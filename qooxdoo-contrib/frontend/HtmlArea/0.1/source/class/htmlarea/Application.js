@@ -52,7 +52,7 @@ qx.Class.define("htmlarea.Application",
     {
       this.base(arguments);
       
-      qx.Theme.patch(qx.theme.classic.Appearance, qxcontrib.theme.classic.MHtmlAreaAppearance);
+      qx.Theme.patch(qx.theme.classic.Appearance, htmlarea.MHtmlAreaAppearance);
       
       var vb = new qx.ui.layout.VerticalBoxLayout;
       vb.set({ top : 50, left : 20, width : "65%", height : "auto", spacing : 20 });
@@ -75,7 +75,7 @@ qx.Class.define("htmlarea.Application",
                         geek             : "8-|",
                         show_teeth       : "8o|" };
 
-      var htmlArea = new qxcontrib.ui.form.HtmlArea(null, smileyMap);
+      var htmlArea = new htmlarea.HtmlArea(null, smileyMap);
       htmlArea.set({ width : "100%", height : 400, messengerMode : true, focused : true });
       //vb.add(htmlArea);
 

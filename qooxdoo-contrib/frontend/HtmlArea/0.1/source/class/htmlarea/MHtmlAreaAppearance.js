@@ -29,7 +29,7 @@
 /**
  * The default qooxdoo appearance theme.
  */
-qx.Theme.define("qxcontrib.theme.classic.MHtmlAreaAppearance",
+qx.Theme.define("htmlarea.MHtmlAreaAppearance",
 {
   title: "Classic mixin for HtmlArea",
 
