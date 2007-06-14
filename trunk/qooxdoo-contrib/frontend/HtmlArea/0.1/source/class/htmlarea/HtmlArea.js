@@ -19,7 +19,8 @@
 
 /* ************************************************************************
 
-#resource(smileys:smileys)
+#resource(htmlarea:smileys)
+#require(htmlarea.Settings)
 
 ************************************************************************ */
 
@@ -48,7 +49,7 @@
  * of smilies like ":)" or ";)". These will be automatically added and recognized.
  * 
  */
-qx.Class.define("qxcontrib.ui.form.HtmlArea",
+qx.Class.define("htmlarea.HtmlArea",
 {
   extend : qx.ui.embed.Iframe,
 
@@ -228,7 +229,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
               if (root.attributes.smileytype)
               {
                 var type = root.attributes.smileytype.nodeValue;
-                html = qxcontrib.ui.form.HtmlArea.__getAsciiSmiley(type);
+                html = htmlarea.HtmlArea.__getAsciiSmiley(type);
 
                 if (html != null) {
                   return html;
@@ -236,7 +237,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
               }
             }
 
-            closed = (!(root.hasChildNodes() || qxcontrib.ui.form.HtmlArea.__needsClosingTag(root)));
+            closed = (!(root.hasChildNodes() || htmlarea.HtmlArea.__needsClosingTag(root)));
 
             html = "<" + root.tagName.toLowerCase();
 
@@ -298,7 +299,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
           }
 
           for (i=root.firstChild; i; i=i.nextSibling) {
-            html += qxcontrib.ui.form.HtmlArea.__getHtml(i, true);
+            html += htmlarea.HtmlArea.__getHtml(i, true);
           }
 
           if (outputRoot && !closed) {
@@ -309,7 +310,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
 
         case 3:  // Node.TEXT_NODE
 
-          html = qxcontrib.ui.form.HtmlArea.__htmlEncode(root.data);
+          html = htmlarea.HtmlArea.__htmlEncode(root.data);
           break;
 
         case 8:  // Node.COMMENT_NODE
@@ -336,7 +337,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
      * @return {Boolean} Closing tag needed or not
      */
     __needsClosingTag : function(el) {
-      return (qxcontrib.ui.form.HtmlArea.closingTags.indexOf(" " + el.tagName + " ") != -1);
+      return (htmlarea.HtmlArea.closingTags.indexOf(" " + el.tagName + " ") != -1);
     },
 
 
@@ -369,7 +370,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
      * @return {String | null} smiley or null
      */
     __getAsciiSmiley : function(smileyType) {
-      return typeof qxcontrib.ui.form.HtmlArea.__meaning2Type[smileyType] != "undefined" ? qxcontrib.ui.form.HtmlArea.__meaning2Type[smileyType] : null;
+      return typeof htmlarea.HtmlArea.__meaning2Type[smileyType] != "undefined" ? htmlarea.HtmlArea.__meaning2Type[smileyType] : null;
     }
  },
 
@@ -798,14 +799,14 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
           var search_rng = this.__doc.body.createTextRange();
 
           /* check for start smiley chars */
-          for (var i=0, j=qxcontrib.ui.form.HtmlArea.__startSmileyArr.length; i<j; i++)
+          for (var i=0, j=htmlarea.HtmlArea.__startSmileyArr.length; i<j; i++)
           {
-            if (search_rng.findText(qxcontrib.ui.form.HtmlArea.__startSmileyArr[i]))
+            if (search_rng.findText(htmlarea.HtmlArea.__startSmileyArr[i]))
             {
               /* move by one character and check for any smiley chars which can occur in the middle */
               search_rng.moveEnd("character", 1);
 
-              if (qxcontrib.ui.form.HtmlArea.__middleSmileyChars.indexOf(search_rng.text.charAt(1)) != -1)
+              if (htmlarea.HtmlArea.__middleSmileyChars.indexOf(search_rng.text.charAt(1)) != -1)
               {
                 /* 
                  * if middle smiley char was found move the search range one character more to access
@@ -834,7 +835,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                    * further processing
                    */
 
-                  if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(part.charAt(i).toLowerCase()) == -1) {
+                  if (htmlarea.HtmlArea.__smileyChars.indexOf(part.charAt(i).toLowerCase()) == -1) {
                     valid = false;
                   }
                 }
@@ -846,9 +847,9 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                    * search for the right smiley and add it
                    */
 
-                  for (var i=0, j=qxcontrib.ui.form.HtmlArea.__smileys.length; i<j; i++)
+                  for (var i=0, j=htmlarea.HtmlArea.__smileys.length; i<j; i++)
                   {
-                    if (part.toLowerCase() == qxcontrib.ui.form.HtmlArea.__smileys[i])
+                    if (part.toLowerCase() == htmlarea.HtmlArea.__smileys[i])
                     {
                       this.insertSmiley(part, search_rng);
                       return;
@@ -959,7 +960,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
              * See at the constructor for details.
              */
 
-            if ((qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1 || qxcontrib.ui.form.HtmlArea.__specialIdentifiers.indexOf(keyIdentifier) != -1) || 
+            if ((htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1 || htmlarea.HtmlArea.__specialIdentifiers.indexOf(keyIdentifier) != -1) || 
                 (qx.core.Client.getInstance().isOpera() && e.isShiftPressed() && (keyIdentifier == "home" || keyIdentifier == "down" || keyIdentifier == "right")))
             {
               //          this.debug("SMILEY " + keyIdentifier);
@@ -1017,19 +1018,19 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                 var part = "";
 
                 //            this.debug("search_rng: " + search_rng.text);
-                for (var i=0, j=qxcontrib.ui.form.HtmlArea.__startSmileyArr.length; i<j; i++)
+                for (var i=0, j=htmlarea.HtmlArea.__startSmileyArr.length; i<j; i++)
                 {
                   /* if the current key is an start smiley character */
-                  if (keyIdentifier == qxcontrib.ui.form.HtmlArea.__startSmileyArr[i])
+                  if (keyIdentifier == htmlarea.HtmlArea.__startSmileyArr[i])
                   {
                     /*
                      * check for middle smiley characters with the "findText()" method
                      * if any character is found, move the range end and set the flag
                      */
 
-                    for (var i=0, j=qxcontrib.ui.form.HtmlArea.__middleSmileyArr.length; i<j; i++)
+                    for (var i=0, j=htmlarea.HtmlArea.__middleSmileyArr.length; i<j; i++)
                     {
-                      if (search_rng.findText(qxcontrib.ui.form.HtmlArea.__middleSmileyArr[i]))
+                      if (search_rng.findText(htmlarea.HtmlArea.__middleSmileyArr[i]))
                       {
                         search_rng.moveEnd("character", 1);
                         checkForSmiley = true;
@@ -1044,9 +1045,9 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
 
                     if (checkForSmiley == false)
                     {
-                      for (var i=0, j=qxcontrib.ui.form.HtmlArea.__endSmileyArr.length; i<j; i++)
+                      for (var i=0, j=htmlarea.HtmlArea.__endSmileyArr.length; i<j; i++)
                       {
-                        if (search_rng.findText(qxcontrib.ui.form.HtmlArea.__endSmileyArr[i]))
+                        if (search_rng.findText(htmlarea.HtmlArea.__endSmileyArr[i]))
                         {
                           checkForSmiley = true;
                           break;
@@ -1063,7 +1064,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                    * -> current key is any smiley character except any start smiley character
                    */
 
-                  if (search_rng.findText(qxcontrib.ui.form.HtmlArea.__startSmileyArr[i]))
+                  if (search_rng.findText(htmlarea.HtmlArea.__startSmileyArr[i]))
                   {
                     //                this.debug("FOUND");
                     /* move the range 2 chars to the right to cover the (possible) smiley */
@@ -1075,8 +1076,8 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                      * check for short smiley
                      * -> current identifier is smiley char and no middle smiley char
                      */
-                    if (part.length == 1 && qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1 && 
-                        qxcontrib.ui.form.HtmlArea.__middleSmileyChars.indexOf(keyIdentifier) == -1)
+                    if (part.length == 1 && htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1 && 
+                        htmlarea.HtmlArea.__middleSmileyChars.indexOf(keyIdentifier) == -1)
                     {
                       //                  this.debug("Part1: " + part);
                       part = part + keyIdentifier;
@@ -1089,15 +1090,15 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                      * check for normal smiley
                      * -> current identifier is a smiley char
                      */
-                    else if (part.length > 1 && qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(part.charAt(1).toLowerCase()) != -1 && 
-                             qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1)
+                    else if (part.length > 1 && htmlarea.HtmlArea.__smileyChars.indexOf(part.charAt(1).toLowerCase()) != -1 && 
+                             htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1)
                     {
                       //                  this.debug("Part2: |" + part + "|");
                       /* 
                        * if last char of the part is no smiley char
                        * -> exclude char and concat only the first two with the keyIdentifier
                        */
-                      if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(part.charAt(2)) == -1) {
+                      if (htmlarea.HtmlArea.__smileyChars.indexOf(part.charAt(2)) == -1) {
                         part = part.substring(0, 2) + keyIdentifier;
                       } else {
                         part = part + keyIdentifier;
@@ -1112,7 +1113,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                      * -> Concat first char with the keyIdentifier and enable the check for smiley
                      * Basically this is a little bit of guessing :)
                      */
-                    else if (part.length > 1 && qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1)
+                    else if (part.length > 1 && htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1)
                     {
                       part = part.charAt(0) + keyIdentifier;
 
@@ -1126,9 +1127,9 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                    */
                   if (checkForSmiley == true)
                   {
-                    for (var i=0, j=qxcontrib.ui.form.HtmlArea.__smileys.length; i<j; i++)
+                    for (var i=0, j=htmlarea.HtmlArea.__smileys.length; i<j; i++)
                     {
-                      if (part.toLowerCase() == qxcontrib.ui.form.HtmlArea.__smileys[i])
+                      if (part.toLowerCase() == htmlarea.HtmlArea.__smileys[i])
                       {
                         /* 
                          * set the flag - this ensures that the smiley gets inserted
@@ -1173,7 +1174,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                     if (offset == len)
                     {
                       /* check the char at the left of the cursor */
-                      if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(anchorValue.charAt(len - 1).toLowerCase()) != -1)
+                      if (htmlarea.HtmlArea.__smileyChars.indexOf(anchorValue.charAt(len - 1).toLowerCase()) != -1)
                       {
                         /* set the index variables */
                         indexRight = 1;
@@ -1191,7 +1192,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
 
                           //                      this.debug("length " + len + " " + (indexLeft + 1) + " leftChar " + leftChar);
                           /* if char is smiley char -> concat it with the existing part */
-                          if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(leftChar) != -1)
+                          if (htmlarea.HtmlArea.__smileyChars.indexOf(leftChar) != -1)
                           {
                             part = leftChar + part;
                             indexLeft++;
@@ -1204,11 +1205,11 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                     {
                       indexLeft      = keyIdentifier == "backspace" ? 2 : 1;
                       leftChar       = anchorValue.charAt(offset - indexLeft).toLowerCase();
-                      posSmileyLeft  = qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(leftChar);
+                      posSmileyLeft  = htmlarea.HtmlArea.__smileyChars.indexOf(leftChar);
 
                       indexRight     = keyIdentifier == "delete" ? 1 : 0;
                       rightChar      = anchorValue.charAt(offset + indexRight).toLowerCase();
-                      posSmileyRight = qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(rightChar);
+                      posSmileyRight = htmlarea.HtmlArea.__smileyChars.indexOf(rightChar);
 
 //                                        this.debug("|" + leftChar + "|   |" + rightChar + "|");
 //                                        this.debug("posSmileyLeft: " + posSmileyLeft + " posSmileyRight: " + posSmileyRight);
@@ -1221,7 +1222,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                         leftChar = anchorValue.charAt(offset - (indexLeft + 1)).toLowerCase();
 
                         //                    this.debug("NewLeftChar: |" + leftChar + "|");
-                        if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(leftChar) != -1)
+                        if (htmlarea.HtmlArea.__smileyChars.indexOf(leftChar) != -1)
                         {
                           part = leftChar + part;
                           indexLeft++;
@@ -1231,7 +1232,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                         rightChar = anchorValue.charAt(offset + (indexRight + 1)).toLowerCase();
 
                         //                    this.debug("NewRightChar: |" + rightChar + "| indexRight " + indexRight);
-                        if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(rightChar) != -1)
+                        if (htmlarea.HtmlArea.__smileyChars.indexOf(rightChar) != -1)
                         {
                           part = part + rightChar;
 
@@ -1250,7 +1251,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                         part = leftChar + keyIdentifier;
 
                         leftChar = anchorValue.charAt(offset - (indexLeft + 1)).toLowerCase();
-                        posSmileyLeft = qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(leftChar);
+                        posSmileyLeft = htmlarea.HtmlArea.__smileyChars.indexOf(leftChar);
 
                         if (posSmileyLeft != -1)
                         {
@@ -1267,7 +1268,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
 
                         // take a look at the char at the right
                         rightChar = anchorValue.charAt(offset + (indexRight + 1)).toLowerCase();
-                        posSmileyRight = qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(rightChar);
+                        posSmileyRight = htmlarea.HtmlArea.__smileyChars.indexOf(rightChar);
 
                         if (posSmileyRight != -1)
                         {
@@ -1281,9 +1282,9 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
                     /* check if the selected part is really a smiley shortcut */
                     if (part.length > 1)
                     {
-                      for (var i=0, j=qxcontrib.ui.form.HtmlArea.__smileys.length; i<j; i++)
+                      for (var i=0, j=htmlarea.HtmlArea.__smileys.length; i<j; i++)
                       {
-                        if (part.toLowerCase() == qxcontrib.ui.form.HtmlArea.__smileys[i])
+                        if (part.toLowerCase() == htmlarea.HtmlArea.__smileys[i])
                         {
 //                                                this.debug("INSERT SMILEY offset " + offset + " indexLeft " + indexLeft + " indexRight " + indexRight);
                           this.__insertSmiley = true;
@@ -1584,7 +1585,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
         return null;
       }
 
-      return qxcontrib.ui.form.HtmlArea.__getHtml(this.__doc.body, false);
+      return htmlarea.HtmlArea.__getHtml(this.__doc.body, false);
     },
 
 
@@ -1630,7 +1631,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
        */
 
       if (typeof smileyMap == "object") {
-        qxcontrib.ui.form.HtmlArea.__meaning2Type = smileyMap;
+        htmlarea.HtmlArea.__meaning2Type = smileyMap;
       }
       else
       {
@@ -1638,7 +1639,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
          * map with all "standard" supported smilies
          */
 
-        qxcontrib.ui.form.HtmlArea.__meaning2Type =
+        htmlarea.HtmlArea.__meaning2Type =
         {
           laugh            : ":-)",
           twinkle          : ";-)",
@@ -1660,15 +1661,15 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
       }
 
       // list of all used data structures
-      qxcontrib.ui.form.HtmlArea.__type2Meaning = {};
+      htmlarea.HtmlArea.__type2Meaning = {};
 
-      qxcontrib.ui.form.HtmlArea.__smileyChars = "";
-      qxcontrib.ui.form.HtmlArea.__startSmileyArr = [];
-      qxcontrib.ui.form.HtmlArea.__middleSmileyChars = "";
-      qxcontrib.ui.form.HtmlArea.__middleSmileyArr = [];
-      qxcontrib.ui.form.HtmlArea.__endSmileyArr = [];
-      qxcontrib.ui.form.HtmlArea.__specialIdentifiers = " backspace delete ";
-      qxcontrib.ui.form.HtmlArea.__smileys = [];
+      htmlarea.HtmlArea.__smileyChars = "";
+      htmlarea.HtmlArea.__startSmileyArr = [];
+      htmlarea.HtmlArea.__middleSmileyChars = "";
+      htmlarea.HtmlArea.__middleSmileyArr = [];
+      htmlarea.HtmlArea.__endSmileyArr = [];
+      htmlarea.HtmlArea.__specialIdentifiers = " backspace delete ";
+      htmlarea.HtmlArea.__smileys = [];
 
       // helper variables
       var startSmileyChars = "";
@@ -1689,14 +1690,14 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
         }
 
         // adding the smilies
-        qxcontrib.ui.form.HtmlArea.__type2Meaning[smiley] = meaning;
-        qxcontrib.ui.form.HtmlArea.__smileys.push(smiley);
+        htmlarea.HtmlArea.__type2Meaning[smiley] = meaning;
+        htmlarea.HtmlArea.__smileys.push(smiley);
 
         // adding the short smilies if available
         if (shortSmiley != "")
         {
-          qxcontrib.ui.form.HtmlArea.__type2Meaning[shortSmiley] = meaning;
-          qxcontrib.ui.form.HtmlArea.__smileys.push(shortSmiley);
+          htmlarea.HtmlArea.__type2Meaning[shortSmiley] = meaning;
+          htmlarea.HtmlArea.__smileys.push(shortSmiley);
         }
 
         /* 
@@ -1705,8 +1706,8 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
          */
         for (var i=0, j=smiley.length; i<j; i++)
         {
-          if (qxcontrib.ui.form.HtmlArea.__smileyChars.indexOf(smiley.charAt(i)) == -1) {
-            qxcontrib.ui.form.HtmlArea.__smileyChars += smiley.charAt(i);
+          if (htmlarea.HtmlArea.__smileyChars.indexOf(smiley.charAt(i)) == -1) {
+            htmlarea.HtmlArea.__smileyChars += smiley.charAt(i);
           }
 
           /* 
@@ -1718,16 +1719,16 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
               if (startSmileyChars.indexOf(smiley.charAt(i)) == -1)
               {
                 startSmileyChars += smiley.charAt(i);
-                qxcontrib.ui.form.HtmlArea.__startSmileyArr.push(smiley.charAt(i));
+                htmlarea.HtmlArea.__startSmileyArr.push(smiley.charAt(i));
               }
 
               break;
 
             case 1:
-              if (qxcontrib.ui.form.HtmlArea.__middleSmileyChars.indexOf(smiley.charAt(i)) == -1 && smiley.length == 3)
+              if (htmlarea.HtmlArea.__middleSmileyChars.indexOf(smiley.charAt(i)) == -1 && smiley.length == 3)
               {
-                qxcontrib.ui.form.HtmlArea.__middleSmileyChars += smiley.charAt(i);
-                qxcontrib.ui.form.HtmlArea.__middleSmileyArr.push(smiley.charAt(i));
+                htmlarea.HtmlArea.__middleSmileyChars += smiley.charAt(i);
+                htmlarea.HtmlArea.__middleSmileyArr.push(smiley.charAt(i));
               }
 
               break;
@@ -1736,7 +1737,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
               if (endSmileyChars.indexOf(smiley.charAt(i)) == -1)
               {
                 endSmileyChars += smiley.charAt(i);
-                qxcontrib.ui.form.HtmlArea.__endSmileyArr.push(smiley.charAt(i));
+                htmlarea.HtmlArea.__endSmileyArr.push(smiley.charAt(i));
               }
 
               break;
@@ -1746,17 +1747,17 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
     },
 
     /*
-      this.debug(qx.io.Json.stringify(qxcontrib.ui.form.HtmlArea.__type2Meaning));
+      this.debug(qx.io.Json.stringify(htmlarea.HtmlArea.__type2Meaning));
     
-      this.debug("start " + qxcontrib.ui.form.HtmlArea.__startSmileyArr);
+      this.debug("start " + htmlarea.HtmlArea.__startSmileyArr);
       
-      this.debug("middle " + qxcontrib.ui.form.HtmlArea.__middleSmileyArr);
-      this.debug("middle " + qxcontrib.ui.form.HtmlArea.__middleSmileyChars);
+      this.debug("middle " + htmlarea.HtmlArea.__middleSmileyArr);
+      this.debug("middle " + htmlarea.HtmlArea.__middleSmileyChars);
       
-      this.debug("end " + qxcontrib.ui.form.HtmlArea.__endSmileyArr);
+      this.debug("end " + htmlarea.HtmlArea.__endSmileyArr);
       
-      this.debug("smilies " + qxcontrib.ui.form.HtmlArea.__smileys);
-      this.debug("smileyChars " + qxcontrib.ui.form.HtmlArea.__smileyChars);
+      this.debug("smilies " + htmlarea.HtmlArea.__smileys);
+      this.debug("smileyChars " + htmlarea.HtmlArea.__smileyChars);
     */
 
     /**
@@ -1774,9 +1775,9 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
       var meaning, url;
       var rng = typeof range != "undefined" ? range : null;
 
-      //  this.debug("Smiley: " + type.toLowerCase() + " " + "Meaning: " + qxcontrib.ui.form.HtmlArea.__type2Meaning[type.toLowerCase()] );
+      //  this.debug("Smiley: " + type.toLowerCase() + " " + "Meaning: " + htmlarea.HtmlArea.__type2Meaning[type.toLowerCase()] );
       // setting the meaning
-      meaning = typeof qxcontrib.ui.form.HtmlArea.__type2Meaning[type.toLowerCase()] != "undefined" ? qxcontrib.ui.form.HtmlArea.__type2Meaning[type.toLowerCase()] : null;
+      meaning = typeof htmlarea.HtmlArea.__type2Meaning[type.toLowerCase()] != "undefined" ? htmlarea.HtmlArea.__type2Meaning[type.toLowerCase()] : null;
 
       // setting the url
       if (meaning != null)
@@ -2101,18 +2102,7 @@ qx.Class.define("qxcontrib.ui.form.HtmlArea",
    */
   defer : function() 
   {
-    qx.io.Alias.getInstance().add("smileys", qx.core.Setting.get("qxcontrib.htmlAreaResourceUri"));
-  },
- 
-
-  /*
-  *****************************************************************************
-     SETTINGS
-  *****************************************************************************
-  */
-
-  settings : {
-    "qxcontrib.htmlAreaResourceUri" : "./resource"
+    qx.io.Alias.getInstance().add("smileys", qx.core.Setting.get("htmlarea.resourceUri"));
   },
  
  
