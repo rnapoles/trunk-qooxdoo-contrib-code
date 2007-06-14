@@ -58,30 +58,9 @@ qx.Class.define("htmlarea.Application",
       vb.set({ top : 50, left : 20, width : "65%", height : "auto", spacing : 20 });
       vb.addToDocument();
 
-      var smileyMap = { laugh            : ":-)",
-                        twinkle          : ";-)",
-                        sad              : ":-(",
-                        astonished       : ":-o",
-                        laugh_loud       : ":-d",
-                        stick_out_tongue : ":-p",
-                        speechless       : ":-|",
-                        angry            : ":-@",
-                        confused         : ":-s",
-                        cool_looking     : "8-)",
-                        crying           : ":'(",
-                        amorous          : ":-x",
-                        discreet         : ":-#",
-                        disgraced        : ":-$",
-                        geek             : "8-|",
-                        show_teeth       : "8o|" };
-
-      var htmlArea = new htmlarea.HtmlArea(null, smileyMap);
-      htmlArea.set({ width : "100%", height : 400, messengerMode : true, focused : true });
+      var htmlArea = new qxcontrib.ui.form.HtmlArea(null);
+      htmlArea.set({ width : "100%", height : 400, focused : true });
       //vb.add(htmlArea);
-
-      htmlArea.addEventListener("messengerContent", function(e) {
-        this.debug("messengerContent: " + e.getData());
-      });
 
       var hb = new qx.ui.layout.HorizontalBoxLayout;
       hb.set({ width : "100%", height : "auto", spacing : 10 });
@@ -113,12 +92,6 @@ qx.Class.define("htmlarea.Application",
         this.removeFormat();
       }, htmlArea);
 
-      var addSmileyButton = new qx.ui.form.Button("Add smiley");
-      addSmileyButton.addEventListener("execute", function(e){
-        var result = window.prompt("Smiley: ", "");
-        this.insertSmiley(result);
-      }, htmlArea);
-
       var setContentButton = new qx.ui.form.Button("getValue");
       setContentButton.addEventListener("execute", function(e){
         alert(this.getValue());
@@ -129,7 +102,7 @@ qx.Class.define("htmlarea.Application",
         alert(this.getComputedValue());
       }, htmlArea);
 
-      hb.add(boldButton, italicButton, fontSizeButton, colorButton, removeFormatButton, addSmileyButton, setContentButton, getContentButton);
+      hb.add(boldButton, italicButton, fontSizeButton, colorButton, removeFormatButton, setContentButton, getContentButton);
 
       var hb2 = new qx.ui.layout.HorizontalBoxLayout;
       hb2.set({ width : "100%", height : "auto", spacing : 10 });

@@ -19,7 +19,6 @@
 
 /* ************************************************************************
 
-#resource(htmlarea:smileys)
 #require(htmlarea.Settings)
 
 ************************************************************************ */
@@ -29,25 +28,6 @@
  * Rich text editor widget
  * 
  * @param Content {string} Initial content
- * @param smileyMap {Object ? null} Data structure with all smilies which should be supported.
- * If not set a default set of smilies is supported.
- * <table>
- *   <tr>
- *     <td>Usage is:</td>
- *   </tr>
- *   <tr>
- *     <td>{ meaning : "chars", meaning2 : "chars2" }</td>
- *   </tr>
- *   <tr>
- *     <td>{ laugh : ":-)",</td>
- *   </tr>
-     <tr>
- *     <td>twinkle : ";-)" }</td>
- *   </tr>
- * </table>
- * The key meaning is also the name of the smiley image which should be inserted. Please do not add short versions
- * of smilies like ":)" or ";)". These will be automatically added and recognized.
- * 
  */
 qx.Class.define("htmlarea.HtmlArea",
 {
@@ -62,7 +42,7 @@ qx.Class.define("htmlarea.HtmlArea",
   *****************************************************************************
   */
 
-  construct : function(value, smileyMap)
+  construct : function(value)
   {
     // **********************************************************************
     //   INIT
@@ -115,43 +95,6 @@ qx.Class.define("htmlarea.HtmlArea",
     if (typeof value == "string") {
       this.setValue(value);
     }
-
-    /* create all data structures needed for smiley handline */
-    this.__createSmileyDataStructures(smileyMap);
-    
-   
-    /*
-     * "Fix" Keycode to identifier mapping in opera to suit the needs
-     * of the editor component
-     */
-    if (qx.core.Client.getInstance().isOpera())
-    {
-      /*
-       * To correct the broken key handling in Opera "fix" the meanings of
-       * the several keyCodes manually to the desired Identifiers
-       * 
-       * However for these keys it is bit more complicated:
-       * 
-       * KEY   RESULT   POSSIBLE SOLUTION
-       * ************************************
-       * $     "Home"   SHIFT + "Home"  -> $
-       * (     "Down"   SHIFT + "Down"  -> (
-       * '     "Right"  SHIFT + "Right" -> '
-       * 
-       */
-      var keyEventHandler = qx.event.handler.KeyEventHandler.getInstance();
-    
-      /*
-       * fix mapping for the keys "#", "-", "P", "S", "X"
-       * for other keys there maybe also a problem with the wrong identifier,
-       * but here are only these keys fixed which are needed for the smiley handling
-       */   
-      keyEventHandler._keyCodeToIdentifierMap[35]  = "#";
-      keyEventHandler._keyCodeToIdentifierMap[45]  = "-";
-      keyEventHandler._keyCodeToIdentifierMap[112] = "P";
-      keyEventHandler._keyCodeToIdentifierMap[115] = "S";
-      keyEventHandler._keyCodeToIdentifierMap[120] = "X";
-    }
   },
 
 
@@ -167,11 +110,6 @@ qx.Class.define("htmlarea.HtmlArea",
      * Thrown when the editor is loaded.
      */
     "load"             : "qx.event.type.Event",
-    
-    /**
-     * Only available if messengerMode is active. This event returns the current content of the editor.
-     */
-    "messengerContent" : "qx.event.type.DataEvent",
     
     /**
      * This event consists of two boolean values. These values represent if the text in the current cursor context is bo
@@ -360,18 +298,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return s;
     },
-
-
-    /**
-     * Translates the meaning (e.g. "twinkle") to the corresponding ascii characters
-     *
-     * @type static
-     * @param smileyType {String} Smileytype to translate
-     * @return {String | null} smiley or null
-     */
-    __getAsciiSmiley : function(smileyType) {
-      return typeof htmlarea.HtmlArea.__meaning2Type[smileyType] != "undefined" ? htmlarea.HtmlArea.__meaning2Type[smileyType] : null;
-    }
  },
 
 
@@ -399,34 +325,6 @@ qx.Class.define("htmlarea.HtmlArea",
       check : "Boolean",
       init  : false,
       apply : "_applyEditable"
-    },
-
-
-    /**
-     * If turned on the editor acts like a messenger widget e.g. if one hits the Enter key the current content gets
-     * outputted (via a DataEvent) and the editor clears his content
-     */
-    messengerMode :
-    {
-      check : "Boolean",
-      init  : false
-    },
-
-
-    /** Location where the smiley images are stored */
-/*
-    smileyLocation :
-    {
-      check : "String",
-      init  : qx.io.Alias.getInstance().resolve("smileys/smileys")
-    },
-*/
-
-    /** File extension for smiley images */
-    smileyFileExtension :
-    {
-      check : "String",
-      init  : "gif"
     },
 
 
@@ -465,12 +363,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /** private field which holds the content of the editor  */
     __value        : "",
 
-    
-    getSmileyLocation : function()
-    {
-      return qx.io.Alias.getInstance().resolve("smileys/smileys");
-    },
-    
     
     /** 
      * Setting the value of the editor
@@ -753,14 +645,6 @@ qx.Class.define("htmlarea.HtmlArea",
     ---------------------------------------------------------------------------
     */
 
-    /* 
-     * flag for controlling the insertion of a smiley
-     * if flag is set during the "keypress" event, the
-     * smiley gets inserted at the "keyup" event
-     */
-    __insertSmiley : false,
-
-
     /**
      * All key events are delegated to this method
      *
@@ -771,134 +655,6 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleEvent : function(e)
     {
       var keyIdentifier = e.getKeyIdentifier().toLowerCase();
-
-      /* 
-       * START SMILEY HANDLING PART 1
-       */
-
-      if (qx.core.Client.getInstance().isMshtml())
-      {
-        /*
-         * Catch the "keyup" event for the keys "Backspace" and "Delete" to easier identify smiley characters.
-         * The identification in the "keypress" handler is much more difficult to handle.
-         * 
-         * Also insert smilies if the according flag is set. This is handled with the "keyup" event because 
-         * the IE then has the full TextRange ( keypress -> ":-", keyup -> ":-)" ). If the user is typing ahead
-         * the TextRange ends with ":-" when handling the keypress event. Expanding the TextRange is not possible.
-         * You have to wait until the keyup event is handled to get access to the currently inserted key to process
-         * the smiley handling.
-         */
-
-        if ((e.getType() == "keyup" && (keyIdentifier == "backspace" || keyIdentifier == "delete")) || (e.getType() == "keyup" && this.__insertSmiley == true))
-        {
-          //      this.debug("backspace delete");
-          /* reset flag */
-          this.__insertSmiley = false;
-
-          /* create new TextRange */
-          var search_rng = this.__doc.body.createTextRange();
-
-          /* check for start smiley chars */
-          for (var i=0, j=htmlarea.HtmlArea.__startSmileyArr.length; i<j; i++)
-          {
-            if (search_rng.findText(htmlarea.HtmlArea.__startSmileyArr[i]))
-            {
-              /* move by one character and check for any smiley chars which can occur in the middle */
-              search_rng.moveEnd("character", 1);
-
-              if (htmlarea.HtmlArea.__middleSmileyChars.indexOf(search_rng.text.charAt(1)) != -1)
-              {
-                /* 
-                 * if middle smiley char was found move the search range one character more to access
-                 * the complete smiley shortcut
-                 */
-
-                search_rng.moveEnd("character", 1);
-              }
-
-              /* 
-               * get the text of the TextRange -> should contain Smiley
-               * set valid flag -> assume text contains a smiley
-               */
-
-              var part = search_rng.text;
-              var valid = true;
-
-              //          this.debug("Part: |" + part + "|  " + part.length);
-              if (part.length > 1)
-              {
-                for (var i=0, j=part.length; i<j; i++)
-                {
-                  /* 
-                   * check all chars within the selected parts
-                   * if any char IS NOT a smiley char set the flag to avoid
-                   * further processing
-                   */
-
-                  if (htmlarea.HtmlArea.__smileyChars.indexOf(part.charAt(i).toLowerCase()) == -1) {
-                    valid = false;
-                  }
-                }
-
-                if (valid == true)
-                {
-                  //              this.debug("insertSmiley");
-                  /*
-                   * search for the right smiley and add it
-                   */
-
-                  for (var i=0, j=htmlarea.HtmlArea.__smileys.length; i<j; i++)
-                  {
-                    if (part.toLowerCase() == htmlarea.HtmlArea.__smileys[i])
-                    {
-                      this.insertSmiley(part, search_rng);
-                      return;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      //            this.debug("|" + search_rng.text + "|");
-      else  /* NON-IE PART */
-      {
-        if (e.getType() == "keyup" && this.__insertSmiley == true)
-        {
-          /* reset flag */
-          this.__insertSmiley = false;
-
-          /* create new range */
-          var range = this.__getSelection().getRangeAt(0);
-
-//                this.debug("KEYUP: " + this.__start + " " + this.__end);
-          /*
-           * set the start and end of the range to select the 
-           * ASCII chars. The smiley insertion will replace the 
-           * chars with the corresponding image
-           */
-
-          if (this.__start >= 0) {
-            range.setStart(this.__container, this.__start);
-          } else {
-            range.setStart(this.__container, 0);
-          }
-
-//                this.debug("RANGE: |" + range.toString() + "|");
-          range.setEnd(this.__container, this.__end);
-
-//                this.debug("RANGE2: |" + range.toString() + "|");
-          
-          /* insert the smiley */
-          this.insertSmiley(range.toString(), range);
-        }
-      }
-
-      /* 
-       * END SMILEY HANDLING PART 1
-       */
 
       if (e.getType() == "keypress")
       {
@@ -914,32 +670,7 @@ qx.Class.define("htmlarea.HtmlArea",
             }
 
             break;
-
-          case "enter":
-            /* if only "Enter" key was pressed and "messengerMode" is activated */
-            if (e.isShiftPressed() == false && this.getMessengerMode() == true)
-            {
-              e.preventDefault();
-              e.stopPropagation();
-
-              /* dispatch data event with editor content */
-              this.dispatchEvent(new qx.event.type.DataEvent("messengerContent", this.getComputedValue()), true);
-
-              /* reset the editor content */
-              this.resetHtml();
-            }
-
-            break;
-
-            /*
-             * for all keys which are able to reposition the cursor
-             * start to examine the current cursor context
-             * 
-             * *** FALLTHROUGH ***
-             * This fallthrough is especially needed for Opera
-             * (due the broken key handling and the wrong keyidentifiers)
-             */
-
+          
           case "left":
           case "right":
           case "up":
@@ -949,360 +680,34 @@ qx.Class.define("htmlarea.HtmlArea",
           case "home":
           case "end":
             this.__startExamineCursorContext();
+          break;
 
           default:
-            /*
-             * check for smiley or special indentifier chars
-             * if current key is member of any of those two groups start smiley detection
-             * 
-             * SPECIAL CASE FOR OPERA
-             * due the broken key handling in Opera it is needed to implement this extra check.
-             * See at the constructor for details.
-             */
-
-            if ((htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1 || htmlarea.HtmlArea.__specialIdentifiers.indexOf(keyIdentifier) != -1) || 
-                (qx.core.Client.getInstance().isOpera() && e.isShiftPressed() && (keyIdentifier == "home" || keyIdentifier == "down" || keyIdentifier == "right")))
+            if (qx.core.Client.getInstance().isMshtml())
             {
-              //          this.debug("SMILEY " + keyIdentifier);
-              /*
-               * manipulation of the keyIdentifier for Opera and his
-               * "special" keyidentifiers
+              /* 
+               * SPECIAL CASE FOR IE
+               * DO NOT allow to delete an image with "Backspace"
+               * this will lead IE to crash the editor component (no working focus handling etc.)
+               * 
+               * Recognize the control selection and clear the selection - this
+               * prevents IE from crashing the editor component
                */
 
-              if (qx.core.Client.getInstance().isOpera())
+              if (keyIdentifier == "backspace")
               {
-                if (e.isShiftPressed())
+                var sel = this.__getSelection();
+ 
+                if (sel.type == "Control")
                 {
-                  switch(keyIdentifier)
-                  {
-                    case "home":
-                      keyIdentifier = "$";
-                      break;
-
-                    case "down":
-                      keyIdentifier = "(";
-                      break;
-
-                    case "right":
-                      keyIdentifier = "'";
-                      break;
-                  }
-                }
-              }
-
-              if (qx.core.Client.getInstance().isMshtml())
-              {
-                /* 
-                 * SPECIAL CASE FOR IE
-                 * DO NOT allow to delete an image (e.g. a smiley) with "Backspace"
-                 * this will lead IE to crash the editor component (no working focus handling etc.)
-                 * 
-                 * Recognize the control selection and clear the selection - this
-                 * prevents IE from crashing the editor component
-                 */
-
-                if (keyIdentifier == "backspace")
-                {
-                  var sel = this.__getSelection();
-
-                  if (sel.type == "Control")
-                  {
-                    sel.clear();
-                    return;
-                  }
-                }
-
-                /* create new range and initialize */
-                var search_rng = this.__doc.body.createTextRange();
-                var checkForSmiley = false;
-                var part = "";
-
-                //            this.debug("search_rng: " + search_rng.text);
-                for (var i=0, j=htmlarea.HtmlArea.__startSmileyArr.length; i<j; i++)
-                {
-                  /* if the current key is an start smiley character */
-                  if (keyIdentifier == htmlarea.HtmlArea.__startSmileyArr[i])
-                  {
-                    /*
-                     * check for middle smiley characters with the "findText()" method
-                     * if any character is found, move the range end and set the flag
-                     */
-
-                    for (var i=0, j=htmlarea.HtmlArea.__middleSmileyArr.length; i<j; i++)
-                    {
-                      if (search_rng.findText(htmlarea.HtmlArea.__middleSmileyArr[i]))
-                      {
-                        search_rng.moveEnd("character", 1);
-                        checkForSmiley = true;
-                        break;
-                      }
-                    }
-
-                    /*
-                     * if no middle smiley character was found search for end smiley characters
-                     * if any character is found, just set the flag. No need to move the range end.
-                     */
-
-                    if (checkForSmiley == false)
-                    {
-                      for (var i=0, j=htmlarea.HtmlArea.__endSmileyArr.length; i<j; i++)
-                      {
-                        if (search_rng.findText(htmlarea.HtmlArea.__endSmileyArr[i]))
-                        {
-                          checkForSmiley = true;
-                          break;
-                        }
-                      }
-                    }
-
-                    /* concat smiley chars with the current range */
-                    part = keyIdentifier + search_rng.text;
-                  }
-
-                  /*
-                   * check for start smiley chars already contained in the range
-                   * -> current key is any smiley character except any start smiley character
-                   */
-
-                  if (search_rng.findText(htmlarea.HtmlArea.__startSmileyArr[i]))
-                  {
-                    //                this.debug("FOUND");
-                    /* move the range 2 chars to the right to cover the (possible) smiley */
-                    search_rng.moveEnd("character", 2);
-
-                    part = search_rng.text;
-
-                    /* 
-                     * check for short smiley
-                     * -> current identifier is smiley char and no middle smiley char
-                     */
-                    if (part.length == 1 && htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1 && 
-                        htmlarea.HtmlArea.__middleSmileyChars.indexOf(keyIdentifier) == -1)
-                    {
-                      //                  this.debug("Part1: " + part);
-                      part = part + keyIdentifier;
-
-                      //                  this.debug("Part1: " + part);
-                      checkForSmiley = true;
-                    }
-
-                    /*
-                     * check for normal smiley
-                     * -> current identifier is a smiley char
-                     */
-                    else if (part.length > 1 && htmlarea.HtmlArea.__smileyChars.indexOf(part.charAt(1).toLowerCase()) != -1 && 
-                             htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1)
-                    {
-                      //                  this.debug("Part2: |" + part + "|");
-                      /* 
-                       * if last char of the part is no smiley char
-                       * -> exclude char and concat only the first two with the keyIdentifier
-                       */
-                      if (htmlarea.HtmlArea.__smileyChars.indexOf(part.charAt(2)) == -1) {
-                        part = part.substring(0, 2) + keyIdentifier;
-                      } else {
-                        part = part + keyIdentifier;
-                      }
-
-                      //                  this.debug("Part2: |" + part + "|");
-                      checkForSmiley = true;
-                    }
-
-                    /*
-                     * Second char of part is no smiley char
-                     * -> Concat first char with the keyIdentifier and enable the check for smiley
-                     * Basically this is a little bit of guessing :)
-                     */
-                    else if (part.length > 1 && htmlarea.HtmlArea.__smileyChars.indexOf(keyIdentifier) != -1)
-                    {
-                      part = part.charAt(0) + keyIdentifier;
-
-                      checkForSmiley = true;
-                    }
-                  }
-
-                  /*
-                   * the part variable consists of smiley characters
-                   * check if it's any of the smilies
-                   */
-                  if (checkForSmiley == true)
-                  {
-                    for (var i=0, j=htmlarea.HtmlArea.__smileys.length; i<j; i++)
-                    {
-                      if (part.toLowerCase() == htmlarea.HtmlArea.__smileys[i])
-                      {
-                        /* 
-                         * set the flag - this ensures that the smiley gets inserted
-                         * with the next "keyup" event
-                         */
-                        this.__insertSmiley = true;
-                        return;
-                      }
-                    }
-                  }
-                }
-              }
-              else  /* NON-IE PART */
-              {
-                var sel         = this.__getSelection();
-
-                var rng         = sel.getRangeAt(0);
-                var offset      = rng.startOffset;
-
-                var anchor      = sel.anchorNode;
-                var anchorValue = anchor.nodeValue;
-                
-//                this.debug("START " + offset + " " + rng.startContainer);
-
-                if (sel.isCollapsed && anchor.nodeType == 3)
-                {
-                  /* only check if more than 1 char is available */
-                  if (offset > 0)
-                  {
-                    var len            = anchorValue.length;
-                    var part           = "";
-
-                    var leftChar       = "";
-                    var posSmileyLeft  = null;
-                    var indexLeft      = null;
-
-                    var rightChar      = "";
-                    var posSmileyRight = null;
-                    var indexRight     = null;
-
-                    /* char was added at the end of the range */
-                    if (offset == len)
-                    {
-                      /* check the char at the left of the cursor */
-                      if (htmlarea.HtmlArea.__smileyChars.indexOf(anchorValue.charAt(len - 1).toLowerCase()) != -1)
-                      {
-                        /* set the index variables */
-                        indexRight = 1;
-                        indexLeft = 1;
-
-                        /* concat char at the left with the current identifier */
-                        part = anchorValue.substring(len - indexLeft) + keyIdentifier;
-
-                        //                    this.debug("PART " + part);
-                        /* next char at the left */
-                        if (len - (indexLeft + 1) >= 0)
-                        {
-                          /* get the next char at the left */
-                          leftChar = anchorValue.substr(len - (indexLeft + 1), 1).toLowerCase();
-
-                          //                      this.debug("length " + len + " " + (indexLeft + 1) + " leftChar " + leftChar);
-                          /* if char is smiley char -> concat it with the existing part */
-                          if (htmlarea.HtmlArea.__smileyChars.indexOf(leftChar) != -1)
-                          {
-                            part = leftChar + part;
-                            indexLeft++;
-                          }
-                        }
-                      }
-                    }
-                    /* char was added before the end of the range */
-                    else
-                    {
-                      indexLeft      = keyIdentifier == "backspace" ? 2 : 1;
-                      leftChar       = anchorValue.charAt(offset - indexLeft).toLowerCase();
-                      posSmileyLeft  = htmlarea.HtmlArea.__smileyChars.indexOf(leftChar);
-
-                      indexRight     = keyIdentifier == "delete" ? 1 : 0;
-                      rightChar      = anchorValue.charAt(offset + indexRight).toLowerCase();
-                      posSmileyRight = htmlarea.HtmlArea.__smileyChars.indexOf(rightChar);
-
-//                                        this.debug("|" + leftChar + "|   |" + rightChar + "|");
-//                                        this.debug("posSmileyLeft: " + posSmileyLeft + " posSmileyRight: " + posSmileyRight);
-                      /* at both sides there are smiley chars - this can only happen with "Delete" and "Backspace"(?) */
-                      if (posSmileyLeft != -1 && posSmileyRight != -1)
-                      {
-                        part = leftChar + rightChar;
-
-                        /* take a look at the left */
-                        leftChar = anchorValue.charAt(offset - (indexLeft + 1)).toLowerCase();
-
-                        //                    this.debug("NewLeftChar: |" + leftChar + "|");
-                        if (htmlarea.HtmlArea.__smileyChars.indexOf(leftChar) != -1)
-                        {
-                          part = leftChar + part;
-                          indexLeft++;
-                        }
-
-                        /* take a look at the right */
-                        rightChar = anchorValue.charAt(offset + (indexRight + 1)).toLowerCase();
-
-                        //                    this.debug("NewRightChar: |" + rightChar + "| indexRight " + indexRight);
-                        if (htmlarea.HtmlArea.__smileyChars.indexOf(rightChar) != -1)
-                        {
-                          part = part + rightChar;
-
-                          if (offset + (indexRight + 1) < len) {
-                            indexRight++;
-                          }
-                        }
-                      }
-
-                      //                    this.debug("indexRight " + indexRight);
-                      /* only left of the current char is a smiley char */
-                      else if (posSmileyLeft != -1)
-                      {
-                        indexRight++;
-
-                        part = leftChar + keyIdentifier;
-
-                        leftChar = anchorValue.charAt(offset - (indexLeft + 1)).toLowerCase();
-                        posSmileyLeft = htmlarea.HtmlArea.__smileyChars.indexOf(leftChar);
-
-                        if (posSmileyLeft != -1)
-                        {
-                          part = leftChar + part;
-                          indexLeft++;
-                        }
-                      }
-
-                      /* only left of the current char is a smiley char */
-                      else if (posSmileyRight != -1)
-                      {
-                        indexLeft--;
-                        part = keyIdentifier + rightChar;
-
-                        // take a look at the char at the right
-                        rightChar = anchorValue.charAt(offset + (indexRight + 1)).toLowerCase();
-                        posSmileyRight = htmlarea.HtmlArea.__smileyChars.indexOf(rightChar);
-
-                        if (posSmileyRight != -1)
-                        {
-                          part = part + rightChar;
-                          indexRight = indexRight + part.length;
-                        }
-                      }
-                    }
-
-//                                    this.debug("PART: |"+ part + "|");
-                    /* check if the selected part is really a smiley shortcut */
-                    if (part.length > 1)
-                    {
-                      for (var i=0, j=htmlarea.HtmlArea.__smileys.length; i<j; i++)
-                      {
-                        if (part.toLowerCase() == htmlarea.HtmlArea.__smileys[i])
-                        {
-//                                                this.debug("INSERT SMILEY offset " + offset + " indexLeft " + indexLeft + " indexRight " + indexRight);
-                          this.__insertSmiley = true;
-                          this.__container    = rng.commonAncestorContainer;
-                          this.__start        = offset - indexLeft;
-                          this.__end          = offset + indexRight;
-
-                          return;
-                        }
-                      }
-                    }
-                  }
+                  sel.clear();
+                  return;
                 }
               }
             }
+          }                
         }
-      }
-    },
+      },
 
 
     /**
@@ -1589,306 +994,6 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
-
-
-    /*
-    ---------------------------------------------------------------------------
-      SMILEYS
-    ---------------------------------------------------------------------------
-    * 
-    * all Smileys are also usable without the dash e.g. ":-)" == ":)"
-    * 
-    * :-)             laugh
-    * ;-)             twinkle
-    * :-(             sad
-    * :-o  and :-O    astonish
-    * :-d  and :-D    laugh loud
-    * :-p  and :-P    stick out tongue
-    * :-|             disappointed
-    * :-@             angry
-    * :-s  and :-S    confused
-    * 8-)             cool looking
-    * :'(             crying
-    * :-x             amorous
-    * :-#             discreet
-    * :-$             disgraced
-    * 8-|             geek
-    * 8o|             show teeth
-    */
-
-    /**
-     * Builds all needed data structures for smiley handling
-     *
-     * @type member
-     * @param smileyMap {Object ? null} Data structure of all smilies which should be supported
-     * @return {void} 
-     */
-    __createSmileyDataStructures : function(smileyMap)
-    {
-      /* 
-       * if parameter "smileyMap" is supplied build the needed data-structures
-       * otherwise use the default values
-       */
-
-      if (typeof smileyMap == "object") {
-        htmlarea.HtmlArea.__meaning2Type = smileyMap;
-      }
-      else
-      {
-        /*
-         * map with all "standard" supported smilies
-         */
-
-        htmlarea.HtmlArea.__meaning2Type =
-        {
-          laugh            : ":-)",
-          twinkle          : ";-)",
-          sad              : ":-(",
-          astonished       : ":-o",
-          laugh_loud       : ":-d",
-          stick_out_tongue : ":-p",
-          speechless       : ":-|",
-          angry            : ":-@",
-          confused         : ":-s",
-          cool_looking     : "8-)",
-          crying           : ":'(",
-          amorous          : ":-x",
-          discreet         : ":-#",
-          disgraced        : ":-$",
-          geek             : "8-|",
-          show_teeth       : "8o|"
-        };
-      }
-
-      // list of all used data structures
-      htmlarea.HtmlArea.__type2Meaning = {};
-
-      htmlarea.HtmlArea.__smileyChars = "";
-      htmlarea.HtmlArea.__startSmileyArr = [];
-      htmlarea.HtmlArea.__middleSmileyChars = "";
-      htmlarea.HtmlArea.__middleSmileyArr = [];
-      htmlarea.HtmlArea.__endSmileyArr = [];
-      htmlarea.HtmlArea.__specialIdentifiers = " backspace delete ";
-      htmlarea.HtmlArea.__smileys = [];
-
-      // helper variables
-      var startSmileyChars = "";
-      var endSmileyChars = "";
-
-      for (var meaning in smileyMap)
-      {
-        var smiley = smileyMap[meaning];
-
-        /* 
-         * a short smiley e.g. is ":)" or ";)"
-         * take a look if a "-" char is existent and then build the short smiley
-         */
-        var shortSmiley = "";
-
-        if (smiley.indexOf("-") != -1) {
-          shortSmiley = smiley.substr(0, 1) + smiley.substr(2, 1);
-        }
-
-        // adding the smilies
-        htmlarea.HtmlArea.__type2Meaning[smiley] = meaning;
-        htmlarea.HtmlArea.__smileys.push(smiley);
-
-        // adding the short smilies if available
-        if (shortSmiley != "")
-        {
-          htmlarea.HtmlArea.__type2Meaning[shortSmiley] = meaning;
-          htmlarea.HtmlArea.__smileys.push(shortSmiley);
-        }
-
-        /* 
-         * building up the rest of the data structures
-         * looping over every smiley and build the needed data structures
-         */
-        for (var i=0, j=smiley.length; i<j; i++)
-        {
-          if (htmlarea.HtmlArea.__smileyChars.indexOf(smiley.charAt(i)) == -1) {
-            htmlarea.HtmlArea.__smileyChars += smiley.charAt(i);
-          }
-
-          /* 
-           * fill the different structures with their needed data
-           */
-          switch(i)
-          {
-            case 0:
-              if (startSmileyChars.indexOf(smiley.charAt(i)) == -1)
-              {
-                startSmileyChars += smiley.charAt(i);
-                htmlarea.HtmlArea.__startSmileyArr.push(smiley.charAt(i));
-              }
-
-              break;
-
-            case 1:
-              if (htmlarea.HtmlArea.__middleSmileyChars.indexOf(smiley.charAt(i)) == -1 && smiley.length == 3)
-              {
-                htmlarea.HtmlArea.__middleSmileyChars += smiley.charAt(i);
-                htmlarea.HtmlArea.__middleSmileyArr.push(smiley.charAt(i));
-              }
-
-              break;
-
-            case 2:
-              if (endSmileyChars.indexOf(smiley.charAt(i)) == -1)
-              {
-                endSmileyChars += smiley.charAt(i);
-                htmlarea.HtmlArea.__endSmileyArr.push(smiley.charAt(i));
-              }
-
-              break;
-          }
-        }
-      }
-    },
-
-    /*
-      this.debug(qx.io.Json.stringify(htmlarea.HtmlArea.__type2Meaning));
-    
-      this.debug("start " + htmlarea.HtmlArea.__startSmileyArr);
-      
-      this.debug("middle " + htmlarea.HtmlArea.__middleSmileyArr);
-      this.debug("middle " + htmlarea.HtmlArea.__middleSmileyChars);
-      
-      this.debug("end " + htmlarea.HtmlArea.__endSmileyArr);
-      
-      this.debug("smilies " + htmlarea.HtmlArea.__smileys);
-      this.debug("smileyChars " + htmlarea.HtmlArea.__smileyChars);
-    */
-
-    /**
-     * Inserts a smiley (image element) at the current position
-     * If the insertion is done via a menu outside the editor 
-     * you only have to provide the first parameter
-     *
-     * @type member
-     * @param type {String} any supported smiley characters
-     * @param range {Range ? null} Range object
-     * @return {void} 
-     */
-    insertSmiley : function(type, range)
-    {
-      var meaning, url;
-      var rng = typeof range != "undefined" ? range : null;
-
-      //  this.debug("Smiley: " + type.toLowerCase() + " " + "Meaning: " + htmlarea.HtmlArea.__type2Meaning[type.toLowerCase()] );
-      // setting the meaning
-      meaning = typeof htmlarea.HtmlArea.__type2Meaning[type.toLowerCase()] != "undefined" ? htmlarea.HtmlArea.__type2Meaning[type.toLowerCase()] : null;
-
-      // setting the url
-      if (meaning != null)
-      {
-        // chain together the url
-        url = this.getSmileyLocation() + "/" + meaning + "." + this.getSmileyFileExtension();
-        var img, htmlPart;
-
-        /*
-         * IE inserts the smiley using "pasteHTML" on a range object
-         * if no range is given as parameter a new one is build.
-         * collapse the range at the end to show the caret.
-         */
-
-        if (qx.core.Client.getInstance().isMshtml())
-        {
-          htmlPart = '<img src="' + url + '" smileytype="' + meaning + '"  style="width:20px;height:20px;" unselectable="on" border="0"/>';
-
-          /*
-           * if no range is available - inserting is done via a menu outside of the editor
-           * create a new range from the current selection and collapse the range before 
-           * inserting the image element
-           */
-          if (rng == null)
-          {
-            rng = this.__getSelection().createRange();
-            rng.collapse(true);
-          }
-
-          rng.pasteHTML(htmlPart);
-          rng.collapse(true);
-        }
-
-        /*
-         * Gecko is using the "inserthtml" command to insert the smiley.
-         * no use of ranges or selections is needed. Collapsing and showing
-         * the caret is also done automatically.
-         */
-        else if (qx.core.Client.getInstance().isGecko())
-        {
-          // use the "inserthtml" command
-          htmlPart = '<img src="' + url + '" smileytype="' + meaning + '" style="-moz-user-select:none;width:20px;height:20px;" border="0"/>';
-
-          var res = this._execCommand("inserthtml", false, htmlPart);
-        }
-
-        //      this.debug("insertHtml " + res);
-        else
-        {
-          /*
-           * IMPORTANT NOTE
-           * When using the execCommand "inserthtml" it is not possible (I tried many options at least)
-           * to reset the lost cursor/caret. A workaround for both is to use the "insertNode" method of 
-           * the Range object. Using this the caret gets not lost. The only drawback is that the caret is
-           * positioned right before the image and not after it.
-           * 
-           * DO NOT USE the method "normalize" on "this.__doc.body". This will lead to a HIERARCHY_REQUEST_ERR
-           * in Webkit.
-           * The "normalize" method collapse all sibling text nodes into one single text node.
-           */
-
-          //      this.debug("insertSmiley");
-          // delete contents if range is available
-          if (rng != null) {
-            rng.deleteContents();
-          }
-
-          var imgNode = this.__doc.createElement("img");
-
-          var attributes =
-          {
-            "src"        : url,
-            "smileyType" : meaning,
-            "style"      : "width:20px;height:20px",
-            "border"     : 0
-          };
-
-          for (var attrName in attributes)
-          {
-            var attrNode = this.__doc.createAttribute(attrName);
-            attrNode.nodeValue = attributes[attrName];
-
-            imgNode.setAttributeNode(attrNode);
-          }
-
-          /* insert the image node */
-          rng.collapse(true);
-          rng.insertNode(imgNode);
-          rng.collapse(true);
-
-          if (qx.core.Client.getInstance().isOpera())
-          {
-            /* 
-             * create a new selection and corresponding range, select the 
-             * new inserted image node and add this range to the selection.
-             * This ensures - at least for Opera - that the cursor is displayed
-             * after the smiley image and the user can type ahead (as expected).
-             */
-            var sel = this.__getSelection();
-            var rng = this.__createRange(sel);
-            rng.selectNode(imgNode);
-            sel.addRange(rng);
-            rng.collapse(true);
-          }
-        }
-      }
-    },
-
-
-
-
     /*
       -----------------------------------------------------------------------------
       PROCESS CURSOR CONTEXT
@@ -2088,23 +1193,6 @@ qx.Class.define("htmlarea.HtmlArea",
     }
  },
 
-
- /*
- ---------------------------------------------------------------------------
-   DESTRUCTOR
- ---------------------------------------------------------------------------
- */
-
-  /**
-   * Defer
-   *
-   * @type member
-   */
-  defer : function() 
-  {
-    qx.io.Alias.getInstance().add("smileys", qx.core.Setting.get("htmlarea.resourceUri"));
-  },
- 
  
   /*
   ---------------------------------------------------------------------------
@@ -2147,7 +1235,6 @@ qx.Class.define("htmlarea.HtmlArea",
     }
     catch(ex) {}
 
-    this._disposeFields("__handleEvent", "__handleFocusEvent", "handleMouseEvent", "__doc", "__contentWrap", "__meaning2Type", "__type2Meaning", "__startSmileyArr",
-                        "__middleSmileyArr", "__endSmileyArr", "__smileys");
+    this._disposeFields("__handleEvent", "__handleFocusEvent", "handleMouseEvent", "__doc", "__contentWrap");
   }
 });
