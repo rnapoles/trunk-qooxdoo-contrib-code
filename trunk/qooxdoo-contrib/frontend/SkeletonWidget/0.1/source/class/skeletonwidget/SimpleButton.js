@@ -11,14 +11,14 @@
 /* ************************************************************************
 
 #resource(image:image)
-#embed(skeleton.image/*)
+#embed(skeletonwidget.image/*)
 
 ************************************************************************ */
 
 /**
  * A simple button
  */
-qx.Class.define("skeleton.SimpleButton",
+qx.Class.define("skeletonwidget.SimpleButton",
 {
   extend : qx.ui.form.Button,
 
@@ -31,7 +31,23 @@ qx.Class.define("skeleton.SimpleButton",
 
   construct : function(text)
   {
-    this.base(arguments, text, qx.core.Setting.get("skeleton.resourceUri") + "/image/test.png");
+    this.base(arguments, text, qx.core.Setting.get("skeletonwidget.resourceUri") + "/image/test.png");
+  },
+  
+  
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+
+  properties : 
+  {
+    appearance :
+    {
+      refine : true,
+      init : "simple-button"
+    }
   },
   
   
@@ -42,7 +58,7 @@ qx.Class.define("skeleton.SimpleButton",
   */
 
   settings : {
-    "skeleton.resourceUri" : "./resource"
+    "skeletonwidget.resourceUri" : "./resource"
   }
   
 });
