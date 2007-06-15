@@ -35,11 +35,15 @@
 # It should end with the last directory. Please omit a trailing slash.
 #
 QOOXDOO_PATH = ../../../external/qooxdoo/trunk
-#QOOXDOO_PATH = ../../../../../../qx
 
-# Include ProgressBar and HtmlArea 
+#
+# Path to qooxdoo-contrib directory. For the qooxdoo-contrib path apply the same
+# rules as to the qooxdoo path.
+#
 QOOXDOO_CONTRIB_PATH = ../../..
-CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/frontend/HtmlArea/0.1 $(QOOXDOO_CONTRIB_PATH)/frontend/ProgressBar/0.1
+
+# Include ProgressBar and HtmlArea
+CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/contributions/HtmlArea/0.1 $(QOOXDOO_CONTRIB_PATH)/contributions/ProgressBar/0.1
 CONTRIBS_NAMESPACES = htmlarea progressbar
 
 #
@@ -75,7 +79,7 @@ VERBOSE = true
 ################################################################################
 
 ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)
-  include contrib.mk
+  include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/targets.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
 endif
