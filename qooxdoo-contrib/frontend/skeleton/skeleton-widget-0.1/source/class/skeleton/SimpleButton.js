@@ -11,6 +11,7 @@
 /* ************************************************************************
 
 #resource(image:image)
+#embed(skeleton.image/*)
 
 ************************************************************************ */
 
@@ -30,7 +31,7 @@ qx.Class.define("skeleton.SimpleButton",
 
   construct : function(text)
   {
-    this.base(arguments, text, qx.core.Setting.get("custom.resourceUri") + "/image/test.png");
+    this.base(arguments, text, qx.core.Setting.get("skeleton.resourceUri") + "/image/test.png");
   },
   
   
@@ -41,7 +42,7 @@ qx.Class.define("skeleton.SimpleButton",
   */
 
   settings : {
-    "custom.resourceUri" : "./resource"
+    "skeleton.resourceUri" : "./resource"
   }
   
 });
