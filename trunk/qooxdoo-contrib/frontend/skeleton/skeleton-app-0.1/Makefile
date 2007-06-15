@@ -45,7 +45,7 @@ CONTRIBS_NAMESPACES = skeleton
 # Namespace of your application e.g. custom
 # Even complexer stuff is possible like: net.sf.custom
 #
-APPLICATION_NAMESPACE = skeleton
+APPLICATION_NAMESPACE = skeletonapp
 
 #
 # Files that will be copied from the source directory into the build
@@ -60,6 +60,7 @@ APPLICATION_FILES = index.html
 # Add any of those variables for your custom configuration here:
 #-------------------------------------------------------------------------------
 
+APPLICATION_RESOURCE_FILTER = true
 
 # turn off optimizations
 APPLICATION_OPTIMIZE_STRINGS = false
