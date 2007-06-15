@@ -1,20 +1,17 @@
-/**
- * Example Manifest file for a qooxdoo contribution
- */
 {
   
-  name : "ProgressBar",
+  "name" : "ProgressBar",
   
-  description : "A progress bar widget",
+  "description" : "A progress bar widget",
   
-  authors : [
-    { name : "Thomas Herchenröder" },
-    { name : "Fabian Jakobs" }
+  "authors" : [
+    { "name" : "Thomas Herchenröder" },
+    { "name" : "Fabian Jakobs" }
   ],
   
-  license : "EPL/LGPL",
+  "license" : "EPL/LGPL",
       
-  versions :
+  "versions" :
   {
     "0.1" :
     {
