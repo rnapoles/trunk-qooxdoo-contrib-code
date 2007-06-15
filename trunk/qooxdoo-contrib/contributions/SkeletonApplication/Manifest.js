@@ -1,15 +1,14 @@
-/**
- * Example Manifest file for a qooxdoo contribution
- */
 {
   
-  name : "ProgressBar",
+  name : "SkeletonApplication",
   
-  description : "A progress bar widget",
+  description : "A small application demonstrating how to embed contributions into custom applications.",
   
   authors : [
-    { name : "Thomas Herchenröder" },
-    { name : "Fabian Jakobs" }
+    {
+      name : "",
+      email : ""
+    },
   ],
   
   license : "EPL/LGPL",
