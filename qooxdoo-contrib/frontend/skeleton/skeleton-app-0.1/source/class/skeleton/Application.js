@@ -17,7 +17,7 @@
 /**
  * Your custom application
  */
-qx.Class.define("custom.Application",
+qx.Class.define("skeleton.Application",
 {
   extend : qx.application.Gui,
 
@@ -44,7 +44,7 @@ qx.Class.define("custom.Application",
       this.base(arguments);
 
       // Create button
-      var button1 = new custom.SimpleButton("First Button");
+      var button1 = new skeleton.SimpleButton("First Button");
 
       // Set button location
       button1.setTop(50);
