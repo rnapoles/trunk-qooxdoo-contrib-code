@@ -20,7 +20,7 @@
   {
     "0.1" :
     {
-      "qooxdoo-versions": ["0.7", "0.7.1-pre"]
+      "qooxdoo-versions": ["0.7.1-pre", "trunk"]
     }
   }
   
