@@ -38,14 +38,14 @@ QOOXDOO_PATH = ../../../external/qooxdoo/trunk
 #QOOXDOO_PATH = ../../../../../../qx
 
 QOOXDOO_CONTRIB_PATH = ../../..
-CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/frontend/skeleton/skeleton-widget-0.1
-CONTRIBS_NAMESPACES = skeleton
+CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/frontend/SkeletonWidget/0.1
+CONTRIBS_NAMESPACES = skeletonwidget
 
 #
 # Namespace of your application e.g. custom
 # Even complexer stuff is possible like: net.sf.custom
 #
-APPLICATION_NAMESPACE = skeletonapp
+APPLICATION_NAMESPACE = skeletonapplication
 
 #
 # Files that will be copied from the source directory into the build
