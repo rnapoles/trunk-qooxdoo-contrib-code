@@ -34,8 +34,7 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-#QOOXDOO_PATH = ../../../external/qooxdoo/0.7
-QOOXDOO_PATH = ../../../../../../qx
+QOOXDOO_PATH = ../../../external/qooxdoo/0.7
 
 #
 # Namespace of your application e.g. custom
