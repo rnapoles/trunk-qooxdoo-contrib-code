@@ -37,16 +37,15 @@
 QOOXDOO_PATH = ../../../external/qooxdoo/trunk
 #QOOXDOO_PATH = ../../../../../../qx
 
-# Include ProgressBar and HtmlArea 
 QOOXDOO_CONTRIB_PATH = ../../..
-CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/frontend/HtmlArea/0.1 $(QOOXDOO_CONTRIB_PATH)/frontend/ProgressBar/0.1
-CONTRIBS_NAMESPACES = htmlarea progressbar
+CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/frontend/skeleton/skeleton-widget-0.1
+CONTRIBS_NAMESPACES = skeleton
 
 #
 # Namespace of your application e.g. custom
 # Even complexer stuff is possible like: net.sf.custom
 #
-APPLICATION_NAMESPACE = custom
+APPLICATION_NAMESPACE = skeleton
 
 #
 # Files that will be copied from the source directory into the build
