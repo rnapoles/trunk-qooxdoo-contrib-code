@@ -17,7 +17,7 @@
 /**
  * Your custom application
  */
-qx.Class.define("skeletonapp.Application",
+qx.Class.define("skeletonapplication.Application",
 {
   extend : qx.application.Gui,
 
@@ -43,8 +43,11 @@ qx.Class.define("skeletonapp.Application",
     {
       this.base(arguments);
 
+     // include appearance for SimpleButton
+     qx.Theme.patch(qx.theme.classic.Appearance, skeletonwidget.MSimpleButtonAppearance);
+
       // Create button
-      var button1 = new skeleton.SimpleButton("First Button");
+      var button1 = new skeletonwidget.SimpleButton("First Button");
 
       // Set button location
       button1.setTop(50);
