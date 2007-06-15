@@ -35,11 +35,6 @@
 # It should end with the last directory. Please omit a trailing slash.
 #
 QOOXDOO_PATH = ../../../external/qooxdoo/trunk
-#QOOXDOO_PATH = ../../../../../../qx
-
-QOOXDOO_CONTRIB_PATH = ../../..
-CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/frontend/SkeletonWidget/0.1
-CONTRIBS_NAMESPACES = skeletonwidget
 
 #
 # Namespace of your application e.g. custom
@@ -53,6 +48,32 @@ APPLICATION_NAMESPACE = skeletonapplication
 #
 APPLICATION_FILES = index.html
 
+
+APPLICATION_RESOURCE_FILTER = true
+
+
+################################################################################
+# CONTRIB
+################################################################################
+# 
+
+#
+# Path to qooxdoo-contrib directory. For the qooxdoo-contrib path apply the same
+# rules as to the qooxdoo path.
+#
+QOOXDOO_CONTRIB_PATH = ../../..
+
+#
+# List of directories containing contributions to include.
+#
+CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/contributions/SkeletonWidget/0.1
+
+#
+# List of top level namespace names corresponding to each contributions.
+#
+CONTRIBS_NAMESPACES = skeletonwidget
+
+
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 
 # see the APPLICATION variables in file 
@@ -60,22 +81,13 @@ APPLICATION_FILES = index.html
 # Add any of those variables for your custom configuration here:
 #-------------------------------------------------------------------------------
 
-APPLICATION_RESOURCE_FILTER = true
-
-# turn off optimizations
-APPLICATION_OPTIMIZE_STRINGS = false
-APPLICATION_OPTIMIZE_VARIABLES = false
-APPLICATION_OPTIMIZE_REMOVE_DEBUG = false
-APPLICATION_OPTIMIZE_BASE_CALL = false
-VERBOSE = true
-
 
 ################################################################################
 # INTERNALS (PLEASE DO NOT CHANGE)
 ################################################################################
 
 ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)
-  include contrib.mk
+  include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/targets.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
 endif
