@@ -17,7 +17,7 @@
 /**
  * Your custom application
  */
-qx.Class.define("skeleton.Application",
+qx.Class.define("skeletonapp.Application",
 {
   extend : qx.application.Gui,
 
