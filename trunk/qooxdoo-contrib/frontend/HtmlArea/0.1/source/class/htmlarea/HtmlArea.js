@@ -297,7 +297,7 @@ qx.Class.define("htmlarea.HtmlArea",
       s = s.replace(/\xA9/ig, "&copy;");
 
       return s;
-    },
+    }
  },
 
 
