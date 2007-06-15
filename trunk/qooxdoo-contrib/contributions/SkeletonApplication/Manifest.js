@@ -1,19 +1,19 @@
 {
   
-  name : "SkeletonApplication",
+  "name" : "SkeletonApplication",
   
-  description : "A small application demonstrating how to embed contributions into custom applications.",
+  "description" : "A small application demonstrating how to embed contributions into custom applications.",
   
-  authors : [
+  "authors" : [
     {
-      name : "",
-      email : ""
-    },
+      "name" : "",
+      "email" : ""
+    }
   ],
   
-  license : "EPL/LGPL",
+  "license" : "EPL/LGPL",
       
-  versions :
+  "versions" :
   {
     "0.1" :
     {

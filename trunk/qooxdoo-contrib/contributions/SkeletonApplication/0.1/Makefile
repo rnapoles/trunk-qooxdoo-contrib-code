@@ -86,10 +86,10 @@ CONTRIBS_NAMESPACES = skeletonwidget
 # INTERNALS (PLEASE DO NOT CHANGE)
 ################################################################################
 
-ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)
-  include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk
+ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)  
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/targets.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
+  include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk	
 endif
 
 error:

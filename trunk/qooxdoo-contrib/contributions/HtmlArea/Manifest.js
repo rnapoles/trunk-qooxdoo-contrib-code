@@ -1,22 +1,19 @@
-/**
- * Example Manifest file for a qooxdoo contribution
- */
 {
   
-  name : "HtmlArea",
+  "name" : "HtmlArea",
   
-  description : "A simple HTML editing widget",
+  "description" : "A simple HTML editing widget",
   
-  authors : [
+  "authors" : [
     {
-      name : "Alexander Back",
-      email : "alex DOT back AT 1und1 DOT de"
+      "name" : "Alexander Back",
+      "email" : "alex DOT back AT 1und1 DOT de"
     }
   ],
   
-  license : "EPL/LGPL",
+  "license" : "EPL/LGPL",
       
-  versions :
+  "versions" :
   {
     "0.1" :
     {

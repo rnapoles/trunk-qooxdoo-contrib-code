@@ -1,19 +1,19 @@
 {
   
-  name : "SkeletonWidget",
+  "name" : "UploadWidget",
   
-  description : "A Sample widget. This widget can be used as basis for other contributions",
+  "description" : "Widget for HTTP file uploads.",
   
-  authors : [
+  "authors" : [
     {
-      name : "",
-      email : ""
-    },
+      "name" : "Dietrich Streifert",
+      "email" : ""
+    }
   ],
   
-  license : "EPL/LGPL",
+  "license" : "EPL/LGPL",
       
-  versions :
+  "versions" :
   {
     "0.1" :
     {
