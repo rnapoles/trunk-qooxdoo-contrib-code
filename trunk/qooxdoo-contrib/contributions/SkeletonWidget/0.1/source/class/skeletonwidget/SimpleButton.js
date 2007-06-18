@@ -32,10 +32,39 @@ qx.Class.define("skeletonwidget.SimpleButton",
   construct : function(text)
   {
     this.base(arguments, text, qx.core.Setting.get("skeletonwidget.resourceUri") + "/image/test.png");
+
+    if (!this.self(arguments).__initialized )
+    {
+      this.self(arguments).__initialized = true;
+      this.self(arguments).__initialize();
+    }
   },
   
   
   /*
+  *****************************************************************************
+     STATICS
+  *****************************************************************************
+  */
+
+  statics :
+  {
+    __initialized : false,
+    __initialize : function()
+    {
+      var changeListener = function(newAppearanceTheme)
+      {
+        // include appearance for SimpleButton
+        qx.Theme.patch(newAppearanceTheme, skeletonwidget.MSimpleButtonAppearance);
+      };
+      
+      changeListener(qx.theme.manager.Appearance.getInstance().getAppearanceTheme());
+      qx.theme.manager.Appearance.getInstance().addEventListener("changeAppearanceTheme", changeListener);
+    }
+  },
+  
+  
+   /*
   *****************************************************************************
      PROPERTIES
   *****************************************************************************
