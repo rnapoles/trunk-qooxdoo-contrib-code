@@ -1,8 +1,9 @@
 {
-  
   "name" : "HtmlArea",
   
-  "description" : "A simple HTML editing widget",
+  "summary" : "A simple HTML editing widget",
+  "description" : "...",
+  "keywords" : ["widget"],
   
   "authors" : [
     {
@@ -12,13 +13,6 @@
   ],
   
   "license" : "EPL/LGPL",
-      
-  "versions" :
-  {
-    "0.1" :
-    {
-      "qooxdoo-versions": ["0.7.1-pre", "trunk"]
-    }
-  }
-  
+  "version" : "0.1",
+  "qooxdoo-versions": ["0.7.1-pre", "trunk"]
 }
