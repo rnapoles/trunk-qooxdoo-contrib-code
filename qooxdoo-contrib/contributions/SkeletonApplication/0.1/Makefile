@@ -66,13 +66,16 @@ QOOXDOO_CONTRIB_PATH = ../../..
 #
 # List of directories containing contributions to include.
 #
-CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/contributions/SkeletonWidget/0.1
-
+CONTRIBS = \
+  $(QOOXDOO_CONTRIB_PATH)/contributions/SkeletonWidget/0.1 \
+  $(QOOXDOO_CONTRIB_PATH)/contributions/ProgressBar/0.1
+  
 #
 # List of top level namespace names corresponding to each contributions.
 #
-CONTRIBS_NAMESPACES = skeletonwidget
+CONTRIBS_NAMESPACES = skeletonwidget progressbar
 
+APPLICATION_COMPLETE_SOURCE = false
 
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 
@@ -87,9 +90,9 @@ CONTRIBS_NAMESPACES = skeletonwidget
 ################################################################################
 
 ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)  
+    include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk	
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/targets.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
-  include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk	
 endif
 
 error:

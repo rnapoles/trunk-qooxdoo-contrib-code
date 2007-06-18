@@ -36,16 +36,11 @@ qx.Class.define("skeletonapplication.Application",
      * TODOC
      *
      * @type member
-     * @param e {Event} TODOC
-     * @return {void}
      */
-    main : function(e)
+    main : function()
     {
       this.base(arguments);
-
-     // include appearance for SimpleButton
-     qx.Theme.patch(qx.theme.classic.Appearance, skeletonwidget.MSimpleButtonAppearance);
-
+    
       // Create button
       var button1 = new skeletonwidget.SimpleButton("First Button");
 

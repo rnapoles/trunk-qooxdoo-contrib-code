@@ -4,11 +4,13 @@
   
   "description" : "A Sample widget. This widget can be used as basis for other contributions",
   "keywords" : ["widget", "skeleton"],
+  "homepage" : "http://qooxdoo.org/contrib",
   
   "authors" : [
     {
       "name" : "",
-      "email" : ""
+      "email" : "",
+      "homepage" : ""
     }
   ],
   
