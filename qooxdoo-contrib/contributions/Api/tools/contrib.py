@@ -39,12 +39,30 @@ def loadContribDb(contribPath):
 		
 	return db
 	
-		
 
+def getGeneratorFlags(contrib):
+	flags = "--class-path %s/source/class " % contrib["path"]
+	flags += "--class-uri ../%s/source/class " % contrib["path"]
+	
+	sourceFlags = flags
+	sourceFlags += "--use-setting %s.resourceUri:../$(APPLICATION_HTML_TO_ROOT_URI)/%s/source/resource " % (contrib["namespace"], contrib["path"])
+
+	buildFlags = flags
+	buildFlags += "--copy-resources "
+	buildFlags += "--resource-input %s/source/resource" % contrib["path"]
+	buildFlags += "--resource-output $(APPLICATION_BUILD_PATH)/resource/%s" % contrib["path"]
+	buildFlags += "--use-setting %s.resourceUri:$(APPLICATION_HTML_TO_ROOT_URI)/resource/%s" % (contrib["namespace"], contrib["namespace"])
+	return (sourceFlags, buildFlags)
+
+def getGeneratorSourceFlags(contrib):
+	return getGeneratorFlags(contrib)[0]
+
+def getGeneratorBuildFlags(contrib):
+	return getGeneratorFlags(contrib)[1]
 	
 db = loadContribDb("../../..")
 for contrib in filterKey(filterByQooxdooVersion(iter(db), "0.7"), "name", "UploadWidget"):
 	print contrib["name"]
 	
-htmlArea = [ contrib for contrib in filterKey(filterKey(iter(db), "name", "UploadWidget"), "version", "0.1")][0]
-print htmlArea["name"]
+htmlArea = [ contrib for contrib in filterKey(filterKey(iter(db), "name", "HtmlArea"), "version", "0.1")][0]
+print getGeneratorSourceFlags(htmlArea)
