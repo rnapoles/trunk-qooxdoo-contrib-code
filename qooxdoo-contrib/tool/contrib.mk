@@ -4,8 +4,8 @@ ifneq ($(CONTRIBS),)
   EXTERNAL_CLASS_URI = $(patsubst %, --class-uri ../%/source/class, $(CONTRIBS))
 
   # will create lines like this:
-  # --use-setting $(EXTERNAL_NAMESPACE).resourceUri:../$(HTMLAREA)/source/resource
-  EXTERNAL_SOURCE_SETTINGS = $(patsubst %, --use-setting %, $(join $(patsubst %, %.resourceUri:../, $(CONTRIBS_NAMESPACES)), $(patsubst %, %/source/resource, $(CONTRIBS))))
+  # --use-setting $(EXTERNAL_NAMESPACE).resourceUri:../$(APPLICATION_HTML_TO_ROOT_URI)/$(HTMLAREA)/source/resource
+  EXTERNAL_SOURCE_SETTINGS = $(patsubst %, --use-setting %, $(join $(patsubst %, %.resourceUri:../$(APPLICATION_HTML_TO_ROOT_URI)/, $(CONTRIBS_NAMESPACES)), $(patsubst %, %/source/resource, $(CONTRIBS))))
 
   # will create lines like this:
   # --use-setting $(EXTERNAL_NAMESPACE).resourceUri:$(APPLICATION_HTML_TO_ROOT_URI)/resource/$(EXTERNAL_NAMESPACE)
