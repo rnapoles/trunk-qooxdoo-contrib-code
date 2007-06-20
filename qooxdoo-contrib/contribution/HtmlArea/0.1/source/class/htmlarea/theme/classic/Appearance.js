@@ -27,9 +27,9 @@
 ************************************************************************* */
 
 /**
- * The default qooxdoo appearance theme.
+ * Mixin for the default qooxdoo appearance theme.
  */
-qx.Theme.define("htmlarea.MHtmlAreaAppearance",
+qx.Theme.define("htmlarea.theme.classic.Appearance",
 {
   title: "Classic mixin for HtmlArea",
 

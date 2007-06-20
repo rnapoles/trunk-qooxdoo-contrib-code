@@ -15,6 +15,6 @@
   
   "license" : "EPL/LGPL",      
   "version" : "0.1",
-  "qooxdoo-versions": ["0.7", "0.7.1-pre", "trunk"],
+  "qooxdoo-versions": ["trunk"],
   "namespace" : "skeletonapplication"
 }
