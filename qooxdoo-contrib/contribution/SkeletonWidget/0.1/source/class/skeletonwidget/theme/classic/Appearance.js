@@ -17,7 +17,7 @@
 /**
  * Button appearacne theme.
  */
-qx.Theme.define("skeletonwidget.MSimpleButtonAppearance",
+qx.Theme.define("skeletonwidget.theme.classic.Appearance",
 {
   title: "Classic mixin for skeletonwidget.SimpleButton",
 

@@ -34,7 +34,8 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = ../../../external/qooxdoo/trunk
+#QOOXDOO_PATH = ../../../external/qooxdoo/trunk
+QOOXDOO_PATH = ../../../../qooxdoo\ Trunk
 
 #
 # Namespace of your application e.g. custom
@@ -47,9 +48,6 @@ APPLICATION_NAMESPACE = skeletonapplication
 # directory (space separated list). The default list is empty.
 #
 APPLICATION_FILES = index.html
-
-
-APPLICATION_RESOURCE_FILTER = true
 
 
 ################################################################################
@@ -66,16 +64,11 @@ QOOXDOO_CONTRIB_PATH = ../../..
 #
 # List of directories containing contributions to include.
 #
-CONTRIBS = \
-  $(QOOXDOO_CONTRIB_PATH)/contributions/SkeletonWidget/0.1 \
-  $(QOOXDOO_CONTRIB_PATH)/contributions/ProgressBar/0.1
-  
-#
-# List of top level namespace names corresponding to each contributions.
-#
-CONTRIBS_NAMESPACES = skeletonwidget progressbar
+CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/contribution/SkeletonWidget/0.1
+
 
 APPLICATION_COMPLETE_SOURCE = false
+APPLICATION_RESOURCE_FILTER = true
 
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 
