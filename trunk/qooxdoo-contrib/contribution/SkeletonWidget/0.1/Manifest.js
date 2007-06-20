@@ -16,5 +16,7 @@
   "license" : "EPL/LGPL",    
   "version" : "0.1",
   "qooxdoo-versions": ["0.7", "0.7.1-pre", "trunk"],
-  "namespace" : "skeletonwidget"
+  
+  "namespace" : "skeletonwidget",
+  "resource-uri-setting" : "skeletonwidget.resourceUri"
 }

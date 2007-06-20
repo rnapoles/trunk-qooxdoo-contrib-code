@@ -58,7 +58,7 @@ qx.Class.define("htmlarea.Application",
       vb.set({ top : 50, left : 20, width : "65%", height : "auto", spacing : 20 });
       vb.addToDocument();
 
-      var htmlArea = new qxcontrib.ui.form.HtmlArea(null);
+      var htmlArea = new htmlarea.HtmlArea(null);
       htmlArea.set({ width : "100%", height : 400, focused : true });
       //vb.add(htmlArea);
 
