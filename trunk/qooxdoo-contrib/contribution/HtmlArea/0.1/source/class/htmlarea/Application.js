@@ -52,7 +52,7 @@ qx.Class.define("htmlarea.Application",
     {
       this.base(arguments);
       
-      qx.Theme.patch(qx.theme.classic.Appearance, htmlarea.MHtmlAreaAppearance);
+      qx.Theme.patch(qx.theme.classic.Appearance, htmlarea.theme.classic.Appearance);
       
       var vb = new qx.ui.layout.VerticalBoxLayout;
       vb.set({ top : 50, left : 20, width : "65%", height : "auto", spacing : 20 });

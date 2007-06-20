@@ -40,6 +40,8 @@ qx.Class.define("skeletonapplication.Application",
     main : function()
     {
       this.base(arguments);
+
+      qx.Theme.patch(qx.theme.classic.Appearance, skeletonwidget.theme.classic.Appearance);
     
       // Create button
       var button1 = new skeletonwidget.SimpleButton("First Button");
