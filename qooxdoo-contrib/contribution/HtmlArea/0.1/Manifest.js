@@ -1,5 +1,6 @@
 {
   "name" : "HtmlArea",
+  "namespace" : "htmlarea",
   
   "summary" : "A simple HTML editing widget",
   "description" : "...",
@@ -15,6 +16,6 @@
   "license" : "EPL/LGPL",
   "version" : "0.1",
   
-  "qooxdoo-versions": ["trunk"],
-  "namespace" : "htmlarea"
+  "qooxdoo-versions": ["trunk"]
+  
 }

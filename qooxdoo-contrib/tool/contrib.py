@@ -1,4 +1,5 @@
 import os
+import sys
 import optparse
 from types import *
 
@@ -27,15 +28,25 @@ def filerByKeyword(contribIterator, keyword):
 
 def loadContrib(manifestPath):
 	""" load a contribution description from a manifest file """
-	manifestData = simplejson.load(open(manifestPath))
+	try:
+		manifestData = simplejson.load(open(manifestPath))
+	except Exception, e:
+		print >> sys.stderr, "Could not parse Manifest: '%s'." % manifestPath
+		print >> sys.stderr, e
+		sys.exit()
+		
 	manifestData["path"] = os.path.dirname(manifestPath)
+	
+	if not manifestData.has_key("resource-uri-setting"):
+		manifestData["resource-uri-setting"] = manifestData["namespace"] + ".resourceUri"
+		
 	return manifestData
 	
 	
 def loadContribDb(contribPath):
 	db = []
 	
-	basePath = os.path.join(contribPath, "contributions")
+	basePath = os.path.join(contribPath, "contribution")
 	for dir in os.listdir(basePath):
 		if dir[0] == ".":
 			continue
@@ -48,24 +59,40 @@ def loadContribDb(contribPath):
 			db.append(loadContrib(manifest))
 		
 	return db
-	
-def getClassPathFlags(contrib):
-	flags = "--class-path %s/source/class " % contrib["path"]
-	flags += "--class-uri ../%s/source/class " % contrib["path"]
+
+
+def getClassUriFlags(contrib):
+	flags = "../%s/source/class," % contrib["path"]
 	return flags
 
-def getGeneratorFlags(contrib):
-	flage = getClassPathFlags(contrib)
-	
-	sourceFlags = flags
-	sourceFlags += "--use-setting %s.resourceUri:../$(APPLICATION_HTML_TO_ROOT_URI)/%s/source/resource " % (contrib["namespace"], contrib["path"])
+		
+def getClassPathFlags(contrib):
+	flags = "%s/source/class," % contrib["path"]
+	return flags
 
-	buildFlags = flags
-	buildFlags += "--copy-resources "
-	buildFlags += "--resource-input %s/source/resource" % contrib["path"]
-	buildFlags += "--resource-output $(APPLICATION_BUILD_PATH)/resource/%s" % contrib["path"]
-	buildFlags += "--use-setting %s.resourceUri:$(APPLICATION_HTML_TO_ROOT_URI)/resource/%s" % (contrib["namespace"], contrib["namespace"])
+
+def getResourceFlags(contrib):
+	sourceFlags = "--use-setting %s:../$(APPLICATION_HTML_TO_ROOT_URI)/%s/source/resource " % (
+		contrib["resource-uri-setting"], contrib["path"]
+	)
+
+	buildFlags = "--copy-resources "
+	buildFlags += "--resource-input %s/source/resource " % contrib["path"]
+	buildFlags += "--resource-output $(APPLICATION_BUILD_PATH)/resource/%s " % contrib["namespace"]
+	
+	buildFlags += "--use-setting %s:$(APPLICATION_HTML_TO_ROOT_URI)/resource/%s " % (
+		contrib["resource-uri-setting"], contrib["namespace"]
+	)
+	
 	return (sourceFlags, buildFlags)
+
+
+def getGeneratorFlags(contrib):
+	flags = getClassPathFlags(contrib)
+	flags += getClassUriFlags(contrib)
+	(sourceFlags, buildFlags) = getResourceFlags(contrib)
+	return (sourceFlags+flags, buildFlags+flags)
+
 
 def getGeneratorSourceFlags(contrib):
 	return getGeneratorFlags(contrib)[0]
@@ -101,10 +128,25 @@ def main():
 	)
 	
 	parser.add_option(
-		"--class-path-flags", action="store_true", default=False, dest="class_path_flags",
-		help="Print class path and class URI flags for the selected packages to stdout."
+		"--class-path", action="store_true", default=False, dest="class_path",
+		help="Print class path for the selected packages to stdout."
 	)	
-	
+
+	parser.add_option(
+		"--class-uri", action="store_true", default=False, dest="class_uri",
+		help="Print class URI for the selected packages to stdout."
+	)	
+
+	parser.add_option(
+		"--resource-flags-source", action="store_true", default=False, dest="resource_flags_source",
+		help="Print class resource flags for the build target of the selected packages to stdout. (source version)"
+	)	
+
+	parser.add_option(
+		"--resource-flags-build", action="store_true", default=False, dest="resource_flags_build",
+		help="Print class resource copy flags for the build target of the selected packages to stdout. (build version)"
+	)	
+
 	parser.add_option(
 		"-k", "--key", default="", type="string", dest="key",
 		help="Get the value of the given key from all selected contrributions."
@@ -136,9 +178,18 @@ def main():
 	if options.key:
 		print "\n".join([contrib[options.key] for contrib in contribIterator])
 	
-	if options.class_path_flags:
+	if options.class_path:
 		print "".join([getClassPathFlags(contrib) for contrib in contribIterator])
 
+	if options.class_uri:
+		print "".join([getClassUriFlags(contrib) for contrib in contribIterator])
+
+	if options.resource_flags_source:
+		print "".join([getResourceFlags(contrib)[0] for contrib in contribIterator])
+
+	if options.resource_flags_build:
+		print "".join([getResourceFlags(contrib)[1] for contrib in contribIterator])
+			
 	if options.build_flags:
 		print "".join([getGeneratorBuildFlags(contrib) for contrib in contribIterator])
 

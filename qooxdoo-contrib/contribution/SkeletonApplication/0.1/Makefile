@@ -64,8 +64,7 @@ QOOXDOO_CONTRIB_PATH = ../../..
 #
 # List of directories containing contributions to include.
 #
-CONTRIBS = $(QOOXDOO_CONTRIB_PATH)/contribution/SkeletonWidget/0.1
-
+APPLICATION_INCLUDES = $(QOOXDOO_CONTRIB_PATH)/contribution/SkeletonWidget/0.1
 
 APPLICATION_COMPLETE_SOURCE = false
 APPLICATION_RESOURCE_FILTER = true
