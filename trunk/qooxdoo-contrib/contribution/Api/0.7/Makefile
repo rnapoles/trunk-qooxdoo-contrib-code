@@ -68,19 +68,17 @@ endif
 error:
 	@echo "  * Please configure QOOXDOO_PATH"
 	
-source: api07
-build: api07
+source: api-07
+build: api-07
 
-.PHONY: api07
+.PHONY: api-07
 
-CONTRIB_UTIL = $(CMD_PYTHON) ../../../tool/contrib.py
-
-api07: exec-api-build exec-files-api
+api-07: exec-api-build exec-files-api
 	$(CMD_GENERATOR) \
 	--generate-api-documentation \
 	--api-separate-files \
 	--api-documentation-json-file $(APPLICATION_API_PATH)/script/apidata.js \
 	$(COMPUTED_CLASS_PATH) \
-	--class-path `$(CONTRIB_UTIL) --contrib-path ../../.. --filter qooxdoo-versions:0.7 --class-path` \
+	--class-path `$(CMD_CONTRIB) --contrib-path ../../.. --filter qooxdoo-versions:0.7 --class-path` \
 	$(COMPUTED_API_INCLUDE)
   
