@@ -73,14 +73,12 @@ build: api-trunk
 
 .PHONY: api-trunk
 
-CONTRIB_UTIL = $(CMD_PYTHON) ../../../tool/contrib.py
-
 api-trunk: exec-api-build exec-files-api
 	$(CMD_GENERATOR) \
 	--generate-api-documentation \
 	--api-separate-files \
 	--api-documentation-json-file $(APPLICATION_API_PATH)/script/apidata.js \
 	$(COMPUTED_CLASS_PATH) \
-	--class-path `$(CONTRIB_UTIL) --contrib-path ../../.. --filter qooxdoo-versions:trunk --class-path` \
+	--class-path `$(CMD_CONTRIB) --contrib-path ../../.. --filter qooxdoo-versions:trunk --class-path` \
 	$(COMPUTED_API_INCLUDE)
   

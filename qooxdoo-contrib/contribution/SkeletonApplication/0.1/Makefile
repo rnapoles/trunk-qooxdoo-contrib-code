@@ -49,25 +49,15 @@ APPLICATION_NAMESPACE = skeletonapplication
 #
 APPLICATION_FILES = index.html
 
-
-################################################################################
-# CONTRIB
-################################################################################
-# 
-
-#
-# Path to qooxdoo-contrib directory. For the qooxdoo-contrib path apply the same
-# rules as to the qooxdoo path.
-#
-QOOXDOO_CONTRIB_PATH = ../../..
-
 #
 # List of directories containing contributions to include.
 #
-APPLICATION_INCLUDES = $(QOOXDOO_CONTRIB_PATH)/contribution/SkeletonWidget/0.1
+#APPLICATION_INCLUDES = ../../../contribution/SkeletonWidget/0.1
+APPLICATION_INCLUDES = qooxdoo-contrib://SkeletonWidget/0.1
 
 APPLICATION_COMPLETE_SOURCE = false
 APPLICATION_RESOURCE_FILTER = true
+
 
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 
@@ -82,7 +72,6 @@ APPLICATION_RESOURCE_FILTER = true
 ################################################################################
 
 ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)  
-    include $(QOOXDOO_CONTRIB_PATH)/tool/contrib.mk	
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/targets.mk
 	include $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
 endif
