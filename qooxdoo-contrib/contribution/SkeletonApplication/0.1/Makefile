@@ -53,11 +53,11 @@ APPLICATION_FILES = index.html
 # List of directories containing contributions to include.
 #
 #APPLICATION_INCLUDES = ../../../contribution/SkeletonWidget/0.1
-APPLICATION_INCLUDES = qooxdoo-contrib://SkeletonWidget/0.1
+APPLICATION_INCLUDES = contrib://SkeletonWidget/0.1
 
 APPLICATION_COMPLETE_SOURCE = false
 APPLICATION_RESOURCE_FILTER = true
-
+VERBOSE = true
 
 #-------------------------------------------------------------------------------
 # For a full list and description of available application settings, please 

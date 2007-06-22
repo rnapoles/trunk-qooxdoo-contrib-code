@@ -5,6 +5,7 @@
   "summary" : "A small application demonstrating how to embed contributions into custom applications.",
   "description" : "...",
   "keywords" : ["application", "skeleton"],
+  "homepage" : "http://qooxdoo.org/documentation/contrib",
 
   "authors" : [
     {

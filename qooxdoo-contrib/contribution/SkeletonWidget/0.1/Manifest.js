@@ -1,21 +1,21 @@
 {
   "name" : "SkeletonWidget",
   
-  "description" : "A Sample widget. This widget can be used as basis for other contributions",
+  "summary" : "A Sample widget.",
+  "description": "This widget can be used as basis for other contributions",
   "keywords" : ["widget", "skeleton"],
-  "homepage" : "http://qooxdoo.org/contrib",
+  "homepage" : "http://qooxdoo.org/documentation/contrib",
   
   "authors" : [
     {
       "name" : "",
-      "email" : "",
-      "homepage" : ""
+      "email" : ""
     }
   ],
   
   "license" : "EPL/LGPL",    
   "version" : "0.1",
-  "qooxdoo-versions": ["0.7", "0.7.1-pre", "trunk"],
+  "qooxdoo-versions": ["0.7", "trunk"],
   
   "namespace" : "skeletonwidget",
   "resource-uri-setting" : "skeletonwidget.resourceUri"
