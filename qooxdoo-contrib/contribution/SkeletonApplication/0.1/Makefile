@@ -35,7 +35,7 @@
 # It should end with the last directory. Please omit a trailing slash.
 #
 #QOOXDOO_PATH = ../../../external/qooxdoo/trunk
-QOOXDOO_PATH = ../../../../qooxdoo\ Trunk
+QOOXDOO_PATH = ../../../../../../qx
 
 #
 # Namespace of your application e.g. custom
@@ -57,6 +57,7 @@ APPLICATION_INCLUDES = contrib://SkeletonWidget/0.1
 
 APPLICATION_COMPLETE_SOURCE = false
 APPLICATION_RESOURCE_FILTER = true
+
 VERBOSE = true
 
 #-------------------------------------------------------------------------------
