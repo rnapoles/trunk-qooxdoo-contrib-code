@@ -1,8 +1,10 @@
 {
   
   "name" : "ProgressBar",
-  "summary" : "A progress bar widget",  
+  "summary" : "A progress bar widget",
+  "description" : "...",
   "keywords" : ["widget"],
+  "homepage" : "http://qooxdoo.org/documentation/contrib",
 
   "authors" : [
     { "name" : "Thomas Herchenröder" },
