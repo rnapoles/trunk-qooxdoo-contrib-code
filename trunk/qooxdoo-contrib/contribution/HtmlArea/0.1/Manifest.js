@@ -5,7 +5,7 @@
   "summary" : "A simple HTML editing widget",
   "description" : "...",
   "keywords" : ["widget"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib"
+  "homepage" : "http://qooxdoo.org/documentation/contrib",
   
   "authors" : [
     {
