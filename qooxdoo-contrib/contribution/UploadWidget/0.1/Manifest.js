@@ -6,7 +6,7 @@
   
   "authors" : [
     {
-      "name" : "Dietrich Streifert"
+      "name" : "Dietrich Streifert" 
     }
   ],
   
