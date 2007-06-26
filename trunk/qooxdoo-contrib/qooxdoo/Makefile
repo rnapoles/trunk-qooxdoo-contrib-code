@@ -12,12 +12,12 @@ qooxdoo-0.7-sdk: qooxdoo-0.7-sdk.$(ZIP_SUFFIX)
 	
 
 %.zip:
-	wget http://belnet.dl.sourceforge.net/sourceforge/qooxdoo/$@
+	wget http://downloads.sourceforge.net/qooxdoo/$@
 	unzip $@
 	
 
 %.tar.gz:
-	wget http://belnet.dl.sourceforge.net/sourceforge/qooxdoo/$@
+	wget http://downloads.sourceforge.net/qooxdoo/$@
 	tar xvfz $@
 
 
