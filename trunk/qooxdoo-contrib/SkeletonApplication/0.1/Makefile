@@ -51,7 +51,7 @@ APPLICATION_FILES = index.html
 #
 # List of directories containing contributions to include.
 #
-#APPLICATION_INCLUDES = ../../../contribution/SkeletonWidget/0.1
+# alternative: APPLICATION_INCLUDES = ../../SkeletonWidget/0.1
 APPLICATION_INCLUDES = contrib://SkeletonWidget/0.1
 
 APPLICATION_COMPLETE_SOURCE = false
