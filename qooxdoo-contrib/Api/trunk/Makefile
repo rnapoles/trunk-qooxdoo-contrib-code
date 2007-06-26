@@ -32,7 +32,7 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = ../../../external/qooxdoo/trunk
+QOOXDOO_PATH = ../../qooxdoo/trunk
 
 #
 # Namespace of your application e.g. custom
@@ -79,6 +79,6 @@ api-trunk: exec-api-build exec-files-api
 	--api-separate-files \
 	--api-documentation-json-file $(APPLICATION_API_PATH)/script/apidata.js \
 	$(COMPUTED_CLASS_PATH) \
-	--class-path `$(CMD_CONTRIB) --contrib-path ../../.. --filter qooxdoo-versions:trunk --class-path` \
+	--class-path `$(CMD_CONTRIB) --contrib-path ../.. --filter qooxdoo-versions:trunk --class-path` \
 	$(COMPUTED_API_INCLUDE)
   
