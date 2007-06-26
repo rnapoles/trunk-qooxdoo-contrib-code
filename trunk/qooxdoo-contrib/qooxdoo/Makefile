@@ -1,9 +1,29 @@
-download-0.7:
-	wget 'http://belnet.dl.sourceforge.net/sourceforge/qooxdoo/qooxdoo-0.7-sdk.zip'
-	unzip qooxdoo-0.7-sdk.zip
-	rm -rf qooxdoo-0.7-sdk.zip
+IS_WINDOWS = $(shell python -c "import sys; print (sys.platform[:3]=='win' or sys.platform[:6]=='cygwin')")
+
+ifeq ($(IS_WINDOWS), True)
+	ZIP_SUFFIX = zip
+else
+	ZIP_SUFFIX = tar.gz
+endif
+
+
+download-0.7: qooxdoo-0.7-sdk
+qooxdoo-0.7-sdk: qooxdoo-0.7-sdk.$(ZIP_SUFFIX)
 	
-download-trunk:
+
+%.zip:
+	wget http://belnet.dl.sourceforge.net/sourceforge/qooxdoo/$@
+	unzip $@
+	
+
+%.tar.gz:
+	wget http://belnet.dl.sourceforge.net/sourceforge/qooxdoo/$@
+	tar xvfz $@
+
+
+download-trunk: trunk
+
+trunk:
 	svn co https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/trunk/qooxdoo trunk
 	svn up trunk
 	
