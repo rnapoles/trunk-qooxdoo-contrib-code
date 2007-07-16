@@ -6,10 +6,14 @@ else
 	ZIP_SUFFIX = tar.gz
 endif
 
+download-0.6.7: qooxdoo-0.6.7-sdk
+qooxdoo-0.6.7-sdk: qooxdoo-0.6.7-sdk.$(ZIP_SUFFIX)
 
 download-0.7: qooxdoo-0.7-sdk
 qooxdoo-0.7-sdk: qooxdoo-0.7-sdk.$(ZIP_SUFFIX)
 	
+download-0.7.1: qooxdoo-0.7.1-sdk
+qooxdoo-0.7.1-sdk: qooxdoo-0.7.1-sdk.$(ZIP_SUFFIX)
 
 %.zip:
 	wget http://downloads.sourceforge.net/qooxdoo/$@
@@ -21,9 +25,9 @@ qooxdoo-0.7-sdk: qooxdoo-0.7-sdk.$(ZIP_SUFFIX)
 	tar xvfz $@
 
 
-download-trunk: trunk
+download-trunk: download-trunk
 
-trunk:
+download-trunk:
 	svn co https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/trunk/qooxdoo trunk
 	svn up trunk
 	

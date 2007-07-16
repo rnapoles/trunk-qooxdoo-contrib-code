@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Simon's Windowing Demo</title>
+    <script type="text/javascript" src="./script/windowdemo.js"></script>
+    <script type="text/javascript">
+      /*
+        Configure logging
+      */
+      qx.log.Logger.ROOT_LOGGER.setMinLevel(qx.log.Logger.LEVEL_DEBUG);
+    </script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      qx.core.Init.getInstance().setApplication(new windowdemo.Application);
+    </script>
+  </body>
+</html>
