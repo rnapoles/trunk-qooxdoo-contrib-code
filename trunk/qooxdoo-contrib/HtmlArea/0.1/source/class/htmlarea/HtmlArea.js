@@ -80,13 +80,47 @@ qx.Class.define("htmlarea.HtmlArea",
      * at the editor instance. This is the point to which the qooxdoo key event handler 
      * dispatches all his events.
      */
-    this.addEventListener("keyup", this._handleEvent);
-    this.addEventListener("keydown", this._handleEvent);
-    this.addEventListener("keypress", this._handleEvent);
+    this.addEventListener("keyup", this._handleKeyUp);
+    this.addEventListener("keydown", this._handleKeyDown);
+    this.addEventListener("keypress", this._handleKeyPress);
 
     /* check for available content */
     if (typeof value == "string") {
       this.setValue(value);
+    }
+    
+   
+    /*
+     * "Fix" Keycode to identifier mapping in opera to suit the needs
+     * of the editor component
+     */
+    if (qx.core.Variant.isSet("qx.client", "opera"))
+    {
+      /*
+       * To correct the broken key handling in Opera "fix" the meanings of
+       * the several keyCodes manually to the desired Identifiers
+       * 
+       * However for these keys it is bit more complicated:
+       * 
+       * KEY   RESULT   POSSIBLE SOLUTION
+       * ************************************
+       * $     "Home"   SHIFT + "Home"  -> $
+       * (     "Down"   SHIFT + "Down"  -> (
+       * '     "Right"  SHIFT + "Right" -> '
+       * 
+       */
+      var keyEventHandler = qx.event.handler.KeyEventHandler.getInstance();
+    
+      /*
+       * fix mapping for the keys "#", "-", "P", "S", "X"
+       * for other keys there maybe also a problem with the wrong identifier,
+       * but here are only these keys fixed which are needed for the smiley handling
+       */   
+      keyEventHandler._keyCodeToIdentifierMap[35]  = "#";
+      keyEventHandler._keyCodeToIdentifierMap[45]  = "-";
+      keyEventHandler._keyCodeToIdentifierMap[112] = "P";
+      keyEventHandler._keyCodeToIdentifierMap[115] = "S";
+      keyEventHandler._keyCodeToIdentifierMap[120] = "X";
     }
   },
 
@@ -103,6 +137,11 @@ qx.Class.define("htmlarea.HtmlArea",
      * Thrown when the editor is loaded.
      */
     "load"             : "qx.event.type.Event",
+    
+    /**
+     * Only available if messengerMode is active. This event returns the current content of the editor.
+     */
+    "messengerContent" : "qx.event.type.DataEvent",
     
     /**
      * This event consists of two boolean values. These values represent if the text in the current cursor context is bo
@@ -148,23 +187,18 @@ qx.Class.define("htmlarea.HtmlArea",
           if (outputRoot)
           {
             /*
-             * check every img element if it is a smiley image
-             * every smiley image has an additional attribute "smileytype"
-             * 
-             * return the ascii chars instead of the image tag
-             * -> the ascii chars will get copied to the result html string
+             * get all of the children nodes of the div placeholder
+             * but DO NOT return the placeholder div elements itself.
+             * This special case is only relevant for IE browsers
              */
-
-            if (root.tagName.toLowerCase() == "img")
+            if (qx.core.Variant.isSet("qx.client", "mshtml"))
             {
-              if (root.attributes.smileytype)
+              if (root.tagName.toLowerCase() == "div" && root.className && root.className == "placeholder")
               {
-                var type = root.attributes.smileytype.nodeValue;
-                html = htmlarea.HtmlArea.__getAsciiSmiley(type);
-
-                if (html != null) {
-                  return html;
+                for (i=root.firstChild; i; i=i.nextSibling) {
+                  html += htmlArea.HtmlArea.__getHtml(i, true);
                 }
+                return html;
               }
             }
 
@@ -255,7 +289,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * 
+     * String containing all tags which need a corresponding closing tag
      */
     closingTags : " SCRIPT STYLE DIV SPAN TR TD TBODY TABLE EM STRONG FONT A ",
 
@@ -321,6 +355,17 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * If turned on the editor acts like a messenger widget e.g. if one hits the Enter key the current content gets
+     * outputted (via a DataEvent) and the editor clears his content
+     */
+    messengerMode :
+    {
+      check : "Boolean",
+      init  : false
+    },
+    
+
     /** Setting own appearance */
     appearance :
     {
@@ -352,6 +397,7 @@ qx.Class.define("htmlarea.HtmlArea",
         footer  : '</body></html>'
       }
     },
+    
 
     /** private field which holds the content of the editor  */
     __value        : "",
@@ -543,7 +589,8 @@ qx.Class.define("htmlarea.HtmlArea",
        * Webkit is listening to the contentWindow and all others catch them at the document directly
        */
 
-      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? this.__doc.body : qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : this.__doc;
+      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? this.__doc.body : 
+                            qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : this.__doc;
 
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur", this.__handleFocusEvent);
@@ -580,7 +627,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * for Gecko set additionally "styleWithCSS" and as fallback for older
        * Gecko engines "useCSS".
        */
-      if (qx.core.Client.getInstance().isGecko())
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
         try
         {
@@ -588,12 +635,18 @@ qx.Class.define("htmlarea.HtmlArea",
            * use the new command "styleWithCSS" to turn on CSS
            * useCSS is deprecated - see http://www.mozilla.org/editor/midas-spec.html
            */
-          this.__doc.execCommand("styleWithCSS", false, true);
+          this.getContentDocument().execCommand("styleWithCSS", false, true);
+          
+          /* 
+           * this command only works when the cursor is inside a paragraph. Then
+           * it is needed to press the Enter key twice to get paragraphs.
+           */
+          //this.__doc.execCommand("insertbronreturn", false, false);
         }
         catch(ex)
         {
           try {
-            this._doc.execCommand("useCSS", false, false);
+            this.getContentDocument().execCommand("useCSS", false, false);
           } catch(ex) {
             throw new Error("Failed to enable rich edit functionality");
           }
@@ -611,26 +664,20 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _visualizeFocus : function()
     {
-      switch(qx.core.Client.getInstance().getEngine())
+      if (qx.core.Client.getInstance().isGecko())
       {
-        case "gecko":
-          this.getContentWindow().focus();
-          break;
-
-        case "mshtml":
-        case "opera":
-        case "webkit":
-          if (this.__isLoaded) {
-            this.__doc.body.focus();
-          }
-          break;
+        this.getContentWindow().focus();
+      }
+      else
+      {
+        if (this.__isLoaded) {
+          this.__doc.body.focus();
+        }
       }
 
       qx.ui.embed.Iframe.prototype._visualizeFocus.call(this);
     },
-
-
-
+    
 
     /*
     ---------------------------------------------------------------------------
@@ -638,70 +685,210 @@ qx.Class.define("htmlarea.HtmlArea",
     ---------------------------------------------------------------------------
     */
 
+    /*
+     * This flag is only needed by IE to implement the mechanism
+     * of a linebreak when pressing "Ctrl+Enter". It is not possible
+     * in IE to get to know that both keys are pressed together (at the 
+     * keypress event). It is only possible to look at the keypress event,
+     * set this flag and insert the linebreak at the keyup event.
+     */
+    __controlPressed : false,
+    
+    /*
+     * flag to control the debugging output
+     */
+    __verboseDebug : false,
+
+
     /**
-     * All key events are delegated to this method
+     * All keyUp events are delegated to this method
      *
      * @type member
      * @param e {Object} Event object
      * @return {void} 
      */
-    _handleEvent : function(e)
+    _handleKeyUp : function(e)
     {
       var keyIdentifier = e.getKeyIdentifier().toLowerCase();
 
-      if (e.getType() == "keypress")
+   
+      /*
+       * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
+       * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
+       * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one 
+       * the linebreak gets inserted.
+       */
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+       {
+         if (keyIdentifier == "enter" && this.__controlPressed == true)
+         {
+            var sel = this.__getSelection();
+            var rng = this.__createRange(sel);
+ 
+            rng.collapse(true);
+            rng.pasteHTML('<br/><div class="placeholder"></div>');
+            rng.collapse(true);
+         }
+         /* 
+          * the keyUp event of the control key ends the "Ctrl+Enter"
+          * session. So it is supported that the user is pressing this
+          * combination several times without releasing the "Ctrl" key
+          */
+         else if (keyIdentifier == "control" && this.__controlPressed == true)
+         {
+            this.__controlPressed = false;
+         }
+       }
+    },
+    
+    
+    /**
+     * All keyDown events are delegated to this method
+     *
+     * @type member
+     * @param e {Object} Event object
+     * @return {void} 
+     */
+    _handleKeyDown : function(e) {},
+    
+    
+    /**
+     * All keyPress events are delegated to this method
+     *
+     * @type member
+     * @param e {Object} Event object
+     * @return {void} 
+     */
+   _handleKeyPress : function(e)
+   {
+      var keyIdentifier = e.getKeyIdentifier().toLowerCase();
+      
+      
+      if (qx.core.Variant.isSet("qx.debug", "on"))
       {
-        //    this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode() + " | " + e.getKeyCode());
-        switch(keyIdentifier)
+        if (this.__verboseDebug)
         {
-          case "tab":
-            if (qx.core.Client.getInstance().isGecko())
-            {
-              //          this.debug("TAB");
-              /* TODO - right implementation? */
-              this.getFocusRoot().getFocusHandler()._onkeyevent(this.getFocusRoot(), e);
-            }
+          this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
+        }
+      }
+        
+        
+      switch(keyIdentifier)
+      {
+        /*
+         * This case is only relevant for IE. It simply sets a flag if the 
+         * control key was pressed. It is used to insert a linebreak when 
+         * pressing the "Ctrl+Enter" combination. The linebreak gets inserted
+         * at the keyUp event at the "_handleKeyUp" method.
+         */
+        case "control":
+          if (qx.core.Client.getInstance().isMshtml())
+          {
+             this.__controlPressed = true;
+          }
+        break;
+       
+        case "tab":
+          if (qx.core.Client.getInstance().isGecko())
+          {
+            /* TODO - right implementation? */
+            this.getFocusRoot().getFocusHandler()._onkeyevent(this.getFocusRoot(), e);
+          }
 
-            break;
-          
-          case "left":
-          case "right":
-          case "up":
-          case "down":
-          case "pageup":
-          case "pagedown":
-          case "home":
-          case "end":
-            this.__startExamineCursorContext();
           break;
 
-          default:
-            if (qx.core.Client.getInstance().isMshtml())
+        case "enter":
+          /* if only "Enter" key was pressed and "messengerMode" is activated */
+          if (e.isShiftPressed() == false && e.isCtrlPressed() == false && this.getMessengerMode() == true)
+          {
+            e.preventDefault();
+            e.stopPropagation();
+
+            /* dispatch data event with editor content */
+            this.dispatchEvent(new qx.event.type.DataEvent("messengerContent", this.getComputedValue()), true);
+
+            /* reset the editor content */
+            this.resetHtml();
+          }
+         
+          /*
+           * This mechanism is to provide a linebreak when pressing "Ctrl+Enter".
+           * The implementation for IE is located at the "control" block and at the
+           * "_handleKeyUp" method.
+           */
+          if (e.isCtrlPressed() == true)
+          {
+            e.preventDefault();
+            e.stopPropagation();
+           
+            switch(qx.core.Client.getInstance().getEngine())
             {
-              /* 
-               * SPECIAL CASE FOR IE
-               * DO NOT allow to delete an image with "Backspace"
-               * this will lead IE to crash the editor component (no working focus handling etc.)
-               * 
-               * Recognize the control selection and clear the selection - this
-               * prevents IE from crashing the editor component
-               */
+               case "gecko":
+                 /* 
+                  * Insert additionally an empty div element - this ensures that
+                  * the caret is shown and the cursor moves down a line correctly
+                  * 
+                  * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
+                  * only necessary to have anything AFTER the "br" element to get it work.
+                  * Strange hack, I know ;-)
+                  */
+                 this._execCommand("insertHtml", false, "<br/><div id='placeholder'></div>");
+               break;
+              
+               case "webkit":
+       		     /*
+       		      * TODO: this mechanism works well when the user already typed in some text at the
+       		      * current line. If the linebreak is done without any text at the current line the
+       	  	      * cursor DOES NOT correspond -> it stays at the current line although the linebreak
+       	  	      * is inserted. Navigating to the next line with the arrow down key is possible.
+       		      */
+      	  	     this._execCommand("insertHtml", false, "<div><br class='webkit-block-placeholder' /></div>");
+               break;
 
-              if (keyIdentifier == "backspace")
-              {
-                var sel = this.__getSelection();
- 
-                if (sel.type == "Control")
-                {
-                  sel.clear();
-                  return;
-                }
-              }
+               case "opera":
+                 /*
+                  * To insert a linebreak for Opera it is necessary to work with ranges and add the
+                  * br element on node-level. The selection of the node afterwards is necessary for Opera
+                  * to show the cursor correctly.
+                  */
+                 var sel    = this.__getSelection();
+                 var rng    = this.__createRange(sel);
+                
+                 var brNode = this.__doc.createElement("br");
+                 rng.collapse(true);
+                 rng.insertNode(brNode);
+                 rng.collapse(true);
+                 
+                 rng.selectNode(brNode);
+                 sel.addRange(rng);
+                 rng.collapse(true);
+               break;
             }
-          }                
-        }
-      },
+          } 
+         
+          break;
 
+          /*
+           * for all keys which are able to reposition the cursor
+           * start to examine the current cursor context
+           */
+
+        case "left":
+        case "right":
+        case "up":
+        case "down":
+        case "pageup":
+        case "pagedown":
+        case "home":
+        case "end":
+          this.__startExamineCursorContext();
+          
+        break;
+ 
+        default:
+       }
+    },
+    
 
     /**
      * Eventlistener for focus events
@@ -718,7 +905,9 @@ qx.Class.define("htmlarea.HtmlArea",
     
     
     /**
-     * Called with every focus event of the editor
+     * Called with every focus event of the editor.
+     * Stores the current content of the editor for later
+     * comparison (see at {@link #__onBlur} method)
      * 
      * @type member
      * @return {void}
@@ -730,7 +919,11 @@ qx.Class.define("htmlarea.HtmlArea",
    
    
    /**
-    * Called with every blur event of the editor
+    * Called with every blur event of the editor.
+    * Compares the current value with the stored one.
+    * If they are different the {@link #setValue} method
+    * is called to sync the current content with the value 
+    * variable.
     * 
     * @type member
     * @return {void}
@@ -753,9 +946,12 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleMouseEvent : function(e)
     {
-//      this.debug("handleMouse " + e.type);
+      if (qx.core.Variant.isSet("qx.debug", "on"))
+      {
+        //this.debug("handleMouse " + e.type);
+      }
 
-      // TODO: transform the DOM events to real qooxdoo events - just like the key events
+      /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       if ((qx.core.Client.getInstance().isMshtml() && e.type == "mouseup")) {
         this.__startExamineCursorContext();
       } else if (e.type == "click") {
@@ -825,8 +1021,10 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     setFontSize : function(value)
     {
-      // check for number
-      // TODO: implementation correct? what if "10px" is given as parameter value?
+      /* TODO: implementation complete? 
+       * should numbers be the only supported unit?
+       * what if "10px" is given as parameter value?
+       */
       if (typeof value == "number") {
         return this._execCommand("FontSize", false, value);
       } else {
@@ -872,58 +1070,72 @@ qx.Class.define("htmlarea.HtmlArea",
               this.__doc.body.focus();
             }
 
-            this.__doc.execCommand(cmd, ui, value);
+            var result = this.__doc.execCommand(cmd, ui, value);
 
+            /* (re)-focus the editor after the execCommand */
+            this.__focusAfterExecCommand(this);
+            
             var o = this;
-
-            if (qx.core.Client.getInstance().isMshtml())
-            {
-              window.setTimeout(function(e)
-              {
-                /* 
-                 * IE needs to change the activeChild to the editor component
-                 * otherwise the e.g. pressed button (to set the selected content bold)
-                 * will receive the following events
-                 * call _visualizeFocus to get the right feedback to the user (editor is active)
-                 */
-
-                qx.ui.core.ClientDocument.getInstance().setActiveChild(o);
-                o._visualizeFocus();
-              },
-              50);
-            }
-            else if (qx.core.Client.getInstance().isWebkit())
-            {
-              /*
-              	* Webkit needs a mix of both (IE/Gecko). It is needed to (re)set the editor widget
-               * as the active child and to focus the editor widget (again).
-              	*/
-              window.setTimeout(function(e)
-              {
-                qx.ui.core.ClientDocument.getInstance().setActiveChild(o);
-                o.getContentWindow().focus();
-              },
-              50);
-            }
-            else
-            {
-              /*
-               * for all other browser a short delayed focus on the contentWindow should do the job
-               */
-              window.setTimeout(function(e) {
-                o.getContentWindow().focus();
-              }, 50);
-            }
           }
           catch(ex)
           {
-            //      this.debug("execCommand " + cmd + " with value " + value + " failed");
+            if (qx.core.Variant.isSet("qx.debug", "on"))
+            {
+              this.debug("execCommand " + cmd + " with value " + value + " failed");
+            }
+            
             return false;
           }
       }
 
-      return true;
+      return result;
     },
+    
+    /**
+     * (Re)-focuses the editor after an execCommand was executed
+     * 
+     * @type member
+     * @param context {Object} current context object for window.setTimeout method
+     * @return void
+     */
+    __focusAfterExecCommand : qx.core.Variant.select("qx.client",
+    {
+       "mshtml" : function(context)
+       {
+          window.setTimeout(function(e)
+          {
+            /* 
+             * IE needs to change the activeChild to the editor component
+             * otherwise the e.g. pressed button (to set the selected content bold)
+             * will receive the following events
+             * call _visualizeFocus to get the right feedback to the user (editor is active)
+             */
+            qx.ui.core.ClientDocument.getInstance().setActiveChild(context);
+            context._visualizeFocus();
+          }, 50);
+       },
+       
+       "webkit" : function(context)
+       {
+         /*
+        	 * Webkit needs a mix of both (IE/Gecko). It is needed to (re)set the editor widget
+          * as the active child and to focus the editor widget (again).
+          */
+          window.setTimeout(function(e)
+          {
+            qx.ui.core.ClientDocument.getInstance().setActiveChild(context);
+            context.getContentWindow().focus();
+          }, 50);
+       },
+       
+       "default" : function(context)
+       {
+         /* for all other browser a short delayed focus on the contentWindow should do the job */
+         window.setTimeout(function(e) {
+           context.getContentWindow().focus();
+         }, 50);  
+       }
+    }),
 
 
 
@@ -972,7 +1184,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * get html content (call own recursive method)
+     * Get html content (call own recursive method)
      *
      * @type member
      * @return {String} current content of the editor as XHTML
@@ -1001,9 +1213,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __startExamineCursorContext : function()
     {
-      /*
-       * setting a timeout is important to get the right result
-       */
+      /* setting a timeout is important to get the right result */
       var o = this;
 
       window.setTimeout(function(e) {
@@ -1020,7 +1230,6 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __examineCursorContext : function()
     {
-      //  this.debug("_examineCursorContext |" + this.getEditable());
       if (this._processingExamineCursorContext || this.getEditable() == false) {
         return;
       }
@@ -1065,9 +1274,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
       this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", [ isBold, isItalic ]), true);
 
-      //  this.debug("examineCursor " + isBold + "  " + isItalic);
       this._processingExamineCursorContext = false;
     },
+    
   
     /*
      -----------------------------------------------------------------------------
@@ -1076,21 +1285,23 @@ qx.Class.define("htmlarea.HtmlArea",
     */
       
     /**
-     * returns the current selection object
+     * Returns the current selection object
      * 
      * @return {Selection} Selection object
     */
-    __getSelection : function()
+    __getSelection : qx.core.Variant.select("qx.client",
     {
-       if (qx.core.Variant.isSet("qx.client", "mshtml"))
+       "mshtml" : function()
        {
-          return this.__doc.selection
-       }  
-       else
+         return this.__doc.selection
+       },
+       
+       "default" : function()
        {
-          return this.getContentWindow().getSelection();
+         return this.getContentWindow().getSelection();
        }
-    },
+    }),
+    
     
     /*
      -----------------------------------------------------------------------------
@@ -1104,41 +1315,42 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param sel {Selection} current selection object
      * @return {Range} Range object     
      */    
-    __createRange : function(sel)
+    __createRange : qx.core.Variant.select("qx.client",
     {
-       if (qx.core.Variant.isSet("qx.client", "mshtml"))
-       {
-          if (qx.util.Validation.isValid(sel))
-          {
-            try {
-              return sel.createRange();
-            } catch(ex) {
-              return this.__doc.createTextRange();
-            }
-          }
-          else
-          {
+      "mshtml" : function(sel)
+      {
+        if (qx.util.Validation.isValid(sel))
+        {
+          try {
+            return sel.createRange();
+          } catch(ex) {
             return this.__doc.createTextRange();
           }
-       }
-       else
+        }
+        else
+        {
+          return this.__doc.createTextRange();
+        }
+       },
+       
+       "default" : function(sel)
        {
-          this.setFocused(true);
+         this.setFocused(true);
 
-          if (qx.util.Validation.isValid(sel))
-          {
-            try {
-              return sel.getRangeAt(0);
-            } catch(ex) {
-              return this._doc.createRange();
-            }
-          }
-          else
-          {
-            return this._doc.createRange();
-          }
+         if (qx.util.Validation.isValid(sel))
+         {
+           try {
+             return sel.getRangeAt(0);
+           } catch(ex) {
+             return this._doc.createRange();
+           }
+         }
+         else
+         {
+           return this._doc.createRange();
+         }
        }
-    },
+    }),
    
    
     /*
@@ -1149,9 +1361,9 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
       returns the node where the selection ends
     */
-    getFocusNode : function()
+    getFocusNode : qx.core.Variant.select("qx.client",
     {
-       if (qx.core.Variant.isSet("qx.client", "mshtml"))
+       "mshtml" : function()
        {
          var sel = this.__getSelection();
          var rng;
@@ -1160,17 +1372,19 @@ qx.Class.define("htmlarea.HtmlArea",
          {
            case "Text":
            case "None":
-             // It seems that even for selection of type "None",
-             // there _is_ a correct parent element
+             /* 
+              * It seems that even for selection of type "None",
+              * there _is_ a correct parent element
+              */
              rng = this.__createRange(sel);
-             rng.collapse(false);  // collapse to end
+             rng.collapse(false);  /* collapse to end */
              return rng.parentElement();
       
            case "Control":
              rng = this.__createRange(sel);
       
              try {
-               rng.collapse(false);  // collapse to end
+               rng.collapse(false);  /* collapse to end */
              } catch(ex) {}
       
              return rng.item(0);
@@ -1178,15 +1392,16 @@ qx.Class.define("htmlarea.HtmlArea",
            default:
              return this.__doc.body;
          }
-       }
-       else
+       },
+       
+       "default" : function()
        {
          return this.__getSelection().focusNode.parentNode;
        }
-    }
- },
+    })
+  },
 
- 
+
   /*
   ---------------------------------------------------------------------------
     DESTRUCTOR
@@ -1205,7 +1420,7 @@ qx.Class.define("htmlarea.HtmlArea",
       return;
     }
 
-    // TODO: complete disposing
+    /* TODO: complete disposing */
     try
     {
       // ************************************************************************
@@ -1228,6 +1443,6 @@ qx.Class.define("htmlarea.HtmlArea",
     }
     catch(ex) {}
 
-    this._disposeFields("__handleEvent", "__handleFocusEvent", "handleMouseEvent", "__doc", "__contentWrap");
+    this._disposeFields("__handleFocusEvent", "handleMouseEvent", "__doc", "__contentWrap");
   }
 });
