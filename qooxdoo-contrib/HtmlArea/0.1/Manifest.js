@@ -17,6 +17,6 @@
   "license" : "EPL/LGPL",
   "version" : "0.1",
   
-  "qooxdoo-versions": ["trunk"]
+  "qooxdoo-versions": ["0.7.1"]
   
 }

@@ -711,26 +711,38 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       var keyIdentifier = e.getKeyIdentifier().toLowerCase();
 
-   
-      /*
-       * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
-       * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
-       * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one 
-       * the linebreak gets inserted.
-       */
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
        {
-         if (keyIdentifier == "enter" && this.__controlPressed == true)
+         if (this.__controlPressed == true)
          {
-            var sel = this.__getSelection();
-            var rng = this.__createRange(sel);
+            switch(keyIdentifier)
+            {
+               /*
+                * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
+                * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
+                * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one 
+                * the linebreak gets inserted.
+                */
+               case "enter":
+                  var sel = this.__getSelection();
+                  var rng = this.__createRange(sel);
  
-            rng.collapse(true);
-            rng.pasteHTML('<br/><div class="placeholder"></div>');
-            rng.collapse(true);
+                  rng.collapse(true);
+                  rng.pasteHTML('<br/><div class="placeholder"></div>');
+                  rng.collapse(true);
+               break;
+               
+               /*
+                * select all content of the editor
+                */
+               case "a":
+                  this._execCommand("selectAll", false, null);
+               break;
+            }
          }
+         
          /* 
-          * the keyUp event of the control key ends the "Ctrl+Enter"
+          * the keyUp event of the control key ends the "Ctrl+ANYKEY"
           * session. So it is supported that the user is pressing this
           * combination several times without releasing the "Ctrl" key
           */
@@ -883,6 +895,23 @@ qx.Class.define("htmlarea.HtmlArea",
         case "end":
           this.__startExamineCursorContext();
           
+        break;
+        
+        /*
+         * Select all content of the editor
+         * Note: this block addresses Gecko and Opera. For IE one
+         * has to look after keypress/keyup events and WebKit has
+         * this selection feature built in.
+         */
+        case "a":
+          if (e.isCtrlPressed())
+          {
+             if (qx.core.Variant.isSet("qx.debug", "on"))
+             {
+                this.debug("Ctrl+A pressed");
+             }
+             this._execCommand("selectAll", false, null);
+          }
         break;
  
         default:
@@ -1097,6 +1126,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @param context {Object} current context object for window.setTimeout method
      * @return void
+     * @signature function(context)
      */
     __focusAfterExecCommand : qx.core.Variant.select("qx.client",
     {
@@ -1288,6 +1318,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Returns the current selection object
      * 
      * @return {Selection} Selection object
+     * @signature function()
     */
     __getSelection : qx.core.Variant.select("qx.client",
     {
@@ -1314,6 +1345,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * 
      * @param sel {Selection} current selection object
      * @return {Range} Range object     
+     * @signature function(sel)
      */    
     __createRange : qx.core.Variant.select("qx.client",
     {
@@ -1358,8 +1390,12 @@ qx.Class.define("htmlarea.HtmlArea",
       NODES
       -----------------------------------------------------------------------------
     */
+    
     /**
-      returns the node where the selection ends
+     * Returns the node where the selection ends
+     * 
+     * @return {Node}
+     * @signature function()
     */
     getFocusNode : qx.core.Variant.select("qx.client",
     {
