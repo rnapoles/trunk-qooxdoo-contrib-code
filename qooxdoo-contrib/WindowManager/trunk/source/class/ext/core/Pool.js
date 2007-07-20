@@ -17,11 +17,11 @@
 
 /**
  * This singleton manages pooled Object instances.
- * 
+ *
  * It exists mainly to minimise the amount of browser memory usage by reusing
  * window instances after they have been closed.  However, it could equally be
  * used to pool instances of any type of Object (expect singletons).
- * 
+ *
  * It is the client's responsibility to ensure that pooled objects are not
  * referenced or used from anywhere else in the application.
  */
@@ -66,10 +66,7 @@ qx.Class.define("ext.core.Pool",
     ---------------------------------------------------------------------------
     */
 
-    /*
-      A Map of classname : poolSize.
-    */
-
+    /** A Map of classname : poolSize. */
     poolSizes :
     {
       _legacy : true,
@@ -94,19 +91,11 @@ qx.Class.define("ext.core.Pool",
     ---------------------------------------------------------------------------
     */
 
-    /*
-      @param vClassname {String} The name of the Object type to count.
-    
-      @return {Integer} The number of instance of type vClassname that are currently
-              pooled.
-    */
-
     /**
-     * TODOC
+     * @param vClassname {String} The name of the Object type to count.
      *
-     * @type member
-     * @param vClassname {var} TODOC
-     * @return {var} TODOC
+     * @return {Integer} The number of instance of type vClassname that are currently
+     *         pooled.
      */
     countObjectsOfType : function(vClassname)
     {
@@ -121,24 +110,16 @@ qx.Class.define("ext.core.Pool",
       return count;
     },
 
-    /*
-      This method finds and returns an instance of a requested type in the pool,
-      if there is one.  Note that the pool determines which instance (if any) to
-      return to the client.  The client cannot get a specific instance from the
-      pool.
-    
-      @param vClassname {String} The name of the Object type to return.
-    
-      @return {Object} An instance of the requested type, or null if no such instance
-              exists in the pool.
-    */
-
     /**
-     * TODOC
+     * This method finds and returns an instance of a requested type in the pool,
+     * if there is one.  Note that the pool determines which instance (if any) to
+     * return to the client.  The client cannot get a specific instance from the
+     * pool.
      *
-     * @type member
-     * @param vClassname {var} TODOC
-     * @return {Object} TODOC
+     * @param vClassname {String} The name of the Object type to return.
+     *
+     * @return {Object} An instance of the requested type, or null if no such instance
+     *         exists in the pool.
      */
     getObjectOfType : function(vClassname)
     {
@@ -156,24 +137,16 @@ qx.Class.define("ext.core.Pool",
       return obj;
     },
 
-    /*
-      This method places an Object in a pool of Objects of its type.  Note that
-      once an instance has been pooled, there is no means to get that exact
-      instance back.  The instance may be discarded for garbage collection if
-      the pool of its type is already full.
-    
-      It is assumed that no other references exist to this Object, and that it will
-      not be used at all while it is pooled.
-    
-      @param vObject {Object} An Object instance to pool.
-    */
-
     /**
-     * TODOC
+     * This method places an Object in a pool of Objects of its type.  Note that
+     * once an instance has been pooled, there is no means to get that exact
+     * instance back.  The instance may be discarded for garbage collection if
+     * the pool of its type is already full.
      *
-     * @type member
-     * @param vObject {var} TODOC
-     * @return {void} 
+     * It is assumed that no other references exist to this Object, and that it will
+     * not be used at all while it is pooled.
+     *
+     * @param vObject {Object} An Object instance to pool.
      */
     poolObject : function(vObject)
     {
@@ -228,24 +201,16 @@ qx.Class.define("ext.core.Pool",
     ---------------------------------------------------------------------------
     */
 
-    /*
-      This method checks whether the pool for a given class of Objects is
-      already full.  As a side-effect of calling this method a pool will
-      be created if it does not already exist.
-    
-      @param vClassname {String} The name of a type of Object.
-    
-      @return {Boolean} True if the pool is already full, otherwise false.  Note
-              that is no upper limit is defined for the type, this method will
-              always return false.
-    */
-
     /**
-     * TODOC
+     * This method checks whether the pool for a given class of Objects is
+     * already full.  As a side-effect of calling this method a pool will
+     * be created if it does not already exist.
      *
-     * @type member
-     * @param vClassname {var} TODOC
-     * @return {var} TODOC
+     * @param vClassname {String} The name of a type of Object.
+     *
+     * @return {Boolean} True if the pool is already full, otherwise false.  Note
+     *         that is no upper limit is defined for the type, this method will
+     *         always return false.
      */
     _isPoolFull : function(vClassname)
     {
@@ -265,19 +230,11 @@ qx.Class.define("ext.core.Pool",
       return isPoolFull;
     },
 
-    /*
-      This method ensures that there is a pool for Objects of a given type.  If a
-      pool doesn't already exist, this method will create it.
-    
-      @param vClassname {String} The name of a type of Object.
-    */
-
     /**
-     * TODOC
+     * This method ensures that there is a pool for Objects of a given type.  If a
+     * pool doesn't already exist, this method will create it.
      *
-     * @type member
-     * @param vClassname {var} TODOC
-     * @return {void} 
+     * @param vClassname {String} The name of a type of Object.
      */
     _ensurePoolOfType : function(vClassname)
     {
