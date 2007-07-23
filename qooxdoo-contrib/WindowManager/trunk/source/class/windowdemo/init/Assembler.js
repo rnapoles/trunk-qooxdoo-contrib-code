@@ -96,7 +96,7 @@ qx.Class.define("windowdemo.init.Assembler",
      * TODOC
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     addTitleBar : function()
     {
@@ -133,7 +133,7 @@ qx.Class.define("windowdemo.init.Assembler",
      * TODOC
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     addMenuBar : function()
     {
@@ -175,12 +175,12 @@ qx.Class.define("windowdemo.init.Assembler",
 
     /*
       This method adds the workspace to the document.
-    
+
       The workspace is the screenspace below the titlebar and menubar into which
       all windows are rendered.
-    
+
       @see    windowdemo.Application.WORKSPACE
-    
+
       @return A reference to the workspace.
     */
 
@@ -219,9 +219,9 @@ qx.Class.define("windowdemo.init.Assembler",
     /*
       This method builds the File menu and adds it to the document because
       all popups must be added to the document.
-    
+
       It does NOT add the menu to any parent widget.
-    
+
       @return qx.ui.menu.Menu.
     */
 
@@ -283,9 +283,9 @@ qx.Class.define("windowdemo.init.Assembler",
     /*
       This method builds the Options menu and adds it to the document because
       all popups must be added to the document.
-    
+
       It does NOT add the menu to any parent widget.
-    
+
       @return qx.ui.menu.Menu.
     */
 
@@ -310,9 +310,9 @@ qx.Class.define("windowdemo.init.Assembler",
     /*
       This method builds the Themes menu and adds it to the document because
       all popups must be added to the document.
-    
+
       It does NOT add the menu to any parent widget.
-    
+
       @return qx.ui.menu.Menu.
     */
 
@@ -404,11 +404,11 @@ qx.Class.define("windowdemo.init.Assembler",
     /*
       This method creates a qx.client.Command instance whose execute method creates
       a new window instance of a specified type.
-    
+
       @param type A String representing the type of window to instantiate. This
                   must be one of the window types supported by ext.manager.object
                   .WindowManager.
-    
+
       @return qx.client.Command.
     */
 
@@ -434,11 +434,11 @@ qx.Class.define("windowdemo.init.Assembler",
     /*
       This method creates a qx.client.Command instance whose execute method brings
       the top window of a specified type into focus.
-    
+
       @param type A String representing the type of window to instantiate. This
                   must be one of the window types supported by ext.manager.object
                   .WindowManager.
-    
+
       @return qx.client.Command.
     */
 
@@ -530,13 +530,13 @@ qx.Class.define("windowdemo.init.Assembler",
         // TODO include all classnames to be effected
         var classnames = [ "qx.ui.basic.Atom" ];
 
-        var all = qx.core.Object._db;
+        var all = qx.core.Object.getDb();
 
         for (var i=0; i<all.length; i++)
         {
           var obj = all[i];
 
-          if (obj != null && classnames.contains(obj.classname)) {
+          if (obj != null && classnames.indexOf(obj.classname) != -1) {
             obj.setShow(mode);
           }
         }
