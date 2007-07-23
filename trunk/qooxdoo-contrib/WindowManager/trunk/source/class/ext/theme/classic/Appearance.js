@@ -19,12 +19,12 @@ qx.Theme.define("ext.theme.classic.Appearance",
   title: "Classic mixin for ext",
 
   appearances :
-  {    
-    
-    "simple-button" : 
+  {
+
+    "simple-button" :
     {
       include : "button",
-       
+
       style : function(states) {
         return {
           backgroundColor : "#DFEBFD"
@@ -35,13 +35,12 @@ qx.Theme.define("ext.theme.classic.Appearance",
     "list" : {
       style : function(states) {
         return {
-          bgcolor         : "white",
           overflow        : "hidden",
-          backgroundColor : this.bgcolor
+          backgroundColor : "white"
         };
       }
     },
-    
+
     // Override the default window-statusbar
     // So that we can set ChildrenAlign properties
     "window-statusbar" : {
@@ -55,16 +54,16 @@ qx.Theme.define("ext.theme.classic.Appearance",
           paddingRight            : 1,
           paddingBottom           : 1,
           paddingLeft             : 1
-        };          
+        };
       }
-    },    
+    },
 
 
     "statusbar-text-field" : {
       style : function(states) {
         var font = new qx.ui.core.Font(11, ["Segoe UI", "Corbel", "Calibri", "Tahoma", "Lucida Sans Unicode", "sans-serif"]);
         font.setBold(false);
-        
+
         return {
           //hideFocus       : true,  // will be themeable in 0.7.2
           border          : "inset-thin",
@@ -77,17 +76,17 @@ qx.Theme.define("ext.theme.classic.Appearance",
         };
       }
     },
-    
-    
+
+
     "statusbar-text-field-busy" : {
       style : function(states) {
-        var font = new qx.ui.core.Font(11, ["Segoe UI", "Corbel", "Calibri", "Tahoma", "Lucida Sans Unicode", "sans-serif"]);  
+        var font = new qx.ui.core.Font(11, ["Segoe UI", "Corbel", "Calibri", "Tahoma", "Lucida Sans Unicode", "sans-serif"]);
         font.setBold(true);
-        
+
         return {
           //hideFocus       : true,  // will be themeable in 0.7.2
           border          : "inset-thin",
-          color           : "white",
+          textColor       : "white",
           backgroundColor : "window-active-caption",
           paddingTop      : 1,
           paddingRight    : 3,
@@ -97,10 +96,10 @@ qx.Theme.define("ext.theme.classic.Appearance",
         };
       }
     },
-    
+
 
     // Override the default window-statusbar-text
-    // So that we include the "font" attribute    
+    // So that we include the "font" attribute
     "window-statusbar-text" : {
       style : function(states) {
         var font = new qx.ui.core.Font(11, ["Segoe UI", "Corbel", "Calibri", "Tahoma", "Lucida Sans Unicode", "sans-serif"]);
@@ -125,7 +124,7 @@ qx.Theme.define("ext.theme.classic.Appearance",
         };
       }
     },
-    
+
 
     "window-focus-blocker" : {
       style : function(states) {
@@ -135,48 +134,31 @@ qx.Theme.define("ext.theme.classic.Appearance",
           cursor          : "default"
         };
       }
-    }
-    
-/*
-    "" : {
+    },
+
+
+    "titlebar-font" : {
       style : function(states) {
+        var font = new qx.ui.core.Font(11, ["Segoe UI", "Corbel", "Calibri", "Tahoma", "Lucida Sans Unicode", "sans-serif"]);
+        font.setBold(true);
         return {
-          
-        }
+          font       : font,
+          textColor  : "white",
+          marginLeft : 4
+        };
       }
     },
 
 
-    theme.registerAppearance("titlebar-font",
-    {
-      setup : function()
-      {
-        this.font = new qx.ui.core.Font(12, '"Segoe UI", Corbel, Calibri, Tahoma, "Lucida Sans Unicode", sans-serif');
-        this.font.setBold(true);
-        this.color = "white";
-      },
-
-      initial : function(vTheme)
-      {
-        return {
-          font       : this.font,
-          color      : this.color,
-          marginLeft : 4
-        };
-      }
-    });
-
-    theme.registerAppearance("workspace",
-    {
-      initial : function(vTheme) {
+    "workspace" : {
+      style : function(states) {
         return { border : "inset-thin" };
       }
-    });
+    },
 
-    theme.registerAppearance("pane-content",
-    {
-      initial : function(vTheme)
-      {
+
+    "pane-content" : {
+      style : function(states) {
         return {
           backgroundColor : "white",
           height          : "100%",
@@ -184,21 +166,18 @@ qx.Theme.define("ext.theme.classic.Appearance",
           border          : "inset-thin"
         };
       }
-    });
+    },
 
-    theme.registerAppearance("split-pane-content",
-    {
-      initial : function(vTheme)
-      {
+
+    "split-pane-content" : {
+      style : function(states) {
         return {
           backgroundColor : "white",
           border          : "inset-thin",
           overflow        : "auto"
         };
       }
-    });
+    }
 
-
-    */
   }
 });
