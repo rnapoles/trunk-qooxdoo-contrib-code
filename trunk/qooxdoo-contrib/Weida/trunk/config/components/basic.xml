@@ -1,0 +1,1393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+  
+  <qx_ui_core_Widget class="qx.ui.core.Widget" 
+                     showEntry="false" 
+                     visible="true">
+    <properties>
+      <property name="backgroundColor" type="color" empty="ignore" />
+      <property name="backgroundImage" type="uri" empty="ignore" />
+      
+      <property name="top"    type="mixed" empty="ignore" />
+      <property name="left"   type="mixed" empty="ignore"/>
+      <property name="right"  type="mixed" empty="ignore"/>
+      <property name="bottom" type="mixed" empty="ignore"/>
+
+      <property name="height" type="mixed" empty="ignore"/>
+      <property name="width"  type="mixed" empty="ignore"/>
+
+      <property name="paddingLeft"   type="mixed" empty="ignore"/>
+      <property name="paddingRight"  type="mixed" empty="ignore"/>
+      <property name="paddingBottom" type="mixed" empty="ignore"/>
+      <property name="paddingTop"    type="mixed" empty="ignore"/>
+
+      <property name="marginLeft"   type="mixed" empty="ignore"/>
+      <property name="marginRight"  type="mixed" empty="ignore"/>
+      <property name="marginBottom" type="mixed" empty="ignore"/>
+      <property name="marginTop"    type="mixed" empty="ignore"/>
+
+      <property name="clipHeight" type="mixed" empty="ignore"/>
+      <property name="clipTop"    type="mixed" empty="ignore"/>
+      <property name="clipWidth"  type="mixed" empty="ignore"/>
+      <property name="clipLeft"   type="mixed" empty="ignore"/>
+      
+      <property name="tabIndex"  type="integer" />
+      <property name="textColor" type="color" />
+ 
+      <property name="maxHeight" type="mixed" empty="ignore"/>
+      <property name="maxWidth"  type="mixed" empty="ignore"/>
+      <property name="minHeight" type="mixed" empty="ignore"/>
+      <property name="minWidth"  type="mixed" empty="ignore"/>
+
+      <property name="overflow" type="set">
+        <set>
+          <value>hidden</value>
+          <value>auto</value>
+          <value>scroll</value>
+          <value>scrollX</value>                              
+          <value>scrollY</value>                                        
+        </set>
+      </property>   
+      
+      <property name="opacity" type="range" from="0.0" to="1.0" step="0.1" />
+      
+      <property name="zIndex" type="integer" />
+      
+      <property name="horizontalAlign" type="set">
+        <set>
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>                                                   
+        </set>
+      </property>   
+
+      <property name="verticalAlign" type="set">
+        <set>
+          <value>top</value>
+          <value>middle</value>
+          <value>bottom</value>                                 
+        </set>
+      </property>   
+
+      <property name="border" type="set" allownull="true">
+        <set>
+          <value>NULL</value>                   
+          <value>inset</value>                                                            
+          <value>outset</value>                                                            
+          <value>groove</value>                                                            
+          <value>ridge</value>
+
+          <value>inset-thin</value>                                                                                          
+          <value>outset-thin</value>                                                                                                    
+          
+          <value>resizer</value>    
+                                        
+          <value>black</value>
+          <value>white</value>
+          <value>dark-shadow</value>
+          <value>light-shadow</value>
+          <value>light</value>
+          <value>dark</value>
+        </set>
+      </property>  
+
+      <property name="cursor" type="set">
+        <set>                                 
+          <value>default</value>
+          <value>crosshair</value>
+          <value>pointer</value>
+          <value>move</value>
+          <value>n-resize</value>
+          <value>ne-resize</value>
+          <value>e-resize</value>
+          <value>se-resize</value>
+          <value>s-resize</value>
+          <value>sw-resize</value>
+          <value>w-resize</value>
+          <value>nw-resize</value>
+          <value>text</value>
+          <value>wait</value>
+          <value>help</value>                    
+        </set>
+      </property>  
+
+    </properties>
+    <properties_init>
+      <property name="height" value="100" />
+      <property name="width" value="100" />      
+    </properties_init>    
+    <events>
+      <event>appear</event>
+      <event>beforeAppear</event>
+      <event>beforeDisappear</event>
+      <event>beforeInsertDom</event>
+      <event>beforeRemoveDom</event>
+      <event>blur</event>
+      <event>changeAnonymous</event>
+      <event>changeAppearance</event>
+      <event>changeBackgroundColor</event>
+      <event>changeBorder</event>
+      <event>changeBottom</event>
+      <event>changeDisplay</event>
+      <event>changeElement</event>
+      <event>changeEnabled</event>
+      <event>changeFocused</event>
+      <event>changeFont</event>
+      <event>changeHeight</event>
+      <event>changeLeft</event>
+      <event>changeMaxHeight</event>
+      <event>changeMaxWidth</event>
+      <event>changeMinHeight</event>
+      <event>changeMinWidth</event>
+      <event>changeOverflow</event>
+      <event>changeParent</event>
+      <event>changeRight</event>
+      <event>changeTabIndex</event>
+      <event>changeTop</event>
+      <event>changeVisibility</event>
+      <event>changeWidth</event>
+      <event>changeZIndex</event>
+      <event>click</event>
+      <event>contextmenu</event>
+      <event>create</event>
+      <event>dblclick</event>
+      <event>disappear</event>
+      <event>dragdrop</event>
+      <event>dragend</event>
+      <event>dragmove</event>
+      <event>dragout</event>
+      <event>dragover</event>
+      <event>dragstart</event>
+      <event>execute</event>
+      <event>focus</event>
+      <event>focusin</event>
+      <event>focusout</event>
+      <event>insertDom</event>
+      <event>keydown</event>
+      <event>keyinput</event>
+      <event>keypress</event>
+      <event>keyup</event>
+      <event>mousedown</event>
+      <event>mousemove</event>
+      <event>mouseout</event>
+      <event>mouseover</event>
+      <event>mouseup</event>
+      <event>mousewheel</event>
+      <event>removeDom</event>
+    </events>
+  </qx_ui_core_Widget>
+  
+
+  <qx_ui_basic_Label class="qx.ui.basic.Label"
+                     extend="qx.ui.core.Widget" 
+                     showEntry="true" 
+                     category="Basic" 
+                     visible="true"
+                     shortName="Label"
+                     iconTree= "icon/16/mimetypes/font-x-generic.png">                                         
+    <properties>
+      <property name="mnemonic" type="string" />
+      
+      <property name="mode" type="set">      
+        <set> 
+          <value>auto</value>
+          <value>text</value>
+          <value>html</value>
+        </set>
+      </property>           
+      
+      <property name="text" type="text" />
+
+      <property name="textAlign" type="set" allownull="true">
+        <set> 
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>
+          <value>justify</value>               
+        </set>
+      </property>    
+
+      <property name="textOverflow" type="boolean" />
+
+      <property name="wrap" type="boolean" />          
+    </properties>
+    <properties_init>
+      <property name="height" value="18" />
+      <property name="width" value="100" />      
+      <property name="text" value="New Label" />      
+    </properties_init>    
+  </qx_ui_basic_Label>  
+  
+  
+  <qx_ui_form_TextField class="qx.ui.form.TextField"
+                        extend="qx.ui.core.Widget" 
+                        showEntry="true" 
+                        category="Formular" 
+                        visible="true"
+                        shortName="TextField"
+                        iconTree="guiBuilder/image/components/16x16/textfield.png">
+    <properties>
+      <property name="liveUpdate" type="boolean" />
+      <property name="hideFocus"  type="boolean" />      
+      <property name="readOnly"   type="boolean" />            
+
+      <property name="textAlign" type="set" allownull="true">
+        <set> 
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>
+          <value>justify</value>               
+        </set>
+      </property>         
+      
+      <property name="maxLength" type="integer" />
+      
+      <property name="value" type="string" />            
+    </properties>
+    <properties_init>
+      <property name="height" value="24" />
+      <property name="width" value="100" />      
+    </properties_init>    
+  </qx_ui_form_TextField>
+
+
+
+  <qx_ui_layout_BoxLayout class="qx.ui.layout.BoxLayout"
+                       extend="qx.ui.core.Widget" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="BoxLayout"
+                       iconTree= "icon/16/actions/edit.png">
+    <properties>
+      <property name="horizontalChildrenAlign" type="set">
+        <set> 
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>        
+        </set>
+      </property>
+      
+      <property name="orientation" type="set">    
+        <set> 
+          <value>horizontal</value>
+          <value>vertical</value>       
+        </set>
+      </property>
+      
+      <property name="reverseChildrenOrder" type="boolean" />    
+      <property name="spacing" type="integer" />    
+      <property name="stretchChildrenOrthogonalAxis" type="boolean" />    
+      <property name="useAdvancedFlexAllocation" type="boolean" />    
+
+      <property name="verticalChildrenAlign" type="set" >          
+        <set> 
+          <value>top</value>
+          <value>middle</value>
+          <value>bottom</value>        
+        </set>
+      </property>             
+    </properties>                        
+    
+    <properties_init>
+      <property name="height" value="200" />
+      <property name="width"  value="200" />
+      <property name="border" value="outset" />    
+    </properties_init>         
+  </qx_ui_layout_BoxLayout>
+
+
+  <qx_ui_layout_VerticalBoxLayout class="qx.ui.layout.VerticalBoxLayout"
+                       extend="qx.ui.layout.BoxLayout" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="VerticalBoxLayout"
+                       iconTree= "icon/16/actions/edit.png">                   
+  </qx_ui_layout_VerticalBoxLayout>
+
+  <qx_ui_layout_HorizontalBoxLayout class="qx.ui.layout.HorizontalBoxLayout"
+                       extend="qx.ui.layout.BoxLayout" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="HorizontalBoxLayout"
+                       iconTree= "icon/16/actions/edit.png">                     
+  </qx_ui_layout_HorizontalBoxLayout>
+
+  <qx_ui_layout_CanvasLayout class="qx.ui.layout.CanvasLayout"
+                       extend="qx.ui.core.Widget" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="CanvasLayout"
+                       iconTree= "icon/16/actions/edit.png">
+    <properties_init>	
+      <property name="height" value="200" />
+      <property name="width"  value="200" />
+      <property name="border" value="outset" />    
+    </properties_init>                         
+  </qx_ui_layout_CanvasLayout>
+
+  <qx_ui_splitpane_SplitPane class="qx.ui.splitpane.SplitPane"
+                             extend="qx.ui.layout.CanvasLayout" 
+                             showEntry="false"
+                             visible="true">
+    <properties> 
+      <property name="firstSize" type="mixed" />
+      <property name="secondSize" type="mixed" />
+            
+      <property name="liveResize" type="boolean" />
+      <property name="orientation" type="set">
+        <set> 
+          <value>horizontal</value>
+          <value>vertical</value>        
+        </set>
+      </property>      
+      
+      <property name="showKnob" type="boolean" />
+      <property name="splitterSize" type="integer" />      
+    </properties>                            
+  </qx_ui_splitpane_SplitPane>
+  
+  <qx_ui_splitpane_HorizontalSplitPane class="qx.ui.splitpane.HorizontalSplitPane"
+                       extend="qx.ui.splitpane.SplitPane" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="HorizontalSplitPane"
+                       saveHandler="SplitPane"                       
+                       loadHandler="SplitPane"                                    
+                       handler="guiBuilder.handler.SplitPane"
+                       iconTree= "icon/16/actions/edit.png">                                       
+  </qx_ui_splitpane_HorizontalSplitPane>
+
+  <qx_ui_splitpane_VerticalSplitPane class="qx.ui.splitpane.VerticalSplitPane"
+                       extend="qx.ui.splitpane.SplitPane" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="VerticalSplitPane"
+                       saveHandler="SplitPane"      
+                       loadHandler="SplitPane"                                                                                                   
+                       handler="guiBuilder.handler.SplitPane"                       
+                       iconTree= "icon/16/actions/edit.png">                                       
+  </qx_ui_splitpane_VerticalSplitPane>
+
+  <qx_ui_layout_FlowLayout class="qx.ui.layout.FlowLayout"
+                       extend="qx.ui.core.Widget" 
+                       showEntry="true"
+                       category="Layout" 
+                       visible="true"
+                       parent="true"
+                       shortName="FlowLayout"
+                       iconTree= "icon/16/actions/edit.png">
+    <properties> 
+      <property name="horizontalChildrenAlign" type="set">
+        <set> 
+          <value>left</value>
+          <value>right</value>        
+        </set>
+      </property>
+      <property name="reverseChildrenOrder"  type="boolean" />    
+      <property name="verticalChildrenAlign" type="set" >          
+        <set> 
+          <value>top</value>
+          <value>bottom</value>        
+        </set>
+      </property>             
+      <property name="horizontalSpacing" type="integer" />    
+      <property name="verticalSpacing"   type="integer" />          
+    </properties>                          
+    <properties_init>
+      <property name="height" value="200" />
+      <property name="width"  value="200" />
+      <property name="border" value="outset" />    
+    </properties_init>                         
+  </qx_ui_layout_FlowLayout>
+  
+
+
+
+
+
+ <qx_ui_component_DateChooser class="qx.ui.component.DateChooser"
+                              extend="qx.ui.layout.BoxLayout" 
+                              showEntry="true" 
+                              category="Select" 
+                              visible="true"
+                              shortName="DateChooser"
+                              iconTree="icon/16/apps/accessories-date.png">
+    <properties>
+      <property name="date"       type="date" />
+      <property name="shownMonth" type="integer" />      
+      <property name="shownYear"  type="integer" />   
+    </properties>  
+    <properties_init>
+      <property name="height" set="false" />
+      <property name="width" set="false" />      
+    </properties_init>    
+ </qx_ui_component_DateChooser>
+
+ <qx_ui_component_DateChooserButton class="qx.ui.component.DateChooserButton"
+                              extend="qx.ui.form.Button" 
+                              showEntry="true" 
+                              category="Select" 
+                              visible="true"
+                              shortName="DateChooserButton"
+                              iconTree="icon/16/apps/accessories-date.png">
+    <properties>
+      <property name="chooserTitle"  type="string" />
+      <property name="dateFormatSize" type="set">   
+        <set> 
+          <value>short</value>
+          <value>medium</value>
+          <value>long</value>        
+          <value>full</value>  
+        </set>        
+      </property>
+    </properties>  
+    <properties_init>
+      <property name="height" set="false" />
+      <property name="width" set="false" />      
+    </properties_init>    
+ </qx_ui_component_DateChooserButton>
+
+ <qx_ui_component_ColorSelector class="qx.ui.component.ColorSelector"
+                              extend="qx.ui.layout.VerticalBoxLayout" 
+                              showEntry="true" 
+                              category="Select" 
+                              visible="true"
+                              shortName="ColorSelector"
+                              iconTree="icon/16/categories/applications-graphics.png">
+    <properties>
+      <property name="blue"       type="integer" />
+      <property name="green"      type="integer" />      
+      <property name="red"        type="integer" />   
+      <property name="brightness" type="integer" />
+      <property name="hue"        type="integer" />      
+      <property name="saturation" type="integer" />   
+    </properties>  
+    <properties_init>
+      <property name="height" set="false" />
+      <property name="width" set="false" />      
+    </properties_init>    
+ </qx_ui_component_ColorSelector>
+
+
+
+
+
+
+  <qx_ui_toolbar_ToolBar class="qx.ui.toolbar.ToolBar"
+                              extend="qx.ui.layout.HorizontalBoxLayout" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              parent="true"
+                              shortName="ToolBar">
+    <properties>
+      <property name="show" type="set">   
+        <set> 
+          <value>both</value>
+          <value>label</value>
+          <value>icon</value>        
+          <value>none</value>  
+        </set>        
+      </property>
+    </properties>  
+    <properties_init>
+      <property name="height" value="32" />
+      <property name="width"  value="100%" />      
+    </properties_init>    
+  </qx_ui_toolbar_ToolBar>
+
+  <qx_ui_toolbar_Button class="qx.ui.toolbar.Button"
+                              extend="qx.ui.form.Button" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              shortName="Button">
+    <properties>
+      <property name="show" type="set">   
+        <set> 
+          <value>both</value>
+          <value>label</value>
+          <value>icon</value>        
+          <value>none</value>  
+        </set>        
+      </property>
+    </properties>      
+    <events>
+      <event>execute</event>
+    </events>          
+  </qx_ui_toolbar_Button>
+
+  <qx_ui_toolbar_MenuButton class="qx.ui.toolbar.MenuButton"
+                              extend="qx.ui.toolbar.Button" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              shortName="MenuButton">
+    <properties>
+      <property name="menu" type="reference" accept="guiBuilder.extend.Menu"/>  
+      <property name="direction" type="set">   
+        <set> 
+          <value>up</value>
+          <value>down</value>
+        </set>        
+      </property>      
+    </properties>     
+  </qx_ui_toolbar_MenuButton>
+ 
+  <qx_ui_toolbar_CheckBox class="qx.ui.toolbar.CheckBox"
+                              extend="qx.ui.toolbar.Button" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              shortName="CheckBox">
+    <properties>
+      <property name="checked" type="boolean" />   
+    </properties>  
+  </qx_ui_toolbar_CheckBox>
+
+  <qx_ui_toolbar_RadioButton class="qx.ui.toolbar.RadioButton"
+                              extend="qx.ui.toolbar.CheckBox" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              shortName="RadioButton">
+    <properties>
+      <property name="manager" type="reference" accept="qx.ui.selection.RadioManager"/>      
+      <property name="disableUncheck" type="boolean" />   
+      <property name="name" type="newradiobutton" />         
+    </properties>  
+  </qx_ui_toolbar_RadioButton>
+
+  <qx_ui_toolbar_Part class="qx.ui.toolbar.Part"
+                              extend="qx.ui.layout.HorizontalBoxLayout" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              parent="true"
+                              shortName="Part">
+    <properties>
+      <property name="show" type="set">   
+        <set> 
+          <value>both</value>
+          <value>label</value>
+          <value>icon</value>        
+          <value>none</value>  
+        </set>        
+      </property>
+    </properties>  
+    <properties_init>
+      <property name="height" value="100%" />
+      <property name="width"  value="100" />      
+      <property name="border"  set="false" />                  
+    </properties_init>    
+  </qx_ui_toolbar_Part>
+  
+  <qx_ui_toolbar_PartHandle class="qx.ui.toolbar.PartHandle"
+                              extend="qx.ui.layout.CanvasLayout" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              parent="true"
+                              shortName="PartHandle">
+    <properties_init>
+      <property name="height" set="false" />
+      <property name="width"  set="false" />      
+      <property name="border"  set="false" />            
+    </properties_init>    
+  </qx_ui_toolbar_PartHandle>  
+
+  <qx_ui_toolbar_Separator class="qx.ui.toolbar.Separator"
+                              extend="qx.ui.layout.CanvasLayout" 
+                              showEntry="true" 
+                              category="Toolbar" 
+                              visible="true"
+                              parent="true"
+                              shortName="Separator">
+    <properties_init>
+      <property name="height" set="false" />
+      <property name="width"  set="false" />      
+      <property name="border"  set="false" />            
+    </properties_init>    
+  </qx_ui_toolbar_Separator> 
+
+
+
+
+
+
+
+  <qx_ui_menubar_MenuBar class="qx.ui.menubar.MenuBar"
+                              extend="qx.ui.toolbar.ToolBar" 
+                              showEntry="true" 
+                              category="Menubar" 
+                              visible="true"
+                              parent="true"
+                              shortName="MenuBar">
+    <properties_init>
+      <property name="height" value="25" />
+    </properties_init>                                 
+  </qx_ui_menubar_MenuBar>
+
+  <qx_ui_menubar_Button class="qx.ui.menubar.Button"
+                              extend="qx.ui.toolbar.MenuButton" 
+                              showEntry="true" 
+                              category="Menubar" 
+                              visible="true"
+                              shortName="Button"> 
+  </qx_ui_menubar_Button>
+
+
+
+
+
+
+
+
+
+  <qx_ui_tree_Tree class="qx.ui.tree.Tree" 
+                   extend="qx.ui.layout.BoxLayout" 
+                   showEntry="true" 
+                   category="Additional" 
+                   visible="true"
+                   shortName="Tree"
+                   parent="true"
+                   handler="guiBuilder.handler.Tree"
+                   saveHandler="Tree"
+                   allowedChild="qx.ui.tree.TreeFolder,qx.ui.tree.TreeFile"
+                   iconTree="icon/16/actions/view-pane-tree.png">
+    <properties>
+      <property name="useDoubleClick" type="boolean" />
+      <property name="useTreeLines"   type="boolean" />                                       
+           
+      <property name="icon"         type="uri" />      
+      <property name="iconSelected" type="uri" />      
+              
+      <property name="orientation" type="string" />            
+      
+      <property name="selectable" type="boolean" />    
+      <property name="selected" type="boolean" />    
+      <property name="alwaysShowPlusMinusSymbol" type="boolean" />    
+      <property name="open" type="boolean" />                                        
+    </properties>  
+
+    <properties_init>
+      <property name="backgroundColor" value="white" />     
+      <property name="overflow" value="auto" />     
+      <property name="border" value="inset" />    
+    </properties_init>             
+  </qx_ui_tree_Tree>    
+
+  
+  
+  
+
+  
+  <qx_ui_groupbox_GroupBox class="qx.ui.groupbox.GroupBox"
+                       extend="qx.ui.layout.CanvasLayout" 
+                       showEntry="true"
+                       category="Group" 
+                       visible="true"
+                       parent="true"
+                       shortName="GroupBox"
+                       iconTree="icon/16/actions/edit.png">     
+  </qx_ui_groupbox_GroupBox>                     
+
+  <qx_ui_groupbox_CheckGroupBox class="qx.ui.groupbox.CheckGroupBox"
+                       extend="qx.ui.groupbox.GroupBox" 
+                       showEntry="true"
+                       category="Group" 
+                       visible="true"
+                       parent="true"
+                       shortName="CheckGroupBox"
+                       iconTree="icon/16/actions/edit.png">     
+  </qx_ui_groupbox_CheckGroupBox>   
+  
+  <qx_ui_groupbox_RadioGroupBox class="qx.ui.groupbox.RadioGroupBox"
+                       extend="qx.ui.groupbox.GroupBox"
+                       showEntry="true"
+                       category="Group" 
+                       visible="true"
+                       parent="true"
+                       shortName="RadioGroupBox"
+                       iconTree="icon/16/actions/edit.png">     
+  </qx_ui_groupbox_RadioGroupBox>     
+
+
+
+
+
+
+
+  <qx_ui_basic_ScrollArea class="qx.ui.basic.ScrollArea"
+                       extend="qx.ui.layout.CanvasLayout" 
+                       showEntry="true"
+                       category="Basic" 
+                       visible="true"
+                       parent="true"
+                       shortName="ScrollArea"
+                       iconTree="guiBuilder/image/components/16x16/scrollarea.png">     
+    <properties_init>
+      <property name="overflow" value="scroll" />
+      <property name="border"  value="inset-thin" /> 
+    </properties_init>                             
+  </qx_ui_basic_ScrollArea>
+
+  <qx_ui_basic_ScrollBar class="qx.ui.basic.ScrollBar"
+                       extend="qx.ui.layout.CanvasLayout" 
+                       showEntry="true"
+                       category="Basic" 
+                       visible="true"
+                       parent="true"
+                       shortName="ScrollBar"
+                       iconTree="guiBuilder/image/components/16x16/scrollarea.png">     
+
+    <properties>
+      <property name="maximum" type="integer" />            
+      <property name="mergeEvents" type="boolean" />                
+      <property name="value" type="integer" />                        
+    </properties>
+    <properties_init>
+      <property name="width"   set="false" />
+      <property name="height"  value="100" />
+      <property name="maximum" value="1000" />      
+      <property name="value"   value="1000" />      
+    </properties_init>                             
+  </qx_ui_basic_ScrollBar>
+
+
+  <qx_ui_basic_Image class="qx.ui.basic.Image"
+                       extend="qx.ui.basic.Terminator" 
+                       showEntry="true"
+                       category="Basic" 
+                       visible="true"
+                       parent="true"
+                       shortName="Image"
+                       iconTree="icon/16/apps/preferences-desktop-wallpaper.png">     
+
+    <properties>
+      <property name="source" type="uri" />  
+      <property name="preloader" type="reference" accept="qx.io.image.Preloader"/>  
+      <property name="allowStretchX" type="boolean" />
+      <property name="allowStretchY" type="boolean" />
+      <property name="resizeToInner" type="boolean" />
+      <property name="selectable" type="boolean" />
+    </properties>
+    <properties_init>
+      <property name="width"   value="200" />
+      <property name="height"  value="200" />
+    </properties_init>                             
+  </qx_ui_basic_Image>
+
+  
+  <qx_ui_form_TextArea class="qx.ui.form.TextArea"
+                       extend="qx.ui.form.TextField" 
+                       showEntry="true"
+                       category="Formular" 
+                       visible="true"
+                       shortName="TextArea"
+                       iconTree="guiBuilder/image/components/16x16/textfield.png">
+    <properties>
+      <property name="value" type="text" />            
+      <property name="wrap" type="boolean" />                
+    </properties>
+    <properties_init>
+      <property name="height" value="200" />
+      <property name="width"  value="200" />
+    </properties_init>         
+  </qx_ui_form_TextArea>
+
+  <qx_ui_form_PasswordField class="qx.ui.form.PasswordField"
+                       extend="qx.ui.form.TextField" 
+                       showEntry="true"
+                       category="Formular" 
+                       visible="true"
+                       shortName="PasswordField"
+                       iconTree="guiBuilder/image/components/16x16/passwordfield.png">
+  </qx_ui_form_PasswordField>
+
+
+
+  
+  
+  <qx_ui_basic_Atom class="qx.ui.basic.Atom" 
+                    extend="qx.ui.core.Widget" 
+                    showEntry="true" 
+                    category="Basic" 
+                    visible="true"
+                    shortName="Atom"
+                    iconTree= "icon/16/apps/preferences-desktop-font.png">
+    <properties>
+      <property name="label"  type="string" />
+    
+      <property name="icon" type="uri" />
+
+      <property name="iconHeight" type="integer" />
+      <property name="iconWidth"  type="integer" />                  
+                  
+    </properties>
+  </qx_ui_basic_Atom>
+  
+
+  <qx_ui_form_Button class="qx.ui.form.Button" 
+                     extend="qx.ui.basic.Atom" 
+                     showEntry="true" 
+                     category="Formular" 
+                     visible="true"
+                     shortName="Button"
+                     iconTree= "icon/16/apps/accessories-character-map.png">                    
+    <properties_init>
+      <property name="height" value="auto" />
+      <property name="width" value="auto" />         
+      <property name="label" value="New Button" />
+    </properties_init>    
+  </qx_ui_form_Button>  
+
+  <qx_ui_form_RepeatButton class="qx.ui.form.RepeatButton" 
+                           extend="qx.ui.form.Button" 
+                           showEntry="true" 
+                           category="Formular" 
+                           visible="true"
+                           shortName="RepeatButton">
+    <properties>
+      <property name="firstInterval" type="integer" />
+      <property name="interval"      type="integer" />  
+    </properties>    
+  </qx_ui_form_RepeatButton>
+
+  <qx_ui_form_Spinner class="qx.ui.form.Spinner" 
+                      extend="qx.ui.layout.HorizontalBoxLayout" 
+                      showEntry="true" 
+                      category="Formular" 
+                      visible="true"
+                      shortName="Spinner"
+                      iconTree="guiBuilder/image/components/16x16/spinedit.png">
+    <properties>
+      <property name="amountGrowth"         type="integer" />
+      <property name="editable"             type="boolean" />  
+      <property name="firstInterval"        type="integer" />  
+      <property name="incrementAmount"      type="integer" />  
+      <property name="interval"             type="integer" />  
+      <property name="minTimer"             type="integer" />  
+      <property name="pageIncrementAmount"  type="integer" /> 
+      <property name="wheelIncrementAmount" type="integer" />                                
+      <property name="timerDecrease"        type="integer" />                 
+    </properties>    
+    <properties_init>    
+      <property name="height" value="auto" />                 
+      <property name="width"  value="100" />                 
+    </properties_init>
+  </qx_ui_form_Spinner>
+
+  <qx_ui_form_CheckBox class="qx.ui.form.CheckBox" 
+                       extend="qx.ui.basic.Atom" 
+                       showEntry="true" 
+                       category="Formular" 
+                       visible="true"
+                       shortName="CheckBox">
+    <properties>
+      <property name="name"  type="string" />      
+      <property name="value" type="string" /> 
+      <property name="checked" type="boolean" />      
+    </properties>
+    <properties_init>
+      <property name="height" value="auto" />
+      <property name="width" value="auto" />         
+      <property name="name" value="defaultname" />
+      <property name="value" value="defaultvalue" />      
+      <property name="label" value="New Checkbox" />
+    </properties_init>     
+  </qx_ui_form_CheckBox>  
+
+  <qx_ui_form_RadioButton class="qx.ui.form.RadioButton" 
+                          extend="qx.ui.form.CheckBox" 
+                          showEntry="true" 
+                          category="Formular" 
+                          visible="true"
+                          shortName="RadioButton"
+                          iconTree="guiBuilder/image/components/16x16/radiobutton.png">
+    <properties>
+      <property name="manager" type="reference" accept="qx.ui.selection.RadioManager"/>      
+    </properties>
+  </qx_ui_form_RadioButton>  
+
+
+  <qx_ui_form_ComboBox class="qx.ui.form.ComboBox" 
+                       extend="qx.ui.layout.HorizontalBoxLayout" 
+                       showEntry="true" 
+                       category="Formular" 
+                       visible="true"
+                       shortName="ComboBox"
+                       parent="true"
+                       allowedChild="qx.ui.form.ListItem"                       
+                       iconTree="guiBuilder/image/components/16x16/combobox.png">
+    <properties>
+      <property name="editable" type="boolean" />      
+      <property name="pagingInterval" type="integer" />
+      <property name="value" type="string" />
+    </properties>
+    <properties_init>
+      <property name="height" value="auto" />
+      <property name="width"  value="auto" />      
+      <property name="border" value="inset" />
+    </properties_init>     
+  </qx_ui_form_ComboBox>  
+
+  <qx_ui_form_List class="qx.ui.form.List" 
+                   extend="qx.ui.layout.VerticalBoxLayout" 
+                   showEntry="true" 
+                   category="Formular" 
+                   visible="true"
+                   shortName="List"
+                   parent="true"
+                   allowedChild="qx.ui.form.ListItem"
+                   iconTree="guiBuilder/image/components/16x16/textfield.png">
+    <properties>
+      <property name="enableInlineFind" type="boolean" />      
+      <property name="markLeadingItem" type="boolean" />
+    </properties>    
+    <properties_init>
+      <property name="height" value="100" />
+      <property name="width"  value="100" /> 
+      <property name="border" value="inset" /> 
+    </properties_init>  
+  </qx_ui_form_List>  
+
+  <qx_ui_form_ListItem class="qx.ui.form.ListItem" 
+                   extend="qx.ui.basic.Atom" 
+                   showEntry="true" 
+                   category="Formular" 
+                   visible="true"
+                   shortName="ListItem"
+                   iconTree="guiBuilder/image/components/16x16/textfield.png">
+    <properties>
+      <property name="value" type="mixed" />  
+    </properties>   
+    <properties_init>
+      <property name="height" set="false" />      
+      <property name="width"  set="false" />            
+      <property name="value" value="" />      
+      <property name="label" value="New Listitem" />
+    </properties_init>
+  </qx_ui_form_ListItem>    
+
+
+
+  <qx_ui_basic_Terminator class="qx.ui.basic.Terminator" 
+                   extend="qx.ui.core.Widget" 
+                   showEntry="true" 
+                   category="Basic" 
+                   visible="true"
+                   shortName="Terminator"
+                   iconTree= "icon/16/mimetypes/empty-x-generic.png">
+    <properties_init>
+      <property name="border" value="black" />
+    </properties_init>  
+  </qx_ui_basic_Terminator>  
+  
+  
+  <qx_ui_basic_HorizontalSpacer class="qx.ui.basic.HorizontalSpacer" 
+                   extend="qx.ui.basic.Terminator" 
+                   showEntry="true" 
+                   category="Basic" 
+                   visible="true"
+                   shortName="HorizontalSpacer"
+                   iconTree="guiBuilder/image/components/16x16/horspacer.png">
+    <properties>
+      <property name="width" type="integer" />
+    </properties>  
+    <properties_init>
+      <property name="width" value="1*" />    
+      <property name="height" value="10" />               
+    </properties_init>      
+  </qx_ui_basic_HorizontalSpacer>  
+
+
+  <qx_ui_basic_VerticalSpacer class="qx.ui.basic.VerticalSpacer" 
+                   extend="qx.ui.basic.Terminator" 
+                   showEntry="true" 
+                   category="Basic" 
+                   visible="true"
+                   shortName="VerticalSpacer"
+                   iconTree="guiBuilder/image/components/16x16/vertspacer.png">
+    <properties>
+      <property name="height" type="integer" />
+    </properties>  
+    <properties_init>
+      <property name="height" value="1*" />   
+      <property name="width" value="10" />         
+    </properties_init>      
+  </qx_ui_basic_VerticalSpacer>      
+  
+  
+
+
+
+
+
+  <qx_ui_tree_AbstractTreeElement class="qx.ui.tree.AbstractTreeElement"                   
+                                  showEntry="false">
+    <properties>                                     
+      <property name="icon"         type="uri" />      
+      <property name="iconSelected" type="uri" />      
+            
+      <property name="label" type="string" />            
+              
+      <property name="orientation" type="string" />            
+      
+      <property name="selectable" type="boolean" />                                            
+    </properties>  
+  </qx_ui_tree_AbstractTreeElement>  
+  
+
+  <qx_ui_tree_TreeFolder class="qx.ui.tree.TreeFolder" 
+                         extend="qx.ui.tree.AbstractTreeElement" 
+                         category="Additional" 
+                         visible="true"
+                         shortName="TreeFolder"                         
+                         showEntry="true"
+                         parent="true"
+                         saveHandler="Tree"                     
+                         allowedChild="qx.ui.tree.TreeFolder,qx.ui.tree.TreeFile"                         
+                         allowedParent="qx.ui.tree.Tree,qx.ui.tree.TreeFolder"
+                         iconTree= "icon/16/actions/folder-new.png">
+    <properties>                                     
+      <property name="alwaysShowPlusMinusSymbol" type="boolean" />    
+      <property name="open" type="boolean" />                                        
+    </properties>  
+    <properties_init>
+      <property name="label" value="New" />
+    </properties_init>      
+  </qx_ui_tree_TreeFolder>
+
+
+  <qx_ui_tree_TreeFile class="qx.ui.tree.TreeFile" 
+                       extend="qx.ui.tree.AbstractTreeElement" 
+                       category="Additional" 
+                       visible="true"
+                       shortName="TreeFile"                         
+                       showEntry="true"
+                       allowedParent="qx.ui.tree.Tree,qx.ui.tree.TreeFolder"
+                       iconTree= "icon/16/actions/document-new.png">                        
+    <properties_init>
+      <property name="label" value="New" />
+    </properties_init>                             
+  </qx_ui_tree_TreeFile>  
+
+
+
+  <qx_ui_pageview_tabview_TabView class="qx.ui.pageview.tabview.TabView" 
+                                  extend="qx.ui.layout.BoxLayout" 
+                                  category="Additional" 
+                                  visible="true"
+                                  shortName="TabView"
+                                  handler="guiBuilder.handler.TabView"   
+                                  parent="true"                      
+                                  showEntry="true"
+                                  iconTree="guiBuilder/image/components/16x16/tabview.png">                          
+    <properties>
+      <property name="alignTabsToLeft" type="boolean" />
+      <property name="placeBarOnTop"   type="boolean" />
+      <property name="orientation"     type="string" />                
+    </properties>     
+    <properties_init>
+      <property name="border" value="#NULL#" />
+    </properties_init>                               
+  </qx_ui_pageview_tabview_TabView>  
+
+  <qx_ui_pageview_tabview_Button class="qx.ui.pageview.tabview.Button"
+                                    extend="qx.ui.basic.Atom"
+                                    visible="true"
+                                    showEntry="false">                                    
+    <properties_init>
+      <property name="height" value="auto" />
+      <property name="width" value="auto" />      
+    </properties_init>                                    
+  </qx_ui_pageview_tabview_Button>  
+
+  <virtual_TabView_Tab class="virtual" 
+                       category="Additional" 
+                       visible="true"
+                       shortName="* Add Tab"
+                       handler="guiBuilder.handler.TabViewTab"
+                       showEntry="true"
+                       allowedParent="qx.ui.pageview.tabview.TabView"
+                       iconTree="guiBuilder/image/components/16x16/tab.png">
+  </virtual_TabView_Tab>
+
+  
+
+
+
+
+  <qx_ui_pageview_buttonview_ButtonView class="qx.ui.pageview.buttonview.ButtonView" 
+                                  extend="qx.ui.layout.BoxLayout" 
+                                  category="Additional" 
+                                  visible="true"
+                                  shortName="ButtonView"
+                                  handler="guiBuilder.handler.ButtonView"   
+                                  parent="true"                      
+                                  showEntry="true">                          
+    <properties>
+      <property name="barPosition" type="set">
+        <set> 
+          <value>top</value>
+          <value>right</value>
+          <value>bottom</value>
+          <value>left</value>               
+        </set>        
+      </property>          
+    </properties>     
+    <properties_init>
+      <property name="border" value="dark-shadow" />
+    </properties_init>                               
+  </qx_ui_pageview_buttonview_ButtonView>  
+  
+
+  <qx_ui_pageview_buttonview_Button class="qx.ui.pageview.buttonview.Button"
+                                    extend="qx.ui.basic.Atom"
+                                    visible="true"
+                                    showEntry="false">                                    
+    <properties_init>
+      <property name="height" value="auto" />
+      <property name="width" value="auto" />      
+    </properties_init>                                    
+  </qx_ui_pageview_buttonview_Button>  
+  
+  <virtual_ButtonView_Button class="virtual" 
+                       extend="qx.ui.basic.Atom"
+                       category="Additional" 
+                       visible="true"
+                       shortName="* Add Button"
+                       handler="guiBuilder.handler.ButtonViewButton"
+                       showEntry="true"
+                       allowedParent="qx.ui.pageview.buttonview.ButtonView">
+  </virtual_ButtonView_Button>
+
+
+
+
+
+
+
+  <qx_ui_embed_HtmlEmbed class="qx.ui.embed.HtmlEmbed" 
+                   extend="qx.ui.basic.Terminator" 
+                   showEntry="true" 
+                   category="Embed" 
+                   visible="true"
+                   shortName="HtmlEmbed"
+                   iconTree= "icon/16/mimetypes/empty-x-generic.png">
+    <properties>
+      <property name="html" type="text" />   
+      <property name="textAlign" type="set" allownull="true">
+        <set> 
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>
+          <value>justify</value>               
+        </set>
+      </property>
+      <property name="textColor" type="color" />      
+    </properties>                    
+  </qx_ui_embed_HtmlEmbed>  
+
+
+  <qx_ui_embed_LinkEmbed class="qx.ui.embed.LinkEmbed" 
+                   extend="qx.ui.embed.HtmlEmbed" 
+                   showEntry="true" 
+                   category="Embed" 
+                   visible="true"
+                   shortName="LinkEmbed"
+                   iconTree= "icon/16/mimetypes/empty-x-generic.png">
+    <properties>
+      <property name="target" type="string" />   
+      <property name="uri"    type="string" />         
+    </properties>                    
+  </qx_ui_embed_LinkEmbed>    
+  
+  <qx_ui_embed_TextEmbed class="qx.ui.embed.TextEmbed" 
+                   extend="qx.ui.basic.Terminator" 
+                   showEntry="true" 
+                   category="Embed" 
+                   visible="true"
+                   shortName="HtmlEmbed"
+                   iconTree= "icon/16/mimetypes/empty-x-generic.png">
+    <properties>
+      <property name="text" type="text" />   
+      <property name="textAlign" type="set" allownull="true">
+        <set> 
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>
+          <value>justify</value>               
+        </set>
+      </property>
+      <property name="textColor" type="color" />      
+      <property name="wrap" type="boolean" />            
+    </properties>                    
+  </qx_ui_embed_TextEmbed>    
+  
+  
+  
+  
+  <qx_ui_selection_RadioManager class="qx.ui.selection.RadioManager" 
+                     showEntry="true" 
+                     visible="true"
+                     category="Non-Visual/Hidden" 
+                     shortName="RadioManager"
+                     nonvisual="true"
+                     icon    = "icon/32/apps/accessories-disk-usage.png"
+                     iconTree= "icon/16/apps/accessories-disk-usage.png">
+  </qx_ui_selection_RadioManager>      
+      
+
+  <qx_client_Timer class="qx.client.Timer" 
+                     showEntry="true" 
+                     visible="true"
+                     category="Non-Visual/Hidden" 
+                     shortName="Timer"
+                     nonvisual="true"
+                     icon    = "icon/32/actions/history.png"
+                     iconTree= "icon/16/actions/history.png">
+    <properties>
+      <property name="interval" type="integer" />   
+    </properties>                         
+  </qx_client_Timer>            
+
+
+  <qx_io_image_Preloader class="qx.io.image.Preloader"
+                         showEntry="true" 
+                         visible="true"
+                         category="Non-Visual/Hidden" 
+                         shortName="Image Preloader"
+                         nonvisual="true"
+                         icon    = "icon/32/apps/preferences-desktop-wallpaper.png"
+                         iconTree= "icon/16/apps/preferences-desktop-wallpaper.png">
+  </qx_io_image_Preloader>
+
+  <guiBuilder_extend_Menu class="guiBuilder.extend.Menu"
+                         showEntry="true" 
+                         visible="true"
+                         category="Non-Visual/Hidden" 
+                         shortName="Menu"
+                         nonvisual="true"
+                         icon    = "icon/32/apps/preferences-desktop-wallpaper.png"
+                         iconTree= "icon/16/apps/preferences-desktop-wallpaper.png">
+    <properties>                         
+      <property name="* Menu Items" type="special" handler="guiBuilder.popup.property.Menu" />
+     
+      <property name="closeInterval" type="integer" />
+      <property name="contentArrowGap" type="integer" />
+      <property name="contentNonArrowPadding" type="integer" />
+      <property name="contentNonIconPadding" type="integer" />
+      <property name="fastReopen" type="boolean" />
+      <property name="iconContentGap" type="integer" />
+      <property name="iconPosition" type="mixed" />
+      <property name="indentShortcuts" type="boolean" />
+
+      <property name="labelShortcutGap" type="integer" />
+      
+      <property name="openInterval" type="integer" />
+      
+      <property name="subMenuHorizontalOffset" type="integer" />   
+      <property name="subMenuVerticalOffset" type="integer" />
+    </properties>                                                  
+  </guiBuilder_extend_Menu>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  <qx_ui_menu_Button class="qx.ui.menu.Button" 
+                     showEntry="false" 
+                     visible="true">
+    <properties>
+      <property name="icon" type="uri" />
+      <property name="label" type="string" />      
+    </properties>
+    <properties_init>
+      <property name="label" value="New button" />
+    </properties_init>         
+  </qx_ui_menu_Button>  
+  
+  <qx_ui_menu_CheckBox class="qx.ui.menu.CheckBox" 
+  					 extend="qx.ui.menu.Button"
+                     showEntry="false" 
+                     visible="true">
+    <properties>
+      <property name="checked" type="boolean" />
+      <property name="name"  type="string" />      
+      <property name="value" type="string" />            
+    </properties>
+    <properties_init>
+      <property name="name" value="defaultname" />
+      <property name="value" value="defaultvalue" />      
+      <property name="label" value="New checkbox" />
+    </properties_init>     
+  </qx_ui_menu_CheckBox>  
+
+  <qx_ui_menu_RadioButton class="qx.ui.menu.RadioButton" 
+  					 extend="qx.ui.menu.CheckBox"
+                     showEntry="false" 
+                     visible="true">
+    <properties>
+      <property name="manager" type="reference" accept="qx.ui.selection.RadioManager"/>     
+    </properties>  
+    <properties_init>
+      <property name="label" value="New radiobutton" />
+    </properties_init>        
+  </qx_ui_menu_RadioButton>    
+
+  <qx_ui_menu_Separator class="qx.ui.menu.Separator" 
+                     showEntry="false" 
+                     visible="true">       
+  </qx_ui_menu_Separator>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <formWindow class="formWindow" 
+                     showEntry="false" 
+                     visible="true">       
+    <properties>
+      <property name="className" type="string" />
+    </properties>                       
+  </formWindow>  
+
+  <formCanvas class="formWindow" 
+              extend="qx.ui.layout.CanvasLayout"
+              showEntry="false" 
+              visible="true">       
+    <properties>
+      <property name="className" type="string" />
+    </properties>                       
+  </formCanvas> 
+ 
+</components>
