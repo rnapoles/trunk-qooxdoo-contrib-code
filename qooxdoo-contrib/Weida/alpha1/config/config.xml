@@ -1,0 +1,20 @@
+<config>
+  <backend>
+    
+    <projectPath>
+      /Users/fabianpb/Desktop/weida_projects/
+    </projectPath>
+
+  </backend>
+  <frontend>
+    
+    <backendURL>
+      ../backend/
+    </backendURL>
+    
+    <projectURL>
+      file:///Users/fabianpb/Desktop/weida_projects/
+    </projectURL>
+    
+  </frontend>
+</config>

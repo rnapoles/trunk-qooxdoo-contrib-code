@@ -1,0 +1,20 @@
+<config>
+  <backend>
+    
+    <projectPath>
+      /home/fabianpb/Desktop/contrib/
+    </projectPath>
+
+  </backend>
+  <frontend>
+    
+    <backendURL>
+      /~fabianpb/weida/backend/
+    </backendURL>
+    
+    <projectURL>
+      file:///home/fabianpb/Desktop/contrib/
+    </projectURL>
+    
+  </frontend>
+</config>
