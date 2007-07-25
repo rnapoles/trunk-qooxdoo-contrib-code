@@ -1,0 +1,32 @@
+How to install
+
+The installation of Weida is quite simple, but remember two things:
+
+1. Weida was developed under Linux. The build process should be problematic 
+because of cygwin for now. 
+
+2. Weida was, until now, only tested under Firefox 2.0. Don't expect a perfect
+working version on other browser for now ;)
+
+
+Ok, now the the only important point:
+You need an Webserver with php, I use apache. Place Weida inside an external 
+accessable directory of that webserver.
+
+After that you need to the file config/config.xml.example and save the 
+result as config/config.xml
+
+You need to change the following entries there:
+
+<projectPath>   
+The projects you will create and edit will be saved in this directory. 
+IMPORTANT: Must be writeable and accessable by your webserver!
+
+<backendURL>
+The relative url to the backend dir. Try it with ../../backend/
+
+<projectURL>    
+The url to the data in <projectPath>. Can be a local dir (file:///home/...) or 
+via the webserver
+
+The rest should be easy and working :)
