@@ -2,18 +2,18 @@
   <backend>
     
     <projectPath>
-      /home/fabianpb/Desktop/contrib/
+      ....
     </projectPath>
 
   </backend>
   <frontend>
     
     <backendURL>
-      /~fabianpb/weida/backend/
+      ../../backend/
     </backendURL>
     
     <projectURL>
-      file:///home/fabianpb/Desktop/contrib/
+      file://...
     </projectURL>
     
   </frontend>
