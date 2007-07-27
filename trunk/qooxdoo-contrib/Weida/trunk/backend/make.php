@@ -3,7 +3,7 @@
 <style type="text/css">
 <!--
 .style2 {
-	font-size: 36px;
+	font-size: 16px;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
 }
@@ -14,7 +14,9 @@
 
 <?php
 
-$baseDir = '/home/fabianpb/Desktop/contrib/';
+$configXML = simplexml_load_file('../config/config.xml');
+$baseDir =  trim($configXML->backend->projectPath);
+
 $projectName = $_REQUEST['project'];
 
 $command = 'make';
