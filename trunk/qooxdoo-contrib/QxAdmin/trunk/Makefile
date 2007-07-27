@@ -21,7 +21,10 @@
 # BASIC SETTINGS
 ####################################################################################
 
-QOOXDOO_PATH = ../../..
+QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.1-sdk
+QOOXDOO_URI = ../$(QOOXDOO_PATH)
+QOOXDOO_VERSION = 0.7.1
+
 APPLICATION_NAMESPACE = qxadmin
 APPLICATION_CLASSNAME = Qooxdoo Web Admin
 APPLICATION_MAKE_TITLE = QxAdmin
