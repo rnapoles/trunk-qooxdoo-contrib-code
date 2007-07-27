@@ -5,18 +5,10 @@ qxjsonrpc - JSON-RPC backend for the qooxdoo JavaScript library
 
 (C) 2007 - Viktor Ferenczi (python@cx.hu) - Licence: GNU LGPL
 
------------------------------------------------------------------------------
-
-Login/logout test for qooxdoo, uses session.
-
 =========================================================================='''
 
-import os
-import os.path as op
-import sys
-import logging
+import sys, os
 import qxjsonrpc
-import qxjsonrpc.wsgi
 import qxjsonrpc.test.login
 from qxjsonrpc import *
 from qxjsonrpc.http import HTTPServer
@@ -24,7 +16,13 @@ from qxjsonrpc.http import HTTPServer
 #============================================================================
 # Exported symbols
 
-__all__=['TestService', 'TestHTTPServer']
+__all__=['AdminService', 'AdminHTTPServer']
+
+#============================================================================
+
+qxadminconf = {
+    'qooxdoo_path' : '../../../qooxdoo/qooxdoo-0.7.1-sdk',
+}
 
 #============================================================================
 
@@ -33,7 +31,7 @@ class DirEntry(dict):
     _attrlist='dev,ino,mode,nlink,uid,gid,size,atime,mtime,ctime'.split(',')
     def __init__(self, dirpath, filename):
         self['name']=filename
-        st=os.stat(op.join(dirpath, filename))
+        st=os.stat(os.path.join(dirpath, filename))
         for n in self._attrlist:
             self[n]=getattr(st, 'st_%s'%n)
         self['rdev']=''
@@ -50,22 +48,19 @@ class FileSystemService(object):
         self.basedir=basedir
     @qxjsonrpc.public
     def readDirEntries(self, pathelements, details):
-        dirpath=op.join(*[self.basedir]+pathelements)
+        dirpath=os.path.join(*[self.basedir]+pathelements)
         assert '..' not in dp, 'Cannot go back in directory hierarchy! The .. path element is not supported!'
         filenames=os.listdir(dirpath)
         if details:
             return [DirEntry(dirpath, filename) for filename in filenames]
         return filenames
 
-sys.stdout=open('/tmp/wsgi-fs.out', 'ab')
-logger=logging.getLogger('login')
-logger.addHandler(logging.FileHandler('/tmp/wsgi-fs.log'))
-application=qxjsonrpc.wsgi.WSGIApplication(domain='python.cx.hu', logger=logger)
-service=FileSystemService('/var/www/python.cx.hu/qxjsonrpc/wsgi/fsdir')
-application.setService('qooxdoo.fs', service)
+class AdminService(object):
+    '''Admin service can be used with qxadmin.html.'''
+    def __init__(self):
+        "Add further worker classes to this service class"
+        self.fss = FileSystemService(qxadminconf['qooxdoo_path'])
 
-class TestService(object):
-    '''Test service can be used with session.html.'''
     @public
     @request
     def login(self, username, password, request):
@@ -88,24 +83,24 @@ class TestService(object):
 
 #============================================================================
 
-class TestHTTPServer(HTTPServer):
-    '''HTTP JSON-RPC server for testing sessions'''
-    def __init__(self, host='127.0.0.1', port=8000):
+class AdminHTTPServer(HTTPServer):
+    '''HTTP server for interfacing to qooxdoo's build process'''
+    def __init__(self, host='127.0.0.1', port=8007):
         HTTPServer.__init__(self, host, port, debug=True)
-        self.setService('login.test', TestService())
+        self.setService('qooxdoo.admin', AdminService())
 
 #============================================================================
 
 def main():
-    '''Run test server on 127.0.0.1:8000'''
-    print 'Open login.html from test subdirectory to test this server.'
+    '''Run admin server on 127.0.0.1:8000'''
+    print 'Open index.html from the main directory to connect to this server.'
     print 'Debugging output is enabled in the test server.'
     print
     print 'Ctrl-C aborts the server.'
     print
-    print 'Test server log output follows:'
+    print 'Admin server log output follows:'
     print
-    srv=TestHTTPServer()
+    srv=AdminHTTPServer()
     srv.serve_forever()
 
 #============================================================================

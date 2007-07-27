@@ -37,6 +37,7 @@ APPLICATION_COMPLETE_BUILD = false
 APPLICATION_COMPLETE_SOURCE = false
 APPLICATION_BUILD_LOG_LEVEL = error
 
+APPLICATION_ADDITIONAL_SOURCE_OPTIONS = --include $(APPLICATION_NAMESPACE).*
 
 ####################################################################################
 # INCLUDE CORE
