@@ -900,6 +900,7 @@ qx.Class.define("qxadmin.AppFrame",
       buttview.getPane().add(p1);
 
       var tree = new qx.ui.tree.Tree("Samples");
+      //var tree = new qxadmin.FileSystemService();
       p1.add(tree);
       this.tree = tree;
       this.widgets["treeview.full"] = tree;
@@ -928,51 +929,6 @@ qx.Class.define("qxadmin.AppFrame",
         }
       },
       this);
-
-      // flat view
-      var bsb2 = new qx.ui.pageview.buttonview.Button("Flat Tree", "icon/16/actions/view-pane-text.png");
-
-      // buttview.getBar().add(bsb2);
-      this.widgets["treeview.bsb2"] = bsb2;
-      bsb2.setShow("icon");
-      bsb2.setToolTip(new qx.ui.popup.ToolTip("Flat tree view (only one level of containers)"));
-
-      var p2 = new qx.ui.pageview.buttonview.Page(bsb2);
-      buttview.getPane().add(p2);
-
-      var tree1 = new qx.ui.tree.Tree("Tests");
-      p2.add(tree1);
-      this.tree1 = tree1;
-      this.widgets["treeview.flat"] = tree1;
-      bsb2.setUserData('tree', tree1);  // for changeSelected handling
-
-      tree1.set(
-      {
-        width    : "100%",
-        height   : "100%",
-        padding  : 5,
-        overflow : "auto"
-      });
-
-      tree1.getManager().addEventListener("changeSelection", this.treeGetSelection, this);
-
-      // fake unique tree for selection (better to have a selection on the model)
-      this.tree = {};
-      var that = this;
-
-      this.tree.getSelectedElement = function()
-      {
-        var sel = that.widgets["treeview"].getBar().getManager().getSelected();
-        var elem;
-
-        if (sel.getLabel() == "Full Tree") {
-          elem = that.widgets["treeview.full"].getSelectedElement();
-        } else {
-          elem = that.widgets["treeview.flat"].getSelectedElement();
-        }
-
-        return elem;
-      };
 
       return buttview;
     },
@@ -1489,11 +1445,10 @@ qx.Class.define("qxadmin.AppFrame",
      */
     dataLoader : function()
     {
-      var treeData = get_remote('directory');
-      this.tests.handler = new qxadmin.TreeDataHandler(treeData);
+      this.tests.handler = new qxadmin.TreeDataHandler({});
 
       var start = new Date();
-      this.leftReloadTree();
+      //this.leftReloadTree();
       var end = new Date();
       this.debug("Time to build/display tree: " + (end.getTime() - start.getTime()) + "ms");
 
