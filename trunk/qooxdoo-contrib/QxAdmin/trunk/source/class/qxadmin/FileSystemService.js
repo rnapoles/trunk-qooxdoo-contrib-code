@@ -26,26 +26,13 @@
 
 qx.Class.define("qxadmin.FileSystemService",
 {
+  //extend : qx.ui.basic.Terminator,
+  //extend : qx.core.Target,
   extend : qx.ui.tree.Tree,
 
   construct : function()
   {
-    this.base(arguments);
-
-    /*
-     * Reset the default of always showing the plus/minus symbol.  The
-     * default is 'false'.  We want to always display it for each folder
-     * (and then stop displaying it if we determine upon open that there
-     * is no contents).
-     */
-    /*
-    var constructor = qx.OO.classes["qx.ui.tree.TreeFolder"];
-    qx.Proto = constructor.prototype;
-    qx.OO.changeProperty({
-          name : "alwaysShowPlusMinusSymbol",
-          type : "boolean",
-          defaultValue : true });
-    */
+    this.base(arguments, "Qooxdoo");
 
     var rpc = new qx.io.remote.Rpc();
     this.rpc = rpc;
@@ -56,37 +43,20 @@ qx.Class.define("qxadmin.FileSystemService",
 
     this.mycall = null;
 
-    var trs = qx.ui.tree.TreeRowStructure.getInstance().standard("Root");
-    var tree = new qx.ui.tree.Tree(trs);
-    this.tree = tree;
-
-    tree.set(
+    this.set(
     {
-        backgroundColor : 'white',
-        border          : 'inset',
-        overflow        : "auto",
-
-        height          : null,
-        top             : 48,
-        left            : 20,
-        width           : 700,
-        bottom          : 48,
-
-        hideNode        : true,          // hide the root node
-        useTreeLines    : true           // display tree lines
+      rootOpenClose : true,
+      alwaysShowPlusMinusSymbol : true,
+      useTreeLines    : true           // display tree lines
     });
 
     /*
      * All subtrees will use this root node's event listeners.  Create an
      * event listener for an open while empty.
      */
-    tree.addEventListener("treeOpenWhileEmpty", this.__treeOpenWhileEmpty, this);
-
-    //qx.ui.core.ClientDocument.getInstance().add(tree);
-
-    var trs = qx.ui.tree.TreeRowStructure.getInstance().standard("Sandbox");
-    var tf = new qx.ui.tree.TreeFolder(trs);
-    tree.add(tf);
+    this.addEventListener("treeOpenWhileEmpty", this.__treeOpenWhileEmpty, this);
+    //this.getManager().addEventListener("changeSelection", alert('in constructor'), this);
+    //this.getManager().addEventListener("changeSelection", function(){alert('in constructor')}, this);
 
   }, // construct
 
@@ -94,8 +64,6 @@ qx.Class.define("qxadmin.FileSystemService",
 
     __treeOpenWhileEmpty : function(e)
     {
-        alert("in treeOpenWhileEmpty handler");
-        return;
         var parent = e.getData();
         var hierarchy = parent.getHierarchy(new Array());
         var that = this;
@@ -129,6 +97,10 @@ qx.Class.define("qxadmin.FileSystemService",
         var trs;
         var child;
         var obj;
+
+        if (children.length > 0) {
+          parent.setAlwaysShowPlusMinusSymbol(false);
+        }
 
         for (i = 0; i < children.length; i++)
         {
@@ -191,6 +163,7 @@ qx.Class.define("qxadmin.FileSystemService",
             if (bIsDirectory)
             {
                 t = new qx.ui.tree.TreeFolder(trs);
+                t.setAlwaysShowPlusMinusSymbol(true);
             }
             else
             {

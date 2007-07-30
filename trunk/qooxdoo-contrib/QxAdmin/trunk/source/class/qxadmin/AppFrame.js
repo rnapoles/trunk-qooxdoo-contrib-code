@@ -181,7 +181,7 @@ qx.Class.define("qxadmin.AppFrame",
      */
     __makeHeader : function()
     {
-      var header = new qx.ui.embed.HtmlEmbed("<h1>" + "<span>" + "qooxdoo Demo Browser" + "</span>" + "</h1>" + "<div class='version'>qooxdoo " + qx.core.Version.toString() + "</div>");
+      var header = new qx.ui.embed.HtmlEmbed("<h1>" + "<span>" + "qooxdoo Web Admin" + "</span>" + "</h1>" + "<div class='version'>qooxdoo " + qx.core.Version.toString() + "</div>");
       header.setHtmlProperty("id", "header");
       header.setStyleProperty("background", "#134275 url(" + qx.io.Alias.getInstance().resolve("qxadmin/image/colorstrip.gif") + ") top left repeat-x");
       header.setHeight(70);
@@ -914,7 +914,7 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      //tree.getManager().addEventListener("changeSelection", this.treeGetSelection, this);
+      tree.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
 
       /*
       tree.addEventListener("dblclick", function(e)
@@ -945,7 +945,7 @@ qx.Class.define("qxadmin.AppFrame",
      * @param e {Event} TODOC
      * @return {void}
      */
-    treeGetSelection : function(e)
+    __handleTreeSelection : function(e)
     {
       if (!this.tree.getSelectedElement())
       {  // this is a kludge!
@@ -953,39 +953,15 @@ qx.Class.define("qxadmin.AppFrame",
       }
 
       var treeNode = this.tree.getSelectedElement();
-      var modelNode = treeNode.getUserData("modelLink");
-      this.tests.selected = this.tests.handler.getFullName(modelNode);
+      //var modelNode = treeNode.getUserData("modelLink");
+      //this.tests.selected = this.tests.handler.getFullName(modelNode);
 
-      // update toolbar
-      if (treeNode instanceof qx.ui.tree.TreeFolder)
+      if (treeNode.getLabel() == "Makefile") 
       {
-        this._cmdRunSample.setEnabled(false);
-        this._cmdPrevSample.setEnabled(false);
-        this._cmdNextSample.setEnabled(false);
-        this._cmdSampleInOwnWindow.setEnabled(false);
-      }
-      else
-      {
-        this._cmdRunSample.setEnabled(true);
-
-        if (treeNode.getUserData('modelLink').getPrevSibling()) {
-          this._cmdPrevSample.setEnabled(true);
-          this.__states.isFirstSample=false;
-        } else {
-          this._cmdPrevSample.setEnabled(false);
-          this.__states.isFirstSample=true;
-        }
-
-        if (treeNode.getUserData('modelLink').getNextSibling()) {
-          this._cmdNextSample.setEnabled(true);
-          this.__states.isLastSample=false;
-        } else {
-          this._cmdNextSample.setEnabled(false);
-          this.__states.isLastSample=true;
-        }
+        alert(this.getParentFolderChain(treeNode));
       }
 
-    },
+    }, //handleTreeSelection
 
 
     /**
@@ -1595,6 +1571,38 @@ qx.Class.define("qxadmin.AppFrame",
       res = res.replace(/(&lt;\/?)([a-zA-Z]+)(.*?)(\/?)&gt;/g, matchfunc); // whole tag
 
       return res;
+    },
+
+
+    /**
+     * Return the array of ancestor folders of a given element.
+     *
+     * @type member
+     * @param treeElem {qx.ui.tree.AbstractTreeElement} Element of a tree
+     * @return {qx.ui.tree.AbstractTreeElement[]|null} Array of ancestor folders
+     */
+    getParentFolderChain : function(treeElem) 
+    {
+      if (treeElem.getParentFolder() == null)
+      {
+        return null;
+      } else 
+      {
+        return this.getParentFolderChainR(treeElem, []);
+      }
+      
+    },
+
+    getParentFolderChainR : function(treeElem,aAncestors)
+    {
+      var parnt = treeElem.getParentFolder();
+      if (parnt == null)
+      {
+        return aAncestors;
+      } else 
+      {
+        return arguments.callee(parnt, aAncestors.unshift(parnt));
+      }
     },
 
 
