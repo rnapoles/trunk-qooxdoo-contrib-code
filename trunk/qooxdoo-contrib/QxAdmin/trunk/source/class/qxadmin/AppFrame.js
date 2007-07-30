@@ -899,8 +899,8 @@ qx.Class.define("qxadmin.AppFrame",
 
       buttview.getPane().add(p1);
 
-      var tree = new qx.ui.tree.Tree("Samples");
-      //var tree = new qxadmin.FileSystemService();
+      //var tree = new qx.ui.tree.Tree("Samples");
+      var tree = new qxadmin.FileSystemService();
       p1.add(tree);
       this.tree = tree;
       this.widgets["treeview.full"] = tree;
@@ -914,8 +914,9 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      tree.getManager().addEventListener("changeSelection", this.treeGetSelection, this);
+      //tree.getManager().addEventListener("changeSelection", this.treeGetSelection, this);
 
+      /*
       tree.addEventListener("dblclick", function(e)
       {
         if (e.getTarget() instanceof qx.ui.tree.TreeFile)
@@ -929,6 +930,7 @@ qx.Class.define("qxadmin.AppFrame",
         }
       },
       this);
+      */
 
       return buttview;
     },

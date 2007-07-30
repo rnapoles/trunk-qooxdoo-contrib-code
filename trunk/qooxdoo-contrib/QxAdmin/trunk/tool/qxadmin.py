@@ -21,7 +21,8 @@ __all__=['AdminService', 'AdminHTTPServer']
 #============================================================================
 
 qxadminconf = {
-    'qooxdoo_path' : '../../../qooxdoo/qooxdoo-0.7.1-sdk',
+    #'qooxdoo_path' : '../../../qooxdoo/qooxdoo-0.7.1-sdk',
+    'qooxdoo_path' : '/home/thron7/workspace/qooxdoo-contrib.trunk/qooxdoo/qooxdoo-0.7.1-sdk',
 }
 
 #============================================================================
@@ -49,7 +50,8 @@ class FileSystemService(object):
     @qxjsonrpc.public
     def readDirEntries(self, pathelements, details):
         dirpath=os.path.join(*[self.basedir]+pathelements)
-        assert '..' not in dp, 'Cannot go back in directory hierarchy! The .. path element is not supported!'
+        print dirpath
+        assert '..' not in dirpath, 'Cannot go back in directory hierarchy! The .. path element is not supported!'
         filenames=os.listdir(dirpath)
         if details:
             return [DirEntry(dirpath, filename) for filename in filenames]
