@@ -37,8 +37,8 @@ qx.Class.define("LoginTestApplication",
     {
       this.base(arguments);
 
-      var url = 'http://127.0.0.1:8000';
-      var service = 'login.test';
+      var url = 'http://127.0.0.1:8007';
+      var service = 'qooxdoo.admin';
       var rpc = new qx.io.remote.Rpc(url, service);
       rpc.setCrossDomain(true);
       rpc.setTimeout(1000);

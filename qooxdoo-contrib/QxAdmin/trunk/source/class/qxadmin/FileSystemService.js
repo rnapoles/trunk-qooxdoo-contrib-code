@@ -26,7 +26,7 @@
 
 qx.Class.define("qxadmin.FileSystemService",
 {
-  extend : qx.ui.core.Widget,
+  extend : qx.ui.tree.Tree,
 
   construct : function()
   {
@@ -38,72 +38,80 @@ qx.Class.define("qxadmin.FileSystemService",
      * (and then stop displaying it if we determine upon open that there
      * is no contents).
      */
-    var constructor = qx.OO.classes["qx.ui.treefullcontrol.TreeFolder"];
+    /*
+    var constructor = qx.OO.classes["qx.ui.tree.TreeFolder"];
     qx.Proto = constructor.prototype;
     qx.OO.changeProperty({
           name : "alwaysShowPlusMinusSymbol",
           type : "boolean",
           defaultValue : true });
+    */
 
     var rpc = new qx.io.remote.Rpc();
+    this.rpc = rpc;
     rpc.setTimeout(1000);
     rpc.setUrl("http://127.0.0.1:8007");
     rpc.setServiceName("qooxdoo.admin");
-    rpc.setCrossDomain(false);
+    rpc.setCrossDomain(true);
 
-    var mycall = null;
+    this.mycall = null;
 
-    var trs = qx.ui.treefullcontrol.TreeRowStructure.getInstance().standard("Root");
-    var t = new qx.ui.treefullcontrol.Tree(trs);
+    var trs = qx.ui.tree.TreeRowStructure.getInstance().standard("Root");
+    var tree = new qx.ui.tree.Tree(trs);
+    this.tree = tree;
 
-    with(t)
+    tree.set(
     {
-        setBackgroundColor(255);
-        setBorder(qx.renderer.border.BorderPresets.getInstance().inset);
-        setOverflow("scrollY");
+        backgroundColor : 'white',
+        border          : 'inset',
+        overflow        : "auto",
 
-        setHeight(null);
-        setTop(48);
-        setLeft(20);
-        setWidth(700);
-        setBottom(48);
+        height          : null,
+        top             : 48,
+        left            : 20,
+        width           : 700,
+        bottom          : 48,
 
-        setHideNode(true);          // hide the root node
-        setUseTreeLines(true);      // display tree lines
-    };
+        hideNode        : true,          // hide the root node
+        useTreeLines    : true           // display tree lines
+    });
 
     /*
      * All subtrees will use this root node's event listeners.  Create an
      * event listener for an open while empty.
      */
-    t.addEventListener("treeOpenWhileEmpty", this.__treeOpenWhileEmpty, this);
+    tree.addEventListener("treeOpenWhileEmpty", this.__treeOpenWhileEmpty, this);
 
-    qx.ui.core.ClientDocument.getInstance().add(t);
+    //qx.ui.core.ClientDocument.getInstance().add(tree);
 
-    var trs = qx.ui.treefullcontrol.TreeRowStructure.getInstance().standard("Sandbox");
-    var tf = new qx.ui.treefullcontrol.TreeFolder(trs);
-    t.add(tf);
-  },
+    var trs = qx.ui.tree.TreeRowStructure.getInstance().standard("Sandbox");
+    var tf = new qx.ui.tree.TreeFolder(trs);
+    tree.add(tf);
+
+  }, // construct
 
   members : {
 
     __treeOpenWhileEmpty : function(e)
     {
+        alert("in treeOpenWhileEmpty handler");
+        return;
         var parent = e.getData();
         var hierarchy = parent.getHierarchy(new Array());
+        var that = this;
 
         parent.debug("Requesting children...");
 
         // Strip off the root node
         hierarchy.shift();
 
-        mycall = rpc.callAsync(
+        this.mycall = this.rpc.callAsync(
             function(result, ex, id)
             {
-                mycall = null;
+                that.mycall = null;
                 if (ex == null) {
                     parent.debug("Children obtained.  Rendering...");
-                    this.__addChildren(parent, result);
+                    that.__addChildren(parent, result);
                     parent.debug("Rendering complete.");
                 } else {
                     alert("Async(" + id + ") exception: " + ex);
@@ -120,12 +128,13 @@ qx.Class.define("qxadmin.FileSystemService",
         var t;
         var trs;
         var child;
+        var obj;
 
         for (i = 0; i < children.length; i++)
         {
             child = children[i];
 
-            trs = qx.ui.treefullcontrol.TreeRowStructure.getInstance().newRow();
+            trs = qx.ui.tree.TreeRowStructure.getInstance().newRow();
 
             // Here's our indentation and tree-lines
             trs.addIndent();
@@ -181,11 +190,11 @@ qx.Class.define("qxadmin.FileSystemService",
 
             if (bIsDirectory)
             {
-                t = new qx.ui.treefullcontrol.TreeFolder(trs);
+                t = new qx.ui.tree.TreeFolder(trs);
             }
             else
             {
-                t = new qx.ui.treefullcontrol.TreeFile(trs);
+                t = new qx.ui.tree.TreeFile(trs);
             }
             parent.add(t);
         }
