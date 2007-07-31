@@ -1069,6 +1069,7 @@ qx.Class.define("qxadmin.AppFrame",
       var a = this.getParentFolderChain(treeNode);
       var b = [];
       var that = this;
+      var treeLabel = treeNode.getLabel();
 
       for (var i=0; i<a.length; i++) 
       {
@@ -1077,14 +1078,14 @@ qx.Class.define("qxadmin.AppFrame",
       // drop the root node
       b.shift();
       // add file name
-      b.push(treeNode.getLabel());
+      b.push(treeLabel);
 
       this.RpcRunning = this.RpcServer.callAsync(
         function(result, ex, id)
         {
           that.RpcRunning = null;
           if (ex == null) {
-              that.debug("Got QOOXDOO_PATH");
+              that.debug("Got file "+treeLabel);
               that.f3.setHtml('<pre>'+result+'</pre>');
           } else {
               alert("Async(" + id + ") exception: " + ex);
