@@ -30,17 +30,11 @@ qx.Class.define("qxadmin.FileSystemService",
   //extend : qx.core.Target,
   extend : qx.ui.tree.Tree,
 
-  construct : function()
+  construct : function(rpc)
   {
     this.base(arguments, "Qooxdoo");
 
-    var rpc = new qx.io.remote.Rpc();
     this.rpc = rpc;
-    rpc.setTimeout(1000);
-    rpc.setUrl("http://127.0.0.1:8007");
-    rpc.setServiceName("qooxdoo.admin");
-    rpc.setCrossDomain(true);
-
     this.mycall = null;
 
     this.set(
