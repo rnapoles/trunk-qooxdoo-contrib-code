@@ -60,6 +60,7 @@ qx.Class.define("qxadmin.AppFrame",
     this.__states.isLastSample  = false;
 
     this.__makeCommands();
+    this.__makeRpcServer();
 
     // Header Pane
     this.header = this.__makeHeader();
@@ -173,6 +174,34 @@ qx.Class.define("qxadmin.AppFrame",
     // ------------------------------------------------------------------------
     //   CONSTRUCTOR HELPERS
     // ------------------------------------------------------------------------
+    __makeRpcServer : function()
+    {
+      var rpc = new qx.io.remote.Rpc();
+      rpc.setTimeout(10000000000000);
+      rpc.setUrl("http://127.0.0.1:8007");
+      rpc.setServiceName("qooxdoo.admin");
+      rpc.setCrossDomain(true);
+
+      this.RpcServer = rpc;
+
+      // get qooxdoo base dir (aka QOOXDOO_PATH)
+      var that = this;
+      this.RpcRunning = this.RpcServer.callAsync(
+        function(result, ex, id)
+        {
+          that.RpcRunning = null;
+          if (ex == null) {
+              that.debug("Got QOOXDOO_PATH");
+              that.qooxdoo_path = result;
+          } else {
+              alert("Async(" + id + ") exception: " + ex);
+          }
+        },
+        "fss.getBaseDir");
+
+    }, //makeRpcServer
+
+
     /**
      * Create the header widget
      *
@@ -786,6 +815,8 @@ qx.Class.define("qxadmin.AppFrame",
         border   : "dark-shadow"
       });
 
+      f1.setStyleProperty("font-family", '"Consolas", "Courier New", monospace');
+
       f1.addEventListener("load", this.__ehIframeLoaded, this);
 
 
@@ -840,6 +871,7 @@ qx.Class.define("qxadmin.AppFrame",
       // -- Pane Content
       //var f3 = new qx.ui.form.TextArea("The sample source will be displayed here.");
       var f3 = new qx.ui.embed.HtmlEmbed("<div class='script'>The sample source will be displayed here.</div>");
+      this.f3 = f3;
       p3.add(f3);
       this.widgets["outputviews.sourcepage.page"] = f3;
 
@@ -900,7 +932,7 @@ qx.Class.define("qxadmin.AppFrame",
       buttview.getPane().add(p1);
 
       //var tree = new qx.ui.tree.Tree("Samples");
-      var tree = new qxadmin.FileSystemService();
+      var tree = new qxadmin.FileSystemService(this.RpcServer);
       p1.add(tree);
       this.tree = tree;
       this.widgets["treeview.full"] = tree;
@@ -956,12 +988,112 @@ qx.Class.define("qxadmin.AppFrame",
       //var modelNode = treeNode.getUserData("modelLink");
       //this.tests.selected = this.tests.handler.getFullName(modelNode);
 
-      if (treeNode.getLabel() == "Makefile") 
+      var treeLabel = treeNode.getLabel();
+
+      if (treeLabel == "Makefile") 
       {
-        alert(this.getParentFolderChain(treeNode));
+        this.invokeMake(treeNode);
+      } else if (treeLabel == "index.html") 
+      {
+        this.invokeIndexHtml(treeNode);
+      } else if (treeNode instanceof qx.ui.tree.TreeFile)
+      {
+        this.getFile(treeNode);
       }
 
     }, //handleTreeSelection
+
+
+    invokeMake : function (treeNode) 
+    {
+      var a = this.getParentFolderChain(treeNode);
+      var b = [];
+      var that = this;
+
+      for (var i=0; i<a.length; i++) 
+      {
+        b.push(a[i].getLabel());
+      }
+      //alert(b);
+      // drop the root node
+      b.shift();
+
+      // run make through RPC
+      this.RpcRunning = this.RpcServer.callAsync(
+        function(result, ex, id)
+        {
+          that.RpcRunning = null;
+          if (ex == null) {
+              that.debug("Make successfull, rendering output...");
+              that.f2.setHtml('<pre>'+result+'</pre>')
+              that.debug("Rendering complete.");
+          } else {
+              alert("Async(" + id + ") exception: " + ex);
+          }
+        },
+        "fss.runMake",
+        b,
+        "source");
+      /*
+      // run make through CGI
+      var url = "http://127.0.0.1/cgi-bin/nph-make_build.py?path="+b.join("/");
+      this.f1.setSource(url);
+      */
+
+    },
+
+
+    invokeIndexHtml : function (treeNode) 
+    {
+      var a = this.getParentFolderChain(treeNode);
+      var b = [];
+      var that = this;
+
+      for (var i=0; i<a.length; i++) 
+      {
+        b.push(a[i].getLabel());
+      }
+      //alert(b);
+      // drop the root node
+      b.shift();
+
+      var url = this.qooxdoo_path+"/"+b.join("/")+"/index.html";
+      // open index.html
+      window.open(url);
+
+    },
+
+
+    getFile : function (treeNode)
+    {
+      var a = this.getParentFolderChain(treeNode);
+      var b = [];
+      var that = this;
+
+      for (var i=0; i<a.length; i++) 
+      {
+        b.push(a[i].getLabel());
+      }
+      // drop the root node
+      b.shift();
+      // add file name
+      b.push(treeNode.getLabel());
+
+      this.RpcRunning = this.RpcServer.callAsync(
+        function(result, ex, id)
+        {
+          that.RpcRunning = null;
+          if (ex == null) {
+              that.debug("Got QOOXDOO_PATH");
+              that.f3.setHtml('<pre>'+result+'</pre>');
+          } else {
+              alert("Async(" + id + ") exception: " + ex);
+          }
+        },
+        "fss.getFile",
+        b);
+
+    },
 
 
     /**
@@ -1261,6 +1393,7 @@ qx.Class.define("qxadmin.AppFrame",
      */
     __ehIframeLoaded : function(e)
     {
+      return;
       var fwindow = this.f1.getContentWindow();
       var fpath = fwindow.location.pathname + "";
       var splitIndex = fpath.indexOf("?");
@@ -1601,7 +1734,8 @@ qx.Class.define("qxadmin.AppFrame",
         return aAncestors;
       } else 
       {
-        return arguments.callee(parnt, aAncestors.unshift(parnt));
+        aAncestors.unshift(parnt);
+        return arguments.callee(parnt, aAncestors);
       }
     },
 
