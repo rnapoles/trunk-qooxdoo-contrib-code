@@ -96,16 +96,19 @@ qx.Class.define("qxadmin.AppFrame",
 
     // Toolbar
     this.toolbar = this.__makeToolbar();
-
     this.toolbar.set(
     {
       show                  : "icon",
       verticalChildrenAlign : "middle"
     });
-
     right.add(this.toolbar);
 
-    // output views
+    // Run Options
+    this.widgets["runoptions"] = this.__makeOptionsPane();
+    right.add(this.widgets["runoptions"]);
+    this.widgets["runoptions"].setDisplay(false);
+
+    // Output Views
     var buttview = this.__makeOutputViews();
     right.add(buttview);
 
@@ -409,128 +412,9 @@ qx.Class.define("qxadmin.AppFrame",
       this.__bindCommand(openb, this._cmdOpenPage);
       openb.setToolTip(new qx.ui.popup.ToolTip("Open page in browser"));
 
-      /*
-      // -- next navigation
-      var nextbutt = new qx.ui.toolbar.Button("Next Sample", "icon/16/actions/go-right.png");
-      mb.add(nextbutt);
-      this.widgets["toolbar.nextbutt"] = nextbutt;
-      this.__bindCommand(nextbutt, this._cmdOpenPage);
-      nextbutt.setToolTip(new qx.ui.popup.ToolTip("Run the next sample"));
-
-      // -- spin-out sample
-      var sobutt = new qx.ui.toolbar.Button("Spin out Sample", "icon/16/actions/edit-redo.png");
-      mb.add(sobutt);
-      this.widgets["toolbar.sobutt"] = sobutt;
-      sobutt.setToolTip(new qx.ui.popup.ToolTip("Open Sample in Own Window"));
-      this.__bindCommand(sobutt, this._cmdSampleInOwnWindow);
-
-      toolbar.add((new qx.ui.basic.HorizontalSpacer).set({ width : "1*" }));
-
-      // -- Sample Features
-      var gb = new qx.ui.toolbar.Part();
-      toolbar.add(gb);
-      this.widgets["toolbar.sampbutts"] = gb;
-
-      gb.set(
-      {
-        height : "100%",
-        width  : "auto",
-        border : null
-      });
-
-      gb.resetBorder();
-      gb.setEnabled(false);
-
-      // profiling
-      var sb0 = new qx.ui.toolbar.CheckBox("Profile", "icon/16/apps/accessories-alarm.png", this._cmdProfile.getUserData("checked"));
-      gb.add(sb0);
-
-      this.__bindCommand(sb0, this._cmdProfile);
-      sb0.setToolTip(new qx.ui.popup.ToolTip("Profile Running Sample"));
-      this.widgets["toolbar.profile"] = sb0;
-
-      // object summary
-      var sb1 = new qx.ui.toolbar.Button("Object Summary", "icon/16/apps/accessories-magnifier.png");
-      gb.add(sb1);
-
-      sb1.set(
-      {
-        height : "100%",
-        width  : "auto",
-        command: this._cmdObjectSummary
-      });
-
-      this.__bindCommand(sb1, this._cmdObjectSummary)
-      sb1.setToolTip(new qx.ui.popup.ToolTip("Sample Object Summary"));
-
-      // -- sample: global pollution
-      var sb2 = new qx.ui.toolbar.Button("Global Pollution", "icon/16/places/www.png");
-      gb.add(sb2);
-      this.__bindCommand(sb2, this._cmdNamespacePollution)
-
-      sb2.setToolTip(new qx.ui.popup.ToolTip("Sample Global Pollution"));
-      */
-
       return toolbar;
     },  // __makeToolbar()
 
-
-    showProfile : function(profData)
-    {
-      if (!this._profWindow)
-      {
-        var win = new qx.ui.window.Window("Profiling Data");
-        win.set({
-          space: [20, 800, 20, 600],
-          minWidth : 400,
-          minHeight : 300,
-          showMinimize : false,
-          modal : true
-        });
-        win.addToDocument();
-        this._profWindow = win;
-
-        var tableModel = new qx.ui.table.model.Simple();
-        tableModel.setColumns([ "Function", "Type", "Own Time", "Avg Time", "Call Count" ]);
-        tableModel.setData([]);
-        this._profTableModel = tableModel;
-
-        var custom = {
-          tableColumnModel : function(obj) {
-            return new qx.ui.table.columnmodel.Resize(obj);
-          }
-        };
-
-        var table = new qx.ui.table.Table(tableModel, custom);
-        table.set({
-          height: "100%",
-          width: "100%"
-        });
-
-        var tcm = table.getTableColumnModel();
-        var resizeBehavior = tcm.getBehavior();
-        resizeBehavior.set(0, { width:"2*", minWidth:50 });
-        resizeBehavior.setMaxWidth(1, 80);
-        resizeBehavior.setMaxWidth(2, 80);
-        resizeBehavior.setMaxWidth(3, 80);
-        resizeBehavior.setMaxWidth(4, 80);
-
-        win.add(table);
-      }
-
-      var rowData = [];
-      for (var key in profData) {
-        var data = profData[key];
-        if (data.name == "qx.core.Aspect.__calibrateHelper") {
-          continue;
-        }
-        rowData.push([data.name+"()", data.type, data.calibratedOwnTime, data.calibratedOwnTime/data.callCount, data.callCount]);
-      }
-      this._profTableModel.setData(rowData);
-      this._profTableModel.sortByColumn(2);
-
-      this._profWindow.open();
-    },
 
 
     /**
@@ -557,7 +441,7 @@ qx.Class.define("qxadmin.AppFrame",
       var bsb1 = new qx.ui.pageview.tabview.Button("Start", "icon/16/actions/system-run.png");
       this.widgets["outputviews.demopage.button"] = bsb1;
       bsb1.setChecked(true);
-      buttview.getBar().add(bsb1);
+      //buttview.getBar().add(bsb1);
 
       var p1 = new qx.ui.pageview.tabview.Page(bsb1);
       p1.set({ padding : [ 5 ] });
@@ -584,6 +468,7 @@ qx.Class.define("qxadmin.AppFrame",
       // Second Page
       var bsb2 = new qx.ui.pageview.tabview.Button("Log", "icon/16/mimetypes/text-ascii.png");
       buttview.getBar().add(bsb2);
+      bsb2.setChecked(true);
 
       var p2 = new qx.ui.pageview.tabview.Page(bsb2);
       p2.set({ padding : [ 5 ] });
@@ -621,7 +506,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       // Third Page
       // -- Tab Button
-      var bsb3 = new qx.ui.pageview.tabview.Button("Source Code", "icon/16/apps/graphics-snapshot.png");
+      var bsb3 = new qx.ui.pageview.tabview.Button("Source View", "icon/16/apps/graphics-snapshot.png");
       buttview.getBar().add(bsb3);
 
       // -- Tab Pane
@@ -728,6 +613,62 @@ qx.Class.define("qxadmin.AppFrame",
       return buttview;
     },
 
+
+    __makeOptionsPane : function () 
+    {
+      var rightSub = new qx.ui.layout.VerticalBoxLayout();
+      rightSub.set(
+      {
+        padding : 10,
+        height  : "auto",
+        spacing : 20 
+      };
+
+      var groupBox = new qx.ui.groupbox.GroupBox();
+      groupBox.set({ height : "auto" });
+      rightSub.add(groupBox);
+
+      var vert = new qx.ui.layout.VerticalBoxLayout();
+
+      vert.set(
+      {
+        height : "auto",
+        width  : "100%"
+      });
+
+      groupBox.add(vert);
+
+      var opts = new qx.ui.layout.HorizontalBoxLayout();
+      vert.add(opts);
+      opts.set(
+      {
+        height : "auto",
+        width : "100%"
+      });
+
+      var c1 = new qx.ui.form.CheckBox("source","sourceChecked","c1");
+      opts.add(c1);
+
+      var addOpts = new qx.ui.layout.HorizontalBoxLayout();
+      vert.add(addOpts);
+      addOpts.set(
+      {
+        height : "auto",
+        width : "100%"
+      });
+
+      var t1 = new qx.ui.form.TextField();
+      addOpts.add(t1);
+
+      var l1 = new qx.ui.basic.Label("additional run options");
+      addOpts.add(l1);
+
+
+      return rightSub;
+
+    }, //makeOptionsPane
+
+
     // ------------------------------------------------------------------------
     //   EVENT HANDLER
     // ------------------------------------------------------------------------
@@ -757,8 +698,10 @@ qx.Class.define("qxadmin.AppFrame",
       {
         this._cmdRunFile.setEnabled(true);
         //this.invokeMake(treeNode);
+        this.widgets["runoptions"].setDisplay(true);
       } else {
         this._cmdRunFile.setEnabled(false);
+        this.widgets["runoptions"].setDisplay(false);
         if (treeLabel == "index.html") 
         {
           this._cmdOpenPage.setEnabled(true);
