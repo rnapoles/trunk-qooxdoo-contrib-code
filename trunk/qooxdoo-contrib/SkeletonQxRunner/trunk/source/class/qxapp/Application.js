@@ -31,7 +31,8 @@
 ************************************************************************ */
 
 /**
- * The main application class.
+ * The main application class. Provides the application's main() function, which
+ * instantiates the worker class proper, AppFrame. All application logic is there.
  */
 qx.Class.define("qxapp.Application",
 {
