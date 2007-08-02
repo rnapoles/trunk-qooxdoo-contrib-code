@@ -622,7 +622,7 @@ qx.Class.define("qxadmin.AppFrame",
         padding : 10,
         height  : "auto",
         spacing : 20 
-      };
+      });
 
       var groupBox = new qx.ui.groupbox.GroupBox();
       groupBox.set({ height : "auto" });
