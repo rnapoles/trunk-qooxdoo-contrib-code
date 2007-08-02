@@ -558,9 +558,10 @@ qx.Class.define("qxadmin.AppFrame",
       buttview.getPane().setPadding(0);
 
       this.widgets["treeview"] = buttview;
+      buttview.getBar().getManager().addEventListener("changeSelected",this.__ehLeftSelection,this);
 
-      // full view
-      var bsb1 = new qx.ui.pageview.buttonview.Button("Full Tree", "icon/16/actions/view-pane-tree.png");
+      // First Pane
+      var bsb1 = new qx.ui.pageview.buttonview.Button("Make Edit", "icon/16/actions/view-pane-tree.png");
       buttview.getBar().add(bsb1);
       this.widgets["treeview.bsb1"] = bsb1;
       bsb1.setShow("icon");
@@ -577,8 +578,71 @@ qx.Class.define("qxadmin.AppFrame",
 
       buttview.getPane().add(p1);
 
+      var treeData = 
+      {
+        label : "Makefile Stuff",
+        items : [
+        {
+          label : "General",
+          items : [
+          {
+            label : "QOOXDOO_PATH"
+          }
+          ]
+        },
+        {
+          label : "Makefile Vars",
+          items : [
+          {
+            label : "BASIC SETTINGS",
+            items : [
+            {
+              label : "APPLICATION_CLASSNAME"
+            },
+            {
+              label : "QOOXDOO_URI"
+            },
+            {
+              label : "APPLICATION_NAMESPACE_PATH"
+            }
+            ]
+          },
+          {
+            label : "GENERATOR OPTIONS",
+            items : [
+            {
+              label : "APPLICATON_COMPLETE_BUILD"
+            },
+            {
+              label : "APPLICATON_COMPLETE_SOURCE"
+            },
+            {
+              label : "APPLICATION_COMPLETE_API"
+            }
+            ]
+          },
+          {
+            label : "RUNTIME SETTINGS",
+            items : [
+            {
+              label : "APPLICATION_THEME"
+            },
+            {
+              label : "APPLICATION_THEME_COLOR"
+            },
+            {
+              label : "APPLICATION_THEME_BORDER"
+            }
+            ]
+          }
+          ]
+        }
+        ]
+      };
       //var tree = new qx.ui.tree.Tree("Samples");
-      var tree = new qxadmin.FileSystemService(this.RpcServer);
+      //var tree = new qxadmin.FileSystemService(this.RpcServer);
+      var tree = this.__createTree(treeData);
+      this.tD = treeData;
       p1.add(tree);
       this.tree = tree;
       this.widgets["treeview.full"] = tree;
@@ -594,23 +658,129 @@ qx.Class.define("qxadmin.AppFrame",
 
       tree.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
 
-      /*
-      tree.addEventListener("dblclick", function(e)
+      // Second Pane
+      var bsb2 = new qx.ui.pageview.buttonview.Button("Run Make", "icon/16/categories/applications-development.png");
+      buttview.getBar().add(bsb2);
+      this.widgets["treeview.bsb2"] = bsb2;
+      bsb2.setShow("icon");
+      bsb2.setToolTip(new qx.ui.popup.ToolTip("Run make"));
+
+      var p2 = new qx.ui.pageview.buttonview.Page(bsb2);
+
+      p2.set(
       {
-        if (e.getTarget() instanceof qx.ui.tree.TreeFile)
+        width           : "100%",
+        height          : "100%",
+        backgroundColor : "white"
+      });
+
+      buttview.getPane().add(p2);
+
+      // second pane content
+      var treeData = 
         {
-          // allow treeGetSelection to run first
-          qx.client.Timer.once(this.runSample, this, 50);
-        }
-        else
-        {
-          this.setCurrentSample(this.defaultUrl);
-        }
-      },
-      this);
-      */
+          label : "Run make",
+          items : [
+          {
+            label : "source"
+          },
+          {
+            label : "build"
+          },
+          {
+            label : "api"
+          },
+          {
+            label : "test"
+          }
+          ]
+        };
+
+      var tree1 = this.__createTree(treeData);
+      p2.add(tree1);
+      this.widgets["treeview.runmake"] = tree1;
+      bsb2.setUserData('tree', tree1);  // for changeSelected handling
+
+      tree1.set(
+      {
+        width    : "100%",
+        height   : "100%",
+        padding  : 5,
+        overflow : "auto"
+      });
+
+      tree1.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
+
 
       return buttview;
+    },
+
+
+    __createTree : function (treeData)
+    {
+      var tree = new qx.ui.tree.Tree();
+
+      // recursive worker function
+      var createTreeR = function (tData)
+      {
+        if (!tData.items)
+        {
+          return new qx.ui.tree.TreeFile(tData.label);
+        } else 
+        {
+          var node = new qx.ui.tree.TreeFolder(tData.label);
+
+          for (var i=0; i<tData.items.length; i++)
+          {
+            var item = tData.items[i];
+            node.add(createTreeR(item));
+          }
+          return node;
+        }
+      }; //createTreeR
+
+      tree.add(createTreeR(treeData));
+
+      return tree;
+    },
+
+    /** Select right hand side toolbar and button pane, depending on left hand side
+     *  choice
+     */
+    __toggleRightSide : function (b) 
+    {
+      if (b=="edit") // make file edit
+      {
+        this.widgets["toolrun"].setDisplay(false);
+        this.widgets["buttrun"].setDisplay(false);
+        this.widgets["tooledit"].setDisplay(true);
+        this.widgets["buttedit"].setDisplay(true);
+      } else 
+      {
+        this.widgets["tooledit"].setDisplay(false);
+        this.widgets["buttedit"].setDisplay(false);
+        this.widgets["toolrun"].setDisplay(true);
+        this.widgets["buttrun"].setDisplay(true);
+      }
+      
+    },
+
+    __ehLeftSelection : function (e) 
+    {
+      var sel = e.getData();
+      var lab = sel.getLabel();
+      var tok;
+
+      if (lab == "Make Edit") 
+      {
+        alert("Make Edit selected");
+        tok = "edit";
+      } else 
+      {
+        alert("Run Make selected");
+        tok = "run";
+      }
+      //this.__toggleRightSide(tok);
     },
 
 
