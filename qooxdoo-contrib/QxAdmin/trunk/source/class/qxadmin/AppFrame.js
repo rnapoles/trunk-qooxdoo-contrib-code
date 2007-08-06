@@ -95,7 +95,7 @@ qx.Class.define("qxadmin.AppFrame",
     mainsplit.addRight(right);
 
     // Toolbar
-    this.toolbar = this.__makeToolbar();
+    this.toolbar = this.__makeToolRun();
     this.toolbar.set(
     {
       show                  : "icon",
@@ -103,16 +103,21 @@ qx.Class.define("qxadmin.AppFrame",
     });
     right.add(this.toolbar);
 
+    var tb = this.__makeToolEdit();
+    right.add(tb);
+
     // Run Options
     this.widgets["runoptions"] = this.__makeOptionsPane();
     right.add(this.widgets["runoptions"]);
     this.widgets["runoptions"].setDisplay(false);
 
     // Output Views
-    var buttview = this.__makeOutputViews();
+    var buttview = this.__makeButtRun();
     right.add(buttview);
 
-    this.widgets["treeview.bsb1"].setChecked(true);
+
+    buttview = this.__makeButtEdit();
+    right.add(buttview);
 
     this.__setStateInitialized();
 
@@ -129,6 +134,9 @@ qx.Class.define("qxadmin.AppFrame",
       }
     },
     this);
+
+    // Initial selections
+    this.widgets["treeview.bsb1"].setChecked(true);
 
     //construct
   },
@@ -381,39 +389,40 @@ qx.Class.define("qxadmin.AppFrame",
      * @type member
      * @return {var} TODOC
      */
-    __makeToolbar : function()
+    __makeToolRun : function()
     {
       var toolbar = new qx.ui.toolbar.ToolBar;
       toolbar.setBorder("line-bottom");
       toolbar.setHeight(27);
+      this.widgets["toolrun"] = toolbar;
 
       var mb = new qx.ui.toolbar.Part();
       toolbar.add(mb);
-      this.widgets["toolbar.controlbutts"] = mb;
+      this.widgets["toolrun.controlbutts"] = mb;
 
       // -- run button
       this.runbutton = new qx.ui.toolbar.Button("Run Make", "icon/16/actions/media-playback-start.png");
       mb.add(this.runbutton);
-      this.widgets["toolbar.runbutton"] = this.runbutton;
+      this.widgets["toolrun.runbutton"] = this.runbutton;
       this.__bindCommand(this.runbutton, this._cmdRunFile);
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
 
       // -- view button
       var viewb = new qx.ui.toolbar.Button("View File", "icon/16/actions/zoom.png");
-      this.widgets["toolbar.viewb"] = viewb;
-      mb.add(viewb);
+      this.widgets["toolrun.viewb"] = viewb;
+      //mb.add(viewb);
       viewb.addEventListener("execute", this.__ehViewFile, this);
       viewb.setToolTip(new qx.ui.popup.ToolTip("View file"));
 
       // -- previous navigation
       var openb = new qx.ui.toolbar.Button("Open Page", "icon/16/places/www.png");
       mb.add(openb);
-      this.widgets["toolbar.openb"] = openb;
+      this.widgets["toolrun.openb"] = openb;
       this.__bindCommand(openb, this._cmdOpenPage);
       openb.setToolTip(new qx.ui.popup.ToolTip("Open page in browser"));
 
       return toolbar;
-    },  // __makeToolbar()
+    },  // __makeToolRun()
 
 
 
@@ -423,7 +432,7 @@ qx.Class.define("qxadmin.AppFrame",
      * @type member
      * @return {var} TODOC
      */
-    __makeOutputViews : function()
+    __makeButtRun : function()
     {
       // Main Container
       var buttview = new qx.ui.pageview.tabview.TabView();
@@ -434,12 +443,12 @@ qx.Class.define("qxadmin.AppFrame",
         padding : 10
       });
 
-      this.widgets["outputviews"] = buttview;
-      this.widgets["outputviews.bar"] = buttview.getBar();
+      this.widgets["buttrun"] = buttview;
+      this.widgets["buttrun.bar"] = buttview.getBar();
 
       // First Page
       var bsb1 = new qx.ui.pageview.tabview.Button("Start", "icon/16/actions/system-run.png");
-      this.widgets["outputviews.demopage.button"] = bsb1;
+      this.widgets["buttedit.demopage.button"] = bsb1;
       bsb1.setChecked(true);
       //buttview.getBar().add(bsb1);
 
@@ -450,7 +459,7 @@ qx.Class.define("qxadmin.AppFrame",
       var f1 = new qx.ui.embed.Iframe;
       this.f1 = f1;
       p1.add(f1);
-      this.widgets["outputviews.demopage.page"] = f1;
+      this.widgets["buttedit.demopage.page"] = f1;
 
       f1.set(
       {
@@ -507,7 +516,7 @@ qx.Class.define("qxadmin.AppFrame",
       // Third Page
       // -- Tab Button
       var bsb3 = new qx.ui.pageview.tabview.Button("Source View", "icon/16/apps/graphics-snapshot.png");
-      buttview.getBar().add(bsb3);
+      //buttview.getBar().add(bsb3);
 
       // -- Tab Pane
       var p3 = new qx.ui.pageview.tabview.Page(bsb3);
@@ -519,7 +528,7 @@ qx.Class.define("qxadmin.AppFrame",
       var f3 = new qx.ui.embed.HtmlEmbed("<div class='script'>The sample source will be displayed here.</div>");
       this.f3 = f3;
       p3.add(f3);
-      this.widgets["outputviews.sourcepage.page"] = f3;
+      this.widgets["buttrun.sourcepage.page"] = f3;
 
       f3.set(
       {
@@ -533,7 +542,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       return buttview;
 
-    },  // __makeOutputViews()
+    },  // __makeButtRun()
 
 
     /**
@@ -565,7 +574,7 @@ qx.Class.define("qxadmin.AppFrame",
       buttview.getBar().add(bsb1);
       this.widgets["treeview.bsb1"] = bsb1;
       bsb1.setShow("icon");
-      bsb1.setToolTip(new qx.ui.popup.ToolTip("Full tree view"));
+      bsb1.setToolTip(new qx.ui.popup.ToolTip("Customize make"));
 
       var p1 = new qx.ui.pageview.buttonview.Page(bsb1);
 
@@ -580,7 +589,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       var treeData = 
       {
-        label : "Makefile Stuff",
+        label : "Customize Makefile",
         items : [
         {
           label : "General",
@@ -711,6 +720,44 @@ qx.Class.define("qxadmin.AppFrame",
 
       tree1.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
 
+      // Third Pane
+      var bsb3 = new qx.ui.pageview.buttonview.Button("Info", "resource/image/information18.png");
+      buttview.getBar().add(bsb3);
+      this.widgets["treeview.bsb3"] = bsb2;
+      bsb3.setShow("icon");
+      bsb3.setToolTip(new qx.ui.popup.ToolTip("Run make"));
+
+      var p2 = new qx.ui.pageview.buttonview.Page(bsb3);
+
+      p2.set(
+      {
+        width           : "100%",
+        height          : "100%",
+        backgroundColor : "white"
+      });
+
+      buttview.getPane().add(p2);
+
+      // pane content
+      var treeData = 
+        {
+          label : "Overview",
+          items : [
+          ]
+        };
+
+      var tree1 = this.__createTree(treeData);
+      p2.add(tree1);
+      tree1.set(
+      {
+        width    : "100%",
+        height   : "100%",
+        padding  : 5,
+        overflow : "auto"
+      });
+
+      tree1.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
+
 
       return buttview;
     },
@@ -719,6 +766,7 @@ qx.Class.define("qxadmin.AppFrame",
     __createTree : function (treeData)
     {
       var tree = new qx.ui.tree.Tree();
+      tree.setHideNode(true);
 
       // recursive worker function
       var createTreeR = function (tData)
@@ -729,6 +777,7 @@ qx.Class.define("qxadmin.AppFrame",
         } else 
         {
           var node = new qx.ui.tree.TreeFolder(tData.label);
+          node.setAlwaysShowPlusMinusSymbol(true);
 
           for (var i=0; i<tData.items.length; i++)
           {
@@ -744,6 +793,31 @@ qx.Class.define("qxadmin.AppFrame",
       return tree;
     },
 
+
+    /** Traverse treeData and apply fn at each node
+     */
+    __traverseTreeData : function (treeData, fn)
+    {
+      if (!treeData.items)
+      {
+        fn(treeData,'L');
+        return;
+      } else 
+      {
+        fn(treeData,'N');
+        for (var i=0; i<treeData.items.length; i++)
+        {
+          var item = treeData.items[i];
+          arguments.callee(item, fn);
+        }
+        return;
+      }
+
+      return;
+
+    }, //traverseTreeData
+
+
     /** Select right hand side toolbar and button pane, depending on left hand side
      *  choice
      */
@@ -753,6 +827,7 @@ qx.Class.define("qxadmin.AppFrame",
       {
         this.widgets["toolrun"].setDisplay(false);
         this.widgets["buttrun"].setDisplay(false);
+        this.widgets["runoptions"].setDisplay(false);
         this.widgets["tooledit"].setDisplay(true);
         this.widgets["buttedit"].setDisplay(true);
       } else 
@@ -761,6 +836,7 @@ qx.Class.define("qxadmin.AppFrame",
         this.widgets["buttedit"].setDisplay(false);
         this.widgets["toolrun"].setDisplay(true);
         this.widgets["buttrun"].setDisplay(true);
+        this.widgets["runoptions"].setDisplay(true);
       }
       
     },
@@ -773,15 +849,106 @@ qx.Class.define("qxadmin.AppFrame",
 
       if (lab == "Make Edit") 
       {
-        alert("Make Edit selected");
         tok = "edit";
       } else 
       {
-        alert("Run Make selected");
         tok = "run";
       }
-      //this.__toggleRightSide(tok);
+      this.__toggleRightSide(tok);
     },
+
+
+    __makeToolEdit : function ()
+    {
+      var toolbar = new qx.ui.toolbar.ToolBar;
+      toolbar.setBorder("line-bottom");
+      toolbar.setHeight(27);
+      this.widgets["tooledit"] = toolbar;
+
+      var mb = new qx.ui.toolbar.Part();
+      toolbar.add(mb);
+      this.widgets["tooledit.controlbutts"] = mb;
+
+      // -- run button
+      this.runbutton = new qx.ui.toolbar.Button("Save Makefile", "icon/16/actions/media-playback-start.png");
+      mb.add(this.runbutton);
+      this.widgets["tooledit.runbutton"] = this.runbutton;
+      this.__bindCommand(this.runbutton, this._cmdRunFile);
+      this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
+
+      // -- view button
+      var viewb = new qx.ui.toolbar.Button("View File", "icon/16/actions/zoom.png");
+      this.widgets["tooledit.viewb"] = viewb;
+      //mb.add(viewb);
+      viewb.addEventListener("execute", this.__ehViewFile, this);
+      viewb.setToolTip(new qx.ui.popup.ToolTip("View file"));
+
+      // -- previous navigation
+      var openb = new qx.ui.toolbar.Button("Open Page", "icon/16/places/www.png");
+      //mb.add(openb);
+      this.widgets["tooledit.openb"] = openb;
+      this.__bindCommand(openb, this._cmdOpenPage);
+      openb.setToolTip(new qx.ui.popup.ToolTip("Open page in browser"));
+
+      return toolbar;
+      
+    }, //__makeToolEdit
+
+
+    __makeButtEdit : function ()
+    {
+      // Main Container
+      var buttview = new qx.ui.pageview.tabview.TabView();
+
+      buttview.set(
+      {
+        height  : "1*",
+        padding : 10
+      });
+
+      this.widgets["buttedit"] = buttview;
+      this.widgets["buttedit.bar"] = buttview.getBar();
+
+      // First Page
+      var bsb1 = new qx.ui.pageview.tabview.Button("Customize Make", "icon/16/actions/system-run.png");
+      this.widgets["buttrun.varedit.button"] = bsb1;
+      bsb1.setChecked(true);
+      buttview.getBar().add(bsb1);
+
+      var p1 = new qx.ui.pageview.tabview.Page(bsb1);
+      p1.set({ padding : [ 5 ] });
+      buttview.getPane().add(p1);
+
+      // contents widget
+      var f1 = new qx.ui.embed.HtmlEmbed();
+      p1.add(f1);
+      this.widgets["buttrun.varedit.page"] = f1;
+
+      f1.set(
+      {
+        overflow : "auto",
+        height   : "100%",
+        width    : "100%",
+        border   : "dark-shadow"
+      });
+      f1.setStyleProperty("font-family", '"Consolas", "Courier New", monospace');
+
+      var html = new qx.util.StringBuilder();
+      this.__traverseTreeData(this.tD, function (item, type) 
+      {
+        if (type == 'N')
+        {
+          html.add('<h3>'+item.label+'</h3>');
+        } else 
+        {
+          html.add(item.label+'<br>');
+        }
+      });
+      f1.setHtml(html.get());
+
+      return buttview;
+
+    }, //makeButtEdit
 
 
     __makeOptionsPane : function () 
@@ -809,7 +976,7 @@ qx.Class.define("qxadmin.AppFrame",
       groupBox.add(vert);
 
       var opts = new qx.ui.layout.HorizontalBoxLayout();
-      vert.add(opts);
+      //vert.add(opts);
       opts.set(
       {
         height : "auto",
@@ -851,6 +1018,7 @@ qx.Class.define("qxadmin.AppFrame",
      */
     __handleTreeSelection : function(e)
     {
+      return;
       if (!this.tree.getSelectedElement())
       {  // this is a kludge!
         return;
