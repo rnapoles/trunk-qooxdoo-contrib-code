@@ -648,13 +648,17 @@ qx.Class.define("qxadmin.AppFrame",
         }
         ]
       };
+      var playdata = this.createTree(treeData);
+      this.tD      = playdata;
       //var tree = new qx.ui.tree.Tree("Samples");
       //var tree = new qxadmin.FileSystemService(this.RpcServer);
-      var tree = this.__createTree(treeData);
-      this.tD = treeData;
-      p1.add(tree);
+      /*
       this.tree = tree;
-      this.widgets["treeview.full"] = tree;
+      */
+      var tree = new qx.ui.tree.Tree("Customize Makefile");
+      p1.add(tree);
+      //tree.setHideNode(true);
+      this.widgets["treeview.makvars"] = tree;
       bsb1.setUserData('tree', tree);  // for changeSelected handling
 
       tree.set(
@@ -705,7 +709,7 @@ qx.Class.define("qxadmin.AppFrame",
           ]
         };
 
-      var tree1 = this.__createTree(treeData);
+      var tree1 = this.createTree(treeData);
       p2.add(tree1);
       this.widgets["treeview.runmake"] = tree1;
       bsb2.setUserData('tree', tree1);  // for changeSelected handling
@@ -746,7 +750,7 @@ qx.Class.define("qxadmin.AppFrame",
           ]
         };
 
-      var tree1 = this.__createTree(treeData);
+      var tree1 = this.createTree(treeData);
       p2.add(tree1);
       tree1.set(
       {
@@ -763,7 +767,7 @@ qx.Class.define("qxadmin.AppFrame",
     },
 
 
-    __createTree : function (treeData)
+    createTree : function (treeData)
     {
       var tree = new qx.ui.tree.Tree();
       tree.setHideNode(true);
@@ -796,22 +800,33 @@ qx.Class.define("qxadmin.AppFrame",
 
     /** Traverse treeData and apply fn at each node
      */
-    __traverseTreeData : function (treeData, fn)
+    traverseTreeData : function (treeData, fn)
     {
-      if (!treeData.items)
+      var level = 0;
+      var rc;
+
+      var traverseTD = function (treeData, fn, level)
       {
-        fn(treeData,'L');
-        return;
-      } else 
-      {
-        fn(treeData,'N');
-        for (var i=0; i<treeData.items.length; i++)
+        if (!treeData.items)
         {
-          var item = treeData.items[i];
-          arguments.callee(item, fn);
+          rc = fn(treeData,'L', level);
+          return;
+        } else 
+        {
+          rc = fn(treeData,'N', level);
+          if (rc == 0) // !=0 means prune this subtree
+          {
+            for (var i=0; i<treeData.items.length; i++)
+            {
+              var item = treeData.items[i];
+              arguments.callee(item, fn, level + 1);
+            }
+          }
+          return;
         }
-        return;
-      }
+      };
+
+      traverseTD(treeData, fn, level);
 
       return;
 
@@ -934,7 +949,7 @@ qx.Class.define("qxadmin.AppFrame",
       f1.setStyleProperty("font-family", '"Consolas", "Courier New", monospace');
 
       var html = new qx.util.StringBuilder();
-      this.__traverseTreeData(this.tD, function (item, type) 
+      this.traverseTreeData(this.tD, function (item, type) 
       {
         if (type == 'N')
         {
@@ -1198,194 +1213,83 @@ qx.Class.define("qxadmin.AppFrame",
      * @param e {Event} TODOC
      * @return {void}
      */
-    leftReloadTree : function(e)
+    leftReloadTree : function(tD)
     {
-      this._sampleToTreeNodeMap = {};
-      var _sampleToTreeNodeMap = this._sampleToTreeNodeMap;
+      var treeData = tD || this.__makvars;
+      //var tree     = new qx.ui.tree.Tree("Customize Makefile");
+      var tree     = this.widgets["treeview.makvars"];
 
-      // use tree struct
-      /**
-       * create widget tree from model
-       *
-       * @param widgetR {qx.ui.tree.Tree}    [In/Out]
-       *        widget root under which the widget tree will be built
-       * @param modelR  {qxadmin.Tree} [In]
-       *        model root for the tree from which the widgets representation
-       *        will be built
-       */
-      function buildSubTree(widgetR, modelR)
+      var genRoot  = new qx.ui.tree.TreeFolder("General");
+      tree.add(genRoot);
+      genRoot.add(new qx.ui.tree.TreeFile("QOOXDOO_PATH"));
+
+      var makRoot = new qx.ui.tree.TreeFolder("Makefile Vars");
+      tree.add(makRoot);
+
+      this.createMakTree(makRoot,treeData);
+
+      qx.client.Timer.once(function()
       {
-        var children = modelR.getChildren();
-        var t, tt, desc;
+        qx.ui.core.Widget.flushGlobalQueues();  // create all widgets
+      }, this, 0);
 
-        for (var i=0; i<children.length; i++)
-        {
-          var currNode = children[i];
+      return;
 
-          if (currNode.hasChildren())
-          {
-            t = new qx.ui.tree.TreeFolder(that.polish(currNode.label), "qxadmin/image/package18.gif");
-            t.setUserData("filled", false);
-            t.setUserData("node", currNode);
-            t.setAlwaysShowPlusMinusSymbol(true);
-
-            t.addEventListener("changeOpen", function(e)
-            {
-              if (!this.getUserData("filled"))
-              {
-                buildSubTree(this, this.getUserData("node"));
-                this.setUserData("filled", true);
-              }
-            });
-
-            if (currNode.label == "example")
-            {  // TODO: hard-wired
-              t.setOpen(true);
-            }
-          }
-          else
-          {
-            t = new qx.ui.tree.TreeFile(that.polish(currNode.label), "qxadmin/image/method_public18.gif");
-            var fullName = currNode.pwd().slice(1).join("/") + "/" + currNode.label;
-            _sampleToTreeNodeMap[fullName] = t;
-
-            desc = currNode.desc;
-
-            // force reduced margins
-            desc = desc.replace(/<p>/g, '<p style="margin:4px 0;padding:0">');
-            desc = desc.replace(/<ul>/g, '<ul style="margin:4px 0;padding:0">');
-            desc = desc.replace(/<ol>/g, '<ol style="margin:4px 0;padding:0">');
-
-            if (qx.core.Variant.isSet("qx.client", "mshtml")) {
-              desc = '<div style="width:200px">' + desc + '</div>';
-            } else {
-              desc = '<div style="max-width:200px">' + desc + '</div>';
-            }
-
-            tt = new qx.ui.popup.ToolTip(desc, "icon/32/actions/help-contents.png");
-            tt.getAtom().getLabelObject().setWrap(true);
-            tt.setShowInterval(200);
-            t.setToolTip(tt);
-          }
-
-          // make connections
-          widgetR.add(t);
-          t.setUserData("modelLink", currNode);
-          currNode.widgetLinkFull = t;
-
-          if (that.tests.handler.getFullName(currNode) == that.tests.selected) {
-            selectedElement = currNode;
-          }
-        }
-      }
-
-      function buildSubTreeFlat(widgetR, modelR)
-      {
-        var iter = modelR.getIterator("depth");
-        var currNode;
-
-        while (currNode = iter())
-        {
-          // it's a container
-          if (!(currNode.type && currNode.type == "test"))
-          {
-            if (handler.hasTests(currNode))
-            {
-              var fullName = handler.getFullName(currNode);
-              var t = new qx.ui.tree.TreeFolder(that.polish(fullName), "qxadmin/image/package18.gif");
-              widgetR.add(t);
-              t.setUserData("modelLink", currNode);
-              currNode.widgetLinkFlat = t;
-
-              if (that.tests.handler.getFullName(currNode) == that.tests.selected) {
-                selectedElement = currNode;
-              }
-
-              var children = currNode.getChildren();
-
-              for (var i=0; i<children.length; i++)
-              {
-                if (children[i].type && children[i].type == "test")
-                {
-                  var c = new qx.ui.tree.TreeFile(that.polish(children[i].label), "qxadmin/image/class18.gif");
-                  c.setToolTip(new qx.ui.popup.ToolTip(children[i].desc));
-                  t.add(c);
-                  c.setUserData("modelLink", children[i]);
-                  children[i].widgetLinkFlat = c;
-
-                  if (that.tests.handler.getFullName(children[i]) == that.tests.selected) {
-                    selectedElement = children[i];
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // -- Main --------------------------------
-      var ttree = this.tests.handler.ttree;
-      var handler = this.tests.handler;
-      var that = this;
-
-      /*
-      // Reset Status Pane Elements
-      this.widgets["statuspane.current"].setText("");
-      this.widgets["statuspane.number"].setText("");
-      */
-
-      // Disable Tree View
-      this.widgets["treeview"].setEnabled(false);
-
-      // Handle current Tree Selection and Content
-      var fulltree = this.widgets["treeview.full"];
-      var flattree = this.widgets["treeview.flat"];
-      var trees = [ fulltree, flattree ];
-      var stree = this.widgets["treeview"].getBar().getManager().getSelected();
-
-      for (var i=0; i<trees.length; i++)
-      {
-        trees[i].resetSelected();
-        trees[i].destroyContent();  // clean up before re-build
-        trees[i].setUserData("modelLink", ttree);  // link top level widgets and model
-      }
-
-      // link top level model to widgets
-      ttree.widgetLinkFull = fulltree;
-      ttree.widgetLinkFlat = flattree;
-
-      var selectedElement = null;  // if selection exists will be set by
-
-      // buildSubTree* functions to a model node
-      // Build the widget trees
-      buildSubTree(this.widgets["treeview.full"], ttree);
-
-      // buildSubTreeFlat(this.widgets["treeview.flat"], ttree);
-      // Re-enable and Re-select
-      this.widgets["treeview"].setEnabled(true);
-
-      if (selectedElement)  // try to re-select previously selected element
-      {
-        // select tree element and open if folder
-        if (selectedElement.widgetLinkFull)
-        {
-          this.widgets["treeview.full"].setSelectedElement(selectedElement.widgetLinkFull);
-
-          if (selectedElement.widgetLinkFull instanceof qx.ui.tree.TreeFolder) {
-            selectedElement.widgetLinkFull.open();
-          }
-        }
-
-        if (selectedElement.widgetLinkFlat)
-        {
-          this.widgets["treeview.flat"].setSelectedElement(selectedElement.widgetLinkFlat);
-
-          if (selectedElement.widgetLinkFlat instanceof qx.ui.tree.TreeFolder) {
-            selectedElement.widgetLinkFlat.open();
-          }
-        }
-      }
     },  // leftReloadTree
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param e {Event} TODOC
+     * @return {void}
+     */
+    createMakTree : function(widgetNode, tD)
+    {
+      var treeData = tD || this.__makvars;
+      var parnt    = [widgetNode];
+
+      // callback for the traverseTreeData method
+      // :: at any node of the tree data, do the following:
+      function buildWidgetTree(node, type, level)
+      {
+        var nnode;
+        var olevel = parnt.length - 1;  // length of parent array as depth indicator
+
+        if (node.label.search(/Copyright/i) != -1 ||  // things to skip
+            node.label.search(/INCLUDE/i)   != -1
+           ) 
+        {
+          return -1; //prune these subtrees
+        }
+        if (node.type == 'part')       // parts become folders in the widget tree
+        {
+          nnode = new qx.ui.tree.TreeFolder(node.label);
+          if (olevel >= level) // coming back from a recursion
+          {
+            parnt.pop();
+          }
+          parnt[parnt.length-1].add(nnode);
+          parnt.push(nnode);
+        } else if (node.type == 'section') // skip sections for now
+        {
+        } else if (node.type == 'var')  // vars become leaf nodes
+        {
+          nnode = new qx.ui.tree.TreeFile(node.label);
+          parnt[parnt.length-1].add(nnode);
+        }
+
+        return 0;
+
+      }; // buildWidgetTree
+
+      this.traverseTreeData(treeData, buildWidgetTree); 
+              // return value will be attached to widgetNode
+
+      return;
+
+    },  // createMakTree
 
 
     /**
@@ -1452,7 +1356,7 @@ qx.Class.define("qxadmin.AppFrame",
       if (treeNode)
       {
         treeNode.setSelected(true);
-        //this.widgets["treeview.full"].setSelectedElement(treeNode);
+        //this.widgets["treeview.makvars"].setSelectedElement(treeNode);
         url = 'html/' + value;
         if (this._useProfile) {
           url += "?qxvariant:qx.aspects:on&qxsetting:qx.enableAspect:true"
@@ -1574,7 +1478,7 @@ qx.Class.define("qxadmin.AppFrame",
         this.setPlayAll(true);  // turn on global flag
         // select first example
         var first = this._sampleToTreeNodeMap['example/Atom_1.html'];
-        this.widgets["treeview.full"].setSelectedElement(first);
+        this.widgets["treeview.makvars"].setSelectedElement(first);
         // run sample
         this.widgets["toolbar.runbutton"].execute();
       } else                  // end playing all
@@ -1611,7 +1515,7 @@ qx.Class.define("qxadmin.AppFrame",
      * @param url {var} TODOC
      * @return {String} TODOC
      */
-    __getPageSource : function(url)
+    __loadPage : function(url, fn, obj)
     {
       var req = new qx.io.remote.Request(url);
 
@@ -1626,9 +1530,7 @@ qx.Class.define("qxadmin.AppFrame",
         var content = evt.getData().getContent();
 
         if (content) {
-          //this.widgets["outputviews.sourcepage.page"].setValue(content);
-          this.widgets["outputviews.sourcepage.page"].setHtml(this.__beautySource(content));
-          this.__sourceCodeLoaded = 1;
+          fn.call(obj, content);
         }
       },
       this);
@@ -1651,12 +1553,17 @@ qx.Class.define("qxadmin.AppFrame",
      */
     dataLoader : function()
     {
-      this.tests.handler = new qxadmin.TreeDataHandler({});
+      var url = "script/makvars.js";
 
-      var start = new Date();
-      //this.leftReloadTree();
-      var end = new Date();
-      this.debug("Time to build/display tree: " + (end.getTime() - start.getTime()) + "ms");
+      this.__loadPage(url, function (cont) 
+      {
+        this.__makvars = eval("("+cont+")");
+        var start = new Date();
+        this.leftReloadTree(this.__makvars);
+        var end = new Date();
+        this.debug("Time to build/display tree: " + (end.getTime() - start.getTime()) + "ms");
+      }, this);
+
 
       // read initial state
       var state = this._history.getState();
@@ -1680,7 +1587,7 @@ qx.Class.define("qxadmin.AppFrame",
 
         if (otherSamp)
         {
-          this.widgets["treeview.full"].setSelectedElement(otherSamp);
+          this.widgets["treeview.makvars"].setSelectedElement(otherSamp);
           this.runSample();
         }
       }
@@ -1704,7 +1611,7 @@ qx.Class.define("qxadmin.AppFrame",
 
         if (otherSamp)
         {
-          this.widgets["treeview.full"].setSelectedElement(otherSamp);
+          this.widgets["treeview.makvars"].setSelectedElement(otherSamp);
           this.runSample();
         }
       }
