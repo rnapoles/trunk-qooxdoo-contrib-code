@@ -657,7 +657,7 @@ qx.Class.define("qxadmin.AppFrame",
       */
       var tree = new qx.ui.tree.Tree("Customize Makefile");
       p1.add(tree);
-      //tree.setHideNode(true);
+      tree.setHideNode(true);
       this.widgets["treeview.makvars"] = tree;
       bsb1.setUserData('tree', tree);  // for changeSelected handling
 
@@ -669,7 +669,7 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      tree.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
+      tree.getManager().addEventListener("changeSelection", this.__handleEditTreeSelection, this);
 
       // Second Pane
       var bsb2 = new qx.ui.pageview.buttonview.Button("Run Make", "icon/16/categories/applications-development.png");
@@ -926,7 +926,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       // First Page
       var bsb1 = new qx.ui.pageview.tabview.Button("Customize Make", "icon/16/actions/system-run.png");
-      this.widgets["buttrun.varedit.button"] = bsb1;
+      this.widgets["buttedit.varedit.button"] = bsb1;
       bsb1.setChecked(true);
       buttview.getBar().add(bsb1);
 
@@ -935,9 +935,11 @@ qx.Class.define("qxadmin.AppFrame",
       buttview.getPane().add(p1);
 
       // contents widget
-      var f1 = new qx.ui.embed.HtmlEmbed();
+      //var f1 = new qx.ui.embed.HtmlEmbed();
+      var f1 = new qx.ui.layout.GridLayout();
       p1.add(f1);
-      this.widgets["buttrun.varedit.page"] = f1;
+      this.widgets["buttedit.varedit.page"] = f1;
+      this.widgets["buttedit.varedit.page.items"] = {}; // item widget registry
 
       f1.set(
       {
@@ -948,18 +950,26 @@ qx.Class.define("qxadmin.AppFrame",
       });
       f1.setStyleProperty("font-family", '"Consolas", "Courier New", monospace');
 
-      var html = new qx.util.StringBuilder();
-      this.traverseTreeData(this.tD, function (item, type) 
-      {
-        if (type == 'N')
-        {
-          html.add('<h3>'+item.label+'</h3>');
-        } else 
-        {
-          html.add(item.label+'<br>');
-        }
-      });
-      f1.setHtml(html.get());
+      /*
+      //++tmp
+      f1.setColumnCount(2);
+      //f1.setRowCount(2);
+      f1.addRow();
+      f1.add(new qx.ui.basic.Label("Und 1.1"),0,0);
+      f1.add(new qx.ui.basic.Label("Und 1.2"),0,1);
+      f1.addRow();
+      f1.add(new qx.ui.basic.Label("Und 2.1"),1,0);
+      f1.add(new qx.ui.basic.Label("Und 2.2"),1,1);
+      for (var i=0, N=f1.getColumnCount(); i<N; i++) {                                   
+        f1.setColumnWidth(i, 54);                                                   
+      }                                                                                   
+                                                                                          
+      for (var i=0, N=f1.getRowCount(); i<N; i++) {                                      
+        f1.setRowHeight(i, 18);                                                     
+      }                                                                                   
+
+      //--tmp
+      */
 
       return buttview;
 
@@ -1067,6 +1077,25 @@ qx.Class.define("qxadmin.AppFrame",
       }
 
     }, //handleTreeSelection
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param e {Event} TODOC
+     * @return {void}
+     */
+    __handleEditTreeSelection : function(e)
+    {
+      var id;
+      if (id = e.getData()[0].getUserData('id'))
+      {
+        var eitem = this.widgets["buttedit.varedit.page.items"][id];
+        eitem.scrollIntoView(true);
+      }
+
+    }, //handleEditTreeSelection
 
 
     __ehViewFile : function (e) 
@@ -1219,14 +1248,12 @@ qx.Class.define("qxadmin.AppFrame",
       //var tree     = new qx.ui.tree.Tree("Customize Makefile");
       var tree     = this.widgets["treeview.makvars"];
 
-      var genRoot  = new qx.ui.tree.TreeFolder("General");
-      tree.add(genRoot);
-      genRoot.add(new qx.ui.tree.TreeFile("QOOXDOO_PATH"));
-
       var makRoot = new qx.ui.tree.TreeFolder("Makefile Vars");
       tree.add(makRoot);
 
       this.createMakTree(makRoot,treeData);
+
+      this.createMakList1(this.widgets["buttedit.varedit.page"],treeData);
 
       qx.client.Timer.once(function()
       {
@@ -1236,6 +1263,109 @@ qx.Class.define("qxadmin.AppFrame",
       return;
 
     },  // leftReloadTree
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param e {Event} TODOC
+     * @return {void}
+     */
+    createMakList : function(htmlContainer, tD)
+    {
+      var treeData = tD;
+      var html = new qx.util.StringBuilder();
+
+      this.traverseTreeData(treeData, function (item, type, level)
+      {
+        if (item.label.search(/Copyright/i) != -1 ||  // things to skip
+            item.label.search(/INCLUDE/i)   != -1
+           ) 
+        {
+          return -1; //prune these subtrees
+        }
+        if (item.type == 'part')
+        {
+          html.add('<h3>'+item.label+'</h3>');
+        } else if (item.type == 'section')
+        {
+          
+        } else if (item.type == 'var')
+        {
+          html.add(item.label+'<br>');
+        }
+        return 0;
+      });
+
+      htmlContainer.setHtml(html.get());
+
+      return;
+
+    }, //createMakList
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param e {Event} TODOC
+     * @return {void}
+     */
+    createMakList1 : function(canvasContainer, tD)
+    {
+      var treeData = tD;
+      var container = canvasContainer;
+      var rowIndex = 0;
+      var that     = this;
+
+      container.setColumnCount(2);
+
+      this.traverseTreeData(treeData, function (item, type, level)
+      {
+        if (item.label.search(/Copyright/i) != -1 ||  // things to skip
+            item.label.search(/INCLUDE/i)   != -1
+           ) 
+        {
+          return -1; //prune these subtrees
+        }
+        if (item.type == 'part')
+        {
+          container.addRow();
+          rowIndex = container.getRowCount() -1;
+          var l = new qx.ui.basic.Label(item.label);
+          that.widgets["buttedit.varedit.page.items"][item.id]=l; // register widget
+          //l.setStyleProperty("font-weight","bold");
+          //l.setTextColor("red");
+          l.setFont("bold");
+          l.setBackgroundColor("#E1EEFF");
+          container.add(l,0,rowIndex);
+        } else if (item.type == 'section')
+        {
+          
+        } else if (item.type == 'var')
+        {
+          container.addRow();
+          rowIndex = container.getRowCount() -1;
+          var l = new qx.ui.basic.Label(item.label);
+          container.add(l,0,rowIndex);
+          that.widgets["buttedit.varedit.page.items"][item.id]=l; // register widget
+          container.add(new qx.ui.form.TextField(item.default),1,rowIndex);
+        }
+        return 0;
+      });
+
+      for (var i=0, N=container.getColumnCount(); i<N; i++) {
+        container.setColumnWidth(i, 350);
+      }
+
+      for (var i=0, N=container.getRowCount(); i<N; i++) {
+        container.setRowHeight(i, 24);
+      }
+
+      return;
+
+    }, //createMakList
 
 
     /**
@@ -1278,6 +1408,9 @@ qx.Class.define("qxadmin.AppFrame",
         {
           nnode = new qx.ui.tree.TreeFile(node.label);
           parnt[parnt.length-1].add(nnode);
+        }
+        if (nnode) {
+          nnode.setUserData("id", node.id);  // for click event handling
         }
 
         return 0;
