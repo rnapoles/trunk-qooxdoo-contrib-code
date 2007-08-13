@@ -1350,7 +1350,7 @@ qx.Class.define("qxadmin.AppFrame",
           var l = new qx.ui.basic.Label(item.label);
           container.add(l,0,rowIndex);
           that.widgets["buttedit.varedit.page.items"][item.id]=l; // register widget
-          container.add(new qx.ui.form.TextField(item.default),1,rowIndex);
+          container.add(new qx.ui.form.TextField(item.defaultt),1,rowIndex);
         }
         return 0;
       });
@@ -1733,6 +1733,39 @@ qx.Class.define("qxadmin.AppFrame",
         aAncestors.unshift(parnt);
         return arguments.callee(parnt, aAncestors);
       }
+    },
+
+    blah : function () 
+    {
+      var url = "http://localhost:8000/cgi-bin/nph-qxadmin_cgi.py"; // config url, port
+      var req = new qx.io.remote.Request(url);
+      var dat = "action=save&makvars={'a':1,'b':2}";
+
+      req.setTimeout(5000);
+      req.setProhibitCaching(true);
+      req.setMethod(qx.net.Http.METHOD_POST);
+      req.setData(dat);
+      //req.setCrossDomain(true);
+
+      req.addEventListener("completed", function(evt)
+      {
+        var loadEnd = new Date();
+        this.debug("Time to load page source from server: " + (loadEnd.getTime() - loadStart.getTime()) + "ms");
+
+        var content = evt.getData().getContent();
+
+        if (content) {
+          alert(content);
+        }
+      },
+      this);
+
+      req.addEventListener("failed", function(evt) {
+        this.error("Failed to post to URL: " + url);
+      }, this);
+
+      var loadStart = new Date();
+      req.send();
     }
 
   },

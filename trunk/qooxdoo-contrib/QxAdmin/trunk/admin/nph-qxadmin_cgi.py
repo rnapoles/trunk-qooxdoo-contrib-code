@@ -75,7 +75,7 @@ def dispatch_action(form):
     else:
         print "Content-type: text/plain"
         print
-        print "Thank you for asking"
+        print 'qx.io.remote.ScriptTransport._requestFinished(%s, "Thank you for asking");' % form["_ScriptTransport_id"].value
 
 def emit_http_headers():
     # since we're nph, provide the minimal HTTP headers here
