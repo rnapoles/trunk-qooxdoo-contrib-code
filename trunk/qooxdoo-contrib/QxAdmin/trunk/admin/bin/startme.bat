@@ -1,5 +1,6 @@
   @echo off
   set rc=0
+  set pybin=python
 :: cd to Makefile dir
   echo. Changing directory
   for /f %%i in ('cd') do set opwd=%%i
@@ -10,14 +11,23 @@
     goto:END
   )
 :: start mini web server
-  python -V >nul 2>&1
-  if not errorlevel 0 (
-    echo. Python not in your pathi - aborting ...
+  %pybin% -V >nul 2>&1
+  if not %errorlevel%==0 (
+    for /r c:\ /d %%F in (*cygwin) do (
+      if exist "%%F\bin\python.exe" (
+        echo. %%F
+        set pybin=%%F\bin\python.exe
+        echo. %pybin%
+        goto:GotPython
+      ) 
+    )
+    echo. Python not in your path - aborting ...
     set rc=2
     goto:END
   )
+  :GotPython
   echo. Starting mini web server
-  start "Use Ctrl-Break to terminate" python admin/bin/cgiserver.py
+  start "Use Ctrl-Break to terminate" %pybin% admin/bin/cgiserver.py
 :: load admin url in browser
   echo. Launching admin url in browser
   start http://localhost:8000/admin/
