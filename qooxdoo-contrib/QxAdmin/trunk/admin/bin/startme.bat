@@ -14,5 +14,6 @@ start python admin/bin/cgiserver.py
 :: load admin url in browser
 echo. Launching admin url in browser
 start http://localhost:8000/admin/
+:: back to initial dir
 cd %opwd%
 
