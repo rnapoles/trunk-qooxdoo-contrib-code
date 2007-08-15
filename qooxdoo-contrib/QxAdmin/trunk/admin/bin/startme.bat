@@ -32,7 +32,7 @@
     )
   )
   :: no python - giving up
-  echo. Could not find Python in your environment - aborting ...
+  echo. Could not find python in your environment - aborting ...
   set rc=2
   goto:END
 
@@ -46,6 +46,7 @@
 :: clean-up
   :END
   cd %opwd%
+  endlocal
   exit /b %rc%
 
 :_SearchCygwin
