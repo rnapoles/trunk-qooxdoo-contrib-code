@@ -21,7 +21,8 @@
   echo. No python in your path; trying to locate python within cygwin ...
   echo. ... this may take some moments.
   rem cmd /c exit /b 19
-  for /f %%L in (admin\bin\drives.txt) do (
+  rem for /f %%L in (admin\bin\drives.txt) do (
+  for %%L in (c: d: e:) do (
     call :_SearchCygwin "%%L"
     set SearchCygwinFound >nul 2>&1
     if !errorlevel!==0 (
