@@ -47,6 +47,7 @@
   :END
   cd %opwd%
   endlocal
+  pause
   exit /b %rc%
 
 :_SearchCygwin
