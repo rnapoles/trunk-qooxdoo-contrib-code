@@ -5,8 +5,7 @@
   set pybin=python
 :: cd to Makefile dir
   echo. Changing directory
-  for /f %%i in ('cd') do set opwd=%%i
-  cd ..\..
+  pushd ..\..
   if not exist "Makefile" (
     echo. Looks like the wrong directory _no Makefile_ - aborting ...
     set rc=1
@@ -42,7 +41,7 @@
   ) else (
     start "Use Ctrl-Break to terminate" /b %pybin% admin/bin/cgiserver.py >nul 2>&1
   )
-  echo. Wait a few seconds for the web server
+  echo. Waiting a few seconds for the web server
   call :_sleepDot 3
   :: TODO check success
 :: load admin url in browser
@@ -50,7 +49,7 @@
   start http://localhost:8000/admin/
 :: clean-up
   :END
-  cd %opwd%
+  popd
   endlocal
   call :_shutdown
   exit /b %rc%
