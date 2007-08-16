@@ -20,7 +20,7 @@
   :: try to locate python within cygwin
   echo. No python in your path; trying to locate python within cygwin ...
   echo. ... this may take some moments
-  call :_searchPython
+  call :_searchCygwin
   set SearchCygwinFound >nul 2>&1
   if !errorlevel!==0 (
     echo.
@@ -35,6 +35,7 @@
   goto:END
 
   :GotPython
+  rem goto:END
   echo. Starting mini web server
   if %DEBUG%==1 (
     start "Use Ctrl-Break to terminate" %pybin% admin/bin/cgiserver.py
@@ -53,18 +54,6 @@
   endlocal
   call :_shutdown
   exit /b %rc%
-
-:_SearchCygwin
-  setlocal
-  rem echo. IN SUBROUTINE: %1
-  for /r %1\ /d %%G in (*cygwin) do (
-    call :_dot "."
-    if exist "%%G\bin\python.exe" (
-      set myfound=%%G
-    ) 
-  )
-  endlocal & set _SearchCygwinFound=%myfound%
-  goto:EOF
 
 :_dot
   setlocal
@@ -105,15 +94,35 @@
   endlocal
   goto:EOF
 
-:_searchPython
+:_SearchDir
+  rem Searches directories from %1 ending in %2 and returns the path found, but
+  rem only if a subdir of %3 exists (as a further criterion)
   setlocal
+  set root=%1
+  set dir=%2
+  set subdir=%3
+  rem echo. IN SUBROUTINE: %1
+  for /r %root%\ /d %%G in (*%dir%) do (
+    call :_dot "."
+    if exist "%%G\%subdir%" (
+      set myfound=%%G
+    ) 
+  )
+  endlocal & set _SearchDirFound=%myfound%
+  goto:EOF
+
+:_searchCygwin
+  rem Trying to locate a cygwin installation on the machine, using python.exe
+  rem as an criterion
+  setlocal
+  set dir=cygwin
+  set test=bin\python.exe
   call :_dot " ."
   :: try likely paths
-  :: HOMEDRIVE\cygwin ProgramFiles\cygwin SystemDrive\cygwin
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive%) do (
     call :_dot "."
-    if exist "%%L\cygwin\bin\python.exe" (
-      set myfound="%%L\cygwin"
+    if exist "%%L\%dir%\%test%" (
+      set myfound="%%L\%dir%"
       goto:f1End
     )
   )
@@ -122,11 +131,11 @@
   rem for /f %%L in (admin\bin\drives.txt) do (
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive% c: d: e:) do (
     call :_dot "."
-    call :_SearchCygwin "%%L"
-    set _SearchCygwinFound >nul 2>&1
+    call :_SearchDir "%%L" "%dir%" "%test%"
+    set _SearchDirFound >nul 2>&1
     if !errorlevel!==0 (
-      set myfound="%_SearchCygwinFound%"
-      set _SearchCygwinFound=
+      set myfound="%_SearchDirFound%"
+      set _SearchDirFound=
       goto:f1End
     )
   )
