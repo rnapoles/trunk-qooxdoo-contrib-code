@@ -114,10 +114,11 @@
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive%) do (
     call :_dot "."
     if exist "%%L\cygwin\bin\python.exe" (
-      call :_setCygwinFound "%%L\cygwin"
+      set myfound="%%L\cygwin"
       goto:f1End
     )
   )
+  goto:f1End
   :: do an exhaustive search of some paths
   rem for /f %%L in (admin\bin\drives.txt) do (
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive% c: d: e:) do (
@@ -125,18 +126,13 @@
     call :_SearchCygwin "%%L"
     set _SearchCygwinFound >nul 2>&1
     if !errorlevel!==0 (
-      call :_setCygwinFound "%_SearchCygwinFound%"
+      set myfound="%_SearchCygwinFound%"
       set _SearchCygwinFound=
       goto:f1End
     )
   )
   :f1End
-  endlocal
-  goto:EOF
-
-:_setCygwinFound
-  setlocal
-  endlocal & set SearchCygwinFound=%1
+  endlocal & set SearchCygwinFound=%myfound%
   goto:EOF
 
 :EOF
