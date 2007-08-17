@@ -2,7 +2,36 @@
   setlocal ENABLEDELAYEDEXPANSION
   set DEBUG=0
   set rc=0
+  set adminUrl=http://localhost:8000/admin/
   set pybin=python
+:: find cygwin (needed for make etc.)
+  echo. I try to find your cygwin installation (needed for make etc.)
+  echo. ... this may take some moments
+  call :_searchCygwin
+  set CygwinPath >nul 2>&1
+  if not !errorlevel!==0 (
+    :: no cygwin found
+    echo.
+    echo. I cannot find a cygwin installation; cygwin is necessary for the build process.
+    echo. Can you provide the path to your cygwin installation?
+    call :_readAndCheckCygwin
+    set CygwinPath >nul 2>&1
+    if not !errorlevel!==0 (
+      echo. We may be able to start the admin interface, but without cygwin you will
+      echo. not be able run the build commands; shall I continue?
+      call :_yesNo
+      if !YesNo!==0 (
+        echo. Ok, aborting ...
+        goto:END
+      ) else (
+        echo. Ok, I'll do my very best ...
+      )
+    ) else (
+      echo. Found cygwin as !CygwinPath!, containing bash
+    )
+  ) else (
+    echo. Found cygwin as !CygwinPath!, containing bash
+  )
 :: cd to Makefile dir
   echo. Changing directory
   pushd ..\..
@@ -11,21 +40,18 @@
     set rc=1
     goto:END
   )
-:: start mini web server
-  :: this needs python
+:: find python
+  :: in cygwin
+  set CygwinPath >nul 2>&1
+  if !errorlevel!==0 (
+    if exist !CygwinPath!\bin\python.exe (
+      set pybin=!CygwinPath!\bin\python.exe
+      goto:GotPython
+    )
+  )
+  :: in path
   %pybin% -V >nul 2>&1
   if %errorlevel%==0 (
-    goto:GotPython
-  )
-  :: try to locate python within cygwin
-  echo. No python in your path; trying to locate python within cygwin ...
-  echo. ... this may take some moments
-  call :_searchCygwin
-  set SearchCygwinFound >nul 2>&1
-  if !errorlevel!==0 (
-    echo.
-    echo. Found cygwin as !SearchCygwinFound!, containing python
-    set pybin=!SearchCygwinFound!\bin\python.exe
     goto:GotPython
   )
   :: no python - giving up
@@ -34,8 +60,8 @@
   set rc=2
   goto:END
 
+:: start mini web server
   :GotPython
-  rem goto:END
   echo. Starting mini web server
   if %DEBUG%==1 (
     start "Use Ctrl-Break to terminate" %pybin% admin/bin/cgiserver.py
@@ -47,7 +73,7 @@
   :: TODO check success
 :: load admin url in browser
   echo. Launching admin url in browser
-  start http://localhost:8000/admin/
+  start %adminUrl%
 :: clean-up
   :END
   popd
@@ -89,7 +115,7 @@
   rem tasklist /fi "imagename eq python.exe"
   rem TODO: if you call this script on an existing shell, and you dont use
   ::  use ctrl-break, the python process will continue to run
-  echo. Press Ctrl-Break^<RET^> to terminate the application ...
+  echo. Press Ctrl-Break^<RET^> to terminate the web server and this script ...
   pause >nul
   endlocal
   goto:EOF
@@ -112,11 +138,11 @@
   goto:EOF
 
 :_searchCygwin
-  rem Trying to locate a cygwin installation on the machine, using python.exe
+  rem Trying to locate a cygwin installation on the machine, using bash.exe
   rem as an criterion
   setlocal
   set dir=cygwin
-  set test=bin\python.exe
+  set test=bin\bash.exe
   call :_dot " ."
   :: try likely paths
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive%) do (
@@ -140,7 +166,31 @@
     )
   )
   :f1End
-  endlocal & set SearchCygwinFound=%myfound%
+  echo.
+  endlocal & set CygwinPath=%myfound%
+  goto:EOF
+
+:_readAndCheckCygwin
+  setlocal
+  set/p cpath=Enter path to cygwin: 
+  if exist %cpath%\bin\bash.exe (
+    set myfound=%cpath%
+  ) else (
+    echo. Sorry, but this doesn't look like a proper cygwin installation
+  )
+  endlocal & set CygwinPath=!myfound!
+  goto:EOF
+
+:_yesNo
+  setlocal
+  set/p answ=(Please enter [y]/n:) 
+  if %answ%=="n" set myfound=0
+  if %answ%=="N" (
+    set myfound=0
+  ) else (
+    set myfound=1
+  )
+  endlocal & set YesNo=%myfound%
   goto:EOF
 
 :EOF
