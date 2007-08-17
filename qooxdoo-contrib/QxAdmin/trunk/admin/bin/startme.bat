@@ -54,6 +54,14 @@
   if %errorlevel%==0 (
     goto:GotPython
   )
+  :: in assoc
+  call :_errReset
+  assoc .py >nul
+  if %errorlevel%==0 (
+    :: start knows about .py
+    set pybin=""
+    goto:GotPython
+  )
   :: no python - giving up
   echo.
   echo. Could not find python in your environment - aborting ...
@@ -62,11 +70,16 @@
 
 :: start mini web server
   :GotPython
+  if %pybin%=="" (
+    set pcmd=admin/bin/cgiserver.py
+  ) else (
+    set pcmd=%pybin% admin/bin/cgiserver.py
+  )
   echo. Starting mini web server
   if %DEBUG%==1 (
-    start "Use Ctrl-Break to terminate" %pybin% admin/bin/cgiserver.py
+    start "Use Ctrl-Break to terminate" %pcmd%
   ) else (
-    start "Use Ctrl-Break to terminate" /b %pybin% admin/bin/cgiserver.py >nul 2>&1
+    start "Use Ctrl-Break to terminate" /b %pcmd% >nul 2>&1
   )
   echo. Waiting a few seconds for the web server
   call :_sleepDot 3
@@ -115,7 +128,7 @@
   rem tasklist /fi "imagename eq python.exe"
   rem TODO: if you call this script on an existing shell, and you dont use
   ::  use ctrl-break, the python process will continue to run
-  echo. Press Ctrl-Break^<RET^> to terminate the web server and this script ...
+  echo. Press Ctrl-Break^<RET^> to terminate this script ...
   pause >nul
   endlocal
   goto:EOF
@@ -184,8 +197,8 @@
 :_yesNo
   setlocal
   set/p answ=(Please enter [y]/n:) 
-  if %answ%=="n" set myfound=0
-  if %answ%=="N" (
+  if "%answ%"=="n" set myfound=0
+  if "%answ%"=="N" (
     set myfound=0
   ) else (
     set myfound=1
