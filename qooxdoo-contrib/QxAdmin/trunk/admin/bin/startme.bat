@@ -245,6 +245,8 @@
   )
   if !useWait!==1 (
     call :_sleepDot %WebSvrWait%
+    :: since we do not really test, assume it is running
+    set myfound=1
   ) else (
     :: do proper testing with telnet
     if exist !CygwinPath!\bin\telnet.exe (
