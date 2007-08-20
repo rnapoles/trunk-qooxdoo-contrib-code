@@ -91,6 +91,7 @@
 
 :: start mini web server
   :GotPython
+  goto:CheckWeb
   if %pybin%=="" (
     set pcmd=admin/bin/cgiserver.py
   ) else (
@@ -103,6 +104,7 @@
     start "Use Ctrl-Break to terminate" /b %pcmd% >nul 2>&1
   )
   echo. Waiting a few seconds for the web server
+  :CheckWeb
   call :_checkWebServer
   if not !CheckWebServer!==1 (
     echo. Problems starting web server; aborting ...
@@ -233,41 +235,83 @@
 
 :_checkWebServer
   setlocal
+  :: meth=0 no testing, just wait and return success
+  :: meth=1 use telnet for testing
+  :: meth=2 use wget for testing
   set useWait=0
   set myfound=0
+
+  :: find a way to check the web server
   set CygwinPath >nul 2>&1
   if not !errorlevel!==0 (
-    set useWait=1
+    :: no cygwin
+    set meth=0
   ) else (
-    if not exist !CygwinPath!\bin\telnet.exe (
-      set useWait=1
+    if exist !CygwinPath!\bin\wget.* (
+      set meth=2
+    ) else if exist !CygwinPath!\bin\telnet.exe (
+      set meth=1
+    ) else (
+      set meth=0
     )
   )
-  if !useWait!==1 (
+  :: apply appropriate method
+  if !meth!==0 (
+    :: just sleep
     call :_sleepDot %WebSvrWait%
-    :: since we do not really test, assume it is running
+    :: since we do not really test, let's hope it is running
     set myfound=1
   ) else (
-    :: do proper testing with telnet
-    if exist !CygwinPath!\bin\telnet.exe (
-      for /l %%H in (1,1,%WebSvrWait%) do (
-        echo "GET /" | !CygwinPath!\bin\telnet.exe localhost 8000 >%tmpFile% 2>&1
-        call :_errReset
-        find /i "Connection refused" %tmpFile% >nul
-        if not !errorlevel!==0 (
-          :: there is a web connection
-          set myfound=1
-          goto:_webSvrFound
-        ) else (
-          call :_dot "."
-          call :_sleep 1
-        )
+    :: do proper testing
+    for /l %%H in (1,1,%WebSvrWait%) do (
+      call :_testWeb %meth%
+      if !TestWeb!==0 (
+        :: there is a web connection
+        set myfound=1
+        goto:_webSvrFound
+      ) else (
+        call :_dot "."
+        call :_sleep 1
       )
     )
   )
+
   :_webSvrFound
   echo.
   endlocal & set CheckWebServer=%myfound%
+  goto:EOF
+
+:_testWeb
+  setlocal
+  set meth=%1
+  if !meth!==1 (
+  ::telnet
+    rem echo. Using TELNET
+    echo "GET /" | !CygwinPath!\bin\telnet.exe localhost 8000 >%tmpFile% 2>&1
+    call :_errReset
+    find /i "Connection refused" %tmpFile% >nul
+    if not !errorlevel!==0 (
+      :: connection
+      set myfound=0
+    ) else (
+      set myfound=1
+    )
+  ) else if !meth!==2 (
+  :: wget
+    rem echo. Using WGET
+    call :_errReset
+    !CygwinPath!\bin\wget --spider --quiet %adminUrl%
+    if !errorlevel!==0 (
+      :: connection
+      set myfound=0
+    ) else (
+      set myfound=1
+    )
+  ) else (
+    echo. Internal Error:_testWeb:unknown method !meth!
+    set myfound=-1
+  )
+  endlocal & set TestWeb=%myfound%
   goto:EOF
 
 :EOF
