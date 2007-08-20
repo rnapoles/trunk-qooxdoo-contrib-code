@@ -16,12 +16,15 @@
 ::   * Thomas Herchenroeder (thron7)
 ::
 :: ********************************************************************* */
+:: Config Section
   @echo off
   setlocal ENABLEDELAYEDEXPANSION
   set DEBUG=0
+  set WebSvrWait=5
   set rc=0
   set adminUrl=http://localhost:8000/admin/
   set pybin=python
+  set tmpFile="%TEMP%.\qxtmp.txt"
 :: find cygwin (needed for make etc.)
   echo. I try to find your cygwin installation (needed for make etc.)
   echo. ... this may take some moments
@@ -100,8 +103,12 @@
     start "Use Ctrl-Break to terminate" /b %pcmd% >nul 2>&1
   )
   echo. Waiting a few seconds for the web server
-  call :_sleepDot 3
-  :: TODO check success
+  call :_checkWebServer
+  if not !CheckWebServer!==1 (
+    echo. Problems starting web server; aborting ...
+    echo. Try invoking "python admin\bin\cgiserver.py"
+    goto:END
+  )
 :: load admin url in browser
   echo. Launching admin url in browser
   start %adminUrl%
@@ -222,6 +229,43 @@
     set myfound=1
   )
   endlocal & set YesNo=%myfound%
+  goto:EOF
+
+:_checkWebServer
+  setlocal
+  set useWait=0
+  set myfound=0
+  set CygwinPath >nul 2>&1
+  if not !errorlevel!==0 (
+    set useWait=1
+  ) else (
+    if not exist !CygwinPath!\bin\telnet.exe (
+      set useWait=1
+    )
+  )
+  if !useWait!==1 (
+    call :_sleepDot %WebSvrWait%
+  ) else (
+    :: do proper testing with telnet
+    if exist !CygwinPath!\bin\telnet.exe (
+      for /l %%H in (1,1,%WebSvrWait%) do (
+        echo "GET /" | !CygwinPath!\bin\telnet.exe localhost 8000 >%tmpFile% 2>&1
+        call :_errReset
+        find /i "Connection refused" %tmpFile% >nul
+        if not !errorlevel!==0 (
+          :: there is a web connection
+          set myfound=1
+          goto:_webSvrFound
+        ) else (
+          call :_dot "."
+          call :_sleep 1
+        )
+      )
+    )
+  )
+  :_webSvrFound
+  echo.
+  endlocal & set CheckWebServer=%myfound%
   goto:EOF
 
 :EOF
