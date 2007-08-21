@@ -303,7 +303,6 @@
     rem echo. Using WGET
     call :_errReset
     :: the file extension differs (between .exe and .xxx)
-    rem !CygwinPath!\bin\wget.xxx --spider --quiet %adminUrl%
     !CygwinPath!\bin\!wgetBin! --spider --quiet %adminUrl%
     if !errorlevel!==0 (
       :: connection
