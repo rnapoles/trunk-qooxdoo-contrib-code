@@ -199,8 +199,14 @@
     set myfound=!CygwinPath!
     goto:f1End
   ) else (
-    :: prompt for confirmation before searching?
-    echo. Ok, I'll continue searching ...
+    :: prompt for confirmation before searching
+    echo. Shall I do an exhaustive search for cygwin?
+    call :_yesNo
+    if !YesNo!==0 (
+      goto:f1End
+    ) else (
+      echo. Ok, I'll continue searching ...
+    )
   )
 
   :: do an exhaustive search of some paths
@@ -222,20 +228,21 @@
 
 :_readAndCheckCygwin
   setlocal
-  set/p cpath=Enter path to cygwin: 
+  set/p cpath=Enter path to cygwin (quote paths with blanks): 
   if exist %cpath%\bin\bash.exe (
     set myfound=%cpath%
   ) else (
     echo. Sorry, but this doesn't look like a proper cygwin installation
   )
-  endlocal & set CygwinPath=!myfound!
+  endlocal & set CygwinPath=%myfound%
   goto:EOF
 
 :_yesNo
   setlocal
   set/p answ=(Please enter [y]/n:) 
-  if "%answ%"=="n" set myfound=0
-  if "%answ%"=="N" (
+  if "%answ%"=="n" (
+    set myfound=0
+  ) else if "%answ%"=="N" (
     set myfound=0
   ) else (
     set myfound=1
