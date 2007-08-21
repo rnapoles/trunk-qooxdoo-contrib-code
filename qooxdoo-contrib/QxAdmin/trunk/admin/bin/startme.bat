@@ -31,25 +31,17 @@
   call :_searchCygwin
   set CygwinPath >nul 2>&1
   if not !errorlevel!==0 (
-    :: no cygwin found
-    echo.
-    echo. I cannot find a cygwin installation; cygwin is necessary for the build process.
-    echo. Can you provide the path to your cygwin installation?
-    call :_readAndCheckCygwin
-    set CygwinPath >nul 2>&1
-    if not !errorlevel!==0 (
-      echo. We may be able to start the admin interface, but without cygwin you will
-      echo. not be able run the build commands; shall I continue?
-      call :_yesNo
-      if !YesNo!==0 (
-        echo. Ok, aborting ...
-        goto:END
-      ) else (
-        echo. Ok, I'll do my very best ...
-      )
+    echo. I was unable to locate your cygwin installation.
+    echo. We may be able to start the admin interface, but without cygwin you will
+    echo. not be able run the build commands; shall I continue?
+    call :_yesNo
+    if !YesNo!==0 (
+      echo. Ok, aborting ...
+      goto:END
     ) else (
-      echo. Found cygwin as !CygwinPath!, containing bash
+      echo. Ok, I'll do my very best ...
     )
+    set YesNo=
   ) else (
     echo. Found cygwin as !CygwinPath!, containing bash
   )
@@ -185,6 +177,7 @@
   set dir=cygwin
   set test=bin\bash.exe
   call :_dot " ."
+
   :: try likely paths
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive%) do (
     call :_dot "."
@@ -192,6 +185,22 @@
       set myfound="%%L\%dir%"
       goto:f1End
     )
+  )
+
+  :: prompt user
+  echo.
+  echo. I cannot find a cygwin in the default locations. I can further search for it.
+  echo. Can you provide the path to your cygwin installation? (If not, just hit Return
+  echo. and I will continue to search).
+  call :_readAndCheckCygwin
+  set CygwinPath >nul 2>&1
+  if !errorlevel!==0 (
+    :: just to set myfound
+    set myfound=!CygwinPath!
+    goto:f1End
+  ) else (
+    :: prompt for confirmation before searching?
+    echo. Ok, I'll continue searching ...
   )
 
   :: do an exhaustive search of some paths
