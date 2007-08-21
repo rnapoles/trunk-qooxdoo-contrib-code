@@ -171,8 +171,10 @@
     call :_dot "."
     if exist "%%G\%subdir%" (
       set myfound=%%G
+      goto:f1SD
     ) 
   )
+  :f1SD
   endlocal & set _SearchDirFound=%myfound%
   goto:EOF
 
@@ -191,7 +193,7 @@
       goto:f1End
     )
   )
-  goto:f1End
+
   :: do an exhaustive search of some paths
   rem for /f %%L in (admin\bin\drives.txt) do (
   for %%L in (%ProgramFiles% %HOMEDRIVE% %SystemDrive% c: d: e:) do (
@@ -199,7 +201,7 @@
     call :_SearchDir "%%L" "%dir%" "%test%"
     set _SearchDirFound >nul 2>&1
     if !errorlevel!==0 (
-      set myfound="%_SearchDirFound%"
+      set myfound="!_SearchDirFound!"
       set _SearchDirFound=
       goto:f1End
     )
