@@ -91,7 +91,6 @@
 
 :: start mini web server
   :GotPython
-  goto:CheckWeb
   if %pybin%=="" (
     set pcmd=admin/bin/cgiserver.py
   ) else (
@@ -249,6 +248,9 @@
   ) else (
     if exist !CygwinPath!\bin\wget.* (
       set meth=2
+      for /f %%F in ('dir /b !CygwinPath!\bin\wget.*') do (
+        set wgetBin=%%F
+      )
     ) else if exist !CygwinPath!\bin\telnet.exe (
       set meth=1
     ) else (
@@ -300,7 +302,9 @@
   :: wget
     rem echo. Using WGET
     call :_errReset
-    !CygwinPath!\bin\wget --spider --quiet %adminUrl%
+    :: the file extension differs (between .exe and .xxx)
+    rem !CygwinPath!\bin\wget.xxx --spider --quiet %adminUrl%
+    !CygwinPath!\bin\!wgetBin! --spider --quiet %adminUrl%
     if !errorlevel!==0 (
       :: connection
       set myfound=0
