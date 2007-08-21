@@ -266,9 +266,12 @@
   ) else (
     if exist !CygwinPath!\bin\wget.* (
       set meth=2
+      :: the next is fragile, taking the first entry found for wget.*
       for /f %%F in ('dir /b !CygwinPath!\bin\wget.*') do (
         set wgetBin=%%F
+        goto:f3End
       )
+      :f3End
     ) else if exist !CygwinPath!\bin\telnet.exe (
       set meth=1
     ) else (
