@@ -104,6 +104,7 @@
   )
 :: load admin url in browser
   echo. Launching admin url in browser
+  rem start %adminUrl%?cygwin=!CygwinPath!
   start %adminUrl%
 :: clean-up
   :END
@@ -271,13 +272,13 @@
         set wgetBin=%%F
         goto:f3End
       )
-      :f3End
     ) else if exist !CygwinPath!\bin\telnet.exe (
       set meth=1
     ) else (
       set meth=0
     )
   )
+  :f3End
   :: apply appropriate method
   if !meth!==0 (
     :: just sleep
