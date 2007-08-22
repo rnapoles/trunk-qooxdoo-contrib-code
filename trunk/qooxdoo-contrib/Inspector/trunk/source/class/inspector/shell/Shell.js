@@ -1,0 +1,499 @@
+/* ************************************************************************
+
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
+   Copyright:
+     2007 1&1 Internet AG, Germany, http://www.1and1.org
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Martin Wittemann (martin_wittemann)
+
+************************************************************************ */
+
+qx.Class.define("inspector.shell.Shell",
+{
+  extend : inspector.AbstractWindow,  
+
+  /*
+  *****************************************************************************
+     STATICS
+  *****************************************************************************
+  */  
+  statics: {
+    HISTORY_LENGTH: 20
+  },
+    
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */
+  construct : function(main, name) {
+    // call the constructor of the superclass
+    this.base(arguments, main, name);
+    // create the popup for the autocompletion
+    this._autoCompletePopup = new inspector.shell.AutoCompletePopup(this);  
+    // initialize the this reference to the selected widget
+    this._widget = qx.ui.core.ClientDocument.getInstance();
+  },
+
+
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+
+  members :
+  {
+    /*
+    *********************************
+       ATTRIBUTES
+    *********************************
+    */
+    // main elements
+    _shellLayout: null,
+    _textField: null,
+    _outputLayout: null,
+    
+    // buttons
+    _clearButton: null,
+    _heepButtion: null,
+    
+    // history array
+    _history: [],
+    _historyCounter: -1,
+    
+    // auto complete stuff
+    _ctrl: false,
+    _autoCompletePopup: null,
+		
+		// the current widget
+		_widget: null,
+		_ans: null,
+    
+    /*
+    *********************************
+       PUBLIC
+    *********************************
+    */  
+    /**
+     * Returns the components of the shell
+     */
+    getComponents: function() {
+      return [this].concat(this._autoCompletePopup.getComponents());
+    },    
+    
+    appendString: function(string) {
+      if (string != null) {
+        // append the given string to the textfield
+        this._textField.setValue(this._textField.getValue() + string);
+        // if there is a ( in the textfield
+        if (this._textField.getComputedValue().lastIndexOf("(") != -1) {
+          // mark the stuff in the ()
+          var start = this._textField.getComputedValue().lastIndexOf("(") + 1;
+          var end = this._textField.getComputedValue().length - 1;
+          this._textField.selectFromTo(start, end);          
+        }  
+      }
+    },
+    
+    setWidget: function(widget) {
+      this._widget = widget;
+    },
+		
+		getWidget: function() {
+			return this._widget;
+		},
+		
+		getAns: function() {
+			return this._ans;
+		},
+		
+		
+    chooseAutoCompleteValue: function() {
+      // get the current value of the textfield
+      var value = this._textField.getComputedValue();
+      // get the value to add to the textfield
+      var name = this._autoCompletePopup.getCurrentSelection();          
+      // if something is selected
+      if (name != "undefined") {
+        // get the stuff after the dot in the textfield
+        var afterDot = value.substring(value.lastIndexOf(".") + 1);
+        // remove the characters which are already in the textfield
+        name = name.substring(afterDot.length, name.length);
+        // append the new selected string
+        this.appendString(name);            
+      }
+      // hide the popup
+      this._autoCompletePopup.hide(); 
+			// focus the textfield
+			if (!this._textField.getFocused()) {
+        this._textField.focus();				
+			}
+    },		
+    
+    /*
+    *********************************
+       PROTECTED
+    *********************************
+    */
+    _process: function(text) {
+      // add the text to the embedded
+      this._printText(text);			
+      // try to run the code
+      try {
+        // run it and store the result in the global ans value
+        this._ans = (function(text, ans){return eval(text)}).call(this._widget, text, this._ans);
+//      ans = eval(text.replace(/\bthis\b/g, "this._widget"));
+
+        // if ans is defined
+        if (this._ans != undefined) {
+          // print put the return value
+          this._printReturnValue(this._ans);                      
+        } else {
+          // print out that the return value was undefined
+          this._printText("undefined");
+        }
+      } catch (e) {
+        // print out the exception
+        this._printError(e);
+      }      
+      // add a line to seperate two calls
+      this._printLine();
+    },
+    
+    
+    _scrollToLastLine: function() {
+      // flush the queues to ensure that the adding has been recognized
+      qx.ui.core.Widget.flushGlobalQueues();
+      // scroll to the bottom of the layout
+      this._outputLayout.setScrollTop(this._outputLayout.getScrollHeight());
+    },
+    
+    
+    /*
+    *********************************
+       Key handler
+    *********************************
+    */    
+    _keyDownHandler: function(e) {   
+		      
+      // if the esc key is pressed
+      if (e.getKeyIdentifier() == "Escape") {
+        // hide the autocomplete popup
+        this._autoCompletePopup.hide();
+      }
+                
+      // if the enter button is pressed
+      if (e.getKeyIdentifier() == "Enter") {
+        if (!this._autoCompletePopup.isOnScreen()) {     
+          // save the string in the history
+          this._history.unshift(this._textField.getComputedValue());
+          // process the input
+          this._process(this._textField.getComputedValue());          
+          // empty the textfield
+          this._textField.setValue("");
+          // rest the history counter
+          this._historyCounter = -1;
+          // if the history is biger than it should be
+          if (this._history.length > inspector.shell.Shell.HISTORY_LENGTH) {
+            // remove the last element
+            this._history.pop();            
+          }
+          
+        // if the popup is on screen
+        } else {
+          this.chooseAutoCompleteValue();
+        }
+      }
+      
+      // if the up key is pressed      
+      if (e.getKeyIdentifier() == "Up") {
+        // prevent that the cursor is set to another position
+        e.preventDefault();
+        // if the popup is on screen
+        if (!this._autoCompletePopup.isOnScreen()) {
+          
+          // if a value is in the history
+          if (this._history[this._historyCounter + 1] != undefined) {
+            // increase the counter
+            this._historyCounter++;            
+            // set the value to the textfield
+            this._textField.setValue(this._history[this._historyCounter]);
+          }
+        }
+      }        
+          
+      // if the down key is pressed
+      if (e.getKeyIdentifier() == "Down") {
+        // prevent that the cursor is set to another position
+        e.preventDefault();
+        // if the popup is nor on screen
+        if (!this._autoCompletePopup.isOnScreen()) {
+          // check if the counter is bigger than 0
+          if (this._historyCounter > 0) {
+            // if yes, decreas the cunter
+            this._historyCounter--;
+            // set the new value from the history
+            this._textField.setValue(this._history[this._historyCounter]);
+          }
+        }
+      }
+          
+      // if the controll key is pressed
+      if (e.getKeyIdentifier() == "Control") {
+        // mark that in a flag
+        this._ctrl = true;
+      }
+      
+      // if the space or tab is pressed
+      if (e.getKeyIdentifier() == "Space" || e.getKeyIdentifier() == "Tab") {      
+        // check if the control button is pressed
+        if (this._ctrl || e.getKeyIdentifier() == "Tab") {
+          // prevent the browser from leaving the textfield
+          e.preventDefault();
+
+          // do the autocomplete
+          try {
+            // get the position for the popup
+            var left = qx.html.Location.getPageBoxLeft(this._textField.getElement());
+            var top = qx.html.Location.getPageBoxTop(this._textField.getElement()) - this._autoCompletePopup.getHeight();
+            // tell the popup to show itself            
+            this._autoCompletePopup.open(this._textField.getComputedValue(), left, top);
+          } catch (e) {
+            // do nothing
+            this.info(e);
+          }
+        }
+      }
+        
+    },
+    
+    
+    _keyUpHandler: function(e) {
+      // if the control key will be released
+      if (e.getKeyIdentifier() == "Control") {
+        // remove the controll flag
+        this._ctrl = false;
+      }
+    },
+		
+		_keyPressHandler: function(e) {
+			if (this._autoCompletePopup.isOnScreen()) {
+				if (e.getKeyIdentifier() == "Down") {
+					this._autoCompletePopup.selectionDown();
+				} else if (e.getKeyIdentifier() == "Up") {
+					this._autoCompletePopup.selectionUp();
+				}
+			}
+		},
+    
+    
+    /*
+    *********************************
+       Print functions
+    *********************************
+    */    
+    _printReturnValue: function(returnValue) {
+      // check the arrays      
+      if (returnValue instanceof Array) {
+        // if yes, print out that it is one
+        this._outputLayout.add(this._getLabel("---- ", "Array ----", "blue"));
+        // go threw all elements and print them out
+        for (var i in returnValue) {
+          this._printReturnValue(returnValue[i]);
+        }
+        return;
+      }
+      //check for qooxdoo objects
+      if (returnValue instanceof qx.core.Object) {
+        // print out the qooxdoo object
+        this._printQxObject(returnValue);            
+      } else {
+        // print out the return value
+        this._outputLayout.add(this._getLabel("<< ", returnValue, "blue"));
+      }      
+    },
+    
+    _printQxObject: function(object) {
+      var label = this._getLabel("<< <u>", object.classname + " [" + object.toHashCode() + "]</u>", "blue")
+      label.setStyleProperty("cursor", "pointer");
+      label.addEventListener("click", function() {
+        this._inspector.setWidget(object);
+      }, this);
+      this._outputLayout.add(label);
+    },
+    
+    _printText: function(text) {
+      this._outputLayout.add(this._getLabel(">> ", text, "black"));
+    },
+ 
+    _printError: function(error) {
+      this._outputLayout.add(this._getLabel(">> ", error, "red"));
+    },
+ 
+    _printLine: function() {
+      this._outputLayout.add(this._getLine());
+      this._scrollToLastLine();
+    },
+    
+    
+    
+    /*
+    *********************************
+       Creater functions
+    *********************************
+    */
+    _getLabel: function(prefix, text, color) {
+      // start the exclusion so that the new element will not be in the list of objects
+      this._inspector.beginExclusion();
+      // create the new element
+      var label = new qx.ui.basic.Label(prefix + text);
+      // end the exclusion 
+      this._inspector.endExclusion();
+      // set the color of the label
+      label.setTextColor(color);
+      // set the padding
+      label.setPadding(2);      
+      return label;      
+    },
+    
+    _getLine: function() {
+      // start the exclusion so that the new element will not be in the list of objects
+      this._inspector.beginExclusion();
+      // create the new element
+      var line = new qx.ui.basic.Terminator();
+      // end the exclusion 
+      this._inspector.endExclusion();    
+      // set height and color of the label  
+      line.setHeight(1);
+      line.setBackgroundColor("#CCCCCC");
+      return line;      
+    },
+   
+   
+    /*
+    *********************************
+       OVERWRITTEN PROTTECTED FUNCTIONS
+    *********************************
+    */
+    /**
+     * Overwrite the function to avoid creating a status bar.
+     */
+    _createStatusbar: function () {
+      // do not create a statusbar
+    }, 
+    
+    /**
+     * Sets the height of the main element of the window.
+     * @param {int} delta The change value of the height.
+     */
+    _setMainElementHeight: function(delta) {
+       this._outputLayout.setHeight(this._outputLayout.getHeight() + delta);
+    },
+    
+    /**
+     * Sets the width of the main element of the window.
+     * @param {Object} delta The change value of the width.
+     */
+    _setMainElementWidth: function(delta) {
+      // do nothing
+    },
+    
+    /**
+     * Sets the start position of the window.
+     */
+    _setApearancePosition: function() {
+      this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);
+      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());
+    },
+    
+    /**
+     * Creates the table
+     */
+    _createMainElement: function() {
+      // create and add a layout for the HTMLembedded and the textbox
+      this._shellLayout = new qx.ui.layout.VerticalBoxLayout();
+      this._mainLayout.add(this._shellLayout);
+        
+      
+      this._outputLayout = new qx.ui.layout.VerticalBoxLayout();
+      this._outputLayout.setBackgroundColor("white");
+      this._outputLayout.setBorder("inset");
+      this._outputLayout.setOverflow("auto");
+      this._outputLayout.setWidth("100%");
+      this._outputLayout.setHeight(150);
+      this._shellLayout.add(this._outputLayout);
+  
+      // create and add the textfield
+      this._textField = new qx.ui.form.TextField();
+      this._textField.setWidth("100%");
+      this._shellLayout.add(this._textField);
+      // needed to ensure that every line is processed
+      this._textField.setLiveUpdate(true);
+  
+      // add the listener to the textfield
+      this._textField.addEventListener("keydown", this._keyDownHandler, this);
+      this._textField.addEventListener("keyup", this._keyUpHandler, this);
+			this._textField.addEventListener("keypress", this._keyPressHandler, this);			
+      
+      // add a event listener which updates the autoCompletion
+      this._textField.addEventListener("changeValue", function(e) {
+        // if the popup is on the screen
+        if (this._autoCompletePopup.isOnScreen()) {
+          // try to reload it with every hit to the keyboard
+          try {
+            // get the position for the popup
+            var left = qx.html.Location.getPageBoxLeft(this._textField.getElement());
+            var top = qx.html.Location.getPageBoxTop(this._textField.getElement()) - this._autoCompletePopup.getHeight();
+            // tell the popup to show itself            
+            this._autoCompletePopup.open(this._textField.getComputedValue(), left, top);
+          } catch (e) {
+            // close the popup
+            this._autoCompletePopup.hide();
+          }
+        }
+      }, this);
+
+    },
+    
+    
+    /**
+     * Adds the buttons and the search textfield to the toolbar.
+     */
+    _addToolbarButtons: function() {
+      // create and add a button to clear the view
+      this._clearButton = new qx.ui.toolbar.Button("Clear");
+      this._toolbar.add(this._clearButton);
+      // register the clear event listener
+      this._clearButton.addEventListener("click", function(e) {
+        this._outputLayout.removeAll();        
+      }, this);
+      
+      // add a spacer to keep the help button rigth
+      this._toolbar.add(new qx.ui.basic.HorizontalSpacer());      
+      
+      // create and add a help button
+      this._helpButton = new qx.ui.toolbar.Button("Help");
+      this._toolbar.add(this._helpButton);
+      // register a handlert to print out the help text on the shell
+      this._helpButton.addEventListener("click", function() {
+        var helpText = "<strong>HELP:</strong><br>" +
+                       "this = the current selected object<br>" + 
+                       "ans = the last return value<br>" +
+                       "Press the CTRL and space key together to get an auto complete"; 
+        this._outputLayout.add(this._getLabel("", helpText, "grey"));
+        this._outputLayout.add(this._getLine());
+      }, this);
+    }
+       
+   }
+});

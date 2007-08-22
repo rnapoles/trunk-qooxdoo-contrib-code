@@ -1,0 +1,263 @@
+/* ************************************************************************
+
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
+   Copyright:
+     2007 1&1 Internet AG, Germany, http://www.1and1.org
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Martin Wittemann (martin_wittemann)
+
+************************************************************************ */
+
+qx.Class.define("inspector.shell.AutoCompletePopup",
+{
+  extend: qx.ui.popup.Popup,  
+
+  /*
+  *****************************************************************************
+     STATICS
+  *****************************************************************************
+  */  
+  statics: {
+    HISTORY_LENGTH: 20
+  },
+    
+  /*
+  *****************************************************************************
+     CONSTRUCTOR
+  *****************************************************************************
+  */
+  construct : function(main) {
+    // call the constructor of the superclass
+    this.base(arguments);
+    
+    // store the reference to the controller
+    this._controller = main;
+    
+    // initialize the popup    
+    this.setBackgroundColor("#FFFFFF");
+    this.setBorder("black");
+    this.setHeight(140);
+    this.setWidth(300);    
+    this.addToDocument();
+    
+    // initialize the table model
+    this._tableModel = new qx.ui.table.model.Simple();
+    this._tableModel.setColumns(["function"]);
+    
+    // initialize table
+    this._table = new qx.ui.table.Table(this._tableModel);
+    this._table.setWidth(298);
+    this._table.setHeight(140);
+    this._table.setShowCellFocusIndicator(false);
+    this._table.setColumnVisibilityButtonVisible(false);
+    this._table.setStatusBarVisible(false);
+		this._table.getTableColumnModel().setColumnWidth(0, 282);    
+    this.add(this._table);
+		
+		// add the click event listener to the table
+		this._table.addEventListener("click", function(e) {
+			// if it is a click on the pane
+			if (e.getTarget().classname == "qx.ui.table.pane.Pane") {
+				this._controller.chooseAutoCompleteValue();
+			}
+		}, this);
+  },
+
+
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+
+  members :
+  {
+    /*
+    *********************************
+       ATTRIBUTES
+    *********************************
+    */
+    
+    _table: null,
+    _tableModel: null,
+    
+    
+    /*
+    *********************************
+       PUBLIC
+    *********************************
+    */  
+    /**
+     * Returns the components of the shell
+     */
+    getComponents: function() {
+      return [this, this._table, this._tableModel];
+    },
+    
+		
+    selectionUp: function() {
+			// get the current selectend row
+      var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
+      // if the selection is not 0
+      if (selectedIndex > 0) {
+				// go down in the selection count
+        selectedIndex--;
+      } else {
+				// go to the max selection (wrap around function)
+        selectedIndex = this._tableModel.getData().length - 1;
+			}
+      // select and focus the row
+			this._table.getSelectionModel().addSelectionInterval(selectedIndex, selectedIndex);
+      this._table.setFocusedCell(0, selectedIndex, true);
+			
+    },
+    
+		
+    selectionDown: function() {
+			// get the current selected row
+      var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
+			// get the last row id      
+      var maxIndex = this._tableModel.getData().length - 1;
+      // if the selection is not the last row			
+      if (selectedIndex != maxIndex) {
+				// go up in the selection count
+        selectedIndex++;
+      } else {
+				// strat from the beginning
+				selectedIndex = 0;
+			}
+			// select and focus the row
+      this._table.getSelectionModel().addSelectionInterval(selectedIndex, selectedIndex);
+      this._table.setFocusedCell(0, selectedIndex, true);
+    },
+    
+        
+
+    open: function(objectRef, left, top) {     
+      // select the first entry
+      this._table.getSelectionModel().setSelectionInterval(0, 0);
+      this._table.setFocusedCell(0, 0, true);
+			
+      // try to get the part after the last dot          
+      var searchTerm = objectRef.substring(objectRef.lastIndexOf(".") + 1);
+      
+      // if there is no dot in the textfield
+      if (objectRef == searchTerm) {
+        // hide the popup
+        this.hide();
+        // stop forther processing
+        return;
+      } else {
+        // cut of the stuff after the last dot
+        objectRef = objectRef.substring(0, objectRef.lastIndexOf("."));
+      }
+
+      // get the object reference
+      var object = (function(text, ans){return eval(text)}).call(this._controller.getWidget(), objectRef, this._controller.getAns());        
+      
+      // check if it has returned an qooxdoo object
+      if (!(object instanceof qx.core.Object)) {
+        // hide the popup
+        this.hide();
+        // stop forther processing
+        return;
+      } else {
+				// write the classname to the header cell
+        this._tableModel.setColumnNamesByIndex([object.classname]);				
+			}
+      
+      // generate the search object
+      var regExp = new RegExp("^" + searchTerm);
+      // create an array to stor the fitting functions
+      var data = [];
+      
+      // go threw everytring in the object
+      for (var name in object) {
+        // apply the search term
+        if (regExp.test(name)) {
+          // if it is a function
+          if (object[name] instanceof Function) {
+            // add the opening bracket for the function arguments
+            var functionString = name + "(";
+            for (var j = 0; j < object[name].arity; j++) {
+              // if it is the last argument
+              if (j == object[name].arity - 1) {
+                // add a character beginning by a,b,c,d,...
+                functionString += unescape("%" + (61 + j));                               
+              } else {
+                // add a character beginning by a,b,c,d,... and a training comma
+                functionString += unescape("%" + (61 + j) + ", " );                
+              }
+            }
+            // add the ending bracket for the function arguments
+            functionString += ")";
+                        
+            data.push([functionString]);
+
+  
+					// if it is no function
+          } else {
+
+						data.push([name]);
+						
+          }
+				
+        } 
+      }
+      
+      // load the data
+      this._tableModel.setData(data);
+			// sort the data by name
+			this._tableModel.sortByColumn(0, true);
+      
+      // set the popup to the current position
+      this.setLeft(left);
+      this.setTop(top);
+      // show the popup
+      this.show();
+      this.bringToFront();  
+    },    
+
+    
+    hide: function() {
+      this.setVisibility(false);
+    },
+    
+    
+    isOnScreen: function() {
+      return this.getDisplay() && this.getVisibility();
+    },
+    
+		
+    getCurrentSelection: function() {
+      var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
+      // if something is selected
+      if (selectedIndex != -1) {
+        // return the data in the model as a string
+        return this._tableModel.getData()[selectedIndex] + "";
+      }
+      return null;
+    }
+    
+    /*
+    *********************************
+       PROTECTED
+    *********************************
+    */    
+    
+    /*
+    *********************************
+       Key handler
+    *********************************
+    */   
+   }
+});
