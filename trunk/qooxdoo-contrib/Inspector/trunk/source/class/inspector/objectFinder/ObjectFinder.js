@@ -45,8 +45,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
     this._objectsPopup.setBackgroundColor("#FFFAD3");
     this._objectsPopup.setBorder("black");
     this._objectsPopup.setPadding(5, 10);
-    this._objectsPopup.setHeight(300);
-    this._objectsPopup.setWidth(300);
+    this._objectsPopup.setHeight(500);
+    this._objectsPopup.setWidth(350);
     this._objectsPopup.setOverflow("auto");
 
     // load the obecjts into the table after the app is created
@@ -445,13 +445,13 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
         var sum = 0; 
         // create the test message
         var message = "";
-        message += "<table>"
         for (var key in data) {
           message += "<tr><td>" + data[key][0] + ": </td><td>" + data[key][1] + "</td></tr>";
           sum += data[key][1];
         }
-        message += "</table>";
-        message = "<b><font size='4'>Objects Summary</font></b> (Total: " + sum + ")<br>" + message;
+        message = "<table><tbody style='font-size:12px'>" + 
+                  "<tr><td><font size='4'>Objects Summary</font></b></td><td>" + sum + "&nbsp;(Total)</td></tr>" + 
+                  message + "</tbody></table>";
                 
         // set the text to the lable in the popup
         this._objectsPopup.getChildren()[0].setText(message);
