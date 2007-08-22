@@ -19,10 +19,10 @@
 :: Config Section
   @echo off
   setlocal ENABLEDELAYEDEXPANSION
-  set DEBUG=0
+  set DEBUG=1
   set WebSvrWait=5
   set rc=0
-  set adminUrl=http://localhost:8000/admin/
+  set adminUrl=http://localhost:8000/admin/index.html
   set pybin=python
   set tmpFile="%TEMP%.\qxtmp.txt"
 :: find cygwin (needed for make etc.)
@@ -104,8 +104,7 @@
   )
 :: load admin url in browser
   echo. Launching admin url in browser
-  rem start %adminUrl%?cygwin=!CygwinPath!
-  start %adminUrl%
+  start %adminUrl%?cygwin=!CygwinPath!
 :: clean-up
   :END
   popd
