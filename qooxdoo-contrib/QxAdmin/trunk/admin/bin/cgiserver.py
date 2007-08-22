@@ -5,7 +5,7 @@ import BaseHTTPServer
 
 
 class Handler(CGIHTTPServer.CGIHTTPRequestHandler):
-    cgi_directories = ["admin/bin"]
+    cgi_directories = ["/admin/bin"]
 
 
 PORT = 8000
