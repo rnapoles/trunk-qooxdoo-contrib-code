@@ -23,12 +23,13 @@ def invoke_piped(cmd):
 
     return (rcode, output, errout)
 
-def do_make():
+def do_make(form):
     # our output is text/plain
     print "Content-type: text/plain"
     print
-    os.chdir("/tmp/qx-bbb/qooxdoo-0.8-pre-sdk/frontend/application/demobrowser/")
-    rc = invoke_external("make build")
+    sys.stdout.flush()
+    #os.chdir("/tmp/qx-bbb/qooxdoo-0.8-pre-sdk/frontend/application/demobrowser/")
+    rc = invoke_external("make source")
     #os.chdir(olddir)
 
     return rc
