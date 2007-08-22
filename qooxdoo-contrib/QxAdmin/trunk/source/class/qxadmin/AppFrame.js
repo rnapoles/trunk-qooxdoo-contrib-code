@@ -60,7 +60,9 @@ qx.Class.define("qxadmin.AppFrame",
     this.__states.isLastSample  = false;
 
     this.__makeCommands();
-    this.__makeRpcServer();
+    //this.__makeRpcServer();
+
+    this._urlParms = new qxadmin.UrlSearchParms();
 
     // Header Pane
     this.header = this.__makeHeader();
@@ -237,7 +239,7 @@ qx.Class.define("qxadmin.AppFrame",
 
     __setStateInitialized : function()
     {
-      this._cmdRunFile.setEnabled(false);
+      this._cmdRunFile.setEnabled(true);
       this._cmdViewFile.setEnabled(false);
       this._cmdOpenPage.setEnabled(false);
     },
@@ -1115,11 +1117,13 @@ qx.Class.define("qxadmin.AppFrame",
 
     __ehRunFile : function (e)
     {
+      /*
       if (!this.tree.getSelectedElement())
       {  // this is a kludge!
         return;
       }
-      var treeNode = this.tree.getSelectedElement();
+      */
+      var treeNode = this.widgets["treeview.runmake"].getSelectedElement();
 
       if (treeNode instanceof qx.ui.tree.TreeFile) 
       {
@@ -1130,6 +1134,7 @@ qx.Class.define("qxadmin.AppFrame",
 
     runFile : function (treeNode) 
     {
+      /*
       var a = this.getParentFolderChain(treeNode);
       var b = [];
       var that = this;
@@ -1141,28 +1146,37 @@ qx.Class.define("qxadmin.AppFrame",
       //alert(b);
       // drop the root node
       b.shift();
-
-      // run make through RPC
-      this.RpcRunning = this.RpcServer.callAsync(
-        function(result, ex, id)
-        {
-          that.RpcRunning = null;
-          if (ex == null) {
-              that.debug("Make successfull, rendering output...");
-              that.f2.setHtml('<pre>'+result+'</pre>')
-              that.debug("Rendering complete.");
-          } else {
-              alert("Async(" + id + ") exception: " + ex);
-          }
-        },
-        "fss.runMake",
-        b,
-        "source");
-      /*
-      // run make through CGI
-      var url = "http://127.0.0.1/cgi-bin/nph-make_build.py?path="+b.join("/");
-      this.f1.setSource(url);
       */
+
+      // check cygwin path
+      if ('cygwin' in this._urlParms.parms)
+      {
+        var cygParm = 'cygwin'+"="+this._urlParms.parms['cygwin'];
+      }
+
+      if (this.RpcServer) {
+        // run make through RPC
+        this.RpcRunning = this.RpcServer.callAsync(
+          function(result, ex, id)
+          {
+            that.RpcRunning = null;
+            if (ex == null) {
+                that.debug("Make successfull, rendering output...");
+                that.f2.setHtml('<pre>'+result+'</pre>')
+                that.debug("Rendering complete.");
+            } else {
+                alert("Async(" + id + ") exception: " + ex);
+            }
+          },
+          "fss.runMake",
+          b,
+          "source");
+      } else {
+        // run make through CGI
+        //var url = "http://127.0.0.1/cgi-bin/nph-make_build.py?path="+b.join("/")+'&'+cygParm;
+        var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py?action=run&make=source&"+cygParm;
+        this.f1.setSource(url);
+      }
 
     },
 
