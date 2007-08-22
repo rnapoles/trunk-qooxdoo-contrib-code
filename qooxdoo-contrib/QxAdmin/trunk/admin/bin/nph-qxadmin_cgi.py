@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!c:/Programme/cygwin/bin/python
 
 import sys, os, re
 import cgi
@@ -29,7 +29,20 @@ def do_make(form):
     print
     sys.stdout.flush()
     #os.chdir("/tmp/qx-bbb/qooxdoo-0.8-pre-sdk/frontend/application/demobrowser/")
-    rc = invoke_external("make source")
+    #cmd = form['cygwin'].value + "\\\\bin\\\\bash.exe" + " -c make source"
+    if not 'make' in form:
+        print "Missing parameter 'make'; aborting..."
+        return -1
+    else:
+        makecmd = "make " + form['make'].value
+    if 'cygwin' in form:
+        parts = form['cygwin'].value.split('\\')
+        bashpath = os.path.join(*parts)
+        bashpath = os.path.join(bashpath,'bin','bash.exe')
+        cmd = bashpath + " -c 'export PATH=/usr/bin; " + makecmd + "'"
+    else:
+        cmd = makecmd
+    rc = invoke_external(cmd)
     #os.chdir(olddir)
 
     return rc
