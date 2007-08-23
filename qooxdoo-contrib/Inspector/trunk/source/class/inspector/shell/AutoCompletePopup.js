@@ -18,7 +18,7 @@
 ************************************************************************ */
 
 qx.Class.define("inspector.shell.AutoCompletePopup", {
-	
+  
   extend: qx.ui.popup.Popup,  
 
   /*
@@ -27,11 +27,11 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
   *****************************************************************************
   */  
   statics: {
-		// the length of the history
+    // the length of the history
     HISTORY_LENGTH: 20
   },
     
-		
+    
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -62,16 +62,21 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
     this._table.setShowCellFocusIndicator(false);
     this._table.setColumnVisibilityButtonVisible(false);
     this._table.setStatusBarVisible(false);
-		this._table.getTableColumnModel().setColumnWidth(0, 282);    
+    this._table.getTableColumnModel().setColumnWidth(0, 282);    
     this.add(this._table);
-		
-		// add the click event listener to the table
-		this._table.addEventListener("click", function(e) {
-			// if it is a click on the pane
-			if (e.getTarget().classname == "qx.ui.table.pane.Pane") {
-				this._controller.chooseAutoCompleteValue();
-			}
-		}, this);
+    
+    // set the colors of focused and not focues the same
+    var renderer = this._table.getDataRowRenderer();
+    renderer.setBgcolFocusedSelectedBlur(renderer.getBgcolFocusedSelected());
+    renderer.setBgcolSelectedBlur(renderer.getBgcolSelected());
+    
+    // add the click event listener to the table
+    this._table.addEventListener("click", function(e) {
+      // if it is a click on the pane
+      if (e.getTarget().classname == "qx.ui.table.pane.Pane") {
+        this._controller.chooseAutoCompleteValue();
+      }
+    }, this);
   },
 
 
@@ -103,51 +108,51 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
       return [this, this._table, this._tableModel];
     },
     
-		
-		/**
-		 * Moves manually the selection in the table up. If the selection 
-		 * is at the upper end, a wraparound will be performed and the 
-		 * selection is at the last position.
-		 * @see AutoCompletePopup#selectionDown
-		 */
+    
+    /**
+     * Moves manually the selection in the table up. If the selection 
+     * is at the upper end, a wraparound will be performed and the 
+     * selection is at the last position.
+     * @see AutoCompletePopup#selectionDown
+     */
     selectionUp: function() {
-			// get the current selectend row
+      // get the current selectend row
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
       // if the selection is not 0
       if (selectedIndex > 0) {
-				// go down in the selection count
+        // go down in the selection count
         selectedIndex--;
       } else {
-				// go to the max selection (wrap around function)
+        // go to the max selection (wrap around function)
         selectedIndex = this._tableModel.getData().length - 1;
-			}
+      }
       // select and focus the row
-			this._table.getSelectionModel().addSelectionInterval(selectedIndex, selectedIndex);
+      this._table.getSelectionModel().addSelectionInterval(selectedIndex, selectedIndex);
       this._table.setFocusedCell(0, selectedIndex, true);
-			
+      
     },
     
-		
-		/**
-		 * Moves manually the selection down  in the table. If the selection
-		 * is at the lower end, a wraparound will be performed and the
-		 * selection is at the first position.
-		 * @see AutoCompletePopup#selectionUp
-		 */
+    
+    /**
+     * Moves manually the selection down  in the table. If the selection
+     * is at the lower end, a wraparound will be performed and the
+     * selection is at the first position.
+     * @see AutoCompletePopup#selectionUp
+     */
     selectionDown: function() {
-			// get the current selected row
+      // get the current selected row
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
-			// get the last row id      
+      // get the last row id      
       var maxIndex = this._tableModel.getData().length - 1;
-      // if the selection is not the last row			
+      // if the selection is not the last row      
       if (selectedIndex != maxIndex) {
-				// go up in the selection count
+        // go up in the selection count
         selectedIndex++;
       } else {
-				// strat from the beginning
-				selectedIndex = 0;
-			}
-			// select and focus the row
+        // strat from the beginning
+        selectedIndex = 0;
+      }
+      // select and focus the row
       this._table.getSelectionModel().addSelectionInterval(selectedIndex, selectedIndex);
       this._table.setFocusedCell(0, selectedIndex, true);
     },
@@ -167,7 +172,7 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
       // select the first entry
       this._table.getSelectionModel().setSelectionInterval(0, 0);
       this._table.setFocusedCell(0, 0, true);
-			
+      
       // try to get the part after the last dot          
       var searchTerm = objectRef.substring(objectRef.lastIndexOf(".") + 1);
       
@@ -192,9 +197,9 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
         // stop forther processing
         return;
       } else {
-				// write the classname to the header cell
-        this._tableModel.setColumnNamesByIndex([object.classname]);				
-			}
+        // write the classname to the header cell
+        this._tableModel.setColumnNamesByIndex([object.classname]);        
+      }
       
       // generate the search object
       var regExp = new RegExp("^" + searchTerm);
@@ -224,18 +229,18 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
             // add the function string to the data
             data.push([functionString]);
 
-					// if it is no function
+          // if it is no function
           } else {
             // add the name of the attribute to the data
-						data.push([name]);
-          }				
+            data.push([name]);
+          }        
         } 
       }
       
       // load the data
       this._tableModel.setData(data);
-			// sort the data by name
-			this._tableModel.sortByColumn(0, true);
+      // sort the data by name
+      this._tableModel.sortByColumn(0, true);
       
       // set the popup to the current position
       this.setLeft(left);
@@ -246,26 +251,26 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
     },    
 
     
-		/**
-		 * Hides the autcomplete popup.
-		 */
+    /**
+     * Hides the autcomplete popup.
+     */
     hide: function() {
       this.setVisibility(false);
     },
     
     
-		/**
-		 * @return true if the autocomplete popus is visible and displayed.
-		 */
+    /**
+     * @return true if the autocomplete popus is visible and displayed.
+     */
     isOnScreen: function() {
       return this.getDisplay() && this.getVisibility();
     },
     
-		
-		/**
-		 * Takes the current selected element of the table and returns it to the user.
-		 * @return {String} The current selected string.
-		 */
+    
+    /**
+     * Takes the current selected element of the table and returns it to the user.
+     * @return {String} The current selected string.
+     */
     getCurrentSelection: function() {
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
       // if something is selected
