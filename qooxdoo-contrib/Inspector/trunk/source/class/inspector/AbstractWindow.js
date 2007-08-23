@@ -186,7 +186,7 @@ qx.Class.define("inspector.AbstractWindow", {
     
     /**
      * Sets the width of the main element of the window.
-     * @param {Number} delta The change value of the width.
+     * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
       // throw an exception if the method is caled on the abstract class

@@ -22,6 +22,14 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   extend : inspector.AbstractWindow,
   // implement : inspector.propertyEditor.PropertyListController,
 
+  /*
+  *****************************************************************************
+     STATICS
+  *****************************************************************************
+  */
+  statics: {
+    API_VIEWER_URI: "../api/index.html"
+  },
 
   /*
   *****************************************************************************
@@ -93,6 +101,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // timer for the reload interval
     _reloadTimer: null,
 
+    // the native window for the api viewer
+		_apiWindow: null,
 
     /*
     *********************************
@@ -653,6 +663,43 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
         }
         // enable or disable the inheritance button
         this._inheritedButton.setEnabled(!e.getTarget().getChecked())
+      }, this);
+
+      // create the API button      
+      var apiButton = new qx.ui.toolbar.Button("API");
+      this._toolbar.add(apiButton);
+      apiButton.addEventListener("execute", function() {
+				// if the API window is not created
+        if (this._apiWindow == null) {
+					// initialize the api window
+					this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
+          this._apiWindow.setWidth(900);
+          this._apiWindow.setHeight(600);										
+				}        
+				// define the URL to the apiview
+				var urlString = inspector.propertyEditor.PropertyEditor.API_VIEWER_URI;
+				// check if a property is selected
+				if (this._currentlySelectedProperty != null) {
+					// if yes, take the classname and the property name from the property
+					urlString = urlString + "#" + this._currentlySelectedProperty.getUserData("classname");
+					urlString = urlString + "~" + this._currentlySelectedProperty.getUserData("key");
+				
+				// if no property is selected but a object
+				} else if (this._qxObject != null) {
+					// only take the objects classname
+					urlString = urlString + "#" + this._qxObject.classname;
+				}
+				// set the uri in the window
+				this._apiWindow.setUrl(urlString);
+				
+				// if the window is not open
+        if (!this._apiWindow.isOpen()) {
+					// open the window
+					this._apiWindow.open();					
+				} else {
+					// otherwise just focus it
+					this._apiWindow.focus();
+				}
       }, this);
 
       // add a spacer to keep the property relevant buttons on the right
