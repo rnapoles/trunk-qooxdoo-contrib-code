@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.objectFinder.ObjectFinder",
-{
+qx.Class.define("inspector.objectFinder.ObjectFinder", {
+  
   extend : inspector.AbstractWindow,  
 
   /*
@@ -27,6 +27,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
   *****************************************************************************
   */  
   statics: {
+    // the therm which is in the search textfield by default
     SEARCH_TERM: "Search..."
   },
     
@@ -39,6 +40,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
     // call the constructor of the superclass
     this.base(arguments, main, name);
 
+    // initialize the popup for the objects summary
     this._objectsPopup = new qx.ui.popup.Popup();
     this._objectsPopup.addToDocument();
     this._objectsPopup.add(new qx.ui.basic.Label());
@@ -49,16 +51,17 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
     this._objectsPopup.setWidth(350);
     this._objectsPopup.setOverflow("auto");
 
-    // load the obecjts into the table after the app is created
+    // load the obecjts into the table after the component is completely loaded
     var self = this;
-		window.setTimeout(function() {
-			self._readObjects();
-			// if a widget is selected, selet is on open
-			var currentWidget = self._inspector.getWidget();
-			if (currentWidget != null) {
-				self.selectObject(currentWidget);
-			}
-		}, 0);
+    window.setTimeout(function() {
+      // load
+      self._readObjects();
+      // if a widget is selected, selet is on open
+      var currentWidget = self._inspector.getWidget();
+      if (currentWidget != null) {
+        self.selectObject(currentWidget);
+      }
+    }, 0);
   },
 
 
@@ -67,29 +70,28 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
     *********************************
     */
-    // the main element of the object finder
+    // the main elements of the object finder
     _table: null,
     _tableModel: null,
     _objectsPopup: null,
     
-    // buttons
+    // buttons and tooltips
     _reloadButton: null,
     _reloadToolTip: null,
-    _autoReloadToolTip: null,
     _findField: null,
+    _autoReloadToolTip: null,
     _objectSummaryToolTip: null,
     
     // timers
     _reloadTimer: null,    
     _searchTimer: null,
+    
     
     /*
     *********************************
@@ -98,14 +100,21 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
     */  
     /**
      * Returns the components of the widget finder.
+     * @return {Array} List of all components which should be
+     *    ommited in the tree view of the developers application.
      */
     getComponents: function() {
-      return [this, this._table, this._reloadToolTip, this._autoReloadToolTip, this._objectsPopup, this._objectSummaryToolTip];
+      return [this, this._table, this._reloadToolTip, 
+              this._autoReloadToolTip, this._objectsPopup, 
+              this._objectSummaryToolTip];
     },
     
+    
     /**
-     * Selects an object in the list.
-     * @param {Object} object The object to set. 
+     * Selects an object in the list. If the object could not 
+     * be found in the list in case the list is not up to date
+     * the selection of the list will be removed. 
+     * @param object {qx.core.Object} The object to select.
      */
     selectObject: function(object) {
       // flag to mark if the item was selected
@@ -132,32 +141,36 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       }
     },
     
+    
     /**
-     * Returns the hashcode of the currently selected object. If none is selected,
-     * null will be returned.
+     * Returns the hashcode of the currently selected object. 
+     * If none is selected, null will be returned.
+     * @return {String} The hash code of the current selected object.
      */
     getSelectedWidgetHash: function() {
+      // get the id of the selected row
       var rowId = this._table.getSelectionModel().getAnchorSelectionIndex();
-      var row = this._tableModel.getData()[rowId];
+      // get the selected row
+      var row = this._tableModel.getData()[rowId];      
       if (row != null) {
         return row[0];        
       }
       return null;
     },
     
+    
     /*
     *********************************
        PROTECTED
     *********************************
     */
-   
     /**
      * Reads the data of the document and updates the tablemodel.
      */
     _readObjects: function() {
       // check if the search term is in the textfield
       if (this._findField.getComputedValue() != inspector.objectFinder.ObjectFinder.SEARCH_TERM) {        
-				// if not get the filterd data
+        // if not get the filterd data
         var data = this._getData(this._findField.getComputedValue());
       } else {
         // if no filter is applied get the whole data
@@ -167,19 +180,24 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       this._setData(data);
     },
     
+    
     /**
-     * Fetches the data from the objects db, removes the objectsw from the
-     * inspector application and filters it fi a filter is given.
-     * @param {Object} filter The term to search for in the data.
+     * Fetches the data from the objects db, removes the objects from the
+     * inspector application and filters it if a filter is given.
+     * @param filter {String | RegExp} The term to search for in the data.
+     * @return {Array} A filterd and cleaned list objects containing
+     *      0     - the hashode of the object
+     *      1     - the classname of the object
+     *      dbKey - the key in the objects db
      */
     _getData: function(filter) {
       // create a data array
       var data = [];
       // get all objects form the object db
-      var objectsAndKeys = this._getClearObjects();			
-			var objects = objectsAndKeys.object;
-			var dbKeys = objectsAndKeys.dbKey;
-			
+      var objectsAndKeys = this._getClearObjects();      
+      var objects = objectsAndKeys.object;
+      var dbKeys = objectsAndKeys.dbKey;
+      
       //  go threw all objects
       for (var key in objects) {
         // add the object to the data array
@@ -206,17 +224,20 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
           // alert the user it the search string was incorrect
           alert(e);
         }
-        // return the filterd data
+        // set the filterd data
         data = newData;
       }
-
-      // return the unfilterd data
+      // return the data
       return data;
     },
     
+    
     /**
-     * Removes the inspector objects from the set of all objects containing in the
-     * docuement.
+     * Removes the inspector objects from the set of all objects 
+     * containing in the docuement.
+     * @return {Object} A object containing two array:
+     *    objects - A list containing the objects without the inspector objects
+     *    dbKey   - A list of the fitting keys in the original objects db.
      */
     _getClearObjects: function() {
       // get the array of excludes
@@ -242,14 +263,19 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       return {object:objects, dbKey:dbKeys};
     },
     
+    
     /**
-     * Sets the given data in the table model and reordes it like the data was orderd.
-     * @param {Object} data
+     * Sets the given data in the table model and reordes 
+     * it like the data was orderd.
+     * @param data {Array} A list of objects created by {@link inspector.objectFinder.ObjectFinder#_getData}
      */
     _setData: function(data) {
+      // set the data in the model
       this._tableModel.setData(data);
+      // resort the data corresponding the former sort
       this._tableModel.sortByColumn(this._tableModel.getSortColumnIndex() ,this._tableModel.isSortAscending());      
     },
+    
     
     /**
      * Starts a timer which automaticly reloads the table every 200 ms 
@@ -267,6 +293,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       }, 200);   
     },
     
+    
     /**
      * Stops the automatic reload timer.
      */
@@ -277,10 +304,14 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       window.clearTimeout(this._reloadTimer);
     },
        
-       
     
-    
-    _getObjectsCountArray: function(sortByCount) {
+    /**
+     * This function creates the data for the objects summary. 
+     * @return {Array} A list containing key, data pairs as array.
+     *    0 - classname of the object
+     *    1 - the count of the objects int the document
+     */
+    _getObjectsCountArray: function() {
       // create a temp data objects
       var tempData = {};
       // get all objects form the object db
@@ -304,7 +335,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       return data;
     },
        
-       
    
     /*
     *********************************
@@ -318,17 +348,19 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       // do not create a statusbar
     }, 
     
+    
     /**
-     * Sets the height of the main element of the window.
-     * @param {int} delta The change value of the height.
+     * Sets the height of the table.
+     * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
       this._table.setHeight(this._table.getHeight() + delta);
     },
     
+    
     /**
-     * Sets the width of the main element of the window.
-     * @param {Object} delta The change value of the width.
+     * Sets the width of the table and classname column.
+     * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
       // set the width of the table
@@ -339,16 +371,21 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       
     },
     
+    
     /**
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
+      // dosition the window an the rigth 
       this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);
+      // Make the window 25% of the screen heigth heigh 
       this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
     },
     
+    
     /**
-     * Creates the table
+     * Creates the table including the table model. Also register the 
+     * handler which handles the cahnge of the selection of the tabel.
      */
     _createMainElement: function() {
       // initialize the table model
@@ -393,12 +430,12 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
           }          
         }
       }, this);
-      
     },
     
     
     /**
      * Adds the buttons and the search textfield to the toolbar.
+     * Also register the handlers for the search field and the buttons.
      */
     _addToolbarButtons: function() {
       // create and add the reload button
@@ -411,7 +448,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
       // set the tooltip to the reload button
       this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);
       this._reloadButton.setToolTip(this._reloadToolTip);
-      
       
       // create and add a autoreload button
       var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/autoreload.png"));
@@ -506,7 +542,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder",
           self._setData(newData);                
         }, 300);
       }, this);
-    }
-       
+    }       
    }
 });

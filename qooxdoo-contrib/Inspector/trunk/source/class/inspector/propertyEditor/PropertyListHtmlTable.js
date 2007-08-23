@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
-{
+qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
+  
   extend : inspector.propertyEditor.PropertyList,
 
   /*
@@ -26,11 +26,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
      CONSTRUCTOR
   *****************************************************************************
   */
-
   construct : function(controller) {
     // call the constructor of the superclass
     this.base(arguments, controller);
-
     // create and add a new label
     this._htmlTable = new qx.ui.basic.Label(); 
     this.add(this._htmlTable);    
@@ -42,22 +40,24 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
      MEMBERS
   *****************************************************************************
   */
-  members :
-  { 
-
+  members : { 
     /*
     *********************************
        ATTRIBUTES
     *********************************
     */     
-    _showInherited: null,
+    // main element of the view
     _htmlTable: null,
+
 
     /*
     *********************************
        PUBLIC
     *********************************
     */
+    /**
+     * Tells the view to build a list of the widget in the controller.
+     */
     build: function() {
       // only build a list if a widget is set
       if (this._controller.getWidget() != null) {
@@ -65,22 +65,44 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
       }
     },
     
+    
+    /**
+     * Tells the view that a property has changed and need to be reloaded.
+     * @param classkey {String} The classname and property name as a string. 
+     */
     update: function(classkey) {
       this.build();
     },
     
+    
+    /**
+     * @return The components of the view.
+     */
     getComponents: function() {
       return [this._filter];
     },
     
+    
+    /**
+     * Checks if the given property is in the view.
+     * @param key {String} The name of the property.
+     * @param classname {String} the classname of the property.
+     */
     containsProperty: function(key, classname) {
       return false;  
     },
     
+    
+    /**
+     * The handler which switches the inherited status. 
+     * Throws an error in this view because it is not supported.
+     * @param e {Event}
+     */
     switchInheritedStatus: function(e) {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (switchInheritedStatus) in 'PropertyList'!");  
     },
+    
     
     /**
      * This function hides or shows the inherited properties of the current 
@@ -97,18 +119,23 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
        PROTECTED
     *********************************
     */
-    _makeNewHtmlTable: function(widget) {            
+    /**
+     * Creates a new HTML table and adds it to the label in this view.
+     * This table contains all properties of the given object
+     * @param qxObject {qx.core.Object} The object to show the properties of.
+     */
+    _makeNewHtmlTable: function(qxObject) {            
       if (this._controller.getInheritedStatus()) {
         // get the data
-        var data = this._getData(widget);
+        var data = this._getData(qxObject);
         // store the data in variables
         var groupNames = data.names;      
         var properties = data.props;
       
       } else {
         // add a null in front becaus the array goes 1..n
-        var groupNames = [null, widget.classname];
-        var properties = [null , qx.Class.getByName(widget.classname).$$properties];
+        var groupNames = [null, qxObject.classname];
+        var properties = [null , qx.Class.getByName(qxObject.classname).$$properties];
       }
       
       // clear the former text
@@ -127,7 +154,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
             // read value
             var getterName = "get" + qx.lang.String.toFirstUp(key);
             try {
-              var value = widget[getterName].call(widget);              
+              var value = qxObject[getterName].call(qxObject);              
             } catch (e) {
               var value = "<font color='red'>" + e + "</font>";
             }
@@ -141,7 +168,5 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable",
       // beginn the table for the properties
       this._htmlTable.setText("<table>" + this._htmlTable.getText());        
     }
-
   }
-
 });

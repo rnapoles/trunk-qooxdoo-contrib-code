@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.shell.AutoCompletePopup",
-{
+qx.Class.define("inspector.shell.AutoCompletePopup", {
+	
   extend: qx.ui.popup.Popup,  
 
   /*
@@ -27,9 +27,11 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
   *****************************************************************************
   */  
   statics: {
+		// the length of the history
     HISTORY_LENGTH: 20
   },
     
+		
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -78,15 +80,13 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
     *********************************
     */
-    
+    // the main element ot the autcomplete popup
     _table: null,
     _tableModel: null,
     
@@ -104,6 +104,12 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
     },
     
 		
+		/**
+		 * Moves manually the selection in the table up. If the selection 
+		 * is at the upper end, a wraparound will be performed and the 
+		 * selection is at the last position.
+		 * @see AutoCompletePopup#selectionDown
+		 */
     selectionUp: function() {
 			// get the current selectend row
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
@@ -122,6 +128,12 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
     },
     
 		
+		/**
+		 * Moves manually the selection down  in the table. If the selection
+		 * is at the lower end, a wraparound will be performed and the
+		 * selection is at the first position.
+		 * @see AutoCompletePopup#selectionUp
+		 */
     selectionDown: function() {
 			// get the current selected row
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
@@ -141,7 +153,16 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
     },
     
         
-
+    /**
+     * Opens the autocomplete popup and shows the content concerning the 
+     * given attributes. 
+     * This incudes evaluating the objectRef and fetching the arrtibutes 
+     * during runntime of the given object. The information will be 
+     * transformed into an array and set in the tabel.   
+     * @param objectRef {String} The code currently in the shells textfield
+     * @param left {Number} The left position to open the popup. 
+     * @param top {Number} The top position to topen the popup.
+     */
     open: function(objectRef, left, top) {     
       // select the first entry
       this._table.getSelectionModel().setSelectionInterval(0, 0);
@@ -200,17 +221,14 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
             }
             // add the ending bracket for the function arguments
             functionString += ")";
-                        
+            // add the function string to the data
             data.push([functionString]);
 
-  
 					// if it is no function
           } else {
-
+            // add the name of the attribute to the data
 						data.push([name]);
-						
-          }
-				
+          }				
         } 
       }
       
@@ -228,16 +246,26 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
     },    
 
     
+		/**
+		 * Hides the autcomplete popup.
+		 */
     hide: function() {
       this.setVisibility(false);
     },
     
     
+		/**
+		 * @return true if the autocomplete popus is visible and displayed.
+		 */
     isOnScreen: function() {
       return this.getDisplay() && this.getVisibility();
     },
     
 		
+		/**
+		 * Takes the current selected element of the table and returns it to the user.
+		 * @return {String} The current selected string.
+		 */
     getCurrentSelection: function() {
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
       // if something is selected
@@ -247,17 +275,5 @@ qx.Class.define("inspector.shell.AutoCompletePopup",
       }
       return null;
     }
-    
-    /*
-    *********************************
-       PROTECTED
-    *********************************
-    */    
-    
-    /*
-    *********************************
-       Key handler
-    *********************************
-    */   
    }
 });

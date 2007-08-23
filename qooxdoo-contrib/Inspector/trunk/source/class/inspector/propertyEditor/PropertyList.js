@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.propertyEditor.PropertyList",
-{
+qx.Class.define("inspector.propertyEditor.PropertyList", {
+  
   extend : qx.ui.layout.VerticalBoxLayout,
   type : "abstract",
 
@@ -55,9 +55,7 @@ qx.Class.define("inspector.propertyEditor.PropertyList",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
@@ -103,11 +101,19 @@ qx.Class.define("inspector.propertyEditor.PropertyList",
        PROTECTED
     *********************************
     */
-   
-   _getDataInherited: function(widget) {
+    /**
+     * This function goes threw all superclasses of the given object and stores 
+     * the properties in an object.
+     * @param qxObject {qx.core.Object} The object to get the data from.
+     * @return {Object} A Object contrainning tree vaules
+     *    names   - An array of names of the categories (in this case the classnames)
+     *    props   - An array of array of properties.
+     *    classes - An array of array of classnames.
+     */
+    _getDataInherited: function(qxObject) {
       // the first superclass is the class of the selected widget
-      var superclass = widget;
-
+      var superclass = qxObject;
+ 
       // create new properties array to store the propertey of a class
       var properties = [];
       // create new classnames array to store the classnames
@@ -136,36 +142,48 @@ qx.Class.define("inspector.propertyEditor.PropertyList",
       }
       // return the data as an object
       return {names: groupNames, props: properties, classes: classnames};
-   },
+    },
    
    
-   _getDataGrouped: function(widget) {
-     // get all properties
-     var data = this._getDataInherited(widget);
-     var allProperties = data.props;
-     // empty the filter
-     this._filter.empty();
-     // og threw all properties an insert them into the filter
-     for (var index in allProperties) {
-       var classname = data.names[index];
-       for (var propertyName in allProperties[index]) {
-         this._filter.sortIn(propertyName, allProperties[index][propertyName], classname);
-       }
-     }     
-     // return the data as an object      
-     return this._filter.getResult();     
-   },
+    /**
+     * Uses the {@link inspector.propertEditor.PropertyList#_getDataInherited} function
+     * to get the data. Additionally filters the data using the filter and returns 
+     * an object similar to the object from the 
+     * {@link inspector.propertEditor.PropertyList#_getDataInherited} function.
+     * @see Filter
+     * @param qxObject {Object} The qooxdoo object to get the properties from.
+     */
+    _getDataGrouped: function(qxObject) {
+      // get all properties
+      var data = this._getDataInherited(qxObject);
+      var allProperties = data.props;
+      // empty the filter
+      this._filter.empty();
+      // og threw all properties an insert them into the filter
+      for (var index in allProperties) {
+        var classname = data.names[index];
+        for (var propertyName in allProperties[index]) {
+          this._filter.sortIn(propertyName, allProperties[index][propertyName], classname);
+        }
+      }     
+      // return the data as an object      
+      return this._filter.getResult();     
+    },
     
     
-   _getData: function(widget) {
-     // check for the status of the groupButton
-     if (this._controller.getGroupStatus()) {
-       return this._getDataGrouped(widget);    
-     } else {
-       return this._getDataInherited(widget);
-     }
-   } 
-    
+    /**
+     * Returns the grouped or inherited in subject to the 
+     * status of the grouped button.
+     * @param qxObject {qx.core.Object} The object to get the properties from.
+     * @return An object containing the grouped porperties.  
+     */
+    _getData: function(qxObject) {
+      // check for the status of the groupButton
+      if (this._controller.getGroupStatus()) {
+        return this._getDataGrouped(qxObject);    
+      } else {
+        return this._getDataInherited(qxObject);
+      }
+    } 
   }
-
 });

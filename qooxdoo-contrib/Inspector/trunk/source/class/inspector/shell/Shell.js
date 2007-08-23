@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.shell.Shell",
-{
+qx.Class.define("inspector.shell.Shell", {
+  
   extend : inspector.AbstractWindow,  
 
   /*
@@ -27,6 +27,7 @@ qx.Class.define("inspector.shell.Shell",
   *****************************************************************************
   */  
   statics: {
+    // the length of the history in the shell
     HISTORY_LENGTH: 20
   },
     
@@ -50,9 +51,7 @@ qx.Class.define("inspector.shell.Shell",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
@@ -65,19 +64,20 @@ qx.Class.define("inspector.shell.Shell",
     
     // buttons
     _clearButton: null,
-    _heepButtion: null,
+    _helpButton: null,
     
-    // history array
+    // history stuff
     _history: [],
     _historyCounter: -1,
     
     // auto complete stuff
     _ctrl: false,
     _autoCompletePopup: null,
-		
-		// the current widget
-		_widget: null,
-		_ans: null,
+    
+    // the current widget
+    _widget: null,
+    _ans: null,
+    
     
     /*
     *********************************
@@ -85,12 +85,17 @@ qx.Class.define("inspector.shell.Shell",
     *********************************
     */  
     /**
-     * Returns the components of the shell
+     * @return The components of the shell.
      */
     getComponents: function() {
       return [this].concat(this._autoCompletePopup.getComponents());
     },    
     
+    
+    /**
+     * Appends the given string to the textfield.
+     * @param string {String} The string to append.
+     */
     appendString: function(string) {
       if (string != null) {
         // append the given string to the textfield
@@ -105,19 +110,36 @@ qx.Class.define("inspector.shell.Shell",
       }
     },
     
+    
+    /**
+     * Set the widget which should be addressd with the this value in the shell.
+     * @param widget {qx.core.Object} The current selected object.
+     */
     setWidget: function(widget) {
       this._widget = widget;
     },
-		
-		getWidget: function() {
-			return this._widget;
-		},
-		
-		getAns: function() {
-			return this._ans;
-		},
-		
-		
+    
+    
+    /**
+     * @return The current selected object.
+     */
+    getWidget: function() {
+      return this._widget;
+    },
+    
+    
+    /**
+     * @return The answer of the last call.  
+     */
+    getAns: function() {
+      return this._ans;
+    },
+    
+    
+    /**
+     * Invokes the selecting of the value currently selected in the 
+     * autocomplete popup and appends it to the textfield.
+     */
     chooseAutoCompleteValue: function() {
       // get the current value of the textfield
       var value = this._textField.getComputedValue();
@@ -134,20 +156,27 @@ qx.Class.define("inspector.shell.Shell",
       }
       // hide the popup
       this._autoCompletePopup.hide(); 
-			// focus the textfield
-			if (!this._textField.getFocused()) {
-        this._textField.focus();				
-			}
-    },		
+      // focus the textfield
+      if (!this._textField.getFocused()) {
+        this._textField.focus();        
+      }
+    },    
+    
     
     /*
     *********************************
        PROTECTED
     *********************************
     */
+    /**
+     * This function evaluates the given text and runs it a 
+     * javascript code using the eval function. In subject to the 
+     * return value the corresponding value will be printed to the console. 
+     * @param text {String} The text to run as javascript code. 
+     */
     _process: function(text) {
       // add the text to the embedded
-      this._printText(text);			
+      this._printText(text);      
       // try to run the code
       try {
         // run it and store the result in the global ans value
@@ -171,6 +200,9 @@ qx.Class.define("inspector.shell.Shell",
     },
     
     
+    /**
+     * Scrolls the end of the main layout which holds the aoutput of the shell.
+     */
     _scrollToLastLine: function() {
       // flush the queues to ensure that the adding has been recognized
       qx.ui.core.Widget.flushGlobalQueues();
@@ -184,8 +216,14 @@ qx.Class.define("inspector.shell.Shell",
        Key handler
     *********************************
     */    
+    /**
+     * Keyhandler which handels the keydown event on the textfield. This
+     * includes e.g. the historys function by using the up and down keys and 
+     * much more.
+     * @param e {Event} 
+     */
     _keyDownHandler: function(e) {   
-		      
+          
       // if the esc key is pressed
       if (e.getKeyIdentifier() == "Escape") {
         // hide the autocomplete popup
@@ -278,6 +316,10 @@ qx.Class.define("inspector.shell.Shell",
     },
     
     
+    /**
+     * Keyhandler to handle the keyup event. 
+     * @param e {Event}
+     */
     _keyUpHandler: function(e) {
       // if the control key will be released
       if (e.getKeyIdentifier() == "Control") {
@@ -285,16 +327,21 @@ qx.Class.define("inspector.shell.Shell",
         this._ctrl = false;
       }
     },
-		
-		_keyPressHandler: function(e) {
-			if (this._autoCompletePopup.isOnScreen()) {
-				if (e.getKeyIdentifier() == "Down") {
-					this._autoCompletePopup.selectionDown();
-				} else if (e.getKeyIdentifier() == "Up") {
-					this._autoCompletePopup.selectionUp();
-				}
-			}
-		},
+    
+    /**
+     * Keyhandler wich handels the keypress event. This is necessary to 
+     * scrol threw the autocomplete popup by holding the up or down key.
+     * @param e {Event} 
+     */
+    _keyPressHandler: function(e) {
+      if (this._autoCompletePopup.isOnScreen()) {
+        if (e.getKeyIdentifier() == "Down") {
+          this._autoCompletePopup.selectionDown();
+        } else if (e.getKeyIdentifier() == "Up") {
+          this._autoCompletePopup.selectionUp();
+        }
+      }
+    },
     
     
     /*
@@ -302,6 +349,11 @@ qx.Class.define("inspector.shell.Shell",
        Print functions
     *********************************
     */    
+    /**
+     * Pints out a return value to the shell. This also includes a special 
+     * treatment for qooxdoo objects and array.
+     * @param returnValue {Object} The value to print.
+     */
     _printReturnValue: function(returnValue) {
       // check the arrays      
       if (returnValue instanceof Array) {
@@ -323,8 +375,16 @@ qx.Class.define("inspector.shell.Shell",
       }      
     },
     
+    
+    /**
+     * Prints out a qooxdoo object to the shell including a link to set 
+     * the object as the current selected object. 
+     * @param object {qx.core.Object} The qooxdoo object to print.
+     */
     _printQxObject: function(object) {
+      // build the label string
       var label = this._getLabel("<< <u>", object.classname + " [" + object.toHashCode() + "]</u>", "blue")
+      // set the link to set the object as current object
       label.setStyleProperty("cursor", "pointer");
       label.addEventListener("click", function() {
         this._inspector.setWidget(object);
@@ -332,19 +392,33 @@ qx.Class.define("inspector.shell.Shell",
       this._outputLayout.add(label);
     },
     
+    /**
+     * Prints out a standard text in black wit the leading ">> " to the shell.
+     * @param text {String} the text to print out.
+     */
     _printText: function(text) {
       this._outputLayout.add(this._getLabel(">> ", text, "black"));
     },
  
+    
+    /**
+     * Print out an error message to the shell. This message begins with
+     * ">> " and is red.
+     * @param error {String} The error message.
+     */
     _printError: function(error) {
       this._outputLayout.add(this._getLabel(">> ", error, "red"));
     },
  
+ 
+    /**
+     * Print out a line to seperate two calls. This also invokes a scrolling 
+     * to the bottom of the shell. 
+     */
     _printLine: function() {
       this._outputLayout.add(this._getLine());
       this._scrollToLastLine();
     },
-    
     
     
     /*
@@ -352,6 +426,14 @@ qx.Class.define("inspector.shell.Shell",
        Creater functions
     *********************************
     */
+    /**
+     * This function creates a label and tells the inspector that the label 
+     * is a object of the inspector classes.
+     * @param prefix {String} The prefix will be added infront of the text. 
+     * @param text {String} The text which should be in the label.
+     * @param color {String | Color} The color of the font.
+     * @return {qx.ui.basic.Label} the created label.
+     */
     _getLabel: function(prefix, text, color) {
       // start the exclusion so that the new element will not be in the list of objects
       this._inspector.beginExclusion();
@@ -366,6 +448,11 @@ qx.Class.define("inspector.shell.Shell",
       return label;      
     },
     
+    
+    /**
+     * The function creates a Treminator as a line in the shell.
+     * @return {qx.ui.basic.Terminator} The created terminator.  
+     */
     _getLine: function() {
       // start the exclusion so that the new element will not be in the list of objects
       this._inspector.beginExclusion();
@@ -392,21 +479,24 @@ qx.Class.define("inspector.shell.Shell",
       // do not create a statusbar
     }, 
     
+    
     /**
-     * Sets the height of the main element of the window.
-     * @param {int} delta The change value of the height.
+     * Sets the height of the output layout.
+     * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
        this._outputLayout.setHeight(this._outputLayout.getHeight() + delta);
     },
     
+    
     /**
-     * Sets the width of the main element of the window.
-     * @param {Object} delta The change value of the width.
+     * Sets the width of the output layout.
+     * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
       // do nothing
     },
+    
     
     /**
      * Sets the start position of the window.
@@ -416,14 +506,15 @@ qx.Class.define("inspector.shell.Shell",
       this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());
     },
     
+    
     /**
-     * Creates the table
+     * Creates the output layout and the textfield. Also register 
+     * the handlers for the textfield.
      */
     _createMainElement: function() {
       // create and add a layout for the HTMLembedded and the textbox
       this._shellLayout = new qx.ui.layout.VerticalBoxLayout();
       this._mainLayout.add(this._shellLayout);
-        
       
       this._outputLayout = new qx.ui.layout.VerticalBoxLayout();
       this._outputLayout.setBackgroundColor("white");
@@ -443,7 +534,7 @@ qx.Class.define("inspector.shell.Shell",
       // add the listener to the textfield
       this._textField.addEventListener("keydown", this._keyDownHandler, this);
       this._textField.addEventListener("keyup", this._keyUpHandler, this);
-			this._textField.addEventListener("keypress", this._keyPressHandler, this);			
+      this._textField.addEventListener("keypress", this._keyPressHandler, this);
       
       // add a event listener which updates the autoCompletion
       this._textField.addEventListener("changeValue", function(e) {
@@ -462,7 +553,6 @@ qx.Class.define("inspector.shell.Shell",
           }
         }
       }, this);
-
     },
     
     
