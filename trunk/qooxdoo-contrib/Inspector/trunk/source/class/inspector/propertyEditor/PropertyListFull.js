@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.propertyEditor.PropertyListFull",
-{
+qx.Class.define("inspector.propertyEditor.PropertyListFull", {
+  
   extend : inspector.propertyEditor.PropertyList,
 
   /*
@@ -26,7 +26,6 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
      CONSTRUCTOR
   *****************************************************************************
   */
-
   construct : function(controller) {
     // call the constructor of the superclass
     this.base(arguments, controller);
@@ -49,50 +48,73 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
     *********************************
-    */     
+    */
+    // to store the currently displayed properties
     _propertyColumns: null,
     
+    // reference to all combobox popups 
     _comboBoxPopups: null,
     
+    // color picker stuff
     _colorPopup: null,
     _colorFields: null,
     _currentColorProperty: null,
     
+    // cache to store the already created propertie layouts
     _oldPropertyListPool: null,
+
 
     /*
     *********************************
        PUBLIC
     *********************************
     */
+    /**
+     * Invokes a relaod of the view.
+     */
     build: function() {
       if (this._controller.getWidget() != null) {
         this._reloadPropertyListFull();
       }
     },
     
+    
+    /**
+     * Updates the given propertie. 
+     * @param key {String} The name of the propertie.
+     * @param classname {String} The classname of the properties class.
+     */
     update: function(key, classname) {
       this._setPropertyValueFull(key, classname);
     },
     
+    
+    /**
+     * @return {Array} A list of all omponents used in this view.
+     */
     getComponents: function() {
       return [this, this._colorPopup, this._filter].concat(this._comboBoxPopups);
     },
     
+    
+    /**
+     * @param key {String} The name of the propertie.
+     * @param classname {String} The classname of the properties class.
+     * @return {boolean} True, if the given property is in the view. 
+     */
     containsProperty: function(key, classname) {
       return this._propertyColumns[classname + "." + key] == null ? false : true;
     },
     
+    
     /**
      * This function hides or shows the inherited properties of the current 
-     * displayed widget. 
+     * displayed object. 
      */
     switchInheritedStatus: function() {
       // go threw all children of the propertylist
@@ -106,13 +128,12 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
       }  
     },
     
+    
     /*
     *********************************
        PROTECTED
     *********************************
     */
-    
-    
     /**
      * Ths function reloads the full property list. It uses recycling to 
      * speed up the loading process for new properties.
@@ -142,9 +163,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
       // store the data in variables
       var groupNames = data.names;      
       var properties = data.props;
-      var classnames = data.classes;
-      
-            
+      var classnames = data.classes;    
       
       // if the class hiracy is enabled
       if (!this._controller.getGroupStatus()) {
@@ -207,7 +226,6 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
             oldreoved = false;            
           }
           
-          
           // create the atom for the group and add it
           var groupNameAtom = new qx.ui.basic.Atom("<b>" + groupNames[i] + "</b>", qx.io.Alias.getInstance().resolve("inspector/image/close.gif"));
           groupNameAtom.setUserData("name", groupNames[i]);
@@ -243,7 +261,6 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
           // add the group of properties to the propertyList     
           this.addAfter(groupLayout, groupNameAtom);     
          
-         
           // save the maxwidth for the current group
           var maxWidth = 0;
           // go threw all properties in the current group
@@ -267,7 +284,6 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
                 // go over to the next property
                 continue;
               }
-
 
               // create a row in the propertiy editor view
               var horizontalLayout = new qx.ui.layout.HorizontalBoxLayout();
@@ -349,9 +365,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
     
     /**
      * Removes all groupes form the list that count is higher than the 
-     * count of the classes in the current widget. This function shold 
+     * count of the classes in the current object. This function shold 
      * only be invokes if the class based view is enbaled.  
-     * @param {Object} classnames The classnames array.
+     * @param classnames {Array} The classnames array.
      */    
     _removeUnnecessaryClasses: function(classnames) {
       // remove all classes from the list which are definitely not in the current widget
@@ -382,7 +398,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
     /**
      * This function removes all old classes from the list to the 
      * given classname in the deleteTo parameter.
-     * @param {Object} deleteTo Classname.
+     * @param deleteTo {String} Classname.
      */
     _removeOld: function(deleteTo) {
       // if no deleteTo classname is given
@@ -441,6 +457,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
      * a checkbox for a boolean value.
      * The handler for changing the values of the property will also be added 
      * after the creation process.
+     * @param propertySet {Array} The array containing the propertie values.
+     * @param key {String} The name of the propertie.
+     * @param classname {String} The classname of the properties class.
      */
     _getPropertyWidgetFull: function(propertySet, key, classname) {
       // read value
@@ -655,14 +674,15 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
     },    
     
     
-    
     /**
-     * This function sets the value of the property given in the current layout.
-     * The function first reads the current value of the property. If the value 
+     * This function sets the value of the given property.
+     * It first reads the current value of the property. If the value 
      * is null, the null label will be displayed.
      * The next step is to check the kind of widget which represents the value 
      * of the property. According to the type of widget, the right value will 
      * be set.
+     * @param key {String} The name of the propertie.
+     * @param classname {String} The classname of the properties class.
      */
     _setPropertyValueFull: function(key, classname) {      
       // get the layout containing the property 
@@ -751,7 +771,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
           }
         // reset the label if the value is set null
         } else {
-          layout.getChildren()[1].setText("");					
+          layout.getChildren()[1].setText("");
         }
         
       // textfields  
@@ -797,7 +817,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
        CONSTRUCTOR HELPERS
     *********************************
     */    
-    
+    /**
+     * Creates the color popup which is needed to set colors.
+     */
     _createColorPopup: function() {
       // create the color table to initialize the color popup
       var colorTable =
@@ -851,7 +873,5 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull",
         }
       }, this);
     }
-    
   }
-
 });

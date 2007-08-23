@@ -13,25 +13,14 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.AbstractWindow",
-{
+qx.Class.define("inspector.AbstractWindow", {
+  
   extend : qx.ui.window.Window,
-  type : "abstract",  
-  
-  
-  /*
-  *****************************************************************************
-     STATICS
-  *****************************************************************************
-  */  
-  statics: {
-
-  },
-  
+  type : "abstract",   
     
   /*
   *****************************************************************************
@@ -74,7 +63,6 @@ qx.Class.define("inspector.AbstractWindow",
     
     // register the opacity handler
 //    this._registerOpacityHandler();
-
   },
 
 
@@ -83,9 +71,7 @@ qx.Class.define("inspector.AbstractWindow",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
@@ -103,19 +89,6 @@ qx.Class.define("inspector.AbstractWindow",
     // creating inspector reference
     _inspector: null,
     
-    /*
-    *********************************
-       PUBLIC
-    *********************************
-    */  
-	
-    
-    /*
-    *********************************
-       PROTECTED
-    *********************************
-    */
-   
    
     /*
     *********************************
@@ -123,14 +96,16 @@ qx.Class.define("inspector.AbstractWindow",
     *********************************
     */
     /**
-     * Creates a blnk toolbar.
+     * Creates a blank toolbar.
      */
     _createToolbar: function() {
       this._toolbar = new qx.ui.toolbar.ToolBar();
       this._toolbar.setWidth("100%");
       this._mainLayout.add(this._toolbar);
+      // call a abstract function which sholuld add some toolbar buttons
       this._addToolbarButtons();
     }, 
+    
     
     /**
      * Creates a standard statusbar.
@@ -145,9 +120,10 @@ qx.Class.define("inspector.AbstractWindow",
       this._mainLayout.add(this._statusbar);
     },
     
+    
     /**
      * Registers three handler functions to control the starting position
-     * and the resize of the window.
+     * and the resize behavior of the window.
      */
     _registerResizeHandler: function() {
       this.addEventListener("changeHeight", function(e) {
@@ -166,6 +142,7 @@ qx.Class.define("inspector.AbstractWindow",
         this._setApearancePosition();
       }, this);
     },
+    
     
     /**
      * Registers a focus handler which sets the opacity to 100% 
@@ -186,33 +163,36 @@ qx.Class.define("inspector.AbstractWindow",
     *********************************
        ABSTRACT
     *********************************
-    */
-   
+    */   
     /**
-     * Returns the components of the window.
+     * Returns the components of the window which should not 
+     * be in the widget hierarchy. 
      */       
     getComponents: function() {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (getComponents) in 'AbstractDebugerWindow'!");
     },
    
+   
     /**
      * Sets the height of the main element of the window.
-     * @param {int} delta The change value of the height.
+     * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (_setMainElementHeight) in 'AbstractDebugerWindow'!");
     },
     
+    
     /**
      * Sets the width of the main element of the window.
-     * @param {Object} delta The change value of the width.
+     * @param {Number} delta The change value of the width.
      */
     _setMainElementWidth: function(delta) {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (_setMainElementWidth) in 'AbstractDebugerWindow'!");
     },
+    
     
     /**
      * Sets the start position of the window.
@@ -222,20 +202,24 @@ qx.Class.define("inspector.AbstractWindow",
       throw new Error("Abstract method call (_setApearancePosition) in 'AbstractDebugerWindow'!");
     },
     
+    
     /**
-     * Creates the main element e.g. a table or tree.
+     * Creates the main element of the window which cann be
+     * added to the main layout and apears between the toolbar
+     * and the statusbar.
      */
     _createMainElement: function() {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (_createMainElement) in 'AbstractDebugerWindow'!");
     },
-        
+
+
     /**
-     * Adds the buttons to the toolbar.
+     * Adds the buttons to the toolbar. If no toolbar buttons
+     * are needed, do not implement this method.
      */
     _addToolbarButtons: function() {
       // do not add a button at all
     }
-
    }
 });

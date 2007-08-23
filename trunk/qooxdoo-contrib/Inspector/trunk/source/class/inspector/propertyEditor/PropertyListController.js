@@ -13,56 +13,41 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Interface.define("inspector.propertyEditor.PropertyListController",
-{
+qx.Interface.define("inspector.propertyEditor.PropertyListController", {
+  
   /*
   *****************************************************************************
      MEMBERS
   *****************************************************************************
   */
-  members :
-  {
+  members : {
 
     getWidget: function() {
-      return true;
-      // throw an exception if the method is caled on the abstract class
-      // throw new Error("Abstract method call (getWidget) in 'PropertyListController'!");
+      return true;      
     },
     
     setSelectedProperty: function(layout) {
       return true;
-      // throw an exception if the method is caled on the abstract class
-      // throw new Error("Abstract method call (setSelectedProperty) in 'PropertyListController'!");
     },
     
     getSelectedProperty: function() {
       return true;
-      // throw an exception if the method is caled on the abstract class
-      // throw new Error("Abstract method call (getSelectedProperty) in 'PropertyListController'!");
     },
     
     getInheritedStatus: function() {
       return true;
-      // throw an exception if the method is caled on the abstract class
-      // throw new Error("Abstract method call (getInheritedStatus) in 'PropertyListController'!");
     },
     
     getGroupStatus: function() {
       return true;
-      // throw an exception if the method is caled on the abstract class
-      // throw new Error("Abstract method call (getGroupStatus) in 'PropertyListController'!");        
-    },
+    },  
     
     gotoSelectedWidget: function() {
-      return true;
-      // throw an exception if the method is caled on the abstract class
-      // throw new Error("Abstract method call (gotoSelectedWidget) in 'PropertyListController'!");
-    }
-    
+      return true;      
+    }    
   }
-
 });

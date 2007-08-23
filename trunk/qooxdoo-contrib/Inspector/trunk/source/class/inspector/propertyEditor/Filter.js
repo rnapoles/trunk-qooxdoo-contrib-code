@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.propertyEditor.Filter",
-{
+qx.Class.define("inspector.propertyEditor.Filter", {
+  
   extend : qx.core.Object,
   
   /*
@@ -27,6 +27,7 @@ qx.Class.define("inspector.propertyEditor.Filter",
   *****************************************************************************
   */
   statics: {
+    // the name of the default category 
     DEFAULT_CATEGORY_NAME: "Rest"
   },
 
@@ -36,13 +37,12 @@ qx.Class.define("inspector.propertyEditor.Filter",
   *****************************************************************************
   */
   construct : function() {
-    qx.core.Object.call(this);
-    
+    // call the constructor of the superclass
+    qx.core.Object.call(this);    
     // create the tests array
     this._tests = [];
     // call the function which defines the tests
-    this._defineTests();
-    
+    this._defineTests();    
     // the same like initializing the filter
     this._createCategories();   
   },
@@ -53,87 +53,92 @@ qx.Class.define("inspector.propertyEditor.Filter",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
     *********************************
     */     
+    // the data needed to filter
     _categories: null,
     _properties: null,
-    _classnames: null,
-    
+    _classnames: null,    
     _tests: null,
+
 
     /*
     *********************************
        PUBLIC
     *********************************
     */
- 
-     /**
-      * Sorts in the given property into the filter. For the sorting it 
-      * uses the defined test. If no test could be applied, the property 
-      * will be put into a default category.
-      * @param {Object} propertyName The name of the property.
-      * @param {Object} property The property array itself.
-      */
-     sortIn: function(propertyName, property, classname) {
-       // go threw all tests
-       for (var i in this._tests) {
-           // create a new regexp object to test search for the test string
-           var regExp = new RegExp(this._tests[i][0], "i");
-           // check if the propertyName matches
-           if (regExp.test(propertyName)) {
-               var index = this._categories[this._tests[i][1]];
-               // sort the property into the fitting property category
-               this._properties[index][propertyName] = property;
-               this._classnames[index][propertyName] = classname;
-               // end processing
-               return;
-           }           
-       }
-       // if no category could found, put the property into the default category
-       this._properties[this._categories[inspector.propertyEditor.Filter.DEFAULT_CATEGORY_NAME]][propertyName] = property;
-       this._classnames[this._categories[inspector.propertyEditor.Filter.DEFAULT_CATEGORY_NAME]][propertyName] = classname;
-     }, 
+    /**
+     * Sorts in the given property into the filter. For the sorting it 
+     * uses the defined test. If no test could be applied, the property 
+     * will be put into a default category.
+     * @param propertyName {String} The name of the property.
+     * @param property {Array} The property array itself.
+     * @param classname {String} The name of the properties class.
+     */
+    sortIn: function(propertyName, property, classname) {
+     // go threw all tests
+     for (var i in this._tests) {
+         // create a new regexp object to test search for the test string
+         var regExp = new RegExp(this._tests[i][0], "i");
+         // check if the propertyName matches
+         if (regExp.test(propertyName)) {
+             var index = this._categories[this._tests[i][1]];
+             // sort the property into the fitting property category
+             this._properties[index][propertyName] = property;
+             this._classnames[index][propertyName] = classname;
+             // end processing
+             return;
+         }           
+     }
+     // if no category could found, put the property into the default category
+     this._properties[this._categories[inspector.propertyEditor.Filter.DEFAULT_CATEGORY_NAME]][propertyName] = property;
+     this._classnames[this._categories[inspector.propertyEditor.Filter.DEFAULT_CATEGORY_NAME]][propertyName] = classname;
+    }, 
+    
+    
+    /**
+     * Returns the resuls as an object containing two array.
+     * names: An array containing the names of the categories.
+     * props: An array containing the properties of the corresponding categorie.
+     * classes: An array containing arrays of classnames coresponding tu the props array.
+     * The array beginn with the index 1. The two array cooperate with their indices,
+     * e.g. the category[1] contains the category name of the properties found at 
+     * position 1 in the properties array.
+     *
+     * @return {Object} An object containing three array:
+     *     categories - An array containing the categories
+     *     props      - An array containing arrays of properties
+     *     calsses    - An array containing arrays of classnames
+     */
+    getResult: function() {
+     // create a array for the mapping from the named hash to an indexed array
+     var categories = [];       
+     for (var name in this._categories) {
+         categories[this._categories[name]] = name;
+     }  
+     // return the object
+     return {names: categories, props: this._properties, classes: this._classnames};
+    }, 
      
-     /**
-      * Returns the resuls as an object containing two array.
-      * names: An array containing the names of the categories.
-      * props: An array containing the properties of the corresponding categorie.
-      * classes: An array containing arrays of classnames coresponding tu the props array.
-      * The array beginn with the index 1. The two array cooperate with their indices,
-      * e.g. the category[1] contains the category name of the properties found at 
-      * position 1 in the properties array.
-      * 
-      */
-     getResult: function() {
-       // create a array for the mapping from the named hash to an indexed array
-       var categories = [];       
-       for (var name in this._categories) {
-           categories[this._categories[name]] = name;
-       }  
-       // return the object
-       return {names: categories, props: this._properties, classes: this._classnames};
-     }, 
      
-     /**
-      * Empties the filter which menas that the filter can be reused.
-      */
-     empty: function() {
-       // this._createCategories();
-       this._createPropertyAndClassnamesArrays();       
-     },
+    /**
+     * Empties the filter which menas that the filter can be reused.
+     */
+    empty: function() {
+      // this._createCategories();
+      this._createPropertyAndClassnamesArrays();       
+    },
+    
     
     /*
     *********************************
        PROTECTED
     *********************************
     */
- 
     /**
      * Creates the categories array. Therefore it uses the in 
      * the tests defined categories. Additianally a default category 
@@ -158,6 +163,7 @@ qx.Class.define("inspector.propertyEditor.Filter",
       this._createPropertyAndClassnamesArrays();
     },
     
+    
     /**
      * Dependent on how mutch categories are available this method 
      * creates an properties array for every category. 
@@ -173,6 +179,7 @@ qx.Class.define("inspector.propertyEditor.Filter",
         this._classnames[i] = [];
       }
     },
+    
     
     /**
      * The categories and constraints will be defined in this function.
@@ -201,5 +208,4 @@ qx.Class.define("inspector.propertyEditor.Filter",
     }
     
   }
-
 });

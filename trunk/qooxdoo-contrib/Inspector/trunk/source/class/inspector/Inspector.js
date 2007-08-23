@@ -13,22 +13,18 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
 /* ************************************************************************
-
 #resource(inspector.image:image)
 #embed(inspector.image/*)
-
 ************************************************************************ */
 
-qx.Class.define("inspector.Inspector",
-{
+qx.Class.define("inspector.Inspector", {
+  
   type : "singleton",
   extend: qx.core.Object,
-
 
   /*
   *****************************************************************************
@@ -52,12 +48,12 @@ qx.Class.define("inspector.Inspector",
     GROUP_BUTTON_TOOLTIP_TEXT: "Show the properties in groups."
   },
 
+
   /*
   *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
-
   construct : function() {
     // start the exclusion stategie
     this.beginExclusion();
@@ -69,9 +65,9 @@ qx.Class.define("inspector.Inspector",
     this._createHighlightStuff();
     // end the exclusion startegie
     this.endExclusion(); 
-		
-    // Define alias for custom resource path
-    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));		
+    
+    // Define alias for inspector resource path
+    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));    
     
     // add a global key listener for opening the windows
     var doc = qx.ui.core.ClientDocument.getInstance();
@@ -85,9 +81,7 @@ qx.Class.define("inspector.Inspector",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
@@ -123,22 +117,22 @@ qx.Class.define("inspector.Inspector",
     _widget: null,
 
     
-    
    /*
     *********************************
-        PUBLIC HIGHLIGHT STUFF
+        HIGHLIGHT STUFF
     *********************************
-    */       
+    */
     /**
-     * Handler function for the highlight button.
+     * Handler function for the highlight button. Enabled or 
+     * diabled the highlight function.
      * @param e {event} The Event created by a ckeckbox.
      */
     highlightCurrentWidget: function(e) { 
-		  // only if the function has an event
-			if (e != null) {
-	      // save the current state of the checkbox button
-	      this._highlightEnabled = e.getCurrentTarget().getChecked();				
-			}
+      // only if the function has an event
+      if (e != null) {
+        // save the current state of the checkbox button
+        this._highlightEnabled = e.getCurrentTarget().getChecked();        
+      }
       // set the buttons to the current status
       this._setHighlightButton(this._highlightEnabled);
       // if highlight is on
@@ -154,9 +148,10 @@ qx.Class.define("inspector.Inspector",
       }
     },    
     
+    
     /**
-     * Tells the widget finder to highlight the given widget.
-     * @param {qx.ui.core.Widget} The Widget to highlight.
+     * Highlight the given widget for a second.
+     * @param widget {qx.ui.core.Widget} The widget to highlight.
      */
     highlightWidget: function(widget) {
       // tell the highlight function to highlight the element of the widget
@@ -165,41 +160,6 @@ qx.Class.define("inspector.Inspector",
       this._clearHighlight(1000);
     },    
     
-    
-   /*
-    *********************************
-        PUBLIC FIND MODE STUFF
-    *********************************
-    */          
-    /**
-     * Function that enabled the 'find mode' of the widget finder.
-     */
-    startFindMode: function() {
-      // check both find buttons
-      this._setFindButton(true);
-      // show the catchClickLayer
-      this._catchClickLayer.show();      
-    },
-
-
-    /**
-     * Exits the find mode.
-     */
-    exitFindMode: function() {
-      // hide the catchClickLayer and the highlightAtom
-      this._catchClickLayer.hide();
-      this._highlightOverlay.hide();
-      
-      // highlight the currentlys selected widget again
-      if (this._highlightEnabled) {
-        // if something is selected                 
-        if (this._widget != null) {
-          // highlight the current selected      
-          this._highlight(this._widget.getElement());    
-        }
-      }
-    },
-  
     
     /**
      * Draws a red border aroud the given html element.
@@ -225,11 +185,13 @@ qx.Class.define("inspector.Inspector",
       this._highlightOverlay.setWidth(right - left);
       this._highlightOverlay.setHeight(bottom - top);
       this._highlightOverlay.show();
-    }, 
-
-
+    },     
+    
+    
     /**
      * Starts a timer with the given time that removes the highlight border.
+     * If no time is given, the border will be removed immediately.
+     * @param time {Number} The time to remove the highlight border.
      */
     _clearHighlight: function(time) {
       // check that the parameter is a integer
@@ -275,16 +237,66 @@ qx.Class.define("inspector.Inspector",
       returnObject.top = qx.html.Location.getPageBoxTop(element);
       returnObject.bottom = qx.html.Location.getPageBoxBottom(element);
       return returnObject;
-    },
+    },    
     
     
     /**
+     * Sets or resets the highlight button in the property editor 
+     * and widget finder.
+     * @param status {boolean} The value to set the button.
+     */
+    _setHighlightButton: function(status) {
+      if (this._propertyEditor != null) {
+        this._propertyEditor.setHighlightButton(status);        
+      }
+      if (this._widgetFinder != null) {
+        this._widgetFinder.setHighlightButton(status);        
+      }
+    },
+      
+    
+   /*
+    *********************************
+        FIND MODE STUFF
+    *********************************
+    */          
+    /**
+     * Function that enabled the 'find mode'.
+     */
+    startFindMode: function() {
+      // check both find buttons
+      this._setFindButton(true);
+      // show the catchClickLayer
+      this._catchClickLayer.show();      
+    },
+
+
+    /**
+     * Exits the 'find mode'.
+     */
+    exitFindMode: function() {
+      // hide the catchClickLayer and the highlightAtom
+      this._catchClickLayer.hide();
+      this._highlightOverlay.hide();
+      
+      // highlight the currentlys selected widget again
+      if (this._highlightEnabled) {
+        // if something is selected                 
+        if (this._widget != null) {
+          // highlight the current selected      
+          this._highlight(this._widget.getElement());    
+        }
+      }
+    },
+
+    
+    /**
      * This function returns the deepest matching child widget of the given 
-     * widget at the dimensions x and y.
-     * @param widget {Widget} The widget to search in for matching child widgets.
-     * @param x {Integer} The x position to search a widget.
-     * @param y {Integer} The y position to search a widget.
-     * @return {Widget} The found widget.
+     * widget at the point x and y.
+     * @param widget {qx.ui.core.Widget} The widget to search in for matching child widgets.
+     * @param x {Number} The x position to search a widget.
+     * @param y {Number} The y position to search a widget.
+     * @return {qx.ui.core.Widget} The found widget.
      */
     _searchWidget: function(widget, x, y) {
       var returnWidget = widget;      
@@ -309,23 +321,11 @@ qx.Class.define("inspector.Inspector",
       }  
       return returnWidget;    
     },
-
+    
     
     /**
-     * Sets or resets the highlight button in the property editor.
-     * @param status {boolean} The value to set the button.
-     */
-    _setHighlightButton: function(status) {
-      if (this._propertyEditor != null) {
-        this._propertyEditor.setHighlightButton(status);        
-      }
-      if (this._widgetFinder != null) {
-        this._widgetFinder.setHighlightButton(status);        
-      }
-    },
-    
-    /**
-     * Sets or resets the find button in the property editor.
+     * Sets or resets the find button in the property editor 
+     * and widget finder.
      * @param status {boolean} The value to set the button.
      */
     _setFindButton: function(status) {
@@ -339,45 +339,57 @@ qx.Class.define("inspector.Inspector",
     
     
     
+   /*
+    *********************************
+        WIDGET STUFF
+    *********************************
+    */
+    /**
+     * Return the current selected widget.
+     * @return {qx.core.Object} The current selected widget or object.
+     */
     getWidget: function() {
-			return this._widget;
-		},
+      return this._widget;
+    },
  
-		
-		setWidget: function(widget) {
-			// set the widget in the inspector
-			this._widget = widget;
-			// set the widget in the shell
-			if (this._shell != null) {
-				this._shell.setWidget(widget);
-			}
-			// set the widget in the object finder
-			if (this._objectFinder != null) {
-				if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
-					this._objectFinder.selectObject(widget);
-				}
-			}
-			// set the widget in the widget finder
-			if (this._widgetFinder != null) {
-				if (widget.toHashCode() != this._widgetFinder.getSelectedWidgetHash()) {
-					this._widgetFinder.selectWidget(widget);
-				}
-			}
-			// set the widget in the property editor
+    
+    /**
+     * Set the given widget in all components of the inspector.
+     * @param widget {qx.core.Object} Any qooxdoo object 
+     */
+    setWidget: function(widget) {
+      // set the widget in the inspector
+      this._widget = widget;
+      // set the widget in the shell
+      if (this._shell != null) {
+        this._shell.setWidget(widget);
+      }
+      // set the widget in the object finder
+      if (this._objectFinder != null) {
+        if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
+          this._objectFinder.selectObject(widget);
+        }
+      }
+      // set the widget in the widget finder
+      if (this._widgetFinder != null) {
+        if (widget.toHashCode() != this._widgetFinder.getSelectedWidgetHash()) {
+          this._widgetFinder.selectWidget(widget);
+        }
+      }
+      // set the widget in the property editor
       if (this._propertyEditor != null) {
         // tell the property editor that a new widget has been selected
         if (this._propertyEditor.getDisplay() && this._propertyEditor.getVisibility()) {
           this._propertyEditor.setWidget(widget);        
         }
-			} 
-			// if it is realy a widget and not another qx object
+      } 
+      // if it is realy a widget and not another qx object
       if (widget instanceof qx.ui.core.Widget) {
-  			// highlight the selected widget
-	 		  this._highlight(widget.getElement());
-		  	this._clearHighlight(1000);							
-			}
-			
-		},   
+        // highlight the selected widget
+         this._highlight(widget.getElement());
+        this._clearHighlight(1000);              
+      }
+    },   
    
       
     /*
@@ -408,16 +420,16 @@ qx.Class.define("inspector.Inspector",
         if (this._shell != null) {
           shellComponents = this._shell.getComponents();
         }
-    
-				var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay];
-				
+        // create a array of the Inspector objects
+        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay];        
         // merge the arrays
-        return propertyEditorComponents.concat(shellComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects);
-         
+        return propertyEditorComponents.concat(shellComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects);         
       } catch (e) {
+        // if that doesnt work, return a blank array
         return [];
       }
     },    
+    
     
     /*
     *********************************
@@ -461,6 +473,10 @@ qx.Class.define("inspector.Inspector",
      * two values, begin and end.
      * 
      * Example: a.getExcludes()[0].end
+     * 
+     * @return {Array} A list of objects containing two values
+     *      begin - the beginn of the exclusion index
+     *      end   - the end of the exclusion index
      */
     getExcludes: function() {
       return this._excludes;
@@ -471,12 +487,11 @@ qx.Class.define("inspector.Inspector",
     *********************************
        OPENER
     *********************************
-    */      
-    
+    */    
     /**
      * Handler function to catch all key events and open a application window 
      * in case of a specific key combination.
-     * @param e {KeyEvent} 
+     * @param e {KeyEvent}
      */
     _openWindow: function(e) {
       // if one key is pressed down
@@ -522,8 +537,9 @@ qx.Class.define("inspector.Inspector",
       }
     },
     
+    
     /**
-     * Opens the widget finder window.
+     * Opens and if necessary creates the widget finder window.
      */
     openWidgetFinder: function() {
       // create the widget finder if not already created
@@ -533,8 +549,9 @@ qx.Class.define("inspector.Inspector",
       this._widgetFinder.open();
     },
     
+    
     /**
-     * Opens the object finder window.
+     * Opens and if necessary creates the object finder window.
      */
     openObjectFinder: function() {
       // create the object finder if not already created
@@ -544,8 +561,9 @@ qx.Class.define("inspector.Inspector",
       this._objectFinder.open();
     },
   
+  
     /**
-     * Opens the property editor window.
+     * Opens and if necessary creates the property editor window.
      */
     openPropertyEditor: function() {
       // create the property editor if not already created
@@ -553,14 +571,15 @@ qx.Class.define("inspector.Inspector",
         this._createPropertyEditor();
       }     
       this._propertyEditor.open();
-			// set the current widget if the editor is opend
-			if (this._widget != null) {
+      // set the current widget if the editor is opend
+      if (this._widget != null) {
         this._propertyEditor.setWidget(this._widget);
-			}
+      }
     },
     
+    
     /**
-     * Opens the shell  window.
+     * Opens and if necessary creates the shell window.
      */
     openShell: function() {
       // create the shell if it is not already created
@@ -576,6 +595,10 @@ qx.Class.define("inspector.Inspector",
        CREATE COMPONENTS FUNCTIONS
     *********************************
     */    
+    /**
+     * Creates the shell component. This includes adding the created 
+     * object ids to the excludes array and setting the default values.  
+     */
     _createShell: function() {
       // start the exclusion stategie
       this.beginExclusion();    
@@ -590,6 +613,11 @@ qx.Class.define("inspector.Inspector",
       this._shell.setTextColor("black");      
     },
     
+    
+    /**
+     * Creates the object finder component. This includes adding the created 
+     * object ids to the excludes array and setting the default values.  
+     */    
     _createObjectFinder: function() {
       // start the exclusion stategie
       this.beginExclusion();    
@@ -604,6 +632,11 @@ qx.Class.define("inspector.Inspector",
       this._objectFinder.setTextColor("black");
     },
     
+    
+    /**
+     * Creates the widget finder component. This includes adding the created 
+     * object ids to the excludes array and setting the default values.  
+     */    
     _createWidgetFinder: function() {
       // start the exclusion stategie
       this.beginExclusion();    
@@ -618,6 +651,11 @@ qx.Class.define("inspector.Inspector",
       this._widgetFinder.setTextColor("black");
     },
     
+    
+    /**
+     * Creates the property editor component. This includes adding the created 
+     * object ids to the excludes array and setting the default values.  
+     */    
     _createPropertyEditor: function() {
       // start the exclusion stategie
       this.beginExclusion();    
@@ -632,11 +670,17 @@ qx.Class.define("inspector.Inspector",
       this._propertyEditor.setTextColor("black");
     },
     
+    
     /*
     *********************************
        CREATE FIND MODE AND HIGHLIGHT FUNCTIONS
     *********************************
     */      
+    /**
+     * Create the atom which will be layed over the application to catch
+     * the selections during the find mode. Also register the handlers which 
+     * are responsible for handling the mousemoce and click events.
+     */
     _createCatchClickLayer: function() {
       // initialize the layer to catch the clicks
       this._catchClickLayer = new qx.ui.basic.Terminator();
@@ -662,7 +706,7 @@ qx.Class.define("inspector.Inspector",
         // search the widget at the current position
         var clickedElement = this._searchWidget(qx.ui.core.ClientDocument.getInstance(), xPosition, yPosition);
         // select the widget with the given id in the tree
-        this.setWidget(clickedElement);				
+        this.setWidget(clickedElement);        
       }, this);
       
       // register the mousemove handler
@@ -678,6 +722,10 @@ qx.Class.define("inspector.Inspector",
     },
     
     
+    /**
+     * Create the border and atom needed to draw a red border around 
+     * the current selected widget.
+     */
     _createHighlightStuff: function() {
       // create the border used to highlight the widgets
       this._highlightBorder = new qx.ui.core.Border(2, "solid", "red");
@@ -690,21 +738,27 @@ qx.Class.define("inspector.Inspector",
       this._highlightOverlay.addToDocument();     
     }    
   },
-	
+  
+  
   /*
   *****************************************************************************
      SETTINGS
   *****************************************************************************
   */
-
   settings : { "inspector.resourceUri" : "./resource" },
+  
   
   /*
   *****************************************************************************
      DEFER
   *****************************************************************************
   */  
-  
+  /**
+   * Function which is calld during creating the class. The creates a 
+   * instance of the inspector when the application and the ui are ready.
+   * @param {Object} statics
+   * @param {Object} members
+   */
   defer : function(statics, members) {    
     // start an interval that creates an instance if the app and the ui are ready
     members._startupTimer = window.setInterval(function() {
@@ -716,12 +770,12 @@ qx.Class.define("inspector.Inspector",
     }, 500);    
   },  
   
+  
   /*
   *****************************************************************************
      DESTRUCTOR
   *****************************************************************************
   */
-
   destruct : function() {
     // clear the timer if it is still running
     window.clearInterval(this.__startupTimer);

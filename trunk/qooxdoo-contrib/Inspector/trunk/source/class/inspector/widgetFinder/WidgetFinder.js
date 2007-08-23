@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.widgetFinder.WidgetFinder",
-{
+qx.Class.define("inspector.widgetFinder.WidgetFinder", {
+  
   extend : inspector.AbstractWindow,  
     
   /*
@@ -28,8 +28,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
   */
   construct : function(main, name) {   
     // call the constructor of the superclass
-    this.base(arguments, main, name);		
-		
+    this.base(arguments, main, name);    
+    
     // load the obecjts into the table after the app is created
     var self = this;
     window.setTimeout(function() {
@@ -38,8 +38,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       var currentWidget = self._inspector.getWidget();
       if (currentWidget != null) {
         self.selectWidget(currentWidget);
-      }			
-    }, 0);		
+      }      
+    }, 0);    
   },
 
 
@@ -48,9 +48,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
+  members : {
     /*
     *********************************
        ATTRIBUTES
@@ -69,6 +67,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
     _reloadToolTip: null,
     _autoReloadToolTip: null, 
     
+    
     /*
     *********************************
        PUBLIC
@@ -76,6 +75,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
     */  
     /**
      * Returns the components of the widget finder.
+     * @return {Array} A list of all components in the widget finder.
      */       
     getComponents: function() {
       return [this, this._findToolTip, this._highlightToolTip, this._reloadToolTip, this._autoReloadToolTip];
@@ -90,8 +90,11 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
         this._selectWidgetInTheTree(widget);        
     },
     
+    
     /**
-     * Returns the hash code of the currently selected widget in the tree.
+     * Returns the hash code of the currently selected widget in the tree. If 
+     * nothing is selected, null will be returned.
+     * @return {String} The hashcode of the currently selected widget in the tree.
      */
     getSelectedWidgetHash: function() {
       // get the selected element
@@ -103,39 +106,37 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       // return null otherwise
       return null;
     },
-		
-		/**
-		 * Sets the find button to the given status.
-		 * (Checked or not checked) 
-		 */
-		setFindButton: function(status) {
-			this._findButton.setChecked(status);
-		},
-		
-		/**
-		 * Set the highlight button to the given status.
-		 * (Checked or not checked)
-		 */
-		setHighlightButton: function(status) {
-			this._highlightButton.setChecked(status);
-		},
+    
+    
+    /**
+     * Sets the find button to the given status. (Checked or not checked) 
+     */
+    setFindButton: function(status) {
+      this._findButton.setChecked(status);
+    },
+    
+    
+    /**
+     * Set the highlight button to the given status. (Checked or not checked)
+     */
+    setHighlightButton: function(status) {
+      this._highlightButton.setChecked(status);
+    },
     
     
     /*
     *********************************
        PROTECTED
     *********************************
-    */   
-    
+    */       
     /**
      * Reload the tree. If the tree is once loaded, only the changes in the tree
      * will be loaded.
      * @param parentWidget {qx.ui.core.Widget} The widget to handle.
      * @param parentTreeFolder {qx.ui.tree.TreeFolder} the folder to add the children 
-     * of the parentWidget.
+     *    of the parentWidget.
      */
-    _fillTree: function(parentWidget, parentTreeFolder)  { 
-
+    _fillTree: function(parentWidget, parentTreeFolder)  {
       // get all components fo the inspector application
       var components = this._inspector.getComponents();
       
@@ -202,13 +203,13 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
           } else {   
             
             // check if the selection is on a folder which should be deleted
-	          if (parentTreeFolder.getItems()[i + 1] != null) {
-						  if (parentTreeFolder.getItems()[i + 1].getSelected()) {
-	              this._tree.getManager().deselectAll();
-	              this._tree.getManager().setLeadItem(null);
-	              this._tree.getManager().setAnchorItem(null);
-	            }
-					  }
+            if (parentTreeFolder.getItems()[i + 1] != null) {
+              if (parentTreeFolder.getItems()[i + 1].getSelected()) {
+                this._tree.getManager().deselectAll();
+                this._tree.getManager().setLeadItem(null);
+                this._tree.getManager().setAnchorItem(null);
+              }
+            }
             
             // remove it
             parentTreeFolder.removeAt(i);
@@ -250,8 +251,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
 
     
     /**
-     * Handler function to handle the clock on the tree. The function selects
-     * a new widget.
+     * Handler function to handle the click on the tree. The 
+     * function selects a new widget.
      * @param e {ClickEvent} 
      */
     _treeClickHandler: function(e) {
@@ -273,9 +274,10 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
     
     
     /**
-     * Returns the icon path for the element.
+     * Returns the icon path for the element. If no icon could 
+     * be found, null will be returned.
      * @param element {String} The name of the qooxdoo component.
-     * @return The path of the icon to the element.
+     * @return {String} The path of the icon to the element.
      */
     _getIconPath: function (element) {
       switch (element) {
@@ -369,17 +371,18 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
      */
     _reloadTree: function() {   
       // start the exclusion
-      this._inspector.beginExclusion();			
+      this._inspector.beginExclusion();      
       // refill the tree
       this._fillTree(qx.ui.core.ClientDocument.getInstance(), this._tree);
       // end the exclusion
       this._inspector.endExclusion();      
     },
 
-		
+    
     /**
-     * Tells the tree to select the wiget.
-     * @param widget {Integer} The widget which should be selected
+     * Tells the tree to select the wiget. If the widget is not in the 
+     * tree, the selection will be removed.
+     * @param widget {qx.core.Object} The object which should be selected.
      */
     _selectWidgetInTheTree: function (widget) {
       var id = widget.toHashCode();
@@ -415,19 +418,24 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
         this._tree.getManager().setAnchorItem(null);
         
         // set the status message
-				this._statusbar.setLabel("Selected object is not in the tree");
+        this._statusbar.setLabel("Selected object is not in the tree");
                 
         // tell the inspector class that the widget has changed
         this._inspector.setWidgetInObjectFinder(widget);
-        
       }
     },
+    
     
     /*
     *********************************
        AUTORELOAD STUFF
     *********************************
     */
+    /**
+     * Enables the autoreload timer which invokes a reload of 
+     * the tree every 200 ms. If the autoreload is enabled, 
+     * the reload button will be disabled.
+     */
     _enableAutoReload: function() {
       // disable the reload button
       this._reloadButton.setEnabled(false);
@@ -440,6 +448,10 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       }, 200);   
     },
     
+    
+    /**
+     * Stops the autoreload timer and enabeld the reload button.
+     */
     _disableAutoReload: function () {
       // enable the reload button
       this._reloadButton.setEnabled(true);
@@ -454,38 +466,44 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
     *********************************
     */
     /**
-     * Sets the height of the main element of the window.
-     * @param {int} delta The change value of the height.
+     * Sets the height of the tree.
+     * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
       this._tree.setHeight(this._tree.getHeight() + delta);
     },
     
+    
     /**
-     * Sets the width of the main element of the window.
-     * @param {Object} delta The change value of the width.
+     * Sets the width of the tree.
+     * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
       this._tree.setWidth(this._tree.getWidth() + delta);
     },
     
+    
     /**
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
+      // put the window an the right side of the browser 
       this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);
+      // set top of the window 25% of the browsers heigth
       this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
+      // make the widget finder 25% of the browser heigth high
       this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
     },
     
+    
     /**
-     * Creates the tree
+     * Creates the tree and register the handler for the clicks on the tree
      */
     _createMainElement: function() {
       // initialize tree
       this._tree = new qx.ui.tree.Tree("Document" + 
-			   " [" + qx.ui.core.ClientDocument.getInstance().toHashCode() +"]",
-				  qx.io.Alias.getInstance().resolve("inspector/image/components/document.png"));
+         " [" + qx.ui.core.ClientDocument.getInstance().toHashCode() +"]",
+          qx.io.Alias.getInstance().resolve("inspector/image/components/document.png"));
       this._tree.setBackgroundColor("white");
       this._tree.setBorder("inset");
       this._tree.setOverflow("auto");
@@ -494,14 +512,15 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       this._tree.setMinHeight(10);
       this._tree.setUseDoubleClick(true);
       this._mainLayout.add(this._tree);
-			
-	    // register the handler to select the client document
-	    this._tree.addEventListener("click", function(e) {
-	      if (e.getTarget().getLabel().indexOf("Document [") != -1) {
-	        this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance());
-	      }
-	    }, this);  			
+      
+      // register the handler to select the client document
+      this._tree.addEventListener("click", function(e) {
+        if (e.getTarget().getLabel().indexOf("Document [") != -1) {
+          this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance());
+        }
+      }, this);        
     },
+    
     
     /**
      * Adds the toolbar buttons to the toolbar and the tooltips to the buttons.
@@ -516,14 +535,14 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       this._toolbar.add(new qx.ui.toolbar.Separator());
       // register the find handler
       this._findButton.addEventListener("execute", function(e) {
-	      // if the button is pressed
-	      if (e.getCurrentTarget().getChecked()) {
-	        this._inspector.startFindMode();
-	      } else {
-	        this._inspector.exitFindMode();
-	      }				
-			}, this);
-			        
+        // if the button is pressed
+        if (e.getCurrentTarget().getChecked()) {
+          this._inspector.startFindMode();
+        } else {
+          this._inspector.exitFindMode();
+        }        
+      }, this);
+              
       // create and add the reload button
       this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
       this._toolbar.add(this._reloadButton);
@@ -531,7 +550,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       this._reloadButton.addEventListener("click", function() {
         this._reloadTree();
       }, this);
-			// register the highlight handler
+      // register the highlight handler
       this._highlightButton.addEventListener("execute", this._inspector.highlightCurrentWidget, this._inspector);
       
       // create and add a autoreload button
@@ -556,7 +575,5 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder",
       this._reloadButton.setToolTip(this._reloadToolTip);
       autoReloadButton.setToolTip(this._autoReloadToolTip);
     }
-    
-    
   }
 });

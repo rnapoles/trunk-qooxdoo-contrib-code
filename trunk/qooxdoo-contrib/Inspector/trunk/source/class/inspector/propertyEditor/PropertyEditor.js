@@ -13,12 +13,12 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * Martin Wittemann (martin_wittemann)
+     * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
 
-qx.Class.define("inspector.propertyEditor.PropertyEditor",
-{
+qx.Class.define("inspector.propertyEditor.PropertyEditor", {
+  
   extend : inspector.AbstractWindow,
   // implement : inspector.propertyEditor.PropertyListController,
 
@@ -39,57 +39,53 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
      MEMBERS
   *****************************************************************************
   */
-
-  members :
-  {
-    
+  members : {
     /*
     *********************************
        ATTRIBUTES
     *********************************
     */   
-
     // the window components
     _propertyList: null,
-      _propertyListFull: null,
-      _propertyListHtmlTable: null,
+    _propertyListFull: null,
+    _propertyListHtmlTable: null,
   
-      // find buttons
-      _findButton: null,
-      _findToolTip: null,
-      // highlight button
-      _highlightButton: null,
-      _highlightToolTip: null,
-      // reload buttons
-      _reloadButton: null,
-      _reloadToolTip: null,
-      _autoReloadToolTip: null,
-      // inherited button
-      _inheritedButton: null,
-      _inheritedTooltip: null,
-      // view buttons
-      _fullViewTooltip: null,
-      _htmlViewTooltip: null,  
-      // group button
-      _groupButton: null,
-			_groupToolTip: null,
-      // set null button
-      _setNullButton: null,
-      _setNullTooltip: null,
-      // init button
-      _setPropertyToDefaultButton: null,
-      _setPropertyToDefaultTooltip: null,
-      // highlight currenty property button
-      _highlightCurrentPropertyButton: null,
-      _highlightCurrentPropertyTooltip: null,
-      // goto selected property button
-      _gotoSelectedPropertyButton: null,
-      _gotoSelectedPropertyTooltip: null,
+    // find buttons
+    _findButton: null,
+    _findToolTip: null,
+    // highlight button
+    _highlightButton: null,
+    _highlightToolTip: null,
+    // reload buttons
+    _reloadButton: null,
+    _reloadToolTip: null,
+    _autoReloadToolTip: null,
+    // inherited button
+    _inheritedButton: null,
+    _inheritedTooltip: null,
+    // view buttons
+    _fullViewTooltip: null,
+    _htmlViewTooltip: null,  
+    // group button
+    _groupButton: null,
+    _groupToolTip: null,
+    // set null button
+    _setNullButton: null,
+    _setNullTooltip: null,
+    // init button
+    _setPropertyToDefaultButton: null,
+    _setPropertyToDefaultTooltip: null,
+    // highlight currenty property button
+    _highlightCurrentPropertyButton: null,
+    _highlightCurrentPropertyTooltip: null,
+    // goto selected property button
+    _gotoSelectedPropertyButton: null,
+    _gotoSelectedPropertyTooltip: null,
 
     // the currently selected property
     _currentlySelectedProperty: null,
-    // the currently selected widget
-    _widget: null,
+    // the currently selected qooxdoo object
+    _qxObject: null,
         
     // flag to signal that the inherited properties should be displayed
     _showInherited: true,
@@ -97,16 +93,16 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     // timer for the reload interval
     _reloadTimer: null,
 
+
     /*
     *********************************
        PUBLIC
     *********************************
     */        
-    
     /**
      * Returns all the components of the property editor which should not
-     * be shown in the document tree.
-     * @return All components of the property editor.
+     * be shown in the widget finder.
+     * @return {Array} All components of the property editor.
      */
     getComponents: function() {
       return [this, this._findToolTip, this._highlightToolTip, this._groupToolTip,
@@ -118,12 +114,12 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     
     
     /**
-     * Sets a new widget. This new widget is shown in the property editor.
-     * @param widget {Widget} The new widget to set.
+     * Sets a new widget. This new object is shown in the property editor.
+     * @param qxObject {qx.core.Object} The new qooxdoo object to set.
      */
-    setWidget: function(widget) {		
+    setWidget: function(qxObject) {    
       // save a referente to the current widget
-      this._widget = widget; 
+      this._qxObject = qxObject; 
       // show a loading message in the toolbar
       this._statusbar.setLabel("Loading...");
       // save the this reference for the timeout function
@@ -131,9 +127,9 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       // to the reload of the list after a timeout (after the loading is shown)
       window.setTimeout(function() {
         // initialize the reload of the properties  
-			  self._inspector.beginExclusion();
+        self._inspector.beginExclusion();
         self._propertyList.build();
-				self._inspector.endExclusion();
+        self._inspector.endExclusion();
         // reload the button configuration for the property buttons
         if (self._currentlySelectedProperty != null) {
           // get the key and classname of the former selected property
@@ -154,23 +150,21 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
           }
         }            
         // set the status info in the status bar to the curren selected widget
-        self._statusbar.setLabel(self._widget.classname + " [" + self._widget.toHashCode() + "]");
+        self._statusbar.setLabel(self._qxObject.classname + " [" + self._qxObject.toHashCode() + "]");
       }, 0);
     },
     
     
     /**
-     * @return The currently selected widget. 
+     * @return The currently selected object. 
      */
     getWidget: function() {
-      return this._widget;
+      return this._qxObject;
     },
      
     
     /**
-     * Ckecks or unchecks the highlihgt button in the property editor. 
-     * This method is necessary if the highlight button is pressed in the 
-     * docuemnt tree.
+     * Ckecks or unchecks the highlihgt button in the property editor.
      * @param status {boolean} Value of the highlight button.
      */
     setHighlightButton: function(status) {
@@ -180,31 +174,50 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     
     /**
      * Ckecks or unchecks the find button in the property editor. 
-     * This method is necessary if the find button is pressed in the 
-     * docuemnt tree.
      * @param status {boolean} Value of the find button.
      */
     setFindButton: function(status) {
       this._findButton.setChecked(status);
     },    
     
+    
+    /**
+     * Sets the selected property.
+     * @param layout {qx.ui.layout.HorizontalBoxLayout} The layout containing the property. 
+     */
     setSelectedProperty: function(layout) {
       this._currentlySelectedProperty = layout;
       this._switchPropertyButtons();      
     },
     
+    
+    /**
+     * @return {qx.ui.layout.HorizontalBoxLayout} The selected property.
+     */
     getSelectedProperty: function() {
       return this._currentlySelectedProperty;
     },
     
+    
+    /**
+     * @return {boolean} The status of the inheritance.
+     */
     getInheritedStatus: function() {
       return this._showInherited;
     },
     
+    
+    /**
+     * @return The status of the group button.
+     */
     getGroupStatus: function() {
       return this._groupButton.getChecked();  
     },
     
+    
+    /**
+     * Invokes a selection of the current selected property as a object.
+     */
     gotoSelectedWidget: function() {
       this._gotoSelectedPropertyButtonEventListener();
     },
@@ -215,8 +228,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
        PROTECTED
     *********************************
     */
-    
-    
     /**
      * This method is responsible for enabling and disabling the property 
      * relevant buttons like "set null". 
@@ -262,7 +273,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
           var getterName = "get" + qx.lang.String.toFirstUp(key);
           
           // if the function is not available an the object          
-          if (this._widget[getterName] == undefined) {
+          if (this._qxObject[getterName] == undefined) {
             // disabled all buttons
             this._setNullButton.setEnabled(false);
             this._setPropertyToDefaultButton.setEnabled(false);
@@ -273,10 +284,10 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
           }          
           
           // get the current value
-          var value = this._widget[getterName].call(this._widget);
+          var value = this._qxObject[getterName].call(this._qxObject);
           // if the check constraint is qidget or parent and the selected widget is noch the client document
           if ((property.check == "qx.ui.core.Widget" || property.check == "qx.ui.core.Parent")&& 
-              (this._widget.classname != "qx.ui.core.ClientDocument") && (value != null)){
+              (this._qxObject.classname != "qx.ui.core.ClientDocument") && (value != null)){
             this._highlightCurrentPropertyButton.setEnabled(true);
             this._gotoSelectedPropertyButton.setEnabled(true);
           } else {
@@ -296,9 +307,15 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       }
     },
     
+    
+    /*
+    *********************************
+       AUTORELOAD STUFF
+    *********************************
+    */       
     /**
      * Starts a timer which automaticly reloads the table every 200 ms 
-     * if the window is on screen.
+     * if the property editor is on screen.
      */
     _enableAutoReload: function() {
       // disable the reload button
@@ -308,15 +325,16 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       this._reloadTimer = window.setInterval(function() {
         if (self.getDisplay() && self.getVisibility()) {
           self._inspector.beginExclusion();
-					self._propertyList.build();
-					self._inspector.endExclusion();
+          self._propertyList.build();
+          self._inspector.endExclusion();
           // self._readObjects.call(self);
         }
       }, 200);   
     },
     
+    
     /**
-     * Stops the automati reload timer.
+     * Stops the automatic reload timer.
      */
     _disableAutoReload: function () {
       // enable the reload button
@@ -326,20 +344,17 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     },    
     
     
-    
     /*
     *********************************
        BUTTON HANDLERS
     *********************************
     */    
-
     /**
      * Handler function to handle the execution on the "set null" button. 
      * The function tries to set the current selected property of the widget 
      * to null. If that fails, an alert shows the exception message.
-     * @param e {Event} 
      */
-    _setNullButtonEventListener: function (e) {
+    _setNullButtonEventListener: function () {
       // get the corresponding classname of the currently selected property
       var classname = this._currentlySelectedProperty.getUserData("classname");
       // get the name of the property
@@ -348,7 +363,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       var setterName = "set" + qx.lang.String.toFirstUp(key);
       // try to invoke the setter
       try {
-        this._widget[setterName].call(this._widget, null);
+        this._qxObject[setterName].call(this._qxObject, null);
         // relaod the property view of the current column
         var classname = this._currentlySelectedProperty.getUserData("classname");
         var key = this._currentlySelectedProperty.getUserData("key");
@@ -366,9 +381,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
      * function resets the selected property to its initial value given in 
      * the property declaration. If that fails, the exception message will
      * be shown to the user in an alert.
-     * @param e {Event} 
      */
-    _setPropertyToDefaultButtonEventListener: function (e) {
+    _setPropertyToDefaultButtonEventListener: function () {
       // get the corresponding classname of the currently selected property
       var classname = this._currentlySelectedProperty.getUserData("classname");
       // get the name of the property
@@ -380,7 +394,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       var setterName = "set" + qx.lang.String.toFirstUp(key);
       // try to invoke the setter
       try {
-        this._widget[setterName].call(this._widget, property.init);
+        this._qxObject[setterName].call(this._qxObject, property.init);
         // relaod the property view of the current column
         var classname = this._currentlySelectedProperty.getUserData("classname");
         var key = this._currentlySelectedProperty.getUserData("key");
@@ -393,19 +407,18 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     
     
     /**
-     * Handler function to handle the execution of the "highlight property" #
-     * buutton. The function reads the value of the property which is a 
+     * Handler function to handle the execution of the "highlight property" 
+     * button. The function reads the value of the property which is a 
      * widget and dedicates the highligting task to the inspector class.
-     * @param e {Event} 
      */
-    _highlightCurrentPropertyButtonEventListener: function(e) {
+    _highlightCurrentPropertyButtonEventListener: function() {
       // get the name of the property
       var key = this._currentlySelectedProperty.getUserData("key");
       // build the name of the getter
       var getterName = "get" + qx.lang.String.toFirstUp(key);
       try {
         // tell the document tree to highlight the new widget
-        this._inspector.highlightWidget(this._widget[getterName].call(this._widget));
+        this._inspector.highlightWidget(this._qxObject[getterName].call(this._qxObject));
       } catch (e) {
         alert("Error during highlighting the currently selected property widget: " + e);
       }
@@ -415,13 +428,11 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     /**
      * Handler function to handle the execution of the "goto property" button.
      * The function reads the value of the currently selected property which is
-     * a widget and selects the new widget in the tree and in the property editor.
-     * @param e {Event} 
+     * a widget and selects the new widget.
      */
-    _gotoSelectedPropertyButtonEventListener: function(e) {
+    _gotoSelectedPropertyButtonEventListener: function() {
       // go only to the parrent if the widget is not the client document (root)
-      if (this._widget.classname != "qx.ui.core.ClientDocument") {
-        
+      if (this._qxObject.classname != "qx.ui.core.ClientDocument") {
         // get the name of the property
         var key = this._currentlySelectedProperty.getUserData("key");
         // build the name of the getter function
@@ -429,7 +440,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
 
         try {
           // tell the document tree to select the new widget
-          this._inspector.setWidget(this._widget[getterName].call(this._widget), this);
+          this._inspector.setWidget(this._qxObject[getterName].call(this._qxObject), this);
           // reload the configuration for the property buttons
           this._switchPropertyButtons();            
         } catch (e) {
@@ -442,7 +453,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     /**
      * Handler function to handle the execution of the "find" button. The
      * function dedicates the finding of the widget to the inspector class.
-     * @param e {Event} 
+     * @param e {Event} The event generated by the button.
      */
     _findWidget: function(e) {
       // if the button is pressed in
@@ -455,14 +466,15 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     },  
     
     
+    /**
+     * Handler function to handle the execution of the inherited button.
+     * @param e {Event} Event created by a chackbox.
+     */
     _switchInheritedStatus: function(e) {
       this._showInherited = e.getCurrentTarget().getChecked();
       this._propertyList.switchInheritedStatus(this._showInherited);
     },
-    
-    
-    
-    
+
     
     /*
     *********************************
@@ -470,22 +482,24 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
     *********************************
     */
     /**
-     * Sets the height of the main element of the window.
-     * @param {int} delta The change value of the height.
+     * Sets the height of the property lists.
+     * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
       this._propertyListFull.setHeight(this._propertyListFull.getHeight() + delta);
       this._propertyListHtmlTable.setHeight(this._propertyListHtmlTable.getHeight() + delta);
     },
     
+    
     /**
-     * Sets the width of the main element of the window.
-     * @param {Object} delta The change value of the width.
+     * Sets the width of the property lists.
+     * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
       this._propertyListFull.setWidth(this._propertyListFull.getWidth() + delta);
       this._propertyListHtmlTable.setWidth(this._propertyListHtmlTable.getWidth() + delta);
     },
+    
     
     /**
      * Sets the start position of the window.
@@ -496,8 +510,9 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
     },
     
+    
     /**
-     * Creates the main element e.g. a table or tree.
+     * Creates the two views for the editor and adds the full view as default view.
      */
     _createMainElement: function() {
       // create the inner layouts to hold the property lists
@@ -508,6 +523,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       // add the list to the layout
       this._mainLayout.add(this._propertyList);  
     },
+    
     
     /**
      * Creates and adds the toolbar buttons.
@@ -535,9 +551,9 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       this._toolbar.add(this._reloadButton);
       // add the event listener for the reload
       this._reloadButton.addEventListener("click", function() {
-				this._inspector.beginExclusion();
+        this._inspector.beginExclusion();
         this._propertyList.build();
-				this._inspector.beginExclusion();
+        this._inspector.beginExclusion();
       }, this);
       // set the tooltip to the reload button
       this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);
@@ -563,12 +579,13 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
 
       // inherited button
       this._inheritedButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/inherited.png", true));
+      this._inheritedButton.setChecked(true);
       this._toolbar.add(this._inheritedButton);   
       this._inheritedTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.INHERITED_BUTTON_TOOLTIP_TEXT, null);
       this._inheritedButton.setToolTip(this._inheritedTooltip);
       this._inheritedButton.addEventListener("execute", this._switchInheritedStatus, this);            
      
-		  
+      
       // full view button
       var viewFullButton = new qx.ui.toolbar.RadioButton(null, qx.io.Alias.getInstance().resolve("inspector/image/fullview.png"));
       viewFullButton.setChecked(true);
@@ -582,8 +599,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
           this._mainLayout.removeAt(1);
           this._propertyList = this._propertyListFull;
           // invoke a reload of the list if a widget is selected
-          if (this._widget != null) {
-            this.setWidget(this._widget);
+          if (this._qxObject != null) {
+            this.setWidget(this._qxObject);
           }
           // set the rigth inhrerited status
           this._propertyList.switchInheritedStatus();
@@ -608,8 +625,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
           this._mainLayout.removeAt(1);
           this._propertyList = this._propertyListHtmlTable;
           // invoke a reload of the list if a widget is selected
-          if (this._widget != null) {
-            this.setWidget(this._widget);
+          if (this._qxObject != null) {
+            this.setWidget(this._qxObject);
           }
           // add the new created list to the property editor
           this._mainLayout.addAt(this._propertyList, 1);
@@ -625,17 +642,17 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
  
       // create and add a group button
       this._groupButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/group.png"));
-			this._groupToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.GROUP_BUTTON_TOOLTIP_TEXT, null);
-			this._groupButton.setToolTip(this._groupToolTip);
+      this._groupToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.GROUP_BUTTON_TOOLTIP_TEXT, null);
+      this._groupButton.setToolTip(this._groupToolTip);
       this._toolbar.add(this._groupButton);
       // add the event listener for the change of the group status
       this._groupButton.addEventListener("click", function(e) {
-        if (this._widget != null) {
+        if (this._qxObject != null) {
           // set the widget again so signal a clear reload with the new settings
-          this.setWidget(this._widget);
+          this.setWidget(this._qxObject);
         }
-				// enable or disable the inheritance button
-				this._inheritedButton.setEnabled(!e.getTarget().getChecked())
+        // enable or disable the inheritance button
+        this._inheritedButton.setEnabled(!e.getTarget().getChecked())
       }, this);
 
       // add a spacer to keep the property relevant buttons on the right
@@ -673,6 +690,5 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor",
       this._toolbar.add(this._gotoSelectedPropertyButton);
       this._gotoSelectedPropertyButton.addEventListener("execute", this._gotoSelectedPropertyButtonEventListener, this);
     }
-    
   }
 });
