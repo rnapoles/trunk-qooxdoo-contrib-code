@@ -387,7 +387,7 @@ qx.Class.define("inspector.shell.Shell", {
       // set the link to set the object as current object
       label.setStyleProperty("cursor", "pointer");
       label.addEventListener("click", function() {
-        this._inspector.setWidget(object);
+        this._inspector.setWidget(object, this);
       }, this);
       this._outputLayout.add(label);
     },

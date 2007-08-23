@@ -357,23 +357,28 @@ qx.Class.define("inspector.Inspector", {
      * Set the given widget in all components of the inspector.
      * @param widget {qx.core.Object} Any qooxdoo object 
      */
-    setWidget: function(widget) {
+    setWidget: function(widget, ref) {		
       // set the widget in the inspector
       this._widget = widget;
+			
       // set the widget in the shell
       if (this._shell != null) {
         this._shell.setWidget(widget);
       }
       // set the widget in the object finder
       if (this._objectFinder != null) {
-        if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
-          this._objectFinder.selectObject(widget);
+        if (ref != this._objectFinder) {
+					if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
+		        this._objectFinder.selectObject(widget);												
+					}
         }
       }
       // set the widget in the widget finder
       if (this._widgetFinder != null) {
-        if (widget.toHashCode() != this._widgetFinder.getSelectedWidgetHash()) {
-          this._widgetFinder.selectWidget(widget);
+        if (ref != this._widgetFinder) {
+					if (widget.toHashCode() != this._widgetFinder.getSelectedWidgetHash()) {
+	          this._widgetFinder.selectWidget(widget);
+					}
         }
       }
       // set the widget in the property editor
@@ -386,7 +391,7 @@ qx.Class.define("inspector.Inspector", {
       // if it is realy a widget and not another qx object
       if (widget instanceof qx.ui.core.Widget) {
         // highlight the selected widget
-         this._highlight(widget.getElement());
+        this._highlight(widget.getElement());
         this._clearHighlight(1000);              
       }
     },   
@@ -586,6 +591,11 @@ qx.Class.define("inspector.Inspector", {
       if (this._shell == null) {
         this._createShell();
       }     
+			// if already a widget is selected
+			if (this._widget != null) {
+				// also select it in the shell
+				this._shell.setWidget(this._widget);
+			}
       this._shell.open();
     },
     
@@ -706,7 +716,7 @@ qx.Class.define("inspector.Inspector", {
         // search the widget at the current position
         var clickedElement = this._searchWidget(qx.ui.core.ClientDocument.getInstance(), xPosition, yPosition);
         // select the widget with the given id in the tree
-        this.setWidget(clickedElement);        
+        this.setWidget(clickedElement, this);        
       }, this);
       
       // register the mousemove handler

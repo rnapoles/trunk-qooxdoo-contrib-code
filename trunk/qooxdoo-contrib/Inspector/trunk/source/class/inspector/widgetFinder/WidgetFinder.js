@@ -267,7 +267,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
           // set the current element name in the statusbar
           this._statusbar.setLabel(e.getTarget().getLabel());
           // tell the inspector class that the widget has changed
-          this._inspector.setWidget(selectedWidget);
+          this._inspector.setWidget(selectedWidget, this);
         }
       }      
     },    
@@ -395,7 +395,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         // select the root of the tree
         this._tree.setSelected(true);
         // tell the inspector class that the widget has changed
-        this._inspector.setWidgetInObjectFinder(qx.ui.core.ClientDocument.getInstance());        
+        this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance(), this);        
         return;
       }
       // for every element
@@ -421,7 +421,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         this._statusbar.setLabel("Selected object is not in the tree");
                 
         // tell the inspector class that the widget has changed
-        this._inspector.setWidgetInObjectFinder(widget);
+        this._inspector.setWidget(widget, this);
       }
     },
     
@@ -507,6 +507,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._tree.setBackgroundColor("white");
       this._tree.setBorder("inset");
       this._tree.setOverflow("auto");
+			this._tree.setUserData("id", qx.ui.core.ClientDocument.getInstance().toHashCode());
       this._tree.setWidth(320);
       this._tree.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
       this._tree.setMinHeight(10);
@@ -516,7 +517,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       // register the handler to select the client document
       this._tree.addEventListener("click", function(e) {
         if (e.getTarget().getLabel().indexOf("Document [") != -1) {
-          this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance());
+          this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance(), this);
         }
       }, this);        
     },
