@@ -423,7 +423,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
           // if the widget still exitst
           if (widget != null) {
             // tell the inspector to selet the widget
-            this._inspector.setWidget(widget);                            
+            this._inspector.setWidget(widget, this);                            
           } else {
             // remove the widget from the table
             this._tableModel.removeRows(rowId, 1);
