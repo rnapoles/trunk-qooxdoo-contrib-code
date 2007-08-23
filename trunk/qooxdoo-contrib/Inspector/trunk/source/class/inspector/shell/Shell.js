@@ -42,7 +42,7 @@ qx.Class.define("inspector.shell.Shell", {
     // create the popup for the autocompletion
     this._autoCompletePopup = new inspector.shell.AutoCompletePopup(this);  
     // initialize the this reference to the selected widget
-    this._widget = qx.ui.core.ClientDocument.getInstance();
+    this._widget = qx.ui.core.ClientDocument.getInstance();		
   },
 
 
@@ -158,7 +158,7 @@ qx.Class.define("inspector.shell.Shell", {
       this._autoCompletePopup.hide(); 
       // focus the textfield
       if (!this._textField.getFocused()) {
-        this._textField.focus();        
+        this._textField.focus();
       }
     },    
     
@@ -502,7 +502,7 @@ qx.Class.define("inspector.shell.Shell", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-      this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);
+      this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 355);
       this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());
     },
     
@@ -567,10 +567,33 @@ qx.Class.define("inspector.shell.Shell", {
       this._clearButton.addEventListener("click", function(e) {
         this._outputLayout.removeAll();        
       }, this);
-      
+
+/*      
+			var detailsButton = new qx.ui.toolbar.Button("Property Details");
+      this._toolbar.add(detailsButton);
+      detailsButton.addEventListener("execute", function() {
+        var classname = this._inspector._propertyEditor.getSelectedProperty().getUserData("classname"); 
+				var propertyName = this._inspector._propertyEditor.getSelectedProperty().getUserData("key");
+				
+        // get the properties array of the selected class
+        var properties = qx.Class.getByName(classname).$$properties;
+        // get the property array of the currently selected property
+        var property = properties[propertyName];				
+
+				var headline = "<strong>" + classname + "#" + propertyName + "</strong>";
+				this._outputLayout.add(this._getLabel("", headline, "black"));
+				
+				for (var name in property) {
+  				this._printText(name + ": " + property[name]);				
+				}	
+							
+				this._printLine();
+			}, this);
+*/			
+
       // add a spacer to keep the help button rigth
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());      
-      
+
       // create and add a help button
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
@@ -583,6 +606,7 @@ qx.Class.define("inspector.shell.Shell", {
         this._outputLayout.add(this._getLabel("", helpText, "grey"));
         this._outputLayout.add(this._getLine());
       }, this);
+			
     }
        
    }
