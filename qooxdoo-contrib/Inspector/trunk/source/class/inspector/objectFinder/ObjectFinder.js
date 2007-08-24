@@ -376,8 +376,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-      // dosition the window an the rigth 
+      // position the window to the right 
       this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);
+      this.setTop(25);
       // Make the window 25% of the screen heigth heigh 
       this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
     },
@@ -395,7 +396,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // initialize table
       this._table = new qx.ui.table.Table(this._tableModel);
       this._table.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
-      this._table.setWidth(320);
+      this._table.setWidth(350);
       this._table.setShowCellFocusIndicator(false);
       this._table.setColumnVisibilityButtonVisible(false);
       this._mainLayout.add(this._table);

@@ -535,6 +535,51 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     },
     
     
+		_addToolbarButtons_new: function() {
+			
+      var inspectorMenu = new qx.ui.menu.Menu();
+      inspectorMenu.add(new qx.ui.menu.Button("About Inspector"));
+      inspectorMenu.add(new qx.ui.menu.Separator());
+      inspectorMenu.add(new qx.ui.menu.Button("Settings..."));
+      inspectorMenu.add(new qx.ui.menu.Separator());
+      inspectorMenu.add(new qx.ui.menu.Button("Open Object Finder"));
+      inspectorMenu.add(new qx.ui.menu.Button("Open Widget Finder"));
+      inspectorMenu.add(new qx.ui.menu.Button("Open Property Editor"));
+      inspectorMenu.add(new qx.ui.menu.Button("Open Shell"));
+      inspectorMenu.add(new qx.ui.menu.Separator());
+      inspectorMenu.add(new qx.ui.menu.Button("Find Widget"));
+      inspectorMenu.add(new qx.ui.menu.CheckBox("Highlight Current Widget"));
+      inspectorMenu.addToDocument();
+
+      var viewMenu = new qx.ui.menu.Menu();
+      viewMenu.add(new qx.ui.menu.Button("Reload"));
+      viewMenu.add(new qx.ui.menu.CheckBox("Auto-Reload"));
+      viewMenu.add(new qx.ui.menu.Separator());
+      viewMenu.add(new qx.ui.menu.CheckBox("Show Inherited Porperties", null, true));
+      viewMenu.add(new qx.ui.menu.CheckBox("Group Properties"));
+      viewMenu.add(new qx.ui.menu.Separator());
+      viewMenu.add(new qx.ui.menu.RadioButton("Edit View", null, true));
+      viewMenu.add(new qx.ui.menu.RadioButton("Table View"));     
+      viewMenu.addToDocument();
+      
+      var propertiesMenu = new qx.ui.menu.Menu();
+      propertiesMenu.add(new qx.ui.menu.Button("Show API"));
+      propertiesMenu.add(new qx.ui.menu.Separator());
+      propertiesMenu.add(new qx.ui.menu.Button("Set Null"));
+      propertiesMenu.add(new qx.ui.menu.Button("Set Initial Value"));
+      propertiesMenu.add(new qx.ui.menu.Separator());
+      propertiesMenu.add(new qx.ui.menu.Button("Highlight Property Value"));
+      propertiesMenu.add(new qx.ui.menu.Button("Goto Property Value"));      
+      propertiesMenu.addToDocument();     
+      
+      var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", inspectorMenu);
+      this._toolbar.add(inspectorButton);
+      var viewButton = new qx.ui.toolbar.MenuButton("View", viewMenu);
+      this._toolbar.add(viewButton);
+      var propertiesButton = new qx.ui.toolbar.MenuButton("Properties", propertiesMenu);
+      this._toolbar.add(propertiesButton);			
+		},
+		
     /**
      * Creates and adds the toolbar buttons.
      */
