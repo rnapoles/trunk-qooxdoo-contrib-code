@@ -73,14 +73,14 @@ $(FRAMEWORK_CACHE_PATH):
 source-makvars: check-framework source/script/makvars.js
 
 # this target is less readable, but is actually *checked* by make
-source/script/makvars.js: admin/mk-doc2admin-json.xsl $(FRAMEWORK_TOOL_PATH)/make/application.mk
+source/script/makvars.js: tool/mk-doc2admin-json.xsl $(FRAMEWORK_TOOL_PATH)/make/application.mk
 	@echo
 	@echo "  GENERATION OF QOOXDOO WEB ADMIN DATA"
 	@$(CMD_LINE)
 	@echo "  * Generating source/script/makvars.js..."
 	@$(CMD_PYTHON) $(FRAMEWORK_TOOL_PATH)/make/makefile_doc.py \
 	  -e $(FRAMEWORK_TOOL_PATH)/make/application.mk > $(TMP_XML)
-	@$(CMD_XSLT) admin/mk-doc2admin-json.xsl $(TMP_XML) > \
+	@$(CMD_XSLT) tool/mk-doc2admin-json.xsl $(TMP_XML) > \
 	  $(APPLICATION_SOURCE_PATH)/script/$(MAK_VARS)
 
 # Build Targets
