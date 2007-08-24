@@ -508,7 +508,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._tree.setBorder("inset");
       this._tree.setOverflow("auto");
 			this._tree.setUserData("id", qx.ui.core.ClientDocument.getInstance().toHashCode());
-      this._tree.setWidth(320);
+      this._tree.setWidth(350);
       this._tree.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
       this._tree.setMinHeight(10);
       this._tree.setUseDoubleClick(true);

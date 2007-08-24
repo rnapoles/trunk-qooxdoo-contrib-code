@@ -63,16 +63,15 @@ qx.Class.define("inspector.Inspector", {
     this._createCatchClickLayer();
     // create the stuff needed for the highlighting
     this._createHighlightStuff();
+    // create commands
+    this._createCommands();
+    // create the opener toolbar
+    this._createOpenerToolBar();
     // end the exclusion startegie
     this.endExclusion(); 
     
     // Define alias for inspector resource path
     qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));    
-    
-    // add a global key listener for opening the windows
-    var doc = qx.ui.core.ClientDocument.getInstance();
-    doc.addEventListener("keydown", this._openWindow, this);
-    doc.addEventListener("keyup", this._openWindow, this);
   },
 
 
@@ -92,10 +91,14 @@ qx.Class.define("inspector.Inspector", {
     _objectFinder: null,
     _propertyEditor: null,
     _shell: null,
+    _toolbar: null, 
     
-    // two booleans to store the status of the ctrl and alt key
-    _ctrl: false,
-    _alt: false,
+    // commands
+    _openPropertyEditorCommand: null,
+    _openWidgetFinderCommand: null,
+    _openObjectFinderCommand: null,
+    _openShellCommand: null,
+    _openAllCommand: null,
     
     // excludes
     _excludes: [],
@@ -357,10 +360,10 @@ qx.Class.define("inspector.Inspector", {
      * Set the given widget in all components of the inspector.
      * @param widget {qx.core.Object} Any qooxdoo object 
      */
-    setWidget: function(widget, ref) {		
+    setWidget: function(widget, ref) {    
       // set the widget in the inspector
       this._widget = widget;
-			
+      
       // set the widget in the shell
       if (this._shell != null) {
         this._shell.setWidget(widget);
@@ -368,17 +371,17 @@ qx.Class.define("inspector.Inspector", {
       // set the widget in the object finder
       if (this._objectFinder != null) {
         if (ref != this._objectFinder) {
-					if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
-		        this._objectFinder.selectObject(widget);												
-					}
+          if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
+            this._objectFinder.selectObject(widget);                        
+          }
         }
       }
       // set the widget in the widget finder
       if (this._widgetFinder != null) {
         if (ref != this._widgetFinder) {
-					if (widget.toHashCode() != this._widgetFinder.getSelectedWidgetHash()) {
-	          this._widgetFinder.selectWidget(widget);
-					}
+          if (widget.toHashCode() != this._widgetFinder.getSelectedWidgetHash()) {
+            this._widgetFinder.selectWidget(widget);
+          }
         }
       }
       // set the widget in the property editor
@@ -426,7 +429,7 @@ qx.Class.define("inspector.Inspector", {
           shellComponents = this._shell.getComponents();
         }
         // create a array of the Inspector objects
-        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay];        
+        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay, this._toolbar];        
         // merge the arrays
         return propertyEditorComponents.concat(shellComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects);         
       } catch (e) {
@@ -494,56 +497,6 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */    
     /**
-     * Handler function to catch all key events and open a application window 
-     * in case of a specific key combination.
-     * @param e {KeyEvent}
-     */
-    _openWindow: function(e) {
-      // if one key is pressed down
-      if (e.getType() == "keydown") {
-        // register the pressing of the control key
-        if (e.getKeyIdentifier() == "Control") {
-          this._ctrl = true;
-        }
-        // register the pressing of the alt key
-        if (e.getKeyIdentifier() == "Alt") {
-          this._alt = true;
-        }
-        // if alt and control are pressed
-        if (this._alt && this._ctrl) {
-          
-          // open the docuemnt tree window by pressing the W button
-          if (e.getKeyIdentifier() == "W") {
-            this.openWidgetFinder();
-            
-          // open the property editor by presing the P button
-          } else if (e.getKeyIdentifier() == "P") {
-            this.openPropertyEditor();
-            
-          // open the object finder by presing the O button
-          } else if (e.getKeyIdentifier() == "O") {
-            this.openObjectFinder();
-                        
-          // open the shell by presing the S button
-          } else if (e.getKeyIdentifier() == "S") {
-            this.openShell();
-          }
-        }
-      // if one key is released
-      } else if (e.getType() == "keyup") {
-        // register that control has been released
-        if (e.getKeyIdentifier() == "Control") {
-          this._ctrl = false;
-        }
-        // register that alt has been released
-        if (e.getKeyIdentifier() == "Alt") {
-          this._alt = false;
-        }
-      }
-    },
-    
-    
-    /**
      * Opens and if necessary creates the widget finder window.
      */
     openWidgetFinder: function() {
@@ -591,11 +544,11 @@ qx.Class.define("inspector.Inspector", {
       if (this._shell == null) {
         this._createShell();
       }     
-			// if already a widget is selected
-			if (this._widget != null) {
-				// also select it in the shell
-				this._shell.setWidget(this._widget);
-			}
+      // if already a widget is selected
+      if (this._widget != null) {
+        // also select it in the shell
+        this._shell.setWidget(this._widget);
+      }
       this._shell.open();
     },
     
@@ -613,10 +566,12 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the shell
-      this._shell = new inspector.shell.Shell(this, "Inspector shell");
+      this._shell = new inspector.shell.Shell(this, "Shell");
       // end the exclusion startegie
       this.endExclusion();
-          
+      
+      // add the shell window to the magnetic components for the toolbar          
+      this._toolbar.addMagneticElement(this._shell, "outer");
       // set the windows enabled to avoid disabling by the client document
       this._shell.setEnabled(true);     
       // set the text color to black in case that the text color of the client document will be changed
@@ -635,7 +590,9 @@ qx.Class.define("inspector.Inspector", {
       this._objectFinder = new inspector.objectFinder.ObjectFinder(this, "Object Finder");
       // end the exclusion startegie
       this.endExclusion();
-          
+
+      // add the object finder window to the magnetic components for the toolbar                  
+      this._toolbar.addMagneticElement(this._objectFinder, "outer");  
       // set the windows enabled to avoid disabling by the client document
       this._objectFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -654,7 +611,9 @@ qx.Class.define("inspector.Inspector", {
       this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, "Widget Finder");
       // end the exclusion startegie
       this.endExclusion();
-          
+                  
+      // add the widget finder window to the magnetic components for the toolbar                  
+      this._toolbar.addMagneticElement(this._widgetFinder, "outer");            
       // set the windows enabled to avoid disabling by the client document
       this._widgetFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -673,11 +632,78 @@ qx.Class.define("inspector.Inspector", {
       this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, "Property Editor");
       // end the exclusion startegie
       this.endExclusion();
-          
+
+      // add the property editor window to the magnetic components for the toolbar                  
+      this._toolbar.addMagneticElement(this._propertyEditor, "outer");  
       // set the windows enabled to avoid disabling by the client document
       this._propertyEditor.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
       this._propertyEditor.setTextColor("black");
+    },
+    
+    
+    /**
+     * Create the commands that open the windows.
+     */
+    _createCommands: function() {
+      // create the open all command
+      this._openAllCommand = new qx.client.Command("CTRL+SHIFT+F11");
+      this._openAllCommand.addEventListener("execute", function(e) {        
+        this.openShell();
+        this.openObjectFinder();
+        this.openWidgetFinder();
+        this.openPropertyEditor();
+      }, this);
+      // create the open shell command
+      this._openShellCommand = new qx.client.Command("CTRL+SHIFT+F1");
+      this._openShellCommand.addEventListener("execute", function(e) {
+        this.openShell();
+      }, this);
+      // create the open object finder command
+      this._openObjectFinderCommand = new qx.client.Command("CTRL+SHIFT+F2");
+      this._openObjectFinderCommand.addEventListener("execute", function(e) {
+        this.openObjectFinder();
+      }, this);
+      // create the opne widget finder command
+      this._openWidgetFinderCommand = new qx.client.Command("CTRL+SHIFT+F3");
+      this._openWidgetFinderCommand.addEventListener("execute", function(e) {
+        this.openWidgetFinder();
+      }, this);
+      // create the open property editor command
+      this._openPropertyEditorCommand = new qx.client.Command("CTRL+SHIFT+F4");
+      this._openPropertyEditorCommand.addEventListener("execute", function(e) {
+        this.openPropertyEditor();
+      }, this);
+    },
+    
+    
+    _createOpenerToolBar: function() {
+      this._toolbar = new inspector.FlyingToolBar();      
+      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");    
+      this._toolbar.setRight(0);
+      this._toolbar.addToDocument();
+
+      var openAllButton = new qx.ui.toolbar.Button("All");
+      openAllButton.setCommand(this._openAllCommand);
+      this._toolbar.add(openAllButton);
+      
+      this._toolbar.add(new qx.ui.toolbar.Separator());
+      
+      var openShellButton = new qx.ui.toolbar.Button("Shell");
+      openShellButton.setCommand(this._openShellCommand);
+      this._toolbar.add(openShellButton);
+      
+      var openObjectFinderButton = new qx.ui.toolbar.Button("Objects");
+      openObjectFinderButton.setCommand(this._openObjectFinderCommand);
+      this._toolbar.add(openObjectFinderButton);
+      
+      var openWidgetFinderButton = new qx.ui.toolbar.Button("Widgets");
+      openWidgetFinderButton.setCommand(this._openWidgetFinderCommand);
+      this._toolbar.add(openWidgetFinderButton);
+      
+      var openPropertyEditorButton = new qx.ui.toolbar.Button("Properties");
+      openPropertyEditorButton.setCommand(this._openPropertyEditorCommand);
+      this._toolbar.add(openPropertyEditorButton);      
     },
     
     
