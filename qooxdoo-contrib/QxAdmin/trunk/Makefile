@@ -21,9 +21,9 @@
 # BASIC SETTINGS
 ####################################################################################
 
-QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.1-sdk
+QOOXDOO_PATH = ../../../qooxdoo.legacy_0_7_x
 QOOXDOO_URI = ../$(QOOXDOO_PATH)
-QOOXDOO_VERSION = 0.7.1
+QOOXDOO_VERSION = 0.7.2
 
 APPLICATION_NAMESPACE = qxadmin
 APPLICATION_CLASSNAME = Application
@@ -51,3 +51,45 @@ endif
 error:
 	@echo "  * Please configure QOOXDOO_PATH"
 
+
+################################################################################
+# EXTENSIONS
+################################################################################
+
+TMP_XML = $(FRAMEWORK_CACHE_PATH)/mak.xml
+MAK_VARS = makvars.js
+CMD_XSLT = xsltproc
+CMD_COPY = cp -f
+
+# Source Targets
+
+# check some outside dependencies
+check-framework: $(FRAMEWORK_CACHE_PATH)
+
+$(FRAMEWORK_CACHE_PATH):
+	@(cd $(FRAMEWORK_PATH) && make)
+
+# the next one is an alias for the real target
+source-makvars: check-framework source/script/makvars.js
+
+# this target is less readable, but is actually *checked* by make
+source/script/makvars.js: admin/mk-doc2admin-json.xsl $(FRAMEWORK_TOOL_PATH)/make/application.mk
+	@echo
+	@echo "  GENERATION OF QOOXDOO WEB ADMIN DATA"
+	@$(CMD_LINE)
+	@echo "  * Generating source/script/makvars.js..."
+	@$(CMD_PYTHON) $(FRAMEWORK_TOOL_PATH)/make/makefile_doc.py \
+	  -e $(FRAMEWORK_TOOL_PATH)/make/application.mk > $(TMP_XML)
+	@$(CMD_XSLT) admin/mk-doc2admin-json.xsl $(TMP_XML) > \
+	  $(APPLICATION_SOURCE_PATH)/script/$(MAK_VARS)
+
+# Build Targets
+
+# just fix the source thing, and copy it over
+build-makvars: source-makvars
+	@$(CMD_COPY) $(APPLICATION_SOURCE_PATH)/script/$(MAK_VARS) \
+	  $(APPLICATION_BUILD_PATH)/script
+
+# Framework Interface
+source-addon: source-makvars
+build-addon: build-makvars
