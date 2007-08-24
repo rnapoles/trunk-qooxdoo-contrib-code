@@ -72,7 +72,7 @@ echo
 echo_ Once you are finished working with qxadmin, press any key to terminate
 echo_ this application.
 read -n 1
-popd >/dev/null
 shutDown
+popd >/dev/null
 
 
