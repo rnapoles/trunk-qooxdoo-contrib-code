@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.shell.Shell", {
+qx.Class.define("inspector.console.Console", {
   
   extend : inspector.AbstractWindow,  
 
@@ -27,7 +27,7 @@ qx.Class.define("inspector.shell.Shell", {
   *****************************************************************************
   */  
   statics: {
-    // the length of the history in the shell
+    // the length of the history in the console
     HISTORY_LENGTH: 20
   },
     
@@ -40,7 +40,7 @@ qx.Class.define("inspector.shell.Shell", {
     // call the constructor of the superclass
     this.base(arguments, main, name);
     // create the popup for the autocompletion
-    this._autoCompletePopup = new inspector.shell.AutoCompletePopup(this);  
+    this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
     // initialize the this reference to the selected widget
     this._widget = qx.ui.core.ClientDocument.getInstance();		
   },
@@ -58,7 +58,7 @@ qx.Class.define("inspector.shell.Shell", {
     *********************************
     */
     // main elements
-    _shellLayout: null,
+    _consoleLayout: null,
     _textField: null,
     _outputLayout: null,
     
@@ -85,7 +85,7 @@ qx.Class.define("inspector.shell.Shell", {
     *********************************
     */  
     /**
-     * @return The components of the shell.
+     * @return The components of the console.
      */
     getComponents: function() {
       return [this].concat(this._autoCompletePopup.getComponents());
@@ -112,7 +112,7 @@ qx.Class.define("inspector.shell.Shell", {
     
     
     /**
-     * Set the widget which should be addressd with the this value in the shell.
+     * Set the widget which should be addressd with the this value in the console.
      * @param widget {qx.core.Object} The current selected object.
      */
     setWidget: function(widget) {
@@ -201,7 +201,7 @@ qx.Class.define("inspector.shell.Shell", {
     
     
     /**
-     * Scrolls the end of the main layout which holds the aoutput of the shell.
+     * Scrolls the end of the main layout which holds the aoutput of the console.
      */
     _scrollToLastLine: function() {
       // flush the queues to ensure that the adding has been recognized
@@ -242,7 +242,7 @@ qx.Class.define("inspector.shell.Shell", {
           // rest the history counter
           this._historyCounter = -1;
           // if the history is biger than it should be
-          if (this._history.length > inspector.shell.Shell.HISTORY_LENGTH) {
+          if (this._history.length > inspector.console.Console.HISTORY_LENGTH) {
             // remove the last element
             this._history.pop();            
           }
@@ -350,7 +350,7 @@ qx.Class.define("inspector.shell.Shell", {
     *********************************
     */    
     /**
-     * Pints out a return value to the shell. This also includes a special 
+     * Pints out a return value to the console. This also includes a special 
      * treatment for qooxdoo objects and array.
      * @param returnValue {Object} The value to print.
      */
@@ -377,7 +377,7 @@ qx.Class.define("inspector.shell.Shell", {
     
     
     /**
-     * Prints out a qooxdoo object to the shell including a link to set 
+     * Prints out a qooxdoo object to the console including a link to set 
      * the object as the current selected object. 
      * @param object {qx.core.Object} The qooxdoo object to print.
      */
@@ -393,7 +393,7 @@ qx.Class.define("inspector.shell.Shell", {
     },
     
     /**
-     * Prints out a standard text in black wit the leading ">> " to the shell.
+     * Prints out a standard text in black wit the leading ">> " to the console.
      * @param text {String} the text to print out.
      */
     _printText: function(text) {
@@ -402,7 +402,7 @@ qx.Class.define("inspector.shell.Shell", {
  
     
     /**
-     * Print out an error message to the shell. This message begins with
+     * Print out an error message to the console. This message begins with
      * ">> " and is red.
      * @param error {String} The error message.
      */
@@ -413,7 +413,7 @@ qx.Class.define("inspector.shell.Shell", {
  
     /**
      * Print out a line to seperate two calls. This also invokes a scrolling 
-     * to the bottom of the shell. 
+     * to the bottom of the console. 
      */
     _printLine: function() {
       this._outputLayout.add(this._getLine());
@@ -450,7 +450,7 @@ qx.Class.define("inspector.shell.Shell", {
     
     
     /**
-     * The function creates a Treminator as a line in the shell.
+     * The function creates a Treminator as a line in the console.
      * @return {qx.ui.basic.Terminator} The created terminator.  
      */
     _getLine: function() {
@@ -513,8 +513,8 @@ qx.Class.define("inspector.shell.Shell", {
      */
     _createMainElement: function() {
       // create and add a layout for the HTMLembedded and the textbox
-      this._shellLayout = new qx.ui.layout.VerticalBoxLayout();
-      this._mainLayout.add(this._shellLayout);
+      this._consoleLayout = new qx.ui.layout.VerticalBoxLayout();
+      this._mainLayout.add(this._consoleLayout);
       
       this._outputLayout = new qx.ui.layout.VerticalBoxLayout();
       this._outputLayout.setBackgroundColor("white");
@@ -522,12 +522,12 @@ qx.Class.define("inspector.shell.Shell", {
       this._outputLayout.setOverflow("auto");
       this._outputLayout.setWidth("100%");
       this._outputLayout.setHeight(150);
-      this._shellLayout.add(this._outputLayout);
+      this._consoleLayout.add(this._outputLayout);
   
       // create and add the textfield
       this._textField = new qx.ui.form.TextField();
       this._textField.setWidth("100%");
-      this._shellLayout.add(this._textField);
+      this._consoleLayout.add(this._textField);
       // needed to ensure that every line is processed
       this._textField.setLiveUpdate(true);
   
@@ -597,7 +597,7 @@ qx.Class.define("inspector.shell.Shell", {
       // create and add a help button
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
-      // register a handlert to print out the help text on the shell
+      // register a handlert to print out the help text on the console
       this._helpButton.addEventListener("click", function() {
         var helpText = "<strong>HELP:</strong><br>" +
                        "this = the current selected object<br>" + 

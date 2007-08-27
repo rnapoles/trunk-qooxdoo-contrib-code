@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.shell.AutoCompletePopup", {
+qx.Class.define("inspector.console.AutoCompletePopup", {
   
   extend: qx.ui.popup.Popup,  
 
@@ -102,7 +102,7 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
     *********************************
     */  
     /**
-     * Returns the components of the shell
+     * Returns the components of the console
      */
     getComponents: function() {
       return [this, this._table, this._tableModel];
@@ -164,7 +164,7 @@ qx.Class.define("inspector.shell.AutoCompletePopup", {
      * This incudes evaluating the objectRef and fetching the arrtibutes 
      * during runntime of the given object. The information will be 
      * transformed into an array and set in the tabel.   
-     * @param objectRef {String} The code currently in the shells textfield
+     * @param objectRef {String} The code currently in the consoles textfield
      * @param left {Number} The left position to open the popup. 
      * @param top {Number} The top position to topen the popup.
      */

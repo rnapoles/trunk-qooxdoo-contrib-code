@@ -90,14 +90,14 @@ qx.Class.define("inspector.Inspector", {
     _widgetFinder: null,
     _objectFinder: null,
     _propertyEditor: null,
-    _shell: null,
+    _console: null,
     _toolbar: null, 
     
     // commands
     _openPropertyEditorCommand: null,
     _openWidgetFinderCommand: null,
     _openObjectFinderCommand: null,
-    _openShellCommand: null,
+    _openConsoleCommand: null,
     _openAllCommand: null,
     
     // excludes
@@ -364,9 +364,9 @@ qx.Class.define("inspector.Inspector", {
       // set the widget in the inspector
       this._widget = widget;
       
-      // set the widget in the shell
-      if (this._shell != null) {
-        this._shell.setWidget(widget);
+      // set the widget in the console
+      if (this._console != null) {
+        this._console.setWidget(widget);
       }
       // set the widget in the object finder
       if (this._objectFinder != null) {
@@ -413,7 +413,7 @@ qx.Class.define("inspector.Inspector", {
       var propertyEditorComponents = [];
       var widgetFinderComponents = [];
       var objectFinderComponents = [];
-      var shellComponents = [];
+      var consoleComponents = [];
       // try to fill these arrays
       try {
         if (this._propertyEditor != null) {
@@ -425,13 +425,13 @@ qx.Class.define("inspector.Inspector", {
         if (this._objectFinder != null) {
           objectFinderComponents = this._objectFinder.getComponents();
         }
-        if (this._shell != null) {
-          shellComponents = this._shell.getComponents();
+        if (this._console != null) {
+          consoleComponents = this._console.getComponents();
         }
         // create a array of the Inspector objects
         var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay, this._toolbar];        
         // merge the arrays
-        return propertyEditorComponents.concat(shellComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects);         
+        return propertyEditorComponents.concat(consoleComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects);         
       } catch (e) {
         // if that doesnt work, return a blank array
         return [];
@@ -537,19 +537,19 @@ qx.Class.define("inspector.Inspector", {
     
     
     /**
-     * Opens and if necessary creates the shell window.
+     * Opens and if necessary creates the console window.
      */
-    openShell: function() {
-      // create the shell if it is not already created
-      if (this._shell == null) {
-        this._createShell();
+    openConsole: function() {
+      // create the console if it is not already created
+      if (this._console == null) {
+        this._createConsole();
       }     
       // if already a widget is selected
       if (this._widget != null) {
-        // also select it in the shell
-        this._shell.setWidget(this._widget);
+        // also select it in the console
+        this._console.setWidget(this._widget);
       }
-      this._shell.open();
+      this._console.open();
     },
     
     
@@ -559,23 +559,23 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */    
     /**
-     * Creates the shell component. This includes adding the created 
+     * Creates the console component. This includes adding the created 
      * object ids to the excludes array and setting the default values.  
      */
-    _createShell: function() {
+    _createConsole: function() {
       // start the exclusion stategie
       this.beginExclusion();    
-      // create the shell
-      this._shell = new inspector.shell.Shell(this, "Shell");
+      // create the console
+      this._console = new inspector.console.Console(this, "Console");
       // end the exclusion startegie
       this.endExclusion();
       
-      // add the shell window to the magnetic components for the toolbar          
-      this._toolbar.addMagneticElement(this._shell, "outer");
+      // add the console window to the magnetic components for the toolbar          
+      this._toolbar.addMagneticElement(this._console, "outer");
       // set the windows enabled to avoid disabling by the client document
-      this._shell.setEnabled(true);     
+      this._console.setEnabled(true);     
       // set the text color to black in case that the text color of the client document will be changed
-      this._shell.setTextColor("black");      
+      this._console.setTextColor("black");      
     },
     
     
@@ -649,15 +649,15 @@ qx.Class.define("inspector.Inspector", {
       // create the open all command
       this._openAllCommand = new qx.client.Command("CTRL+SHIFT+F11");
       this._openAllCommand.addEventListener("execute", function(e) {        
-        this.openShell();
+        this.openConsole();
         this.openObjectFinder();
         this.openWidgetFinder();
         this.openPropertyEditor();
       }, this);
-      // create the open shell command
-      this._openShellCommand = new qx.client.Command("CTRL+SHIFT+F1");
-      this._openShellCommand.addEventListener("execute", function(e) {
-        this.openShell();
+      // create the open console command
+      this._openConsoleCommand = new qx.client.Command("CTRL+SHIFT+F1");
+      this._openConsoleCommand.addEventListener("execute", function(e) {
+        this.openConsole();
       }, this);
       // create the open object finder command
       this._openObjectFinderCommand = new qx.client.Command("CTRL+SHIFT+F2");
@@ -688,9 +688,9 @@ qx.Class.define("inspector.Inspector", {
       
       this._toolbar.add(new qx.ui.toolbar.Separator());
       
-      var openShellButton = new qx.ui.toolbar.Button("Shell");
-      openShellButton.setCommand(this._openShellCommand);
-      this._toolbar.add(openShellButton);
+      var openConsoleButton = new qx.ui.toolbar.Button("Console");
+      openConsoleButton.setCommand(this._openConsoleCommand);
+      this._toolbar.add(openConsoleButton);
       
       var openObjectFinderButton = new qx.ui.toolbar.Button("Objects");
       openObjectFinderButton.setCommand(this._openObjectFinderCommand);
