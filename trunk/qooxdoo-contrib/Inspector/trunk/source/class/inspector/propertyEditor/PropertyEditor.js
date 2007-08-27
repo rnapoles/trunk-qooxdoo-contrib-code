@@ -83,6 +83,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // goto selected property button
     _gotoSelectedPropertyButton: null,
     _gotoSelectedPropertyTooltip: null,
+    
+    _menu: null,
 
     // the currently selected property
     _currentlySelectedProperty: null,
@@ -96,7 +98,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     _reloadTimer: null,
 
     // the native window for the api viewer
-		_apiWindow: null,
+    _apiWindow: null,
 
     /*
     *********************************
@@ -109,7 +111,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * @return {Array} All components of the property editor.
      */
     getComponents: function() {
-      return [this, this._groupToolTip,
+      return [this, this._groupToolTip, this._menu,
               this._setNullTooltip, this._highlightCurrentPropertyTooltip, 
               this._gotoSelectedPropertyTooltip, this._setPropertyToDefaultTooltip,
               this._inheritedTooltip, this._fullViewTooltip, this._autoReloadToolTip, this._reloadToolTip,
@@ -511,104 +513,57 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     },
     
     
-		_addToolbarButtons_new: function() {
-			
-      var inspectorMenu = new qx.ui.menu.Menu();
-      inspectorMenu.add(new qx.ui.menu.Button("About Inspector"));
-      inspectorMenu.add(new qx.ui.menu.Separator());
-      inspectorMenu.add(new qx.ui.menu.Button("Settings..."));
-      inspectorMenu.add(new qx.ui.menu.Separator());
-      inspectorMenu.add(new qx.ui.menu.Button("Open Object Finder"));
-      inspectorMenu.add(new qx.ui.menu.Button("Open Widget Finder"));
-      inspectorMenu.add(new qx.ui.menu.Button("Open Property Editor"));
-      inspectorMenu.add(new qx.ui.menu.Button("Open Console"));
-      inspectorMenu.add(new qx.ui.menu.Separator());
-      inspectorMenu.add(new qx.ui.menu.Button("Find Widget"));
-      inspectorMenu.add(new qx.ui.menu.CheckBox("Highlight Current Widget"));
-      inspectorMenu.addToDocument();
-
-      var viewMenu = new qx.ui.menu.Menu();
-      viewMenu.add(new qx.ui.menu.Button("Reload"));
-      viewMenu.add(new qx.ui.menu.CheckBox("Auto-Reload"));
-      viewMenu.add(new qx.ui.menu.Separator());
-      viewMenu.add(new qx.ui.menu.CheckBox("Show Inherited Porperties", null, true));
-      viewMenu.add(new qx.ui.menu.CheckBox("Group Properties"));
-      viewMenu.add(new qx.ui.menu.Separator());
-      viewMenu.add(new qx.ui.menu.RadioButton("Edit View", null, true));
-      viewMenu.add(new qx.ui.menu.RadioButton("Table View"));     
-      viewMenu.addToDocument();
+    
+    
+    
+    
+    
+    _createMenu: function() {
+      // create the menu
+      this._menu = new qx.ui.menu.Menu();
+      this._menu.addToDocument();
       
-      var propertiesMenu = new qx.ui.menu.Menu();
-      propertiesMenu.add(new qx.ui.menu.Button("Show API"));
-      propertiesMenu.add(new qx.ui.menu.Separator());
-      propertiesMenu.add(new qx.ui.menu.Button("Set Null"));
-      propertiesMenu.add(new qx.ui.menu.Button("Set Initial Value"));
-      propertiesMenu.add(new qx.ui.menu.Separator());
-      propertiesMenu.add(new qx.ui.menu.Button("Highlight Property Value"));
-      propertiesMenu.add(new qx.ui.menu.Button("Goto Property Value"));      
-      propertiesMenu.addToDocument();     
-      
-      var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", inspectorMenu);
-      this._toolbar.add(inspectorButton);
-      var viewButton = new qx.ui.toolbar.MenuButton("View", viewMenu);
-      this._toolbar.add(viewButton);
-      var propertiesButton = new qx.ui.toolbar.MenuButton("Properties", propertiesMenu);
-      this._toolbar.add(propertiesButton);			
-		},
-		
-    /**
-     * Creates and adds the toolbar buttons.
-     */
-    _addToolbarButtons: function() {
-      // create and add the reload button
-      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
-      this._toolbar.add(this._reloadButton);
-      // add the event listener for the reload
-      this._reloadButton.addEventListener("click", function() {
-        this._inspector.beginExclusion();
-        this._propertyList.build();
-        this._inspector.beginExclusion();
-      }, this);
-      // set the tooltip to the reload button
-      this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);
-      this._reloadButton.setToolTip(this._reloadToolTip);
-      
-      // create and add a autoreload button
-      var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/autoreload.png"));
-      this._toolbar.add(autoReloadButton);
-      // add the change event listener
-      autoReloadButton.addEventListener("changeChecked", function (e) {
-        if (e.getData()) {
-          this._enableAutoReload();
+      // auto reload
+      var autoReloadButton = new qx.ui.menu.CheckBox("Auto-Reload")
+      var autoReloadCommand = new qx.client.Command("");
+      autoReloadButton.setCommand(autoReloadCommand);      
+      autoReloadCommand.addEventListener("execute", function (e) {
+        if (e.getData().getChecked()) {
+          this._enableAutoReload();          
         } else {
-          this._disableAutoReload();
+          this._disableAutoReload();          
         }
-      },this);
-      // add the tooltip to the autoreload button
-      this._autoReloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.AUTO_RELOAD_BUTTON_TOOLTIP_TEXT, null);      
-      autoReloadButton.setToolTip(this._autoReloadToolTip);
+      }, this);            
+      this._menu.add(autoReloadButton);
       
-      // add a seperator
-      this._toolbar.add(new qx.ui.toolbar.Separator());
-
-      // inherited button
-      this._inheritedButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/inherited.png", true));
-      this._inheritedButton.setChecked(true);
-      this._toolbar.add(this._inheritedButton);   
-      this._inheritedTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.INHERITED_BUTTON_TOOLTIP_TEXT, null);
-      this._inheritedButton.setToolTip(this._inheritedTooltip);
-      this._inheritedButton.addEventListener("execute", this._switchInheritedStatus, this);            
-     
+      // seperator
+      this._menu.add(new qx.ui.menu.Separator());
       
-      // full view button
-      var viewFullButton = new qx.ui.toolbar.RadioButton(null, qx.io.Alias.getInstance().resolve("inspector/image/fullview.png"));
-      viewFullButton.setChecked(true);
-      this._fullViewTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.FULL_VIEW_TOOLTIP_TEXT, null);
-      viewFullButton.setToolTip(this._fullViewTooltip);      
-      this._toolbar.add(viewFullButton);
-      viewFullButton.addEventListener("changeChecked", function(e) {
+      // inherited checkbox
+      this._inheritedButton = new qx.ui.menu.CheckBox("Show Inherited Porperties", null, true);
+      this._menu.add(this._inheritedButton);
+      this._inheritedButton.addEventListener("execute", this._switchInheritedStatus, this);
+      
+      // groupe checkbox
+      this._groupButton = new qx.ui.menu.CheckBox("Group Properties");
+      this._groupButton.addEventListener("click", function(e) {
+        if (this._qxObject != null) {
+          // set the widget again so signal a clear reload with the new settings
+          this.setWidget(this._qxObject);
+        }
+        // enable or disable the inheritance button
+        this._inheritedButton.setEnabled(!e.getTarget().getChecked())
+      }, this);      
+      this._menu.add(this._groupButton);
+      
+      // seperator
+      this._menu.add(new qx.ui.menu.Separator());
+      
+      // edit view button
+      var editViewButton = new qx.ui.menu.RadioButton("Edit View", null, true)
+      editViewButton.addEventListener("execute", function(e) {
         // if the button is checked
-        if (e.getData()) {
+        if (e.getCurrentTarget().getChecked()) {
           // switch the property lists
           this._mainLayout.removeAt(1);
           this._propertyList = this._propertyListFull;
@@ -625,16 +580,14 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // enable the second view     
           viewTableButton.setChecked(true);
         }
-      }, this);
+      }, this);      
+      this._menu.add(editViewButton);
 
       // table view button
-      var viewTableButton = new qx.ui.toolbar.RadioButton(null, qx.io.Alias.getInstance().resolve("inspector/image/tableview.png"));
-      this._htmlViewTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.HTML_VIEW_TOOLTIP_TEXT, null);
-      viewTableButton.setToolTip(this._htmlViewTooltip);  
-      this._toolbar.add(viewTableButton);
-      viewTableButton.addEventListener("changeChecked", function(e) {
+      var tableViewButton = new qx.ui.menu.RadioButton("Table View")
+      tableViewButton.addEventListener("execute", function(e) {
         // if the button is checked
-        if (e.getData()) {
+        if (e.getCurrentTarget().getChecked()) {
           // switch the property lists
           this._mainLayout.removeAt(1);
           this._propertyList = this._propertyListHtmlTable;
@@ -650,60 +603,76 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           viewFullButton.setChecked(true);
         }      
       }, this);
-
+      this._menu.add(tableViewButton); 
+      
       // radio manager for the view buttons      
-      var viewRadioManager = new qx.ui.selection.RadioManager(null, [viewFullButton, viewTableButton]);
- 
-      // create and add a group button
-      this._groupButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/group.png"));
-      this._groupToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.GROUP_BUTTON_TOOLTIP_TEXT, null);
-      this._groupButton.setToolTip(this._groupToolTip);
-      this._toolbar.add(this._groupButton);
-      // add the event listener for the change of the group status
-      this._groupButton.addEventListener("click", function(e) {
-        if (this._qxObject != null) {
-          // set the widget again so signal a clear reload with the new settings
-          this.setWidget(this._qxObject);
-        }
-        // enable or disable the inheritance button
-        this._inheritedButton.setEnabled(!e.getTarget().getChecked())
+      var viewRadioManager = new qx.ui.selection.RadioManager(null, [editViewButton, tableViewButton]);      ;        
+    },
+    
+    /**
+     * Creates and adds the toolbar buttons.
+     */
+    _addToolbarButtons: function() {
+      // create the menu
+      this._createMenu();
+      // add the menu button
+      var menuButton = new qx.ui.toolbar.MenuButton("View", this._menu);
+      this._toolbar.add(menuButton)
+      
+      // add a seperator
+      this._toolbar.add(new qx.ui.toolbar.Separator());
+      
+      // create and add the reload button
+      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
+      this._toolbar.add(this._reloadButton);
+      // add the event listener for the reload
+      this._reloadButton.addEventListener("click", function() {
+        this._inspector.beginExclusion();
+        this._propertyList.build();
+        this._inspector.beginExclusion();
       }, this);
+      // set the tooltip to the reload button
+      this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);
+      this._reloadButton.setToolTip(this._reloadToolTip);
+
+      // add a seperator
+      this._toolbar.add(new qx.ui.toolbar.Separator());
 
       // create the API button      
       var apiButton = new qx.ui.toolbar.Button("API");
       this._toolbar.add(apiButton);
       apiButton.addEventListener("execute", function() {
-				// if the API window is not created
+        // if the API window is not created
         if (this._apiWindow == null) {
-					// initialize the api window
-					this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
+          // initialize the api window
+          this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
           this._apiWindow.setWidth(900);
-          this._apiWindow.setHeight(600);										
-				}        
-				// define the URL to the apiview
-				var urlString = inspector.propertyEditor.PropertyEditor.API_VIEWER_URI;
-				// check if a property is selected
-				if (this._currentlySelectedProperty != null) {
-					// if yes, take the classname and the property name from the property
-					urlString = urlString + "#" + this._currentlySelectedProperty.getUserData("classname");
-					urlString = urlString + "~" + this._currentlySelectedProperty.getUserData("key");
-				
-				// if no property is selected but a object
-				} else if (this._qxObject != null) {
-					// only take the objects classname
-					urlString = urlString + "#" + this._qxObject.classname;
-				}
-				// set the uri in the window
-				this._apiWindow.setUrl(urlString);
-				
-				// if the window is not open
+          this._apiWindow.setHeight(600);                    
+        }        
+        // define the URL to the apiview
+        var urlString = inspector.propertyEditor.PropertyEditor.API_VIEWER_URI;
+        // check if a property is selected
+        if (this._currentlySelectedProperty != null) {
+          // if yes, take the classname and the property name from the property
+          urlString = urlString + "#" + this._currentlySelectedProperty.getUserData("classname");
+          urlString = urlString + "~" + this._currentlySelectedProperty.getUserData("key");
+        
+        // if no property is selected but a object
+        } else if (this._qxObject != null) {
+          // only take the objects classname
+          urlString = urlString + "#" + this._qxObject.classname;
+        }
+        // set the uri in the window
+        this._apiWindow.setUrl(urlString);
+        
+        // if the window is not open
         if (!this._apiWindow.isOpen()) {
-					// open the window
-					this._apiWindow.open();					
-				} else {
-					// otherwise just focus it
-					this._apiWindow.focus();
-				}
+          // open the window
+          this._apiWindow.open();          
+        } else {
+          // otherwise just focus it
+          this._apiWindow.focus();
+        }
       }, this);
 
       // add a spacer to keep the property relevant buttons on the right
