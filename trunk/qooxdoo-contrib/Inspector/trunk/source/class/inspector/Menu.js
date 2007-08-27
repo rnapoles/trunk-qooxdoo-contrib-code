@@ -138,16 +138,6 @@ qx.Class.define("inspector.Menu", {
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       
-      // open all button
-      var openAllButton = new qx.ui.menu.Button("Open All Windows");
-      openAllButton.setCommand(this._openAllCommand);     
-      this._inspectorMenu.add(openAllButton);
-      
-      var reloadAllButton = new qx.ui.menu.Button("Reload All Windows");
-      this._inspectorMenu.add(reloadAllButton);      
-      // seperator
-      this._inspectorMenu.add(new qx.ui.menu.Separator());
-      
       // find button
       this._findButton = new qx.ui.menu.CheckBox("Find Widget");
       this._findButton.addEventListener("execute", function(e) {

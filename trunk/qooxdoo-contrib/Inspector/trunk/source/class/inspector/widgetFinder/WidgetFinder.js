@@ -58,12 +58,9 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     _tree: null,
     
     // toolbar buttons
-    _findButton: null,
-    _highlightButton: null,
     _reloadButton: null,
     // tooltips
-    _findToolTip: null,
-    _highlightToolTip: null,   
+ 
     _reloadToolTip: null,
     _autoReloadToolTip: null, 
     
@@ -78,7 +75,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * @return {Array} A list of all components in the widget finder.
      */       
     getComponents: function() {
-      return [this, this._findToolTip, this._highlightToolTip, this._reloadToolTip, this._autoReloadToolTip];
+      return [this, this._reloadToolTip, this._autoReloadToolTip];
     },
         
     
@@ -106,23 +103,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       // return null otherwise
       return null;
     },
-    
-    
-    /**
-     * Sets the find button to the given status. (Checked or not checked) 
-     */
-    setFindButton: function(status) {
-      this._findButton.setChecked(status);
-    },
-    
-    
-    /**
-     * Set the highlight button to the given status. (Checked or not checked)
-     */
-    setHighlightButton: function(status) {
-      this._highlightButton.setChecked(status);
-    },
-		
+	
 
     /**
      * Reloads the values in the tree.
@@ -526,24 +507,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     /**
      * Adds the toolbar buttons to the toolbar and the tooltips to the buttons.
      */
-    _addToolbarButtons: function() {
-      // add the toolbar buttons
-      this._findButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/select.png"));
-      this._highlightButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/highlight.png"));
-      this._toolbar.add(this._findButton);
-      this._toolbar.add(this._highlightButton);
-      // add a seperator
-      this._toolbar.add(new qx.ui.toolbar.Separator());
-      // register the find handler
-      this._findButton.addEventListener("execute", function(e) {
-        // if the button is pressed
-        if (e.getCurrentTarget().getChecked()) {
-          this._inspector.startFindMode();
-        } else {
-          this._inspector.exitFindMode();
-        }        
-      }, this);
-              
+    _addToolbarButtons: function() {              
       // create and add the reload button
       this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
       this._toolbar.add(this._reloadButton);
@@ -551,8 +515,6 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._reloadButton.addEventListener("click", function() {
         this.reload();
       }, this);
-      // register the highlight handler
-      this._highlightButton.addEventListener("execute", this._inspector.highlightCurrentWidget, this._inspector);
       
       // create and add a autoreload button
       var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/autoreload.png"));
@@ -566,13 +528,9 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         }
       },this);      
       
-      // add the tooltips to the buttons
-      this._findToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.FIND_BUTTON_TOOLTIP_TEXT, null);
-      this._highlightToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.HIGHLIGHT_BUTTON_TOOLTIP_TEXT, null);
+      // add the tooltips to the buttons      
       this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);
-      this._autoReloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.AUTO_RELOAD_BUTTON_TOOLTIP_TEXT, null);
-      this._findButton.setToolTip(this._findToolTip);
-      this._highlightButton.setToolTip(this._highlightToolTip);
+      this._autoReloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.AUTO_RELOAD_BUTTON_TOOLTIP_TEXT, null);      
       this._reloadButton.setToolTip(this._reloadToolTip);
       autoReloadButton.setToolTip(this._autoReloadToolTip);
     }
