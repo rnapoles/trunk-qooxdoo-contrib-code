@@ -378,7 +378,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _setApearancePosition: function() {
       // position the window to the right 
       this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);
-      this.setTop(25);
       // Make the window 25% of the screen heigth heigh 
       this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
     },
@@ -403,7 +402,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // initialize the column model
       var columnModel = this._table.getTableColumnModel();
       columnModel.setColumnWidth(0,50);
-      columnModel.setColumnWidth(1,254);      
+      columnModel.setColumnWidth(1,274);      
       
       // register the selction change handler
       this._table.getSelectionModel().addEventListener("changeSelection", function(e) {

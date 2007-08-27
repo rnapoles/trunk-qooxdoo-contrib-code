@@ -679,8 +679,7 @@ qx.Class.define("inspector.Inspector", {
     
     _createOpenerToolBar: function() {
       this._toolbar = new inspector.FlyingToolBar();      
-      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");    
-      this._toolbar.setRight(0);
+      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");          
       this._toolbar.addToDocument();
 
       var openAllButton = new qx.ui.toolbar.Button("All");
