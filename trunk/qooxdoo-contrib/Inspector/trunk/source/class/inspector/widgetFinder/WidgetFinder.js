@@ -33,7 +33,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     // load the obecjts into the table after the app is created
     var self = this;
     window.setTimeout(function() {
-      self._reloadTree();
+      self.reload();
       // if a widget is selected, selet is on open
       var currentWidget = self._inspector.getWidget();
       if (currentWidget != null) {
@@ -121,6 +121,19 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      */
     setHighlightButton: function(status) {
       this._highlightButton.setChecked(status);
+    },
+		
+
+    /**
+     * Reloads the values in the tree.
+     */
+    reload: function() {   
+      // start the exclusion
+      this._inspector.beginExclusion();      
+      // refill the tree
+      this._fillTree(qx.ui.core.ClientDocument.getInstance(), this._tree);
+      // end the exclusion
+      this._inspector.endExclusion();      
     },
     
     
@@ -364,19 +377,6 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
           return null; 
       }
     }, 
-    
-    
-    /**
-     * Reloads the values in the tree.
-     */
-    _reloadTree: function() {   
-      // start the exclusion
-      this._inspector.beginExclusion();      
-      // refill the tree
-      this._fillTree(qx.ui.core.ClientDocument.getInstance(), this._tree);
-      // end the exclusion
-      this._inspector.endExclusion();      
-    },
 
     
     /**
@@ -443,7 +443,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       var self = this;    
       this._reloadTimer = window.setInterval(function() {
         if (self.getDisplay() && self.getVisibility()) {
-          self._reloadTree.call(self);
+          self.reload.call(self);
         }
       }, 200);   
     },
@@ -549,7 +549,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._toolbar.add(this._reloadButton);
       // add the event listener for the reload
       this._reloadButton.addEventListener("click", function() {
-        this._reloadTree();
+        this.reload();
       }, this);
       // register the highlight handler
       this._highlightButton.addEventListener("execute", this._inspector.highlightCurrentWidget, this._inspector);

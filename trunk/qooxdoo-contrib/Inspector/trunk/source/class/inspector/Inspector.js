@@ -63,8 +63,6 @@ qx.Class.define("inspector.Inspector", {
     this._createCatchClickLayer();
     // create the stuff needed for the highlighting
     this._createHighlightStuff();
-    // create commands
-    this._createCommands();
     // create the opener toolbar
     this._createOpenerToolBar();
     // end the exclusion startegie
@@ -93,13 +91,6 @@ qx.Class.define("inspector.Inspector", {
     _console: null,
     _toolbar: null, 
     
-    // commands
-    _openPropertyEditorCommand: null,
-    _openWidgetFinderCommand: null,
-    _openObjectFinderCommand: null,
-    _openConsoleCommand: null,
-    _openAllCommand: null,
-    
     // excludes
     _excludes: [],
     _excludeBeginIndex: -1,
@@ -118,7 +109,7 @@ qx.Class.define("inspector.Inspector", {
     
     // the current widget
     _widget: null,
-
+    
     
    /*
     *********************************
@@ -414,6 +405,7 @@ qx.Class.define("inspector.Inspector", {
       var widgetFinderComponents = [];
       var objectFinderComponents = [];
       var consoleComponents = [];
+      var menuComponents = [];
       // try to fill these arrays
       try {
         if (this._propertyEditor != null) {
@@ -429,9 +421,11 @@ qx.Class.define("inspector.Inspector", {
           consoleComponents = this._console.getComponents();
         }
         // create a array of the Inspector objects
-        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay, this._toolbar];        
+        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay, this._toolbar];
+        // get the menu components
+        var menuComponents = this._toolbar.getComponents();
         // merge the arrays
-        return propertyEditorComponents.concat(consoleComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects);         
+        return propertyEditorComponents.concat(consoleComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects).concat(menuComponents);         
       } catch (e) {
         // if that doesnt work, return a blank array
         return [];
@@ -489,7 +483,7 @@ qx.Class.define("inspector.Inspector", {
     getExcludes: function() {
       return this._excludes;
     },
-    
+
     
     /*
     *********************************
@@ -541,7 +535,7 @@ qx.Class.define("inspector.Inspector", {
      */
     openConsole: function() {
       // create the console if it is not already created
-      if (this._console == null) {
+      if (this._console == null) {        
         this._createConsole();
       }     
       // if already a widget is selected
@@ -552,6 +546,55 @@ qx.Class.define("inspector.Inspector", {
       this._console.open();
     },
     
+    
+    /*
+    *********************************
+       HIDER
+    *********************************
+    */    
+    /**
+     * Hides the widget finder window.
+     */
+    hideWidgetFinder: function() {
+      // create the widget finder if not already created
+      if (this._widgetFinder != null) {
+        this._widgetFinder.hide();
+      }
+    },
+    
+    
+    /**
+     * Hides the object finder window.
+     */
+    hideObjectFinder: function() {
+      // create the object finder if not already created
+      if (this._objectFinder != null) {
+        this._objectFinder.hide();
+      }
+    },
+  
+  
+    /**
+     * Hides the property editor window.
+     */
+    hidePropertyEditor: function() {
+      // create the property editor if not already created
+      if (this._propertyEditor != null) {      
+        this._propertyEditor.hide();
+      }     
+    },
+    
+    
+    /**
+     * Hides the console window.
+     */
+    hideConsole: function() {
+      // create the console if it is not already created
+      if (this._console != null) {        
+        this._console.hide();
+      }     
+    },
+        
     
     /*
     *********************************
@@ -642,67 +685,15 @@ qx.Class.define("inspector.Inspector", {
     },
     
     
-    /**
-     * Create the commands that open the windows.
-     */
-    _createCommands: function() {
-      // create the open all command
-      this._openAllCommand = new qx.client.Command("CTRL+SHIFT+F11");
-      this._openAllCommand.addEventListener("execute", function(e) {        
-        this.openConsole();
-        this.openObjectFinder();
-        this.openWidgetFinder();
-        this.openPropertyEditor();
-      }, this);
-      // create the open console command
-      this._openConsoleCommand = new qx.client.Command("CTRL+SHIFT+F1");
-      this._openConsoleCommand.addEventListener("execute", function(e) {
-        this.openConsole();
-      }, this);
-      // create the open object finder command
-      this._openObjectFinderCommand = new qx.client.Command("CTRL+SHIFT+F2");
-      this._openObjectFinderCommand.addEventListener("execute", function(e) {
-        this.openObjectFinder();
-      }, this);
-      // create the opne widget finder command
-      this._openWidgetFinderCommand = new qx.client.Command("CTRL+SHIFT+F3");
-      this._openWidgetFinderCommand.addEventListener("execute", function(e) {
-        this.openWidgetFinder();
-      }, this);
-      // create the open property editor command
-      this._openPropertyEditorCommand = new qx.client.Command("CTRL+SHIFT+F4");
-      this._openPropertyEditorCommand.addEventListener("execute", function(e) {
-        this.openPropertyEditor();
-      }, this);
-    },
     
+    
+    
+        
     
     _createOpenerToolBar: function() {
-      this._toolbar = new inspector.FlyingToolBar();      
+      this._toolbar = new inspector.Menu(this);      
       this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");          
-      this._toolbar.addToDocument();
-
-      var openAllButton = new qx.ui.toolbar.Button("All");
-      openAllButton.setCommand(this._openAllCommand);
-      this._toolbar.add(openAllButton);
-      
-      this._toolbar.add(new qx.ui.toolbar.Separator());
-      
-      var openConsoleButton = new qx.ui.toolbar.Button("Console");
-      openConsoleButton.setCommand(this._openConsoleCommand);
-      this._toolbar.add(openConsoleButton);
-      
-      var openObjectFinderButton = new qx.ui.toolbar.Button("Objects");
-      openObjectFinderButton.setCommand(this._openObjectFinderCommand);
-      this._toolbar.add(openObjectFinderButton);
-      
-      var openWidgetFinderButton = new qx.ui.toolbar.Button("Widgets");
-      openWidgetFinderButton.setCommand(this._openWidgetFinderCommand);
-      this._toolbar.add(openWidgetFinderButton);
-      
-      var openPropertyEditorButton = new qx.ui.toolbar.Button("Properties");
-      openPropertyEditorButton.setCommand(this._openPropertyEditorCommand);
-      this._toolbar.add(openPropertyEditorButton);      
+      this._toolbar.addToDocument();    
     },
     
     
@@ -735,6 +726,8 @@ qx.Class.define("inspector.Inspector", {
         this._catchClickLayer.hide();
         // disable all find buttons
         this._setFindButton(false);
+        // disable the find button in the menu
+        this._toolbar.resetFindButton();
         // get the curent mouse position
         var xPosition = e.getClientX();
         var yPosition = e.getClientY();

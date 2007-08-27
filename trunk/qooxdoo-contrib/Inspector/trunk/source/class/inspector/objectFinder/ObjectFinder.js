@@ -55,7 +55,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     var self = this;
     window.setTimeout(function() {
       // load
-      self._readObjects();
+      self.reload();
       // if a widget is selected, selet is on open
       var currentWidget = self._inspector.getWidget();
       if (currentWidget != null) {
@@ -159,15 +159,10 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     },
     
     
-    /*
-    *********************************
-       PROTECTED
-    *********************************
-    */
     /**
      * Reads the data of the document and updates the tablemodel.
      */
-    _readObjects: function() {
+    reload: function() {
       // check if the search term is in the textfield
       if (this._findField.getComputedValue() != inspector.objectFinder.ObjectFinder.SEARCH_TERM) {        
         // if not get the filterd data
@@ -179,8 +174,13 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // set the new data in the model
       this._setData(data);
     },
-    
-    
+
+
+    /*
+    *********************************
+       PROTECTED
+    *********************************
+    */    
     /**
      * Fetches the data from the objects db, removes the objects from the
      * inspector application and filters it if a filter is given.
@@ -288,7 +288,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       var self = this;    
       this._reloadTimer = window.setInterval(function() {
         if (self.getDisplay() && self.getVisibility()) {
-          self._readObjects.call(self);
+          self.reload.call(self);
         }
       }, 200);   
     },
@@ -402,7 +402,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // initialize the column model
       var columnModel = this._table.getTableColumnModel();
       columnModel.setColumnWidth(0,50);
-      columnModel.setColumnWidth(1,274);      
+      columnModel.setColumnWidth(1,284);      
       
       // register the selction change handler
       this._table.getSelectionModel().addEventListener("changeSelection", function(e) {
@@ -443,7 +443,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._toolbar.add(this._reloadButton);
       // add the event listener for the reload
       this._reloadButton.addEventListener("click", function() {
-        this._readObjects();
+        this.reload();
       }, this);
       // set the tooltip to the reload button
       this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);

@@ -161,6 +161,19 @@ qx.Class.define("inspector.console.Console", {
         this._textField.focus();
       }
     },    
+		
+		printHelp: function(e) {        
+        var helpText = "<strong>HELP:</strong><br>" +
+                       "this = the current selected object<br>" + 
+                       "ans = the last return value<br>" +
+                       "Press the CTRL and space key together to get an auto complete"; 
+        this._outputLayout.add(this._getLabel("", helpText, "grey"));
+        this._outputLayout.add(this._getLine());			
+		},
+		
+		clear: function() {
+			this._outputLayout.removeAll();
+		},
     
     
     /*
@@ -564,9 +577,7 @@ qx.Class.define("inspector.console.Console", {
       this._clearButton = new qx.ui.toolbar.Button("Clear");
       this._toolbar.add(this._clearButton);
       // register the clear event listener
-      this._clearButton.addEventListener("click", function(e) {
-        this._outputLayout.removeAll();        
-      }, this);
+      this._clearButton.addEventListener("click", this.clear, this);
 
 /*      
 			var detailsButton = new qx.ui.toolbar.Button("Property Details");
@@ -598,15 +609,7 @@ qx.Class.define("inspector.console.Console", {
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
       // register a handlert to print out the help text on the console
-      this._helpButton.addEventListener("click", function() {
-        var helpText = "<strong>HELP:</strong><br>" +
-                       "this = the current selected object<br>" + 
-                       "ans = the last return value<br>" +
-                       "Press the CTRL and space key together to get an auto complete"; 
-        this._outputLayout.add(this._getLabel("", helpText, "grey"));
-        this._outputLayout.add(this._getLine());
-      }, this);
-			
+      this._helpButton.addEventListener("click", this.printHelp, this);			
     }
        
    }
