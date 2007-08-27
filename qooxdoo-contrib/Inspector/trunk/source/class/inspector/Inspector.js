@@ -644,14 +644,14 @@ qx.Class.define("inspector.Inspector", {
     },
     
     
-    
-    
-    
-        
-    
+		/**
+		 * Creates the toolbar which will hold the inspector menu and
+		 * the buttons to open the components.
+		 */
     _createOpenerToolBar: function() {
       this._toolbar = new inspector.Menu(this);      
-      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");          
+      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");
+			this._toolbar.setLeft(100);          
       this._toolbar.addToDocument();    
     },
     
