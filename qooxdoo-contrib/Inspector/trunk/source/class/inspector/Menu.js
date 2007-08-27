@@ -27,18 +27,15 @@ qx.Class.define("inspector.Menu", {
   */
   construct : function(inspector) {    
     this.base(arguments);
+		// set the zIndex to a higher one than the index of the find mode layer
     this.setZIndex(1e5);
-  
+    // save the reference to the inspector
     this._inspector = inspector;
-      
+    // create the commands
     this.__createCommands();
-    
+    // create the inspector menu
     this.__createInspectorMenu();
-//    this.__createObjectMenu();
-//    this.__createWidgetMenu();
-//    this.__createPropertyMenu();
-//    this.__createConsoleMenu();
-    
+    // create the buttons shown on the menu
     this.__createMenuButtons();
   }, 
   
@@ -75,10 +72,23 @@ qx.Class.define("inspector.Menu", {
     _openWidgetFinderButton: null,
     _openPropertyEditorButton: null,
 
+
+    /*
+    *********************************
+       PUBLIC
+    *********************************
+    */
+		/**
+		 * @return the components of the menu.
+		 */
     getComponents: function() {
       return [this._inspectorMenu, this];
     },
     
+		/**
+		 * Sets the find button to unchecked. This is used to 
+		 * signal the end of the find mode.
+		 */
     resetFindButton: function() {
       this._findButton.setChecked(false);
     },
