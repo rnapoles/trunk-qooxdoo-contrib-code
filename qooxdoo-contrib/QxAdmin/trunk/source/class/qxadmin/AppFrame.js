@@ -113,12 +113,17 @@ qx.Class.define("qxadmin.AppFrame",
     right.add(this.widgets["runoptions"]);
     this.widgets["runoptions"].setDisplay(false);
 
-    // Output Views
+    var tb = this.__makeToolInfo();
+    right.add(tb);
+
+    // Right Side Output/Edit Views
     var buttview = this.__makeButtRun();
     right.add(buttview);
 
-
     buttview = this.__makeButtEdit();
+    right.add(buttview);
+
+    buttview = this.__makeButtInfo();
     right.add(buttview);
 
     this.__setStateInitialized();
@@ -225,8 +230,8 @@ qx.Class.define("qxadmin.AppFrame",
 
     __makeCommands : function()
     {
-      this._cmdRunFile = new qx.client.Command("F5");
-      this._cmdRunFile.addEventListener("execute", this.__ehRunFile, this);
+      this._cmdRunBuild = new qx.client.Command("F5");
+      this._cmdRunBuild.addEventListener("execute", this.__ehRunBuild, this);
 
       this._cmdViewFile = new qx.client.Command("Ctrl-Left");
       this._cmdViewFile.addEventListener("execute", this.__ehViewFile, this);
@@ -239,7 +244,7 @@ qx.Class.define("qxadmin.AppFrame",
 
     __setStateInitialized : function()
     {
-      this._cmdRunFile.setEnabled(true);
+      this._cmdRunBuild.setEnabled(true);
       this._cmdViewFile.setEnabled(false);
       this._cmdOpenPage.setEnabled(false);
     },
@@ -268,7 +273,7 @@ qx.Class.define("qxadmin.AppFrame",
     __setStateSampleLoaded : function()
     {
       this._cmdObjectSummary.setEnabled(true);
-      this._cmdRunFile.setEnabled(true);
+      this._cmdRunBuild.setEnabled(true);
       if (!this.__states.isFirstSample) {
         this._cmdViewFile.setEnabled(true);
       }
@@ -297,7 +302,7 @@ qx.Class.define("qxadmin.AppFrame",
           items : [
             {
               label : "Execute",
-              command : this._cmdRunFile
+              command : this._cmdRunBuild
             },
             { type : "Separator" },
             {
@@ -406,7 +411,7 @@ qx.Class.define("qxadmin.AppFrame",
       this.runbutton = new qx.ui.toolbar.Button("Run Make", "icon/16/actions/media-playback-start.png");
       mb.add(this.runbutton);
       this.widgets["toolrun.runbutton"] = this.runbutton;
-      this.__bindCommand(this.runbutton, this._cmdRunFile);
+      this.__bindCommand(this.runbutton, this._cmdRunBuild);
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
 
       // -- view button
@@ -589,69 +594,6 @@ qx.Class.define("qxadmin.AppFrame",
 
       buttview.getPane().add(p1);
 
-      var treeData = 
-      {
-        label : "Customize Makefile",
-        items : [
-        {
-          label : "General",
-          items : [
-          {
-            label : "QOOXDOO_PATH"
-          }
-          ]
-        },
-        {
-          label : "Makefile Vars",
-          items : [
-          {
-            label : "BASIC SETTINGS",
-            items : [
-            {
-              label : "APPLICATION_CLASSNAME"
-            },
-            {
-              label : "QOOXDOO_URI"
-            },
-            {
-              label : "APPLICATION_NAMESPACE_PATH"
-            }
-            ]
-          },
-          {
-            label : "GENERATOR OPTIONS",
-            items : [
-            {
-              label : "APPLICATON_COMPLETE_BUILD"
-            },
-            {
-              label : "APPLICATON_COMPLETE_SOURCE"
-            },
-            {
-              label : "APPLICATION_COMPLETE_API"
-            }
-            ]
-          },
-          {
-            label : "RUNTIME SETTINGS",
-            items : [
-            {
-              label : "APPLICATION_THEME"
-            },
-            {
-              label : "APPLICATION_THEME_COLOR"
-            },
-            {
-              label : "APPLICATION_THEME_BORDER"
-            }
-            ]
-          }
-          ]
-        }
-        ]
-      };
-      var playdata = this.createTree(treeData);
-      this.tD      = playdata;
       //var tree = new qx.ui.tree.Tree("Samples");
       //var tree = new qxadmin.FileSystemService(this.RpcServer);
       /*
@@ -724,7 +666,7 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      tree1.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
+      tree1.getManager().addEventListener("changeSelection", this.__handleRunTreeSelection, this);
 
       // Third Pane
       var bsb3 = new qx.ui.pageview.buttonview.Button("Info", "resource/image/information18.png");
@@ -749,6 +691,10 @@ qx.Class.define("qxadmin.AppFrame",
         {
           label : "Overview",
           items : [
+            {
+              label : "Overview",
+              items : []
+            }
           ]
         };
 
@@ -762,11 +708,11 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      tree1.getManager().addEventListener("changeSelection", this.__handleTreeSelection, this);
+      tree1.getManager().addEventListener("changeSelection", this.__handleInfoTreeSelection, this);
 
 
       return buttview;
-    },
+    }, // __makeLeft()
 
 
     createTree : function (treeData)
@@ -845,15 +791,28 @@ qx.Class.define("qxadmin.AppFrame",
         this.widgets["toolrun"].setDisplay(false);
         this.widgets["buttrun"].setDisplay(false);
         this.widgets["runoptions"].setDisplay(false);
+        this.widgets["toolinfo"].setDisplay(false);
+        this.widgets["buttinfo"].setVisibility(false);
         this.widgets["tooledit"].setDisplay(true);
         this.widgets["buttedit"].setDisplay(true);
-      } else 
+      } else if (b=="run")
       {
         this.widgets["tooledit"].setDisplay(false);
         this.widgets["buttedit"].setDisplay(false);
+        this.widgets["toolinfo"].setDisplay(false);
+        this.widgets["buttinfo"].setVisibility(false);
         this.widgets["toolrun"].setDisplay(true);
         this.widgets["buttrun"].setDisplay(true);
         this.widgets["runoptions"].setDisplay(true);
+      } else if (b=="info")
+      {
+        this.widgets["tooledit"].setDisplay(false);
+        this.widgets["buttedit"].setDisplay(false);
+        this.widgets["toolrun"].setDisplay(false);
+        this.widgets["buttrun"].setDisplay(false);
+        this.widgets["runoptions"].setDisplay(false);
+        this.widgets["toolinfo"].setDisplay(true);
+        this.widgets["buttinfo"].setVisibility(true);
       }
       
     },
@@ -867,9 +826,12 @@ qx.Class.define("qxadmin.AppFrame",
       if (lab == "Make Edit") 
       {
         tok = "edit";
-      } else 
+      } else if (lab == "Run Make")
       {
         tok = "run";
+      } else if (lab == "Info")
+      {
+        tok = "info";
       }
       this.__toggleRightSide(tok);
     },
@@ -890,7 +852,7 @@ qx.Class.define("qxadmin.AppFrame",
       this.runbutton = new qx.ui.toolbar.Button("Save Makefile", "icon/16/actions/media-playback-start.png");
       mb.add(this.runbutton);
       this.widgets["tooledit.runbutton"] = this.runbutton;
-      this.__bindCommand(this.runbutton, this._cmdRunFile);
+      this.__bindCommand(this.runbutton, this._cmdRunBuild);
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
 
       // -- view button
@@ -978,6 +940,75 @@ qx.Class.define("qxadmin.AppFrame",
     }, //makeButtEdit
 
 
+    /**
+     * TODOC
+     *
+     * @type member
+     * @return {var} TODOC
+     */
+    __makeToolInfo : function()
+    {
+      var toolbar = new qx.ui.toolbar.ToolBar;
+      toolbar.setBorder("line-bottom");
+      toolbar.setHeight(27);
+      this.widgets["toolinfo"] = toolbar;
+
+      var mb = new qx.ui.toolbar.Part();
+      toolbar.add(mb);
+      this.widgets["toolinfo.controlbutts"] = mb;
+
+      return toolbar;
+    },  // __makeToolInfo()
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @return {var} TODOC
+     */
+    __makeButtInfo : function()
+    {
+      // Main Container
+      var buttview = new qx.ui.pageview.tabview.TabView();
+
+      buttview.set(
+      {
+        height  : "1*",
+        padding : 10
+      });
+
+      this.widgets["buttinfo"] = buttview;
+      this.widgets["buttinfo.bar"] = buttview.getBar();
+
+      // First Page
+      var bsb1 = new qx.ui.pageview.tabview.Button("Info", "icon/16/actions/system-run.png");
+      this.widgets["buttinfo.infopage.button"] = bsb1;
+      bsb1.setChecked(true);
+      buttview.getBar().add(bsb1);
+
+      var p1 = new qx.ui.pageview.tabview.Page(bsb1);
+      p1.set({ padding : [ 5 ] });
+      buttview.getPane().add(p1);
+
+      var f1 = new qx.ui.embed.Iframe;
+      this.f1 = f1;
+      p1.add(f1);
+      this.widgets["buttinfo.infopage.page"] = f1;
+      f1.set(
+      {
+        overflow : "auto",
+        height   : "100%",
+        width    : "100%",
+        border   : "dark-shadow"
+      });
+      f1.setStyleProperty("font-family", '"Consolas", "Courier New", monospace');
+
+      return buttview;
+
+    },  // __makeButtInfo()
+
+
     __makeOptionsPane : function () 
     {
       var rightSub = new qx.ui.layout.VerticalBoxLayout();
@@ -1061,11 +1092,11 @@ qx.Class.define("qxadmin.AppFrame",
 
       if (treeLabel == "Makefile") 
       {
-        this._cmdRunFile.setEnabled(true);
+        this._cmdRunBuild.setEnabled(true);
         //this.invokeMake(treeNode);
         this.widgets["runoptions"].setDisplay(true);
       } else {
-        this._cmdRunFile.setEnabled(false);
+        this._cmdRunBuild.setEnabled(false);
         this.widgets["runoptions"].setDisplay(false);
         if (treeLabel == "index.html") 
         {
@@ -1100,6 +1131,33 @@ qx.Class.define("qxadmin.AppFrame",
     }, //handleEditTreeSelection
 
 
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param e {Event} TODOC
+     * @return {void}
+     */
+    __handleRunTreeSelection : function(e)
+    {
+
+    }, //handleRunTreeSelection
+
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param e {Event} TODOC
+     * @return {void}
+     */
+    __handleInfoTreeSelection : function(e)
+    {
+      this.widgets["buttinfo.infopage.page"].setSource("help_overview.html");
+
+    }, //handleInfoTreeSelection
+
+
     __ehViewFile : function (e) 
     {
       if (!this.tree.getSelectedElement())
@@ -1115,7 +1173,7 @@ qx.Class.define("qxadmin.AppFrame",
     },
 
 
-    __ehRunFile : function (e)
+    __ehRunBuild : function (e)
     {
       /*
       if (!this.tree.getSelectedElement())
@@ -1127,12 +1185,12 @@ qx.Class.define("qxadmin.AppFrame",
 
       if (treeNode instanceof qx.ui.tree.TreeFile) 
       {
-        this.runFile(treeNode);
+        this.runBuild(treeNode);
       }
     },
 
 
-    runFile : function (treeNode) 
+    runBuild : function (treeNode) 
     {
       /*
       var a = this.getParentFolderChain(treeNode);
@@ -1796,6 +1854,6 @@ qx.Class.define("qxadmin.AppFrame",
   destruct : function()
   {
     this._disposeFields("widgets", "tests", "_sampleToTreeNodeMap", "tree", "__states");
-    this._disposeObjects("header", "mainsplit", "tree1", "left", "runbutton", "toolbar", "f1", "f2", "logger", "_history", "logappender", '_cmdObjectSummary', '_cmdRunFile', '_cmdViewFile', '_cmdOpenPage', '_cmdSampleInOwnWindow', '_cmdLoadProfile', '_cmdProfile', '_cmdShowLastProfile', '_cmdDisposeSample', '_cmdNamespacePollution');
+    this._disposeObjects("header", "mainsplit", "tree1", "left", "runbutton", "toolbar", "f1", "f2", "logger", "_history", "logappender", '_cmdObjectSummary', '_cmdRunBuild', '_cmdViewFile', '_cmdOpenPage', '_cmdSampleInOwnWindow', '_cmdLoadProfile', '_cmdProfile', '_cmdShowLastProfile', '_cmdDisposeSample', '_cmdNamespacePollution');
   }
 });

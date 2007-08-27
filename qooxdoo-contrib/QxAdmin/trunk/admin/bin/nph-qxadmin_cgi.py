@@ -1,4 +1,4 @@
-#!c:/Programme/cygwin/bin/python
+#!/usr/bin/env python
 
 import sys, os, re
 import cgi
