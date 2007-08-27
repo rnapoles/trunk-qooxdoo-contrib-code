@@ -121,6 +121,12 @@ qx.Class.define("inspector.Menu", {
       this._openPropertyEditorCommand.addEventListener("execute", function(e) {
         this.openPropertyEditor();
       }, this._inspector);
+			
+      // create the find command
+      this._findCommand = new qx.client.Command("CTRL+SHIFT+F");
+      this._findCommand.addEventListener("execute", function(e) {
+        this._findButton.execute();			
+      }, this);			
     },
 
 
