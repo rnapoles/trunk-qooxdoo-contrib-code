@@ -126,9 +126,7 @@ qx.Class.define("inspector.Inspector", {
       if (e != null) {
         // save the current state of the checkbox button
         this._highlightEnabled = e.getCurrentTarget().getChecked();        
-      }
-      // set the buttons to the current status
-      this._setHighlightButton(this._highlightEnabled);
+      }      
       // if highlight is on
       if (this._highlightEnabled) {
         // if something is selected                 
@@ -232,21 +230,6 @@ qx.Class.define("inspector.Inspector", {
       returnObject.bottom = qx.html.Location.getPageBoxBottom(element);
       return returnObject;
     },    
-    
-    
-    /**
-     * Sets or resets the highlight button in the property editor 
-     * and widget finder.
-     * @param status {boolean} The value to set the button.
-     */
-    _setHighlightButton: function(status) {
-      if (this._propertyEditor != null) {
-        this._propertyEditor.setHighlightButton(status);        
-      }
-      if (this._widgetFinder != null) {
-        this._widgetFinder.setHighlightButton(status);        
-      }
-    },
       
     
    /*
@@ -257,9 +240,7 @@ qx.Class.define("inspector.Inspector", {
     /**
      * Function that enabled the 'find mode'.
      */
-    startFindMode: function() {
-      // check both find buttons
-      this._setFindButton(true);
+    startFindMode: function() {      
       // show the catchClickLayer
       this._catchClickLayer.show();      
     },
@@ -314,23 +295,7 @@ qx.Class.define("inspector.Inspector", {
         }                
       }  
       return returnWidget;    
-    },
-    
-    
-    /**
-     * Sets or resets the find button in the property editor 
-     * and widget finder.
-     * @param status {boolean} The value to set the button.
-     */
-    _setFindButton: function(status) {
-      if (this._propertyEditor != null) {
-        this._propertyEditor.setFindButton(status);       
-      }
-      if (this._widgetFinder != null) {
-        this._widgetFinder.setFindButton(status);       
-      }
-    },
-    
+    },    
     
     
    /*
@@ -724,8 +689,6 @@ qx.Class.define("inspector.Inspector", {
       this._catchClickLayer.addEventListener("click", function(e) {
         // hide the layer that chatches the click
         this._catchClickLayer.hide();
-        // disable all find buttons
-        this._setFindButton(false);
         // disable the find button in the menu
         this._toolbar.resetFindButton();
         // get the curent mouse position

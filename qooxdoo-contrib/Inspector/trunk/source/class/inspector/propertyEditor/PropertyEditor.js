@@ -58,12 +58,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     _propertyListFull: null,
     _propertyListHtmlTable: null,
   
-    // find buttons
-    _findButton: null,
-    _findToolTip: null,
-    // highlight button
-    _highlightButton: null,
-    _highlightToolTip: null,
     // reload buttons
     _reloadButton: null,
     _reloadToolTip: null,
@@ -115,7 +109,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * @return {Array} All components of the property editor.
      */
     getComponents: function() {
-      return [this, this._findToolTip, this._highlightToolTip, this._groupToolTip,
+      return [this, this._groupToolTip,
               this._setNullTooltip, this._highlightCurrentPropertyTooltip, 
               this._gotoSelectedPropertyTooltip, this._setPropertyToDefaultTooltip,
               this._inheritedTooltip, this._fullViewTooltip, this._autoReloadToolTip, this._reloadToolTip,
@@ -171,25 +165,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     getWidget: function() {
       return this._qxObject;
     },
-     
-    
-    /**
-     * Ckecks or unchecks the highlihgt button in the property editor.
-     * @param status {boolean} Value of the highlight button.
-     */
-    setHighlightButton: function(status) {
-      this._highlightButton.setChecked(status);
-    },
-    
-    
-    /**
-     * Ckecks or unchecks the find button in the property editor. 
-     * @param status {boolean} Value of the find button.
-     */
-    setFindButton: function(status) {
-      this._findButton.setChecked(status);
-    },    
-    
+         
     
     /**
      * Sets the selected property.
@@ -584,23 +560,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * Creates and adds the toolbar buttons.
      */
     _addToolbarButtons: function() {
-      // find button
-      this._findButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/select.png"));
-      this._toolbar.add(this._findButton);
-      this._findToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.FIND_BUTTON_TOOLTIP_TEXT, null);
-      this._findButton.setToolTip(this._findToolTip);
-      this._findButton.addEventListener("execute", this._findWidget, this);
-      
-      // highlight button
-      this._highlightButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/highlight.png"));
-      this._toolbar.add(this._highlightButton); 
-      this._highlightToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.HIGHLIGHT_BUTTON_TOOLTIP_TEXT, null);
-      this._highlightButton.setToolTip(this._highlightToolTip);
-      this._highlightButton.addEventListener("execute", this._inspector.highlightCurrentWidget, this._inspector);
-      
-      // add a seperator
-      this._toolbar.add(new qx.ui.toolbar.Separator());
-      
       // create and add the reload button
       this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
       this._toolbar.add(this._reloadButton);
