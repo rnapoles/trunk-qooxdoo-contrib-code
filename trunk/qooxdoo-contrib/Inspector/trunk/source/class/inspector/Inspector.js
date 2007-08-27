@@ -33,19 +33,13 @@ qx.Class.define("inspector.Inspector", {
   */
   statics: {
     // Tooltip texts
-    FIND_BUTTON_TOOLTIP_TEXT: "Select a widget with the mouse.",
-    HIGHLIGHT_BUTTON_TOOLTIP_TEXT: "Highlight the current selected widget.",
     RELOAD_BUTTON_TOOLTIP_TEXT: "Reload the window.",
     AUTO_RELOAD_BUTTON_TOOLTIP_TEXT: "Update the window automaticly.",
-    INHERITED_BUTTON_TOOLTIP_TEXT: "Show the inherited properties.",
     SET_NULL_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to null.",
     SET_DEFAULT_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to its initial value.",
     HIGHLIGHT_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Highlight the currently selected property.",
     GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Go to the currently selected property.",
-    FULL_VIEW_TOOLTIP_TEXT: "Switch to the editable full view.",
-    HTML_VIEW_TOOLTIP_TEXT: "Switch to the 'read only' view.",
-    OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects.",
-    GROUP_BUTTON_TOOLTIP_TEXT: "Show the properties in groups."
+    OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects."
   },
 
 
