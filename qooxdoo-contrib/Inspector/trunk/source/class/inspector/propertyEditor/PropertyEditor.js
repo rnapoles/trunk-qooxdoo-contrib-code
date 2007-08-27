@@ -545,7 +545,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       inspectorMenu.add(new qx.ui.menu.Button("Open Object Finder"));
       inspectorMenu.add(new qx.ui.menu.Button("Open Widget Finder"));
       inspectorMenu.add(new qx.ui.menu.Button("Open Property Editor"));
-      inspectorMenu.add(new qx.ui.menu.Button("Open Shell"));
+      inspectorMenu.add(new qx.ui.menu.Button("Open Console"));
       inspectorMenu.add(new qx.ui.menu.Separator());
       inspectorMenu.add(new qx.ui.menu.Button("Find Widget"));
       inspectorMenu.add(new qx.ui.menu.CheckBox("Highlight Current Widget"));
