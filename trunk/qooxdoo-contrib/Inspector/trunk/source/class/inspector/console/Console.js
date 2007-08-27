@@ -42,7 +42,22 @@ qx.Class.define("inspector.console.Console", {
     // create the popup for the autocompletion
     this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
     // initialize the this reference to the selected widget
-    this._widget = qx.ui.core.ClientDocument.getInstance();		
+    this._widget = qx.ui.core.ClientDocument.getInstance();
+		
+		
+		
+		var appender = new inspector.console.Appender(this);
+		qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
+		qx.log.Logger.ROOT_LOGGER.addAppender(appender);
+		
+		
+		
+		// test
+		this.debug("dsfnilasdfnasdl");
+		this.info("dsfnilasdfnasdl");
+		this.error("dsfnilasdfnasdl");
+		this.warn("dsfnilasdfnasdl");
+				
   },
 
 
@@ -162,6 +177,11 @@ qx.Class.define("inspector.console.Console", {
       }
     },    
 		
+		
+		/**
+		 * Prints out the help text on the console.
+		 * @param e {Event} Event triggert by a button.
+		 */
 		printHelp: function(e) {        
         var helpText = "<strong>HELP:</strong><br>" +
                        "this = the current selected object<br>" + 
@@ -173,6 +193,27 @@ qx.Class.define("inspector.console.Console", {
 		
 		clear: function() {
 			this._outputLayout.removeAll();
+		},
+		
+		
+		
+		
+		error: function(message) {
+      this._outputLayout.add(this._getLabel("", message, "red"));			
+		}, 
+		
+		warn: function(message) {
+			var label = this._getLabel("", message, "black");
+			label.setBackgroundColor("#FFFF00");
+			this._outputLayout.add(label);
+		},
+		
+		info: function(message) {
+			this._outputLayout.add(this._getLabel("", message, "black"));
+		}, 
+		
+		debug: function(message) {
+			this._outputLayout.add(this._getLabel("", message, "gray"));
 		},
     
     
@@ -202,7 +243,7 @@ qx.Class.define("inspector.console.Console", {
           this._printReturnValue(this._ans);                      
         } else {
           // print out that the return value was undefined
-          this._printText("undefined");
+          this._printUndefined();
         }
       } catch (e) {
         // print out the exception
@@ -423,6 +464,19 @@ qx.Class.define("inspector.console.Console", {
       this._outputLayout.add(this._getLabel(">> ", error, "red"));
     },
  
+    
+		/**
+		 * Prints out a messaga which holds the text "undefined" with a black 
+		 * border, grey background and a white font color. 
+		 */
+    _printUndefined: function() {
+			var label = this._getLabel("", "undefined", "white")
+			label.setBorder("black");
+			label.setBackgroundColor("grey");
+			label.setPadding(3);
+			label.setMargin(2)
+      this._outputLayout.add(label);			
+		},
  
     /**
      * Print out a line to seperate two calls. This also invokes a scrolling 
@@ -451,7 +505,7 @@ qx.Class.define("inspector.console.Console", {
       // start the exclusion so that the new element will not be in the list of objects
       this._inspector.beginExclusion();
       // create the new element
-      var label = new qx.ui.basic.Label(prefix + text);
+      var label = new qx.ui.basic.Label(prefix + "<font face='Lucida Grande'>" + text + "</font>");
       // end the exclusion 
       this._inspector.endExclusion();
       // set the color of the label
