@@ -121,12 +121,12 @@ qx.Class.define("inspector.Menu", {
       this._openPropertyEditorCommand.addEventListener("execute", function(e) {
         this.openPropertyEditor();
       }, this._inspector);
-			
+      
       // create the find command
       this._findCommand = new qx.client.Command("CTRL+SHIFT+F");
       this._findCommand.addEventListener("execute", function(e) {
-        this._findButton.execute();			
-      }, this);			
+        this._findButton.execute();      
+      }, this);      
     },
 
 
@@ -137,15 +137,14 @@ qx.Class.define("inspector.Menu", {
       
       this._inspectorMenu.add(new qx.ui.menu.Button("About Inspector"));
       // seperator
-      this._inspectorMenu.add(new qx.ui.menu.Separator());
-      
+      this._inspectorMenu.add(new qx.ui.menu.Separator());      
       
       this._inspectorMenu.add(new qx.ui.menu.Button("Settings..."));
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       
       // find button
-      this._findButton = new qx.ui.menu.CheckBox("Find Widget");
+      this._findButton = new qx.ui.menu.CheckBox("Find Widget");      
       this._findButton.addEventListener("execute", function(e) {
         // if the button is pressed
         if (e.getCurrentTarget().getChecked()) {
@@ -166,89 +165,6 @@ qx.Class.define("inspector.Menu", {
       
       this._inspectorMenu.add(new qx.ui.menu.Button("Show API Viewer"));
     },
-    
-    
-    
-    
-    
-
-      
-    __createObjectMenu: function() {
-      // create the menu
-      this._objectMenu = new qx.ui.menu.Menu();
-      this._objectMenu.addToDocument();      
-      
-      // open button
-      var openButton = new qx.ui.menu.Button("Open Object Finder");
-      openButton.setCommand(this._openObjectFinderCommand);
-      this._objectMenu.add(openButton);
-      // seperator      
-      this._objectMenu.add(new qx.ui.menu.Separator());
-      
-      // reload button
-      this._reloadObjectButton = new qx.ui.menu.Button("Reload");
-      this._reloadObjectButton.addEventListener("execute", this._inspector.reloadObjectFinder, this._inspector);
-      this._objectMenu.add(this._reloadObjectButton);
-      this._reloadObjectButton.setEnabled(false);
-      
-      this._autoReloadObjectButton = new qx.ui.menu.CheckBox("Auto-Reload")
-      this._objectMenu.add(this._autoReloadObjectButton);
-      this._autoReloadObjectButton.setEnabled(false);
-      this._objectMenu.add(new qx.ui.menu.Separator());
-      this._summaryButton = new qx.ui.menu.Button("Object Summary");
-      this._objectMenu.add(this._summaryButton);
-      this._summaryButton.setEnabled(false);
-    },
-    
-    __createWidgetMenu: function() {
-      // create the menu
-      this._widgetMenu = new qx.ui.menu.Menu();
-      this._widgetMenu.addToDocument();
-      // open button      
-      var openButton = new qx.ui.menu.Button("Open Widget Finder");
-      openButton.setCommand(this._openWidgetFinderCommand);
-      this._widgetMenu.add(openButton);
-      // seperator
-      this._widgetMenu.add(new qx.ui.menu.Separator());
-      
-      // reload button
-      var reloadButton = new qx.ui.menu.Button("Reload");
-      reloadButton.addEventListener("execute", this._inspector.reloadWidgetFinder, this._inspector);
-      this._widgetMenu.add(reloadButton);
-      this._widgetMenu.add(new qx.ui.menu.CheckBox("Auto-Reload"));
-    },
-    
-    __createPropertyMenu: function() {
-      // create the menu
-      this._propertyMenu = new qx.ui.menu.Menu();
-      this._propertyMenu.addToDocument();
-      // open button      
-      var openButton = new qx.ui.menu.Button("Open Property Editor");
-      openButton.setCommand(this._openPropertyEditorCommand);
-      this._propertyMenu.add(openButton);
-      // seperator
-      this._propertyMenu.add(new qx.ui.menu.Separator());
-      
-      this._propertyMenu.add(new qx.ui.menu.Button("Reload"));
-      this._propertyMenu.add(new qx.ui.menu.CheckBox("Auto-Reload"));
-      this._propertyMenu.add(new qx.ui.menu.Separator());
-      this._propertyMenu.add(new qx.ui.menu.CheckBox("Show Inherited Porperties", null, true));
-      this._propertyMenu.add(new qx.ui.menu.CheckBox("Group Properties"));
-      this._propertyMenu.add(new qx.ui.menu.Separator());
-      this._propertyMenu.add(new qx.ui.menu.RadioButton("Edit View", null, true));
-      this._propertyMenu.add(new qx.ui.menu.RadioButton("Table View")); 
-      this._propertyMenu.add(new qx.ui.menu.Separator());
-      this._propertyMenu.add(new qx.ui.menu.Button("Set Null"));
-      this._propertyMenu.add(new qx.ui.menu.Button("Set Initial Value"));      
-      this._propertyMenu.add(new qx.ui.menu.Button("Highlight Property Value"));
-      this._propertyMenu.add(new qx.ui.menu.Button("Goto Property Value"));  
-    },
-    
-    
-    
-    
-    
-    
     
     
     __createMenuButtons: function() {
