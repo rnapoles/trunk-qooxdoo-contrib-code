@@ -97,10 +97,10 @@ qx.Class.define("inspector.FlyingToolBar", {
     
     // a set of element which have the magnetic edges
     _magneticElements: [],
-		// a set of directions containing to the magnetic elements
+    // a set of directions containing to the magnetic elements
     _snappDirections: [],
     
-		// the elements which are docked
+    // the elements which are docked
     _dockedElementX: null,
     _dockedElementY: null,
     
@@ -124,12 +124,12 @@ qx.Class.define("inspector.FlyingToolBar", {
     
     
     removeMagneticElement: function(element) {
-      // check if it is the docked element			
+      // check if it is the docked element      
     },
     
     emptyMagneticElements: function() {
       // check if there is a docked element and remove the event listener first
-			// then remove all magneticElements
+      // then remove all magneticElements
     },
     
     
@@ -166,11 +166,8 @@ qx.Class.define("inspector.FlyingToolBar", {
       this._move = false;
       // tell the drag terminator not to cacht all events
       this._dragTerminator.setCapture(false);
-      // if the magnetic function is off
-      if (!this.isMagnetic()) {
-        // check all edges on their positions      
-        this.__checkEdges();              
-      }      
+      // check all edges on their positions      
+      this.__checkEdges();              
     },
     
     
@@ -242,17 +239,18 @@ qx.Class.define("inspector.FlyingToolBar", {
 
           // if the toolbar touches the element
           if (bottom > this._magneticElements[i].getTop() &&
-              top < this._magneticElements[i].getTop() + elementHeight) {
-            
-            // calculate the difference between the left of the magnetic edge and the toolbar           
-            var diffLeft = this._magneticElements[i].getLeft() - right;
-            // add the width of the toolbar if the toolbar should snapp on the inner edge
+              top < this._magneticElements[i].getTop() + elementHeight) {            
+            // inner case
             if (this._snappDirections[i]) {
-              diffLeft += this.getBoxWidth();
-            }           
+              // calculate the difference between the left of the magnetic edge and the toolbar              
+              var diffLeft = left - this._magneticElements[i].getLeft();            
+            // outer case
+            } else {              
+              // calculate the difference between the left of the magnetic edge and the toolbar           
+              var diffLeft = right - this._magneticElements[i].getLeft();
+            }
             // check if it is close to an magnetic edge
-            if (diffLeft < this.getSnappDistance() - this._yOffset && 
-                diffLeft > -this.getSnappDistance() + this._yOffset) {                
+            if (diffLeft < this.getSnappDistance() && diffLeft > -this.getSnappDistance()) {                
               // if it should snapp at the inside
               if (this._snappDirections[i]) {
                 this.setLeft(this._magneticElements[i].getLeft());
@@ -265,15 +263,18 @@ qx.Class.define("inspector.FlyingToolBar", {
               return true;
             }
 
-            // calculate the difference between the right of the magnetic edge and the toolbar
-            var diffRight = this._magneticElements[i].getLeft() + elementWidth - left;              
-            // substitute the height of the toolbar if the toolbar should snapp on the inner edge
+            // inner case
             if (this._snappDirections[i]) {
-              diffRight -= this.getBoxWidth();
-            }             
+              // calculate the difference between the right of the magnetic edge and the toolbar
+              var diffRight = this._magneticElements[i].getLeft() + elementWidth - right;              
+            // outer case
+            } else {              
+              // calculate the difference between the right of the magnetic edge and the toolbar
+              var diffRight = this._magneticElements[i].getLeft() + elementWidth - left;              
+            } 
+            
             // check if it is close to an magnetic edge
-            if (diffRight > -this.getSnappDistance() + this._yOffset && 
-                diffRight < this.getSnappDistance() - this._yOffset) {
+            if (diffRight > -this.getSnappDistance() && diffRight < this.getSnappDistance()) {
               // if it should snapp at the inside
               if (this._snappDirections[i]) {
                 this.setLeft(this._magneticElements[i].getLeft() + elementWidth - this.getBoxWidth());
@@ -284,10 +285,10 @@ qx.Class.define("inspector.FlyingToolBar", {
               this.__setDockedElementX (this._magneticElements[i]);
               // return and say that the left value has been set
               return true;
-            }   
-          }           
+            }
+          }
         }
-      }       
+      }
       // if no fitting edge could be found
       return false;
     },
@@ -341,7 +342,6 @@ qx.Class.define("inspector.FlyingToolBar", {
               // say that the y direction has been set
               return true;
             }
-          
   
             // calculate the difference between the bottom of the magnetic edge and the toolbar
             var diffBottom = this._magneticElements[i].getTop() + elementHeight - top;               
@@ -368,7 +368,7 @@ qx.Class.define("inspector.FlyingToolBar", {
       }      
       // if no edge could be found
       return false;
-    },	
+    },  
     
     
     /**
@@ -401,19 +401,19 @@ qx.Class.define("inspector.FlyingToolBar", {
         this.setTop(0);
       }      
     },
-		
-		
-		
-		
-		
-		
-		
-		
+    
+    
+    
+    
+    
+    
+    
+    
     /*
     *********************************
        PRIVATE (FOLLOW THE DOCKED ELEMENT STUFF) 
     *********************************
-    */		
+    */    
     /**
      * This function sets the docked widget in the y direction.
      * Therefore it adds the event listeners to the elemnt so that
@@ -516,6 +516,6 @@ qx.Class.define("inspector.FlyingToolBar", {
         // remove the reference
         this._dockedElementY = null;        
       }
-    }		
+    }
   }
 });
