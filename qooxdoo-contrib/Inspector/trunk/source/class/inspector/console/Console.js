@@ -201,6 +201,7 @@ qx.Class.define("inspector.console.Console", {
       var label = this._getLabel("", message, "red", "error");
       label.setBackgroundColor("#FFFFE0");      
 			this._outputLayout.add(label);
+			
 			// print a trailing line
       this._printLine();      
     }, 
@@ -269,17 +270,6 @@ qx.Class.define("inspector.console.Console", {
         // print out the exception
         this.error(e);
       }
-    },
-    
-    
-    /**
-     * Scrolls the end of the main layout which holds the aoutput of the console.
-     */
-    _scrollToLastLine: function() {
-      // flush the queues to ensure that the adding has been recognized
-      qx.ui.core.Widget.flushGlobalQueues();			
-      // scroll to the bottom of the layout
-      this._outputLayout.setScrollTop(this._outputLayout.getScrollHeight());
     },
     
     
@@ -504,18 +494,19 @@ qx.Class.define("inspector.console.Console", {
      * to the bottom of the console. 
      */
     _printLine: function() {
+  		// draw the line
+			var line = this._getLine();
+	    this._outputLayout.add(line);
 			// flush the queues to ensure that the adding has been recognized
       qx.ui.core.Widget.flushGlobalQueues();
-			// draw the line
-      this._outputLayout.add(this._getLine());
-			// scroll to the last line			
-      this._scrollToLastLine();
+	  	// scroll to the last line			
+      line.scrollIntoView();
     },
     
     
     /*
     *********************************
-       Creater functions
+       CREATE FUNCTIONS
     *********************************
     */
     /**
@@ -549,7 +540,10 @@ qx.Class.define("inspector.console.Console", {
       label.setTextColor(color);
 			// set the width and padding
 			label.setWidth("100%");
-			label.setPadding(2);
+			
+			label.setAllowStretchY(true);
+			
+			label.setPadding(2);	
       // deliver the label			              
       return label;      
     },
