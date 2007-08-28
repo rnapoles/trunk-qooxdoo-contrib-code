@@ -40,7 +40,7 @@ APPLICATION_BUILD_LOG_LEVEL = error
 #APPLICATION_ADDITIONAL_SOURCE_OPTIONS = --include $(APPLICATION_NAMESPACE).*
 
 ####################################################################################
-# INCLUDE CORE
+# INTERNALS (PLEASE DO NOT CHANGE)
 ####################################################################################
 
 ifneq ($(QOOXDOO_PATH),PLEASE_DEFINE_QOOXDOO_PATH)
