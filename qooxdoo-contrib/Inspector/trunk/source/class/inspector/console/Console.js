@@ -179,40 +179,63 @@ qx.Class.define("inspector.console.Console", {
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
                        "Press the CTRL and space key together to get an auto complete"; 
-        this._outputLayout.add(this._getAtom("", helpText, "grey"));
+        this._outputLayout.add(this._getLabel("", helpText, "grey"));
         this._outputLayout.add(this._getLine());      
     },
     
     
-    
+    /**
+     * Clears the whole console screen.
+     */
     clear: function() {
       this._outputLayout.removeAll();
     },
     
     
-    
-    
+    /**
+     * Prints out an error to the console.
+     * @param message {String} The error message.
+     */    
     error: function(message) {
-      var atom = this._getAtom("", message, "red", "error");
-      atom.setBackgroundColor("#FFFFE0");
-      this._outputLayout.add(atom);
+			// create the error label and add it
+      var label = this._getLabel("", message, "red", "error");
+      label.setBackgroundColor("#FFFFE0");      
+			this._outputLayout.add(label);
+			// print a trailing line
       this._printLine();      
     }, 
     
+		
+		/**
+		 * Prints out a warning message to the console.
+		 * @param message {String} The warning message to print out.
+		 */
     warn: function(message) {
-      var atom = this._getAtom("", message, "black", "warning");
-      atom.setBackgroundColor("#00FFFF");
-      this._outputLayout.add(atom);
+			// create and add the warning label
+      var label = this._getLabel("", message, "black", "warning");
+      label.setBackgroundColor("#00FFFF");
+      this._outputLayout.add(label);
+			// print a trailing line
       this._printLine();
     },
     
+		
+		/**
+		 * Prints aut an info message to the console.
+		 * @param message {String} The info message.
+		 */
     info: function(message) {
-      this._outputLayout.add(this._getAtom("", message, "black", "info"));
+      this._outputLayout.add(this._getLabel("", message, "black", "info"));
       this._printLine();
     }, 
     
+		
+		/**
+		 * Prints out an debug message to the console.
+		 * @param message {String} The debug message.
+		 */
     debug: function(message) {
-      this._outputLayout.add(this._getAtom("", message, "gray"));
+      this._outputLayout.add(this._getLabel("", message, "gray"));
       this._printLine();
     },
     
@@ -254,7 +277,7 @@ qx.Class.define("inspector.console.Console", {
      */
     _scrollToLastLine: function() {
       // flush the queues to ensure that the adding has been recognized
-      qx.ui.core.Widget.flushGlobalQueues();
+      qx.ui.core.Widget.flushGlobalQueues();			
       // scroll to the bottom of the layout
       this._outputLayout.setScrollTop(this._outputLayout.getScrollHeight());
     },
@@ -408,7 +431,7 @@ qx.Class.define("inspector.console.Console", {
       // check the arrays      
       if (returnValue instanceof Array) {
         // if yes, print out that it is one
-        this._outputLayout.add(this._getAtom("", "---- Array ----", "#00008B"));
+        this._outputLayout.add(this._getLabel("", "---- Array ----", "#00008B"));
         // print a line
         this._printLine();
         // go threw all elements and print them out
@@ -423,7 +446,7 @@ qx.Class.define("inspector.console.Console", {
         this._printQxObject(returnValue);            
       } else {
         // print out the return value
-        this._outputLayout.add(this._getAtom("", returnValue, "#00008B"));
+        this._outputLayout.add(this._getLabel("", returnValue, "#00008B"));
         // print a line
         this._printLine();          
       }
@@ -437,13 +460,13 @@ qx.Class.define("inspector.console.Console", {
      */
     _printQxObject: function(object) {
       // build the label string
-      var atom = this._getAtom("<u>", object.classname + " [" + object.toHashCode() + "]</u>", "#006400")
+      var label = this._getLabel("<u>", object.classname + " [" + object.toHashCode() + "]</u>", "#006400")
       // set the link to set the object as current object
-      atom.getLabelObject().setStyleProperty("cursor", "pointer");
-      atom.addEventListener("click", function() {
+      label.setStyleProperty("cursor", "pointer");			
+      label.addEventListener("click", function() {
         this._inspector.setWidget(object, this);
       }, this);
-      this._outputLayout.add(atom);
+      this._outputLayout.add(label);
       // print a line
       this._printLine();
     },
@@ -453,9 +476,9 @@ qx.Class.define("inspector.console.Console", {
      * @param text {String} the text to print out.
      */
     _printText: function(text) {
-      this._outputLayout.add(this._getAtom(">>>&nbsp;&nbsp;", text, "blue"));
+      this._outputLayout.add(this._getLabel(">>>&nbsp;", text, "blue"));
       // print a line
-      this._printLine();      
+      this._printLine();
     },
  
     
@@ -464,23 +487,28 @@ qx.Class.define("inspector.console.Console", {
      * border, grey background and a white font color. 
      */
     _printUndefined: function() {
-      var atom = this._getAtom("", "undefined", "white")
-      atom.setBorder("black");
-      atom.setBackgroundColor("grey");
-      atom.setPadding(3);
-      atom.setMargin(2);
-      atom.setWidth("auto");
-      this._outputLayout.add(atom);
+      var label = this._getLabel("", "undefined", "white")
+      label.setBorder("black");
+      label.setBackgroundColor("grey");
+      label.setPadding(3);
+      label.setMargin(2);
+      label.setWidth("auto");
+      this._outputLayout.add(label);
       // print a line
       this._printLine();      
     },
+ 
  
     /**
      * Print out a line to seperate two calls. This also invokes a scrolling 
      * to the bottom of the console. 
      */
     _printLine: function() {
+			// flush the queues to ensure that the adding has been recognized
+      qx.ui.core.Widget.flushGlobalQueues();
+			// draw the line
       this._outputLayout.add(this._getLine());
+			// scroll to the last line			
       this._scrollToLastLine();
     },
     
@@ -499,35 +527,31 @@ qx.Class.define("inspector.console.Console", {
      * @param icon {String} the Icon to be added infron of the text. It can be "error", "warning" or "info".
      * @return {qx.ui.basic.Label} the created label.
      */
-    _getAtom: function(prefix, text, color, icon) {
-      // handle the icon uri
-      var iconUri = "";
-      if (icon == "info") {
-        iconUri = qx.io.Alias.getInstance().resolve("inspector/image/shell/infoIcon.png");
-      } else if (icon == "error") {
-        iconUri = qx.io.Alias.getInstance().resolve("inspector/image/shell/errorIcon.png");
-      } else if (icon == "warning") {
-        iconUri = qx.io.Alias.getInstance().resolve("inspector/image/shell/warningIcon.png");
+    _getLabel: function(prefix, text, color, icon) {
+      // create the text of the label
+			var text = "<font face='Courier New'>" + prefix + text + "</font>";			
+      // handle the icon uri      
+      if (icon == "info" || icon == "error" || icon == "warning") {
+        var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + icon + "Icon.png") + "' style='vertical-align: middle;'>";
+				text = iconHtml + "&nbsp;" + text;
       }
+						
       // start the exclusion so that the new element will not be in the list of objects
       this._inspector.beginExclusion();
       // create the new element
-      var atom = new qx.ui.basic.Atom(prefix + "<font face='Courier New'>" + text + "</font>", iconUri);    
-      // end the exclusion 
+			var label = new qx.ui.basic.Label(text);
+      // end the exclusion
       this._inspector.endExclusion();
-      // set the color of the label
-      atom.setTextColor(color);
-      // set the padding
-      atom.setPadding(2);          
-      // make the atom as wide as the console is
-      atom.setWidth("100%");
-      // tell the atom to show the texton the left side
-      atom.setHorizontalChildrenAlign("left");
-      
+			
       // make the text wrap
-      atom.getLabelObject().setWrap(true);
-              
-      return atom;      
+      label.setWrap(true);
+      // set the color of the label
+      label.setTextColor(color);
+			// set the width and padding
+			label.setWidth("100%");
+			label.setPadding(2);
+      // deliver the label			              
+      return label;      
     },
     
     
@@ -682,7 +706,7 @@ qx.Class.define("inspector.console.Console", {
         var property = properties[propertyName];        
 
         var headline = "<strong>" + classname + "#" + propertyName + "</strong>";
-        this._outputLayout.add(this._getAtom("", headline, "black"));
+        this._outputLayout.add(this._getLabel("", headline, "black"));
         
         for (var name in property) {
           this._printText(name + ": " + property[name]);        
@@ -699,7 +723,7 @@ qx.Class.define("inspector.console.Console", {
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
       // register a handlert to print out the help text on the console
-      this._helpButton.addEventListener("click", this.printHelp, this);      
+      this._helpButton.addEventListener("click", this.printHelp, this);
     }
        
    }
