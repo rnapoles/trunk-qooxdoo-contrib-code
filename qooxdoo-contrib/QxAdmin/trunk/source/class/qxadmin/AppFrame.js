@@ -210,6 +210,9 @@ qx.Class.define("qxadmin.AppFrame",
       this._cmdRunBuild = new qx.client.Command("F5");
       this._cmdRunBuild.addEventListener("execute", this.__ehRunBuild, this);
 
+      this._cmdRunSave = new qx.client.Command("F9");
+      this._cmdRunSave.addEventListener("execute", this.__ehRunSave, this);
+
       this._cmdViewFile = new qx.client.Command("Ctrl-Left");
       this._cmdViewFile.addEventListener("execute", this.__ehViewFile, this);
 
@@ -300,7 +303,7 @@ qx.Class.define("qxadmin.AppFrame",
         border : "line-left"
       });
       vl.add(this.__makeToolRun());
-      vl.add(this.__makeOptionsPane());
+      //vl.add(this.__makeOptionsPane());
       vl.add(this.__makeButtRun());
 
       return vl;
@@ -608,9 +611,6 @@ qx.Class.define("qxadmin.AppFrame",
           },
           {
             label : "api"
-          },
-          {
-            label : "test"
           }
           ]
         };
@@ -803,22 +803,8 @@ qx.Class.define("qxadmin.AppFrame",
       this.runbutton = new qx.ui.toolbar.Button("Save Makefile", "icon/16/actions/media-playback-start.png");
       mb.add(this.runbutton);
       this.widgets["tooledit.runbutton"] = this.runbutton;
-      this.__bindCommand(this.runbutton, this._cmdRunBuild);
-      this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
-
-      // -- view button
-      var viewb = new qx.ui.toolbar.Button("View File", "icon/16/actions/zoom.png");
-      this.widgets["tooledit.viewb"] = viewb;
-      //mb.add(viewb);
-      viewb.addEventListener("execute", this.__ehViewFile, this);
-      viewb.setToolTip(new qx.ui.popup.ToolTip("View file"));
-
-      // -- previous navigation
-      var openb = new qx.ui.toolbar.Button("Open Page", "icon/16/places/www.png");
-      //mb.add(openb);
-      this.widgets["tooledit.openb"] = openb;
-      this.__bindCommand(openb, this._cmdOpenPage);
-      openb.setToolTip(new qx.ui.popup.ToolTip("Open page in browser"));
+      this.__bindCommand(this.runbutton, this._cmdRunSave);
+      this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Save Makefile"));
 
       return toolbar;
       
@@ -1029,7 +1015,7 @@ qx.Class.define("qxadmin.AppFrame",
       var id;
       if (id = e.getData()[0].getUserData('id'))
       {
-        var eitem = this.widgets["buttedit.varedit.page.items"][id];
+        var eitem = this.widgets["buttedit.varedit.page.items"][id]['lab'];
         eitem.scrollIntoView(true);
       }
 
@@ -1144,6 +1130,89 @@ qx.Class.define("qxadmin.AppFrame",
       }
 
     },  // runBuild()
+
+
+    __ehRunSave : function (e) 
+    {
+      var vals = this.__editCheckForm();
+      if (vals == []) 
+      {
+        return;
+      } else {
+        var rc   = this.__editSendData(vals);
+      }
+    },
+
+
+    __editCheckForm : function () 
+    {
+      var vals = [];
+      // check QOOXDOO_PATH
+      if (false) 
+      {
+        alert('You have to at least specify the path to your qooxdoo installation');
+        return vals;
+      }
+      // iterate through form data
+      var makItems = this.widgets["buttedit.varedit.page.items"];
+      for (id in makItems) 
+      {
+        var item = makItems[id];
+        if (!item['dat'])  // skip pure labels (like section heads)
+        {
+          continue;
+        } else 
+        {
+          if (item.dirty) {
+            // gather changed fields
+            vals.push({id: id, lab: item.lab.getText(), dat: item.dat.getValue()});
+          }
+        }
+      }
+
+      return vals;
+
+    }, // editCheckForm()
+
+
+    __editSendData : function (vals)
+    {
+      var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py"; // config url, port
+      var req = new qx.io.remote.Request(url);
+      //var dat = "action=save&makvars={'a':1,'b':2}";
+      var dat = "action=save&makvars=";
+
+      dat += qx.io.Json.stringify(vals);
+
+      req.setTimeout(5000);
+      req.setProhibitCaching(true);
+      req.setMethod(qx.net.Http.METHOD_POST);
+      req.setData(dat);
+      //req.setCrossDomain(true);
+
+      req.addEventListener("completed", function(evt)
+      {
+        var loadEnd = new Date();
+        this.debug("Time to load page source from server: " + (loadEnd.getTime() - loadStart.getTime()) + "ms");
+
+        var content = evt.getData().getContent();
+
+        if (content) {
+          alert(content);
+        }
+      },
+      this);
+
+      req.addEventListener("failed", function(evt) {
+        this.error("Failed to post to URL: " + url);
+      }, this);
+
+      var loadStart = new Date();
+      req.send();
+
+      return;
+
+    }, // editSendData()
 
 
     __ehOpenPage : function (e)
@@ -1314,7 +1383,9 @@ qx.Class.define("qxadmin.AppFrame",
           container.addRow();
           rowIndex = container.getRowCount() -1;
           var l = new qx.ui.basic.Label(item.label);
-          that.widgets["buttedit.varedit.page.items"][item.id]=l; // register widget
+          that.widgets["buttedit.varedit.page.items"][item.id]={};
+          that.widgets["buttedit.varedit.page.items"][item.id]['lab']=l; // register widget
+          l.setUserData('id',item.id);
           //l.setStyleProperty("font-weight","bold");
           //l.setTextColor("red");
           l.setFont("bold");
@@ -1329,8 +1400,13 @@ qx.Class.define("qxadmin.AppFrame",
           rowIndex = container.getRowCount() -1;
           var l = new qx.ui.basic.Label(item.label);
           container.add(l,0,rowIndex);
-          that.widgets["buttedit.varedit.page.items"][item.id]=l; // register widget
-          container.add(new qx.ui.form.TextField(item.defaultt),1,rowIndex);
+          that.widgets["buttedit.varedit.page.items"][item.id]={};
+          that.widgets["buttedit.varedit.page.items"][item.id]['lab']=l; // register widget
+          var tf = new qx.ui.form.TextField(item.defaultt);
+          that.widgets["buttedit.varedit.page.items"][item.id]['dat']=tf; // register widget
+          container.add(tf,1,rowIndex);
+          tf.setUserData('id',item.id);
+          tf.addEventListener("changeValue",that.__ehEditFormChanged,that);
         }
         return 0;
       });
@@ -1345,7 +1421,17 @@ qx.Class.define("qxadmin.AppFrame",
 
       return;
 
-    }, //createMakList
+    }, //createMakList1
+
+
+    __ehEditFormChanged : function (e) 
+    {
+      
+      var id = e.getTarget().getUserData('id');
+      if (id) {
+        this.widgets["buttedit.varedit.page.items"][id]['dirty']=true;
+      }
+    },
 
 
     /**
@@ -1717,39 +1803,6 @@ qx.Class.define("qxadmin.AppFrame",
         return arguments.callee(parnt, aAncestors);
       }
     },
-
-    blah : function () 
-    {
-      var url = "http://localhost:8000/cgi-bin/nph-qxadmin_cgi.py"; // config url, port
-      var req = new qx.io.remote.Request(url);
-      var dat = "action=save&makvars={'a':1,'b':2}";
-
-      req.setTimeout(5000);
-      req.setProhibitCaching(true);
-      req.setMethod(qx.net.Http.METHOD_POST);
-      req.setData(dat);
-      //req.setCrossDomain(true);
-
-      req.addEventListener("completed", function(evt)
-      {
-        var loadEnd = new Date();
-        this.debug("Time to load page source from server: " + (loadEnd.getTime() - loadStart.getTime()) + "ms");
-
-        var content = evt.getData().getContent();
-
-        if (content) {
-          alert(content);
-        }
-      },
-      this);
-
-      req.addEventListener("failed", function(evt) {
-        this.error("Failed to post to URL: " + url);
-      }, this);
-
-      var loadStart = new Date();
-      req.send();
-    }
 
   },
 
