@@ -43,21 +43,13 @@ qx.Class.define("inspector.console.Console", {
     this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
     // initialize the this reference to the selected widget
     this._widget = qx.ui.core.ClientDocument.getInstance();
-		
-		
-		
-		var appender = new inspector.console.Appender(this);
-		qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
-		qx.log.Logger.ROOT_LOGGER.addAppender(appender);
-		
-		
-		
-		// test
-		this.debug("dsfnilasdfnasdl");
-		this.info("dsfnilasdfnasdl");
-		this.error("dsfnilasdfnasdl");
-		this.warn("dsfnilasdfnasdl");
-				
+
+    // create a appende
+    var appender = new inspector.console.Appender(this);
+    // remove all appenders
+    qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
+    // add the console appender
+    qx.log.Logger.ROOT_LOGGER.addAppender(appender);
   },
 
 
@@ -176,45 +168,53 @@ qx.Class.define("inspector.console.Console", {
         this._textField.focus();
       }
     },    
-		
-		
-		/**
-		 * Prints out the help text on the console.
-		 * @param e {Event} Event triggert by a button.
-		 */
-		printHelp: function(e) {        
+    
+    
+    /**
+     * Prints out the help text on the console.
+     * @param e {Event} Event triggert by a button.
+     */
+    printHelp: function(e) {        
         var helpText = "<strong>HELP:</strong><br>" +
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
                        "Press the CTRL and space key together to get an auto complete"; 
-        this._outputLayout.add(this._getLabel("", helpText, "grey"));
-        this._outputLayout.add(this._getLine());			
-		},
-		
-		clear: function() {
-			this._outputLayout.removeAll();
-		},
-		
-		
-		
-		
-		error: function(message) {
-      this._outputLayout.add(this._getLabel("", message, "red"));			
-		}, 
-		
-		warn: function(message) {
-			var label = this._getLabel("", message, "black");
-			label.setBackgroundColor("#FFFF00");
-			this._outputLayout.add(label);
-		},
-		
-		info: function(message) {
-			this._outputLayout.add(this._getLabel("", message, "black"));
-		}, 
-		
-		debug: function(message) {
-			this._outputLayout.add(this._getLabel("", message, "gray"));
-		},
+        this._outputLayout.add(this._getAtom("", helpText, "grey"));
+        this._outputLayout.add(this._getLine());      
+    },
+    
+    
+    
+    clear: function() {
+      this._outputLayout.removeAll();
+    },
+    
+    
+    
+    
+    error: function(message) {
+      var atom = this._getAtom("", message, "red", "error");
+      atom.setBackgroundColor("#FFFFE0");
+      this._outputLayout.add(atom);
+      this._printLine();      
+    }, 
+    
+    warn: function(message) {
+      var atom = this._getAtom("", message, "black", "warning");
+      atom.setBackgroundColor("#00FFFF");
+      this._outputLayout.add(atom);
+      this._printLine();
+    },
+    
+    info: function(message) {
+      this._outputLayout.add(this._getAtom("", message, "black", "info"));
+      this._printLine();
+    }, 
+    
+    debug: function(message) {
+      this._outputLayout.add(this._getAtom("", message, "gray"));
+      this._printLine();
+    },
     
     
     /*
@@ -241,16 +241,11 @@ qx.Class.define("inspector.console.Console", {
         if (this._ans != undefined) {
           // print put the return value
           this._printReturnValue(this._ans);                      
-        } else {
-          // print out that the return value was undefined
-          this._printUndefined();
         }
       } catch (e) {
         // print out the exception
-        this._printError(e);
-      }      
-      // add a line to seperate two calls
-      this._printLine();
+        this.error(e);
+      }
     },
     
     
@@ -382,6 +377,7 @@ qx.Class.define("inspector.console.Console", {
       }
     },
     
+    
     /**
      * Keyhandler wich handels the keypress event. This is necessary to 
      * scrol threw the autocomplete popup by holding the up or down key.
@@ -412,7 +408,9 @@ qx.Class.define("inspector.console.Console", {
       // check the arrays      
       if (returnValue instanceof Array) {
         // if yes, print out that it is one
-        this._outputLayout.add(this._getLabel("---- ", "Array ----", "blue"));
+        this._outputLayout.add(this._getAtom("", "---- Array ----", "#00008B"));
+        // print a line
+        this._printLine();
         // go threw all elements and print them out
         for (var i in returnValue) {
           this._printReturnValue(returnValue[i]);
@@ -425,8 +423,10 @@ qx.Class.define("inspector.console.Console", {
         this._printQxObject(returnValue);            
       } else {
         // print out the return value
-        this._outputLayout.add(this._getLabel("<< ", returnValue, "blue"));
-      }      
+        this._outputLayout.add(this._getAtom("", returnValue, "#00008B"));
+        // print a line
+        this._printLine();          
+      }
     },
     
     
@@ -437,13 +437,15 @@ qx.Class.define("inspector.console.Console", {
      */
     _printQxObject: function(object) {
       // build the label string
-      var label = this._getLabel("<< <u>", object.classname + " [" + object.toHashCode() + "]</u>", "blue")
+      var atom = this._getAtom("<u>", object.classname + " [" + object.toHashCode() + "]</u>", "#006400")
       // set the link to set the object as current object
-      label.setStyleProperty("cursor", "pointer");
-      label.addEventListener("click", function() {
+      atom.getLabelObject().setStyleProperty("cursor", "pointer");
+      atom.addEventListener("click", function() {
         this._inspector.setWidget(object, this);
       }, this);
-      this._outputLayout.add(label);
+      this._outputLayout.add(atom);
+      // print a line
+      this._printLine();
     },
     
     /**
@@ -451,32 +453,27 @@ qx.Class.define("inspector.console.Console", {
      * @param text {String} the text to print out.
      */
     _printText: function(text) {
-      this._outputLayout.add(this._getLabel(">> ", text, "black"));
+      this._outputLayout.add(this._getAtom(">>>&nbsp;&nbsp;", text, "blue"));
+      // print a line
+      this._printLine();      
     },
  
     
     /**
-     * Print out an error message to the console. This message begins with
-     * ">> " and is red.
-     * @param error {String} The error message.
+     * Prints out a messaga which holds the text "undefined" with a black 
+     * border, grey background and a white font color. 
      */
-    _printError: function(error) {
-      this._outputLayout.add(this._getLabel(">> ", error, "red"));
-    },
- 
-    
-		/**
-		 * Prints out a messaga which holds the text "undefined" with a black 
-		 * border, grey background and a white font color. 
-		 */
     _printUndefined: function() {
-			var label = this._getLabel("", "undefined", "white")
-			label.setBorder("black");
-			label.setBackgroundColor("grey");
-			label.setPadding(3);
-			label.setMargin(2)
-      this._outputLayout.add(label);			
-		},
+      var atom = this._getAtom("", "undefined", "white")
+      atom.setBorder("black");
+      atom.setBackgroundColor("grey");
+      atom.setPadding(3);
+      atom.setMargin(2);
+      atom.setWidth("auto");
+      this._outputLayout.add(atom);
+      // print a line
+      this._printLine();      
+    },
  
     /**
      * Print out a line to seperate two calls. This also invokes a scrolling 
@@ -499,20 +496,38 @@ qx.Class.define("inspector.console.Console", {
      * @param prefix {String} The prefix will be added infront of the text. 
      * @param text {String} The text which should be in the label.
      * @param color {String | Color} The color of the font.
+     * @param icon {String} the Icon to be added infron of the text. It can be "error", "warning" or "info".
      * @return {qx.ui.basic.Label} the created label.
      */
-    _getLabel: function(prefix, text, color) {
+    _getAtom: function(prefix, text, color, icon) {
+      // handle the icon uri
+      var iconUri = "";
+      if (icon == "info") {
+        iconUri = qx.io.Alias.getInstance().resolve("inspector/image/shell/infoIcon.png");
+      } else if (icon == "error") {
+        iconUri = qx.io.Alias.getInstance().resolve("inspector/image/shell/errorIcon.png");
+      } else if (icon == "warning") {
+        iconUri = qx.io.Alias.getInstance().resolve("inspector/image/shell/warningIcon.png");
+      }
       // start the exclusion so that the new element will not be in the list of objects
       this._inspector.beginExclusion();
       // create the new element
-      var label = new qx.ui.basic.Label(prefix + "<font face='Lucida Grande'>" + text + "</font>");
+      var atom = new qx.ui.basic.Atom(prefix + "<font face='Courier New'>" + text + "</font>", iconUri);    
       // end the exclusion 
       this._inspector.endExclusion();
       // set the color of the label
-      label.setTextColor(color);
+      atom.setTextColor(color);
       // set the padding
-      label.setPadding(2);      
-      return label;      
+      atom.setPadding(2);          
+      // make the atom as wide as the console is
+      atom.setWidth("100%");
+      // tell the atom to show the texton the left side
+      atom.setHorizontalChildrenAlign("left");
+      
+      // make the text wrap
+      atom.getLabelObject().setWrap(true);
+              
+      return atom;      
     },
     
     
@@ -586,7 +601,7 @@ qx.Class.define("inspector.console.Console", {
       this._outputLayout = new qx.ui.layout.VerticalBoxLayout();
       this._outputLayout.setBackgroundColor("white");
       this._outputLayout.setBorder("inset");
-      this._outputLayout.setOverflow("auto");
+      this._outputLayout.setOverflow("scrollY");
       this._outputLayout.setWidth("100%");
       this._outputLayout.setHeight(150);
       this._consoleLayout.add(this._outputLayout);
@@ -594,9 +609,30 @@ qx.Class.define("inspector.console.Console", {
       // create and add the textfield
       this._textField = new qx.ui.form.TextField();
       this._textField.setWidth("100%");
-      this._consoleLayout.add(this._textField);
+      // remove border because the layout will get the border
+      this._textField.setBorder(null);
+      this._textField.setFont(new qx.ui.core.Font(11, ["Courier New"]));  
       // needed to ensure that every line is processed
       this._textField.setLiveUpdate(true);
+      
+      // create another textfield for holding the leading >>>
+      var leadingTextField = new qx.ui.form.TextField(">>>");
+      leadingTextField.setFont(new qx.ui.core.Font(11, ["Courier New"]));
+      leadingTextField.setTextColor("blue");  
+      leadingTextField.setWidth(26);
+      leadingTextField.setSelectable(false);
+      leadingTextField.setBackgroundColor("white");
+      leadingTextField.setReadOnly(true);
+      leadingTextField.setBorder(null);
+      
+      // create a layout which holds the prefix textfield and the entering textfield
+      var textFieldLayout = new qx.ui.layout.HorizontalBoxLayout();      
+      textFieldLayout.setBorder("inset");      
+      textFieldLayout.setBackgroundColor("white");      
+      textFieldLayout.add(leadingTextField);  
+      textFieldLayout.setHeight(20); 
+      textFieldLayout.add(this._textField);
+      this._consoleLayout.add(textFieldLayout);  
   
       // add the listener to the textfield
       this._textField.addEventListener("keydown", this._keyDownHandler, this);
@@ -634,27 +670,27 @@ qx.Class.define("inspector.console.Console", {
       this._clearButton.addEventListener("click", this.clear, this);
 
 /*      
-			var detailsButton = new qx.ui.toolbar.Button("Property Details");
+      var detailsButton = new qx.ui.toolbar.Button("Property Details");
       this._toolbar.add(detailsButton);
       detailsButton.addEventListener("execute", function() {
         var classname = this._inspector._propertyEditor.getSelectedProperty().getUserData("classname"); 
-				var propertyName = this._inspector._propertyEditor.getSelectedProperty().getUserData("key");
-				
+        var propertyName = this._inspector._propertyEditor.getSelectedProperty().getUserData("key");
+        
         // get the properties array of the selected class
         var properties = qx.Class.getByName(classname).$$properties;
         // get the property array of the currently selected property
-        var property = properties[propertyName];				
+        var property = properties[propertyName];        
 
-				var headline = "<strong>" + classname + "#" + propertyName + "</strong>";
-				this._outputLayout.add(this._getLabel("", headline, "black"));
-				
-				for (var name in property) {
-  				this._printText(name + ": " + property[name]);				
-				}	
-							
-				this._printLine();
-			}, this);
-*/			
+        var headline = "<strong>" + classname + "#" + propertyName + "</strong>";
+        this._outputLayout.add(this._getAtom("", headline, "black"));
+        
+        for (var name in property) {
+          this._printText(name + ": " + property[name]);        
+        }  
+              
+        this._printLine();
+      }, this);
+*/      
 
       // add a spacer to keep the help button rigth
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());      
@@ -663,7 +699,7 @@ qx.Class.define("inspector.console.Console", {
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
       // register a handlert to print out the help text on the console
-      this._helpButton.addEventListener("click", this.printHelp, this);			
+      this._helpButton.addEventListener("click", this.printHelp, this);      
     }
        
    }
