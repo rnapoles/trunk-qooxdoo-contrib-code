@@ -179,7 +179,7 @@ qx.Class.define("inspector.console.Console", {
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
                        "Press the CTRL and space key together to get an auto complete"; 
-        var label = this._getLabel("", helpText, "grey");
+        var label = this._getLabel("", helpText, "#666666");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -190,7 +190,7 @@ qx.Class.define("inspector.console.Console", {
      * Clears the whole console screen.
      */
     clear: function() {
-      this._htmlEmbed.setHtml("");
+      this._htmlEmbed.setHtml("");      
     },
     
     
@@ -277,11 +277,15 @@ qx.Class.define("inspector.console.Console", {
     /**
      * Scrolls the end of the main layout which holds the aoutput of the console.
      */
-    _scrollToLastLine: function() {
+    _scrollToLastLine: function() { 			
       // flush the queues to ensure that the adding has been recognized
       qx.ui.core.Widget.flushGlobalQueues();      
-      // scroll to the bottom of the layout
-      this._htmlEmbed.setScrollTop(this._htmlEmbed.getScrollHeight());
+			// wait until everything is done
+			var self = this;
+      window.setTimeout(function() {
+	      // scroll to the bottom of the layout
+				self._htmlEmbed.setScrollTop(self._htmlEmbed.getScrollHeight());				
+			}, 0);
     },    
     
     /*
@@ -428,29 +432,42 @@ qx.Class.define("inspector.console.Console", {
      * treatment for qooxdoo objects and array.
      * @param returnValue {Object} The value to print.
      */
-    _printReturnValue: function(returnValue) {
-      // check the arrays      
-      if (returnValue instanceof Array) {
+    _printReturnValue: function(returnValue) {			
+      // check for qooxdoo objects
+      if (returnValue instanceof qx.core.Object) {
+        // print out the qooxdoo object
+        this._printQxObject(returnValue);   
+				
+			// check for arrays
+			} else if (returnValue instanceof Array) {
         // if yes, print out that it is one
         var label = this._getLabel("", "---- Array ----", "#00008B")
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
         // go threw all elements and print them out
-        for (var i in returnValue) {
+        for (var i = 0; i < returnValue.length; i++) {
           this._printReturnValue(returnValue[i]);
         }
         return;
-      }
-      //check for qooxdoo objects
-      if (returnValue instanceof qx.core.Object) {
-        // print out the qooxdoo object
-        this._printQxObject(returnValue);            
+
+			// check for objects
+			} else if (returnValue instanceof Object) {				
+        // if yes, print out that it is one
+        var label = this._getLabel("", "---- " + returnValue + " (Object) ----", "#00008B")
+        this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+        // go threw all elements and print them out
+        for (var i in returnValue) {
+          this._printReturnValue(i + ": " + returnValue[i]);
+        }
+        return;
+						         
+		  // everything else
       } else {
         // print out the return value
         var label = this._getLabel("", returnValue, "#00008B");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
-        // scroll to the end of the console 
-        this._scrollToLastLine();
       }
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     },
     
     
@@ -489,7 +506,7 @@ qx.Class.define("inspector.console.Console", {
     */
     _getLabel: function(prefix, text, color, icon, bgcolor) {
       // create the text of the label
-      var text = "<font face='Courier New' color='" + color + "'>" + prefix + text + "</font>";      
+      var text = "<font style='font-family: Courier New; font-size:11px; color:" + color + ";'>" + prefix + text + "</font>";      
       // handle the icon uri      
       if (icon == "info" || icon == "error" || icon == "warning") {
         var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + icon + "Icon.png") + "' style='vertical-align: middle;'>";
