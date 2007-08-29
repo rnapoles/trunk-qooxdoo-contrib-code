@@ -160,7 +160,7 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
       // empty the filter
       this._filter.empty();
       // og threw all properties an insert them into the filter
-      for (var index in allProperties) {
+      for (var index = 0; index < allProperties.length; index++) {
         var classname = data.names[index];
         for (var propertyName in allProperties[index]) {
           this._filter.sortIn(propertyName, allProperties[index][propertyName], classname);

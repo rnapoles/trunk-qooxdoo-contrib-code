@@ -81,7 +81,7 @@ qx.Class.define("inspector.propertyEditor.Filter", {
      */
     sortIn: function(propertyName, property, classname) {
      // go threw all tests
-     for (var i in this._tests) {
+     for (var i = 0; i < this._tests.length; i++) {
          // create a new regexp object to test search for the test string
          var regExp = new RegExp(this._tests[i][0], "i");
          // check if the propertyName matches
@@ -151,7 +151,7 @@ qx.Class.define("inspector.propertyEditor.Filter", {
       this._categories = [];
       // get the category names out of the tests      
       var i = 1;
-      for (var id in this._tests) {        
+      for (var id = 0; id < this._tests.length; id++) {        
         if (this._categories[this._tests[id][1]] == undefined) {
             this._categories[this._tests[id][1]] = i;
             i++;
@@ -175,7 +175,7 @@ qx.Class.define("inspector.propertyEditor.Filter", {
       this._classnames = [];
       // create as much property array as categories are available
       for (var i = 1; i <= this._categories[inspector.propertyEditor.Filter.DEFAULT_CATEGORY_NAME]; i++) {
-        this._properties[i] = [];
+        this._properties[i] = {};
         this._classnames[i] = [];
       }
     },

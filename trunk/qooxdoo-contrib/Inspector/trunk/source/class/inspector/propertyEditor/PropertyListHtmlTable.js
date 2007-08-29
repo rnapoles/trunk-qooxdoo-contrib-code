@@ -32,9 +32,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     // create and add a new label
     this._htmlTable = new qx.ui.basic.Label(); 
     this.add(this._htmlTable);
-		
-		// override the padding
-		this.setPadding(0);
+    
+    // override the padding
+    this.setPadding(0);
   },
 
 
@@ -151,7 +151,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       // go backwords threw the properties array
       for(var i = properties.length - 1; i > 0 ; i--) {        
         // go threw all properties in the current class
-        for (var key in properties[i]) {
+        for (var key in properties[i]) {        
           // ignore the property groups  
           if (properties[i][key].group == null) {
             // read value
@@ -162,11 +162,11 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
               var value = "<font color='red'>" + e + "</font>";
             }
             if (bgColor == "#EBEBE0") {
-							bgColor = "#FFFFE0";
-						} else {
-							bgColor = "#EBEBE0";
-						}
-						// write the key and value to the view
+              bgColor = "#FFFFE0";
+            } else {
+              bgColor = "#EBEBE0";
+            }
+            // write the key and value to the view
             this._htmlTable.setText("<tr style='font: 12px Verdana; background-color:" + bgColor + ";'><td valign='top'>" + key + ": </td><td>" + value + "</td></tr>" + this._htmlTable.getText());
           }                
         }        

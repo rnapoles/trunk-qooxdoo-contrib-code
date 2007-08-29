@@ -264,7 +264,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           // save the maxwidth for the current group
           var maxWidth = 0;
           // go threw all properties in the current group
-          for (var key in properties[i]) {              
+          for (var key in properties[i]) {
             // ignore the property groups  
             if (properties[i][key].group == null) {
               
@@ -380,7 +380,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
         // get the layouts which holt the properties
         var propertyLayouts = this.getChildren()[0].getChildren();
         // gothrew all layouts of this class
-        for (var i in propertyLayouts) {
+        for (var i = 0; i < propertyLayouts.length; i++) {
           // get the classname.key string
           var classKey = propertyLayouts[i].getUserData("classname") + 
                          "." + propertyLayouts[i].getUserData("key");
@@ -420,7 +420,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             // get the list of all layouts which hold the properties
             var propertyLayouts = this.getChildren()[0].getChildren();
             // go threw all properties
-            for (var currentIndex in propertyLayouts) {
+            for (var currentIndex = 0; currentIndex < propertyLayouts.length; currentIndex++) {
               // generate the classname.key string
               var classKey = propertyLayouts[currentIndex].getUserData("classname") + 
                              "." + propertyLayouts[currentIndex].getUserData("key");
@@ -507,9 +507,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           box.setWidth(130);
           var values = propertySet.check;
           // go threw all possible values
-          for (var index in values) {
+          for (var i = 0; i < values.length; i++) {
             // create an combobox item
-            var item = new qx.ui.form.ListItem(values[index]);
+            var item = new qx.ui.form.ListItem(values[i]);
             // add the item to the combobox
             box.add(item);
           }          
