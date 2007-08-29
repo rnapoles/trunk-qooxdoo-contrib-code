@@ -20,7 +20,7 @@
 qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   
   extend : inspector.AbstractWindow,
-  // implement : inspector.propertyEditor.PropertyListController,
+  implement : inspector.propertyEditor.IPropertyListController,
 
   /*
   *****************************************************************************

@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Interface.define("inspector.propertyEditor.PropertyListController", {
+qx.Interface.define("inspector.propertyEditor.IPropertyListController", {
   
   /*
   *****************************************************************************
