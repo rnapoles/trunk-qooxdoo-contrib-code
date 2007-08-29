@@ -1165,7 +1165,7 @@ qx.Class.define("qxadmin.AppFrame",
         {
           if (item.dirty) {
             // gather changed fields
-            vals.push({id: id, lab: item.lab.getText(), dat: item.dat.getValue()});
+            vals.push({lab: item.lab.getText(), dat: item.dat.getValue()});
           }
         }
       }
@@ -1180,7 +1180,14 @@ qx.Class.define("qxadmin.AppFrame",
       var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py"; // config url, port
       var req = new qx.io.remote.Request(url);
       //var dat = "action=save&makvars={'a':1,'b':2}";
-      var dat = "action=save&makvars=";
+      var dat = "action=save";
+      // check cygwin path
+      if ('cygwin' in this._urlParms.parms)
+      {
+        var cygParm = 'cygwin'+"="+this._urlParms.parms['cygwin'];
+        dat += "&"+cygParm;
+      }
+      dat += "&makvars=";
 
       dat += qx.io.Json.stringify(vals);
 
@@ -1213,6 +1220,49 @@ qx.Class.define("qxadmin.AppFrame",
       return;
 
     }, // editSendData()
+
+
+    /* DELETE ME! */
+    __editGetOldVars : function ()
+    {
+      var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py"; // config url, port
+      var req = new qx.io.remote.Request(url);
+      var dat = "action=getvars";
+      // check cygwin path
+      if ('cygwin' in this._urlParms.parms)
+      {
+        var cygParm = 'cygwin'+"="+this._urlParms.parms['cygwin'];
+        dat += "&"+cygParm;
+      }
+
+      req.setTimeout(5000);
+      req.setProhibitCaching(true);
+      req.setMethod(qx.net.Http.METHOD_POST);
+      req.setData(dat);
+
+      req.addEventListener("completed", function(evt)
+      {
+        var loadEnd = new Date();
+        this.debug("Time to load page source from server: " + (loadEnd.getTime() - loadStart.getTime()) + "ms");
+
+        var content = evt.getData().getContent();
+
+        if (content) {
+          this.__makoldvars(content);
+        }
+      },
+      this);
+
+      req.addEventListener("failed", function(evt) {
+        this.error("Failed to post to URL: " + url);
+      }, this);
+
+      var loadStart = new Date();
+      req.send();
+
+      return;
+      
+    }, // editGetOldVars()
 
 
     __ehOpenPage : function (e)
@@ -1291,7 +1341,7 @@ qx.Class.define("qxadmin.AppFrame",
      * @param e {Event} TODOC
      * @return {void}
      */
-    leftReloadTree : function(tD)
+    leftReloadTree : function(tD, oldData)
     {
       var treeData = tD || this.__makvars;
       //var tree     = new qx.ui.tree.Tree("Customize Makefile");
@@ -1302,7 +1352,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       this.createMakTree(makRoot,treeData);
 
-      this.createMakList1(this.widgets["buttedit.varedit.page"],treeData);
+      this.createMakList1(this.widgets["buttedit.varedit.page"],treeData,oldData);
 
       qx.client.Timer.once(function()
       {
@@ -1359,9 +1409,11 @@ qx.Class.define("qxadmin.AppFrame",
      *
      * @type member
      * @param e {Event} TODOC
+     * @param oldData {Array} Array like [{'lab':'QOOXDOO_PATH','dat':'../qooxdoo'},...]
+     *                        containing previously set variables (via Makefile)
      * @return {void}
      */
-    createMakList1 : function(canvasContainer, tD)
+    createMakList1 : function(canvasContainer, tD, oldData)
     {
       var treeData = tD;
       var container = canvasContainer;
@@ -1383,9 +1435,9 @@ qx.Class.define("qxadmin.AppFrame",
           container.addRow();
           rowIndex = container.getRowCount() -1;
           var l = new qx.ui.basic.Label(item.label);
-          that.widgets["buttedit.varedit.page.items"][item.id]={};
-          that.widgets["buttedit.varedit.page.items"][item.id]['lab']=l; // register widget
-          l.setUserData('id',item.id);
+          that.widgets["buttedit.varedit.page.items"][item.label]={};
+          that.widgets["buttedit.varedit.page.items"][item.label]['lab']=l; // register widget
+          l.setUserData('id',item.label);
           //l.setStyleProperty("font-weight","bold");
           //l.setTextColor("red");
           l.setFont("bold");
@@ -1400,12 +1452,14 @@ qx.Class.define("qxadmin.AppFrame",
           rowIndex = container.getRowCount() -1;
           var l = new qx.ui.basic.Label(item.label);
           container.add(l,0,rowIndex);
-          that.widgets["buttedit.varedit.page.items"][item.id]={};
-          that.widgets["buttedit.varedit.page.items"][item.id]['lab']=l; // register widget
-          var tf = new qx.ui.form.TextField(item.defaultt);
-          that.widgets["buttedit.varedit.page.items"][item.id]['dat']=tf; // register widget
+          that.widgets["buttedit.varedit.page.items"][item.label]={};
+          that.widgets["buttedit.varedit.page.items"][item.label]['lab']=l; // register widget
+          var olditem = that.findOldItem(item.label, oldData);
+          var value = olditem ? olditem.dat : item.defaultt;
+          var tf = new qx.ui.form.TextField(value);
+          that.widgets["buttedit.varedit.page.items"][item.label]['dat']=tf; // register widget
           container.add(tf,1,rowIndex);
-          tf.setUserData('id',item.id);
+          tf.setUserData('id',item.label);
           tf.addEventListener("changeValue",that.__ehEditFormChanged,that);
         }
         return 0;
@@ -1422,6 +1476,23 @@ qx.Class.define("qxadmin.AppFrame",
       return;
 
     }, //createMakList1
+
+    
+    // find item with 'lab'==label in itemList; return item
+    findOldItem : function (label, itemList) 
+    {
+      item = null;
+      for (var i=0; i<itemList.length; i++) 
+      {
+        if (itemList[i]['lab'] == label)
+        {
+          item = itemList[i];
+          break;
+        }
+      }
+
+      return item;
+    },
 
 
     __ehEditFormChanged : function (e) 
@@ -1476,7 +1547,7 @@ qx.Class.define("qxadmin.AppFrame",
           parnt[parnt.length-1].add(nnode);
         }
         if (nnode) {
-          nnode.setUserData("id", node.id);  // for click event handling
+          nnode.setUserData("id", node.label);  // for click event handling
         }
 
         return 0;
@@ -1760,10 +1831,22 @@ qx.Class.define("qxadmin.AppFrame",
       this.__loadPage(url, function (cont) 
       {
         this.__makvars = eval("("+cont+")");
-        var start = new Date();
-        this.leftReloadTree(this.__makvars);
-        var end = new Date();
-        this.debug("Time to build/display tree: " + (end.getTime() - start.getTime()) + "ms");
+        // get old vars too
+        var url1 = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py?action=getvars";
+        // check cygwin path
+        if ('cygwin' in this._urlParms.parms)
+        {
+          var cygParm = 'cygwin'+"="+this._urlParms.parms['cygwin'];
+          url1 += "&"+cygParm;
+        }
+        this.__loadPage(url1, function (cont1) 
+        {
+          this.__makoldvars = eval("("+cont1+")");
+          var start = new Date();
+          this.leftReloadTree(this.__makvars, this.__makoldvars);
+          var end = new Date();
+          this.debug("Time to build/display tree: " + (end.getTime() - start.getTime()) + "ms");
+        }, this);
       }, this);
 
 
@@ -1802,7 +1885,7 @@ qx.Class.define("qxadmin.AppFrame",
         aAncestors.unshift(parnt);
         return arguments.callee(parnt, aAncestors);
       }
-    },
+    }
 
   },
 

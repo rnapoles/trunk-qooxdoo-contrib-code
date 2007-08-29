@@ -84,6 +84,15 @@ def do_save(form):
 
     return rc
 
+def do_getmakvars(form):
+    print "Content-type: text/plain"
+    print
+    rc = 0
+    makvars = read_makefile()
+    print makvars
+
+    return rc
+
 def save_makvars(json):
     "Saves makvars in a js file (for later editing sessions)"
     f = open("makvars.js","w")
@@ -201,6 +210,49 @@ def finditem(mvars,label):
 def writeitem(fh,item):
     fh.write(item['lab']+" = "+item['dat']+"\n")
 
+def read_makefile():
+    "Read the var settings from Makefile and return as Json"
+    rc = 0
+    mkfile=config['makefile']
+    # make a list of the settings [{'lab': 'QX_SOMETHING','dat': 'qx-0.7'},...]
+    makvars = []
+    infile = open(mkfile,'rU')
+    kvpat = re.compile(r'^([^=#]+?)\s*=\s*(.*)$') # a key=value line in the Makefile, capturing key
+
+    for line in infile:
+        mo = kvpat.search(line)
+        if mo:
+            fkey = mo.group(1)
+            fkey = fkey.strip()
+            fval = mo.group(2)
+            fval = fval.strip()
+            makvars.append({'lab':fkey, 'dat':fval})
+
+    infile.close()
+
+    makjson = jsonify(makvars)
+
+    return makjson
+
+def jsonify(arrayofmaps):
+    json = ""
+    if isinstance(arrayofmaps, list):
+        json += "["
+        al = len(arrayofmaps)
+        for i,item in enumerate(arrayofmaps):
+            if isinstance(item, dict):
+                json += "{"
+                for j,key in enumerate(item):
+                    json += "'"+key+"':"
+                    json += repr(item[key])
+                    if j<len(item)-1:
+                        json += ","
+                json += "}"
+                if i<al-1:
+                    json += ","
+        json += "]"
+    return json
+
 def dispatch_action(form):
     if 'action' in form:
         action = form['action'].value
@@ -208,6 +260,8 @@ def dispatch_action(form):
             do_save(form)
         elif (action == 'run'): # run make file
             do_make(form)
+        elif (action == 'getvars'): # get existing Makefile vars
+            do_getmakvars(form)
         else:
             print "Content-type: text/plain"
             print
