@@ -348,6 +348,31 @@ qx.Class.define("inspector.Inspector", {
         this._clearHighlight(1000);              
       }
     },   
+		
+		
+		
+		
+		setWidgetByDbKey: function(dbKey, refName) {
+			// get the real reference
+			switch (refName) {
+				case "console":
+				  var ref = this._console;
+					break;
+				case "objectFinder":
+				  var ref = this._objectFinder;
+					break;
+				case "widgetFinder":
+				  var ref = this._widgetFinder;
+					break;
+				case "propertyEditor":
+				  var ref = this._propertyEditor;
+					break;
+				default:
+				  var ref = null;
+			}
+		  // set the widget
+			this.setWidget(qx.core.Object.getDb()[dbKey], ref);
+		},
    
       
     /*

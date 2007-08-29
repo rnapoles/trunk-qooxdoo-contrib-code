@@ -67,7 +67,7 @@ qx.Class.define("inspector.console.Console", {
     // main elements
     _consoleLayout: null,
     _textField: null,
-    _outputLayout: null,
+    _htmlEmbed: null,
     
     // buttons
     _clearButton: null,
@@ -179,8 +179,10 @@ qx.Class.define("inspector.console.Console", {
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
                        "Press the CTRL and space key together to get an auto complete"; 
-        this._outputLayout.add(this._getLabel("", helpText, "grey"));
-        this._outputLayout.add(this._getLine());      
+        var label = this._getLabel("", helpText, "grey");
+        this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     },
     
     
@@ -188,7 +190,7 @@ qx.Class.define("inspector.console.Console", {
      * Clears the whole console screen.
      */
     clear: function() {
-      this._outputLayout.removeAll();
+      this._htmlEmbed.setHtml("");
     },
     
     
@@ -196,48 +198,47 @@ qx.Class.define("inspector.console.Console", {
      * Prints out an error to the console.
      * @param message {String} The error message.
      */    
-    error: function(message) {
-			// create the error label and add it
-      var label = this._getLabel("", message, "red", "error");
-      label.setBackgroundColor("#FFFFE0");      
-			this._outputLayout.add(label);
-			
-			// print a trailing line
-      this._printLine();      
+    error: function(message) {           
+      var label = this._getLabel("", message, "red", "error", "#FFFFE0");
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();         
     }, 
     
-		
-		/**
-		 * Prints out a warning message to the console.
-		 * @param message {String} The warning message to print out.
-		 */
+    
+    /**
+     * Prints out a warning message to the console.
+     * @param message {String} The warning message to print out.
+     */
     warn: function(message) {
-			// create and add the warning label
-      var label = this._getLabel("", message, "black", "warning");
-      label.setBackgroundColor("#00FFFF");
-      this._outputLayout.add(label);
-			// print a trailing line
-      this._printLine();
+      var label = this._getLabel("", message, "black", "warning", "#00FFFF");           
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     },
     
-		
-		/**
-		 * Prints aut an info message to the console.
-		 * @param message {String} The info message.
-		 */
+    
+    /**
+     * Prints aut an info message to the console.
+     * @param message {String} The info message.
+     */
     info: function(message) {
-      this._outputLayout.add(this._getLabel("", message, "black", "info"));
-      this._printLine();
+      var label = this._getLabel("", message, "black", "info");
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     }, 
     
-		
-		/**
-		 * Prints out an debug message to the console.
-		 * @param message {String} The debug message.
-		 */
+    
+    /**
+     * Prints out an debug message to the console.
+     * @param message {String} The debug message.
+     */
     debug: function(message) {
-      this._outputLayout.add(this._getLabel("", message, "gray"));
-      this._printLine();
+      var label = this._getLabel("", message, "grey");        
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     },
     
     
@@ -272,6 +273,16 @@ qx.Class.define("inspector.console.Console", {
       }
     },
     
+    
+    /**
+     * Scrolls the end of the main layout which holds the aoutput of the console.
+     */
+    _scrollToLastLine: function() {
+      // flush the queues to ensure that the adding has been recognized
+      qx.ui.core.Widget.flushGlobalQueues();      
+      // scroll to the bottom of the layout
+      this._htmlEmbed.setScrollTop(this._htmlEmbed.getScrollHeight());
+    },    
     
     /*
     *********************************
@@ -421,9 +432,8 @@ qx.Class.define("inspector.console.Console", {
       // check the arrays      
       if (returnValue instanceof Array) {
         // if yes, print out that it is one
-        this._outputLayout.add(this._getLabel("", "---- Array ----", "#00008B"));
-        // print a line
-        this._printLine();
+        var label = this._getLabel("", "---- Array ----", "#00008B")
+        this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
         // go threw all elements and print them out
         for (var i in returnValue) {
           this._printReturnValue(returnValue[i]);
@@ -436,9 +446,10 @@ qx.Class.define("inspector.console.Console", {
         this._printQxObject(returnValue);            
       } else {
         // print out the return value
-        this._outputLayout.add(this._getLabel("", returnValue, "#00008B"));
-        // print a line
-        this._printLine();          
+        var label = this._getLabel("", returnValue, "#00008B");
+        this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+        // scroll to the end of the console 
+        this._scrollToLastLine();
       }
     },
     
@@ -450,15 +461,13 @@ qx.Class.define("inspector.console.Console", {
      */
     _printQxObject: function(object) {
       // build the label string
-      var label = this._getLabel("<u>", object.classname + " [" + object.toHashCode() + "]</u>", "#006400")
-      // set the link to set the object as current object
-      label.setStyleProperty("cursor", "pointer");			
-      label.addEventListener("click", function() {
-        this._inspector.setWidget(object, this);
-      }, this);
-      this._outputLayout.add(label);
-      // print a line
-      this._printLine();
+      var label = this._getLabel("<u style='cursor: pointer;' " + 
+                                 "onclick=\"inspector.Inspector.getInstance().setWidgetByDbKey(" + object.getDbKey() + ", 'console');\"" + 
+                                 ";>", object.classname + " [" + object.toHashCode() + "]</u>", "#006400")
+      // append the label string
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);      
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     },
     
     /**
@@ -466,41 +475,10 @@ qx.Class.define("inspector.console.Console", {
      * @param text {String} the text to print out.
      */
     _printText: function(text) {
-      this._outputLayout.add(this._getLabel(">>>&nbsp;", text, "blue"));
-      // print a line
-      this._printLine();
-    },
- 
-    
-    /**
-     * Prints out a messaga which holds the text "undefined" with a black 
-     * border, grey background and a white font color. 
-     */
-    _printUndefined: function() {
-      var label = this._getLabel("", "undefined", "white")
-      label.setBorder("black");
-      label.setBackgroundColor("grey");
-      label.setPadding(3);
-      label.setMargin(2);
-      label.setWidth("auto");
-      this._outputLayout.add(label);
-      // print a line
-      this._printLine();      
-    },
- 
- 
-    /**
-     * Print out a line to seperate two calls. This also invokes a scrolling 
-     * to the bottom of the console. 
-     */
-    _printLine: function() {
-  		// draw the line
-			var line = this._getLine();
-	    this._outputLayout.add(line);
-			// flush the queues to ensure that the adding has been recognized
-      qx.ui.core.Widget.flushGlobalQueues();
-	  	// scroll to the last line			
-      line.scrollIntoView();
+      var label = this._getLabel(">>>&nbsp;", text, "blue");
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
     },
     
     
@@ -509,43 +487,19 @@ qx.Class.define("inspector.console.Console", {
        CREATE FUNCTIONS
     *********************************
     */
-    /**
-     * This function creates a label and tells the inspector that the label 
-     * is a object of the inspector classes.
-     * @param prefix {String} The prefix will be added infront of the text. 
-     * @param text {String} The text which should be in the label.
-     * @param color {String | Color} The color of the font.
-     * @param icon {String} the Icon to be added infron of the text. It can be "error", "warning" or "info".
-     * @return {qx.ui.basic.Label} the created label.
-     */
-    _getLabel: function(prefix, text, color, icon) {
+    _getLabel: function(prefix, text, color, icon, bgcolor) {
       // create the text of the label
-			var text = "<font face='Courier New'>" + prefix + text + "</font>";			
+      var text = "<font face='Courier New' color='" + color + "'>" + prefix + text + "</font>";      
       // handle the icon uri      
       if (icon == "info" || icon == "error" || icon == "warning") {
         var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + icon + "Icon.png") + "' style='vertical-align: middle;'>";
-				text = iconHtml + "&nbsp;" + text;
+        text = iconHtml + "&nbsp;" + text;
       }
-						
-      // start the exclusion so that the new element will not be in the list of objects
-      this._inspector.beginExclusion();
-      // create the new element
-			var label = new qx.ui.basic.Label(text);
-      // end the exclusion
-      this._inspector.endExclusion();
-			
-      // make the text wrap
-      label.setWrap(true);
-      // set the color of the label
-      label.setTextColor(color);
-			// set the width and padding
-			label.setWidth("100%");
-			
-			label.setAllowStretchY(true);
-			
-			label.setPadding(2);	
-      // deliver the label			              
-      return label;      
+      // create the sourrounding div
+      text = "<div width='100%' style='padding: 3px; border-bottom: 1px #CCCCCC solid; background-color:" + bgcolor + ";'>" + text + "</div>";
+      
+      // return the text String
+      return text;      
     },
     
     
@@ -585,7 +539,7 @@ qx.Class.define("inspector.console.Console", {
      * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
-       this._outputLayout.setHeight(this._outputLayout.getHeight() + delta);
+       this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);        
     },
     
     
@@ -616,13 +570,13 @@ qx.Class.define("inspector.console.Console", {
       this._consoleLayout = new qx.ui.layout.VerticalBoxLayout();
       this._mainLayout.add(this._consoleLayout);
       
-      this._outputLayout = new qx.ui.layout.VerticalBoxLayout();
-      this._outputLayout.setBackgroundColor("white");
-      this._outputLayout.setBorder("inset");
-      this._outputLayout.setOverflow("scrollY");
-      this._outputLayout.setWidth("100%");
-      this._outputLayout.setHeight(150);
-      this._consoleLayout.add(this._outputLayout);
+      this._htmlEmbed = new qx.ui.embed.HtmlEmbed();
+      this._htmlEmbed.setBackgroundColor("white");
+      this._htmlEmbed.setBorder("inset");
+      this._htmlEmbed.setOverflow("scrollY");
+      this._htmlEmbed.setWidth("100%");
+      this._htmlEmbed.setHeight(150);
+      this._consoleLayout.add(this._htmlEmbed);
   
       // create and add the textfield
       this._textField = new qx.ui.form.TextField();
