@@ -200,10 +200,13 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       
       //  go threw all objects
       for (var key in objects) {
-        // add the object to the data array
-        data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});
+        // IE Bug: only take the qooxdoo objects and not the added functions
+				if (objects[key] instanceof qx.core.Object) {
+					// add the object to the data array
+	        data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});					
+				}
       }
-      
+			
       // apply a filfer if needed
       if (filter != null) {
         // create a new temporary array to store the filterd data
@@ -213,11 +216,11 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
           // create a RegExp object to perform the search
           var regExp = new RegExp(filter);
           // go threw all objects
-          for (var key in data) {
+          for (var i = 0; i < data.length; i++) {
             // if the search text is part of the classname or hash value
-            if (regExp.test(data[key][1]) || regExp.test(data[key][0])) {
+            if (regExp.test(data[i][1]) || regExp.test(data[i][0])) {
               // add the object to the filterd data
-              newData.push(data[key]);
+              newData.push(data[i]);
             }          
           } 
         } catch (e) {
@@ -242,7 +245,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _getClearObjects: function() {
       // get the array of excludes
       var excludes = this._inspector.getExcludes();
-      // get a copy of the objects db
+			// get a copy of the objects db
       var objects = qx.lang.Array.clone(qx.core.Object.getDb());
       // create a array to store the references of the original db
       var dbKeys = new Array(objects.length);
@@ -317,11 +320,14 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // get all objects form the object db
       var objects = this._getData();
       // go threw all objects, count them and put the count into a hash 
-      for (var key in objects) {        
+      for (var key in objects) {
+				// if the class has not been seen jet
         if (tempData[objects[key][1]] == undefined) {
+					// create a entry for the class
           tempData[objects[key][1]] = 0;
         }
-        tempData[objects[key][1]] = tempData[objects[key][1]] + 1;
+				// add one ocurance for the class
+        tempData[objects[key][1]] = tempData[objects[key][1]] + 1;									    
       }
       // create the data array      
       var data = [];
@@ -481,7 +487,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         var sum = 0; 
         // create the test message
         var message = "";
-        for (var key in data) {
+        for (var key = 0; key < data.length; key++) {
           message += "<tr><td>" + data[key][0] + ": </td><td>" + data[key][1] + "</td></tr>";
           sum += data[key][1];
         }
