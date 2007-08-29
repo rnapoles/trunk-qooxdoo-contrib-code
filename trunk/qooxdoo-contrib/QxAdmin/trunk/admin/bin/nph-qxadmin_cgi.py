@@ -165,12 +165,18 @@ def gen_makefile(makvars):
         if mo:
             fkey = mo.group(1)
             fkey = fkey.strip()
+            # patch with new value?
             if fkey in makkeys:
                 item = finditem(makvars,fkey)
-                writeitem(f,item)
-                item['written']=True
-                continue
-        f.write(text[i])
+                if item['dat'] == "__REMOVEME__":
+                    # remove this keyword from the makefile
+                    continue
+                else:
+                    writeitem(f,item)
+                    item['written']=True
+                    continue
+            # default is just to copy over
+            f.write(text[i])
 
     # at the end of the custom section
     for item in makvars:

@@ -1164,8 +1164,13 @@ qx.Class.define("qxadmin.AppFrame",
         } else 
         {
           if (item.dirty) {
-            // gather changed fields
-            vals.push({lab: item.lab.getText(), dat: item.dat.getValue()});
+            if (item.dirty==1) {
+              // gather changed field
+              vals.push({lab: item.lab.getText(), dat: item.dat.getValue()});
+            } else if (item.diryt==2) {
+              // mark for remove
+              vals.push({lab: item.lab.getText(), dat: "__REMOVEME__"});
+            }
           }
         }
       }
@@ -1420,7 +1425,7 @@ qx.Class.define("qxadmin.AppFrame",
       var rowIndex = 0;
       var that     = this;
 
-      container.setColumnCount(2);
+      container.setColumnCount(3);
 
       this.traverseTreeData(treeData, function (item, type, level)
       {
@@ -1450,17 +1455,27 @@ qx.Class.define("qxadmin.AppFrame",
         {
           container.addRow();
           rowIndex = container.getRowCount() -1;
+          // Var Name
           var l = new qx.ui.basic.Label(item.label);
           container.add(l,0,rowIndex);
           that.widgets["buttedit.varedit.page.items"][item.label]={};
           that.widgets["buttedit.varedit.page.items"][item.label]['lab']=l; // register widget
+          // Var Value
           var olditem = that.findOldItem(item.label, oldData);
           var value = olditem ? olditem.dat : item.defaultt;
           var tf = new qx.ui.form.TextField(value);
           that.widgets["buttedit.varedit.page.items"][item.label]['dat']=tf; // register widget
-          container.add(tf,1,rowIndex);
+          that.widgets["buttedit.varedit.page.items"][item.label]['defaultt']=item.defaultt;
           tf.setUserData('id',item.label);
           tf.addEventListener("changeValue",that.__ehEditFormChanged,that);
+          container.add(tf,1,rowIndex);
+          // Var Reset Button
+          var rb = new qx.ui.form.Button("Reset value", "icon/16/actions/view-refresh.png");
+          rb.setUserData('id',item.label);
+          rb.setShow("icon");
+          rb.addEventListener("execute",that.__ehEditFormReset,that);
+          rb.setToolTip(new qx.ui.popup.ToolTip("Reset to default"));
+          container.add(rb,2,rowIndex);
         }
         return 0;
       });
@@ -1500,7 +1515,19 @@ qx.Class.define("qxadmin.AppFrame",
       
       var id = e.getTarget().getUserData('id');
       if (id) {
-        this.widgets["buttedit.varedit.page.items"][id]['dirty']=true;
+        this.widgets["buttedit.varedit.page.items"][id]['dirty']=1; // means changed
+      }
+    },
+
+
+    __ehEditFormReset : function (e) 
+    {
+      var id = e.getTarget().getUserData('id');
+      if (id) 
+      {
+        var item = this.widgets["buttedit.varedit.page.items"][id]
+        item['dirty']=2;  // means reset
+        item['dat'].setValue(item['defaultt']);
       }
     },
 
