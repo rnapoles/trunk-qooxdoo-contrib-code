@@ -52,7 +52,7 @@ qx.Class.define("qxadmin.FileSystemService",
     //this.getManager().addEventListener("changeSelection", alert('in constructor'), this);
     //this.getManager().addEventListener("changeSelection", function(){alert('in constructor')}, this);
 
-  }, // construct
+  },
 
   members : {
 

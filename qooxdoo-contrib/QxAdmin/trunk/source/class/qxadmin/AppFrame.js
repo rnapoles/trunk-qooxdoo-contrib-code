@@ -213,6 +213,9 @@ qx.Class.define("qxadmin.AppFrame",
       this._cmdRunSave = new qx.client.Command("F9");
       this._cmdRunSave.addEventListener("execute", this.__ehRunSave, this);
 
+      this._cmdRunReset = new qx.client.Command("F10");
+      this._cmdRunReset.addEventListener("execute", this.__ehRunReset, this);
+
       this._cmdViewFile = new qx.client.Command("Ctrl-Left");
       this._cmdViewFile.addEventListener("execute", this.__ehViewFile, this);
 
@@ -447,14 +450,7 @@ qx.Class.define("qxadmin.AppFrame",
       this.__bindCommand(this.runbutton, this._cmdRunBuild);
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
 
-      // -- view button
-      var viewb = new qx.ui.toolbar.Button("View File", "icon/16/actions/zoom.png");
-      this.widgets["toolrun.viewb"] = viewb;
-      //mb.add(viewb);
-      viewb.addEventListener("execute", this.__ehViewFile, this);
-      viewb.setToolTip(new qx.ui.popup.ToolTip("View file"));
-
-      // -- previous navigation
+      // -- open generated app in browser
       var openb = new qx.ui.toolbar.Button("Open Page", "icon/16/places/www.png");
       mb.add(openb);
       this.widgets["toolrun.openb"] = openb;
@@ -510,7 +506,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       f1.setStyleProperty("font-family", '"Consolas", "Courier New", monospace');
 
-      f1.addEventListener("load", this.__ehIframeLoaded, this);
+      f1.addEventListener("load", this.__ehRunIframeLoaded, this);
 
       return buttview;
 
@@ -617,7 +613,7 @@ qx.Class.define("qxadmin.AppFrame",
 
       var tree1 = this.createTree(treeData);
       p2.add(tree1);
-      this.widgets["treeview.runmake"] = tree1;
+      this.widgets["treeview.trun"] = tree1;
       bsb2.setUserData('tree', tree1);  // for changeSelected handling
 
       tree1.set(
@@ -680,7 +676,7 @@ qx.Class.define("qxadmin.AppFrame",
 
     createTree : function (treeData)
     {
-      var tree = new qx.ui.tree.Tree();
+      var tree = new qx.ui.tree.Tree("AnonRoot");
       tree.setHideNode(true);
 
       // recursive worker function
@@ -805,6 +801,13 @@ qx.Class.define("qxadmin.AppFrame",
       this.widgets["tooledit.runbutton"] = this.runbutton;
       this.__bindCommand(this.runbutton, this._cmdRunSave);
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Save Makefile"));
+
+      // -- reset button
+      var resetb = new qx.ui.toolbar.Button("Reset Values", "icon/16/actions/view-refresh.png");
+      mb.add(resetb);
+      this.widgets["tooledit.resetbutton"] = resetb;
+      this.__bindCommand(resetb, this._cmdRunReset);
+      resetb.setToolTip(new qx.ui.popup.ToolTip("Reset to load-time values"));
 
       return toolbar;
       
@@ -1072,7 +1075,7 @@ qx.Class.define("qxadmin.AppFrame",
         return;
       }
       */
-      var treeNode = this.widgets["treeview.runmake"].getSelectedElement();
+      var treeNode = this.widgets["treeview.trun"].getSelectedElement();
 
       if (treeNode instanceof qx.ui.tree.TreeFile) 
       {
@@ -1135,7 +1138,7 @@ qx.Class.define("qxadmin.AppFrame",
     __ehRunSave : function (e) 
     {
       var vals = this.__editCheckForm();
-      if (vals == []) 
+      if (vals.length == 0) 
       {
         return;
       } else {
@@ -1144,18 +1147,35 @@ qx.Class.define("qxadmin.AppFrame",
     },
 
 
+    // reset edit form to values when page was loaded
+    __ehRunReset : function (e) 
+    {
+      var makItems = this.widgets["buttedit.varedit.page.items"];
+      for (var id in makItems) 
+      {
+        var item = makItems[id];
+        if (!item['dat']) 
+        {
+          continue
+        } else 
+        {
+          var oitem = this.findOldItem(id, this.__makoldvars);
+          var rval = oitem ? oitem.dat : item.defaultt;
+          item['dat'].setValue(rval);
+          if (item['dirty']) {
+            delete item['dirty'];
+          }
+        }
+      }
+    },
+
+
     __editCheckForm : function () 
     {
       var vals = [];
-      // check QOOXDOO_PATH
-      if (false) 
-      {
-        alert('You have to at least specify the path to your qooxdoo installation');
-        return vals;
-      }
       // iterate through form data
       var makItems = this.widgets["buttedit.varedit.page.items"];
-      for (id in makItems) 
+      for (var id in makItems) 
       {
         var item = makItems[id];
         if (!item['dat'])  // skip pure labels (like section heads)
@@ -1163,10 +1183,19 @@ qx.Class.define("qxadmin.AppFrame",
           continue;
         } else 
         {
+          var currVal = item.dat.getValue();
+          // check QOOXDOO_PATH
+          if (id == "QOOXDOO_PATH") 
+          {
+            if (currVal == item.defaultt) {
+              alert('You have to at least specify QOOXDOO_PATH (the path to your qooxdoo installation); aborting...');
+              return [];
+            }
+          }
           if (item.dirty) {
             if (item.dirty==1) {
               // gather changed field
-              vals.push({lab: item.lab.getText(), dat: item.dat.getValue()});
+              vals.push({lab: item.lab.getText(), dat: currVal});
             } else if (item.diryt==2) {
               // mark for remove
               vals.push({lab: item.lab.getText(), dat: "__REMOVEME__"});
@@ -1272,37 +1301,20 @@ qx.Class.define("qxadmin.AppFrame",
 
     __ehOpenPage : function (e)
     {
-      if (!this.tree.getSelectedElement())
-      {  // this is a kludge!
+      var treeNode = this.widgets["treeview.trun"].getSelectedElement();
+
+      if (!treeNode) 
+      {
+        alert("Please select a previously built target to open (source, build, ...)");
         return;
       }
-      var treeNode = this.tree.getSelectedElement();
 
       if (treeNode instanceof qx.ui.tree.TreeFile) 
       {
-        this.invokeIndexHtml(treeNode);
+        var url = "/"+treeNode.getLabel()+"/index.html";
+        // open index.html
+        window.open(url);
       }
-    },
-
-
-    invokeIndexHtml : function (treeNode) 
-    {
-      var a = this.getParentFolderChain(treeNode);
-      var b = [];
-      var that = this;
-
-      for (var i=0; i<a.length; i++) 
-      {
-        b.push(a[i].getLabel());
-      }
-      //alert(b);
-      // drop the root node
-      b.shift();
-
-      var url = this.qooxdoo_path+"/"+b.join("/")+"/index.html";
-      // open index.html
-      window.open(url);
-
     },
 
 
@@ -1465,7 +1477,7 @@ qx.Class.define("qxadmin.AppFrame",
           var value = olditem ? olditem.dat : item.defaultt;
           var tf = new qx.ui.form.TextField(value);
           that.widgets["buttedit.varedit.page.items"][item.label]['dat']=tf; // register widget
-          that.widgets["buttedit.varedit.page.items"][item.label]['defaultt']=item.defaultt;
+          that.widgets["buttedit.varedit.page.items"][item.label]['defaultt']=item.defaultt; // always remember application.mk default
           tf.setUserData('id',item.label);
           tf.addEventListener("changeValue",that.__ehEditFormChanged,that);
           container.add(tf,1,rowIndex);
@@ -1689,79 +1701,11 @@ qx.Class.define("qxadmin.AppFrame",
      * @param e {Event} TODOC
      * @return {void}
      */
-    __ehIframeLoaded : function(e)
+    __ehRunIframeLoaded : function(e)
     {
+      this._cmdOpenPage.setEnabled(true);
       return;
-      var fwindow = this.widgets["buttrun.demopage.page"].getContentWindow();
-      var f1 = this.widgets["buttrun.demopage.page"];
-      var fpath = fwindow.location.pathname + "";
-      var splitIndex = fpath.indexOf("?");
-      if (splitIndex != -1) {
-        fpath = fpath.substring(0, splitIndex + 1);
-      }
-      var path = fpath.split("/");
-
-      //if (this._currentSampleUrl != this.defaultUrl)
-      if (f1.getSource() != "" && f1.getSource() != this.defaultUrl)
-      {
-        // set logger
-        fwindow.qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
-        fwindow.qx.log.Logger.ROOT_LOGGER.addAppender(this.logappender);
-
-        var url = fwindow.location.href;
-        var posHtml = url.indexOf("/html/") + 6;
-        var posSearch = url.indexOf("?");
-        posSearch = posSearch == -1 ? url.length : posSearch;
-        var split = url.substring(posHtml, posSearch).split("/");
-        var div = String.fromCharCode(187);
-
-        if (split.length == 2)
-        {
-          var category = split[0];
-          category = category.charAt(0).toUpperCase() + category.substring(1);
-          var pagename = split[1].replace(".html", "").replace(/_/g, " ");
-          pagename = pagename.charAt(0).toUpperCase() + pagename.substring(1);
-          var title = "qooxdoo " + div + " Demo Browser " + div + " " + category + " " + div + " " + pagename;
-        }
-        else
-        {
-          var title = "qooxdoo " + div + " Demo Browser " + div + " Welcome";
-        }
-
-        // update state on example change
-        var sample = path.slice(-2).join('~');
-        this._history.addToHistory(sample, title);
-
-        // load sample source code
-        if (this._currentSampleUrl != this.defaultUrl)
-        {
-          this.__setStateSampleLoaded();
-          this.__getPageSource(this._currentSampleUrl);
-        } else {
-          this.__setStateInitialized();
-        }
-      }
-
-      this.__setStateLoaded();
-      this.widgets["outputviews.demopage.button"].setLabel(this.polish(path[path.length - 1]));
-      this.debug("Demo loaded...");
-
-      if (this.isPlayAll())
-      {
-        if (this.widgets["toolbar.nextbutt"].isEnabled())
-        {
-          // give some time before proceeding
-          qx.client.Timer.once(function ()
-          {
-            this.widgets["toolbar.nextbutt"].execute();
-          }, this, 1500);
-        } else
-        {
-          this.setPlayAll(false);
-        }
-      }
-
-    }, // __ehIframeLoaded
+    }, // __ehRunIframeLoaded
 
 
     /**
@@ -1928,6 +1872,6 @@ qx.Class.define("qxadmin.AppFrame",
   destruct : function()
   {
     this._disposeFields("widgets", "tests", "_sampleToTreeNodeMap", "tree", "__states");
-    this._disposeObjects("header", "mainsplit", "tree1", "left", "runbutton", "toolbar", "f1", "f2", "logger", "_history", "logappender", '_cmdObjectSummary', '_cmdRunBuild', '_cmdViewFile', '_cmdOpenPage', '_cmdSampleInOwnWindow', '_cmdLoadProfile', '_cmdProfile', '_cmdShowLastProfile', '_cmdDisposeSample', '_cmdNamespacePollution');
+    this._disposeObjects("header", "mainsplit", "tree1", "left", "runbutton", "toolbar", "f1", "f2", "logger", "_history", "logappender", '_cmdObjectSummary', '_cmdRunBuild', '_cmdRunSave', '_cmdRunReset', '_cmdViewFile', '_cmdOpenPage', '_cmdSampleInOwnWindow', '_cmdLoadProfile', '_cmdProfile', '_cmdShowLastProfile', '_cmdDisposeSample', '_cmdNamespacePollution');
   }
 });

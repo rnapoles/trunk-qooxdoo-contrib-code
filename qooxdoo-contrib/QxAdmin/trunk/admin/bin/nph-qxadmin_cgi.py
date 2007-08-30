@@ -177,6 +177,8 @@ def gen_makefile(makvars):
                     continue
             # default is just to copy over
             f.write(text[i])
+        else:
+            f.write(text[i])
 
     # at the end of the custom section
     for item in makvars:
