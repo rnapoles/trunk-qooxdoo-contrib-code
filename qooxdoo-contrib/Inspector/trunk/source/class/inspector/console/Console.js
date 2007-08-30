@@ -260,7 +260,6 @@ qx.Class.define("inspector.console.Console", {
       try {
         // run it and store the result in the global ans value
         this._ans = (function(text, ans){return eval(text)}).call(this._widget, text, this._ans);
-//      ans = eval(text.replace(/\bthis\b/g, "this._widget"));
 
         // if ans is defined
         if (this._ans != undefined) {
@@ -323,7 +322,7 @@ qx.Class.define("inspector.console.Console", {
             // remove the last element
             this._history.pop();            
           }
-          
+          					
         // if the popup is on screen
         } else {
           this.chooseAutoCompleteValue();
