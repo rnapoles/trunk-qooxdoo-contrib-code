@@ -27,7 +27,7 @@ qx.Class.define("inspector.Menu", {
   */
   construct : function(inspector) {    
     this.base(arguments);
-		// set the zIndex to a higher one than the index of the find mode layer
+    // set the zIndex to a higher one than the index of the find mode layer
     this.setZIndex(1e5);
     // save the reference to the inspector
     this._inspector = inspector;
@@ -37,6 +37,10 @@ qx.Class.define("inspector.Menu", {
     this.__createInspectorMenu();
     // create the buttons shown on the menu
     this.__createMenuButtons();
+    
+    
+    
+    this.__createAboutPopup();
   }, 
   
   
@@ -71,24 +75,26 @@ qx.Class.define("inspector.Menu", {
     _openObjectFinderButton: null,
     _openWidgetFinderButton: null,
     _openPropertyEditorButton: null,
-
+    
+    // about popup
+    _aboutPopup: null,
 
     /*
     *********************************
        PUBLIC
     *********************************
     */
-		/**
-		 * @return the components of the menu.
-		 */
+    /**
+     * @return the components of the menu.
+     */
     getComponents: function() {
-      return [this._inspectorMenu, this];
+      return [this._inspectorMenu, this._aboutPopup, this];
     },
     
-		/**
-		 * Sets the find button to unchecked. This is used to 
-		 * signal the end of the find mode.
-		 */
+    /**
+     * Sets the find button to unchecked. This is used to 
+     * signal the end of the find mode.
+     */
     resetFindButton: function() {
       this._findButton.setChecked(false);
     },
@@ -145,7 +151,19 @@ qx.Class.define("inspector.Menu", {
       this._inspectorMenu = new qx.ui.menu.Menu();
       this._inspectorMenu.addToDocument();      
       
-      this._inspectorMenu.add(new qx.ui.menu.Button("About Inspector"));
+      // about button
+      var aboutButton = new qx.ui.menu.Button("About Inspector");
+      this._inspectorMenu.add(aboutButton);
+      aboutButton.addEventListener("execute", function() {
+        // get and set the positions to center the popup
+        var left = (qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2) - (this._aboutPopup.getOuterWidth() / 2);
+        var top = (qx.ui.core.ClientDocument.getInstance().getInnerHeight() / 2) - (this._aboutPopup.getOuterHeight() / 2); 
+        this._aboutPopup.setTop(top);
+        this._aboutPopup.setLeft(left);
+        // show the popup
+        this._aboutPopup.show();
+        this._aboutPopup.bringToFront();
+      }, this);      
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());      
       
@@ -174,7 +192,7 @@ qx.Class.define("inspector.Menu", {
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       var apiButton = new qx.ui.menu.Button("Show API Viewer");
       apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
-			this._inspectorMenu.add(apiButton);
+      this._inspectorMenu.add(apiButton);
     },
     
     
@@ -253,6 +271,32 @@ qx.Class.define("inspector.Menu", {
           this._inspector.hidePropertyEditor();
        }
       }, this);
+    },
+    
+    __createAboutPopup: function() {
+      // create the popup
+      this._aboutPopup = new qx.ui.popup.Popup();
+      this._aboutPopup.addToDocument();
+      // set the look of the popup
+      this._aboutPopup.setBackgroundColor("#FFFFFF");
+      this._aboutPopup.setBorder("black");      
+      this._aboutPopup.setHeight(150);
+      this._aboutPopup.setWidth(300);
+      this._aboutPopup.setPadding(10);
+      
+      // create the label text
+      var label = "<font size='4' face='Verdana'><strong>Inspector 0.1</strong></font><br><br>" + 
+                  "<a href='http://www.qooxdoo.org' target='_blank'>qooxdoo.org</a><br>" + 
+                  "1und1 Internet AG<br><br>" + 
+                  "<strong>License:</strong><br>See the LICENSE file in the<br>project's top-level<br>directory for details.";
+      
+      // add a atom containing the about text
+      var aboutText = new qx.ui.basic.Atom(label);
+      aboutText.setIcon(qx.io.Alias.getInstance().resolve("inspector/image/1und1.jpg"));
+      this._aboutPopup.add(aboutText);
+      // style the atom      
+      aboutText.setVerticalChildrenAlign("top");
+      aboutText.getLabelObject().setPaddingLeft(10);
     }
 
   }
