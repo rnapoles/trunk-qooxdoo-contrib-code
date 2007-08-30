@@ -22,14 +22,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   extend : inspector.AbstractWindow,
   implement : inspector.propertyEditor.IPropertyListController,
 
-  /*
-  *****************************************************************************
-     STATICS
-  *****************************************************************************
-  */
-  statics: {
-    API_VIEWER_URI: "../api/index.html"
-  },
 
   /*
   *****************************************************************************
@@ -61,16 +53,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // reload buttons
     _reloadButton: null,
     _reloadToolTip: null,
-    _autoReloadToolTip: null,
-    // inherited button
-    _inheritedButton: null,
-    _inheritedTooltip: null,
-    // view buttons
-    _fullViewTooltip: null,
-    _htmlViewTooltip: null,  
-    // group button
-    _groupButton: null,
-    _groupToolTip: null,
+    // api buttion
+		_apiButtonToolTip: null,
     // set null button
     _setNullButton: null,
     _setNullTooltip: null,
@@ -97,8 +81,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // timer for the reload interval
     _reloadTimer: null,
 
-    // the native window for the api viewer
-    _apiWindow: null,
 
     /*
     *********************************
@@ -111,11 +93,10 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * @return {Array} All components of the property editor.
      */
     getComponents: function() {
-      return [this, this._groupToolTip, this._menu,
+      return [this, this._groupToolTip, this._menu, this._apiButtonToolTip,
               this._setNullTooltip, this._highlightCurrentPropertyTooltip, 
               this._gotoSelectedPropertyTooltip, this._setPropertyToDefaultTooltip,
-              this._inheritedTooltip, this._fullViewTooltip, this._autoReloadToolTip, this._reloadToolTip,
-              this._htmlViewTooltip].concat(this._propertyListFull.getComponents()).concat(this._propertyListHtmlTable.getComponents());
+              this._reloadToolTip].concat(this._propertyListFull.getComponents()).concat(this._propertyListHtmlTable.getComponents());
     },
     
     
@@ -208,48 +189,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      */
     gotoSelectedWidget: function() {
       this._gotoSelectedPropertyButtonEventListener();
-    },
-    
-    
-    /**
-     * Opens an native window showing the API documentation.
-     * If a widget is currently selected, the API viewer will
-     * open the the documentataion of that class. Is in addition
-     * a property is selected, the viewer automaticly jumps to 
-     * the selected property. 
-     */
-    openApiWindow: function() {
-        // if the API window is not created
-        if (this._apiWindow == null) {
-          // initialize the api window
-          this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
-          this._apiWindow.setWidth(900);
-          this._apiWindow.setHeight(600);                    
-        }        
-        // define the URL to the apiview
-        var urlString = inspector.propertyEditor.PropertyEditor.API_VIEWER_URI;
-        // check if a property is selected
-        if (this._currentlySelectedProperty != null) {
-          // if yes, take the classname and the property name from the property
-          urlString = urlString + "#" + this._currentlySelectedProperty.getUserData("classname");
-          urlString = urlString + "~" + this._currentlySelectedProperty.getUserData("key");
-        
-        // if no property is selected but a object
-        } else if (this._qxObject != null) {
-          // only take the objects classname
-          urlString = urlString + "#" + this._qxObject.classname;
-        }
-        // set the uri in the window
-        this._apiWindow.setUrl(urlString);
-        
-        // if the window is not open
-        if (!this._apiWindow.isOpen()) {
-          // open the window
-          this._apiWindow.open(); 
-        } else {
-          // otherwise just focus it
-          this._apiWindow.focus();          
-        }      
     },
     
     
@@ -649,7 +588,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._toolbar.add(new qx.ui.toolbar.Separator());
       
       // create and add the reload button
-      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
+      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/reload.png"));
       this._toolbar.add(this._reloadButton);
       // add the event listener for the reload
       this._reloadButton.addEventListener("click", function() {
@@ -665,15 +604,17 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._toolbar.add(new qx.ui.toolbar.Separator());
 
       // create the API button      
-      var apiButton = new qx.ui.toolbar.Button("API");
+      var apiButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/api.png"));
       this._toolbar.add(apiButton);
-      apiButton.addEventListener("execute", this.openApiWindow, this);
+      apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
+			this._apiButtonToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.SHOW_API_BUTTON_TOOLTIP_TEXT, null);
+      apiButton.setToolTip(this._apiButtonToolTip);
 
       // add a spacer to keep the property relevant buttons on the right
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());
      
       // set null button
-      this._setNullButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/setnull.png"));
+      this._setNullButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/icons/setnull.png"));
       this._setNullButton.setEnabled(false);
       this._setNullTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.SET_NULL_BUTTON_TOOLTIP_TEXT, null);
       this._setNullButton.setToolTip(this._setNullTooltip);
@@ -681,7 +622,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._setNullButton.addEventListener("execute", this._setNullButtonEventListener, this);
   
       // set to initial value button
-      this._setPropertyToDefaultButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/setInit.png"));
+      this._setPropertyToDefaultButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/icons/setInit.png"));
       this._setPropertyToDefaultButton.setEnabled(false);
       this._setPropertyToDefaultTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.SET_DEFAULT_BUTTON_TOOLTIP_TEXT, null);
       this._setPropertyToDefaultButton.setToolTip(this._setPropertyToDefaultTooltip);
@@ -689,7 +630,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._setPropertyToDefaultButton.addEventListener("execute", this._setPropertyToDefaultButtonEventListener, this);
   
       // highlight property button
-      this._highlightCurrentPropertyButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/highlightproperty.png"));
+      this._highlightCurrentPropertyButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/icons/highlight.png"));
       this._highlightCurrentPropertyButton.setEnabled(false);
       this._highlightCurrentPropertyTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.HIGHLIGHT_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT, null);
       this._highlightCurrentPropertyButton.setToolTip(this._highlightCurrentPropertyTooltip);    
@@ -697,7 +638,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._highlightCurrentPropertyButton.addEventListener("execute", this._highlightCurrentPropertyButtonEventListener, this);
   
       // goto property button
-      this._gotoSelectedPropertyButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/goto.png"));
+      this._gotoSelectedPropertyButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/icons/goto.png"));
       this._gotoSelectedPropertyButton.setEnabled(false);
       this._gotoSelectedPropertyTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT, null);
       this._gotoSelectedPropertyButton.setToolTip(this._gotoSelectedPropertyTooltip);      

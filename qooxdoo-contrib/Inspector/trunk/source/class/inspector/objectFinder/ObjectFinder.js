@@ -449,8 +449,11 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * Also register the handlers for the search field and the buttons.
      */
     _addToolbarButtons: function() {
+			// tell the toolbar to senter ist children
+			this._toolbar.setVerticalChildrenAlign("middle");
+			
       // create and add the reload button
-      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
+      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/reload.png"));
       this._toolbar.add(this._reloadButton);
       // add the event listener for the reload
       this._reloadButton.addEventListener("click", function() {
@@ -461,7 +464,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._reloadButton.setToolTip(this._reloadToolTip);
       
       // create and add a autoreload button
-      var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/autoreload.png"));
+      var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/autoreload.png"));
       this._toolbar.add(autoReloadButton);
       // add the change event listener
       autoReloadButton.addEventListener("changeChecked", function (e) {
@@ -479,7 +482,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._toolbar.add(new qx.ui.toolbar.Separator());
 
       // add the objects summary button
-      var objectsButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/objectsummary.png"));
+      var objectsButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/objectsummary.png"));
       this._toolbar.add(objectsButton);
       // add the tooltip to the objects summary button
       this._objectSummaryToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT, null);

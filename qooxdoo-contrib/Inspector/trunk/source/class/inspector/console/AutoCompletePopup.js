@@ -20,16 +20,6 @@
 qx.Class.define("inspector.console.AutoCompletePopup", {
   
   extend: qx.ui.popup.Popup,  
-
-  /*
-  *****************************************************************************
-     STATICS
-  *****************************************************************************
-  */  
-  statics: {
-    // the length of the history
-    HISTORY_LENGTH: 20
-  },
     
     
   /*
