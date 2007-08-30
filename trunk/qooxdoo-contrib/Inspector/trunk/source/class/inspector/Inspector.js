@@ -70,6 +70,18 @@ qx.Class.define("inspector.Inspector", {
 		
 		// initialize the this reference to the selected widget
     this.setWidget(qx.ui.core.ClientDocument.getInstance());
+		
+		// react on the theme change
+		qx.theme.manager.Meta.getInstance().addEventListener("changeTheme", function() {
+			// if a property editor exists
+			if (this._propertyEditor != null) {
+				// tell the property editor to recalculate if everything else is done
+				var self = this;
+				window.setTimeout(function() {
+					self._propertyEditor.recalculateLayout();					
+				}, 0);
+			}			
+		}, this);
   },
 
 

@@ -190,6 +190,16 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     gotoSelectedWidget: function() {
       this._gotoSelectedPropertyButtonEventListener();
     },
+		
+		
+		/**
+		 * Tells the property list that something hase changed in the layout
+		 * and that the calculations based on font size or something else 
+		 * has to be recalculated. 
+		 */
+		recalculateLayout: function() {
+			this._propertyList.recalculateLayout();
+		},
     
     
     /*

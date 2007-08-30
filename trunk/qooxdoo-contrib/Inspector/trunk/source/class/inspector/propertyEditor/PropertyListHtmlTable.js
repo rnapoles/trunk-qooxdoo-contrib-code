@@ -115,6 +115,14 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       // rebuild the view
       this.build();
     },    
+		
+		
+		/**
+		 * Because its a simpe html view, the function doesnt do anything.
+		 */
+		recalculateLayout: function() {
+			// just do nothing
+		},
     
     
     /*

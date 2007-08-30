@@ -127,6 +127,37 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
         }
       }  
     },
+		
+		
+		/**
+		 * In case of a theme change, the width of the property names can 
+		 * change. In that case, the width has to be calculated again with 
+		 * this function.
+		 */
+		recalculateLayout: function() {	
+		  // get all children of the current list (atoms with names and group layouts)		
+			var children = this.getChildren();
+			// go threw all children
+			for (var i = 0; i < children.length; i++) {
+				// if it is a gooup layout
+				if (children[i] instanceof qx.ui.layout.VerticalBoxLayout) {
+					// reset the maxwidth					
+					var maxWidth = 0;
+					// go threw all property layouts
+					for (var j = 0; j < children[i].getChildren().length; j++) {
+						// get the label which holds the name of the property
+						var labelName = children[i].getChildren()[j].getChildren()[0];
+						// calculate the max width
+						maxWidth = maxWidth > labelName.getPreferredBoxWidth() ? maxWidth : labelName.getPreferredBoxWidth();
+					}					
+					// go again threw all children of the grouplayout
+          for (var k = 0; k < children[i].getChildren().length; k++) {
+						// the the max width to every layout
+            children[i].getChildren()[k].getChildren()[0].setWidth(maxWidth);
+          }    				
+				}
+			}
+		},
     
     
     /*
