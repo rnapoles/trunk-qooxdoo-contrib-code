@@ -170,9 +170,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       } else {
         // if no filter is applied get the whole data
         var data = this._getData();
-      }
+      }	
       // set the new data in the model
-      this._setData(data);
+      this._setData(data);		
     },
 
 
@@ -278,8 +278,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // resort the data corresponding the former sort
       this._tableModel.sortByColumn(this._tableModel.getSortColumnIndex() ,this._tableModel.isSortAscending());      
     },
-    
-    
+
+
     /**
      * Starts a timer which automaticly reloads the table every 200 ms 
      * if the window is on screen.
@@ -403,19 +403,24 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._table.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
       this._table.setWidth(350);
       this._table.setShowCellFocusIndicator(false);
-      this._table.setColumnVisibilityButtonVisible(false);
+      this._table.setColumnVisibilityButtonVisible(false);			
       this._mainLayout.add(this._table);
       // initialize the column model
       var columnModel = this._table.getTableColumnModel();
       columnModel.setColumnWidth(0,50);
-      columnModel.setColumnWidth(1,284);      
+      columnModel.setColumnWidth(1,284);
+			
+      // reset the colors of not focused
+      var renderer = this._table.getDataRowRenderer();
+      renderer.setBgcolFocusedSelectedBlur(renderer.getBgcolFocusedSelected());
+      renderer.setBgcolSelectedBlur(renderer.getBgcolSelected());
       
       // register the selction change handler
       this._table.getSelectionModel().addEventListener("changeSelection", function(e) {
         // get the selection model
         var model = e.getTarget();
         // get the selected row id
-        var rowId = model.getLeadSelectionIndex();        
+        var rowId = model.getLeadSelectionIndex();
         // if a rowId of -1 is returnd (by resorting the table)
         if (rowId == -1) {
           // remove the selection
@@ -544,8 +549,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         this._searchTimer = window.setTimeout(function() {          
           // fetch the objecty data
           var newData = self._getData(filterText);
-          // set the new data
-          self._setData(newData);                
+					// set the new data
+          self._setData(newData);
         }, 300);
       }, this);
     }       
