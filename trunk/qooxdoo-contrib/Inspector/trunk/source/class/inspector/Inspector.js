@@ -697,7 +697,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the property editor window
-      this._objectFinder = new inspector.objectFinder.ObjectFinder(this, "Object Finder");
+      this._objectFinder = new inspector.objectFinder.ObjectFinder(this, "Objects");
       // end the exclusion startegie
       this.endExclusion();
 
@@ -718,7 +718,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the widget finder window
-      this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, "Widget Finder");
+      this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, "Widgets");
       // end the exclusion startegie
       this.endExclusion();
                   
@@ -739,7 +739,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the property editor window
-      this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, "Property Editor");
+      this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, "Properties");
       // end the exclusion startegie
       this.endExclusion();
 

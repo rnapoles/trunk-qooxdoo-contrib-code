@@ -35,8 +35,7 @@ qx.Class.define("inspector.AbstractWindow", {
     qx.ui.window.Window.call(this);
     this.setCaption(name);
     this.setShowMinimize(false);
-    this.setShowMaximize(false);
-		this.setShowClose(false);
+    this.setShowMaximize(false);		
     this.setAllowMaximize(false);
     this.setWidth("auto");
     this.setHeight("auto");

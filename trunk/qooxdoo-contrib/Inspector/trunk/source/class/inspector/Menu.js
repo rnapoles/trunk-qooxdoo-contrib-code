@@ -232,7 +232,7 @@ qx.Class.define("inspector.Menu", {
       }, this);      
       
       // add the open object finder button      
-      this._openObjectFinderButton = new qx.ui.toolbar.CheckBox("Object");
+      this._openObjectFinderButton = new qx.ui.toolbar.CheckBox("Objects");
       this.add(this._openObjectFinderButton);
       // register the event listeren to open the object finder
       this._openObjectFinderButton.addEventListener("changeChecked", function(e) {
@@ -247,7 +247,7 @@ qx.Class.define("inspector.Menu", {
       }, this);
       
       // add a button to open the widget finder      
-      this._openWidgetFinderButton = new qx.ui.toolbar.CheckBox("Widget");
+      this._openWidgetFinderButton = new qx.ui.toolbar.CheckBox("Widgets");
       this.add(this._openWidgetFinderButton);
       // register the event listenerto open the widget finder 
       this._openWidgetFinderButton.addEventListener("changeChecked", function(e) {
@@ -262,7 +262,7 @@ qx.Class.define("inspector.Menu", {
       }, this);
       
       // add a button to open the property editor       
-      this._openPropertyEditorButton = new qx.ui.toolbar.CheckBox("Property");
+      this._openPropertyEditorButton = new qx.ui.toolbar.CheckBox("Properties");
       this.add(this._openPropertyEditorButton);
       // reigster the event listener to open the property editor
       this._openPropertyEditorButton.addEventListener("changeChecked", function(e) {
