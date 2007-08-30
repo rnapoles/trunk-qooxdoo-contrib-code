@@ -595,7 +595,7 @@ qx.Class.define("inspector.console.Console", {
   
       // create and add the textfield
       this._textField = new qx.ui.form.TextField();
-      this._textField.setWidth("100%");
+      this._textField.setWidth("1*");
       // remove border because the layout will get the border
       this._textField.setBorder(null);
       this._textField.setFont(new qx.ui.core.Font(11, ["Courier New"]));  
