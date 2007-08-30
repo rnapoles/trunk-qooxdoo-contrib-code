@@ -509,7 +509,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      */
     _addToolbarButtons: function() {              
       // create and add the reload button
-      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/reload.png"));
+      this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/reload.png"));
       this._toolbar.add(this._reloadButton);
       // add the event listener for the reload
       this._reloadButton.addEventListener("click", function() {
@@ -517,7 +517,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       }, this);
       
       // create and add a autoreload button
-      var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/autoreload.png"));
+      var autoReloadButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/autoreload.png"));
       this._toolbar.add(autoReloadButton);
       // add the change event listener
       autoReloadButton.addEventListener("changeChecked", function (e) {

@@ -171,10 +171,9 @@ qx.Class.define("inspector.console.Console", {
     
     
     /**
-     * Prints out the help text on the console.
-     * @param e {Event} Event triggert by a button.
+     * Prints out the help text on the console.     
      */
-    printHelp: function(e) {        
+    printHelp: function() {        
         var helpText = "<strong>HELP:</strong><br>" +
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +

@@ -172,8 +172,9 @@ qx.Class.define("inspector.Menu", {
       this._inspectorMenu.add(highlightButton);
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
-      
-      this._inspectorMenu.add(new qx.ui.menu.Button("Show API Viewer"));
+      var apiButton = new qx.ui.menu.Button("Show API Viewer");
+      apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
+			this._inspectorMenu.add(apiButton);
     },
     
     

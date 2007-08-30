@@ -35,11 +35,14 @@ qx.Class.define("inspector.Inspector", {
     // Tooltip texts
     RELOAD_BUTTON_TOOLTIP_TEXT: "Reload the window.",
     AUTO_RELOAD_BUTTON_TOOLTIP_TEXT: "Update the window automaticly.",
-    SET_NULL_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to null.",
+    SHOW_API_BUTTON_TOOLTIP_TEXT: "Show the API of the selected object or property.",
+		SET_NULL_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to null.",
     SET_DEFAULT_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to its initial value.",
     HIGHLIGHT_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Highlight the currently selected property.",
     GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Go to the currently selected property.",
-    OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects."
+    OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects.",
+		
+    API_VIEWER_URI: "../api/index.html"		
   },
 
 
@@ -103,8 +106,61 @@ qx.Class.define("inspector.Inspector", {
     
     // the current widget
     _widget: null,
-    
-    
+
+    // the native window for the api viewer
+    _apiWindow: null,
+		    
+		
+   /*
+    *********************************
+        API STUFF
+    *********************************
+    */    
+    /**
+     * Opens an native window showing the API documentation.
+     * If a widget is currently selected, the API viewer will
+     * open the the documentataion of that class. Is in addition
+     * a property is selected, the viewer automaticly jumps to 
+     * the selected property. 
+     */
+    openApiWindow: function() {
+        // if the API window is not created
+        if (this._apiWindow == null) {
+          // initialize the api window
+          this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
+          this._apiWindow.setWidth(900);
+          this._apiWindow.setHeight(600);                    
+        }        
+        // define the URL to the apiview
+        var urlString = inspector.Inspector.API_VIEWER_URI;
+        // if there is a property editor
+				if (this._propertyEditor != null) {
+					// check if a property is selected
+	        if (this._propertyEditor.getSelectedProperty() != null) {
+	          // if yes, take the classname and the property name from the property
+	          urlString = urlString + "#" + this._propertyEditor.getSelectedProperty().getUserData("classname");
+	          urlString = urlString + "~" + this._propertyEditor.getSelectedProperty().getUserData("key");
+	        
+	        // if no property is selected but a object
+	        } else if (this._propertyEditor.getWidget() != null) {
+	          // only take the objects classname
+	          urlString = urlString + "#" + this._propertyEditor.getWidget().classname;
+	        }					
+				}				
+        // set the uri in the window
+        this._apiWindow.setUrl(urlString);
+        
+        // if the window is not open
+        if (!this._apiWindow.isOpen()) {
+          // open the window
+          this._apiWindow.open(); 
+        } else {
+          // otherwise just focus it
+          this._apiWindow.focus();          
+        }      
+    },
+		
+		
    /*
     *********************************
         HIGHLIGHT STUFF
@@ -348,10 +404,15 @@ qx.Class.define("inspector.Inspector", {
         this._clearHighlight(1000);              
       }
     },   
+    
 		
-		
-		
-		
+		/**
+		 * Sets the current widget by the reference in the objects db.
+		 * @internal
+		 * @param dbKey {Integer} The key in the objects db.
+		 * @param refName {String} The Name of the reference class either 
+		 *    "console", "objectFinder", "widgetFinder", "propertyEditor"  
+		 */
 		setWidgetByDbKey: function(dbKey, refName) {
 			// get the real reference
 			switch (refName) {
@@ -425,6 +486,7 @@ qx.Class.define("inspector.Inspector", {
     /**
      * Beginns the exclusions strategy with storing the current index
      * of the object db in an member.
+     * @internal
      */
     beginExclusion: function() {
       // get the current index of the db and store it
@@ -437,6 +499,7 @@ qx.Class.define("inspector.Inspector", {
      * index of the object db in an exclusion array. All indices
      * the created classes between beginn and end are in the 
      * range of the exclusion.  
+     * @internal
      */
     endExclusion: function() {
       // flush the queues to get all changes
@@ -459,6 +522,8 @@ qx.Class.define("inspector.Inspector", {
      * two values, begin and end.
      * 
      * Example: a.getExcludes()[0].end
+     * 
+     * @internal
      * 
      * @return {Array} A list of objects containing two values
      *      begin - the beginn of the exclusion index
@@ -674,10 +739,15 @@ qx.Class.define("inspector.Inspector", {
 		 * the buttons to open the components.
 		 */
     _createOpenerToolBar: function() {
-      this._toolbar = new inspector.Menu(this);      
-      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");
-			this._toolbar.setLeft(100);          
+			// create and add the menu
+      this._toolbar = new inspector.Menu(this);
       this._toolbar.addToDocument();    
+			// add the document as magnetiv element      
+      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");
+			
+			
+			
+			this._toolbar.setLeft(100);          
     },
     
     
