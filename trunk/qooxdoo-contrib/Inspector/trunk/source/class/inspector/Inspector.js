@@ -66,7 +66,10 @@ qx.Class.define("inspector.Inspector", {
     this.endExclusion(); 
     
     // Define alias for inspector resource path
-    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));    
+    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
+		
+		// initialize the this reference to the selected widget
+    this.setWidget(qx.ui.core.ClientDocument.getInstance());
   },
 
 
@@ -86,7 +89,7 @@ qx.Class.define("inspector.Inspector", {
     _objectFinder: null,
     _propertyEditor: null,
     _console: null,
-    _toolbar: null, 
+    _menu: null, 
     
     // excludes
     _excludes: [],
@@ -369,6 +372,9 @@ qx.Class.define("inspector.Inspector", {
     setWidget: function(widget, ref) {    
       // set the widget in the inspector
       this._widget = widget;
+			
+			// signal the current Widget in the menu
+			this._menu.setCurrentWidget(widget.classname + " [" + widget.toHashCode() + "]")
       
       // set the widget in the console
       if (this._console != null) {
@@ -466,9 +472,9 @@ qx.Class.define("inspector.Inspector", {
           consoleComponents = this._console.getComponents();
         }
         // create a array of the Inspector objects
-        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay, this._toolbar];
+        var ownObjects = [this, this._catchClickLayer, this._highlightBorder, this._highlightOverlay, this._menu];
         // get the menu components
-        var menuComponents = this._toolbar.getComponents();
+        var menuComponents = this._menu.getComponents();
         // merge the arrays
         return propertyEditorComponents.concat(consoleComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects).concat(menuComponents);         
       } catch (e) {
@@ -663,7 +669,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
       
       // add the console window to the magnetic components for the toolbar          
-      this._toolbar.addMagneticElement(this._console, "outer");
+      this._menu.addMagneticElement(this._console, "outer");
       // set the windows enabled to avoid disabling by the client document
       this._console.setEnabled(true);     
       // set the text color to black in case that the text color of the client document will be changed
@@ -684,7 +690,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
 
       // add the object finder window to the magnetic components for the toolbar                  
-      this._toolbar.addMagneticElement(this._objectFinder, "outer");  
+      this._menu.addMagneticElement(this._objectFinder, "outer");  
       // set the windows enabled to avoid disabling by the client document
       this._objectFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -705,7 +711,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
                   
       // add the widget finder window to the magnetic components for the toolbar                  
-      this._toolbar.addMagneticElement(this._widgetFinder, "outer");            
+      this._menu.addMagneticElement(this._widgetFinder, "outer");            
       // set the windows enabled to avoid disabling by the client document
       this._widgetFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -726,7 +732,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
 
       // add the property editor window to the magnetic components for the toolbar                  
-      this._toolbar.addMagneticElement(this._propertyEditor, "outer");  
+      this._menu.addMagneticElement(this._propertyEditor, "outer");  
       // set the windows enabled to avoid disabling by the client document
       this._propertyEditor.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -740,14 +746,10 @@ qx.Class.define("inspector.Inspector", {
 		 */
     _createOpenerToolBar: function() {
 			// create and add the menu
-      this._toolbar = new inspector.Menu(this);
-      this._toolbar.addToDocument();    
+      this._menu = new inspector.Menu(this);
+      this._menu.addToDocument();    
 			// add the document as magnetiv element      
-      this._toolbar.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");
-			
-			
-			
-			this._toolbar.setLeft(100);          
+      this._menu.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");       
     },
     
     
@@ -779,7 +781,7 @@ qx.Class.define("inspector.Inspector", {
         // hide the layer that chatches the click
         this._catchClickLayer.hide();
         // disable the find button in the menu
-        this._toolbar.resetFindButton();
+        this._menu.resetFindButton();
         // get the curent mouse position
         var xPosition = e.getClientX();
         var yPosition = e.getClientY();

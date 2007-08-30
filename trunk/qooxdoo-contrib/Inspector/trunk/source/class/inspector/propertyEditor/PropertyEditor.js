@@ -107,8 +107,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     setWidget: function(qxObject) {    
       // save a referente to the current widget
       this._qxObject = qxObject; 
-      // show a loading message in the toolbar
-      this._statusbar.setLabel("Loading...");
+      // show a loading message in the titel bar
+      this.setCaption("Property Editor - Loading...");
       // save the this reference for the timeout function
       var self = this;
       // to the reload of the list after a timeout (after the loading is shown)
@@ -136,8 +136,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
             self._gotoSelectedPropertyButton.setEnabled(false);
           }
         }            
-        // set the status info in the status bar to the curren selected widget
-        self._statusbar.setLabel(self._qxObject.classname + " [" + self._qxObject.toHashCode() + "]");
+        // reset the loading message in the title bar
+        self.setCaption("Property Editor");
       }, 0);
     },
     

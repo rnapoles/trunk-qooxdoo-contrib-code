@@ -257,9 +257,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         // get the selected widget
         var selectedWidget = e.getTarget().getUserData('instance');
         // proceed only if the selected widget is visible
-        if (selectedWidget.getParent()) {
-          // set the current element name in the statusbar
-          this._statusbar.setLabel(e.getTarget().getLabel());
+        if (selectedWidget.getParent()) {          
           // tell the inspector class that the widget has changed
           this._inspector.setWidget(selectedWidget, this);
         }
@@ -397,10 +395,6 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         this._tree.getManager().deselectAll();
         this._tree.getManager().setLeadItem(null);
         this._tree.getManager().setAnchorItem(null);
-        
-        // set the status message
-        this._statusbar.setLabel("Selected object is not in the tree");
-                
         // tell the inspector class that the widget has changed
         this._inspector.setWidget(widget, this);
       }

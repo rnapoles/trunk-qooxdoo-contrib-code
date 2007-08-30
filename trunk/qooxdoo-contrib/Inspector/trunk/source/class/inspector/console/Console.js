@@ -41,8 +41,6 @@ qx.Class.define("inspector.console.Console", {
     this.base(arguments, main, name);
     // create the popup for the autocompletion
     this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
-    // initialize the this reference to the selected widget
-    this._widget = qx.ui.core.ClientDocument.getInstance();
 
     // create a appende
     var appender = new inspector.console.Appender(this);
@@ -541,14 +539,6 @@ qx.Class.define("inspector.console.Console", {
        OVERWRITTEN PROTTECTED FUNCTIONS
     *********************************
     */
-    /**
-     * Overwrite the function to avoid creating a status bar.
-     */
-    _createStatusbar: function () {
-      // do not create a statusbar
-    }, 
-    
-    
     /**
      * Sets the height of the output layout.
      * @param delta {Number} The change value of the height.

@@ -348,14 +348,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     *********************************
     */
     /**
-     * Overwrite the function to avoid creating a status bar.
-     */
-    _createStatusbar: function () {
-      // do not create a statusbar
-    }, 
-    
-    
-    /**
      * Sets the height of the table.
      * @param delta {Number} The change value of the height.
      */
