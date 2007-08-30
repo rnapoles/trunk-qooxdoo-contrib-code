@@ -476,7 +476,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      */
     _createMainElement: function() {
       // initialize tree
-      this._tree = new qx.ui.tree.Tree("Document" + 
+      this._tree = new qx.ui.tree.Tree(qx.ui.core.ClientDocument.getInstance().classname + 
          " [" + qx.ui.core.ClientDocument.getInstance().toHashCode() +"]",
           qx.io.Alias.getInstance().resolve("inspector/image/components/document.png"));
       this._tree.setBackgroundColor("white");
