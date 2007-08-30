@@ -94,6 +94,11 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (switchInheritedStatus) in 'PropertyList'!");  
     },
+		
+		recalculateLayout: function() {
+      // throw an exception if the method is caled on the abstract class
+      throw new Error("Abstract method call (recalculateLayout) in 'PropertyList'!");			
+		},
     
     
     /*
