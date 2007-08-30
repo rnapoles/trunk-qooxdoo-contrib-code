@@ -36,6 +36,7 @@ qx.Class.define("inspector.AbstractWindow", {
     this.setCaption(name);
     this.setShowMinimize(false);
     this.setShowMaximize(false);
+		this.setShowClose(false);
     this.setAllowMaximize(false);
     this.setWidth("auto");
     this.setHeight("auto");
@@ -54,9 +55,6 @@ qx.Class.define("inspector.AbstractWindow", {
     
     // initialize main element
     this._createMainElement();
-    
-    // initialite the statusbar
-    this._createStatusbar();
     
     // register the resize handler for the window
     this._registerResizeHandler();
@@ -105,20 +103,6 @@ qx.Class.define("inspector.AbstractWindow", {
       // call a abstract function which sholuld add some toolbar buttons
       this._addToolbarButtons();
     }, 
-    
-    
-    /**
-     * Creates a standard statusbar.
-     */
-    _createStatusbar: function () {
-      this._statusbar = new qx.ui.basic.Atom();
-      this._statusbar.setHorizontalChildrenAlign("left");
-      this._statusbar.setPadding(2, 4);
-      this._statusbar.setBorder("inset");
-      this._statusbar.setWidth("100%");
-      this._statusbar.setLabel("Please select an object...");
-      this._mainLayout.add(this._statusbar);
-    },
     
     
     /**
