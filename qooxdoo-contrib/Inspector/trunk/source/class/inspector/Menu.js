@@ -18,7 +18,7 @@
 ************************************************************************ */
 qx.Class.define("inspector.Menu", {
   
-  extend : inspector.FlyingToolBar,
+  extend : qx.ui.toolbar.ToolBar,
 
   /*
   *****************************************************************************
@@ -31,6 +31,71 @@ qx.Class.define("inspector.Menu", {
     this.setZIndex(1e5);
     // save the reference to the inspector
     this._inspector = inspector;
+
+//********************************
+// TEST
+    
+    // initialize the toolbar
+    this.setBorder("outset");
+    this.setWidth("auto");
+    this.setPadding(1);
+
+    
+    this.setTop(-18);
+    this.interval = null;
+    this.swapp = null;
+    this.swapp2 = null;
+    this.addEventListener("mouseover", function() {
+      var self = this;
+      
+      if (this.swapp2 != null) {
+        window.clearTimeout(this.swapp2);
+      }
+      
+      this.swapp = window.setTimeout(function() {
+      
+        if (self.interval == null && self.getTop() < 0) {
+          self.info("mouseover");
+          self.interval = window.setInterval(function() {
+            var currentTop = self.getTop();
+            currentTop = currentTop + 1;
+            self.setTop(currentTop);
+            if (self.getTop() >= 0) {
+              window.clearInterval(self.interval);
+              self.interval = null;
+            }
+          }, 50);
+        }  
+        
+        self.swapp = null;
+              
+      }, 10);
+     
+      
+    }, this);
+    
+    
+    
+    this.addEventListener("mouseout", function() {      
+      if (this.swapp != null) {
+        window.clearTimeout(this.swapp);
+      }
+      
+      var self = this;
+      this.swapp2 = window.setTimeout(function() {
+        self.info("mouse OUT");
+        self.setTop(-18);
+        if (self.interval != null) {        
+          window.clearInterval(self.interval);
+          self.interval = null;
+        }
+        self.swapp2 = null;
+      }, 500);
+      
+    }, this);    
+    
+// ***********************************    
+    
     // create the commands
     this.__createCommands();
     // create the inspector menu
@@ -99,7 +164,7 @@ qx.Class.define("inspector.Menu", {
       this._findButton.setChecked(false);
     },
 		
-		setCurrentWidget: function(name) {
+    setCurrentWidget: function(name) {
 			this._currentWidgetLabel.setText(name);
 		},
   
