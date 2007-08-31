@@ -2,8 +2,7 @@
 
 typeset -i DEBUG=0
 typeset -i rc=0
-#typeset adminUrl=http://localhost:8000/admin/index.html
-typeset adminUrl=http://localhost:8000/source/index.html
+typeset adminUrl=http://localhost:8000/admin/index.html
 typeset adminPort=8000
 typeset pybin=python
 typeset Browsers="firefox mozilla webkit safari"
