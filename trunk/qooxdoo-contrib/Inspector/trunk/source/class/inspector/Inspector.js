@@ -681,7 +681,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
       
       // add the console window to the magnetic components for the toolbar          
-      this._menu.addMagneticElement(this._console, "outer");
+//      this._menu.addMagneticElement(this._console, "outer");
       // set the windows enabled to avoid disabling by the client document
       this._console.setEnabled(true);     
       // set the text color to black in case that the text color of the client document will be changed
@@ -702,7 +702,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
 
       // add the object finder window to the magnetic components for the toolbar                  
-      this._menu.addMagneticElement(this._objectFinder, "outer");  
+//      this._menu.addMagneticElement(this._objectFinder, "outer");  
       // set the windows enabled to avoid disabling by the client document
       this._objectFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -723,7 +723,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
                   
       // add the widget finder window to the magnetic components for the toolbar                  
-      this._menu.addMagneticElement(this._widgetFinder, "outer");            
+//      this._menu.addMagneticElement(this._widgetFinder, "outer");            
       // set the windows enabled to avoid disabling by the client document
       this._widgetFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -744,7 +744,7 @@ qx.Class.define("inspector.Inspector", {
       this.endExclusion();
 
       // add the property editor window to the magnetic components for the toolbar                  
-      this._menu.addMagneticElement(this._propertyEditor, "outer");  
+//      this._menu.addMagneticElement(this._propertyEditor, "outer");  
       // set the windows enabled to avoid disabling by the client document
       this._propertyEditor.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -761,7 +761,7 @@ qx.Class.define("inspector.Inspector", {
       this._menu = new inspector.Menu(this);
       this._menu.addToDocument();    
 			// add the document as magnetiv element      
-      this._menu.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");       
+//      this._menu.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");       
     },
     
     
