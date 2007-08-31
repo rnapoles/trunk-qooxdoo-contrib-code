@@ -3,6 +3,7 @@
 typeset -i DEBUG=0
 typeset -i rc=0
 typeset adminUrl=http://localhost:8000/admin/index.html
+#typeset adminUrl=http://localhost:8000/source/index.html
 typeset adminPort=8000
 typeset pybin=python
 typeset Browsers="firefox mozilla webkit safari"
@@ -27,7 +28,6 @@ findBrowser () {
 }
 
 startServer () {
-  typeset pybin=python
   which $pybin >/dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo_ There is no Python in your path; qxadmin cannot work without Python; aborting ...
@@ -141,7 +141,8 @@ checkWebServer
 if [ $? -ne 0 ]; then
   echo_ "Problems starting web server; aborting ..."
   echo_ Try invoking "python admin/bin/cgiserver.py"
-  return 3
+  shutDown
+  exit 3
 fi
 
 # load admin url in browser
