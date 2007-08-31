@@ -1,10 +1,13 @@
 #!/bin/sh
 
-DEBUG=0
-rc=0
-adminUrl=http://localhost:8000/admin/index.html
-pybin=python
-Browsers="firefox mozilla webkit safari"
+typeset -i DEBUG=0
+typeset -i rc=0
+#typeset adminUrl=http://localhost:8000/admin/index.html
+typeset adminUrl=http://localhost:8000/source/index.html
+typeset adminPort=8000
+typeset pybin=python
+typeset Browsers="firefox mozilla webkit safari"
+typeset -i WebSvrWait=5
 
 # -- Functions ------------
 
@@ -43,6 +46,82 @@ shutDown () {
   kill $ServerPid
 }
 
+sleepDot () {
+  typeset -i limit=$1
+  typeset -i x
+
+  for ((x=0; x<=limit; x += 1)); do
+    echo -n "."
+    sleep 1
+  done
+  echo
+}
+
+testWeb () {
+  typeset -i meth=$1
+
+  if [ $meth -eq 1 ]; then
+    echo quit | (telnet localhost $adminPort 2>&1) | grep -i -q 'Connected'
+    if [ $? -eq 0 ]; then
+      return 0
+    else
+      return 1
+    fi
+  elif [ $meth -eq 2 ]; then
+    wget --spider --quiet $adminUrl
+    if [ $? -eq 0 ]; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    echo_ Internal Error: testWeb: unknown method $meth
+    return 2
+  fi
+}
+    
+checkWebServer () {
+  # meth=0 no testing, just wait and return success
+  # meth=1 use telnet for testing
+  # meth=2 use wget for testing
+  typeset -i meth i
+
+  # find a way to check the web server
+  which wget >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    meth=2
+  else
+    which telnet >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      meth=1
+    else
+      meth=0
+    fi
+  fi
+
+  # apply appropriate method
+  if [ $meth -eq 0 ]; then
+    # just sleep
+    sleepDot $WebSvrWait
+    # since we do not really test, let's hope it is running
+    return 0
+  else
+    # do proper testing
+    for ((i=0; i<=$WebSvrWait; i += 1)); do
+      testWeb $meth
+      if [ $? -eq 0 ]; then
+        echo
+        return 0
+      else
+        echo -n "."
+        sleep 1
+      fi
+    done
+  fi
+  echo
+  return -1
+}
+
 # -- Main ------------------
 
 # change directory
@@ -56,6 +135,15 @@ pushd ../.. >/dev/null
 # start mini web server
 echo_ Starting mini web server
 startServer
+
+# check server available
+echo_ Waiting a few seconds for the web server
+checkWebServer
+if [ $? -ne 0 ]; then
+  echo_ "Problems starting web server; aborting ..."
+  echo_ Try invoking "python admin/bin/cgiserver.py"
+  return 3
+fi
 
 # load admin url in browser
 echo_ Locating your browser
