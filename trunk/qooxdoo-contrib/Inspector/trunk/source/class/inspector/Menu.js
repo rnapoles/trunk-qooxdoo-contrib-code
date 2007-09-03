@@ -132,7 +132,8 @@ qx.Class.define("inspector.Menu", {
     _openWidgetFinderCommand: null,
     _openObjectFinderCommand: null,
     _openConsoleCommand: null,
-    _openAllCommand: null,    
+    _openAllCommand: null,
+    _hideEverythingCommand: null,
     
     // menus
     _inspectorMenu: null,
@@ -196,29 +197,46 @@ qx.Class.define("inspector.Menu", {
       // create the open console command
       this._openConsoleCommand = new qx.client.Command("CTRL+SHIFT+F1");
       this._openConsoleCommand.addEventListener("execute", function(e) {
-        this.openConsole();
-      }, this._inspector);
+        this._openConsoleButton.toggleChecked();
+      }, this);
       // create the open object finder command
       this._openObjectFinderCommand = new qx.client.Command("CTRL+SHIFT+F2");
       this._openObjectFinderCommand.addEventListener("execute", function(e) {
-        this.openObjectFinder();
-      }, this._inspector);
+        this._openObjectFinderButton.toggleChecked();
+      }, this);
       // create the opne widget finder command
       this._openWidgetFinderCommand = new qx.client.Command("CTRL+SHIFT+F3");
       this._openWidgetFinderCommand.addEventListener("execute", function(e) {
-        this.openWidgetFinder();
-      }, this._inspector);
+        this._openWidgetFinderButton.toggleChecked();
+      }, this);
       // create the open property editor command
       this._openPropertyEditorCommand = new qx.client.Command("CTRL+SHIFT+F4");
       this._openPropertyEditorCommand.addEventListener("execute", function(e) {
-        this.openPropertyEditor();
-      }, this._inspector);
+        this._openPropertyEditorButton.toggleChecked();
+      }, this);
       
       // create the find command
       this._findCommand = new qx.client.Command("CTRL+SHIFT+F");
       this._findCommand.addEventListener("execute", function(e) {
         this._findButton.execute();      
-      }, this);      
+      }, this);
+      // create the command which hides and shows all application components
+      this._hideEverythingCommand = new qx.client.Command("CTRL+SHIFT+H");
+      this._hideEverythingCommand.addEventListener("execute", function(e) {
+        // if the menu is on the screen
+        if (this.getDisplay()) {
+          // hide all windows
+          this._inspector.hideWidgetFinder();
+          this._inspector.hideObjectFinder();
+          this._inspector.hideConsole();
+          this._inspector.hidePropertyEditor();
+          // hide the menu
+          this.setDisplay(false);          
+        } else {
+          // show the menu
+          this.setDisplay(true);
+        }
+      }, this);  
     },
 
 
@@ -266,9 +284,17 @@ qx.Class.define("inspector.Menu", {
       this._inspectorMenu.add(highlightButton);
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
+      
+      // api button
       var apiButton = new qx.ui.menu.Button("Show API Viewer");
       apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
       this._inspectorMenu.add(apiButton);
+      
+      // seperator
+      this._inspectorMenu.add(new qx.ui.menu.Separator());
+      var hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
+      hideEverythingButton.setCommand(this._hideEverythingCommand);
+      this._inspectorMenu.add(hideEverythingButton);
     },
     
     
@@ -295,10 +321,10 @@ qx.Class.define("inspector.Menu", {
       this.add(this._openConsoleButton);
       // register the event listener to open and close the console window on toggle      
       this._openConsoleButton.addEventListener("changeChecked", function(e) {
-       // iuf the button is pressed
+       // if the button is pressed
        if (e.getCurrentTarget().getChecked()) {
-         // execute the command which opens the console
-         this._openConsoleCommand.execute();
+         // open the console
+         this._inspector.openConsole();
        } else {
          // otherwise, hide the console
          this._inspector.hideConsole();
@@ -312,8 +338,8 @@ qx.Class.define("inspector.Menu", {
       this._openObjectFinderButton.addEventListener("changeChecked", function(e) {
         // if the buttonis checked 
         if (e.getCurrentTarget().getChecked()) {
-          // execute the command which opens the object finder
-          this._openObjectFinderCommand.execute();
+          // open the object finder
+          this._inspector.openObjectFinder();
         } else {
           // otherwise, close the object finder
           this._inspector.hideObjectFinder();
@@ -328,7 +354,7 @@ qx.Class.define("inspector.Menu", {
         // if the button is checked
         if (e.getCurrentTarget().getChecked()) {
           // fire the command to which opens the widget finder
-          this._openWidgetFinderCommand.execute();
+          this._inspector.openWidgetFinder();
         } else {
           // otherwise, hide the widget finder
           this._inspector.hideWidgetFinder();
@@ -343,7 +369,7 @@ qx.Class.define("inspector.Menu", {
         // if the button is checked
         if (e.getCurrentTarget().getChecked()) {
           // execute the commmand which opens the property editor
-          this._openPropertyEditorCommand.execute();
+          this._inspector.openPropertyEditor();
         } else {
           // otherwise, cloase the property editor 
           this._inspector.hidePropertyEditor();
