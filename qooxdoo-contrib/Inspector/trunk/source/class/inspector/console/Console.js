@@ -273,15 +273,15 @@ qx.Class.define("inspector.console.Console", {
     /**
      * Scrolls the end of the main layout which holds the aoutput of the console.
      */
-    _scrollToLastLine: function() { 			
+    _scrollToLastLine: function() {       
       // flush the queues to ensure that the adding has been recognized
       qx.ui.core.Widget.flushGlobalQueues();      
-			// wait until everything is done
-			var self = this;
+      // wait until everything is done
+      var self = this;
       window.setTimeout(function() {
-	      // scroll to the bottom of the layout
-				self._htmlEmbed.setScrollTop(self._htmlEmbed.getScrollHeight());				
-			}, 0);
+        // scroll to the bottom of the layout
+        self._htmlEmbed.setScrollTop(self._htmlEmbed.getScrollHeight());        
+      }, 0);
     },    
     
     /*
@@ -319,7 +319,7 @@ qx.Class.define("inspector.console.Console", {
             // remove the last element
             this._history.pop();            
           }
-          					
+                    
         // if the popup is on screen
         } else {
           this.chooseAutoCompleteValue();
@@ -371,6 +371,16 @@ qx.Class.define("inspector.console.Console", {
         if (this._ctrl || e.getKeyIdentifier() == "Tab") {
           // prevent the browser from leaving the textfield
           e.preventDefault();
+          
+          // if tab is the pressed key
+          if (e.getKeyIdentifier() == "Tab") {            
+            var self = this;
+            // remove the selection of the text
+            window.setTimeout(function() {
+              var length = self._textField.getComputedValue().length;
+              self._textField.selectFromTo(length, length);            
+            }, 0);            
+          }
 
           // do the autocomplete
           try {
@@ -428,14 +438,14 @@ qx.Class.define("inspector.console.Console", {
      * treatment for qooxdoo objects and array.
      * @param returnValue {Object} The value to print.
      */
-    _printReturnValue: function(returnValue) {			
+    _printReturnValue: function(returnValue) {      
       // check for qooxdoo objects
       if (returnValue instanceof qx.core.Object) {
         // print out the qooxdoo object
         this._printQxObject(returnValue);   
-				
-			// check for arrays
-			} else if (returnValue instanceof Array) {
+        
+      // check for arrays
+      } else if (returnValue instanceof Array) {
         // if yes, print out that it is one
         var label = this._getLabel("", "---- Array ----", "#00008B")
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
@@ -445,8 +455,8 @@ qx.Class.define("inspector.console.Console", {
         }
         return;
 
-			// check for objects
-			} else if (returnValue instanceof Object) {				
+      // check for objects
+      } else if (returnValue instanceof Object) {        
         // if yes, print out that it is one
         var label = this._getLabel("", "---- " + returnValue + " (Object) ----", "#00008B")
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
@@ -455,8 +465,8 @@ qx.Class.define("inspector.console.Console", {
           this._printReturnValue(i + ": " + returnValue[i]);
         }
         return;
-						         
-		  // everything else
+                     
+      // everything else
       } else {
         // print out the return value
         var label = this._getLabel("", returnValue, "#00008B");
@@ -591,22 +601,17 @@ qx.Class.define("inspector.console.Console", {
       this._textField.setFont(new qx.ui.core.Font(11, ["Courier New"]));  
       // needed to ensure that every line is processed
       this._textField.setLiveUpdate(true);
-      
-      // create another textfield for holding the leading >>>
-      var leadingTextField = new qx.ui.form.TextField(">>>");
-      leadingTextField.setFont(new qx.ui.core.Font(11, ["Courier New"]));
-      leadingTextField.setTextColor("blue");  
-      leadingTextField.setWidth(26);
-      leadingTextField.setSelectable(false);
-      leadingTextField.setBackgroundColor("white");
-      leadingTextField.setReadOnly(true);
-      leadingTextField.setBorder(null);
-      
+
+      // create a label to hold the leading >>>
+      var leadingLabel = new qx.ui.basic.Label(">>>");
+      leadingLabel.setTextColor("blue");
+      leadingLabel.setBackgroundColor("white");
+
       // create a layout which holds the prefix textfield and the entering textfield
       var textFieldLayout = new qx.ui.layout.HorizontalBoxLayout();      
       textFieldLayout.setBorder("inset");      
       textFieldLayout.setBackgroundColor("white");      
-      textFieldLayout.add(leadingTextField);  
+      textFieldLayout.add(leadingLabel);  
       textFieldLayout.setHeight(20); 
       textFieldLayout.add(this._textField);
       this._consoleLayout.add(textFieldLayout);  

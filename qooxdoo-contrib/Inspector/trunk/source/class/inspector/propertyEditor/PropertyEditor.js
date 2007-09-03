@@ -54,7 +54,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     _reloadButton: null,
     _reloadToolTip: null,
     // api buttion
-		_apiButtonToolTip: null,
+    _apiButtonToolTip: null,
     // set null button
     _setNullButton: null,
     _setNullTooltip: null,
@@ -104,11 +104,16 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * Sets a new widget. This new object is shown in the property editor.
      * @param qxObject {qx.core.Object} The new qooxdoo object to set.
      */
-    setWidget: function(qxObject) {    
+    setWidget: function(qxObject) {
+      // only set the widget if it is a new one
+      if (this._qxObject == qxObject) {
+        return;
+      }
+      
       // save a referente to the current widget
       this._qxObject = qxObject; 
       // show a loading message in the titel bar
-			var caption = this.getCaption();
+      var caption = this.getCaption();      
       this.setCaption(caption + " - Loading...");
       // save the this reference for the timeout function
       var self = this;
@@ -191,16 +196,16 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     gotoSelectedWidget: function() {
       this._gotoSelectedPropertyButtonEventListener();
     },
-		
-		
-		/**
-		 * Tells the property list that something hase changed in the layout
-		 * and that the calculations based on font size or something else 
-		 * has to be recalculated. 
-		 */
-		recalculateLayout: function() {
-			this._propertyList.recalculateLayout();
-		},
+    
+    
+    /**
+     * Tells the property list that something hase changed in the layout
+     * and that the calculations based on font size or something else 
+     * has to be recalculated. 
+     */
+    recalculateLayout: function() {
+      this._propertyList.recalculateLayout();
+    },
     
     
     /*
@@ -618,7 +623,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       var apiButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/api.png"));
       this._toolbar.add(apiButton);
       apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
-			this._apiButtonToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.SHOW_API_BUTTON_TOOLTIP_TEXT, null);
+      this._apiButtonToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.SHOW_API_BUTTON_TOOLTIP_TEXT, null);
       apiButton.setToolTip(this._apiButtonToolTip);
 
       // add a spacer to keep the property relevant buttons on the right

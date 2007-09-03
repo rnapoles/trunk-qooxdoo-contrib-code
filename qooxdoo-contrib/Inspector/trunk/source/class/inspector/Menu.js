@@ -28,7 +28,7 @@ qx.Class.define("inspector.Menu", {
   construct : function(inspector) {    
     this.base(arguments);
     // set the zIndex to a higher one than the index of the find mode layer
-    this.setZIndex(1e5);
+    this.setZIndex(1e5 + 3);
     // save the reference to the inspector
     this._inspector = inspector;
 
@@ -38,61 +38,68 @@ qx.Class.define("inspector.Menu", {
     // initialize the toolbar
     this.setBorder("outset");
     this.setWidth("auto");
-    this.setPadding(1);
+    this.setPadding(1);    
+    this.setTop(-20);
 
     
-    this.setTop(-18);
-    this.interval = null;
-    this.swapp = null;
-    this.swapp2 = null;
     this.addEventListener("mouseover", function() {
       var self = this;
-      
-      if (this.swapp2 != null) {
-        window.clearTimeout(this.swapp2);
+      // if the time to move the menu up is enabled
+      if (this._upTimer != null) {
+        // clear it
+        window.clearTimeout(this._upTimer);
       }
       
-      this.swapp = window.setTimeout(function() {
-      
-        if (self.interval == null && self.getTop() < 0) {
-          self.info("mouseover");
-          self.interval = window.setInterval(function() {
+      // start a timer to do the down move
+      this._downTimer= window.setTimeout(function() {
+        // do only if the moving is not in progress and not in the end position      
+        if (self._moveInterval == null && self.getTop() < 0) {
+          // start an interval to move the menu down
+          self._moveInterval = window.setInterval(function() {
+            // stor the current top position
             var currentTop = self.getTop();
+            // add one to the position
             currentTop = currentTop + 1;
+            // set the new position
             self.setTop(currentTop);
+            // if the end position is reached
             if (self.getTop() >= 0) {
-              window.clearInterval(self.interval);
-              self.interval = null;
+              // clear the interavl
+              window.clearInterval(self._moveInterval);
+              // mark that the interval has been reseted
+              self._moveInterval = null;
             }
-          }, 50);
-        }  
-        
-        self.swapp = null;
-              
+          }, 10);
+        }          
       }, 10);
-     
-      
+    }, this);
+    
+    
+    this.addEventListener("mouseout", function() {            
+      var self = this;
+      // set a timer to enable the reset to the starting position 
+      this._upTimer = window.setTimeout(function() {
+        // sett the start position
+        self.setTop(-20);
+        // if there is still a movement
+        if (self._moveInterval != null) {
+          // clear the move interval        
+          window.clearInterval(self._moveInterval);
+          // mark that the moving has ended
+          self._moveInterval = null;
+        }
+      }, 300);      
+    }, this);    
+    
+    
+    
+    this.addEventListener("appear", function() {
+      var middle = qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2;  
+      this.setLeft(parseInt(middle - (this.getBoxWidth() / 2)));
     }, this);
     
     
     
-    this.addEventListener("mouseout", function() {      
-      if (this.swapp != null) {
-        window.clearTimeout(this.swapp);
-      }
-      
-      var self = this;
-      this.swapp2 = window.setTimeout(function() {
-        self.info("mouse OUT");
-        self.setTop(-18);
-        if (self.interval != null) {        
-          window.clearInterval(self.interval);
-          self.interval = null;
-        }
-        self.swapp2 = null;
-      }, 500);
-      
-    }, this);    
     
 // ***********************************    
     
@@ -141,8 +148,14 @@ qx.Class.define("inspector.Menu", {
     
     // about popup
     _aboutPopup: null,
-		
-		// _currentwidgetLabel: null,
+    
+    // move timer
+    _upTimer: null,
+    _downTimer : null,
+    _moveInterval: null,
+    
+    // label to show the name of the current widget
+    _currentWidgetLabel: null,
 
     /*
     *********************************
@@ -163,10 +176,10 @@ qx.Class.define("inspector.Menu", {
     resetFindButton: function() {
       this._findButton.setChecked(false);
     },
-		
+    
     setCurrentWidget: function(name) {
-			this._currentWidgetLabel.setText(name);
-		},
+      this._currentWidgetLabel.setText(name);
+    },
   
     
     /*
@@ -265,6 +278,8 @@ qx.Class.define("inspector.Menu", {
     },
     
     
+    
+    
     __createMenuButtons: function() {
       // create a button for the inspector menu
       var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", this._inspectorMenu);
@@ -340,19 +355,21 @@ qx.Class.define("inspector.Menu", {
           this._inspector.hidePropertyEditor();
        }
       }, this);
-			
+          
       // add a seperator
       this.add(new qx.ui.toolbar.Separator());
-			
-			// add a label to show the current selected widget
-			this._currentWidgetLabel = new qx.ui.basic.Label("<i>nothing selected</i>");
-			this.setVerticalChildrenAlign("middle");
-			this._currentWidgetLabel.setBackgroundColor("black");
-			this._currentWidgetLabel.setTextColor("white");
-			this._currentWidgetLabel.setFont(new qx.ui.core.Font(11, ["Verdana"]));
-			this._currentWidgetLabel.setPadding(3);
-			this.add(this._currentWidgetLabel);
+      
+      // add a label to show the current selected widget
+      this._currentWidgetLabel = new qx.ui.basic.Label("<i>nothing selected</i>");
+      this.setVerticalChildrenAlign("middle");
+      this._currentWidgetLabel.setBackgroundColor("black");
+      this._currentWidgetLabel.setTextColor("white");
+      this._currentWidgetLabel.setFont(new qx.ui.core.Font(11, ["Verdana"]));
+      this._currentWidgetLabel.setPadding(3);
+      this.add(this._currentWidgetLabel);
     },
+    
+    
     
     __createAboutPopup: function() {
       // create the popup
