@@ -18,7 +18,7 @@
 ************************************************************************ */
 qx.Class.define("inspector.Menu", {
   
-  extend : qx.ui.toolbar.ToolBar,
+  extend : qx.ui.layout.VerticalBoxLayout,
 
   /*
   *****************************************************************************
@@ -35,11 +35,10 @@ qx.Class.define("inspector.Menu", {
 //********************************
 // TEST
     
-    // initialize the toolbar
-    this.setBorder("outset");
+    // initialize the layout
     this.setWidth("auto");
-    this.setPadding(1);    
-    this.setTop(-20);
+		this.setHeight("auto");
+    this.setTop(-24);
 
     
     this.addEventListener("mouseover", function() {
@@ -80,7 +79,7 @@ qx.Class.define("inspector.Menu", {
       // set a timer to enable the reset to the starting position 
       this._upTimer = window.setTimeout(function() {
         // sett the start position
-        self.setTop(-20);
+        self.setTop(-24);
         // if there is still a movement
         if (self._moveInterval != null) {
           // clear the move interval        
@@ -108,9 +107,16 @@ qx.Class.define("inspector.Menu", {
     // create the inspector menu
     this.__createInspectorMenu();
     // create the buttons shown on the menu
-    this.__createMenuButtons();
+    this.__createMenubar();
     // create the popup which holds the about text
     this.__createAboutPopup();
+		
+		
+	  downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
+		downAtom.setWidth("100%");
+		downAtom.setStyleProperty("border-top", "1px #000000 solid");
+		this.add(downAtom);
+		
   }, 
   
   
@@ -136,6 +142,7 @@ qx.Class.define("inspector.Menu", {
     _hideEverythingCommand: null,
     
     // menus
+		_menubar: null,
     _inspectorMenu: null,
     
     // inspector menu buttons
@@ -300,25 +307,32 @@ qx.Class.define("inspector.Menu", {
     
     
     
-    __createMenuButtons: function() {
+    __createMenubar: function() {
+			// create the menu bar
+			this._menubar = new qx.ui.toolbar.ToolBar();
+      
+			this._menubar.setPadding(1);
+			// add the bar to the layout			
+			this.add(this._menubar);
+			
       // create a button for the inspector menu
       var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", this._inspectorMenu);
-      this.add(inspectorButton);
+      this._menubar.add(inspectorButton);
 
       // add a seperator            
-      this.add(new qx.ui.toolbar.Separator());      
+      this._menubar.add(new qx.ui.toolbar.Separator());      
       
       // add the open all button
       var openAllButton = new qx.ui.toolbar.Button("All");
       openAllButton.setCommand(this._openAllCommand);
-      this.add(openAllButton);
+      this._menubar.add(openAllButton);
       
       // add a seperator
-      this.add(new qx.ui.toolbar.Separator());
+      this._menubar.add(new qx.ui.toolbar.Separator());
 
       // add the open console button
       this._openConsoleButton = new qx.ui.toolbar.CheckBox("Console");
-      this.add(this._openConsoleButton);
+      this._menubar.add(this._openConsoleButton);
       // register the event listener to open and close the console window on toggle      
       this._openConsoleButton.addEventListener("changeChecked", function(e) {
        // if the button is pressed
@@ -333,7 +347,7 @@ qx.Class.define("inspector.Menu", {
       
       // add the open object finder button      
       this._openObjectFinderButton = new qx.ui.toolbar.CheckBox("Objects");
-      this.add(this._openObjectFinderButton);
+      this._menubar.add(this._openObjectFinderButton);
       // register the event listeren to open the object finder
       this._openObjectFinderButton.addEventListener("changeChecked", function(e) {
         // if the buttonis checked 
@@ -348,7 +362,7 @@ qx.Class.define("inspector.Menu", {
       
       // add a button to open the widget finder      
       this._openWidgetFinderButton = new qx.ui.toolbar.CheckBox("Widgets");
-      this.add(this._openWidgetFinderButton);
+      this._menubar.add(this._openWidgetFinderButton);
       // register the event listenerto open the widget finder 
       this._openWidgetFinderButton.addEventListener("changeChecked", function(e) {
         // if the button is checked
@@ -363,7 +377,7 @@ qx.Class.define("inspector.Menu", {
       
       // add a button to open the property editor       
       this._openPropertyEditorButton = new qx.ui.toolbar.CheckBox("Properties");
-      this.add(this._openPropertyEditorButton);
+      this._menubar.add(this._openPropertyEditorButton);
       // reigster the event listener to open the property editor
       this._openPropertyEditorButton.addEventListener("changeChecked", function(e) {
         // if the button is checked
@@ -378,7 +392,7 @@ qx.Class.define("inspector.Menu", {
     },
     
     
-    
+		
     __createAboutPopup: function() {
       // create the popup
       this._aboutPopup = new qx.ui.popup.Popup();
