@@ -48,8 +48,6 @@ qx.Class.define("inspector.console.Console", {
     qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
     // add the console appender
     qx.log.Logger.ROOT_LOGGER.addAppender(appender);
-		
-		
   },
 
 
@@ -123,6 +121,8 @@ qx.Class.define("inspector.console.Console", {
      * @param widget {qx.core.Object} The current selected object.
      */
     setWidget: function(widget) {
+			this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + ": " + 
+			                widget.classname + " [" + widget.toHashCode() + "]");
       this._widget = widget;
     },
     

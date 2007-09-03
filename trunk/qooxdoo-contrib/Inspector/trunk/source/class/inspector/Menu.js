@@ -154,8 +154,6 @@ qx.Class.define("inspector.Menu", {
     _downTimer : null,
     _moveInterval: null,
     
-    // label to show the name of the current widget
-    _currentWidgetLabel: null,
 
     /*
     *********************************
@@ -175,10 +173,6 @@ qx.Class.define("inspector.Menu", {
      */
     resetFindButton: function() {
       this._findButton.setChecked(false);
-    },
-    
-    setCurrentWidget: function(name) {
-      this._currentWidgetLabel.setText(name);
     },
   
     
@@ -355,18 +349,6 @@ qx.Class.define("inspector.Menu", {
           this._inspector.hidePropertyEditor();
        }
       }, this);
-          
-      // add a seperator
-      this.add(new qx.ui.toolbar.Separator());
-      
-      // add a label to show the current selected widget
-      this._currentWidgetLabel = new qx.ui.basic.Label("<i>nothing selected</i>");
-      this.setVerticalChildrenAlign("middle");
-      this._currentWidgetLabel.setBackgroundColor("black");
-      this._currentWidgetLabel.setTextColor("white");
-      this._currentWidgetLabel.setFont(new qx.ui.core.Font(11, ["Verdana"]));
-      this._currentWidgetLabel.setPadding(3);
-      this.add(this._currentWidgetLabel);
     },
     
     

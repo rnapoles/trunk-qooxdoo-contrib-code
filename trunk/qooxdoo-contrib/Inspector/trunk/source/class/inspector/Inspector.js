@@ -42,6 +42,11 @@ qx.Class.define("inspector.Inspector", {
     GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Go to the currently selected property.",
     OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects.",
 		
+		CONSOLE_CAPTION_TITLE: "Console",
+		OBJECT_CAPTION_TITLE: "Objects",
+		WIDGET_CAPTION_TITLE: "Widgets",
+		PROPERTY_CAPTION_TITLE: "Properties",
+		
     API_VIEWER_URI: "../api/index.html"		
   },
 
@@ -384,10 +389,7 @@ qx.Class.define("inspector.Inspector", {
     setWidget: function(widget, ref) {    
       // set the widget in the inspector
       this._widget = widget;
-			
-			// signal the current Widget in the menu
-			this._menu.setCurrentWidget(widget.classname + " [" + widget.toHashCode() + "]")
-      
+
       // set the widget in the console
       if (this._console != null) {
         this._console.setWidget(widget);
@@ -676,7 +678,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the console
-      this._console = new inspector.console.Console(this, "Console");
+      this._console = new inspector.console.Console(this, inspector.Inspector.CONSOLE_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
       
@@ -697,7 +699,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the property editor window
-      this._objectFinder = new inspector.objectFinder.ObjectFinder(this, "Objects");
+      this._objectFinder = new inspector.objectFinder.ObjectFinder(this, inspector.Inspector.OBJECT_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
 
@@ -718,7 +720,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the widget finder window
-      this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, "Widgets");
+      this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, inspector.Inspector.WIDGET_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
                   
@@ -739,7 +741,7 @@ qx.Class.define("inspector.Inspector", {
       // start the exclusion stategie
       this.beginExclusion();    
       // create the property editor window
-      this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, "Properties");
+      this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, inspector.Inspector.PROPERTY_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
 
