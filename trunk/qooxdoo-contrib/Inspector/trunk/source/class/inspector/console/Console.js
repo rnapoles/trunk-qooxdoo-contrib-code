@@ -48,6 +48,19 @@ qx.Class.define("inspector.console.Console", {
     qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
     // add the console appender
     qx.log.Logger.ROOT_LOGGER.addAppender(appender);
+		
+		// add a event listener if the console cahnged active
+		this.addEventListener("changeActive", function(e) {
+      // if the console is selected
+			if (e.getValue()) {
+				// set a timeout to focus the textfield after everything is done
+				var self = this;
+				window.setTimeout(function() {
+				  // set the focus to the textfield
+					self._textField.focus();			
+				}, 0);
+			}
+		}, this);
   },
 
 
