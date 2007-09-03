@@ -31,77 +31,21 @@ qx.Class.define("inspector.Menu", {
     this.setZIndex(1e5 + 3);
     // save the reference to the inspector
     this._inspector = inspector;
-
-//********************************
-// TEST
     
     // initialize the layout
     this.setWidth("auto");
 		this.setHeight("auto");
     this.setTop(-24);
-
     
-    this.addEventListener("mouseover", function() {
-      var self = this;
-      // if the time to move the menu up is enabled
-      if (this._upTimer != null) {
-        // clear it
-        window.clearTimeout(this._upTimer);
-      }
-      
-      // start a timer to do the down move
-      this._downTimer= window.setTimeout(function() {
-        // do only if the moving is not in progress and not in the end position      
-        if (self._moveInterval == null && self.getTop() < 0) {
-          // start an interval to move the menu down
-          self._moveInterval = window.setInterval(function() {
-            // stor the current top position
-            var currentTop = self.getTop();
-            // add one to the position
-            currentTop = currentTop + 1;
-            // set the new position
-            self.setTop(currentTop);
-            // if the end position is reached
-            if (self.getTop() >= 0) {
-              // clear the interavl
-              window.clearInterval(self._moveInterval);
-              // mark that the interval has been reseted
-              self._moveInterval = null;
-            }
-          }, 10);
-        }          
-      }, 10);
-    }, this);
-    
-    
-    this.addEventListener("mouseout", function() {            
-      var self = this;
-      // set a timer to enable the reset to the starting position 
-      this._upTimer = window.setTimeout(function() {
-        // sett the start position
-        self.setTop(-24);
-        // if there is still a movement
-        if (self._moveInterval != null) {
-          // clear the move interval        
-          window.clearInterval(self._moveInterval);
-          // mark that the moving has ended
-          self._moveInterval = null;
-        }
-      }, 300);      
-    }, this);    
-    
-    
-    
+    // register the handler to move the menu out of the screen		
+		this.__registerMoveListener();		
+		
+    // register an event listener to set the staart position
     this.addEventListener("appear", function() {
       var middle = qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2;  
       this.setLeft(parseInt(middle - (this.getBoxWidth() / 2)));
-    }, this);
-    
-    
-    
-    
-// ***********************************    
-    
+    }, this);    
+        
     // create the commands
     this.__createCommands();
     // create the inspector menu
@@ -110,13 +54,13 @@ qx.Class.define("inspector.Menu", {
     this.__createMenubar();
     // create the popup which holds the about text
     this.__createAboutPopup();
+		// create the popup which is shown an the startup
+		this.__createStartPopup();
 		
-		
+		// create a atom to show the down arrows
 	  downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
 		downAtom.setWidth("100%");
-		downAtom.setStyleProperty("border-top", "1px #000000 solid");
-		this.add(downAtom);
-		
+		this.add(downAtom);		
   }, 
   
   
@@ -154,8 +98,9 @@ qx.Class.define("inspector.Menu", {
     _openWidgetFinderButton: null,
     _openPropertyEditorButton: null,
     
-    // about popup
+    // popups
     _aboutPopup: null,
+    _welcomePopup: null,
     
     // move timer
     _upTimer: null,
@@ -172,7 +117,7 @@ qx.Class.define("inspector.Menu", {
      * @return the components of the menu.
      */
     getComponents: function() {
-      return [this._inspectorMenu, this._aboutPopup, this];
+      return [this._inspectorMenu, this._aboutPopup, this._welcomePopup, this];
     },
     
     /**
@@ -305,8 +250,6 @@ qx.Class.define("inspector.Menu", {
     },
     
     
-    
-    
     __createMenubar: function() {
 			// create the menu bar
 			this._menubar = new qx.ui.toolbar.ToolBar();
@@ -392,7 +335,9 @@ qx.Class.define("inspector.Menu", {
     },
     
     
-		
+		/**
+		 * Creates the popup for the about screen.
+		 */
     __createAboutPopup: function() {
       // create the popup
       this._aboutPopup = new qx.ui.popup.Popup();
@@ -417,7 +362,93 @@ qx.Class.define("inspector.Menu", {
       // style the atom      
       aboutText.setVerticalChildrenAlign("top");
       aboutText.getLabelObject().setPaddingLeft(10);
-    }
+    },
+		
+		
+		/**
+		 * Creates a popup which will be shown to the position of 
+		 * the menu to the user.
+		 */
+		__createStartPopup: function() {
+		  // create the popup	
+			this._welcomePopup = new qx.ui.popup.Popup();
+			// add the popup to the document
+			this._welcomePopup.addToDocument();
+			// set the opsition of the popup
+			this._welcomePopup.setWidth(255);
+			this._welcomePopup.setHeight(84);
+			// set the position of the popup
+			this._welcomePopup.setTop(3);
+			this._welcomePopup.setLeft((qx.ui.core.ClientDocument.getInstance().getInnerHeight() / 2));
+			// create and add the image for the background
+      var backGround = new qx.ui.basic.Image(qx.io.Alias.getInstance().resolve("inspector/image/popup.png"));			
+			this._welcomePopup.add(backGround);
+			// create the text for the popup
+			var label = new qx.ui.basic.Label("<strong>Inspector</strong><br>Move here to show the Inspector menu.");
+			this._welcomePopup.add(label);
+      // set the position of the text in the popup
+			label.setTop(33);
+			label.setLeft(10);
+			// show the popup
+			this._welcomePopup.bringToFront();
+			this._welcomePopup.show();
+			// start a timer to hide the popup in 4 seconds
+			var self = this;
+			window.setTimeout(function() {
+		    self._welcomePopup.hide();
+			}, 4000);
+		},
+		
+		__registerMoveListener: function() {
+	    this.addEventListener("mouseover", function() {
+	      var self = this;
+	      // if the time to move the menu up is enabled
+	      if (this._upTimer != null) {
+	        // clear it
+	        window.clearTimeout(this._upTimer);
+	      }
+	      
+	      // start a timer to do the down move
+	      this._downTimer= window.setTimeout(function() {
+	        // do only if the moving is not in progress and not in the end position      
+	        if (self._moveInterval == null && self.getTop() < 0) {
+	          // start an interval to move the menu down
+	          self._moveInterval = window.setInterval(function() {
+	            // stor the current top position
+	            var currentTop = self.getTop();
+	            // add one to the position
+	            currentTop = currentTop + 1;
+	            // set the new position
+	            self.setTop(currentTop);
+	            // if the end position is reached
+	            if (self.getTop() >= 0) {
+	              // clear the interavl
+	              window.clearInterval(self._moveInterval);
+	              // mark that the interval has been reseted
+	              self._moveInterval = null;
+	            }
+	          }, 10);
+	        }          
+	      }, 10);
+	    }, this);
+	    
+	    
+	    this.addEventListener("mouseout", function() {            
+	      var self = this;
+	      // set a timer to enable the reset to the starting position 
+	      this._upTimer = window.setTimeout(function() {
+	        // sett the start position
+	        self.setTop(-24);
+	        // if there is still a movement
+	        if (self._moveInterval != null) {
+	          // clear the move interval        
+	          window.clearInterval(self._moveInterval);
+	          // mark that the moving has ended
+	          self._moveInterval = null;
+	        }
+	      }, 300);      
+	    }, this);  			
+		}
 
   }
 });
