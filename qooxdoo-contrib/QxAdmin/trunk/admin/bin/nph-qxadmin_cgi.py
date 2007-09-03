@@ -14,7 +14,7 @@ def invoke_external(cmd):
     import subprocess
     p = subprocess.Popen(cmd, shell=True,
                          stdout=sys.stdout,
-                         stderr=sys.stderr)
+                         stderr=subprocess.STDOUT)
     return p.wait()
 
 def invoke_piped(cmd):
@@ -33,8 +33,6 @@ def do_make(form):
     print "Content-type: text/plain"
     print
     sys.stdout.flush()
-    #os.chdir("/tmp/qx-bbb/qooxdoo-0.8-pre-sdk/frontend/application/demobrowser/")
-    #cmd = form['cygwin'].value + "\\\\bin\\\\bash.exe" + " -c make source"
     if not 'make' in form:
         print "Missing parameter 'make'; aborting..."
         return -1
@@ -48,7 +46,6 @@ def do_make(form):
     else:
         cmd = makecmd
     rc = invoke_external(cmd)
-    #os.chdir(olddir)
 
     return rc
 

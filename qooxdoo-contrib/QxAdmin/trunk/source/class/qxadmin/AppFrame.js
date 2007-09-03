@@ -158,9 +158,22 @@ qx.Class.define("qxadmin.AppFrame",
 
   members :
   {
-    // ------------------------------------------------------------------------
-    //   CONSTRUCTOR HELPERS
-    // ------------------------------------------------------------------------
+
+    /*
+    ----------------------------------------------------------------------------
+      CONFIG SETTINGS
+    ----------------------------------------------------------------------------
+    */
+    adminHost : "127.0.0.1",  // some machines dont know localhost
+    adminPort : "8000",
+    adminPath : "/admin/bin/nph-qxadmin_cgi.py",
+    adminUrl  : "http://"+this.adminHost+":"+this.adminPort+this.adminPath,
+
+    /*
+    ----------------------------------------------------------------------------
+      CONSTRUCTOR HELPERS
+    ----------------------------------------------------------------------------
+    */
     __makeRpcServer : function()
     {
       var rpc = new qx.io.remote.Rpc();
@@ -1127,7 +1140,7 @@ qx.Class.define("qxadmin.AppFrame",
       } else {
         // run make through CGI
         var target = treeNode.getLabel();
-        var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py?action=run&make="+target+"&"+cygParm;
+        var url = "http://"+this.adminHost+":"+this.adminPort+this.adminPath+"?action=run&make="+target+"&"+cygParm;
         var currUrl = f1.getSource();
         url == currUrl ? f1.reload() : f1.setSource(url);
       }
@@ -1183,14 +1196,18 @@ qx.Class.define("qxadmin.AppFrame",
           continue;
         } else 
         {
-          var currVal = item.dat.getValue();
           // check QOOXDOO_PATH
           if (id == "QOOXDOO_PATH") 
           {
+            //TODO: clean this up!
+            var currVal = item.value;
             if (currVal == item.defaultt) {
               alert('You have to at least specify QOOXDOO_PATH (the path to your qooxdoo installation); aborting...');
               return [];
             }
+          } else 
+          {
+            var currVal = item.dat.getValue();
           }
           if (item.dirty) {
             if (item.dirty==1) {
@@ -1211,7 +1228,7 @@ qx.Class.define("qxadmin.AppFrame",
 
     __editSendData : function (vals)
     {
-      var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py"; // config url, port
+      var url = "http://"+this.adminHost+":"+this.adminPort+this.adminPath;
       var req = new qx.io.remote.Request(url);
       //var dat = "action=save&makvars={'a':1,'b':2}";
       var dat = "action=save";
@@ -1254,49 +1271,6 @@ qx.Class.define("qxadmin.AppFrame",
       return;
 
     }, // editSendData()
-
-
-    /* DELETE ME! */
-    __editGetOldVars : function ()
-    {
-      var url = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py"; // config url, port
-      var req = new qx.io.remote.Request(url);
-      var dat = "action=getvars";
-      // check cygwin path
-      if ('cygwin' in this._urlParms.parms)
-      {
-        var cygParm = 'cygwin'+"="+this._urlParms.parms['cygwin'];
-        dat += "&"+cygParm;
-      }
-
-      req.setTimeout(5000);
-      req.setProhibitCaching(true);
-      req.setMethod(qx.net.Http.METHOD_POST);
-      req.setData(dat);
-
-      req.addEventListener("completed", function(evt)
-      {
-        var loadEnd = new Date();
-        this.debug("Time to load page source from server: " + (loadEnd.getTime() - loadStart.getTime()) + "ms");
-
-        var content = evt.getData().getContent();
-
-        if (content) {
-          this.__makoldvars(content);
-        }
-      },
-      this);
-
-      req.addEventListener("failed", function(evt) {
-        this.error("Failed to post to URL: " + url);
-      }, this);
-
-      var loadStart = new Date();
-      req.send();
-
-      return;
-      
-    }, // editGetOldVars()
 
 
     __ehOpenPage : function (e)
@@ -1437,7 +1411,7 @@ qx.Class.define("qxadmin.AppFrame",
       var rowIndex = 0;
       var that     = this;
 
-      container.setColumnCount(3);
+      container.setColumnCount(4);
 
       this.traverseTreeData(treeData, function (item, type, level)
       {
@@ -1475,11 +1449,16 @@ qx.Class.define("qxadmin.AppFrame",
           // Var Value
           var olditem = that.findOldItem(item.label, oldData);
           var value = olditem ? olditem.dat : item.defaultt;
-          var tf = new qx.ui.form.TextField(value);
+          if (item.label == "QOOXDOO_PATH") 
+          {
+            var tf = new qx.ui.embed.HtmlEmbed("<input type='file' onchange='qx.core.Init.getInstance().getApplication().viewer.checkQxPath(this.value);' value="+value+">");
+          } else {
+            var tf = new qx.ui.form.TextField(value);
+            tf.addEventListener("changeValue",that.__ehEditFormChanged,that);
+          }
           that.widgets["buttedit.varedit.page.items"][item.label]['dat']=tf; // register widget
           that.widgets["buttedit.varedit.page.items"][item.label]['defaultt']=item.defaultt; // always remember application.mk default
           tf.setUserData('id',item.label);
-          tf.addEventListener("changeValue",that.__ehEditFormChanged,that);
           container.add(tf,1,rowIndex);
           // Var Reset Button
           var rb = new qx.ui.form.Button("Reset value", "icon/16/actions/view-refresh.png");
@@ -1488,12 +1467,26 @@ qx.Class.define("qxadmin.AppFrame",
           rb.addEventListener("execute",that.__ehEditFormReset,that);
           rb.setToolTip(new qx.ui.popup.ToolTip("Reset to default"));
           container.add(rb,2,rowIndex);
+          // File Chooser for QOOXDOO_PATH
+          if (item.label == "QOOXDOO_PATH") 
+          {
+            var fc = new qx.ui.form.Button("Pick Qooxdoo Path", "icon/16/actions/document-open.png");
+            fc.setUserData("id",item.label);
+            fc.setShow("icon");
+            fc.addEventListener("execute", that.__ehQxPathChooser,that);
+            fc.setToolTip(new qx.ui.popup.ToolTip("Choose Qooxdoo Path"));
+            container.add(fc,3,rowIndex);
+          }
         }
         return 0;
       });
 
-      for (var i=0, N=container.getColumnCount(); i<N; i++) {
+      for (var i=0; i<2; i++) {
         container.setColumnWidth(i, 350);
+      }
+
+      for (var i=2; i<4; i++) {
+        container.setColumnWidth(i,30);
       }
 
       for (var i=0, N=container.getRowCount(); i<N; i++) {
@@ -1541,6 +1534,24 @@ qx.Class.define("qxadmin.AppFrame",
         item['dirty']=2;  // means reset
         item['dat'].setValue(item['defaultt']);
       }
+    },
+
+
+    __ehQxPathChooser : function (e) 
+    {
+      //alert("Choose Path");
+      var diag = new qx.ui.window.Window("Qooxdoo Path Picker", "icon/16/apps/document-open.png");
+      diag.setSpace(20, 400, 20, 250);
+      this.add(diag);
+      
+    }, 
+
+
+    checkQxPath : function (path) 
+    {
+      alert("I was oh so much changed!>>>"+ path+ "<<<");
+      this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['dirty']=1; // means changed
+      this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['value']=path; // remember value
     },
 
 
@@ -1803,7 +1814,8 @@ qx.Class.define("qxadmin.AppFrame",
       {
         this.__makvars = eval("("+cont+")");
         // get old vars too
-        var url1 = "http://localhost:8000/admin/bin/nph-qxadmin_cgi.py?action=getvars";
+        var url1 = "http://"+this.adminHost+":"+this.adminPort+this.adminPath+"?action=getvars";
+        //var url1 = this.adminUrl+"?action=getvars";
         // check cygwin path
         if ('cygwin' in this._urlParms.parms)
         {
@@ -1873,5 +1885,12 @@ qx.Class.define("qxadmin.AppFrame",
   {
     this._disposeFields("widgets", "tests", "_sampleToTreeNodeMap", "tree", "__states");
     this._disposeObjects("header", "mainsplit", "tree1", "left", "runbutton", "toolbar", "f1", "f2", "logger", "_history", "logappender", '_cmdObjectSummary', '_cmdRunBuild', '_cmdRunSave', '_cmdRunReset', '_cmdViewFile', '_cmdOpenPage', '_cmdSampleInOwnWindow', '_cmdLoadProfile', '_cmdProfile', '_cmdShowLastProfile', '_cmdDisposeSample', '_cmdNamespacePollution');
+  },
+
+
+  defer : function (statics,members,properties) 
+  {
+    // I think I need this because checkQxPath is called from a (document) input field
+    qx.lang.Function.bind(members.checkQxPath, this);
   }
 });

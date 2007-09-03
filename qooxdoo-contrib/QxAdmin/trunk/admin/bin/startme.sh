@@ -1,9 +1,10 @@
 #!/bin/sh
 
-typeset -i DEBUG=0
+typeset -i DEBUG=1
 typeset -i rc=0
 typeset adminUrl=http://localhost:8000/admin/index.html
 #typeset adminUrl=http://localhost:8000/source/index.html
+typeset testUrl=http://localhost:8000/
 typeset adminPort=8000
 typeset pybin=python
 typeset Browsers="firefox mozilla webkit safari"
@@ -36,13 +37,17 @@ startServer () {
   if [ $DEBUG -eq 0 ]; then
     $pybin admin/bin/cgiserver.py >/dev/null 2>&1 &
   else
-    xterm -c $pybin admin/bin/cgiserver.py &
+    xterm -e $pybin admin/bin/cgiserver.py &
   fi
   ServerPid=$!
 }
 
 shutDown () {
+  echo_ Once you are finished working with qxadmin, press any key to terminate
+  echo_ this application.
+  read -n 1
   kill $ServerPid
+  popd >/dev/null
 }
 
 sleepDot () {
@@ -67,7 +72,7 @@ testWeb () {
       return 1
     fi
   elif [ $meth -eq 2 ]; then
-    wget --spider --quiet $adminUrl
+    wget --spider --quiet $testUrl
     if [ $? -eq 0 ]; then
       return 0
     else
@@ -157,10 +162,6 @@ else
 fi
 
 echo
-echo_ Once you are finished working with qxadmin, press any key to terminate
-echo_ this application.
-read -n 1
 shutDown
-popd >/dev/null
 
 
