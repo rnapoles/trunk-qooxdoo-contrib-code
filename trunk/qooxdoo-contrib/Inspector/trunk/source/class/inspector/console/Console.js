@@ -48,6 +48,8 @@ qx.Class.define("inspector.console.Console", {
     qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
     // add the console appender
     qx.log.Logger.ROOT_LOGGER.addAppender(appender);
+		
+		
   },
 
 
@@ -175,7 +177,7 @@ qx.Class.define("inspector.console.Console", {
         var helpText = "<strong>HELP:</strong><br>" +
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
-                       "Press the CTRL and space key together to get an auto complete"; 
+                       "Press the CTRL and space key together (or tab) to get an auto complete"; 
         var label = this._getLabel("", helpText, "#666666");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 

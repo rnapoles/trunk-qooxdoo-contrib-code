@@ -577,7 +577,13 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           return box;
   
         // textfield
-        } else if (propertySet.check == "Integer" || propertySet.check == "String" || propertySet.check == "Number") {
+        } else if (propertySet.check == "Integer" || 
+				           propertySet.check == "String" ||
+									 propertySet.check == "NonEmptyString" ||
+									 propertySet.check == "Label" ||
+									 propertySet.check == "Float" ||
+									 propertySet.check == "Double" || 
+									 propertySet.check == "Number") {
           // create new textfield
           var textField = new qx.ui.form.TextField();
           
@@ -774,14 +780,15 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             layout.getChildren()[1].setText(value.length + " objects");
             
           // if it is a widget and not the client document  
-          } else if ((property.check == "qx.ui.core.Widget" || property.check == "qx.ui.core.Parent")&& 
+          } else if ((property.check == "qx.ui.core.Widget" || 
+					            property.check == "qx.ui.core.Parent")&& 
               (this._controller.getWidget().classname != "qx.ui.core.ClientDocument")) {
             
             // create the link to the widget
             layout.getChildren()[1].setText("<u>" + value.classname + " [" + value.toHashCode() + "]</u>");
             layout.getChildren()[1].setStyleProperty("cursor", "pointer");
            
-            // add only a event listener the first time 
+            // add only a event listener the first time
             if (layout.getChildren()[1].hasEventListeners("click") === undefined) {
               
               // register the click handler
@@ -796,7 +803,14 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
                 // tell the controller to go to the new widget
                 this._controller.gotoSelectedWidget();
               }, this);            
-            }            
+            }   
+
+				  // fonts    
+				  } else if(property.check == "Font") {
+						// set the font of the label
+            layout.getChildren()[1].setFont(value);						
+						layout.getChildren()[1].setText(value + "");
+						
           } else {
             layout.getChildren()[1].setText(value + "");
           }
