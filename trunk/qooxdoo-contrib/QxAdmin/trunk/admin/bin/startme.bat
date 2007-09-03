@@ -23,6 +23,7 @@
   set WebSvrWait=5
   set rc=0
   set adminUrl=http://localhost:8000/admin/index.html
+  set testUrl=http://localhost:8000/
   set pybin=python
   set tmpFile="%TEMP%.\qxtmp.txt"
 :: find cygwin (needed for make etc.)
@@ -324,7 +325,7 @@
     rem echo. Using WGET
     call :_errReset
     :: the file extension differs (between .exe and .xxx)
-    !CygwinPath!\bin\!wgetBin! --spider --quiet %adminUrl%
+    !CygwinPath!\bin\!wgetBin! --spider --quiet %testUrl%
     if !errorlevel!==0 (
       :: connection
       set myfound=0
