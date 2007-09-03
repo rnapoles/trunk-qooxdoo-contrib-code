@@ -57,6 +57,8 @@ qx.Class.define("inspector.Inspector", {
   *****************************************************************************
   */
   construct : function() {
+    // Define alias for inspector resource path
+    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
     // start the exclusion stategie
     this.beginExclusion();
     // create the inspector object
@@ -68,10 +70,7 @@ qx.Class.define("inspector.Inspector", {
     // create the opener toolbar
     this._createOpenerToolBar();
     // end the exclusion startegie
-    this.endExclusion(); 
-    
-    // Define alias for inspector resource path
-    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
+    this.endExclusion();     
 		
 		// initialize the this reference to the selected widget
     this.setWidget(qx.ui.core.ClientDocument.getInstance());
