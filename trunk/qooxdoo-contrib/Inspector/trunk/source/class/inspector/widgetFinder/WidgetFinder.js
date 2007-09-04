@@ -462,12 +462,21 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-      // put the window an the right side of the browser 
-      this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);
-      // set top of the window 25% of the browsers heigth
-      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
-      // make the widget finder 25% of the browser heigth high
-      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
+	    // if the left is not set
+			if (this.getLeft() == null) {
+			  // put the window an the right side of the browser 
+	      this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);				
+			}
+			// if the top is not set
+			if (this.getTop() == null) {
+	      // set top of the window 25% of the browsers heigth
+	      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);				
+			}
+			// if the height is not set
+			if (this.getHeight() == "auto") {
+	      // make the widget finder 25% of the browser heigth high
+	      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);				
+			}
     },
     
     
@@ -483,7 +492,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._tree.setBorder("inset");
       this._tree.setOverflow("auto");
 			this._tree.setUserData("id", qx.ui.core.ClientDocument.getInstance().toHashCode());
-      this._tree.setWidth(350);
+      this._tree.setWidth(320);
       this._tree.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
       this._tree.setMinHeight(10);
       this._tree.setUseDoubleClick(true);

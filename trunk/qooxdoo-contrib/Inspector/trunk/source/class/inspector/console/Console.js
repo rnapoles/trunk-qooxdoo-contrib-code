@@ -586,8 +586,15 @@ qx.Class.define("inspector.console.Console", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-      this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 355);
-      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());
+      // if the width is not set properly
+			if (this.getWidth() == "auto") {
+				// set the width to the full display width minus the width of the property editor
+				this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);				
+			}
+      // set the top position only if no other top position is set
+			if (this.getTop() == null) {
+	      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());				
+			}
     },
     
     
