@@ -35,7 +35,9 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     this.setCaption(inspector.Inspector.SETTINGS_CAPTION_TITLE);
     this.setWidth(400);
     this.setHeight("auto");  
-    this.setModal(true);  
+    this.setModal(true);
+    this.setShowMinimize(false);
+    this.setShowMaximize(false);
     
     
     this.add(this.__createApiUrlGroupbox());
@@ -53,7 +55,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
        ATTRIBUTES
     *********************************
     */    
-
+    _apiGroup: null,
     
 
     /*
@@ -69,6 +71,17 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     },
     
     
+    /**
+     * Enables the settings dialogs of the window. This should 
+     * be used to disable the settings e.g. wehn no cookies can 
+     * be found to edit. 
+     * @param enabled {boolean} Enabled or disables the settings.
+     */
+    enableSettings: function(enabled) {
+      this._apiGroup.setEnabled(enabled);
+    },
+    
+    
     
     /*
     *********************************
@@ -77,11 +90,11 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     */
     __createApiUrlGroupbox: function() {
       // create a group box
-      var groupBox = new qx.ui.groupbox.GroupBox("API");
+      this._apiGroup = new qx.ui.groupbox.GroupBox("API");
       // initialize the groupbox
-      groupBox.setWidth("100%");
-      groupBox.setHeight("auto");
-      groupBox.setPadding(2);
+      this._apiGroup.setWidth("100%");
+      this._apiGroup.setHeight("auto");
+      this._apiGroup.setPadding(2);
       
       // create a main layout which holds the setting rows
       var mainLayout = new qx.ui.layout.VerticalBoxLayout();
@@ -90,7 +103,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       mainLayout.setHeight("auto");
       mainLayout.setSpacing(5);
       // add the main layout to the groupbox
-      groupBox.add(mainLayout);
+      this._apiGroup.add(mainLayout);
       
       // create a layout to hold the uri settings row
       var uriLayout = new qx.ui.layout.HorizontalBoxLayout();      
@@ -111,15 +124,9 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       uriBox.addEventListener("changeValue", function(e) {
         qx.io.local.CookieApi.set("ApiViewerUri", this.getValue());
       }, uriBox);          
-    
-    
-    
       // add the components for the uri together
       uriLayout.add(uriLabel, uriBox);      
       mainLayout.add(uriLayout);
-      
-      
-      
       
       // create a layout for the dimension row
       var dimensionLayout = new qx.ui.layout.HorizontalBoxLayout();      
@@ -149,7 +156,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       dimensionLayout.add(widthLabel, widthTextField, heightLabel, heightTextField);      
       mainLayout.add(dimensionLayout);        
       
-      return groupBox;
+      return this._apiGroup;
     }
     
 

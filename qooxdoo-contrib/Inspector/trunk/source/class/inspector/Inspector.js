@@ -175,6 +175,9 @@ qx.Class.define("inspector.Inspector", {
         }
         // define the URL to the apiview
         var urlString = qx.io.local.CookieApi.get("ApiViewerUri");
+        if (!urlString) {
+          urlString = inspector.Inspector.API_VIEWER_URI;
+        }
         // if there is a property editor
         if (this._propertyEditor != null) {
           // check if a property is selected
