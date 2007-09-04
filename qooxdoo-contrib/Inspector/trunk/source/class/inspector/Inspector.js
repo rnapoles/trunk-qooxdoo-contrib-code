@@ -36,18 +36,18 @@ qx.Class.define("inspector.Inspector", {
     RELOAD_BUTTON_TOOLTIP_TEXT: "Reload the window.",
     AUTO_RELOAD_BUTTON_TOOLTIP_TEXT: "Update the window automaticly.",
     SHOW_API_BUTTON_TOOLTIP_TEXT: "Show the API of the selected object or property.",
-		SET_NULL_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to null.",
+    SET_NULL_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to null.",
     SET_DEFAULT_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to its initial value.",
     HIGHLIGHT_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Highlight the currently selected property.",
     GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Go to the currently selected property.",
     OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects.",
-		
-		CONSOLE_CAPTION_TITLE: "Console",
-		OBJECT_CAPTION_TITLE: "Objects",
-		WIDGET_CAPTION_TITLE: "Widgets",
-		PROPERTY_CAPTION_TITLE: "Properties",
-		
-    API_VIEWER_URI: "../api/index.html"		
+    
+    CONSOLE_CAPTION_TITLE: "Console",
+    OBJECT_CAPTION_TITLE: "Objects",
+    WIDGET_CAPTION_TITLE: "Widgets",
+    PROPERTY_CAPTION_TITLE: "Properties",
+    
+    API_VIEWER_URI: "../api/index.html"    
   },
 
 
@@ -71,21 +71,21 @@ qx.Class.define("inspector.Inspector", {
     this._createOpenerToolBar();
     // end the exclusion startegie
     this.endExclusion();     
-		
-		// initialize the this reference to the selected widget
+    
+    // initialize the this reference to the selected widget
     this.setWidget(qx.ui.core.ClientDocument.getInstance());
-		
-		// react on the theme change
-		qx.theme.manager.Meta.getInstance().addEventListener("changeTheme", function() {
-			// if a property editor exists
-			if (this._propertyEditor != null) {
-				// tell the property editor to recalculate if everything else is done
-				var self = this;
-				window.setTimeout(function() {
-					self._propertyEditor.recalculateLayout();					
-				}, 0);
-			}			
-		}, this);
+    
+    // react on the theme change
+    qx.theme.manager.Meta.getInstance().addEventListener("changeTheme", function() {
+      // if a property editor exists
+      if (this._propertyEditor != null) {
+        // tell the property editor to recalculate if everything else is done
+        var self = this;
+        window.setTimeout(function() {
+          self._propertyEditor.recalculateLayout();          
+        }, 0);
+      }      
+    }, this);
   },
 
 
@@ -128,8 +128,8 @@ qx.Class.define("inspector.Inspector", {
 
     // the native window for the api viewer
     _apiWindow: null,
-		    
-		
+        
+    
    /*
     *********************************
         API STUFF
@@ -153,19 +153,19 @@ qx.Class.define("inspector.Inspector", {
         // define the URL to the apiview
         var urlString = inspector.Inspector.API_VIEWER_URI;
         // if there is a property editor
-				if (this._propertyEditor != null) {
-					// check if a property is selected
-	        if (this._propertyEditor.getSelectedProperty() != null) {
-	          // if yes, take the classname and the property name from the property
-	          urlString = urlString + "#" + this._propertyEditor.getSelectedProperty().getUserData("classname");
-	          urlString = urlString + "~" + this._propertyEditor.getSelectedProperty().getUserData("key");
-	        
-	        // if no property is selected but a object
-	        } else if (this._propertyEditor.getWidget() != null) {
-	          // only take the objects classname
-	          urlString = urlString + "#" + this._propertyEditor.getWidget().classname;
-	        }					
-				}				
+        if (this._propertyEditor != null) {
+          // check if a property is selected
+          if (this._propertyEditor.getSelectedProperty() != null) {
+            // if yes, take the classname and the property name from the property
+            urlString = urlString + "#" + this._propertyEditor.getSelectedProperty().getUserData("classname");
+            urlString = urlString + "~" + this._propertyEditor.getSelectedProperty().getUserData("key");
+          
+          // if no property is selected but a object
+          } else if (this._propertyEditor.getWidget() != null) {
+            // only take the objects classname
+            urlString = urlString + "#" + this._propertyEditor.getWidget().classname;
+          }          
+        }        
         // set the uri in the window
         this._apiWindow.setUrl(urlString);
         
@@ -178,8 +178,8 @@ qx.Class.define("inspector.Inspector", {
           this._apiWindow.focus();          
         }      
     },
-		
-		
+    
+    
    /*
     *********************************
         HIGHLIGHT STUFF
@@ -424,35 +424,35 @@ qx.Class.define("inspector.Inspector", {
       }
     },   
     
-		
-		/**
-		 * Sets the current widget by the reference in the objects db.
-		 * @internal
-		 * @param dbKey {Integer} The key in the objects db.
-		 * @param refName {String} The Name of the reference class either 
-		 *    "console", "objectFinder", "widgetFinder", "propertyEditor"  
-		 */
-		setWidgetByDbKey: function(dbKey, refName) {
-			// get the real reference
-			switch (refName) {
-				case "console":
-				  var ref = this._console;
-					break;
-				case "objectFinder":
-				  var ref = this._objectFinder;
-					break;
-				case "widgetFinder":
-				  var ref = this._widgetFinder;
-					break;
-				case "propertyEditor":
-				  var ref = this._propertyEditor;
-					break;
-				default:
-				  var ref = null;
-			}
-		  // set the widget
-			this.setWidget(qx.core.Object.getDb()[dbKey], ref);
-		},
+    
+    /**
+     * Sets the current widget by the reference in the objects db.
+     * @internal
+     * @param dbKey {Integer} The key in the objects db.
+     * @param refName {String} The Name of the reference class either 
+     *    "console", "objectFinder", "widgetFinder", "propertyEditor"  
+     */
+    setWidgetByDbKey: function(dbKey, refName) {
+      // get the real reference
+      switch (refName) {
+        case "console":
+          var ref = this._console;
+          break;
+        case "objectFinder":
+          var ref = this._objectFinder;
+          break;
+        case "widgetFinder":
+          var ref = this._widgetFinder;
+          break;
+        case "propertyEditor":
+          var ref = this._propertyEditor;
+          break;
+        default:
+          var ref = null;
+      }
+      // set the widget
+      this.setWidget(qx.core.Object.getDb()[dbKey], ref);
+    },
    
       
     /*
@@ -662,6 +662,18 @@ qx.Class.define("inspector.Inspector", {
         this._console.hide();
       }     
     },
+    
+    componentClosed: function(component) {
+      if (component == this._console) {
+        this._menu.resetConsoleButton();
+      } else if (component == this._widgetFinder) {
+        this._menu.resetWidgetButton();
+      } else if (component == this._objectFinder) {
+        this._menu.resetObjectButton();
+      } else if (component == this._propertyEditor) {
+        this._menu.resetPropertyButton();
+      }
+    },
         
     
     /*
@@ -681,8 +693,6 @@ qx.Class.define("inspector.Inspector", {
       // end the exclusion startegie
       this.endExclusion();
       
-      // add the console window to the magnetic components for the toolbar          
-//      this._menu.addMagneticElement(this._console, "outer");
       // set the windows enabled to avoid disabling by the client document
       this._console.setEnabled(true);     
       // set the text color to black in case that the text color of the client document will be changed
@@ -701,9 +711,7 @@ qx.Class.define("inspector.Inspector", {
       this._objectFinder = new inspector.objectFinder.ObjectFinder(this, inspector.Inspector.OBJECT_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
-
-      // add the object finder window to the magnetic components for the toolbar                  
-//      this._menu.addMagneticElement(this._objectFinder, "outer");  
+  
       // set the windows enabled to avoid disabling by the client document
       this._objectFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -722,9 +730,7 @@ qx.Class.define("inspector.Inspector", {
       this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, inspector.Inspector.WIDGET_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
-                  
-      // add the widget finder window to the magnetic components for the toolbar                  
-//      this._menu.addMagneticElement(this._widgetFinder, "outer");            
+
       // set the windows enabled to avoid disabling by the client document
       this._widgetFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -743,9 +749,7 @@ qx.Class.define("inspector.Inspector", {
       this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, inspector.Inspector.PROPERTY_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
-
-      // add the property editor window to the magnetic components for the toolbar                  
-//      this._menu.addMagneticElement(this._propertyEditor, "outer");  
+  
       // set the windows enabled to avoid disabling by the client document
       this._propertyEditor.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
@@ -753,16 +757,14 @@ qx.Class.define("inspector.Inspector", {
     },
     
     
-		/**
-		 * Creates the toolbar which will hold the inspector menu and
-		 * the buttons to open the components.
-		 */
+    /**
+     * Creates the toolbar which will hold the inspector menu and
+     * the buttons to open the components.
+     */
     _createOpenerToolBar: function() {
-			// create and add the menu
-      this._menu = new inspector.Menu(this);
-      this._menu.addToDocument();    
-			// add the document as magnetiv element      
-//      this._menu.addMagneticElement(qx.ui.core.ClientDocument.getInstance(), "inner");       
+      // create and add the menu
+      this._menu = new inspector.menu.Menu(this);
+      this._menu.addToDocument();           
     },
     
     

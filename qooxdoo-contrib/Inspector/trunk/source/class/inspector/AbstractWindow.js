@@ -35,7 +35,7 @@ qx.Class.define("inspector.AbstractWindow", {
     qx.ui.window.Window.call(this);
     this.setCaption(name);
     this.setShowMinimize(false);
-    this.setShowMaximize(false);		
+    this.setShowMaximize(false);    
     this.setAllowMaximize(false);
     this.setWidth("auto");
     this.setHeight("auto");
@@ -60,7 +60,7 @@ qx.Class.define("inspector.AbstractWindow", {
     
     // register the opacity handler
 //    this._registerOpacityHandler();
-  },
+    },
 
 
   /*
@@ -141,6 +141,16 @@ qx.Class.define("inspector.AbstractWindow", {
       }, this); 
     },
     
+    /*
+    *********************************
+       OVERRIDDEN
+    *********************************
+    */
+    
+    hide: function() {
+      this.setVisibility(false);
+      this._inspector.componentClosed(this);
+    },
     
     /*
     *********************************
