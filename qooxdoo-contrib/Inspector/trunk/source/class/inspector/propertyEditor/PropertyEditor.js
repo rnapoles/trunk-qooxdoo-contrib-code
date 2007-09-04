@@ -474,9 +474,21 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-      this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);
-      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
-      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+      // if left is not set
+			if (this.getLeft() == null) {
+				// set the window an the right border of the document
+  			this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);			
+			}
+			// if the top is not set
+      if (this.getTop() == null) {
+				// set the window beginning at the half of the document
+				this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+			}
+			// if the height is not set propertly
+      if (this.getHeight() == "auto") {
+				// set the height to the half of the documents height
+				this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+			}
     },
     
     
