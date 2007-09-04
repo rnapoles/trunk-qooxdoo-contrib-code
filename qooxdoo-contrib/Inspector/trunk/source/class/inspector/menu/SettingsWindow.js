@@ -82,7 +82,6 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     },
     
     
-    
     /*
     *********************************
        PRIVATE
