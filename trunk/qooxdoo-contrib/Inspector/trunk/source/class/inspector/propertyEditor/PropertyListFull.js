@@ -127,37 +127,37 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
         }
       }  
     },
-		
-		
-		/**
-		 * In case of a theme change, the width of the property names can 
-		 * change. In that case, the width has to be calculated again with 
-		 * this function.
-		 */
-		recalculateLayout: function() {	
-		  // get all children of the current list (atoms with names and group layouts)		
-			var children = this.getChildren();
-			// go threw all children
-			for (var i = 0; i < children.length; i++) {
-				// if it is a gooup layout
-				if (children[i] instanceof qx.ui.layout.VerticalBoxLayout) {
-					// reset the maxwidth					
-					var maxWidth = 0;
-					// go threw all property layouts
-					for (var j = 0; j < children[i].getChildren().length; j++) {
-						// get the label which holds the name of the property
-						var labelName = children[i].getChildren()[j].getChildren()[0];
-						// calculate the max width
-						maxWidth = maxWidth > labelName.getPreferredBoxWidth() ? maxWidth : labelName.getPreferredBoxWidth();
-					}					
-					// go again threw all children of the grouplayout
+    
+    
+    /**
+     * In case of a theme change, the width of the property names can 
+     * change. In that case, the width has to be calculated again with 
+     * this function.
+     */
+    recalculateLayout: function() {  
+      // get all children of the current list (atoms with names and group layouts)    
+      var children = this.getChildren();
+      // go threw all children
+      for (var i = 0; i < children.length; i++) {
+        // if it is a gooup layout
+        if (children[i] instanceof qx.ui.layout.VerticalBoxLayout) {
+          // reset the maxwidth          
+          var maxWidth = 0;
+          // go threw all property layouts
+          for (var j = 0; j < children[i].getChildren().length; j++) {
+            // get the label which holds the name of the property
+            var labelName = children[i].getChildren()[j].getChildren()[0];
+            // calculate the max width
+            maxWidth = maxWidth > labelName.getPreferredBoxWidth() ? maxWidth : labelName.getPreferredBoxWidth();
+          }          
+          // go again threw all children of the grouplayout
           for (var k = 0; k < children[i].getChildren().length; k++) {
-						// the the max width to every layout
+            // the the max width to every layout
             children[i].getChildren()[k].getChildren()[0].setWidth(maxWidth);
-          }    				
-				}
-			}
-		},
+          }            
+        }
+      }
+    },
     
     
     /*
@@ -578,12 +578,12 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
   
         // textfield
         } else if (propertySet.check == "Integer" || 
-				           propertySet.check == "String" ||
-									 propertySet.check == "NonEmptyString" ||
-									 propertySet.check == "Label" ||
-									 propertySet.check == "Float" ||
-									 propertySet.check == "Double" || 
-									 propertySet.check == "Number") {
+                   propertySet.check == "String" ||
+                   propertySet.check == "NonEmptyString" ||
+                   propertySet.check == "Label" ||
+                   propertySet.check == "Float" ||
+                   propertySet.check == "Double" || 
+                   propertySet.check == "Number") {
           // create new textfield
           var textField = new qx.ui.form.TextField();
           
@@ -781,7 +781,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             
           // if it is a widget and not the client document  
           } else if ((property.check == "qx.ui.core.Widget" || 
-					            property.check == "qx.ui.core.Parent")&& 
+                      property.check == "qx.ui.core.Parent")&& 
               (this._controller.getWidget().classname != "qx.ui.core.ClientDocument")) {
             
             // create the link to the widget
@@ -805,12 +805,12 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
               }, this);            
             }   
 
-				  // fonts    
-				  } else if(property.check == "Font") {
-						// set the font of the label
-            layout.getChildren()[1].setFont(value);						
-						layout.getChildren()[1].setText(value + "");
-						
+          // fonts    
+          } else if(property.check == "Font") {
+            // set the font of the label
+            layout.getChildren()[1].setFont(value);            
+            layout.getChildren()[1].setText(value + "");
+            
           } else {
             layout.getChildren()[1].setText(value + "");
           }
@@ -890,6 +890,22 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       
       // add the colorpopup to the document
       this._colorPopup.addToDocument();
+
+      // wrapp the function on the color popup which creates the color selector
+      // save the reference to the original function
+      var orgFunction = this._colorPopup._createColorSelector;
+      // create a new function to substitute the old
+      var self = this;
+      var newFunction = function() {
+        // start the exclusion
+        inspector.Inspector.getInstance().beginExclusion();
+        // call the old function    
+        orgFunction.call(self._colorPopup);
+        // end the exclusion
+        inspector.Inspector.getInstance().endExclusion();
+      }
+      // add the new function to the color popup
+      this._colorPopup._createColorSelector = newFunction;
       
       // create the object so save the colorFields in the property editor
       this._colorFields = {};
