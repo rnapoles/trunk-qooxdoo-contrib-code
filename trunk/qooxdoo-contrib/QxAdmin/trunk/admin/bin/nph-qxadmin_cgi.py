@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-import sys, os, re
+import sys, os, re, string
 import cgi
 #import cgitb; cgitb.enable()
 
 config = {
     'debug': 0,
     'makefile': "Makefile",
+    'versionfile' : "VERSION",
 }
 
 
@@ -27,6 +28,64 @@ def invoke_piped(cmd):
     rcode = p.returncode
 
     return (rcode, output, errout)
+
+def find_common_prefix (p1, p2):
+  # Of two paths p1 and p2 return the common path prefix, the rest of p1, and
+  # the rest of p2: find_common_prefix("/home/thron7/div/corp","/home/thron7/workspace/qooxdoo.trunk") =>
+  #'"/home/thron7/" "div/corp" "workspace/qooxdoo.trunk"
+  a1 = p1.split(os.sep)
+  a2 = p2.split(os.sep)
+  com= []
+  common = ""
+  p1rest = "" 
+  p2rest = "" 
+  ind = 0 
+  for i in range(len(a1)): 
+    if (i >= len(a2) or a1[i] != a2[i]): 
+      ind = i 
+      break
+    com.append(a1[i]) 
+  p1rest = os.sep.join( a1[ind:])
+  p2rest = os.sep.join( a2[ind:])
+  common = os.sep.join( com)
+  return (common, p1rest, p2rest)
+
+def part_to_ups (part):
+  #"../.."
+  a1 = string.split(part, os.sep)
+  s  = []
+  for i in a1:           
+    s.append( "..")
+  return os.sep.join(s) or ""
+
+def check_qx(pexp):
+    dir = os.path.dirname(pexp)
+    fle = os.path.join(dir,"frontend","framework",config['makefile'])
+    if os.path.exists(fle):
+        f = open(fle)
+        cont = f.read()
+        if re.search(r'qooxdoo - the new era',cont):
+            return 1
+    return 0
+
+def do_reldir(form):
+    rc = 0
+    print "Content-type: text/plain"
+    print
+    if not 'path' in form:
+        print "Missing parameter 'make'; aborting..."
+        return -1
+    else:
+        path_exp = form['path'].value
+    cwd = os.getcwd()
+    common = find_common_prefix (cwd, os.path.abspath(path_exp))
+    ups = part_to_ups (common[1])
+    reldir = os.sep.join([ups,common[2]])
+    if check_qx(reldir):
+        print os.path.dirname(reldir)
+    else:
+        print "-1"
+    return rc
 
 def do_make(form):
     # our output is text/plain
@@ -267,6 +326,8 @@ def dispatch_action(form):
             do_make(form)
         elif (action == 'getvars'): # get existing Makefile vars
             do_getmakvars(form)
+        elif (action == 'reldir'): # relativize absolute path
+            do_reldir(form)
         else:
             print "Content-type: text/plain"
             print
