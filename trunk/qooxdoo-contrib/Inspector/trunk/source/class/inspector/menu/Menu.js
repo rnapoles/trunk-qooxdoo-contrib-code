@@ -35,7 +35,7 @@ qx.Class.define("inspector.menu.Menu", {
     // initialize the layout
     this.setWidth("auto");
     this.setHeight("auto");
-    this.setTop(-24);
+    this.setTop(-24);    
     
     // register the handler to move the menu out of the screen    
     this.__registerMoveListener();    
@@ -535,6 +535,14 @@ qx.Class.define("inspector.menu.Menu", {
       }
       // open the settings window
       this._settingsWindow.open();
+      
+      // check if cookies are alowed
+      if (!qx.io.local.CookieApi.get("ApiViewerUri")) {
+        this._settingsWindow.enableSettings(false);
+        alert("Enable cookies to access the settings.");
+      } else {
+        this._settingsWindow.enableSettings(true);
+      }
     }
 
   }
