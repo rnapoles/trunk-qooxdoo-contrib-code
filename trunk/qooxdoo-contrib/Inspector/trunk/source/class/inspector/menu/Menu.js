@@ -16,7 +16,7 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-qx.Class.define("inspector.Menu", {
+qx.Class.define("inspector.menu.Menu", {
   
   extend : qx.ui.layout.VerticalBoxLayout,
 
@@ -34,12 +34,12 @@ qx.Class.define("inspector.Menu", {
     
     // initialize the layout
     this.setWidth("auto");
-		this.setHeight("auto");
+    this.setHeight("auto");
     this.setTop(-24);
     
-    // register the handler to move the menu out of the screen		
-		this.__registerMoveListener();		
-		
+    // register the handler to move the menu out of the screen    
+    this.__registerMoveListener();    
+    
     // register an event listener to set the staart position
     this.addEventListener("appear", function() {
       var middle = qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2;  
@@ -54,13 +54,13 @@ qx.Class.define("inspector.Menu", {
     this.__createMenubar();
     // create the popup which holds the about text
     this.__createAboutPopup();
-		// create the popup which is shown an the startup
-		this.__createStartPopup();
-		
-		// create a atom to show the down arrows
-	  downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
-		downAtom.setWidth("100%");
-		this.add(downAtom);		
+    // create the popup which is shown an the startup
+    this.__createStartPopup();
+    
+    // create a atom to show the down arrows
+    downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
+    downAtom.setWidth("100%");
+    this.add(downAtom);    
   }, 
   
   
@@ -74,7 +74,8 @@ qx.Class.define("inspector.Menu", {
     *********************************
        ATTRIBUTES
     *********************************
-    */       
+    */    
+    // reference to the inspector   
     _inspector: null,
     
     // commands
@@ -86,7 +87,7 @@ qx.Class.define("inspector.Menu", {
     _hideEverythingCommand: null,
     
     // menus
-		_menubar: null,
+    _menubar: null,
     _inspectorMenu: null,
     
     // inspector menu buttons
@@ -120,6 +121,12 @@ qx.Class.define("inspector.Menu", {
       return [this._inspectorMenu, this._aboutPopup, this._welcomePopup, this];
     },
     
+    
+    /*
+    *********************************
+       BUTTON RESETTER
+    *********************************
+    */    
     /**
      * Sets the find button to unchecked. This is used to 
      * signal the end of the find mode.
@@ -127,7 +134,43 @@ qx.Class.define("inspector.Menu", {
     resetFindButton: function() {
       this._findButton.setChecked(false);
     },
-  
+    
+    
+    /**
+     * Resets the open button of the console so it 
+     * is unchecked.
+     */
+    resetConsoleButton: function() {
+      this._openConsoleButton.setChecked(false);
+    },
+
+
+    /**
+     * Resets the open button of the widget finder so it 
+     * is unchecked.
+     */
+    resetWidgetButton: function() {
+      this._openWidgetFinderButton.setChecked(false);    
+    },
+    
+    
+    /**
+     * Resets the open button of the object finder so it 
+     * is unchecked.
+     */    
+    resetObjectButton: function() {
+      this._openObjectFinderButton.setChecked(false);
+    },
+    
+    
+    /**
+     * Resets the open button of the property editor so it 
+     * is unchecked.
+     */    
+    resetPropertyButton: function() {
+      this._openPropertyEditorButton.setChecked(false);
+    },  
+    
     
     /*
     *********************************
@@ -146,21 +189,25 @@ qx.Class.define("inspector.Menu", {
         this._openWidgetFinderButton.setChecked(true);
         this._openPropertyEditorButton.setChecked(true);
       }, this);
+      
       // create the open console command
       this._openConsoleCommand = new qx.client.Command("CTRL+SHIFT+F1");
       this._openConsoleCommand.addEventListener("execute", function(e) {
         this._openConsoleButton.toggleChecked();
       }, this);
+      
       // create the open object finder command
       this._openObjectFinderCommand = new qx.client.Command("CTRL+SHIFT+F2");
       this._openObjectFinderCommand.addEventListener("execute", function(e) {
         this._openObjectFinderButton.toggleChecked();
       }, this);
+      
       // create the opne widget finder command
       this._openWidgetFinderCommand = new qx.client.Command("CTRL+SHIFT+F3");
       this._openWidgetFinderCommand.addEventListener("execute", function(e) {
         this._openWidgetFinderButton.toggleChecked();
       }, this);
+      
       // create the open property editor command
       this._openPropertyEditorCommand = new qx.client.Command("CTRL+SHIFT+F4");
       this._openPropertyEditorCommand.addEventListener("execute", function(e) {
@@ -172,16 +219,17 @@ qx.Class.define("inspector.Menu", {
       this._findCommand.addEventListener("execute", function(e) {
         this._findButton.execute();      
       }, this);
+      
       // create the command which hides and shows all application components
       this._hideEverythingCommand = new qx.client.Command("CTRL+SHIFT+H");
       this._hideEverythingCommand.addEventListener("execute", function(e) {
         // if the menu is on the screen
         if (this.getDisplay()) {
           // hide all windows
-          this._inspector.hideWidgetFinder();
-          this._inspector.hideObjectFinder();
-          this._inspector.hideConsole();
-          this._inspector.hidePropertyEditor();
+          this._openWidgetFinderButton.setChecked(false);
+          this._openConsoleButton.setChecked(false);
+          this._openObjectFinderButton.setChecked(false);
+          this._openPropertyEditorButton.setChecked(false);
           // hide the menu
           this.setDisplay(false);          
         } else {
@@ -192,6 +240,11 @@ qx.Class.define("inspector.Menu", {
     },
 
 
+    /**
+     * Creates the menu which is shown by the click on the 
+     * inspector button in the menu. That includes the creation 
+     * of all buttons in the menu.
+     */
     __createInspectorMenu: function() {
       // create the menu
       this._inspectorMenu = new qx.ui.menu.Menu();
@@ -250,14 +303,17 @@ qx.Class.define("inspector.Menu", {
     },
     
     
+    /**
+     * Creates the menubar including the buttons on the bar.
+     */
     __createMenubar: function() {
-			// create the menu bar
-			this._menubar = new qx.ui.toolbar.ToolBar();
+      // create the menu bar
+      this._menubar = new qx.ui.toolbar.ToolBar();
       
-			this._menubar.setPadding(1);
-			// add the bar to the layout			
-			this.add(this._menubar);
-			
+      this._menubar.setPadding(1);
+      // add the bar to the layout      
+      this.add(this._menubar);
+      
       // create a button for the inspector menu
       var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", this._inspectorMenu);
       this._menubar.add(inspectorButton);
@@ -335,9 +391,9 @@ qx.Class.define("inspector.Menu", {
     },
     
     
-		/**
-		 * Creates the popup for the about screen.
-		 */
+    /**
+     * Creates the popup for the about screen.
+     */
     __createAboutPopup: function() {
       // create the popup
       this._aboutPopup = new qx.ui.popup.Popup();
@@ -353,7 +409,7 @@ qx.Class.define("inspector.Menu", {
       var label = "<font size='4' face='Verdana'><strong>Inspector 0.1</strong></font><br><br>" + 
                   "<a href='http://www.qooxdoo.org' target='_blank'>qooxdoo.org</a><br>" + 
                   "1und1 Internet AG<br><br>" + 
-                  "<strong>License:</strong><br>See the LICENSE file in the<br>project's top-level<br>directory for details.";
+                  "<strong>License:</strong><br>See the LICENSE file in<br>the project's top-level<br>directory for details.";
       
       // add a atom containing the about text
       var aboutText = new qx.ui.basic.Atom(label);
@@ -363,92 +419,99 @@ qx.Class.define("inspector.Menu", {
       aboutText.setVerticalChildrenAlign("top");
       aboutText.getLabelObject().setPaddingLeft(10);
     },
-		
-		
-		/**
-		 * Creates a popup which will be shown to the position of 
-		 * the menu to the user.
-		 */
-		__createStartPopup: function() {
-		  // create the popup	
-			this._welcomePopup = new qx.ui.popup.Popup();
-			// add the popup to the document
-			this._welcomePopup.addToDocument();
-			// set the opsition of the popup
-			this._welcomePopup.setWidth(255);
-			this._welcomePopup.setHeight(84);
-			// set the position of the popup
-			this._welcomePopup.setTop(3);
-			this._welcomePopup.setLeft((qx.ui.core.ClientDocument.getInstance().getInnerHeight() / 2));
-			// create and add the image for the background
-      var backGround = new qx.ui.basic.Image(qx.io.Alias.getInstance().resolve("inspector/image/popup.png"));			
-			this._welcomePopup.add(backGround);
-			// create the text for the popup
-			var label = new qx.ui.basic.Label("<strong>Inspector</strong><br>Move here to show the Inspector menu.");
-			this._welcomePopup.add(label);
+    
+    
+    /**
+     * Creates a popup which will show the position of 
+     * the menu to the user.
+     */
+    __createStartPopup: function() {
+      // create the popup  
+      this._welcomePopup = new qx.ui.popup.Popup();
+      // add the popup to the document
+      this._welcomePopup.addToDocument();
+      // set the opsition of the popup
+      this._welcomePopup.setWidth(255);
+      this._welcomePopup.setHeight(84);
+      // set the position of the popup
+      this._welcomePopup.setTop(3);
+      this._welcomePopup.setLeft((qx.ui.core.ClientDocument.getInstance().getInnerHeight() / 2));
+      // create and add the image for the background
+      var backGround = new qx.ui.basic.Image(qx.io.Alias.getInstance().resolve("inspector/image/popup.png"));      
+      this._welcomePopup.add(backGround);
+      // create the text for the popup
+      var label = new qx.ui.basic.Label("<strong>Inspector</strong><br>Move here to show the Inspector menu.");
+      this._welcomePopup.add(label);
       // set the position of the text in the popup
-			label.setTop(33);
-			label.setLeft(10);
-			// show the popup
-			this._welcomePopup.bringToFront();
-			this._welcomePopup.show();
-			// start a timer to hide the popup in 4 seconds
-			var self = this;
-			window.setTimeout(function() {
-		    self._welcomePopup.hide();
-			}, 4000);
-		},
-		
-		__registerMoveListener: function() {
-	    this.addEventListener("mouseover", function() {
-	      var self = this;
-	      // if the time to move the menu up is enabled
-	      if (this._upTimer != null) {
-	        // clear it
-	        window.clearTimeout(this._upTimer);
-	      }
-	      
-	      // start a timer to do the down move
-	      this._downTimer= window.setTimeout(function() {
-	        // do only if the moving is not in progress and not in the end position      
-	        if (self._moveInterval == null && self.getTop() < 0) {
-	          // start an interval to move the menu down
-	          self._moveInterval = window.setInterval(function() {
-	            // stor the current top position
-	            var currentTop = self.getTop();
-	            // add one to the position
-	            currentTop = currentTop + 1;
-	            // set the new position
-	            self.setTop(currentTop);
-	            // if the end position is reached
-	            if (self.getTop() >= 0) {
-	              // clear the interavl
-	              window.clearInterval(self._moveInterval);
-	              // mark that the interval has been reseted
-	              self._moveInterval = null;
-	            }
-	          }, 10);
-	        }          
-	      }, 10);
-	    }, this);
-	    
-	    
-	    this.addEventListener("mouseout", function() {            
-	      var self = this;
-	      // set a timer to enable the reset to the starting position 
-	      this._upTimer = window.setTimeout(function() {
-	        // sett the start position
-	        self.setTop(-24);
-	        // if there is still a movement
-	        if (self._moveInterval != null) {
-	          // clear the move interval        
-	          window.clearInterval(self._moveInterval);
-	          // mark that the moving has ended
-	          self._moveInterval = null;
-	        }
-	      }, 300);      
-	    }, this);  			
-		}
+      label.setTop(33);
+      label.setLeft(10);
+      // show the popup
+      this._welcomePopup.bringToFront();
+      this._welcomePopup.show();
+      // start a timer to hide the popup in 4 seconds
+      var self = this;
+      window.setTimeout(function() {
+        self._welcomePopup.hide();
+      }, 4000);
+    },
+    
+    
+    /**
+     * Registers a mouseover and mouseout listener. These two listeners take 
+     * care of moving the meno out of the screen. 
+     */
+    __registerMoveListener: function() {
+      
+      // register the mouseover listener
+      this.addEventListener("mouseover", function() {
+        var self = this;
+        // if the time to move the menu up is enabled
+        if (this._upTimer != null) {
+          // clear it
+          window.clearTimeout(this._upTimer);
+        }
+        
+        // start a timer to do the down move
+        this._downTimer= window.setTimeout(function() {
+          // do only if the moving is not in progress and not in the end position      
+          if (self._moveInterval == null && self.getTop() < 0) {
+            // start an interval to move the menu down
+            self._moveInterval = window.setInterval(function() {
+              // stor the current top position
+              var currentTop = self.getTop();
+              // add one to the position
+              currentTop = currentTop + 1;
+              // set the new position
+              self.setTop(currentTop);
+              // if the end position is reached
+              if (self.getTop() >= 0) {
+                // clear the interavl
+                window.clearInterval(self._moveInterval);
+                // mark that the interval has been reseted
+                self._moveInterval = null;
+              }
+            }, 10);
+          }          
+        }, 10);
+      }, this);
+      
+      // register a mouseout listener
+      this.addEventListener("mouseout", function() {            
+        var self = this;
+        // set a timer to enable the reset to the starting position 
+        this._upTimer = window.setTimeout(function() {
+          // set to the start position
+          self.setTop(-24);
+          // if there is still a movement
+          if (self._moveInterval != null) {
+            // clear the move interval        
+            window.clearInterval(self._moveInterval);
+            // mark that the moving has ended
+            self._moveInterval = null;
+          }
+        }, 300);      
+      }, this);        
+    }
 
   }
 });
