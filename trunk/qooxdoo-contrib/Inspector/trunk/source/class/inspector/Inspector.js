@@ -46,6 +46,7 @@ qx.Class.define("inspector.Inspector", {
     OBJECT_CAPTION_TITLE: "Objects",
     WIDGET_CAPTION_TITLE: "Widgets",
     PROPERTY_CAPTION_TITLE: "Properties",
+    SETTINGS_CAPTION_TITLE: "Settings",
     
     API_VIEWER_URI: "../api/index.html"    
   },
@@ -86,6 +87,20 @@ qx.Class.define("inspector.Inspector", {
         }, 0);
       }      
     }, this);
+    
+    
+    // set the default url of the api viewer if it is not set
+    if (!qx.io.local.CookieApi.get("ApiViewerUri")) {
+      qx.io.local.CookieApi.set("ApiViewerUri", inspector.Inspector.API_VIEWER_URI);
+    }
+    // set the default width of the api viewer if it is not set
+    if (!qx.io.local.CookieApi.get("ApiViewerWidth")) {
+      qx.io.local.CookieApi.set("ApiViewerWidth", 900);
+    }
+    // set the default height of the api viewer if it is not set
+    if (!qx.io.local.CookieApi.get("ApiViewerHeight")) {
+      qx.io.local.CookieApi.set("ApiViewerHeight", 600);
+    }
   },
 
 
@@ -147,11 +162,19 @@ qx.Class.define("inspector.Inspector", {
         if (this._apiWindow == null) {
           // initialize the api window
           this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
-          this._apiWindow.setWidth(900);
-          this._apiWindow.setHeight(600);                    
         }        
+        // try to get the dimensions of the window
+        try {
+          // set the dimension of the window from the cookie
+          this._apiWindow.setWidth(parseInt(qx.io.local.CookieApi.get("ApiViewerWidth")));
+          this._apiWindow.setHeight(parseInt(qx.io.local.CookieApi.get("ApiViewerHeight")));
+        } catch (e) {
+          // set the standard value
+          this._apiWindow.setWidth(900);
+          this._apiWindow.setHeight(600);
+        }
         // define the URL to the apiview
-        var urlString = inspector.Inspector.API_VIEWER_URI;
+        var urlString = qx.io.local.CookieApi.get("ApiViewerUri");
         // if there is a property editor
         if (this._propertyEditor != null) {
           // check if a property is selected

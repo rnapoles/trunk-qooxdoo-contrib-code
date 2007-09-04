@@ -108,6 +108,9 @@ qx.Class.define("inspector.menu.Menu", {
     _downTimer : null,
     _moveInterval: null,
     
+    // the settings window
+    _settingsWindow: null,
+        
 
     /*
     *********************************
@@ -118,7 +121,7 @@ qx.Class.define("inspector.menu.Menu", {
      * @return the components of the menu.
      */
     getComponents: function() {
-      return [this._inspectorMenu, this._aboutPopup, this._welcomePopup, this];
+      return [this._inspectorMenu, this._aboutPopup, this._welcomePopup, this._settingsWindow, this];
     },
     
     
@@ -266,7 +269,12 @@ qx.Class.define("inspector.menu.Menu", {
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());      
       
-      this._inspectorMenu.add(new qx.ui.menu.Button("Settings..."));
+      // the settings button
+      var settingsButton = new qx.ui.menu.Button("Settings...");
+      settingsButton.addEventListener("execute", function() {
+        this.__openSettingsWindow();
+      }, this);
+      this._inspectorMenu.add(settingsButton);
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       
@@ -511,6 +519,22 @@ qx.Class.define("inspector.menu.Menu", {
           }
         }, 300);      
       }, this);        
+    },
+    
+    
+    /**
+     * Opens the settings window. If no window hase benn created jet,
+     * the function creates a window and opens the new object.
+     */
+    __openSettingsWindow: function() {
+      // if there is no settings window
+      if (this._settingsWindow == null) {
+        // create one
+        this._settingsWindow = new inspector.menu.SettingsWindow();
+        this._settingsWindow.addToDocument();
+      }
+      // open the settings window
+      this._settingsWindow.open();
     }
 
   }

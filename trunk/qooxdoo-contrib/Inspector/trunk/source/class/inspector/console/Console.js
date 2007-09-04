@@ -48,19 +48,19 @@ qx.Class.define("inspector.console.Console", {
     qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
     // add the console appender
     qx.log.Logger.ROOT_LOGGER.addAppender(appender);
-		
-		// add a event listener if the console cahnged active
-		this.addEventListener("changeActive", function(e) {
+    
+    // add a event listener if the console cahnged active
+    this.addEventListener("changeActive", function(e) {
       // if the console is selected
-			if (e.getValue()) {
-				// set a timeout to focus the textfield after everything is done
-				var self = this;
-				window.setTimeout(function() {
-				  // set the focus to the textfield
-					self._textField.focus();			
-				}, 0);
-			}
-		}, this);
+      if (e.getValue()) {
+        // set a timeout to focus the textfield after everything is done
+        var self = this;
+        window.setTimeout(function() {
+          // set the focus to the textfield
+          self._textField.focus();      
+        }, 0);
+      }
+    }, this);
   },
 
 
@@ -134,8 +134,8 @@ qx.Class.define("inspector.console.Console", {
      * @param widget {qx.core.Object} The current selected object.
      */
     setWidget: function(widget) {
-			this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + ": " + 
-			                widget.classname + " [" + widget.toHashCode() + "]");
+      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + ": " + 
+                      widget.classname + " [" + widget.toHashCode() + "]");
       this._widget = widget;
     },
     
@@ -280,7 +280,7 @@ qx.Class.define("inspector.console.Console", {
         }
       } catch (e) {
         // print out the exception
-        this.error(e);
+        this.error(e + "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + qx.dev.StackTrace.getStackTraceFromError(e).join("<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"));
       }
     },
     
