@@ -388,6 +388,21 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * @param widget {qx.core.Object} The object which should be selected.
      */
     _selectWidgetInTheTree: function (widget) {
+			// create a array of parents
+			var parents = [];
+			// save the parrents in that array
+			var w = widget;
+			while(w.getParent() != null) {
+				parents.push(w);
+				w = w.getParent();
+			}
+			// Go backwards threw all parents
+			for (var i = parents.length - 1; i > 0; i--) {
+				// open the folder of that parent
+				this._openFolder(parents[i]);
+			}
+					
+		  
       var id = widget.toHashCode();
       // get all items of the tree
       var items = this._tree.getItems(true, true);
@@ -421,8 +436,37 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         this._tree.getManager().setAnchorItem(null);
         // tell the inspector class that the widget has changed
         this._inspector.setWidget(widget, this);
-      }
+      }	
     },
+		
+		
+		/**
+		 * Opens the Folder that contains the widget. 
+		 * @param widget {qx.ui.core.Widget} The widget to open the corresponding folder.
+		 */
+		_openFolder: function(widget) {
+      var id = widget.toHashCode();
+      // get all items of the tree
+      var items = this._tree.getItems(true, true);
+      // check the root element of the tree
+      if (qx.ui.core.ClientDocument.getInstance().toHashCode() == id) {
+        // select the root of the tree
+        this._tree.setSelected(true);
+        // tell the inspector class that the widget has changed
+        this._inspector.setWidget(qx.ui.core.ClientDocument.getInstance(), this);        
+        return;
+      }
+      // for every element
+      for (var i = 0; i < items.length; i++) {
+        // if the elemnt was found
+        if (items[i].getUserData('id') == id) {
+          // select in in the tree
+          items[i].open();
+          // stop searching for the element
+          break;
+        }
+      }            		
+		},
     
     
     /*
