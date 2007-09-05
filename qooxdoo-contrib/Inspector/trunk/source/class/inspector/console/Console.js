@@ -210,7 +210,11 @@ qx.Class.define("inspector.console.Console", {
      * Prints out an error to the console.
      * @param message {String} The error message.
      */    
-    error: function(message) {           
+    error: function(message) {
+			// open the console if it is not opened
+			if (!this.isOpen()) {
+				this.open();
+			}
       var label = this._getLabel("", message, "red", "error", "#FFFFE0");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -223,6 +227,10 @@ qx.Class.define("inspector.console.Console", {
      * @param message {String} The warning message to print out.
      */
     warn: function(message) {
+      // open the console if it is not opened
+      if (!this.isOpen()) {
+        this.open();
+      }			
       var label = this._getLabel("", message, "black", "warning", "#00FFFF");           
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -235,6 +243,10 @@ qx.Class.define("inspector.console.Console", {
      * @param message {String} The info message.
      */
     info: function(message) {
+      // open the console if it is not opened
+      if (!this.isOpen()) {
+        this.open();
+      }			
       var label = this._getLabel("", message, "black", "info");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -247,6 +259,10 @@ qx.Class.define("inspector.console.Console", {
      * @param message {String} The debug message.
      */
     debug: function(message) {
+      // open the console if it is not opened
+      if (!this.isOpen()) {
+        this.open();
+      }			
       var label = this._getLabel("", message, "grey");        
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
