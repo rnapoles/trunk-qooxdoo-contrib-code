@@ -103,16 +103,16 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       // return null otherwise
       return null;
     },
-	
+  
 
     /**
-     * Reloads the values in the tree.
+     * Reloads the first two layers of the tree.
      */
     reload: function() {   
       // start the exclusion
       this._inspector.beginExclusion();      
       // refill the tree
-      this._fillTree(qx.ui.core.ClientDocument.getInstance(), this._tree);
+      this._fillTree(qx.ui.core.ClientDocument.getInstance(), this._tree, 2);
       // end the exclusion
       this._inspector.endExclusion();      
     },
@@ -127,10 +127,12 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * Reload the tree. If the tree is once loaded, only the changes in the tree
      * will be loaded.
      * @param parentWidget {qx.ui.core.Widget} The widget to handle.
-     * @param parentTreeFolder {qx.ui.tree.TreeFolder} the folder to add the children 
+     * @param parentTreeFolder {qx.ui.tree.TreeFolder} The folder to add the children 
      *    of the parentWidget.
+     * @param recursive {Integer} Indicates if ther should be a recursive call
+     *    of this function.
      */
-    _fillTree: function(parentWidget, parentTreeFolder)  {
+    _fillTree: function(parentWidget, parentTreeFolder, recursive)  {
       // get all components fo the inspector application
       var components = this._inspector.getComponents();
       
@@ -155,6 +157,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       
       // seperate index necessary because the components of the inspector are omitted in the tree view
       var i = 0;
+      // reduce the recursive calls
+      recursive--;
       // visit all children     
       for (var k = 0; k < parentWidget.getChildrenLength(); k++) {
         // get the current child
@@ -187,7 +191,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
           childTreeFolder.setUserData('id', childWidget.toHashCode());
 
           // add the highlight listener to the tree elements
-          childTreeFolder.addEventListener("changeSelected", this._treeClickHandler, this);                            
+          childTreeFolder.addEventListener("changeSelected", this._treeClickHandler, this);
+          childTreeFolder.addEventListener("changeOpen", this._treeOpenHandler, this);                            
           
         } else { 
           // if the folder is the same          
@@ -218,14 +223,16 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
             // append the id of the widget to the tree folder
             childTreeFolder.setUserData('id', childWidget.toHashCode());
   
-            // add the highlight listener to the tree elements
-            childTreeFolder.addEventListener("changeSelected", this._treeClickHandler, this);  
+            // add the listeners to the tree elements
+            childTreeFolder.addEventListener("changeSelected", this._treeClickHandler, this);
+            childTreeFolder.addEventListener("changeOpen", this._treeOpenHandler, this);  
           }
+        }  
+        // if the recursive flag is set
+        if (recursive > 0) {
+          // visit the children of the current child
+          this._fillTree(childWidget, childTreeFolder, recursive);          
         }
-
-        // visit the children of the current child
-        this._fillTree(childWidget, childTreeFolder);
-
         // if the last child of the folder has been created
         if (i + 1 == parentWidget.getChildrenLength()) {
           // get the new child folders of the current parent
@@ -242,6 +249,23 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         i++;
       }  
     }, 
+    
+    
+    /**
+     * Handler function to handle the opening of a tree folder.
+     * The function invokes a reload of the sufolders of the clicked 
+     * forlder
+     * @param {Object} e
+     */
+    _treeOpenHandler: function(e) {
+      // if the folder is open
+      if (e.getValue()) {
+        // get the selected widget
+        var selectedWidget = e.getTarget().getUserData('instance');        
+        // load the following two hirachi layers of the tree
+        this._fillTree(selectedWidget, e.getTarget(), 2);      
+      }
+    },
 
     
     /**
@@ -462,21 +486,21 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-	    // if the left is not set
-			if (this.getLeft() == null) {
-			  // put the window an the right side of the browser 
-	      this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);				
-			}
-			// if the top is not set
-			if (this.getTop() == null) {
-	      // set top of the window 25% of the browsers heigth
-	      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);				
-			}
-			// if the height is not set
-			if (this.getHeight() == "auto") {
-	      // make the widget finder 25% of the browser heigth high
-	      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);				
-			}
+      // if the left is not set
+      if (this.getLeft() == null) {
+        // put the window an the right side of the browser 
+        this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);        
+      }
+      // if the top is not set
+      if (this.getTop() == null) {
+        // set top of the window 25% of the browsers heigth
+        this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
+      }
+      // if the height is not set
+      if (this.getHeight() == "auto") {
+        // make the widget finder 25% of the browser heigth high
+        this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
+      }
     },
     
     
@@ -491,7 +515,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._tree.setBackgroundColor("white");
       this._tree.setBorder("inset");
       this._tree.setOverflow("auto");
-			this._tree.setUserData("id", qx.ui.core.ClientDocument.getInstance().toHashCode());
+      this._tree.setUserData("id", qx.ui.core.ClientDocument.getInstance().toHashCode());
       this._tree.setWidth(320);
       this._tree.setHeight("1*");
       this._tree.setMinHeight(10);
