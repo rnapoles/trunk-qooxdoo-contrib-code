@@ -79,6 +79,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     
     
     /**
+     * @internal
      * @return The components of the view.
      */
     getComponents: function() {
@@ -94,18 +95,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     containsProperty: function(key, classname) {
       return false;  
     },
-    
-    
-    /**
-     * The handler which switches the inherited status. 
-     * Throws an error in this view because it is not supported.
-     * @param e {Event}
-     */
-    switchInheritedStatus: function(e) {
-      // throw an exception if the method is caled on the abstract class
-      throw new Error("Abstract method call (switchInheritedStatus) in 'PropertyList'!");  
-    },
-    
+       
     
     /**
      * This function hides or shows the inherited properties of the current 

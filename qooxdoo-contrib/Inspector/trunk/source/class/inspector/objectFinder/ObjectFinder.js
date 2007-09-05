@@ -100,6 +100,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     */  
     /**
      * Returns the components of the widget finder.
+     * @internal
      * @return {Array} List of all components which should be
      *    ommited in the tree view of the developers application.
      */

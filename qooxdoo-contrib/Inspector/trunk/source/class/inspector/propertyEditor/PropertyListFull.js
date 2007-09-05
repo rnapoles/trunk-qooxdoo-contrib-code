@@ -95,6 +95,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     
     
     /**
+     * @internal
      * @return {Array} A list of all omponents used in this view.
      */
     getComponents: function() {

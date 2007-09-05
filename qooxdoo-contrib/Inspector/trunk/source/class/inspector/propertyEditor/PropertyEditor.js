@@ -90,6 +90,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     /**
      * Returns all the components of the property editor which should not
      * be shown in the widget finder.
+     * @internal
      * @return {Array} All components of the property editor.
      */
     getComponents: function() {
@@ -158,6 +159,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     /**
      * Sets the selected property.
+     * @internal
      * @param layout {qx.ui.layout.HorizontalBoxLayout} The layout containing the property. 
      */
     setSelectedProperty: function(layout) {
@@ -167,6 +169,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
+     * @internal
      * @return {qx.ui.layout.HorizontalBoxLayout} The selected property.
      */
     getSelectedProperty: function() {

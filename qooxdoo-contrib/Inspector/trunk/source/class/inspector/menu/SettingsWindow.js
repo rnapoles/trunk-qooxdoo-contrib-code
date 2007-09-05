@@ -75,6 +75,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     *********************************
     */
     /**
+     * @internal
      * @return the components of the menu.
      */
     getComponents: function() {
