@@ -42,7 +42,6 @@ qx.Class.define("inspector.AbstractWindow", {
     this.setMinHeight(130);
     this.setMinWidth(250);
     this.addToDocument();
-		this._minZIndex = 1e5 + 10;
     
     // initialize the inner layout    
     this._mainLayout = new qx.ui.layout.VerticalBoxLayout();
@@ -61,7 +60,15 @@ qx.Class.define("inspector.AbstractWindow", {
     
     // register the opacity handler
 //    this._registerOpacityHandler();
-    },
+
+    // register a listener to kep the inspector windows alwasy on top
+    this.addEventListener("changeZIndex", function(e) {
+			if (e.getValue() != 1e6) {
+				this.setZIndex(1e6);
+			}
+		}, this); 
+		
+  },
 
 
   /*
@@ -99,7 +106,7 @@ qx.Class.define("inspector.AbstractWindow", {
 		isOpen: function() {
 			return this.getVisibility() && this.getDisplay();
 		},
-   
+
 	 
     /*
     *********************************
