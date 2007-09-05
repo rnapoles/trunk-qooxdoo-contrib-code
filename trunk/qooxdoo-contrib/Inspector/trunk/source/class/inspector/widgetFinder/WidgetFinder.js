@@ -72,6 +72,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     */  
     /**
      * Returns the components of the widget finder.
+     * @internal
      * @return {Array} A list of all components in the widget finder.
      */       
     getComponents: function() {
@@ -255,7 +256,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * Handler function to handle the opening of a tree folder.
      * The function invokes a reload of the sufolders of the clicked 
      * forlder
-     * @param {Object} e
+     * @param e {Event} Event triggert by a changeOpen.
      */
     _treeOpenHandler: function(e) {
       // if the folder is open
@@ -271,7 +272,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     /**
      * Handler function to handle the click on the tree. The 
      * function selects a new widget.
-     * @param e {ClickEvent} 
+     * @param e {ClickEvent} Event triggert by a selectionChange.
      */
     _treeClickHandler: function(e) {
       // if the changeSelection changes from false -> true

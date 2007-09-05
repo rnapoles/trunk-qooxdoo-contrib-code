@@ -167,7 +167,11 @@ qx.Class.define("inspector.AbstractWindow", {
        OVERRIDDEN
     *********************************
     */
-    
+    /**
+     * Hides the window and tells the inspector hat the window 
+     * has been closed so that the buttons of the menu can stay
+     * in sync with the open/close status of the components.
+     */
     hide: function() {
       this.setVisibility(false);
       this._inspector.componentClosed(this);
@@ -181,6 +185,7 @@ qx.Class.define("inspector.AbstractWindow", {
     /**
      * Returns the components of the window which should not 
      * be in the widget hierarchy. 
+     * @internal
      */       
     getComponents: function() {
       // throw an exception if the method is caled on the abstract class

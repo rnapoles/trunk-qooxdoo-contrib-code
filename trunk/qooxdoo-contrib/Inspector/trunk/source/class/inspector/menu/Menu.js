@@ -143,6 +143,7 @@ qx.Class.define("inspector.menu.Menu", {
     *********************************
     */
     /**
+     * @internal
      * @return the components of the menu.
      */
     getComponents: function() {
@@ -158,6 +159,7 @@ qx.Class.define("inspector.menu.Menu", {
     /**
      * Sets the find button to unchecked. This is used to 
      * signal the end of the find mode.
+     * @internal
      */
     resetFindButton: function() {
       this._findButton.setChecked(false);
@@ -167,6 +169,7 @@ qx.Class.define("inspector.menu.Menu", {
     /**
      * Resets the open button of the console so it 
      * is unchecked.
+     * @internal
      */
     resetConsoleButton: function() {
       this._openConsoleButton.setChecked(false);
@@ -176,6 +179,7 @@ qx.Class.define("inspector.menu.Menu", {
     /**
      * Resets the open button of the widget finder so it 
      * is unchecked.
+     * @internal
      */
     resetWidgetButton: function() {
       this._openWidgetFinderButton.setChecked(false);    
@@ -185,6 +189,7 @@ qx.Class.define("inspector.menu.Menu", {
     /**
      * Resets the open button of the object finder so it 
      * is unchecked.
+     * @internal
      */    
     resetObjectButton: function() {
       this._openObjectFinderButton.setChecked(false);
@@ -194,6 +199,7 @@ qx.Class.define("inspector.menu.Menu", {
     /**
      * Resets the open button of the property editor so it 
      * is unchecked.
+     * @internal
      */    
     resetPropertyButton: function() {
       this._openPropertyEditorButton.setChecked(false);

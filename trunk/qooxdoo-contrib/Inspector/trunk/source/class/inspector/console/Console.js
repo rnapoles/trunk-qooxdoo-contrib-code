@@ -103,6 +103,7 @@ qx.Class.define("inspector.console.Console", {
     *********************************
     */  
     /**
+     * @internal
      * @return The components of the console.
      */
     getComponents: function() {

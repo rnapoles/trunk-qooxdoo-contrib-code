@@ -93,7 +93,8 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     *********************************
     */  
     /**
-     * Returns the components of the console
+     * @internal
+     * @return the components of the console
      */
     getComponents: function() {
       return [this, this._table, this._tableModel];
