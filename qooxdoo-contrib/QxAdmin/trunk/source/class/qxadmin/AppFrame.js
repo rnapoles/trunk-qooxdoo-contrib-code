@@ -1552,6 +1552,8 @@ qx.Class.define("qxadmin.AppFrame",
 
       var lab = new qx.ui.basic.Label("Please identify your qooxdoo installation by selecting one of its top-level files (AUTHORS, LICENSE,...)");
       this.widgets["window.chooseQxPath.lab"] = lab;
+      box.add(lab);
+
       var tf = new qx.ui.embed.HtmlEmbed("<input type='file' onchange='qx.core.Init.getInstance().getApplication().viewer.getQxPath(this.value);'>");
       box.add(tf);
       tf.set({
@@ -1586,6 +1588,7 @@ qx.Class.define("qxadmin.AppFrame",
       var url = this.adminPath+"?action=reldir&path="+path;
       this.__loadPage(url, function (npath) 
       {
+        npath = qx.lang.String.trim(npath);
         if (npath == "-1") 
         {
           if (this.widgets["window.chooseQxPath.lab"])
