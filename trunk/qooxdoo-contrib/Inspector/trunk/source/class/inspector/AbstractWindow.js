@@ -86,7 +86,20 @@ qx.Class.define("inspector.AbstractWindow", {
     // creating inspector reference
     _inspector: null,
     
+    /*
+    *********************************
+       PUBLIC
+    *********************************
+    */
+		/**
+		 * Return wether the window is on the creen or not.
+		 * @return {Boolean} true, if the window is on the screen
+		 */
+		isOpen: function() {
+			return this.getVisibility() && this.getDisplay();
+		},
    
+	 
     /*
     *********************************
        CONSTRUCTOR HELPERS
