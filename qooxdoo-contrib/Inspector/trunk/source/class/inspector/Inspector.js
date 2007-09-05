@@ -808,7 +808,7 @@ qx.Class.define("inspector.Inspector", {
       this._catchClickLayer.setHeight("100%");
       this._catchClickLayer.setBackgroundColor("black");
       this._catchClickLayer.setOpacity(0.1);
-      this._catchClickLayer.setZIndex(1e5 + 2);
+      this._catchClickLayer.setZIndex(1e6 - 1);
       this._catchClickLayer.hide();
       this._catchClickLayer.addToDocument();
       
@@ -851,7 +851,7 @@ qx.Class.define("inspector.Inspector", {
       // create a new overlay atom object
       this._highlightOverlay = new qx.ui.basic.Atom();
       this._highlightOverlay.setBorder(this._highlightBorder);
-      this._highlightOverlay.setZIndex(1e5 + 1);
+      this._highlightOverlay.setZIndex(1e6 - 2);
       this._highlightOverlay.hide();
       this._highlightOverlay.addToDocument();     
     },
