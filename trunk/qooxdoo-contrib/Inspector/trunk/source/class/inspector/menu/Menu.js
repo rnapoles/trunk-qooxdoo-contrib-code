@@ -339,7 +339,9 @@ qx.Class.define("inspector.menu.Menu", {
           // hide the menu
           this.setDisplay(false);
           // hide the settings window
-          this._settingsWindow.close();          
+          if (this._settingsWindow != null) {
+						this._settingsWindow.close();						
+					}
         } else {
           // show the menu
           this.setDisplay(true);
@@ -402,9 +404,28 @@ qx.Class.define("inspector.menu.Menu", {
       
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
-      this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
+      // hide everything button
+			this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
       this._hideEverythingButton.setCommand(this._hideEverythingCommand);
       this._inspectorMenu.add(this._hideEverythingButton);
+			
+			// listener which holds the bemubar down while the menu is shown
+			this._inspectorMenu.addEventListener("mousemove", function() {
+				// if a uptimer is set
+				if (this._upTimer != null) {
+					// clear it
+					window.clearTimeout(this._upTimer);
+					this._upTimer = null;
+				}
+			}, this);			
+			// listener which moves the menubar away if the menu is closed
+			this._inspectorMenu.addEventListener("changeVisibility", function(e) {
+				// if the menu is clicked away
+				if (!e.getValue()) {
+					// hide the menu
+  				this.setTop(-24);				
+				}
+			}, this);
     },
     
     

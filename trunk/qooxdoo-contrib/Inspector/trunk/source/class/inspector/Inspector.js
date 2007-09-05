@@ -883,7 +883,10 @@ qx.Class.define("inspector.Inspector", {
       }
       if (!qx.io.local.CookieApi.get("HighlightShortcut")) {
         qx.io.local.CookieApi.set("HighlightShortcut", "CTRL+SHIFT+I");
-      }   
+      }
+      if (!qx.io.local.CookieApi.get("HideAllShortcut")) {
+        qx.io.local.CookieApi.set("HideAllShortcut", "CTRL+SHIFT+H");
+      }  			
       if (!qx.io.local.CookieApi.get("OpenAllShortcut")) {
         qx.io.local.CookieApi.set("OpenAllShortcut", "CTRL+SHIFT+F11");
       }
