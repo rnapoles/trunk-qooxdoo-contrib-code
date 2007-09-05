@@ -85,6 +85,8 @@ qx.Class.define("inspector.menu.Menu", {
     _openConsoleCommand: null,
     _openAllCommand: null,
     _hideEverythingCommand: null,
+    _findCommand: null,
+    _highlightCommand: null,
     
     // menus
     _menubar: null,
@@ -92,6 +94,8 @@ qx.Class.define("inspector.menu.Menu", {
     
     // inspector menu buttons
     _findButton: null,
+    _highlightButton: null,
+    _hideEverythingButton: null,
     
     // open buttons
     _openConsoleButton: null,
@@ -172,7 +176,50 @@ qx.Class.define("inspector.menu.Menu", {
      */    
     resetPropertyButton: function() {
       this._openPropertyEditorButton.setChecked(false);
-    },  
+    },
+    
+
+    /*
+    *********************************
+       CHANGE COMMAND SHORTCUTS
+    *********************************
+    */    
+    changeFindShortcut: function(shortcut) {
+      // set the new shortcut
+      this._findCommand.setShortcut(shortcut);
+      // reset the command and set it again (invokes redrawing of the shortcut in the menu)      
+      this._findButton.setCommand(null);
+      this._findButton.setCommand(this._findCommand);
+    },
+    changeHighlightShortcut: function(shortcut) {
+      // set the new shortcut
+      this._highlightCommand.setShortcut(shortcut);
+      // reset the command and set it again (invokes redrawing of the shortcut in the menu)
+      this._highlightButton.setCommand(null);
+      this._highlightButton.setCommand(this._highlightCommand);
+    },    
+    changeHideAllShortcut: function(shortcut) {
+      // set the new shortcut
+      this._hideEverythingCommand.setShortcut(shortcut);
+      // reset the command and set it again (invokes redrawing of the shortcut in the menu)      
+      this._hideEverythingButton.setCommand(null);
+      this._hideEverythingButton.setCommand(this._hideEverythingCommand);
+    },    
+    changeOpenAllShortcut: function(shortcut) {
+      this._openAllCommand.setShortcut(shortcut);
+    },
+    changeConsoleShortcut: function(shortcut) {
+      this._openConsoleCommand.setShortcut(shortcut);
+    },
+    changeObjectShortcut: function(shortcut) {
+      this._openObjectFinderCommand.setShortcut(shortcut);
+    },
+    changeWidgetShortcut: function(shortcut) {
+      this._openWidgetFinderCommand.setShortcut(shortcut);
+    },
+    changePropertyShortcut: function(shortcut) {
+      this._openPropertyEditorCommand.setShortcut(shortcut);
+    },
     
     
     /*
@@ -184,8 +231,13 @@ qx.Class.define("inspector.menu.Menu", {
      * Create the commands that open the windows.
      */
     __createCommands: function() {
+      // check for the shortcut in the cookie
+      var shortcut = "CTRL+SHIFT+F11";
+      if (qx.io.local.CookieApi.get("OpenAllShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("OpenAllShortcut");
+      }
       // create the open all command
-      this._openAllCommand = new qx.client.Command("CTRL+SHIFT+F11");
+      this._openAllCommand = new qx.client.Command(shortcut);
       this._openAllCommand.addEventListener("execute", function(e) {        
         this._openConsoleButton.setChecked(true);
         this._openObjectFinderButton.setChecked(true);
@@ -193,38 +245,89 @@ qx.Class.define("inspector.menu.Menu", {
         this._openPropertyEditorButton.setChecked(true);
       }, this);
       
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+F1";
+      if (qx.io.local.CookieApi.get("OpenConsoleShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("OpenConsoleShortcut");
+      }      
       // create the open console command
-      this._openConsoleCommand = new qx.client.Command("CTRL+SHIFT+F1");
+      this._openConsoleCommand = new qx.client.Command(shortcut);
       this._openConsoleCommand.addEventListener("execute", function(e) {
         this._openConsoleButton.toggleChecked();
       }, this);
       
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+F2";
+      if (qx.io.local.CookieApi.get("OpenObjectShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("OpenObjectShortcut");
+      }       
       // create the open object finder command
-      this._openObjectFinderCommand = new qx.client.Command("CTRL+SHIFT+F2");
+      this._openObjectFinderCommand = new qx.client.Command(shortcut);
       this._openObjectFinderCommand.addEventListener("execute", function(e) {
         this._openObjectFinderButton.toggleChecked();
       }, this);
       
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+F3";
+      if (qx.io.local.CookieApi.get("OpenWidgetShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("OpenWidgetShortcut");
+      }           
       // create the opne widget finder command
-      this._openWidgetFinderCommand = new qx.client.Command("CTRL+SHIFT+F3");
+      this._openWidgetFinderCommand = new qx.client.Command(shortcut);
       this._openWidgetFinderCommand.addEventListener("execute", function(e) {
         this._openWidgetFinderButton.toggleChecked();
       }, this);
       
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+F4";
+      if (qx.io.local.CookieApi.get("OpenPropertyShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("OpenPropertyShortcut");
+      }       
       // create the open property editor command
-      this._openPropertyEditorCommand = new qx.client.Command("CTRL+SHIFT+F4");
+      this._openPropertyEditorCommand = new qx.client.Command(shortcut);
       this._openPropertyEditorCommand.addEventListener("execute", function(e) {
         this._openPropertyEditorButton.toggleChecked();
       }, this);
       
-      // create the find command
-      this._findCommand = new qx.client.Command("CTRL+SHIFT+F");
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+F";
+      if (qx.io.local.CookieApi.get("FindShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("FindShortcut");
+      }
+      // create the find command      
+      this._findCommand = new qx.client.Command(shortcut);
       this._findCommand.addEventListener("execute", function(e) {
-        this._findButton.execute();      
+        // check the status of the find checkbox
+        if (this._findButton.getChecked()) {
+          // uncheck it and exit the find mode if it was checked
+          this._findButton.setChecked(false);
+          this._inspector.exitFindMode();          
+        } else {
+          // check it and start the find mode if it was not checked
+          this._findButton.setChecked(true);
+          this._inspector.startFindMode();
+        }    
       }, this);
       
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+I";
+      if (qx.io.local.CookieApi.get("HighlightShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("HighlightShortcut");
+      }
+      // create the find command      
+      this._highlightCommand = new qx.client.Command(shortcut);
+      this._highlightCommand.addEventListener("execute", function(e) {
+        this._highlightButton.toggleChecked();
+        this._inspector.highlightCurrentWidget(this._highlightButton.getChecked());
+      }, this);
+      
+      // check for the shortcut in the cookie
+      shortcut = "CTRL+SHIFT+H";
+      if (qx.io.local.CookieApi.get("HideAllShortcut")) {
+        shortcut = qx.io.local.CookieApi.get("HideAllShortcut");
+      }
       // create the command which hides and shows all application components
-      this._hideEverythingCommand = new qx.client.Command("CTRL+SHIFT+H");
+      this._hideEverythingCommand = new qx.client.Command(shortcut);
       this._hideEverythingCommand.addEventListener("execute", function(e) {
         // if the menu is on the screen
         if (this.getDisplay()) {
@@ -234,7 +337,9 @@ qx.Class.define("inspector.menu.Menu", {
           this._openObjectFinderButton.setChecked(false);
           this._openPropertyEditorButton.setChecked(false);
           // hide the menu
-          this.setDisplay(false);          
+          this.setDisplay(false);
+          // hide the settings window
+          this._settingsWindow.close();          
         } else {
           // show the menu
           this.setDisplay(true);
@@ -280,21 +385,13 @@ qx.Class.define("inspector.menu.Menu", {
       
       // find button
       this._findButton = new qx.ui.menu.CheckBox("Find Widget");      
-      this._findButton.addEventListener("execute", function(e) {
-        // if the button is pressed
-        if (e.getCurrentTarget().getChecked()) {
-          this.startFindMode();
-        } else {
-          this.exitFindMode();
-        }           
-      }, this._inspector);
+      this._findButton.setCommand(this._findCommand);
       this._inspectorMenu.add(this._findButton);
+      
       // highlight button
-      var highlightButton = new qx.ui.menu.CheckBox("Highlight Current Widget")
-      highlightButton.addEventListener("execute", function(e) {
-        this.highlightCurrentWidget(e);
-      }, this._inspector);      
-      this._inspectorMenu.add(highlightButton);
+      this._highlightButton = new qx.ui.menu.CheckBox("Highlight Current Widget")
+      this._highlightButton.setCommand(this._highlightCommand);
+      this._inspectorMenu.add(this._highlightButton);
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       
@@ -305,9 +402,9 @@ qx.Class.define("inspector.menu.Menu", {
       
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
-      var hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
-      hideEverythingButton.setCommand(this._hideEverythingCommand);
-      this._inspectorMenu.add(hideEverythingButton);
+      this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
+      this._hideEverythingButton.setCommand(this._hideEverythingCommand);
+      this._inspectorMenu.add(this._hideEverythingButton);
     },
     
     
@@ -530,7 +627,7 @@ qx.Class.define("inspector.menu.Menu", {
       // if there is no settings window
       if (this._settingsWindow == null) {
         // create one
-        this._settingsWindow = new inspector.menu.SettingsWindow();
+        this._settingsWindow = new inspector.menu.SettingsWindow(this);
         this._settingsWindow.addToDocument();
       }
       // open the settings window

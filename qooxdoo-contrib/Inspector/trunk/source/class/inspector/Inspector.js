@@ -89,18 +89,8 @@ qx.Class.define("inspector.Inspector", {
     }, this);
     
     
-    // set the default url of the api viewer if it is not set
-    if (!qx.io.local.CookieApi.get("ApiViewerUri")) {
-      qx.io.local.CookieApi.set("ApiViewerUri", inspector.Inspector.API_VIEWER_URI);
-    }
-    // set the default width of the api viewer if it is not set
-    if (!qx.io.local.CookieApi.get("ApiViewerWidth")) {
-      qx.io.local.CookieApi.set("ApiViewerWidth", 900);
-    }
-    // set the default height of the api viewer if it is not set
-    if (!qx.io.local.CookieApi.get("ApiViewerHeight")) {
-      qx.io.local.CookieApi.set("ApiViewerHeight", 600);
-    }
+    this.__initializeCookies();
+    
   },
 
 
@@ -212,16 +202,12 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */
     /**
-     * Handler function for the highlight button. Enabled or 
-     * diabled the highlight function.
-     * @param e {event} The Event created by a ckeckbox.
+     * Enabled or diabled the highlight function.
+     * @param on {Boolean} The bool value wether the highlight function should be on or of.
      */
-    highlightCurrentWidget: function(e) { 
-      // only if the function has an event
-      if (e != null) {
-        // save the current state of the checkbox button
-        this._highlightEnabled = e.getCurrentTarget().getChecked();        
-      }      
+    highlightCurrentWidget: function(on) { 
+      // save the current state of the checkbox button
+      this._highlightEnabled = on;       
       // if highlight is on
       if (this._highlightEnabled) {
         // if something is selected                 
@@ -689,6 +675,12 @@ qx.Class.define("inspector.Inspector", {
       }     
     },
     
+    
+    /**
+     * Signals the menu that one of the components hast been closed.
+     * @internal
+     * @param component {inspector.AbstractWindow} The componente which has benn closed 
+     */
     componentClosed: function(component) {
       if (component == this._console) {
         this._menu.resetConsoleButton();
@@ -859,7 +851,56 @@ qx.Class.define("inspector.Inspector", {
       this._highlightOverlay.setZIndex(1e5 - 2);
       this._highlightOverlay.hide();
       this._highlightOverlay.addToDocument();     
+    },
+    
+    
+    /*
+    *********************************
+       INIT COOKIES
+    *********************************
+    */    
+    /**
+     * Initializes the cookies. In the case a cookie setting is not set,
+     * this function sets the cookie to the default value.
+     */
+    __initializeCookies: function() {
+      // set the default url of the api viewer if it is not set
+      if (!qx.io.local.CookieApi.get("ApiViewerUri")) {
+        qx.io.local.CookieApi.set("ApiViewerUri", inspector.Inspector.API_VIEWER_URI);
+      }
+      // set the default width of the api viewer if it is not set
+      if (!qx.io.local.CookieApi.get("ApiViewerWidth")) {
+        qx.io.local.CookieApi.set("ApiViewerWidth", 900);
+      }
+      // set the default height of the api viewer if it is not set
+      if (!qx.io.local.CookieApi.get("ApiViewerHeight")) {
+        qx.io.local.CookieApi.set("ApiViewerHeight", 600);
+      }
+      
+      // set the default shortcuts if they are not set
+      if (!qx.io.local.CookieApi.get("FindShortcut")) {
+        qx.io.local.CookieApi.set("FindShortcut", "CTRL+SHIFT+F");
+      }
+      if (!qx.io.local.CookieApi.get("HighlightShortcut")) {
+        qx.io.local.CookieApi.set("HighlightShortcut", "CTRL+SHIFT+I");
+      }   
+      if (!qx.io.local.CookieApi.get("OpenAllShortcut")) {
+        qx.io.local.CookieApi.set("OpenAllShortcut", "CTRL+SHIFT+F11");
+      }
+      if (!qx.io.local.CookieApi.get("OpenConsoleShortcut")) {
+        qx.io.local.CookieApi.set("OpenConsoleShortcut", "CTRL+SHIFT+F1");
+      }
+      if (!qx.io.local.CookieApi.get("OpenObjectShortcut")) {
+        qx.io.local.CookieApi.set("OpenObjectShortcut", "CTRL+SHIFT+F2");
+      }   
+      if (!qx.io.local.CookieApi.get("OpenWidgetShortcut")) {
+        qx.io.local.CookieApi.set("OpenWidgetShortcut", "CTRL+SHIFT+F3");
+      }   
+      if (!qx.io.local.CookieApi.get("OpenPropertyShortcut")) {
+        qx.io.local.CookieApi.set("OpenPropertyShortcut", "CTRL+SHIFT+F4");
+      }   
     }    
+        
   },
   
   
