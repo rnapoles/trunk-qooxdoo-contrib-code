@@ -41,9 +41,16 @@ qx.Class.define("inspector.menu.Menu", {
     this.__registerMoveListener();    
     
     // register an event listener to set the staart position
-    this.addEventListener("appear", function() {
+    this.addEventListener("appear", function() {      
       var middle = qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2;  
+      // set the position of the menu
       this.setLeft(parseInt(middle - (this.getBoxWidth() / 2)));
+      // set the position of the start popup
+      this._welcomePopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 120);
+      this._welcomePopup.setTop(3);
+      // show the popup
+      this._welcomePopup.bringToFront();
+      this._welcomePopup.show();      
     }, this);    
         
     // create the commands
@@ -114,13 +121,13 @@ qx.Class.define("inspector.menu.Menu", {
     
     // the settings window
     _settingsWindow: null,
-		
-		// the status during the hide phase
-		_settingsOpened: false,
-		_consoleOpended: false,
-		_objectOpened: false,
-		_widgetOpened: false,
-		_propertyOpened: false,
+    
+    // the status during the hide phase
+    _settingsOpened: false,
+    _consoleOpended: false,
+    _objectOpened: false,
+    _widgetOpened: false,
+    _propertyOpened: false,
         
 
     /*
@@ -191,10 +198,10 @@ qx.Class.define("inspector.menu.Menu", {
        CHANGE COMMAND SHORTCUTS
     *********************************
     */
-		/**
-		 * Changes the shortcut for the find command.
-		 * @param shortcut {String} The new keyboard shortcut.
-		 */
+    /**
+     * Changes the shortcut for the find command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */
     changeFindShortcut: function(shortcut) {
       // set the new shortcut
       this._findCommand.setShortcut(shortcut);
@@ -202,12 +209,12 @@ qx.Class.define("inspector.menu.Menu", {
       this._findButton.setCommand(null);
       this._findButton.setCommand(this._findCommand);
     },
-		
-		
+    
+    
     /**
      * Changes the shortcut for the highlight command.
      * @param shortcut {String} The new keyboard shortcut.
-     */		
+     */    
     changeHighlightShortcut: function(shortcut) {
       // set the new shortcut
       this._highlightCommand.setShortcut(shortcut);
@@ -215,8 +222,8 @@ qx.Class.define("inspector.menu.Menu", {
       this._highlightButton.setCommand(null);
       this._highlightButton.setCommand(this._highlightCommand);
     },
-		
-		
+    
+    
     /**
      * Changes the shortcut for the hide all command.
      * @param shortcut {String} The new keyboard shortcut.
@@ -228,48 +235,48 @@ qx.Class.define("inspector.menu.Menu", {
       this._hideEverythingButton.setCommand(null);
       this._hideEverythingButton.setCommand(this._hideEverythingCommand);
     },    
-		
+    
 
     /**
      * Changes the shortcut for the open all command.
      * @param shortcut {String} The new keyboard shortcut.
-     */		
+     */    
     changeOpenAllShortcut: function(shortcut) {
       this._openAllCommand.setShortcut(shortcut);
     },
-		
-		
+    
+    
     /**
      * Changes the shortcut for the open console command.
      * @param shortcut {String} The new keyboard shortcut.
-     */		
+     */    
     changeConsoleShortcut: function(shortcut) {
       this._openConsoleCommand.setShortcut(shortcut);
     },
-		
-		
+    
+    
     /**
      * Changes the shortcut for the open object command.
      * @param shortcut {String} The new keyboard shortcut.
-     */		
+     */    
     changeObjectShortcut: function(shortcut) {
       this._openObjectFinderCommand.setShortcut(shortcut);
     },
-		
-		
+    
+    
     /**
      * Changes the shortcut for the open widget command.
      * @param shortcut {String} The new keyboard shortcut.
-     */		
+     */    
     changeWidgetShortcut: function(shortcut) {
       this._openWidgetFinderCommand.setShortcut(shortcut);
     },
-		
-		
+    
+    
     /**
      * Changes the shortcut for the property command.
      * @param shortcut {String} The new keyboard shortcut.
-     */		
+     */    
     changePropertyShortcut: function(shortcut) {
       this._openPropertyEditorCommand.setShortcut(shortcut);
     },
@@ -384,80 +391,80 @@ qx.Class.define("inspector.menu.Menu", {
       this._hideEverythingCommand.addEventListener("execute", function(e) {
         // if the menu is on the screen: hide
         if (this.getDisplay()) {
-					// if the widget window is on the screen
+          // if the widget window is on the screen
           if (this._openWidgetFinderButton.getChecked()) {
-	          // close it
-					  this._openWidgetFinderButton.setChecked(false);
-						// mark that it was opened
-						this._widgetOpened = true;
-					}
-					// if the console is open
-					if (this._openConsoleButton.getChecked()) {
-						// close it
+            // close it
+            this._openWidgetFinderButton.setChecked(false);
+            // mark that it was opened
+            this._widgetOpened = true;
+          }
+          // if the console is open
+          if (this._openConsoleButton.getChecked()) {
+            // close it
             this._openConsoleButton.setChecked(false);
-						// mark that it was open
-	          this._consoleOpended = true;					
-					}
-					// if the object window is open
-					if (this._openObjectFinderButton.getChecked()) {
-	          // close it
-						this._openObjectFinderButton.setChecked(false);
-						this._objectOpened = true;						
-					}
-					// if the property window is open
-					if (this._openPropertyEditorButton.getChecked()) {
-	          // close it
-						this._openPropertyEditorButton.setChecked(false);
-						// mark that it was open
-						this._propertyOpened = true;						
-					}
+            // mark that it was open
+            this._consoleOpended = true;          
+          }
+          // if the object window is open
+          if (this._openObjectFinderButton.getChecked()) {
+            // close it
+            this._openObjectFinderButton.setChecked(false);
+            this._objectOpened = true;            
+          }
+          // if the property window is open
+          if (this._openPropertyEditorButton.getChecked()) {
+            // close it
+            this._openPropertyEditorButton.setChecked(false);
+            // mark that it was open
+            this._propertyOpened = true;            
+          }
           // hide the settings window
           if (this._settingsWindow != null) {
-						// if the settings window is on the secreen
-						if (this._settingsWindow.getVisibility()) {
-							// close it
-  						this._settingsWindow.close();		
-							// mark that the window was open
-							this._settingsOpened = true;
-						}
-					}
-					// hide the menubar
+            // if the settings window is on the secreen
+            if (this._settingsWindow.getVisibility()) {
+              // close it
+              this._settingsWindow.close();    
+              // mark that the window was open
+              this._settingsOpened = true;
+            }
+          }
+          // hide the menubar
           this.setDisplay(false);
-				
-				// unhide
+        
+        // unhide
         } else {
           // show the menu
           this.setDisplay(true);
-					// if the widget window was opened
-					if (this._widgetOpened) {
-						// reopen it
-						this._openWidgetFinderButton.setChecked(true);
-						this._widgetOpened = false;
-					}
-					// if the console window was open
-					if (this._consoleOpended) {
-						// reopen it
-						this._openConsoleButton.setChecked(true);
-						this._consoleOpended = false;
-					}
-					// if the object window was pened
-					if (this._objectOpened) {
-						// reopen it
+          // if the widget window was opened
+          if (this._widgetOpened) {
+            // reopen it
+            this._openWidgetFinderButton.setChecked(true);
+            this._widgetOpened = false;
+          }
+          // if the console window was open
+          if (this._consoleOpended) {
+            // reopen it
+            this._openConsoleButton.setChecked(true);
+            this._consoleOpended = false;
+          }
+          // if the object window was pened
+          if (this._objectOpened) {
+            // reopen it
             this._openObjectFinderButton.setChecked(true);
-						this._objectOpened = false;
-					}
-					// if the property window was open
-					if (this._propertyOpened) {
+            this._objectOpened = false;
+          }
+          // if the property window was open
+          if (this._propertyOpened) {
             // reopen it
             this._openPropertyEditorButton.setChecked(true);
-						this._propertyOpened = false;
-					}
-					// if the settings window was opened					
-					if (this._settingsOpened) {
-						// reopen it
-						this._settingsWindow.open();
-						this._settingsOpened = false;
-					}
+            this._propertyOpened = false;
+          }
+          // if the settings window was opened          
+          if (this._settingsOpened) {
+            // reopen it
+            this._settingsWindow.open();
+            this._settingsOpened = false;
+          }
         }
       }, this);  
     },
@@ -518,27 +525,27 @@ qx.Class.define("inspector.menu.Menu", {
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       // hide everything button
-			this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
+      this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
       this._hideEverythingButton.setCommand(this._hideEverythingCommand);
       this._inspectorMenu.add(this._hideEverythingButton);
-			
-			// listener which holds the bemubar down while the menu is shown
-			this._inspectorMenu.addEventListener("mousemove", function() {
-				// if a uptimer is set
-				if (this._upTimer != null) {
-					// clear it
-					window.clearTimeout(this._upTimer);
-					this._upTimer = null;
-				}
-			}, this);			
-			// listener which moves the menubar away if the menu is closed
-			this._inspectorMenu.addEventListener("changeVisibility", function(e) {
-				// if the menu is clicked away
-				if (!e.getValue()) {
-					// hide the menu
-  				this.setTop(-24);				
-				}
-			}, this);
+      
+      // listener which holds the bemubar down while the menu is shown
+      this._inspectorMenu.addEventListener("mousemove", function() {
+        // if a uptimer is set
+        if (this._upTimer != null) {
+          // clear it
+          window.clearTimeout(this._upTimer);
+          this._upTimer = null;
+        }
+      }, this);      
+      // listener which moves the menubar away if the menu is closed
+      this._inspectorMenu.addEventListener("changeVisibility", function(e) {
+        // if the menu is clicked away
+        if (!e.getValue()) {
+          // hide the menu
+          this.setTop(-24);        
+        }
+      }, this);
     },
     
     
@@ -672,9 +679,6 @@ qx.Class.define("inspector.menu.Menu", {
       // set the opsition of the popup
       this._welcomePopup.setWidth(255);
       this._welcomePopup.setHeight(84);
-      // set the position of the popup
-      this._welcomePopup.setTop(3);
-      this._welcomePopup.setLeft((qx.ui.core.ClientDocument.getInstance().getInnerHeight() / 2));
       // create and add the image for the background
       var backGround = new qx.ui.basic.Image(qx.io.Alias.getInstance().resolve("inspector/image/popup.png"));      
       this._welcomePopup.add(backGround);
@@ -684,14 +688,13 @@ qx.Class.define("inspector.menu.Menu", {
       // set the position of the text in the popup
       label.setTop(33);
       label.setLeft(10);
-      // show the popup
-      this._welcomePopup.bringToFront();
-      this._welcomePopup.show();
       // start a timer to hide the popup in 4 seconds
       var self = this;
       window.setTimeout(function() {
         self._welcomePopup.hide();
       }, 4000);
+      
+      return this._welcomePopup;
     },
     
     
