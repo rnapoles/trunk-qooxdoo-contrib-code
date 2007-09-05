@@ -88,9 +88,18 @@ qx.Class.define("inspector.Inspector", {
       }      
     }, this);
     
-    
+    // initialize the cookies
     this.__initializeCookies();
-    
+		
+		//////////////////////////
+		// PATCH FOR 0.7.1
+		if (qx.core.Object.prototype.getDbKey == undefined) {
+			this.debug("qx.core.Object patcht");
+			qx.core.Object.prototype.getDbKey = function() {
+				return this.__dbKey;
+			}			
+		}
+    //////////////////////////
   },
 
 
