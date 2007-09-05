@@ -28,7 +28,7 @@ qx.Class.define("inspector.menu.Menu", {
   construct : function(inspector) {    
     this.base(arguments);
     // set the zIndex to a higher one than the index of the find mode layer
-    this.setZIndex(1e5 + 3);
+    this.setZIndex(1e5 + 15);
     // save the reference to the inspector
     this._inspector = inspector;
     

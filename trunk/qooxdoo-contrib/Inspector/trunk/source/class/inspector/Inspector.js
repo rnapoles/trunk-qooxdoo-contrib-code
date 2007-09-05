@@ -143,7 +143,7 @@ qx.Class.define("inspector.Inspector", {
     /**
      * Opens an native window showing the API documentation.
      * If a widget is currently selected, the API viewer will
-     * open the the documentataion of that class. Is in addition
+     * open the documentataion of that class. Is in addition
      * a property is selected, the viewer automaticly jumps to 
      * the selected property. 
      */
@@ -396,6 +396,8 @@ qx.Class.define("inspector.Inspector", {
     /**
      * Set the given widget in all components of the inspector.
      * @param widget {qx.core.Object} Any qooxdoo object 
+     * @param ref {inspector.AbstractWindow} A reference to the component which sets the widget. 
+     * If the widget is not set from a component of the inspector, the value can be null.
      */
     setWidget: function(widget, ref) {    
       // set the widget in the inspector
@@ -474,6 +476,7 @@ qx.Class.define("inspector.Inspector", {
     */      
     /**
      * Return the components of the application.
+     * @internal
      */
     getComponents: function() {
       // create all components arrays
@@ -805,7 +808,7 @@ qx.Class.define("inspector.Inspector", {
       this._catchClickLayer.setHeight("100%");
       this._catchClickLayer.setBackgroundColor("black");
       this._catchClickLayer.setOpacity(0.1);
-      this._catchClickLayer.setZIndex(1e5 - 1);
+      this._catchClickLayer.setZIndex(1e5 + 2);
       this._catchClickLayer.hide();
       this._catchClickLayer.addToDocument();
       
@@ -848,7 +851,7 @@ qx.Class.define("inspector.Inspector", {
       // create a new overlay atom object
       this._highlightOverlay = new qx.ui.basic.Atom();
       this._highlightOverlay.setBorder(this._highlightBorder);
-      this._highlightOverlay.setZIndex(1e5 - 2);
+      this._highlightOverlay.setZIndex(1e5 + 1);
       this._highlightOverlay.hide();
       this._highlightOverlay.addToDocument();     
     },

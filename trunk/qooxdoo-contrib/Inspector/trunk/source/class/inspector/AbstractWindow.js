@@ -42,6 +42,7 @@ qx.Class.define("inspector.AbstractWindow", {
     this.setMinHeight(130);
     this.setMinWidth(250);
     this.addToDocument();
+		this._minZIndex = 1e5 + 10;
     
     // initialize the inner layout    
     this._mainLayout = new qx.ui.layout.VerticalBoxLayout();
