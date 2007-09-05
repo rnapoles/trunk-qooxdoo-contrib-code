@@ -25,8 +25,10 @@ qx.Class.define("inspector.menu.SettingsWindow", {
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function() {    
+  construct : function(menu) {    
     this.base(arguments);
+    // store the reference to the menu
+    this._menu = menu;
     // set the zIndex to a higher one than the index of the find mode layer
     this.setZIndex(1e5 + 2);
 
@@ -34,13 +36,17 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     // initialize the window
     this.setCaption(inspector.Inspector.SETTINGS_CAPTION_TITLE);
     this.setWidth(400);
-    this.setHeight("auto");  
-    this.setModal(true);
+    this.setHeight("auto");
     this.setShowMinimize(false);
     this.setShowMaximize(false);
     
+    var layout = new qx.ui.layout.VerticalBoxLayout();
+    layout.setWidth("100%");
+    this.add(layout);
     
-    this.add(this.__createApiUrlGroupbox());
+    // add the groupboxes
+    layout.add(this.__createApiGroupbox());
+    layout.add(this.__createKeyGroupbox());
   }, 
   
   
@@ -55,7 +61,12 @@ qx.Class.define("inspector.menu.SettingsWindow", {
        ATTRIBUTES
     *********************************
     */    
+    _menu: null,
+    
     _apiGroup: null,
+    _keyGroup: null,
+    
+    
     
 
     /*
@@ -79,6 +90,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
      */
     enableSettings: function(enabled) {
       this._apiGroup.setEnabled(enabled);
+      this._keyGroup.setEnabled(enabled);
     },
     
     
@@ -87,7 +99,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
        PRIVATE
     *********************************
     */
-    __createApiUrlGroupbox: function() {
+    __createApiGroupbox: function() {
       // create a group box
       this._apiGroup = new qx.ui.groupbox.GroupBox("API");
       // initialize the groupbox
@@ -156,9 +168,73 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       mainLayout.add(dimensionLayout);        
       
       return this._apiGroup;
-    }
+    },
     
 
+
+    __createKeyGroupbox: function() {
+      // create a group box
+      this._keyGroup = new qx.ui.groupbox.GroupBox("Shortcuts");
+      // initialize the groupbox
+      this._keyGroup.setWidth("100%");
+      this._keyGroup.setHeight("auto");
+      this._keyGroup.setPadding(2);
+      
+      // create a main layout which holds the setting rows
+      var mainLayout = new qx.ui.layout.VerticalBoxLayout();
+      // initialize the main layout
+      mainLayout.setWidth("100%");
+      mainLayout.setHeight("auto");
+      mainLayout.setSpacing(5);
+      // add the main layout to the groupbox
+      this._keyGroup.add(mainLayout);
+      
+      // create the laouts which hold the cammand shortcut settings      
+      mainLayout.add(this.__getShortcutLayout("Find: ", "Find", this._menu.changeFindShortcut));
+      mainLayout.add(this.__getShortcutLayout("Highlight: ", "Highlight", this._menu.changeHighlightShortcut));      
+      mainLayout.add(this.__getShortcutLayout("Hide All: ", "HideAll", this._menu.changeHideAllShortcut));
+      mainLayout.add(this.__getShortcutLayout("Open All: ", "OpenAll", this._menu.changeOpenAllShortcut));      
+      mainLayout.add(this.__getShortcutLayout("Open Console: ", "OpenConsole", this._menu.changeConsoleShortcut));
+      mainLayout.add(this.__getShortcutLayout("Open Object: ", "OpenObject", this._menu.changeObjectShortcut));
+      mainLayout.add(this.__getShortcutLayout("Open Widget: ", "OpenWidget", this._menu.changeWidgetShortcut));
+      mainLayout.add(this.__getShortcutLayout("Open Property: ", "OpenProperty", this._menu.changePropertyShortcut));
+      
+      return this._keyGroup;      
+    },
+    
+    __getShortcutLayout: function(label, cookiePrefix, changeFunction) {
+      // create the layout for the find commmand settings
+      var layout = new qx.ui.layout.HorizontalBoxLayout();      
+      layout.setWidth("100%");
+      layout.setHeight("auto");
+      // create the label for the find shortcut 
+      var findLabel = new qx.ui.basic.Label(label);
+      findLabel.setPadding(5);
+      findLabel.setWidth(90);
+      // create the textfield for the find shortcur
+      var findTextField = new qx.ui.form.TextField(qx.io.local.CookieApi.get(cookiePrefix + "Shortcut"));
+      findTextField.setWidth("1*");
+      
+      // add the change listener for the find shortcut
+      findTextField.addEventListener("changeValue", function(e) {
+        // try to change the shortcut
+        try {
+          // change the shortcut
+          // this._menu.changeShortcut(names[j], findTextField.getComputedValue());
+          changeFunction.call(this._menu, findTextField.getComputedValue());
+          // stor the new shortcut in the cookie
+          qx.io.local.CookieApi.set(cookiePrefix + "Shortcut", findTextField.getComputedValue());
+        } catch (e) {
+          // alert the user if the change didnt work
+          alert(e);
+          // restore the former shortcut to the textfield
+          findTextField.setValue(qx.io.local.CookieApi.get(cookiePrefix + "Shortcut"));
+        }
+      }, this);        
+      // add the components to the layout
+      layout.add(findLabel, findTextField);      
+      return layout;  
+    }
 
   }
 });
