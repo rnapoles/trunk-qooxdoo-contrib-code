@@ -114,6 +114,13 @@ qx.Class.define("inspector.menu.Menu", {
     
     // the settings window
     _settingsWindow: null,
+		
+		// the status during the hide phase
+		_settingsOpened: false,
+		_consoleOpended: false,
+		_objectOpened: false,
+		_widgetOpened: false,
+		_propertyOpened: false,
         
 
     /*
@@ -183,7 +190,11 @@ qx.Class.define("inspector.menu.Menu", {
     *********************************
        CHANGE COMMAND SHORTCUTS
     *********************************
-    */    
+    */
+		/**
+		 * Changes the shortcut for the find command.
+		 * @param shortcut {String} The new keyboard shortcut.
+		 */
     changeFindShortcut: function(shortcut) {
       // set the new shortcut
       this._findCommand.setShortcut(shortcut);
@@ -191,13 +202,25 @@ qx.Class.define("inspector.menu.Menu", {
       this._findButton.setCommand(null);
       this._findButton.setCommand(this._findCommand);
     },
+		
+		
+    /**
+     * Changes the shortcut for the highlight command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */		
     changeHighlightShortcut: function(shortcut) {
       // set the new shortcut
       this._highlightCommand.setShortcut(shortcut);
       // reset the command and set it again (invokes redrawing of the shortcut in the menu)
       this._highlightButton.setCommand(null);
       this._highlightButton.setCommand(this._highlightCommand);
-    },    
+    },
+		
+		
+    /**
+     * Changes the shortcut for the hide all command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */
     changeHideAllShortcut: function(shortcut) {
       // set the new shortcut
       this._hideEverythingCommand.setShortcut(shortcut);
@@ -205,18 +228,48 @@ qx.Class.define("inspector.menu.Menu", {
       this._hideEverythingButton.setCommand(null);
       this._hideEverythingButton.setCommand(this._hideEverythingCommand);
     },    
+		
+
+    /**
+     * Changes the shortcut for the open all command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */		
     changeOpenAllShortcut: function(shortcut) {
       this._openAllCommand.setShortcut(shortcut);
     },
+		
+		
+    /**
+     * Changes the shortcut for the open console command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */		
     changeConsoleShortcut: function(shortcut) {
       this._openConsoleCommand.setShortcut(shortcut);
     },
+		
+		
+    /**
+     * Changes the shortcut for the open object command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */		
     changeObjectShortcut: function(shortcut) {
       this._openObjectFinderCommand.setShortcut(shortcut);
     },
+		
+		
+    /**
+     * Changes the shortcut for the open widget command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */		
     changeWidgetShortcut: function(shortcut) {
       this._openWidgetFinderCommand.setShortcut(shortcut);
     },
+		
+		
+    /**
+     * Changes the shortcut for the property command.
+     * @param shortcut {String} The new keyboard shortcut.
+     */		
     changePropertyShortcut: function(shortcut) {
       this._openPropertyEditorCommand.setShortcut(shortcut);
     },
@@ -329,22 +382,82 @@ qx.Class.define("inspector.menu.Menu", {
       // create the command which hides and shows all application components
       this._hideEverythingCommand = new qx.client.Command(shortcut);
       this._hideEverythingCommand.addEventListener("execute", function(e) {
-        // if the menu is on the screen
+        // if the menu is on the screen: hide
         if (this.getDisplay()) {
-          // hide all windows
-          this._openWidgetFinderButton.setChecked(false);
-          this._openConsoleButton.setChecked(false);
-          this._openObjectFinderButton.setChecked(false);
-          this._openPropertyEditorButton.setChecked(false);
-          // hide the menu
-          this.setDisplay(false);
+					// if the widget window is on the screen
+          if (this._openWidgetFinderButton.getChecked()) {
+	          // close it
+					  this._openWidgetFinderButton.setChecked(false);
+						// mark that it was opened
+						this._widgetOpened = true;
+					}
+					// if the console is open
+					if (this._openConsoleButton.getChecked()) {
+						// close it
+            this._openConsoleButton.setChecked(false);
+						// mark that it was open
+	          this._consoleOpended = true;					
+					}
+					// if the object window is open
+					if (this._openObjectFinderButton.getChecked()) {
+	          // close it
+						this._openObjectFinderButton.setChecked(false);
+						this._objectOpened = true;						
+					}
+					// if the property window is open
+					if (this._openPropertyEditorButton.getChecked()) {
+	          // close it
+						this._openPropertyEditorButton.setChecked(false);
+						// mark that it was open
+						this._propertyOpened = true;						
+					}
           // hide the settings window
           if (this._settingsWindow != null) {
-						this._settingsWindow.close();						
+						// if the settings window is on the secreen
+						if (this._settingsWindow.getVisibility()) {
+							// close it
+  						this._settingsWindow.close();		
+							// mark that the window was open
+							this._settingsOpened = true;
+						}
 					}
+					// hide the menubar
+          this.setDisplay(false);
+				
+				// unhide
         } else {
           // show the menu
           this.setDisplay(true);
+					// if the widget window was opened
+					if (this._widgetOpened) {
+						// reopen it
+						this._openWidgetFinderButton.setChecked(true);
+						this._widgetOpened = false;
+					}
+					// if the console window was open
+					if (this._consoleOpended) {
+						// reopen it
+						this._openConsoleButton.setChecked(true);
+						this._consoleOpended = false;
+					}
+					// if the object window was pened
+					if (this._objectOpened) {
+						// reopen it
+            this._openObjectFinderButton.setChecked(true);
+						this._objectOpened = false;
+					}
+					// if the property window was open
+					if (this._propertyOpened) {
+            // reopen it
+            this._openPropertyEditorButton.setChecked(true);
+						this._propertyOpened = false;
+					}
+					// if the settings window was opened					
+					if (this._settingsOpened) {
+						// reopen it
+						this._settingsWindow.open();
+						this._settingsOpened = false;
+					}
         }
       }, this);  
     },
