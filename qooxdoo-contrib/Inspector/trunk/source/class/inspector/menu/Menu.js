@@ -48,9 +48,13 @@ qx.Class.define("inspector.menu.Menu", {
       // set the position of the start popup
       this._welcomePopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 120);
       this._welcomePopup.setTop(3);
-      // show the popup
-      this._welcomePopup.bringToFront();
-      this._welcomePopup.show();      
+      if (this._firstRun) {
+        // show the popup
+        this._welcomePopup.bringToFront();
+        this._welcomePopup.show();
+        // mark that this was the first run
+        this._firstRun = false;              
+      }
     }, this);    
         
     // create the commands
@@ -128,6 +132,9 @@ qx.Class.define("inspector.menu.Menu", {
     _objectOpened: false,
     _widgetOpened: false,
     _propertyOpened: false,
+    
+    // marker for the opening popup
+    _firstRun: true,
         
 
     /*
