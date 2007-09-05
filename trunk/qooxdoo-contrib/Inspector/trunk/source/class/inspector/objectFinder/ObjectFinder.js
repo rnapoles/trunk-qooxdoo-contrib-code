@@ -398,15 +398,16 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._tableModel.sortByColumn(0, true);
       // initialize table
       this._table = new qx.ui.table.Table(this._tableModel);
-      this._table.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
-      this._table.setWidth(320);
+      this._table.setHeight("1*");
+      
+			this._table.setWidth(320);
       this._table.setShowCellFocusIndicator(false);
       this._table.setColumnVisibilityButtonVisible(false);			
       this._mainLayout.add(this._table);
       // initialize the column model
       var columnModel = this._table.getTableColumnModel();
       columnModel.setColumnWidth(0,50);
-      columnModel.setColumnWidth(1,284);
+      columnModel.setColumnWidth(1,254);
 			
       // reset the colors of not focused
       var renderer = this._table.getDataRowRenderer();

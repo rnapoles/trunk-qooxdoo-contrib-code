@@ -32,7 +32,7 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
     this.base(arguments);
     // configure the current list
     this.setWidth(320);
-    this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.4);
+    this.setHeight("1*");
     this.setBorder("inset");
     this.setPaddingLeft(5);
     this.setPaddingRight(5);
