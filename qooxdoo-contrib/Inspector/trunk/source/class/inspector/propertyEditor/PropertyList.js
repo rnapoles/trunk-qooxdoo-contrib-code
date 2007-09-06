@@ -43,10 +43,7 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
     this.setMinHeight(10);
     
     // save the reference to the controller
-    this._controller = controller;
-    
-    // create the Filter for sorting 
-    this._filter = new inspector.propertyEditor.Filter();
+    this._controller = controller;    
   },
 
 
@@ -162,17 +159,19 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
       // get all properties
       var data = this._getDataInherited(qxObject);
       var allProperties = data.props;
+			// get the filter
+			var filter = this._controller.getFilter();
       // empty the filter
-      this._filter.empty();
+      filter.empty();
       // og threw all properties an insert them into the filter
       for (var index = 0; index < allProperties.length; index++) {
         var classname = data.names[index];
         for (var propertyName in allProperties[index]) {
-          this._filter.sortIn(propertyName, allProperties[index][propertyName], classname);
+          filter.sortIn(propertyName, allProperties[index][propertyName], classname);
         }
       }     
       // return the data as an object      
-      return this._filter.getResult();     
+      return filter.getResult();     
     },
     
     

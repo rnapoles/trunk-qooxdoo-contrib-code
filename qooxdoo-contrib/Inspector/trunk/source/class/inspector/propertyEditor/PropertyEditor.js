@@ -31,6 +31,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   construct : function(main, name) {          
     // call the constructor of the superclass
     this.base(arguments, main, name);
+    // create the Filter for sorting 
+    this._filter = new inspector.propertyEditor.Filter();		
   },
 
 
@@ -80,6 +82,9 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
 
     // timer for the reload interval
     _reloadTimer: null,
+		
+		// filter to sort the properties into groups
+		_filter: null,
 
 
     /*
@@ -199,6 +204,14 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     gotoSelectedWidget: function() {
       this._gotoSelectedPropertyButtonEventListener();
     },
+		
+		
+		/**
+		 * Returns the Filter used for grouping the properties. 
+		 */
+		getFilter: function() {
+			return this._filter;
+		},
     
     
     /**
@@ -543,8 +556,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._groupButton = new qx.ui.menu.CheckBox("Group Properties");
       this._groupButton.addEventListener("click", function(e) {
         if (this._qxObject != null) {
-          // set the widget again so signal a clear reload with the new settings
-          this.setWidget(this._qxObject);
+          // reload the view          
+					this._propertyList.build();
         }
         // enable or disable the inheritance button
         this._inheritedButton.setEnabled(!e.getTarget().getChecked())
@@ -564,7 +577,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           this._propertyList = this._propertyListFull;
           // invoke a reload of the list if a widget is selected
           if (this._qxObject != null) {
-            this.setWidget(this._qxObject);
+	          // reload the view          
+	          this._propertyList.build();
           }
           // set the rigth inhrerited status
           this._propertyList.switchInheritedStatus();
@@ -588,7 +602,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           this._propertyList = this._propertyListHtmlTable;
           // invoke a reload of the list if a widget is selected
           if (this._qxObject != null) {
-            this.setWidget(this._qxObject);
+	          // reload the view          
+	          this._propertyList.build();
           }
           // add the new created list to the property editor
           this._mainLayout.addAt(this._propertyList, 1);
