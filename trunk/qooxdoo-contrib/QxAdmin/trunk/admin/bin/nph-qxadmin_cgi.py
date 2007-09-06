@@ -364,7 +364,7 @@ def process_parms():
 
 def fix_env(form):
     "Mostly patch PATH so everything will be found"
-    if cygwin in form:  # on cygwin, webserver will not supply '/usr/bin'
+    if sys.platform == 'cygwin':  # on cygwin, webserver will not supply '/usr/bin'
         os.environ['PATH'] = '/usr/bin:'+os.environ['PATH']
 
 def main():
