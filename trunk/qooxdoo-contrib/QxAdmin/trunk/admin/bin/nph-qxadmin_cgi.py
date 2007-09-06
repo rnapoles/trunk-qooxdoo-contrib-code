@@ -225,7 +225,7 @@ def gen_makefile(makvars):
 
     kvpat = re.compile(r'^([^=]+?)\s*=\s*.*$') # a key=value line in the Makefile, capturing key
     # until the end of the custom section
-    for i in range(0,j):
+    for i in range(0,j+1):  # range(0,N) := [0,N[ (right-exclusive)
         # copy or patch
         mo = kvpat.search(text[i])
         if mo:
