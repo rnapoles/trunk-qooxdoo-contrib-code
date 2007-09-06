@@ -22,8 +22,8 @@
   set DEBUG=1
   set WebSvrWait=5
   set rc=0
-  set adminUrl=http://localhost:8000/admin/index.html
-  set testUrl=http://localhost:8000/
+  set adminUrl=http://127.0.0.1:8000/admin/index.html
+  set testUrl=http://127.0.0.1:8000/
   set pybin=python
   set tmpFile="%TEMP%.\qxtmp.txt"
 :: find cygwin (needed for make etc.)
@@ -311,7 +311,7 @@
   if !meth!==1 (
   ::telnet
     rem echo. Using TELNET
-    echo "GET /" | !CygwinPath!\bin\telnet.exe localhost 8000 >%tmpFile% 2>&1
+    echo "GET /" | !CygwinPath!\bin\telnet.exe 127.0.0.1 8000 >%tmpFile% 2>&1
     call :_errReset
     find /i "Connection refused" %tmpFile% >nul
     if not !errorlevel!==0 (

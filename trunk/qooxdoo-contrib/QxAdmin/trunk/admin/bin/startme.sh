@@ -2,9 +2,10 @@
 
 typeset -i DEBUG=1
 typeset -i rc=0
-typeset adminUrl=http://localhost:8000/admin/index.html
-#typeset adminUrl=http://localhost:8000/source/index.html
-typeset testUrl=http://localhost:8000/
+typeset adminUrl=http://127.0.0.1:8000/admin/index.html
+#typeset adminUrl=http://127.0.0.1:8000/source/index.html
+typeset testUrl=http://127.0.0.1:8000/
+typeset adminHost=127.0.0.1
 typeset adminPort=8000
 typeset pybin=python
 typeset Browsers="firefox mozilla webkit safari"
@@ -65,7 +66,7 @@ testWeb () {
   typeset -i meth=$1
 
   if [ $meth -eq 1 ]; then
-    echo quit | (telnet localhost $adminPort 2>&1) | grep -i -q 'Connected'
+    echo quit | (telnet 127.0.0.1 $adminPort 2>&1) | grep -i -q 'Connected'
     if [ $? -eq 0 ]; then
       return 0
     else
