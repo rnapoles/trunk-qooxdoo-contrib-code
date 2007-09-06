@@ -362,9 +362,15 @@ def process_parms():
     query = cgi.FieldStorage()
     return query
 
+def fix_env(form):
+    "Mostly patch PATH so everything will be found"
+    if cygwin in form:  # on cygwin, webserver will not supply '/usr/bin'
+        os.environ['PATH'] = '/usr/bin:'+os.environ['PATH']
+
 def main():
     form = process_parms()
     emit_http_headers()
+    fix_env(form)
     dispatch_action(form)
 
 if __name__ == "__main__":
