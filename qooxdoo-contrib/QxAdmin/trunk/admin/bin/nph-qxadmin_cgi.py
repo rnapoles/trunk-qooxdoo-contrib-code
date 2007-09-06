@@ -68,6 +68,14 @@ def check_qx(pexp):
             return 1
     return 0
 
+def normalize_path(dospath):
+    # use cygpath to do the conversion
+    (rc,out,err) = invoke_piped("cygpath -u '"+dospath+"'")
+    if rc==0:
+        return out
+    else:
+        return err
+
 def do_reldir(form):
     rc = 0
     print "Content-type: text/plain"
@@ -78,6 +86,8 @@ def do_reldir(form):
     else:
         path_exp = form['path'].value
     cwd = os.getcwd()
+    if re.match(r'^[a-zA-Z]:',path_exp):  # is it a DOS path?
+        path_exp = normalize_path(path_exp)
     common = find_common_prefix (cwd, os.path.abspath(path_exp))
     ups = part_to_ups (common[1])
     reldir = os.sep.join([ups,common[2]])
@@ -340,12 +350,13 @@ def dispatch_action(form):
 
 def emit_http_headers():
     # since we're nph, provide the minimal HTTP headers here
-    server_protocol = os.environ['SERVER_PROTOCOL']
-    server_software = os.environ['SERVER_SOFTWARE']
+    #server_protocol = os.environ['SERVER_PROTOCOL']
+    #server_software = os.environ['SERVER_SOFTWARE']
     # but CGIHTTPServer prints headers anyway, and still piping the output :-)
     #print "%s 200 OK" % server_protocol
     #print "Server: %s" % server_software
     # "Content-type: text/html\n\n" to be supplied by worker function
+    pass
 
 def process_parms():
     query = cgi.FieldStorage()
