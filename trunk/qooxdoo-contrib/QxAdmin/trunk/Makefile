@@ -38,8 +38,8 @@ APPLICATION_COMPLETE_SOURCE = true
 APPLICATION_BUILD_LOG_LEVEL = error
 
 #APPLICATION_ADDITIONAL_SOURCE_OPTIONS = --include $(APPLICATION_NAMESPACE).*
-QOOXDOO_CONTRIB_PATH = ../..
-APPLICATION_INCLUDES = $(QOOXDOO_CONTRIB_PATH)/Inspector/trunk
+#QOOXDOO_CONTRIB_PATH = ../..
+#APPLICATION_INCLUDES = $(QOOXDOO_CONTRIB_PATH)/Inspector/trunk
 ####################################################################################
 # INTERNALS (PLEASE DO NOT CHANGE)
 ####################################################################################
