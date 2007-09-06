@@ -1201,7 +1201,7 @@ qx.Class.define("qxadmin.AppFrame",
           if (id == "QOOXDOO_PATH") 
           {
             //TODO: clean this up!
-            var currVal = item.value;
+            var currVal = item.dat.getValue();
             if (currVal == item.defaultt) {
               alert('You have to at least specify QOOXDOO_PATH (the path to your qooxdoo installation); aborting...');
               return [];
