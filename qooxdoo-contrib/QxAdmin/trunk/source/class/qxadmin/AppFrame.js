@@ -640,7 +640,7 @@ qx.Class.define("qxadmin.AppFrame",
       tree1.getManager().addEventListener("changeSelection", this.__handleRunTreeSelection, this);
 
       // Third Pane
-      var bsb3 = new qx.ui.pageview.buttonview.Button("Info", "resource/image/information18.png");
+      var bsb3 = new qx.ui.pageview.buttonview.Button("Info", "qxadmin/image/information18.png");
       buttview.getBar().add(bsb3);
       this.widgets["treeview.binfo"] = bsb3;
       bsb3.setShow("icon");
