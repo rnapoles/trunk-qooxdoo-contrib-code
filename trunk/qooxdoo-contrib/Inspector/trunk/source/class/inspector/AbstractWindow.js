@@ -28,11 +28,12 @@ qx.Class.define("inspector.AbstractWindow", {
   *****************************************************************************
   */
   construct : function(main, name) {
+    this.base(arguments);
+
     // save the reference to the inspector class
     this._inspector = main;
     
     // initialize window
-    qx.ui.window.Window.call(this);
     this.setCaption(name);
     this.setShowMinimize(false);
     this.setShowMaximize(false);    

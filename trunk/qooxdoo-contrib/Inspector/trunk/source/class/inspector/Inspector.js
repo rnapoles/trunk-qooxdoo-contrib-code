@@ -48,7 +48,7 @@ qx.Class.define("inspector.Inspector", {
     PROPERTY_CAPTION_TITLE: "Properties",
     SETTINGS_CAPTION_TITLE: "Settings",
     
-    API_VIEWER_URI: "../api/index.html"    
+    API_VIEWER_URI: "http://demo.qooxdoo.org/current/apiviewer/"    
   },
 
 
@@ -101,7 +101,7 @@ qx.Class.define("inspector.Inspector", {
 		}
     //////////////////////////
   },
-
+	
 
   /*
   *****************************************************************************

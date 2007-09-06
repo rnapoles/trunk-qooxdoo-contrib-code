@@ -493,7 +493,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       // if left is not set
 			if (this.getLeft() == null) {
 				// set the window an the right border of the document
-  			this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);			
+        this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);      
 			}
 			// if the top is not set
       if (this.getTop() == null) {

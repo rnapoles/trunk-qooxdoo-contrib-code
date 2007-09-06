@@ -130,8 +130,8 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       uriBox.setEditable(true);
       uriBox.setValue(qx.io.local.CookieApi.get("ApiViewerUri"));
       // add the two default values
-      uriBox.add(new qx.ui.form.ListItem("../api/index.html"));
       uriBox.add(new qx.ui.form.ListItem("http://demo.qooxdoo.org/current/apiviewer/"));
+      uriBox.add(new qx.ui.form.ListItem("../api/index.html (if built locally)", null, "../api/index.html"));
       // add a listener to save the changed value to a cookie
       uriBox.addEventListener("changeValue", function(e) {
         qx.io.local.CookieApi.set("ApiViewerUri", this.getValue());
