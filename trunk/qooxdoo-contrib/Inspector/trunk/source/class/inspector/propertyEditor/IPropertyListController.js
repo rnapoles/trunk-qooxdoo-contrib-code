@@ -48,6 +48,10 @@ qx.Interface.define("inspector.propertyEditor.IPropertyListController", {
     
     gotoSelectedWidget: function() {
       return true;      
-    }    
+    },
+		
+		getFilter: function() {
+			return true;
+		}
   }
 });
