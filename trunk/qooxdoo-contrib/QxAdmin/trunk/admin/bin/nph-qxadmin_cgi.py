@@ -20,6 +20,7 @@ def invoke_external(cmd):
 
 def invoke_external1(cmd):
     "Just os. based"
+    rc = 0
     (cin,couterr) = os.popen4(cmd)
     cin.close()  # no need to pass data to child
     couterrNo = couterr.fileno()
@@ -29,8 +30,17 @@ def invoke_external1(cmd):
         if buf == "":
             break
         os.write(stdoutNo,buf)
-    os.wait()  # wish: (os.wait())[0] >> 8 -- unreliable on Windows
-    return 0
+    (pid,rcode) = os.wait()  # wish: (os.wait())[1] >> 8 -- unreliable on Windows
+    rc = eval_wait(rcode)
+    return rc
+
+def eval_wait(rcode):
+    lb = (rcode << 8) >> 8 # get low-byte from 16-bit word
+    if (lb == 0):  # check low-byte for signal
+        rc = rcode >> 8  # high-byte has exit code
+    else:
+        rc = lb  # return signal/coredump val
+    return rc
 
 def invoke_piped(cmd):
     import subprocess
@@ -53,7 +63,8 @@ def invoke_piped1(cmd):
     output = cout.read()
     cout.close()
     cerr.close()
-    os.wait()
+    (pid,rc) = os.wait()
+    rcode = eval_wait(rc)
 
     return (rcode, output, errout)
 
