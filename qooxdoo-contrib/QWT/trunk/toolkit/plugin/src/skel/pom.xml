@@ -6,7 +6,7 @@
   <artifactId>%ARTIFACT%</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>%ARTIFACT%</name>
-  <description>Qwt Application</description>
+  <description>QWT Application</description>
   <packaging>jar</packaging>
 
   <build>

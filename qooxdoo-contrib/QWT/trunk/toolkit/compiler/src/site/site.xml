@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Qwt Compiler">
+<project name="QWT Compiler">
   <bannerLeft>
-    <name>Qwt Compiler</name>
+    <name>QWT Compiler</name>
   </bannerLeft>
   <bannerRight>
     <src>http://1und1.de/img/header/logo.gif</src>

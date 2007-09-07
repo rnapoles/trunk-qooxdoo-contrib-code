@@ -2,12 +2,12 @@
 <document>
 
   <properties>
-    <title>Qwt</title>
+    <title>QWT</title>
   </properties>
 
   <body>
     <section name="Setup">
-      <p>This section describes how to install Qwt on your machine. </p>
+      <p>This section describes how to install QWT on your machine. </p>
       <subsection name="Prerequisites">
         <p>A Unix machine: Linux or Mac OS should do, Windows doesn't work.</p>
         <p><a href="http://python.org/">Python</a> 2.3 or higher (because Qooxdoo needs it). Use <code>python -V</code> to verify.</p>
@@ -21,7 +21,7 @@
 export MAVEN_OPTS=-Xmx128m
 </source>
 in your environment initialization (e.g. your <code>.bash_profile</code>).</p>
-<p>Second, build Qwt (which takes about 10 minutes, depending on your machine):</p>
+<p>Second, build QWT (which takes about 10 minutes, depending on your machine):</p>
         <source> 
 svn co https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk qwt
 cd qwt

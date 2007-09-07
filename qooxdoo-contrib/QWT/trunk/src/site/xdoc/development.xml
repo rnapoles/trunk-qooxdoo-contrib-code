@@ -2,18 +2,18 @@
 <document>
 
   <properties>
-    <title>Qwt</title>
+    <title>QWT</title>
   </properties>
 
   <body>
     <section name="Development">
-      <p>This pages applies if you want to work on Qwt itself, 
+      <p>This pages applies if you want to work on QWT itself, 
       e.g. fix compiler bugs or extend the Java Runtime.</p>
       <subsection name="Prerequisites">
-        <p>Qwt is <a href="setup.html">set up</a>.</p>
+        <p>QWT is <a href="setup.html">set up</a>.</p>
       </subsection>
       <subsection name="Building">
-        <p>Qwt has a Maven multi-module build, just use the normal <code>mvn clean install</code>.
+        <p>QWT has a Maven multi-module build, just use the normal <code>mvn clean install</code>.
         However, install fails when executed without running <code>./install.sh</code> once because 
         I don't know how do model build-only-dependencies to the Plugin Module. 
 		See http://jira.codehaus.org/browse/MNG-1883 and http://jira.codehaus.org/browse/MNG-2668.
@@ -28,7 +28,7 @@ mvn eclipse:eclipse
         <p>2) Create an M2_REPO variable pointing to your ~/.m2/repository directory</p>
       </subsection>
       <subsection name="Modules">
-        <p>Qwt has a Maven multi-module build with the following modules:</p>
+        <p>QWT has a Maven multi-module build with the following modules:</p>
         <ul>
           <li><a href="toolkit/compiler">Compiler</a>: translates Java to JavaScript. </li>
           <li><a href="toolkit/runtime">Runtime</a>: Java Class Libraries translated to JavaScript. </li>

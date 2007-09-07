@@ -7,8 +7,8 @@
 
   <body>
     <section name="The Qooxdoo Module">
-      <p>Qwt's Qooxdoo module re-packages original Qooxdoo Distribution into a Maven aritfact 
-        to make it available for Qwt applications. This is similar to Linux distributions re-packaging
+      <p>QWT's Qooxdoo module re-packages original Qooxdoo Distribution into a Maven aritfact 
+        to make it available for QWT applications. This is similar to Linux distributions re-packaging
         software distributed in an arbitrary format to make it available in the distributions format. 
         The version number follows the qooxdoo version.</p>
         

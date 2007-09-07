@@ -28,7 +28,7 @@ import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.io.FileNode;
 
 /**
- * Packages an Qwt Application into a War file.
+ * Packages an QWT Application into a War file.
  *
  * @goal war
  * @phase package
