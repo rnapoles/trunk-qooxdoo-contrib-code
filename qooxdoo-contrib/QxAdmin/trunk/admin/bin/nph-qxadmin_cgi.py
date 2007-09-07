@@ -29,7 +29,7 @@ def invoke_external1(cmd):
         if buf == "":
             break
         os.write(stdoutNo,buf)
-    os.wait()  # unreliable on Windows
+    os.wait()  # wish: (os.wait())[0] >> 8 -- unreliable on Windows
     return 0
 
 def invoke_piped(cmd):
@@ -42,6 +42,21 @@ def invoke_piped(cmd):
     rcode = p.returncode
 
     return (rcode, output, errout)
+
+def invoke_piped1(cmd):
+    "Just os. based"
+    rcode = 0
+    (cin,cout,cerr) = os.popen3(cmd)
+    cin.close()
+    # the next code is roughly from stdlib:popen2's 'flow control issues' doc
+    errout = cerr.read()
+    output = cout.read()
+    output.close()
+    errout.close()
+    os.wait()
+
+    return (rcode, output, errout)
+
 
 def find_common_prefix (p1, p2):
   # Of two paths p1 and p2 return the common path prefix, the rest of p1, and
@@ -84,7 +99,7 @@ def check_qx(pexp):
 
 def normalize_path(dospath):
     # use cygpath to do the conversion
-    (rc,out,err) = invoke_piped("cygpath -u '"+dospath+"'")
+    (rc,out,err) = invoke_piped1("cygpath -u '"+dospath+"'")
     if rc==0:
         return out
     else:
