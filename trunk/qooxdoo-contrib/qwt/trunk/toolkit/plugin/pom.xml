@@ -1,0 +1,106 @@
+<project>
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>toolkit</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--  CAUTION: not "org.qooxdoo.toolkit" because I want an automatically-mapped plugin group: -->  
+  <groupId>org.apache.maven.plugins</groupId>
+
+  <!--  CAUTION: not "qwt-maven-plugin" because I don't want to inherit scm defs etc: -->  
+  <artifactId>plugin</artifactId>
+  <version>${qwt.version}</version>
+  <packaging>maven-plugin</packaging>
+  <name>Toolkit Maven Plugin</name>
+  <description>Generate New Project, War, Qooxdoo Java Proxies, Qooxdoo Repository and Qooxdoo Resources.</description>
+
+  <properties>
+    <!-- TODO: 6.0.14 -->
+    <tomcat.version>6.0.13</tomcat.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.qooxdoo.toolkit</groupId>
+      <artifactId>compiler</artifactId>
+      <version>${qwt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+
+    <!--  for tomcat: -->
+	<dependency>
+	  <groupId>org.apache.tomcat</groupId>
+	  <artifactId>catalina</artifactId>
+      <version>${tomcat.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.tomcat</groupId>
+		<artifactId>servlet-api</artifactId>
+		<version>${tomcat.version}</version>
+	</dependency>
+	<dependency>
+      <!--  to avoid Digester warning "could not get url for jsptaglibrary dtd":  -->
+	  <groupId>org.apache.tomcat</groupId>
+	  <artifactId>jsp-api</artifactId>
+	  <version>${tomcat.version}</version>
+	</dependency>
+	<dependency>
+        <groupId>org.apache.tomcat</groupId>
+		<artifactId>coyote</artifactId>
+		<version>${tomcat.version}</version>
+	</dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <configuration>
+          <goalPrefix>qwt</goalPrefix>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>skel</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo file="${basedir}/target/classes/qwt.version">${project.version}</echo>
+                <mkdir dir="${basedir}/target" />
+                <tar destfile="${basedir}/target/classes/skel.tar.gz" compression="gzip">
+                  <tarfileset dir="${basedir}/src/skel">
+                    <exclude name="**/*.sh" />
+                  </tarfileset>
+                  <tarfileset dir="${basedir}/src/skel" mode="755">
+                    <include name="**/*.sh" />
+                  </tarfileset>
+                </tar>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>

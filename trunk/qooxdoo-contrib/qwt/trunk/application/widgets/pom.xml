@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>application</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.qooxdoo</groupId>
+  <artifactId>widgets</artifactId>
+  <name>Widget Demo</name>
+  <description>Qwt Demo Web Application: no-sense-example, we just need a place 
+    to try various widgets.</description>
+  <version>${qwt.version}</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.qooxdoo.toolkit</groupId>
+      <artifactId>server</artifactId>
+      <version>${qwt.version}</version>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>${qwt.version}</version>
+        <configuration>
+          <main>${project.groupId}.${project.artifactId}.Main</main>
+          <includes>
+            <include>**/*.java</include>
+            <include>**/*.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/Services.java</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>war</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
