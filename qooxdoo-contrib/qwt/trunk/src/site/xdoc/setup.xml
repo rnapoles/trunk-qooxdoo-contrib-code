@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>Qwt</title>
+  </properties>
+
+  <body>
+    <section name="Setup">
+      <p>This section describes how to install Qwt on your machine. </p>
+      <subsection name="Prerequisites">
+        <p>A Unix machine: Linux or Mac OS should do, Windows doesn't work.</p>
+        <p><a href="http://python.org/">Python</a> 2.3 or higher (because Qooxdoo needs it). Use <code>python -V</code> to verify.</p>
+        <p><a href="http://java.sun.com/javase/downloads/index.jsp">Java 6</a>. Use <code>java -version</code> to verfiy.</p>
+        <p><a href="http://maven.apache.org/">Maven 2.0.7 or later</a>. Use <code>mvn -version</code> to verify.</p>
+        <p><a href="http://subversion.tigris.org/">Subversion 1.3 or higher</a>. Use <code>svn --version</code> to verify.</p>
+        <p>Recommended: Firefox with <a href="http://getfirebug.com">Firebug</a>.</p>
+      </subsection>
+      <subsection name="Setup">
+        <p>First, make sure that Maven's heap size is at least 128 MB: place something like <source> 
+export MAVEN_OPTS=-Xmx128m
+</source>
+in your environment initialization (e.g. your <code>.bash_profile</code>).</p>
+<p>Second, build Qwt (which takes about 10 minutes, depending on your machine):</p>
+        <source> 
+svn co https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/qwt
+cd qwt
+./install.sh
+</source>
+      </subsection>
+    </section>
+  </body>
+</document>

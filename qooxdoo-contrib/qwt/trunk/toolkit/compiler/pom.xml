@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>toolkit</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.qooxdoo.toolkit</groupId>
+  <artifactId>compiler</artifactId>
+  <name>Toolkit Compiler</name>
+  <description>Translates JavaScript to Java</description>
+  <version>${qwt.version}</version>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.qooxdoo.sushi</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>core</artifactId>
+      <version>3.2.0.666</version>
+    </dependency>
+    <dependency><!-- generated with "tu eclipse-jar" -->
+      <groupId>org.eclipse</groupId>
+      <artifactId>base</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

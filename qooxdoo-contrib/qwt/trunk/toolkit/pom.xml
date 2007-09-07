@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>qwt</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.qooxdoo</groupId>
+  <artifactId>toolkit</artifactId>
+  <name>Toolkit</name>
+  <version>1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>compiler</module>
+    <module>plugin</module>
+    <module>runtime</module>
+    <module>qooxdoo</module>
+    <module>server</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.qooxdoo.sushi</groupId>
+        <artifactId>core</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce-once</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>2.0.6</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>1.6</version>
+                </requireJavaVersion>
+                <requireOS>
+                  <family>unix</family>
+                </requireOS>            
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

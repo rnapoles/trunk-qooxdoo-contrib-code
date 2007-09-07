@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>Qwt</title>
+  </properties>
+
+  <body>
+    <section name="Limitations">
+    <subsection name="Status">
+      <p>Works for me ... very early beta.</p>
+    </subsection>
+    <subsection name="Language">
+      <p>Java 5 without</p>
+      <ul>
+        <li>Member classes</li>
+        <li>byte, long, float, double</li>
+        <li>... argumnts</li>
+        <li>autoboxing</li>
+      </ul>
+    </subsection>
+    <subsection name="Runtime">
+      <p>Limited subset of Java SE 5 runtime: mostly java.lang and java.util</p>
+    </subsection>
+    <subsection name="Qooxdoo">
+      <p>Version 0.5.3. </p>
+    </subsection>
+    <subsection name="RMI">
+      <p>Object trees only, no back-references, no inheritance</p>
+    </subsection>
+    </section>
+  </body>
+</document>

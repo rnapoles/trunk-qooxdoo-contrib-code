@@ -1,0 +1,19 @@
+Qooxdoo Web Toolkit
+-------------------
+
+CAUTION: this is alpha software.
+
+Building
+
+  ./install.sh
+
+
+Directory structure
+
+  sushi          gerneral purpose stuff, like apache commons
+  toolkit        qwt itself
+  application    example applications
+
+
+See also: https://qooxdoo.org/documentation/contrib/contributions/qwt
+
