@@ -1604,20 +1604,6 @@ qx.Class.define("qxadmin.AppFrame",
     },
 
 
-    relDirPath : function (path) 
-    {
-      var npath;
-
-
-      this.__loadPage(url, function(cont) 
-      {
-        
-      }, this);
-
-      return npath;
-    },
-
-
     /**
      * TODOC
      *
