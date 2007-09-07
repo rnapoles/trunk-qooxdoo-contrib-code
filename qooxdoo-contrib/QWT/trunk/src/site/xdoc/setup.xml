@@ -23,9 +23,9 @@ export MAVEN_OPTS=-Xmx128m
 in your environment initialization (e.g. your <code>.bash_profile</code>).</p>
 <p>Second, build Qwt (which takes about 10 minutes, depending on your machine):</p>
         <source> 
-svn co https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/qwt
+svn co https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk qwt
 cd qwt
-./install.sh
+‚./install.sh
 </source>
       </subsection>
     </section>
