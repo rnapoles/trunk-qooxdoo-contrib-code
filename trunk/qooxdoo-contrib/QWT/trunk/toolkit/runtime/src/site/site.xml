@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Qwt Runtime">
+<project name="QWT Runtime">
   <bannerLeft>
-    <name>Qwt Runtime</name>
+    <name>QWT Runtime</name>
   </bannerLeft>
   <bannerRight>
     <src>http://1und1.de/img/header/logo.gif</src>
