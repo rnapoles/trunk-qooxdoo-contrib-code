@@ -18,6 +18,20 @@ def invoke_external(cmd):
                          stderr=subprocess.STDOUT)
     return p.wait()
 
+def invoke_external1(cmd):
+    "Just os. based"
+    (cin,couterr) = os.popen4(cmd)
+    cin.close()  # no need to pass data to child
+    couterrNo = couterr.fileno()
+    stdoutNo  = sys.stdout.fileno()
+    while(1):
+        buf = os.read(couterrNo,50)
+        if buf == "":
+            break
+        os.write(stdoutNo,buf)
+    os.wait()  # unreliable on Windows
+    return 0
+
 def invoke_piped(cmd):
     import subprocess
     p = subprocess.Popen(cmd, shell=True,
@@ -114,7 +128,7 @@ def do_make(form):
         cmd = bashpath + " -c 'export PATH=/usr/bin; " + makecmd + "'"
     else:
         cmd = makecmd
-    rc = invoke_external(cmd)
+    rc = invoke_external1(cmd)
 
     return rc
 
