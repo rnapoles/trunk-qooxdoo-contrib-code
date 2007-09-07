@@ -51,8 +51,8 @@ def invoke_piped1(cmd):
     # the next code is roughly from stdlib:popen2's 'flow control issues' doc
     errout = cerr.read()
     output = cout.read()
-    output.close()
-    errout.close()
+    cout.close()
+    cerr.close()
     os.wait()
 
     return (rcode, output, errout)
