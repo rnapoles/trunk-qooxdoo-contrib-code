@@ -34,7 +34,7 @@ import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 
 /**
- * Starts Qwt application in an embedded Tomcat. 
+ * Starts QWT application in an embedded Tomcat. 
  * 
  * @goal run
  * @requiresDependencyResolution runtime

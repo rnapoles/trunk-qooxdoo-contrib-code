@@ -24,14 +24,14 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
- * @description Qwt Help.
+ * @description QWT Help.
  * @requiresProject false
  * @goal help
  */
 public class HelpMojo extends Base {
     @Override
     public void doExecute() throws IOException, MojoExecutionException {
-        info("Qwt Cheat Sheet");
+        info("QWT Cheat Sheet");
         info("  create new application               mvn qwt:new -Dpackage=foo.bar.Baz");
         info("  remove generated files               mvn clean");
         info("  compile application                  mvn compile");

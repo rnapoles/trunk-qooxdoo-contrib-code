@@ -2,12 +2,12 @@
 <document>
 
   <properties>
-    <title>Qwt</title>
+    <title>QWT</title>
   </properties>
 
   <body>
     <section name="Usage">
-      <p>This section describes how to build applications with Qwt. </p>
+      <p>This section describes how to build applications with QWT. </p>
       <subsection name="New Application">
         <p>To create and start a new application <code>hello</code>:</p>
       <source>
@@ -60,7 +60,7 @@ yourapp
       <ol>
         <li>Add and method <code>initServiceFoo</code> to your client's Main class, taking a single interface argument.</li>
         <li>Define a class <code>ServiceFoo</code> implmenting the interface.</li>
-        <li>For every new session, Qwt instantiates <code>ServiceFoo</code> on the server and passes a proxy object 
+        <li>For every new session, QWT instantiates <code>ServiceFoo</code> on the server and passes a proxy object 
           implementing the interface to the above method. This happens before <code>createRoot</code> is 
           called.</li>
         <li>Use the proxy in your to invoke service methods executed on the server.</li>

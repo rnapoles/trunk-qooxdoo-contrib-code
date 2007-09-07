@@ -347,7 +347,7 @@ public class Naming {
             "switch", "synchronized", "this", "throw", "throws", "transient",
             "true", "try", "typeof", "var", "void", "volatile", "while", "with",
             
-            // names reserved for Qwt
+            // names reserved for QWT
             CINIT
     );
     

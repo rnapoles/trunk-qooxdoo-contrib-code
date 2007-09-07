@@ -50,7 +50,7 @@ public class QooxdooEngine extends JavaScriptEngine {
                 "  'qx.propertyDebugLevel' : 10\n" +
                 "};" +
                 "navigator = new Object();" +
-                "navigator.vendor = 'Qwt'; " +
+                "navigator.vendor = 'QWT'; " +
                 "navigator.userAgent = 'rv:1.0;'; " +
                 "navigator.product = 'Gecko';" +
                 "navigator.platform = 'java';" +

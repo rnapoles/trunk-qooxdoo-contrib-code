@@ -11,8 +11,8 @@
   <artifactId>grep</artifactId>
   <version>${qwt.version}</version>
   <name>Grep Application</name>
-  <description>Qwt Application. 
-    Requirements: 1) show main Qwt features; 2) code explainable in a single presentation 3) use advanced Qooxdoo Widgets
+  <description>QWT Application. 
+    Requirements: 1) show main QWT features; 2) code explainable in a single presentation 3) use advanced Qooxdoo Widgets
   </description>
 
   <dependencies>

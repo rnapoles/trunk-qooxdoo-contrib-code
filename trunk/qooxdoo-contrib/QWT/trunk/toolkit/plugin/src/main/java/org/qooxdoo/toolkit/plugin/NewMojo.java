@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.util.Program;
 
 /**
- * @description Generates a new Qwt application.
+ * @description Generates a new QWT application.
  * @requiresProject false
  * @goal new
  */

@@ -7,7 +7,7 @@
 
   <body>
     <section name="About">
-      <p>Qwt is a toolkit for <a href="http://en.wikipedia.org/wiki/Web_application">Web Application</a>
+      <p>QWT is a toolkit for <a href="http://en.wikipedia.org/wiki/Web_application">Web Application</a>
       with a <a href="http://qooxdoo.org/">Qooxdoo</a> UI. The main idea is taken from 
       <a href="http://code.google.com/webtoolkit">Google Web Toolkit</a>: an application with client and
       server part is written in Java, and the system takes care to translate the client part to JavaScript.</p>
