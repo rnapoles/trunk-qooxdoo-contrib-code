@@ -13,7 +13,7 @@ export LC_ALL=C
 # Also force a client vm as normally used on customer machines.
 export MAVEN_OPTS="-Xmx112m -client"
 
-export INSTALL_OPTS="--batch-mode -Dall -Dfull"
+export INSTALL_OPTS="--batch-mode -Dall"
 rm -rf $HOME/.m2/repository
 ./install.sh || exit 1
 # TODO mvn site site:deploy || exit 1
