@@ -9,11 +9,7 @@
 
   <body>
     <menu name="Documentation">
-      <item name="Home" href="index.html"/>
-      <item name="Setup" href="setup.html"/>
-      <item name="Usage" href="usage.html"/>
       <item name="Development" href="development.html"/>
-      <item name="Limitations" href="limits.html"/>
     </menu>
   </body>
 </project>
