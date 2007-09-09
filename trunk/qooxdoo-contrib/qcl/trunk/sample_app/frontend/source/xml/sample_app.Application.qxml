@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qx:root xmlns:qx="http://www.qooxdoo.org"
+	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension"
+	qooxdooVersion="0.7">
+
+	<!-- application -->
+
+	<qx:application 
+		title="qcl (qooxdoo component library) sample application"
+		namespace="sample_app" authors="Christian Boulanger">		
+
+		<!-- start scripts -->
+		<qxt:include src="/includes/scripts-start.xml"/>
+		<qxt:include src="/includes/resources.xml"/>
+	
+		<!-- security -->
+		<qxt:include src="/includes/security.xml"/>
+		
+		<!-- components -->
+		<qxt:include src="/includes/components/loading-popup.xml"/>
+		<qxt:include src="/includes/components/remote-error-log.xml"/>	
+		<qxt:include src="/includes/components/login-window.xml"/>	
+		<qxt:include src="/includes/components/splash-window.xml"/>	
+		<qxt:include src="/includes/components/authorization/auth-config-main.xml"/>	
+		
+		<!-- contextmenus -->	
+		<!--qxt:include src="/includes/contextmenus.xml"/-->		
+		
+		<!-- popup windows -->
+		<!--qxt:include src="/includes/windows.xml"/-->
+		
+		<!-- main window layout -->
+		<qxt:include src="/includes/main.xml"/>
+		
+		<!-- admin scripts -->
+		<!--qxt:include src="/includes/admin.xml"/-->
+			
+		<!-- final scripts / business logic -->
+		<qxt:include src="/includes/scripts-end.xml"/>
+		
+	</qx:application>
+
+</qx:root>

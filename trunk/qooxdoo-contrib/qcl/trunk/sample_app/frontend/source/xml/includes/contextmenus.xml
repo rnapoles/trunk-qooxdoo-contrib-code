@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qooxdoo.org"
+	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
+	
+	<!-- context menus -->
+	<qxt:include src="/includes/contextmenus/contextmenu-people.xml"/>
+	<qxt:include src="/includes/contextmenus/contextmenu-times.xml"/>
+	<qxt:include src="/includes/contextmenus/contextmenu-places.xml"/>		
+		
+</qxt:include-definition>	
