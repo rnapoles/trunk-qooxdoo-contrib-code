@@ -5,9 +5,9 @@
  * relying on PEAR::DB for database access
  */
 
-require_once SERVICE_PATH . "qcl/jsonrpc/db.php";
+require_once SERVICE_PATH . "qcl/db/db.php";
 
-class qcl_jsonrpc_db_pear extends qcl_jsonrpc_db 
+class qcl_db_pear extends qcl_db 
 {
 
 	/**

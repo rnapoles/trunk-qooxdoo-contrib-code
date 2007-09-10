@@ -2,7 +2,7 @@
 
 // dependencies
 require_once  SERVICE_PATH . "qcl/jsonrpc/object.php";
-require_once  SERVICE_PATH . "qcl/jsonrpc/db/pear.php";
+require_once  SERVICE_PATH . "qcl/db/pear.php";
 require_once  SERVICE_PATH . "qcl/locale/manager.php";
 
 /**
@@ -42,7 +42,7 @@ class qcl_auth_common extends qcl_jsonrpc_object
    function __construct()
    {
 		parent::__construct();
-	 	$this->db = new qcl_jsonrpc_db_pear;
+	 	$this->db = new qcl_db_pear;
    }   
 
 	//-------------------------------------------------------------
