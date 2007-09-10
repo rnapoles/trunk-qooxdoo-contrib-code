@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.demo;
+package org.qooxdoo.widgets;
 
 import qx.event.type.DataEvent;
 import qx.ui.basic.Image;
