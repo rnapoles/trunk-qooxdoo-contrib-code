@@ -25,11 +25,27 @@ class qcl_db extends qcl_jsonrpc_object
 	function __construct()
 	{
 		parent::__construct(); 
-		$this->dsn 	= $this->config['database']['dsn'];
+		$this->dsn 	= $this->ini['database']['dsn'];
 		$this->db 	= $this->connect();
 	}
+		
+	//-------------------------------------------------------------
+	// static methods
+	//-------------------------------------------------------------
 	
+	/**
+	 * static method which returns a database object based on the configuration file
+	 * @return always returns a PEAR object at the moment
+	 */
+	function &getDbObject($config)
+	{
+		require_once SERVICE_PATH . "qcl/db/pear.php";
+		return new qcl_db_pear;
+	}
+	
+	//-------------------------------------------------------------
 	// abstract methods
+	//-------------------------------------------------------------
 
 	/**
 	 * makes connection
