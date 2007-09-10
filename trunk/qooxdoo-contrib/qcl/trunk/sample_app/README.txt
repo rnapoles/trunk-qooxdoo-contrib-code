@@ -33,7 +33,7 @@ called "sample_app" and create tables using the
 sample_app/backend/php/services/sample_app/sql/sample_app.sql
 file. You will also need to adapt the file
 sample_app/backend/php/services/sample_app/service.ini.php
-and edit the database DSN to your local configuration.
+and edit the database DSN to match your local configuration.
 
 Using the sample application as the basis of your own application
 -----------------------------------------------------------------
