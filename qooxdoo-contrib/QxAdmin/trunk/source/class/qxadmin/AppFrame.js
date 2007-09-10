@@ -1598,6 +1598,7 @@ qx.Class.define("qxadmin.AppFrame",
           
         } else 
         {
+            this.widgets["window.chooseQxPath.lab"].setText("Good, this looks like a proper qooxdoo installation");
           this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['dat'].setValue(npath); // remember value
         }
       }, this);
