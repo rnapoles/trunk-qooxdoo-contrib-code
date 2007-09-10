@@ -25,7 +25,8 @@ folder structure:
 If you use a different folder structure, you'll need to adapt the
 Makefile int qcl/frontend.
 
-Once you have all components, go to qcl/frontend and do "make source"
+Once you have all components, go to qcl/frontend and do "make transform" to
+convert the xml files into javascript and then "make source"
 or "make build" to build the sample app. 
 
 Before you can use the application, you need to create a MySQL database
