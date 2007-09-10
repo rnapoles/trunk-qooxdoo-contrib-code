@@ -6,7 +6,7 @@
 	<!-- authorization configuration -->
 	
 	<!-- includes -->
-	<qxt:include src="/includes/components/authorization/auth-config-contextmenus.xml"/>
+	<qxt:include src="/components/authorization/auth-config-contextmenus.xml"/>
 
 	<!-- SECURITY POLICIES -->
 	
@@ -92,11 +92,11 @@
 							showKnob="true">
 									
 							<qx:leftPane>
-								<qxt:include src="/includes/components/authorization/auth-config-left.xml"/>
+								<qxt:include src="/components/authorization/auth-config-left.xml"/>
 							</qx:leftPane>
 							
 							<qx:rightPane>
-								<qxt:include src="/includes/components/authorization/auth-config-right.xml"/>  
+								<qxt:include src="/components/authorization/auth-config-right.xml"/>  
 							</qx:rightPane>
 							
 						</qx:horizontalSplitPane>
@@ -106,7 +106,7 @@
 				</qx:topPane>
 				
 				<qx:bottomPane>
-					<qxt:include src="/includes/components/authorization/auth-config-properties.xml"/>
+					<qxt:include src="/components/authorization/auth-config-properties.xml"/>
 				</qx:bottomPane>
 				
 			</qx:verticalSplitPane>
