@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.demo;
+package org.qooxdoo.widgets;
 
 public class Services implements IServices {
     public String ping(String msg) {
