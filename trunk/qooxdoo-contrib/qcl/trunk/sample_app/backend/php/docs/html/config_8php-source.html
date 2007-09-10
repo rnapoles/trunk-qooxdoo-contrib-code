@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-<title>qcl sample application: F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/jsonrpc/config.php Source File</title>
+<title>qcl sample application: F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/config/config.php Source File</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 <link href="tabs.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -13,37 +13,49 @@
     <li><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
   </ul>
 </div>
-<h1>F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/jsonrpc/config.php</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 &lt;?php
+<h1>F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/config/config.php</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 &lt;?php
 <a name="l00002"></a>00002 
-<a name="l00003"></a>00003 <span class="comment">// configuration storage class</span>
-<a name="l00004"></a>00004 
-<a name="l00005"></a>00005 
-<a name="l00006"></a>00006 
-<a name="l00007"></a><a class="code" href="classqcl__jsonrpc__config__db.html">00007</a> <span class="keyword">class </span><a class="code" href="classqcl__jsonrpc__config__db.html">qcl_jsonrpc_config_db</a> <span class="keyword">extends</span> <a class="code" href="classqcl__jsonrpc__db__pear.html">qcl_jsonrpc_db_pear</a>
+<a name="l00007"></a><a class="code" href="classqcl__config.html">00007</a> <span class="keyword">class </span><a class="code" href="classqcl__config.html">qcl_config</a> <span class="keyword">extends</span> <a class="code" href="classqcl__jsonrpc__object.html">qcl_jsonrpc_object</a>
 <a name="l00008"></a>00008 {    
-<a name="l00009"></a>00009    
-<a name="l00013"></a><a class="code" href="classqcl__jsonrpc__config__db.html#4f4fbf0b9b3d345254a74523f1c6a8fd">00013</a>         function <a class="code" href="classqcl__jsonrpc__config__db.html#4f4fbf0b9b3d345254a74523f1c6a8fd">__construct</a>()
-<a name="l00014"></a>00014         {
-<a name="l00015"></a>00015                 parent::__construct();
-<a name="l00016"></a>00016         }
-<a name="l00017"></a>00017  
-<a name="l00021"></a><a class="code" href="classqcl__jsonrpc__config__db.html#63ed8410f0a3a8ba73882d64d1fd32b7">00021</a>         function <span class="keyword">set</span>($name,$value)
-<a name="l00022"></a>00022         {
-<a name="l00023"></a>00023                 $res = $this-&gt;db-&gt;getAllRows(<span class="stringliteral">"SELECT id FROM config WHERE name = '$name'"</span>);
-<a name="l00024"></a>00024                 $id  = $res[0]['<span class="keywordtype">id</span>'];
-<a name="l00025"></a>00025                 <span class="keywordflow">if</span> ( $id )
-<a name="l00026"></a>00026                 {
-<a name="l00027"></a>00027                         $this-&gt;<a class="code" href="classqcl__jsonrpc__db__pear.html#ac53b36035a6607877777c8d3b2528a1">execute</a>(<span class="stringliteral">"UPDATE config SET value = '$value' WHERE id = $id "</span>);
-<a name="l00028"></a>00028                 }
-<a name="l00029"></a>00029                 <span class="keywordflow">else</span>
-<a name="l00030"></a>00030                 {
-<a name="l00031"></a>00031                         $this-&gt;<a class="code" href="classqcl__jsonrpc__db__pear.html#ac53b36035a6607877777c8d3b2528a1">execute</a>(<span class="stringliteral">"INSERT INTO config (name,value) VALUES ('$name','$value')"</span>);
-<a name="l00032"></a>00032                         <span class="keywordflow">return</span> $this-&gt;<a class="code" href="classqcl__jsonrpc__db__pear.html#2e1997985041069fc356e5f58aa6e9b4">getLastInsertId</a>();
-<a name="l00033"></a>00033                 }
-<a name="l00034"></a>00034         }         
-<a name="l00035"></a>00035 }
-<a name="l00036"></a>00036 
-</pre></div><hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 10 08:50:44 2007 for qcl sample application by&nbsp;
+<a name="l00009"></a>00009 
+<a name="l00010"></a>00010         <span class="comment">//-------------------------------------------------------------</span>
+<a name="l00011"></a>00011         <span class="comment">// internal methods</span>
+<a name="l00012"></a>00012         <span class="comment">//------------------------------------------------------------- </span>
+<a name="l00013"></a>00013    
+<a name="l00017"></a><a class="code" href="classqcl__config.html#0580bd2bb96e305f9db6e6695bde4c5e">00017</a>         function <a class="code" href="classqcl__config.html#0580bd2bb96e305f9db6e6695bde4c5e">__construct</a>()
+<a name="l00018"></a>00018         {
+<a name="l00019"></a>00019                 parent::__construct();
+<a name="l00020"></a>00020                 
+<a name="l00021"></a>00021         }
+<a name="l00022"></a>00022 
+<a name="l00023"></a>00023         <span class="comment">//-------------------------------------------------------------</span>
+<a name="l00024"></a>00024         <span class="comment">// static methods </span>
+<a name="l00025"></a>00025         <span class="comment">//-------------------------------------------------------------   </span>
+<a name="l00026"></a>00026 
+<a name="l00031"></a><a class="code" href="classqcl__config.html#e62d900e016e9738297c1c9650df220e">00031</a>         function &amp;<a class="code" href="classqcl__config.html#e62d900e016e9738297c1c9650df220e">getConfigSingleton</a>(<a class="code" href="classqcl__jsonrpc__object.html#37fc8dbf2ca24f8e14daed114c0140ae">$ini</a>)
+<a name="l00032"></a>00032         {
+<a name="l00033"></a>00033                 $config = &amp;$this-&gt;<a class="code" href="classqcl__jsonrpc__object.html#6993b54c3d840c491ab5695597220687">getSingleton</a>(<span class="stringliteral">"qcl_config_db"</span>);
+<a name="l00034"></a>00034                 <span class="keywordflow">if</span> ( ! $config )
+<a name="l00035"></a>00035                 {
+<a name="l00036"></a>00036                         require_once SERVICE_PATH . <span class="stringliteral">"qcl/config/db.php"</span>;
+<a name="l00037"></a>00037                         $config = <span class="keyword">new</span> <a class="code" href="classqcl__config__db.html">qcl_config_db</a>;
+<a name="l00038"></a>00038                         $this-&gt;<a class="code" href="classqcl__jsonrpc__object.html#29598bc770a04e04167a16609adc4871">setSingleton</a>(&amp;$config);
+<a name="l00039"></a>00039                 }
+<a name="l00040"></a>00040                 <span class="keywordflow">return</span> $config;
+<a name="l00041"></a>00041         }
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043         <span class="comment">//-------------------------------------------------------------</span>
+<a name="l00044"></a>00044         <span class="comment">// abstract public non-rpc methods </span>
+<a name="l00045"></a>00045         <span class="comment">//-------------------------------------------------------------   </span>
+<a name="l00046"></a>00046 
+<a name="l00062"></a><a class="code" href="classqcl__config.html#953d223af96fb9b8bf895f74c75024cf">00062</a>         function <a class="code" href="classqcl__config.html#953d223af96fb9b8bf895f74c75024cf">create</a>($name, $type, $permissionRead=null, $permissionWrite=null, $userRef=null ){}
+<a name="l00063"></a>00063  
+<a name="l00069"></a><a class="code" href="classqcl__config.html#17384db044cffe8893712b709d9a1320">00069</a>         function <span class="keyword">get</span>($name,$value){}     
+<a name="l00070"></a>00070  
+<a name="l00077"></a><a class="code" href="classqcl__config.html#9ea16749286da65c86e52a1edeb29ea7">00077</a>         function <span class="keyword">set</span>($name,$value){}      
+<a name="l00078"></a>00078 }
+<a name="l00079"></a>00079 
+</pre></div><hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 11 00:51:43 2007 for qcl sample application by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.3 </small></address>
 </body>
