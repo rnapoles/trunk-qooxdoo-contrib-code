@@ -42,26 +42,36 @@ class patched_object {
 
 }
 
-// basis of all jsonrpc service classes
+/**
+ * base class of all json rpc service classes
+ */
 
 class qcl_jsonrpc_object extends patched_object {
+
+   //-------------------------------------------------------------
+   // common class variables to be overridden
+   //-------------------------------------------------------------
 
 	/**
 	 * @var JsonRpcError $error
 	 */
 	var $error;
-
+	
 	/**
-	 * @var string $servicedir the directory where the called service is
-	 * located in, needs to be defined in the called class
-	 * todo: should be set by jsonrpc server
-	 */
-	var $service_dir;
+	 * initial configuration contained in ini.php-files in the #
+	 * service class folders
+	 * @see qcl_jsonrpc_object::configureServie()
+	 */	
+	var $ini;
 	
 	/**
 	 * result value which will be serialized and returned to server
 	 */
 	var $result = array();
+
+   //-------------------------------------------------------------
+   // internal methods
+   //-------------------------------------------------------------
 	
 	/**
 	 * Class constructor, configures the service
@@ -73,7 +83,8 @@ class qcl_jsonrpc_object extends patched_object {
 	}
 
 	/**
-	 * set singleton instance of class
+	 * set singleton instance of a class
+	 * @param object $instance reference to be set as singleton
 	 */
 	function &setSingleton( $instance ) 
 	{
@@ -86,10 +97,11 @@ class qcl_jsonrpc_object extends patched_object {
 	
 	/**
 	 * get singleton instance of class
+	 * @param string $classname
+	 * @return object reference to singleton instance
 	 */
 	function &getSingleton( $classname ) 
 	{
-        
         global $qcl_jsonrpc_singletons;
         $instance = &$qcl_jsonrpc_singletons[$classname];
         if ( ! is_object ($instance) ) 
@@ -100,18 +112,16 @@ class qcl_jsonrpc_object extends patched_object {
     }
 	
 	/**
-	 * reads configuration from file or other source
-	 * currently, only ini-file based configuration is supported
-	 * the server looks for service.ini.php files, starting at the top-level
-	 * service directory. lower-level service.ini.php files can override config
-	 * directives selectively, inheriting the rest of the settings from the upper
+	 * reads initial configuration. looks for service.ini.php files, starting at 
+	 * the top-level service directory. lower-level service.ini.php files can override 
+	 * config directives selectively, inheriting the rest of the settings from the upper
 	 * level config files.
 	 **/
 	function configureService()
 	{
 		global $serviceComponents;
 		$currPath = servicePathPrefix;
-		$this->config = array();
+		$this->ini = array();
 		
 		// traverse service path and look for service.ini.php files 
 		// 
@@ -123,7 +133,7 @@ class qcl_jsonrpc_object extends patched_object {
 			 if ( file_exists ($currPath . "/service.ini.php") )
 			 {
 			 	$config = parse_ini_file ( $currPath . "/service.ini.php", true);
-			 	$this->config = array_merge ( $this->config, $config );
+			 	$this->ini = array_merge ( $this->ini, $config );
 			 }
 		} 
 	}

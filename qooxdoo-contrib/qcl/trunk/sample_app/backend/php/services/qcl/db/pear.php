@@ -10,6 +10,10 @@ require_once SERVICE_PATH . "qcl/db/db.php";
 class qcl_db_pear extends qcl_db 
 {
 
+	//-------------------------------------------------------------
+    // internal methods
+    //-------------------------------------------------------------
+
 	/**
 	 * constructor
 	 */
@@ -18,6 +22,9 @@ class qcl_db_pear extends qcl_db
 		parent::__construct();
 	}
 
+	//-------------------------------------------------------------
+    // public non-rpc methods
+    //-------------------------------------------------------------
 	
 	/**
 	 * connects to database 
@@ -33,7 +40,7 @@ class qcl_db_pear extends qcl_db
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 		
 		// set encoding
-		$encoding = $this->config['database']['encoding']; 
+		$encoding = $this->ini['database']['encoding']; 
 		if ($encoding)
 		{
 			$db->query("SET NAMES $encoding");

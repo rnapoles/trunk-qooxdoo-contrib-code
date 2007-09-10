@@ -3,6 +3,9 @@
 /**
  * class providing data on users
  * providing a backend to the qcl.auth client package
+ * 
+ * Class cannot be used directly, you need to subclass it 
+ * in your application service class folder
  */
 
 class qcl_auth_user extends qcl_auth_common
