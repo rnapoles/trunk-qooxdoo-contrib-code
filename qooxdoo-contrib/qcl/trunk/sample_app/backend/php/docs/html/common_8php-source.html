@@ -17,7 +17,7 @@
 <a name="l00002"></a>00002 
 <a name="l00003"></a>00003 <span class="comment">// dependencies</span>
 <a name="l00004"></a>00004 require_once  SERVICE_PATH . <span class="stringliteral">"qcl/jsonrpc/object.php"</span>;
-<a name="l00005"></a>00005 require_once  SERVICE_PATH . <span class="stringliteral">"qcl/jsonrpc/db/pear.php"</span>;
+<a name="l00005"></a>00005 require_once  SERVICE_PATH . <span class="stringliteral">"qcl/db/db.php"</span>;
 <a name="l00006"></a>00006 require_once  SERVICE_PATH . <span class="stringliteral">"qcl/locale/manager.php"</span>;
 <a name="l00007"></a>00007 
 <a name="l00013"></a><a class="code" href="classqcl__auth__common.html">00013</a> <span class="keyword">class </span><a class="code" href="classqcl__auth__common.html">qcl_auth_common</a> <span class="keyword">extends</span> <a class="code" href="classqcl__jsonrpc__object.html">qcl_jsonrpc_object</a>        
@@ -42,14 +42,14 @@
 <a name="l00032"></a>00032                 'note'          =&gt; array ()
 <a name="l00033"></a>00033         );
 <a name="l00034"></a>00034 
-<a name="l00035"></a>00035    <span class="comment">//-------------------------------------------------------------</span>
-<a name="l00036"></a>00036    <span class="comment">// shared constructor</span>
-<a name="l00037"></a>00037    <span class="comment">//-------------------------------------------------------------</span>
+<a name="l00035"></a>00035         <span class="comment">//-------------------------------------------------------------</span>
+<a name="l00036"></a>00036     <span class="comment">// internal methods</span>
+<a name="l00037"></a>00037     <span class="comment">//-------------------------------------------------------------</span>
 <a name="l00038"></a>00038 
 <a name="l00042"></a><a class="code" href="classqcl__auth__common.html#7547f68a05911d779a1c807eea74a248">00042</a>    function <a class="code" href="classqcl__auth__common.html#7547f68a05911d779a1c807eea74a248">__construct</a>()
 <a name="l00043"></a>00043    {
 <a name="l00044"></a>00044                 parent::__construct();
-<a name="l00045"></a>00045                 $this-&gt;db = <span class="keyword">new</span> <a class="code" href="classqcl__jsonrpc__db__pear.html">qcl_jsonrpc_db_pear</a>;
+<a name="l00045"></a>00045                 $this-&gt;db = <a class="code" href="classqcl__db.html#ef45d543cab6a8a1758cd0fde1aea6d7">qcl_db::getDbObject</a>($this-&gt;ini);
 <a name="l00046"></a>00046    }   
 <a name="l00047"></a>00047 
 <a name="l00048"></a>00048         <span class="comment">//-------------------------------------------------------------</span>
@@ -253,7 +253,7 @@
 <a name="l00315"></a>00315 }
 <a name="l00316"></a>00316 
 <a name="l00317"></a>00317 ?&gt;
-</pre></div><hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 10 08:50:44 2007 for qcl sample application by&nbsp;
+</pre></div><hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 11 00:51:43 2007 for qcl sample application by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.3 </small></address>
 </body>
