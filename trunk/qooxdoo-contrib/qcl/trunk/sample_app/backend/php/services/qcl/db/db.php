@@ -6,7 +6,7 @@ require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
  * abstract class for rpc objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_jsonrpc_db extends qcl_jsonrpc_object 
+class qcl_db extends qcl_jsonrpc_object 
 {
 
 	/**
