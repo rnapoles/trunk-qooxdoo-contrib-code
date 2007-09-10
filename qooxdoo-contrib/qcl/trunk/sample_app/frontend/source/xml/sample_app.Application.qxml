@@ -17,11 +17,11 @@
 		<qxt:include src="/includes/security.xml"/>
 		
 		<!-- components -->
-		<qxt:include src="/includes/components/loading-popup.xml"/>
-		<qxt:include src="/includes/components/remote-error-log.xml"/>	
-		<qxt:include src="/includes/components/login-window.xml"/>	
-		<qxt:include src="/includes/components/splash-window.xml"/>	
-		<qxt:include src="/includes/components/authorization/auth-config-main.xml"/>	
+		<qxt:include src="/components/loading-popup.xml"/>
+		<qxt:include src="/components/remote-error-log.xml"/>	
+		<qxt:include src="/components/login-window.xml"/>	
+		<qxt:include src="/components/splash-window.xml"/>	
+		<qxt:include src="/components/authorization/auth-config-main.xml"/>	
 		
 		<!-- contextmenus -->	
 		<!--qxt:include src="/includes/contextmenus.xml"/-->		
