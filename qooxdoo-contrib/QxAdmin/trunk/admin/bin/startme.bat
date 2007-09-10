@@ -100,7 +100,8 @@
   call :_checkWebServer
   if not !CheckWebServer!==1 (
     echo. Problems starting web server; aborting ...
-    echo. Try invoking "python admin\bin\cgiserver.py"
+    echo. Try invoking "python admin\bin\cgiserver.py". If that works,
+    echo. open the URL %adminUrl%?cygwin=!CgwinPath! in your web browser.
     goto:END
   )
 :: load admin url in browser

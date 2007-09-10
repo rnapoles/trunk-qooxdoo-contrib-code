@@ -17,11 +17,37 @@ echo_ () {
   echo " " $@ 
 }
 
+checkWhich () {
+  # check behaviour of the 'which' command (important for MacX)
+  typeset unknownCommand="unknownCommand$$"
+  typeset -i err1 err2
+  type which
+  if [ $? -eq 0 ]; then
+    which $unknownCommand  # should produce $?=1
+    err1=$?
+    which which  # should produce $?=0
+    err2=$?
+    if [ $err1 -eq $err2 ]; then  # this which is unusable
+      return 1
+    else
+      return 0
+    fi
+  fi
+}
+
+checkBin () {
+  # looks for the existence of a binary
+  #typeset tresult=`type $1|grep "$1 is"`
+  #typeset result=${tresult#$1 is}
+  type -p $1
+  return $?
+}
+
 findBrowser () {
   typeset browser=""
   for name in $Browsers
   do
-    browser=`which $name 2>/dev/null`
+    browser=`checkBin $name 2>/dev/null`
     if [ $? -eq 0 ]; then 
       echo $browser
       break
@@ -30,7 +56,7 @@ findBrowser () {
 }
 
 startServer () {
-  which $pybin >/dev/null 2>&1
+  checkBin $pybin >/dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo_ There is no Python in your path; qxadmin cannot work without Python; aborting ...
     return -1
@@ -92,11 +118,11 @@ checkWebServer () {
   typeset -i meth i
 
   # find a way to check the web server
-  which wget >/dev/null 2>&1
+  checkBin wget >/dev/null 2>&1
   if [ $? -eq 0 ]; then
     meth=2
   else
-    which telnet >/dev/null 2>&1
+    checkBin telnet >/dev/null 2>&1
     if [ $? -eq 0 ]; then
       meth=1
     else
@@ -146,7 +172,8 @@ echo_ Waiting a few seconds for the web server
 checkWebServer
 if [ $? -ne 0 ]; then
   echo_ "Problems starting web server; aborting ..."
-  echo_ Try invoking "python admin/bin/cgiserver.py"
+  echo_ "Try invoking \"python admin/bin/cgiserver.py\". If that works,"
+  echo_ "open the URL $adminUrl in your web browser."
   shutDown
   exit 3
 fi
