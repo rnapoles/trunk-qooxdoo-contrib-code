@@ -567,7 +567,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
 			}, this);
 			this._menu.add(nonGroupButton);
       // group radiobutton
-      this._groupButton = new qx.ui.menu.RadioButton("Group by content");
+      this._groupButton = new qx.ui.menu.RadioButton("Group by category");
       this._groupButton.addEventListener("execute", function(e) {
         if (this._qxObject != null) {
           // reload the view          
