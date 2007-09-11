@@ -21,7 +21,7 @@ package java.lang;
 
 public class Long extends Number {
     /** @native return Number(str) */
-    public native static long parseLong(String str);
+    public static native long parseLong(String str);
     
     private long value;
     

@@ -21,7 +21,7 @@ package java.lang;
 
 public class Integer extends Number {
     /** @native return Number(str) */
-    public native static int parseInt(String str);
+    public static native int parseInt(String str);
     
     private int value;
     

@@ -21,7 +21,7 @@ package java.lang;
 
 public class Float extends Number {
     /** @native return Number(str) */
-    public native static int parseFloat(String str);
+    public static native int parseFloat(String str);
     
     private float value;
     

@@ -24,12 +24,12 @@ import java.lang.reflect.Field;
 public class Class<T> {
     /**
      * @native
-         if (typeof(Class.metadata) == "string") {
-             Class.metadata = newObject(java.lang.Class, java.lang.Class.init1, [Class.metadata, Class]);
+         if (typeof(clazz.metadata) == "string") {
+             clazz.metadata = newObject(java.lang.Class, java.lang.Class.init1, [clazz.metadata, class]);
          }
-         return Class.metadata;        
+         return clazz.metadata;        
      */
-    public native static Class forJsClass(Object Class);
+    public static native Class<?> forJsClass(Object clazz);
     
     /**
      * @native 
@@ -40,7 +40,7 @@ public class Class<T> {
            return result;
          }
      */
-    public native static Object lookupJsClass(String name);
+    public static native Object lookupJsClass(String name);
 
     public static Class<?> forName(String name) throws ClassNotFoundException {
         Object jsClass;
