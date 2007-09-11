@@ -1,4 +1,5 @@
 <?php
+require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
 
 /**
  * abstract class for classes that implement configuration management
@@ -17,7 +18,6 @@ class qcl_config extends qcl_jsonrpc_object
    	function __construct()
    	{
 		parent::__construct();
-		
 	}
 
 	//-------------------------------------------------------------
@@ -60,20 +60,38 @@ class qcl_config extends qcl_jsonrpc_object
 	 * @return true if success or false if there was an error
 	 */
 	function create($name, $type, $permissionRead=null, $permissionWrite=null, $userRef=null ){}
- 
+
 	/**
-	 * gets config property value
+	 * gets config property value. 
+	 * raise an error if the active user does not have write permission for this property.
 	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
 	 * @return value of property or null if value does not exist.
 	 */
-	function get($name,$value){} 	 
+	function delete($name, $userRef){} 	
+
+	/**
+	 * gets all config property value that are readable by the active user 
+	 * @return array Array, with property names as key 
+	 */
+	function getAll(){} 	
+
+	/**
+	 * gets config property value. 
+	 * raise an error if the active user does not have read permission for this property.
+	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
+	 * @return mixed value of property or null if value does not exist.
+	 */
+	function get($name){} 	 
  
 	/**
-	 * sets config property
+	 * sets config property values
+	 * raise an error if the active user does not have write permission for this property
+	 * or if the type of the value does not match the type of the property.  
 	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @param string $value The value of the property. 
+	 * @param mixed $value The value of the property. 
 	 * @return true if success or false if there was an error
 	 */
-	function set($name,$value){} 	  
+	function set($name,$value){}
+
 }
 
