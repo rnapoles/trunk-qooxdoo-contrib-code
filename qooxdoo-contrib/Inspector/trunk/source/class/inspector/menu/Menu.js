@@ -48,6 +48,9 @@ qx.Class.define("inspector.menu.Menu", {
       // set the position of the start popup
       this._welcomePopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 120);
       this._welcomePopup.setTop(3);
+      // set the position of the hide popup
+      this._hideAllPopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 120);
+      this._hideAllPopup.setTop(3);      
       if (this._firstRun) {
         // show the popup
         this._welcomePopup.bringToFront();
@@ -63,6 +66,8 @@ qx.Class.define("inspector.menu.Menu", {
     this.__createInspectorMenu();
     // create the buttons shown on the menu
     this.__createMenubar();
+    // create the hide all popup
+    this.__createHideAllPopup();    
     // create the popup which is shown an the startup
     this.__createStartPopup();
     
@@ -112,9 +117,10 @@ qx.Class.define("inspector.menu.Menu", {
     _openWidgetFinderButton: null,
     _openPropertyEditorButton: null,
     
-    // popups
-    _aboutPopup: null,
+    // popups and additional stuff
+    _hideAllPopup: null,
     _welcomePopup: null,
+    _hideAllLabel: null,
     
     // move timer
     _upTimer: null,
@@ -145,7 +151,7 @@ qx.Class.define("inspector.menu.Menu", {
      * @return the components of the menu.
      */
     getComponents: function() {
-      return [this._inspectorMenu, this._aboutPopup, this._welcomePopup, this._settingsWindow, this];
+      return [this._inspectorMenu, this._hideAllPopup, this._welcomePopup, this._settingsWindow, this];
     },
     
     
@@ -399,9 +405,12 @@ qx.Class.define("inspector.menu.Menu", {
       }
       // create the command which hides and shows all application components
       this._hideEverythingCommand = new qx.client.Command(shortcut);
-      this._hideEverythingCommand.addEventListener("execute", function(e) {
+      this._hideEverythingCommand.addEventListener("execute", function(e) {        
         // if the menu is on the screen: hide
         if (this.getDisplay()) {
+          // show the popup to signal the shortcut to show the menu again
+          this.__showHideAllPopup();      
+          
           // if the widget window is on the screen
           if (this._openWidgetFinderButton.getChecked()) {
             // close it
@@ -557,7 +566,7 @@ qx.Class.define("inspector.menu.Menu", {
       
       // create a button for the inspector menu
       var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", this._inspectorMenu, qx.io.Alias.getInstance().resolve("inspector/image/menuarrow.png"));
-			inspectorButton.setIconPosition("right");
+      inspectorButton.setIconPosition("right");
       this._menubar.add(inspectorButton);
 
       // add a seperator            
@@ -659,10 +668,49 @@ qx.Class.define("inspector.menu.Menu", {
       window.setTimeout(function() {
         self._welcomePopup.hide();
       }, 4000);
-      
-      return this._welcomePopup;
     },
     
+    
+    /**
+     * Creates the popup which will be shown if the whole inspector will be hidden.
+     * It contains the key shortcut to reshow the inspector.
+     */
+    __createHideAllPopup: function() {
+      // create the popup  
+      this._hideAllPopup = new qx.ui.popup.Popup();
+      // add the popup to the document
+      this._hideAllPopup.addToDocument();
+      // set the opsition of the popup
+      this._hideAllPopup.setWidth(255);
+      this._hideAllPopup.setHeight(84);
+      // create and add the image for the background
+      var backGround = new qx.ui.basic.Image(qx.io.Alias.getInstance().resolve("inspector/image/popup.png"));      
+      this._hideAllPopup.add(backGround);
+      this._hideAllLabel = new qx.ui.basic.Label();
+      this._hideAllPopup.add(this._hideAllLabel);
+      // set the position of the text in the popup
+      this._hideAllLabel.setTop(33);
+      this._hideAllLabel.setLeft(10);
+    },
+    
+    
+    __showHideAllPopup: function() {
+      // create the text for the popup
+      var shortcut = qx.io.local.CookieApi.get("HideAllShortcut");
+      if (shortcut == null) {
+        shortcut = "CTRL+SHIFT+H";
+      }      
+      // set the text in the label
+      this._hideAllLabel.setText("<strong>Inspector</strong><br>Press " + shortcut + " to show the inspector.");
+      // show the popup
+      this._hideAllPopup.bringToFront();
+      this._hideAllPopup.show();
+      // start a timer to hide the popup in 4 seconds
+      var self = this;
+      window.setTimeout(function() {
+        self._hideAllPopup.hide();
+      }, 4000);         
+    },
     
     /**
      * Registers a mouseover and mouseout listener. These two listeners take 
