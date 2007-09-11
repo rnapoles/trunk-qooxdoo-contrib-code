@@ -25,7 +25,7 @@ public class Class<T> {
     /**
      * @native
          if (typeof(clazz.metadata) == "string") {
-             clazz.metadata = newObject(java.lang.Class, java.lang.Class.init1, [clazz.metadata, class]);
+             clazz.metadata = newObject(java.lang.Class, java.lang.Class.init1, [clazz.metadata, clazz]);
          }
          return clazz.metadata;        
      */
