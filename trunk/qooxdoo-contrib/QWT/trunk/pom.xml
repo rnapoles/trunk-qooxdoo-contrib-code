@@ -251,7 +251,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <distributionManagement>
     <site>
       <id>sourceforge</id>
-      <url>scpexe://shell.sf.net/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/sites</url>
+      <url>scpexe://shell.sf.net/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/sites/qwt</url>
     </site>
   </distributionManagement>
 
