@@ -166,7 +166,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       }, heightTextField);    
       // add the dimesion components together
       dimensionLayout.add(widthLabel, widthTextField, heightLabel, heightTextField);      
-      mainLayout.add(dimensionLayout);        
+      mainLayout.add(dimensionLayout);
       
       return this._apiGroup;
     },
