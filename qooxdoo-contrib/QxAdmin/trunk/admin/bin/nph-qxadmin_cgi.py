@@ -99,7 +99,7 @@ def part_to_ups (part):
   return os.sep.join(s) or ""
 
 def check_qx(pexp):
-    # get rid of trailing file name
+    # expect directory
     if os.path.isdir(pexp):
         dir = pexp
     else:
@@ -135,8 +135,11 @@ def do_reldir(form):
     common = find_common_prefix (cwd, os.path.abspath(path_exp))
     ups = part_to_ups (common[1])
     reldir = os.sep.join([ups,common[2]])
+    # get rid of trailing file name
+    if not os.path.isdir(reldir):
+        reldir = os.path.dirname(reldir)
     if check_qx(reldir):
-        print os.path.dirname(reldir)
+        print reldir
     else:
         print "-1"
     return rc
