@@ -35,7 +35,7 @@ qx.Class.define("inspector.menu.Menu", {
     // initialize the layout
     this.setWidth("auto");
     this.setHeight("auto");
-    this.setTop(-24);    
+    this.setTop(-26);    
     
     // register the handler to move the menu out of the screen    
     this.__registerMoveListener();    
@@ -46,10 +46,10 @@ qx.Class.define("inspector.menu.Menu", {
       // set the position of the menu
       this.setLeft(parseInt(middle - (this.getBoxWidth() / 2)));
       // set the position of the start popup
-      this._welcomePopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 120);
+      this._welcomePopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 145);
       this._welcomePopup.setTop(3);
       // set the position of the hide popup
-      this._hideAllPopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 120);
+      this._hideAllPopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 145);
       this._hideAllPopup.setTop(3);      
       if (this._firstRun) {
         // show the popup
@@ -167,6 +167,7 @@ qx.Class.define("inspector.menu.Menu", {
      */
     resetFindButton: function() {
       this._findButton.setChecked(false);
+			
     },
     
     
@@ -374,16 +375,7 @@ qx.Class.define("inspector.menu.Menu", {
       // create the find command      
       this._findCommand = new qx.client.Command(shortcut);
       this._findCommand.addEventListener("execute", function(e) {
-        // check the status of the find checkbox
-        if (this._findButton.getChecked()) {
-          // uncheck it and exit the find mode if it was checked
-          this._findButton.setChecked(false);
-          this._inspector.exitFindMode();          
-        } else {
-          // check it and start the find mode if it was not checked
-          this._findButton.setChecked(true);
-          this._inspector.startFindMode();
-        }    
+        this._findButton.toggleChecked(); 
       }, this);
       
       // check for the shortcut in the cookie
@@ -394,8 +386,7 @@ qx.Class.define("inspector.menu.Menu", {
       // create the find command      
       this._highlightCommand = new qx.client.Command(shortcut);
       this._highlightCommand.addEventListener("execute", function(e) {
-        this._highlightButton.toggleChecked();
-        this._inspector.highlightCurrentWidget(this._highlightButton.getChecked());
+        this._highlightButton.toggleChecked();        
       }, this);
       
       // check for the shortcut in the cookie
@@ -506,18 +497,7 @@ qx.Class.define("inspector.menu.Menu", {
         this.__openSettingsWindow();
       }, this);
       this._inspectorMenu.add(settingsButton);
-      // seperator
-      this._inspectorMenu.add(new qx.ui.menu.Separator());
-      
-      // find button
-      this._findButton = new qx.ui.menu.CheckBox("Find Widget");      
-      this._findButton.setCommand(this._findCommand);
-      this._inspectorMenu.add(this._findButton);
-      
-      // highlight button
-      this._highlightButton = new qx.ui.menu.CheckBox("Highlight Current Widget")
-      this._highlightButton.setCommand(this._highlightCommand);
-      this._inspectorMenu.add(this._highlightButton);
+
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       
@@ -571,6 +551,28 @@ qx.Class.define("inspector.menu.Menu", {
 
       // add a seperator            
       this._menubar.add(new qx.ui.toolbar.Separator());      
+			
+			// add the find button
+			this._findButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/menu_select.png"));
+			this._findButton.addEventListener("changeChecked", function(e) {
+        // check the status of the find checkbox
+        if (!this._findButton.getChecked()) {
+          this._inspector.exitFindMode();          
+        } else {
+          this._inspector.startFindMode();
+        }   
+			}, this);
+			this._menubar.add(this._findButton);
+			      
+      // highlight button
+      this._highlightButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/menu_highlight.png"));
+      this._highlightButton.addEventListener("changeChecked", function(e) {
+        this._inspector.highlightCurrentWidget(this._highlightButton.getChecked());				
+			}, this);
+      this._menubar.add(this._highlightButton);			
+			
+			// add a seperator            
+      this._menubar.add(new qx.ui.toolbar.Separator());  
       
       // add the open all button
       var openAllButton = new qx.ui.toolbar.Button("All");
@@ -757,7 +759,7 @@ qx.Class.define("inspector.menu.Menu", {
         // set a timer to enable the reset to the starting position 
         this._upTimer = window.setTimeout(function() {
           // set to the start position
-          self.setTop(-24);
+          self.setTop(-26);
           // if there is still a movement
           if (self._moveInterval != null) {
             // clear the move interval        
