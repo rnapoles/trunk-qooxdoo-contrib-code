@@ -304,6 +304,19 @@ qx.Class.define("qxadmin.AppFrame",
       vl.add(this.__makeToolEdit());
       vl.add(this.__makeButtEdit());
 
+      vl.addEventListener("appear", function (e) 
+      {
+        // check the current qooxdoo path
+        if (this.widgets &&
+            this.widgets["buttedit.varedit.page.items"] &&
+            this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"] &&
+            this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['dat'])
+        {
+          var qxp = this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['dat'].getValue();
+          this.checkQxPath(qxp);
+        }
+      }, this);
+
       return vl;
     }, // makeRightEdit()
 
@@ -816,7 +829,7 @@ qx.Class.define("qxadmin.AppFrame",
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Save Makefile"));
 
       // -- reset button
-      var resetb = new qx.ui.toolbar.Button("Reset Values", "icon/16/actions/view-refresh.png");
+      var resetb = new qx.ui.toolbar.Button("Reset Values", "icon/16/actions/edit-undo.png");
       mb.add(resetb);
       this.widgets["tooledit.resetbutton"] = resetb;
       this.__bindCommand(resetb, this._cmdRunReset);
@@ -1200,7 +1213,6 @@ qx.Class.define("qxadmin.AppFrame",
           // check QOOXDOO_PATH
           if (id == "QOOXDOO_PATH") 
           {
-            //TODO: clean this up!
             var currVal = item.dat.getValue();
             if (currVal == item.defaultt) {
               alert('You have to at least specify QOOXDOO_PATH (the path to your qooxdoo installation); aborting...');
@@ -1458,7 +1470,7 @@ qx.Class.define("qxadmin.AppFrame",
           tf.setUserData('id',item.label);
           container.add(tf,1,rowIndex);
           // Var Reset Button
-          var rb = new qx.ui.form.Button("Reset value", "icon/16/actions/view-refresh.png");
+          var rb = new qx.ui.form.Button("Reset value", "icon/16/actions/document-revert.png");
           rb.setUserData('id',item.label);
           rb.setShow("icon");
           rb.addEventListener("execute",that.__ehEditFormReset,that);
@@ -1538,14 +1550,20 @@ qx.Class.define("qxadmin.AppFrame",
     {
       var d = qx.ui.core.ClientDocument.getInstance();
       var diag = new qx.ui.window.Window("Qooxdoo Path Picker", "icon/16/apps/document-open.png");
-      diag.setSpace(600, 400, 150, 120);
       d.add(diag);
+      diag.setSpace(200, 400, 100, 120);
+      diag.set({
+        showMaximize : false,
+        showMinimize : false,
+        modal : true
+      });
 
       var box = new qx.ui.layout.VerticalBoxLayout();
       diag.add(box);
       box.set({
         horizontalChildrenAlign : 'center',
         padding : 10,
+        spacing:  10,
         width : "100%",
         height: "100%"
       });
@@ -1561,18 +1579,41 @@ qx.Class.define("qxadmin.AppFrame",
         height : 30
       });
 
+      var line1 = new qx.ui.layout.HorizontalBoxLayout();
+      box.add(line1);
+      line1.set({
+        spacing : 5,
+        width : "100%"
+      });
+
       var b1 = new qx.ui.form.Button("OK");
-      box.add(b1);
+      line1.add(b1);
       b1.addEventListener("execute", function (e) 
       {
+        var qxpath_ent = this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"];
+        if (qxpath_ent['tmp']) { // is there an temp. new value?
+          var npath      = qxpath_ent['tmp'];
+          if (npath != qxpath_ent['dat'].getValue())  // is it different?
+          {
+            qxpath_ent['dirty']=1; // means changed
+            qxpath_ent['dat'].setValue(npath); // store value
+          }
+        }
         diag.close();
         diag.getParent().remove(diag);
         qx.ui.core.Widget.flushGlobalQueues();
         diag.dispose();
       }, this);
 
-      //var b2 = new qx.ui.form.Button("Cancel");
-      //box.add(b2);
+      var b2 = new qx.ui.form.Button("Cancel");
+      line1.add(b2);
+      b2.addEventListener("execute", function (e) 
+      {
+        diag.close();
+        diag.getParent().remove(diag);
+        qx.ui.core.Widget.flushGlobalQueues();
+        diag.dispose();
+      }, this);
 
       diag.open();
       
@@ -1581,7 +1622,6 @@ qx.Class.define("qxadmin.AppFrame",
 
     getQxPath : function (path) 
     {
-      this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['dirty']=1; // means changed
       // strip 
 
       // Relativize path value (through server) and remember value
@@ -1591,15 +1631,27 @@ qx.Class.define("qxadmin.AppFrame",
         npath = qx.lang.String.trim(npath);
         if (npath == "-1") 
         {
-          if (this.widgets["window.chooseQxPath.lab"])
-          {
-            this.widgets["window.chooseQxPath.lab"].setText("This does not seem like a proper qooxdoo installation path; choose again");
-          }
-          
+          this.widgets["window.chooseQxPath.lab"].setText("This does not seem like a proper qooxdoo installation path; choose again");
         } else 
         {
-            this.widgets["window.chooseQxPath.lab"].setText("Good, this looks like a proper qooxdoo installation");
-          this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['dat'].setValue(npath); // remember value
+          this.widgets["window.chooseQxPath.lab"].setText("Good, this looks like a proper qooxdoo installation");
+          this.widgets["buttedit.varedit.page.items"]["QOOXDOO_PATH"]['tmp']=npath; // remember value
+        }
+      }, this);
+    },
+
+
+    // bring up the path chooser if passed value is not a valid one
+    checkQxPath : function (path) 
+    {
+      // Relativize path value (through server) and remember value
+      var url = this.adminPath+"?action=reldir&path="+path;
+      this.__loadPage(url, function (npath) 
+      {
+        npath = qx.lang.String.trim(npath);
+        if (npath == "-1") 
+        {
+          this.__ehQxPathChooser(null);
         }
       }, this);
     },

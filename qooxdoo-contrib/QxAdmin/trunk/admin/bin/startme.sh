@@ -36,6 +36,8 @@
 #  - Port 8000 for the web server is hard-coded; if this port is occupied on
 #    your machine, you have to change it here and in the GUI Javascript source
 #    code (which implies you need a source version of this app).
+#  - The whole application is intentionally restricted to local usage (althrough
+#    it uses network connections); don't try it from a remote host
 #  - The current version only half works on MacOSX; especilly the DEBUG option
 #    does not work.
 #

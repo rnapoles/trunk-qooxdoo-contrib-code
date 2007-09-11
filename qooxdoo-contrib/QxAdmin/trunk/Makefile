@@ -21,7 +21,7 @@
 # BASIC SETTINGS
 ####################################################################################
 
-QOOXDOO_PATH = ../../../qooxdoo.legacy_0_7_x
+QOOXDOO_PATH = ../../../packages/qooxdoo-0.7.1-sdk
 QOOXDOO_URI = ../$(QOOXDOO_PATH)
 QOOXDOO_VERSION = 0.7.2
 
