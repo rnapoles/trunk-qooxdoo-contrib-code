@@ -20,7 +20,9 @@
 qx.Class.define("inspector.propertyEditor.Filter", {
   
   extend : qx.core.Object,
+  implement : inspector.propertyEditor.IFilter,
   
+	
   /*
   *****************************************************************************
      STATICS
