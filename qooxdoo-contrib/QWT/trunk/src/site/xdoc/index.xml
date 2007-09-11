@@ -6,6 +6,11 @@
   </properties>
 
   <body>
+    <section name="Documentation">
+      <p>This page contains generated documentation (like api docs and svn statistics.
+      Please refer to <a href="http://qooxdoo.org/documentation/contrib/contributions/qwt">qooxdoo Wiki</a>
+      for written documentation. </p>
+    </section>
     <section name="Development">
       <subsection name="Building">
         <p>QWT has a Maven multi-module build, just use the normal <code>mvn clean install</code>.
