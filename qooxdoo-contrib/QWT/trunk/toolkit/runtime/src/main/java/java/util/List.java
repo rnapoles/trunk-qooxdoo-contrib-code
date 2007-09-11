@@ -20,8 +20,8 @@
 package java.util;
 
 public interface List<T> extends Collection<T> {
-    public T get(int idx);
-    public void set(int idx, T obj);
-    public boolean remove(T Object);
-    public T remove(int idx);
+    T get(int idx);
+    void set(int idx, T obj);
+    boolean remove(T obj);
+    T remove(int idx);
 }

@@ -117,6 +117,11 @@ public class ArrayList<T> implements List<T> {
     }
     
     @Override
+    public int hashCode() {
+        return used;
+    }
+    
+    @Override
     public boolean equals(Object obj) {
         Collection<? extends T> c;
         int idx;

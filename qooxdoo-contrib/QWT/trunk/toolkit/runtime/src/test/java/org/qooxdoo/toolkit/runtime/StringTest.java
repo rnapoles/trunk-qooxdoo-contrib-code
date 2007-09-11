@@ -19,7 +19,6 @@
 
 package org.qooxdoo.toolkit.runtime;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 

@@ -28,7 +28,7 @@ public class Object {
      * @native 
          return this.__proto__.constructor;
      */
-    public native final Object getJsClass();
+    public final native Object getJsClass();
 
     public int hashCode() {
         return 1;

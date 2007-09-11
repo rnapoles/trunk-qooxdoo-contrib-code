@@ -28,7 +28,7 @@ public final class System {
     /**
      * @native  return new Date().getTime();
      */
-    public native static long currentTimeMillis();
+    public static native long currentTimeMillis();
 
     /**
      * @native 

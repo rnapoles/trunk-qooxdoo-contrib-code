@@ -21,7 +21,7 @@ package java.lang;
 
 public class Double extends Number {
     /** @native return Number(str) */
-    public native static int parseDouble(String str);
+    public static native int parseDouble(String str);
     
     private double value;
     
