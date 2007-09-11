@@ -556,7 +556,8 @@ qx.Class.define("inspector.menu.Menu", {
       this.add(this._menubar);
       
       // create a button for the inspector menu
-      var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", this._inspectorMenu);
+      var inspectorButton = new qx.ui.toolbar.MenuButton("Inspector", this._inspectorMenu, qx.io.Alias.getInstance().resolve("inspector/image/menuarrow.png"));
+			inspectorButton.setIconPosition("right");
       this._menubar.add(inspectorButton);
 
       // add a seperator            
