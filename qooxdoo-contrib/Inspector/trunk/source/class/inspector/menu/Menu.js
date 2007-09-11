@@ -63,8 +63,6 @@ qx.Class.define("inspector.menu.Menu", {
     this.__createInspectorMenu();
     // create the buttons shown on the menu
     this.__createMenubar();
-    // create the popup which holds the about text
-    this.__createAboutPopup();
     // create the popup which is shown an the startup
     this.__createStartPopup();
     
@@ -491,23 +489,7 @@ qx.Class.define("inspector.menu.Menu", {
     __createInspectorMenu: function() {
       // create the menu
       this._inspectorMenu = new qx.ui.menu.Menu();
-      this._inspectorMenu.addToDocument();      
-      
-      // about button
-      var aboutButton = new qx.ui.menu.Button("About Inspector");
-      this._inspectorMenu.add(aboutButton);
-      aboutButton.addEventListener("execute", function() {
-        // get and set the positions to center the popup
-        var left = (qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2) - (this._aboutPopup.getOuterWidth() / 2);
-        var top = (qx.ui.core.ClientDocument.getInstance().getInnerHeight() / 2) - (this._aboutPopup.getOuterHeight() / 2); 
-        this._aboutPopup.setTop(top);
-        this._aboutPopup.setLeft(left);
-        // show the popup
-        this._aboutPopup.show();
-        this._aboutPopup.bringToFront();
-      }, this);      
-      // seperator
-      this._inspectorMenu.add(new qx.ui.menu.Separator());      
+      this._inspectorMenu.addToDocument();
       
       // the settings button
       var settingsButton = new qx.ui.menu.Button("Settings...");
@@ -647,36 +629,6 @@ qx.Class.define("inspector.menu.Menu", {
           this._inspector.hidePropertyEditor();
        }
       }, this);
-    },
-    
-    
-    /**
-     * Creates the popup for the about screen.
-     */
-    __createAboutPopup: function() {
-      // create the popup
-      this._aboutPopup = new qx.ui.popup.Popup();
-      this._aboutPopup.addToDocument();
-      // set the look of the popup
-      this._aboutPopup.setBackgroundColor("#FFFFFF");
-      this._aboutPopup.setBorder("black");      
-      this._aboutPopup.setHeight(150);
-      this._aboutPopup.setWidth(300);
-      this._aboutPopup.setPadding(10);
-      
-      // create the label text
-      var label = "<font size='4' face='Verdana'><strong>Inspector 0.1</strong></font><br><br>" + 
-                  "<a href='http://www.qooxdoo.org' target='_blank'>qooxdoo.org</a><br>" + 
-                  "1und1 Internet AG<br><br>" + 
-                  "<strong>License:</strong><br>See the LICENSE file in<br>the project's top-level<br>directory for details.";
-      
-      // add a atom containing the about text
-      var aboutText = new qx.ui.basic.Atom(label);
-      aboutText.setIcon(qx.io.Alias.getInstance().resolve("inspector/image/1und1.jpg"));
-      this._aboutPopup.add(aboutText);
-      // style the atom      
-      aboutText.setVerticalChildrenAlign("top");
-      aboutText.getLabelObject().setPaddingLeft(10);
     },
     
     
