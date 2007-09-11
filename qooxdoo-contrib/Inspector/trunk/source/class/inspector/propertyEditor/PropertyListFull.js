@@ -499,7 +499,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       try {
         value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
       } catch (e) {
-        return new qx.ui.basic.Label("Error during reading the property: " + e);
+        return new qx.ui.basic.Label("Error");
       }
       
       // call the function to handle the right type
@@ -722,7 +722,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * @param key {String} The name of the propertie.
      * @param classname {String} The classname of the properties class.
      */
-    _setPropertyValueFull: function(key, classname) {      
+    _setPropertyValueFull: function(key, classname) {			
       // get the layout containing the property 
       var layout = this._propertyColumns[classname + "." + key];
       
@@ -739,7 +739,17 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       try {
         var value = this._controller.getWidget()[getterName].call(this._controller.getWidget());  
       } catch (e) {
-        layout.setBackgroundColor("red");
+				// if there is a label to signal that there was an error
+        if (layout.getChildren()[1].classname == "qx.ui.basic.Label") {
+					// write the text in red
+					layout.getChildren()[1].setTextColor("red");
+					// print out the error message
+					layout.getChildren()[1].setText(e + "");
+					// hide the null icon
+          layout.getChildren()[2].setDisplay(false);					
+				} else {
+					layout.setBackgroundColor("red");					
+				}
         return;
       }
 
@@ -758,10 +768,18 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           value = parent[getterName].call(parent);
         }
       } catch (e) {
-        layout.setBackgroundColor("red");
+        // if there is a label to signal that there was an error				
+				if (layout.getChildren()[1].classname == "qx.ui.basic.Label") {
+          // write the text in red
+          layout.getChildren()[1].setTextColor("red");
+          // print out the error message
+          layout.getChildren()[1].setText(e + "");					
+				} else {
+	        layout.setBackgroundColor("red");					
+				}
         return;
       }
-      
+			
       // check box
       if (layout.getChildren()[1].classname == "qx.ui.form.CheckBox") {
         if (value == null) {
