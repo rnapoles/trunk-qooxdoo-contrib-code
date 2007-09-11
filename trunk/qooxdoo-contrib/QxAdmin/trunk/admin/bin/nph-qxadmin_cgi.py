@@ -99,7 +99,11 @@ def part_to_ups (part):
   return os.sep.join(s) or ""
 
 def check_qx(pexp):
-    dir = os.path.dirname(pexp)
+    # get rid of trailing file name
+    if os.path.isdir(pexp):
+        dir = pexp
+    else:
+        dir = os.path.dirname(pexp)
     fle = os.path.join(dir,"frontend","framework",config['makefile'])
     if os.path.exists(fle):
         f = open(fle)
