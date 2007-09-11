@@ -5,8 +5,16 @@ require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
 
 /**
  * manages locales and translations
- * this is only a stub which does not do any translation
- * to be implemented
+ * ported from qooxdoo javascript implementation
+ * this is only a stub which does not do any translation yet
+ * to be implemented & turned into an interface/abstract class - we can implement 
+ * gettext-based, db-based, file-based etc. although gettext-based makes most sense
+ * since qooxdoo frontend can use those, too. 
+ * 
+ * qcl/locale/
+ * |-- locale.php abstract class
+ * |-- gettext.php subclass
+ * |-- db.php subclass etc. 
  */
 class qcl_locale_manager extends qcl_jsonrpc_object
 {
