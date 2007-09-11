@@ -643,7 +643,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       // create the menu
       this._createMenu();
       // add the menu button
-      var menuButton = new qx.ui.toolbar.MenuButton("View", this._menu);
+      var menuButton = new qx.ui.toolbar.MenuButton("View", this._menu, qx.io.Alias.getInstance().resolve("inspector/image/menuarrow.png"));
+			menuButton.setIconPosition("right");
       this._toolbar.add(menuButton)
       
       // add a seperator
