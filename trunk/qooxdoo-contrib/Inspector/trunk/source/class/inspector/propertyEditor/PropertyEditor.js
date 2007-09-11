@@ -299,7 +299,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // signal the user that somneting went wrong
           alert("Error during reading the selecteds Property: " + e);
           // mark the property that something went wrong while reading
-          this._currentlySelectedProperty.setBackgroundColor("red");
+          this._currentlySelectedProperty.setBackgroundColor(null);
           // reset the current selected property
           this._currentlySelectedProperty = null;          
           this._highlightCurrentPropertyButton.setEnabled(false);
