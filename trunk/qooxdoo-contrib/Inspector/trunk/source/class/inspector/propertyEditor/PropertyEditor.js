@@ -552,23 +552,39 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._menu.add(this._inheritedButton);
       this._inheritedButton.addEventListener("execute", this._switchInheritedStatus, this);
       
-      // groupe checkbox
-      this._groupButton = new qx.ui.menu.CheckBox("Group Properties");
-      this._groupButton.addEventListener("click", function(e) {
+      // seperator
+      this._menu.add(new qx.ui.menu.Separator());			
+			
+			// non group radio button
+			var nonGroupButton = new qx.ui.menu.RadioButton("Group by inheritance", null, true);
+			nonGroupButton.addEventListener("execute", function(e) {
+        if (this._qxObject != null) {
+          // reload the view          
+          this._propertyList.build();
+        }
+        // enable the inheritance button
+        this._inheritedButton.setEnabled(true); 
+			}, this);
+			this._menu.add(nonGroupButton);
+      // group radiobutton
+      this._groupButton = new qx.ui.menu.RadioButton("Group by content");
+      this._groupButton.addEventListener("execute", function(e) {
         if (this._qxObject != null) {
           // reload the view          
 					this._propertyList.build();
         }
-        // enable or disable the inheritance button
-        this._inheritedButton.setEnabled(!e.getTarget().getChecked())
+        // disable the inheritance button
+        this._inheritedButton.setEnabled(false);
       }, this);      
       this._menu.add(this._groupButton);
-      
+      // group radio manager
+      new qx.ui.selection.RadioManager(null, [nonGroupButton, this._groupButton]);
+
       // seperator
       this._menu.add(new qx.ui.menu.Separator());
       
       // edit view button
-      var editViewButton = new qx.ui.menu.RadioButton("Edit View", null, true)
+      var editViewButton = new qx.ui.menu.RadioButton("Edit View", null, true);
       editViewButton.addEventListener("execute", function(e) {
         // if the button is checked
         if (e.getCurrentTarget().getChecked()) {
@@ -616,7 +632,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._menu.add(tableViewButton); 
       
       // radio manager for the view buttons      
-      var viewRadioManager = new qx.ui.selection.RadioManager(null, [editViewButton, tableViewButton]);      ;        
+      var viewRadioManager = new qx.ui.selection.RadioManager(null, [editViewButton, tableViewButton]);     
     },
     
     
