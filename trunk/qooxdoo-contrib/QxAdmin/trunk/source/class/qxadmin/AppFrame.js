@@ -1549,7 +1549,7 @@ qx.Class.define("qxadmin.AppFrame",
     __ehQxPathChooser : function (e) 
     {
       var d = qx.ui.core.ClientDocument.getInstance();
-      var diag = new qx.ui.window.Window("Qooxdoo Path Picker", "icon/16/apps/document-open.png");
+      var diag = new qx.ui.window.Window("Qooxdoo Path Picker", "icon/16/actions/document-open.png");
       d.add(diag);
       diag.setSpace(200, 400, 100, 120);
       diag.set({
@@ -1816,6 +1816,8 @@ qx.Class.define("qxadmin.AppFrame",
      */
     __ehRunIframeLoaded : function(e)
     {
+      var ifrm = e.getTarget();
+      ifrm.setScrollTop(ifrm.getScrollHeight());
       this._cmdOpenPage.setEnabled(true);
       return;
     }, // __ehRunIframeLoaded
