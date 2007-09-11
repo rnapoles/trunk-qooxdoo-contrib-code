@@ -176,6 +176,8 @@ qx.Class.define("inspector.AbstractWindow", {
     hide: function() {
       this.setVisibility(false);
       this._inspector.componentClosed(this);
+      // save that the finder is closed
+      qx.io.local.CookieApi.set(this.classname + "#Open", false);			
     },
     
     /*

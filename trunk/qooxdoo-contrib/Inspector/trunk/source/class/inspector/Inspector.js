@@ -91,6 +91,9 @@ qx.Class.define("inspector.Inspector", {
     // initialize the cookies
     this.__initializeCookies();
 		
+		// reopen the windows if they were former opened
+		this.__reopenWindows();
+		
 		//////////////////////////
 		// PATCH FOR 0.7.1
 		if (qx.core.Object.prototype.getDbKey == undefined) {
@@ -591,6 +594,8 @@ qx.Class.define("inspector.Inspector", {
         this._createWidgetFinder();
       }
       this._widgetFinder.open();
+			// save that the finder is open
+			qx.io.local.CookieApi.set(this._widgetFinder.classname + "#Open", true);
     },
     
     
@@ -603,6 +608,8 @@ qx.Class.define("inspector.Inspector", {
         this._createObjectFinder();
       }
       this._objectFinder.open();
+      // save that the finder is open
+      qx.io.local.CookieApi.set(this._objectFinder.classname + "#Open", true);			
     },
   
   
@@ -619,6 +626,8 @@ qx.Class.define("inspector.Inspector", {
       if (this._widget != null) {
         this._propertyEditor.setWidget(this._widget);
       }
+      // save that the editor is open
+      qx.io.local.CookieApi.set(this._propertyEditor.classname + "#Open", true);  			
     },
     
     
@@ -636,6 +645,8 @@ qx.Class.define("inspector.Inspector", {
         this._console.setWidget(this._widget);
       }
       this._console.open();
+      // save that the console is open
+      qx.io.local.CookieApi.set(this._console.classname + "#Open", true);  			
     },
     
     
@@ -914,7 +925,31 @@ qx.Class.define("inspector.Inspector", {
       if (!qx.io.local.CookieApi.get("OpenPropertyShortcut")) {
         qx.io.local.CookieApi.set("OpenPropertyShortcut", "CTRL+SHIFT+F4");
       }   
-    }    
+    },
+		
+		
+		/**
+		 * Checks for the cookies which store the state of the opened or closed windows.
+		 * If a window was opened on relaod, the function opens that window.
+		 */
+		__reopenWindows: function() {
+	    // check if there is a cookie stored that the console was opened
+			if (qx.io.local.CookieApi.get("inspector.console.Console#Open") == "true") {
+	      this.openConsole();
+	    }
+			// check if there is a cookie stored that the object finder was opened
+	    if (qx.io.local.CookieApi.get("inspector.objectFinder.ObjectFinder#Open") == "true") {
+	      this.openObjectFinder();
+	    }
+			// check if there is a cookie stored that the property editor was opened
+	    if (qx.io.local.CookieApi.get("inspector.propertyEditor.PropertyEditor#Open") == "true") {
+	      this.openPropertyEditor();
+	    }
+			// check if there is a cookie stored that the widget finder was opened
+	    if (qx.io.local.CookieApi.get("inspector.widgetFinder.WidgetFinder#Open") == "true") {
+	      this.openWidgetFinder();
+	    }			
+		}
         
   },
   
