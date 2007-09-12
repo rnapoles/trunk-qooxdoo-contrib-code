@@ -26,12 +26,6 @@ class qcl_auth_common extends qcl_jsonrpc_object
 	var $icon;
 	var $foreignKey						= "Needs to be overridden!";
 
-	var $meta = array(
-		'namedId'	=> array ('confirm' => true ),
-		'name'		=> array (),
-		'note'		=> array ()
-	);
-
 	//-------------------------------------------------------------
     // internal methods
     //-------------------------------------------------------------
@@ -42,7 +36,7 @@ class qcl_auth_common extends qcl_jsonrpc_object
    function __construct()
    {
 		parent::__construct();
-	 	$this->db = qcl_db::getDbObject($this->ini);
+	 	$this->db = qcl_db::getSubclass($this->ini);
    }   
 
 	//-------------------------------------------------------------
@@ -56,14 +50,15 @@ class qcl_auth_common extends qcl_jsonrpc_object
     * @return integer id
     */
    function getIdFromRef($ref)
-   {
-	   	if ( is_numeric ($ref) ) 
+   {   	
+	   	if ( $ref === null or is_numeric ($ref) ) 
 	   	{
 	   		return $ref;
 	   	}
+	   	
 	   	if ( ! is_string ( $ref ) ) 
 	   	{
-	   		$this->raiseError("qx::security::common::getIdFromRef : integer or string expected, got '$ref'");	
+	   		$this->raiseError("qcl_auth_common::getIdFromRef : integer or string expected, got '$ref'");	
 	   	}
 	   	$row = $this->db->getRow("
 			SELECT `{$this->key_id}` 
@@ -134,7 +129,7 @@ class qcl_auth_common extends qcl_jsonrpc_object
    		}
    		else
    		{
-   			$this->raiseError("qx::security::common::getByRef : integer or string expected, got '$ref'");
+   			$this->raiseError("qcl_auth_common::getByRef : integer or string expected, got '$ref'");
    		}
    	}
 
@@ -280,7 +275,7 @@ class qcl_auth_common extends qcl_jsonrpc_object
        	}
        	elseif ( ! $data[$this->key_id] )
        	{
-       		$this->raiseError("qcl.auth.item.update : no id given!");
+       		$this->raiseError("qcl_auth_common::method_update : no id given!");
        	}
        	
 		$this->update($data);

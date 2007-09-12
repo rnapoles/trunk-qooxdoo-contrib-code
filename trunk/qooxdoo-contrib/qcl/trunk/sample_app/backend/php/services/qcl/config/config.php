@@ -23,6 +23,11 @@ require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
 
 class qcl_config extends qcl_jsonrpc_object
 {    
+	//-------------------------------------------------------------
+   	// class variables, can be overridden
+	//------------------------------------------------------------- 
+
+	var $types = array("string","number","boolean");
 
 	//-------------------------------------------------------------
    	// internal methods
@@ -41,18 +46,13 @@ class qcl_config extends qcl_jsonrpc_object
 	//-------------------------------------------------------------   
 
 	/**
-	 * get config object singleton based on initial configuration.
+	 * get config object based on initial configuration.
 	 * at the moment, a qcl_config_db object is used by default.
 	 */
-	function &getConfigSingleton($ini)
+	function &getSubclass($ini)
 	{
-		$config = &$this->getSingleton("qcl_config_db");
-		if ( ! $config )
-		{
-			require_once SERVICE_PATH . "qcl/config/db.php";
-			$config = new qcl_config_db;
-			$this->setSingleton(&$config);
-		}
+		require_once SERVICE_PATH . "qcl/config/db.php";
+		$config = new qcl_config_db();
 		return $config;
 	}
 
@@ -72,7 +72,7 @@ class qcl_config extends qcl_jsonrpc_object
 	 * 		  and read this property (optional)
 	 * @param boolean $allowUserVariants If true, allow users to create their 
 	 * 		  own variant of the configuration setting 
-	 * @return true if success or false if there was an error
+	 * @return id of created config entry
 	 */
 	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false ){}
 
@@ -80,25 +80,25 @@ class qcl_config extends qcl_jsonrpc_object
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
 	 * 
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @return true if success or false if there was an error
+	 * @param mixed $ref Id or name of the property (i.e., myapplication.config.locale)
+	 * @return true if success 
 	 */
-	function delete($name ){} 	
+	function delete( $ref ){} 	
 
 	/**
 	 * gets all config property value that are readable by the active user
 	 * @param string $mask return only a subset of entries that start with $mask
-	 * @return array Array, with property names as key 
+	 * @return array Array
 	 */
-	function getAll($mask){} 	
+	function getAll( $mask ){} 	
 
 	/**
 	 * gets config property value. 
 	 * raise an error if the active user does not have read permission for this property.
-	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
+	 * @param string $name of the property (i.e., myapplication.config.locale) 
 	 * @return mixed value of property or null if value does not exist.
 	 */
-	function get($name){} 	 
+	function get( $name ){} 	 
  
 	/**
 	 * sets config property

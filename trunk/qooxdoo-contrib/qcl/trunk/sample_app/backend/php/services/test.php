@@ -15,9 +15,10 @@ if ( $_POST )
 	{
 		if ( $param )
 		{
-			if( is_numeric($param) or strstr("true false null", $param) )
+			if( is_numeric($param) or strstr("true false null", $param) 
+				or preg_match("/^[{[].*[}\]]$/",$param) )
 			{
-				$params[] = $param;
+				$params[] = stripslashes($param);
 			}
 			else
 			{
