@@ -39,7 +39,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.6</version>
         <executions>
           <execution>
             <phase>compile</phase>
