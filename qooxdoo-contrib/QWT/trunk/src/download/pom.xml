@@ -20,8 +20,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <pluginRepository>
       <id>qooxdoo-contrib</id>
       <url>http://qooxdoo-contrib.sourceforge.net/maven/repository</url>
-      <snapshots><enabled/></snapshots>
-      <releases><enabled/></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
     </pluginRepository>
   </pluginRepositories>
 
