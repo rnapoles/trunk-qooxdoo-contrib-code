@@ -11,7 +11,7 @@
 
   <!--  CAUTION: not "qwt-maven-plugin" because I don't want to inherit scm defs etc: -->  
   <artifactId>plugin</artifactId>
-  <version>${qwt.version}</version>
+  <version>0.6.0</version>
   <packaging>maven-plugin</packaging>
   <name>Toolkit Maven Plugin</name>
   <description>Generate New Project, War, Qooxdoo Java Proxies, Qooxdoo Repository and Qooxdoo Resources.</description>
