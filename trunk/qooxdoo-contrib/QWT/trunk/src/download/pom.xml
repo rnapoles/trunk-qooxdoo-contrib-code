@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.qooxdoo</groupId>
+  <artifactId>download</artifactId>
+  <version>1-SNAPSHOT</version>
+  <name>Qooxdoo Web Toolkit</name>
+  <packaging>pom</packaging>
+
+  <repositories>
+    <repository>
+      <id>qooxdoo-contrib</id>
+      <url>http://qooxdoo-contrib.sourceforge.net/maven/repository</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.qooxdoo.toolkit</groupId>
+      <artifactId>server</artifactId>
+      <version>0.7-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>plugin</artifactId>
+      <version>0.7-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+</project>
