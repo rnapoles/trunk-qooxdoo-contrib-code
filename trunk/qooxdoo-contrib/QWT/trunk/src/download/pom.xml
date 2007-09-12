@@ -2,6 +2,12 @@
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>qwt</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+
   <groupId>org.qooxdoo</groupId>
   <artifactId>download</artifactId>
   <version>1-SNAPSHOT</version>
@@ -44,6 +50,42 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           <execution>
             <phase>compile</phase>
             <goals><goal>help</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <configuration>
+          <tasks>
+            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-local.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>plugin</artifactId>
+  <version>0.7-SNAPSHOT</version>
+  <versioning>
+    <latest>0.7-SNAPSHOT</latest>
+    <versions>
+      <version>0.7-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20070912202456</lastUpdated>
+  </versioning>
+</metadata>
+]]></echo>
+            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/maven-metadata-local.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <plugins>
+    <plugin>
+      <name>QWT Plugin</name>
+      <prefix>qwt</prefix>
+      <artifactId>plugin</artifactId>
+    </plugin>
+  </plugins>
+</metadata>
+]]></echo>
+          </tasks>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals><goal>run</goal></goals>
           </execution>
         </executions>
       </plugin>
