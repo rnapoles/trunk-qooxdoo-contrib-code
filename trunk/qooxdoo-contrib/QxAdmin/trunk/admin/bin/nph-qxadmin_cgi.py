@@ -172,28 +172,17 @@ def do_save(form):
     # get parms - JSON string?
     json  = form['makvars'].value
     makvars = eval(json)
-    # get Makefile.in
-    # fill in parms
-    # write Makefile
-    #for line in makefile_in.read():
-    #    if line.match(INTRO):
-    #        inIntro = True
-    #    while inIntro == True:
-    #        makefile_out.write(line)
-    #        if line.match(INTRO_END):
-    #            inIntro = False
-    #    if line.match(PARAM):
-    #        makefile_out.write(param, lookup(param,parms))
-    #    if line.match(FOOTER):
-    #        # write rest of template
-    #        pass
     if config['debug']:
         print "dumping json map:"
         for item in makvars:
             print item['lab']+"="+item['dat']
     save_makvars(json)
     rc = gen_makefile(makvars)
-    print "Return code of saving Makefile: %d" % rc
+    if rc==0:
+        print "Successfully saved Makefile"
+    else:
+        print ("Problem saving Makefile (return code of gen_makefile was: %d);" % rc + 
+               "please check the Makefile by hand.")
 
     return rc
 
@@ -283,11 +272,11 @@ def gen_makefile(makvars):
                 item = finditem(makvars,fkey)
                 if item['dat'] == "__REMOVEME__":
                     # remove this keyword from the makefile
-                    continue
+                    pass
                 else:
                     writeitem(f,item)
-                    item['written']=True
-                    continue
+                item['written']=True
+                continue
             # default is just to copy over
             f.write(text[i])
         else:

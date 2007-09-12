@@ -472,7 +472,7 @@ qx.Class.define("qxadmin.AppFrame",
       // -- run button
       this.runbutton = new qx.ui.toolbar.Button("Run Make", "icon/16/actions/media-playback-start.png");
       mb.add(this.runbutton);
-      this.widgets["toolrun.runbutton"] = this.runbutton;
+      this.widgets["toolrun.runb"] = this.runbutton;
       this.__bindCommand(this.runbutton, this._cmdRunBuild);
       this.runbutton.setToolTip(new qx.ui.popup.ToolTip("Run make"));
 
@@ -600,7 +600,7 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      tree.getManager().addEventListener("changeSelection", this.__handleEditTreeSelection, this);
+      tree.getManager().addEventListener("changeSelection", this.__ehHandleEditTreeSelection, this);
 
       // Second Pane
       var bsb2 = new qx.ui.pageview.buttonview.Button("Run Make", "icon/16/categories/applications-development.png");
@@ -641,6 +641,7 @@ qx.Class.define("qxadmin.AppFrame",
       p2.add(tree1);
       this.widgets["treeview.trun"] = tree1;
       bsb2.setUserData('tree', tree1);  // for changeSelected handling
+      tree1.getFirstVisibleChildOfFolder().setOpen(true); // open 'Run make'
 
       tree1.set(
       {
@@ -650,7 +651,7 @@ qx.Class.define("qxadmin.AppFrame",
         overflow : "auto"
       });
 
-      tree1.getManager().addEventListener("changeSelection", this.__handleRunTreeSelection, this);
+      tree1.getManager().addEventListener("changeSelection", this.__ehHandleRunTreeSelection, this);
 
       // Third Pane
       var bsb3 = new qx.ui.pageview.buttonview.Button("Info", "qxadmin/image/information18.png");
@@ -1039,7 +1040,7 @@ qx.Class.define("qxadmin.AppFrame",
      * @param e {Event} TODOC
      * @return {void}
      */
-    __handleEditTreeSelection : function(e)
+    __ehHandleEditTreeSelection : function(e)
     {
       var id;
       if (id = e.getData()[0].getUserData('id'))
@@ -1058,8 +1059,27 @@ qx.Class.define("qxadmin.AppFrame",
      * @param e {Event} TODOC
      * @return {void}
      */
-    __handleRunTreeSelection : function(e)
+    __ehHandleRunTreeSelection : function(e)
     {
+      var treeNode = e.getData()[0];
+
+      // handle enable "Open Page" button
+      if (treeNode instanceof qx.ui.tree.TreeFolder || treeNode.getLabel() == "source") 
+      {
+        this.widgets["toolrun.openb"].setEnabled(false);
+      } else 
+      {
+        this.widgets["toolrun.openb"].setEnabled(true);
+      }
+
+      // handle enable "Run Make" button
+      if (treeNode instanceof qx.ui.tree.TreeFile) 
+      {
+        this.widgets["toolrun.runb"].setEnabled(true);
+      } else 
+      {
+        this.widgets["toolrun.runb"].setEnabled(false);
+      }
 
     }, //handleRunTreeSelection
 
@@ -1226,7 +1246,7 @@ qx.Class.define("qxadmin.AppFrame",
             if (item.dirty==1) {
               // gather changed field
               vals.push({lab: item.lab.getText(), dat: currVal});
-            } else if (item.diryt==2) {
+            } else if (item.dirty==2) {
               // mark for remove
               vals.push({lab: item.lab.getText(), dat: "__REMOVEME__"});
             }
@@ -1356,6 +1376,7 @@ qx.Class.define("qxadmin.AppFrame",
       tree.add(makRoot);
 
       this.createMakTree(makRoot,treeData);
+      makRoot.setOpen(true);
 
       this.createMakList1(this.widgets["buttedit.varedit.page"],treeData,oldData);
 
@@ -1529,7 +1550,13 @@ qx.Class.define("qxadmin.AppFrame",
       
       var id = e.getTarget().getUserData('id');
       if (id) {
-        this.widgets["buttedit.varedit.page.items"][id]['dirty']=1; // means changed
+        var item = this.widgets["buttedit.varedit.page.items"][id]
+        if (item.dat.getValue() == item.defaultt) { // check if new value is a reset to default
+          item.dirty = 2;  // means changed to default
+        } else
+        {
+          item.dirty = 1;  // means changed to some other value
+        }
       }
     },
 
@@ -1540,8 +1567,8 @@ qx.Class.define("qxadmin.AppFrame",
       if (id) 
       {
         var item = this.widgets["buttedit.varedit.page.items"][id]
-        item['dirty']=2;  // means reset
         item['dat'].setValue(item['defaultt']);
+        // item['dirty'] will be set in __ehEditFormChanged, which is invoked subsequently
       }
     },
 
