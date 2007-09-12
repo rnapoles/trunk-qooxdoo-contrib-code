@@ -37,7 +37,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <defaultGoal>package</defaultGoal>
     <plugins>
       <plugin>
-        <groupId>org.qooxdoo.toolkit</groupId>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>0.7-SNAPSHOT</version>
         <executions>
@@ -49,5 +49,4 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       </plugin>
     </plugins>
   </build>
-
 </project>
