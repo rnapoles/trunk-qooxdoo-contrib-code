@@ -30,6 +30,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </dependencies>
 
   <build>
+    <defaultGoal>package</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -37,7 +38,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <version>0.7-SNAPSHOT</version>
         <executions>
           <execution>
-            <goals><goal>compile</goal></goals>
+            <phase>compile</phase>
+            <goals><goal>help</goal></goals>
           </execution>
         </executions>
       </plugin>
