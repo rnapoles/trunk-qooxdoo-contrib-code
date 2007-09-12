@@ -17,11 +17,12 @@ class qcl_config_db extends qcl_config
 	//------------------------------------------------------------- 
 	
 	var $table 					= "config";
+	var $key_id 				= "id";
 	var $key_name 				= "name";
 	var $key_type 				= "type";
 	var $key_value 				= "value";
 	var $key_permissionRead 	= "permissionRead";
-	var $key_permissionWrite 	= "permissionRead";
+	var $key_permissionWrite 	= "permissionWrite";
 	var $key_userId 			= "userId";
 
 	//-------------------------------------------------------------
@@ -30,11 +31,13 @@ class qcl_config_db extends qcl_config
    
    	/**
    	 * constructor calls parent constructor
+   	 * @param array $ini initial configuration
      */
    	function __construct()
    	{
 		parent::__construct();
-		$this->db = qcl_db::getDbObject($this->ini);
+		$this->db 	= qcl_db::getSubclass($this->ini);
+		$this->user = $this->getSingleton("class_user");
 	}
 	
 	/**
@@ -48,7 +51,7 @@ class qcl_config_db extends qcl_config
 		{
 			// user reference given, this is usually only the
 			// case if a manager edits the configuration
-			$userId = $this->user->getByRef($userRef);
+			$userId = $this->user->getIdFromRef($userRef);
 			$row = $this->db->getRow("
 				SELECT * 
 				FROM {$this->table}
@@ -67,6 +70,7 @@ class qcl_config_db extends qcl_config
 			{
 				return $row;
 			}
+			
 			if( $permissionRead = $row[$this->key_permissionRead] )
 			{
 				$this->user->requirePermisson($permissionRead);
@@ -93,19 +97,22 @@ class qcl_config_db extends qcl_config
 				ORDER BY `{$this->key_userId}`
 			");
 			
-			if ( count($rows) )
+			if ( count($rows) == 2 )
 			{
 				// config entry has variants, return user variant
 				// since user can access own data
 				return $rows[1];
 			}
-			
-			// only a non-variant or default entry available, check permission
-			if( $permissionRead = $rows[0][$this->key_permissionRead] )
+			elseif ( count($rows) == 1 )
 			{
-				$this->user->requirePermisson($permissionRead);
+				// only a non-variant or default entry available, check permission
+				if( $permissionRead = $rows[0][$this->key_permissionRead] )
+				{
+					$this->user->requirePermission($permissionRead);
+				}
+				return $rows[0];				
 			}
-			return $rows[0];
+			return null;
 		}
 	}
 	
@@ -126,14 +133,21 @@ class qcl_config_db extends qcl_config
 	 * 		  and read this property (optional)
 	 * @param boolean $allowUserVariants If true, allow users to create their 
 	 * 		  own variant of the configuration setting 
-	 * @return true if success 
+	 * @return id of created config entry
 	 */
 	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false )
 	{
+		// check permission
 		$this->user->requirePermission("qcl.config.permissions.manage");
 		
-		$permissionRead  = $permissionRead ? "'$permissionRead'" : null;
-		$permissionWrite = $permissionWrite ? "'$permissionWrite'" : null;
+		// check type
+		if ( ! in_array( $type, $this->types ) )
+		{
+			$this->raiseError("cql_config_db::create : invalid type '$type'");
+		}
+		
+		$permissionRead  = $permissionRead ? "'$permissionRead'" : "null";
+		$permissionWrite = $permissionWrite ? "'$permissionWrite'" : "null";
 
 		// delete all previous entries
 		$this->db->execute("
@@ -142,7 +156,7 @@ class qcl_config_db extends qcl_config
 		");			
 		
 		// create new entry
-		$userId = $allowUserVariants ? 0 : null;
+		$userId = $allowUserVariants ? 0 : "null";
 		
 		$this->db->execute("
 			INSERT INTO `{$this->table}` 
@@ -153,23 +167,34 @@ class qcl_config_db extends qcl_config
 				('$name','$type',$permissionRead,$permissionWrite,$userId)
 		");					
 
-		return true;
+		return $this->db->getLastInsertId();
 	} 
 
 	/**
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
 	 * 
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @return true if success or false if there was an error
+	 * @param mixed $ref Id or name of the property (i.e., myapplication.config.locale)
+	 * @return true if success 
 	 */
-	function delete($name )
+	function delete( $ref )
 	{
-		$this->user->requirePermission("qcl.config.permissions.manage"); 
-		$this->db->execute("
-			DELETE FROM `{$this->table}` 
-			WHERE `{$this->key_name}` = '$name'
-		"); 
+		$this->user->requirePermission("qcl.config.permissions.manage");
+		
+		if ( is_numeric( $ref ) )
+		{
+			$this->db->execute("
+				DELETE FROM `{$this->table}` 
+				WHERE `{$this->key_id}` = $ref
+			");			
+		}
+		else
+		{
+			$this->db->execute("
+				DELETE FROM `{$this->table}` 
+				WHERE `{$this->key_name}` = '$ref'
+			");			
+		}		 
 		return true;
 	} 
 	 
@@ -185,6 +210,35 @@ class qcl_config_db extends qcl_config
 	} 	  
  
 	/**
+	 * gets all config property value that are readable by the active user
+	 * @param string $mask return only a subset of entries that start with $mask
+	 * @return array Array
+	 */
+	function getAll( $mask )
+	{
+		$activeUserId = $this->user->getActiveUserId();
+		
+		// get all rows containing mask
+		$rows = $this->db->getAllRows("
+			SELECT * 
+			FROM `{$this->table}`
+			WHERE `{$this->key_name}` LIKE '$mask%'
+			ORDER BY `{$this->key_name}`			
+		");
+		
+		$result = array();
+		foreach ( $rows as $row )
+		{
+			$permissionRead = $row[$this->key_permissionRead];
+			if ( ! $permissionRead or $this->user->hasPermission($permissionRead) )
+			{
+				$result[] = $row;
+			}
+		}
+		return $result;
+	}	 
+ 
+	/**
 	 * sets config property
 	 * @param string $name The name of the property (i.e., myapplication.config.locale)
 	 * @param string $value The value of the property. 
@@ -193,7 +247,7 @@ class qcl_config_db extends qcl_config
 	 * 		of editing her/his own variant.
 	 * @return true if success or false if there was an error
 	 */
-	function set($name,$value,$defaultValue=false)
+	function set( $name, $value, $defaultValue=false)
 	{
 		// if we set the default value, we need to retrieve 
 		if ( $defaultValue )
@@ -205,6 +259,7 @@ class qcl_config_db extends qcl_config
 			$row = $this->_getRow($name);
 		}
 		
+		// does the key exist?
 		if ( ! count($row) )
 		{
 			$this->triggerError("qcl_config::set : no config key '$name' ");
@@ -214,30 +269,8 @@ class qcl_config_db extends qcl_config
 		$type			 = $row[$this->key_type];
 		$permissionWrite = $row[$this->key_permissionWrite];
 		$userId			 = $row[$this->key_userId];
-		$activeUser 	 = $this->user->getActiveUser(); 
-		$activeUserId 	 = $activeUser[$this->user->key_id];
-		
-		// users can set their own entry variant with no further checking
-		if ( $userId != $activeUserId )
-		{
-			// but others need to check permission
-			$this->requirePermission( $permissionWrite );
-			
-			// create variant if necessary
-			if ( $userId == 0 and ! $defaultValue )
-			{
-				unset($row[$this->key_id]);
-				$id = $this->db->insert($this->table,$row);
-				$row[$this->key_id] = $id;
-			}
-			
-			// set default value
-			if ( $userId == 0 and $defaultValue )
-			{
-				$this->requirePermission("qcl.config.permissions.manage");
-			}				
-		}		
-				
+		$activeUserId 	 = $this->user->getActiveUserId(); 
+
 		// type checking
 		$type_error = false;
 		switch ( $row[$this->key_type] )
@@ -248,8 +281,31 @@ class qcl_config_db extends qcl_config
 		}
 		if ( $type_error )
 		{
-			$this->triggerError("cql_config::set : Invalid type for '$name' (type '$type').");
+			$this->raiseError("cql_config::set : Invalid type for '$name' (type '$type').");
 		}
+		
+		// users can set their own entry variant with no further checking
+		if ( $userId != $activeUserId )
+		{
+			// but others need to check permission
+			$this->user->requirePermission( $permissionWrite );
+			
+			// create variant if necessary
+			if ( $userId == 0 and ! $defaultValue )
+			{
+				unset($row[$this->key_id]);
+				$row[$this->key_userId] = $activeUserId;
+				$id = $this->db->insert($this->table,$row);
+				$row[$this->key_id] = $id;
+			}
+			
+			// set default value
+			if ( $userId == 0 and $defaultValue )
+			{
+				$this->user->requirePermission("qcl.config.permissions.manage");
+			}				
+		}		
+				
 		
 		// all checks have been passed, set value
 		$this->db->execute("
@@ -259,7 +315,18 @@ class qcl_config_db extends qcl_config
 		");
 		return true;
 	}
-	
+
+	/**
+	 * resets a property user variant to its original value
+	 * raise an error if the active user does not have write permission for this property  
+	 * @param string $name The name of the property (i.e., myapplication.config.locale)
+	 * @return true if success or false if there was an error
+	 */
+	function reset($name)
+	{
+		$this->raiseError("qcl_config_db::reset : not implemented!");
+	}
+
 	/**
 	 * gets required permission name for read access to config property
 	 * @param string $name name of configuration key
@@ -277,7 +344,7 @@ class qcl_config_db extends qcl_config
 	function getPermissionWrite($name)
 	{
 		$row = $this->_getRow($name);
-		return $row[$this->key_permissionRead];
+		return $row[$this->key_permissionWrite];
 	}
 
 	/**

@@ -22,6 +22,7 @@
 		<qxt:include src="/components/login-window.xml"/>	
 		<qxt:include src="/components/splash-window.xml"/>	
 		<qxt:include src="/components/authorization/auth-config-main.xml"/>	
+		<qxt:include src="/components/configEditor/config-editor-main.xml"/>	
 		
 		<!-- contextmenus -->	
 		<!--qxt:include src="/includes/contextmenus.xml"/-->		

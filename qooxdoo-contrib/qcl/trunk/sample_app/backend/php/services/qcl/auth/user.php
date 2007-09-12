@@ -197,6 +197,15 @@ class qcl_auth_user extends qcl_auth_common
    {
    		$_SESSION['qcl_auth_user_activeUser'] = $data;
    }
+
+   /**
+    * gets active user record id
+    * @return int
+    */
+   function getActiveUserId()
+   {
+   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_id]; 
+   }
    
    /**
     * checks if active user has the given permission

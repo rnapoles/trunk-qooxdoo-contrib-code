@@ -35,13 +35,20 @@ class qcl_db extends qcl_jsonrpc_object
 	
 	/**
 	 * static method which returns a database object based on the configuration file
+	 * @param array $ini initial configuration array
 	 * @return always returns a PEAR object at the moment
 	 */
-	function &getDbObject($config)
+	function &getSubclass($ini)
 	{
-		require_once SERVICE_PATH . "qcl/db/pear.php";
-		return new qcl_db_pear;
-	}
+		//$db = &$this->getSingleton("qcl_db_pear");
+		//if ( ! $db )
+		//{
+			require_once SERVICE_PATH . "qcl/db/pear.php";
+			$db = new qcl_db_pear();
+			//$this->setSingleton(&$db);
+		//}
+		return $db;
+	}		
 	
 	//-------------------------------------------------------------
 	// abstract methods
