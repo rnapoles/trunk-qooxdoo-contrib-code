@@ -10,9 +10,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <groupId>org.qooxdoo</groupId>
   <artifactId>download</artifactId>
-  <version>1-SNAPSHOT</version>
-  <name>Qooxdoo Web Toolkit</name>
-  <packaging>jar</packaging>
+  <version>${qwt.version}</version>
+  <name>Download Pom</name>
+  <description>A simple script to download QWT to the local repository.</description>
+  <packaging>pom</packaging>
 
   <repositories>
     <repository>
@@ -35,7 +36,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>server</artifactId>
-      <version>0.7-SNAPSHOT</version>
+      <version>${qwt.version}</version>
     </dependency>
   </dependencies>
 
@@ -45,7 +46,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>0.7-SNAPSHOT</version>
+        <version>${qwt.version}</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
@@ -60,11 +61,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-sourceforge.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
   <groupId>org.apache.maven.plugins</groupId>
   <artifactId>plugin</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <version>${qwt.version}</version>
   <versioning>
-    <latest>0.7-SNAPSHOT</latest>
+    <latest>${qwt.version}</latest>
     <versions>
-      <version>0.7-SNAPSHOT</version>
+      <version>${qwt.version}</version>
     </versions>
     <lastUpdated>20070912202456</lastUpdated>
   </versioning>
