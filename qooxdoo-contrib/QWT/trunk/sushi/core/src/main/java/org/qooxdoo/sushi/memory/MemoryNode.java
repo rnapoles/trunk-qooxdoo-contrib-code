@@ -157,7 +157,7 @@ public class MemoryNode extends Node {
             public void close() throws IOException {
                 super.close();
                 type = Type.FILE;
-                context.store(path, toByteArray());
+                context.store(path, this.buf, this.count);
             }
         };
     }
