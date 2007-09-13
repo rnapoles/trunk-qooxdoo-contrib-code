@@ -143,7 +143,7 @@ public class MemoryNode extends Node {
         if (type != Type.FILE) {
             throw new FileNotFoundException(path);
         }
-        return new ByteArrayInputStream(context.load(path));
+        return context.open(path);
     }
 
     @Override

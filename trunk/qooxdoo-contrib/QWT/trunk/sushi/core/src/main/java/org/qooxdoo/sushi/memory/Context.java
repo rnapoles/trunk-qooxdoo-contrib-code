@@ -19,6 +19,8 @@
 
 package org.qooxdoo.sushi.memory;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,19 +79,17 @@ public class Context {
     
     //--
     
-    // default
-    byte[] load(String path) throws IOException {
+    InputStream open(String path) throws IOException {
         Object obj;
         
         obj = store.get(path);
         if (obj instanceof FileNode) {
-            return ((FileNode) obj).readBytes();
+            return ((FileNode) obj).createInputStream();
         } else {
-            return (byte[]) obj;
+            return new ByteArrayInputStream((byte[]) obj);
         }
     }
     
-    // default
     void store(String path, byte[] data, int used) throws IOException {
         Object old;
         FileNode file;
