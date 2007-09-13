@@ -1,11 +1,4 @@
 #/bin/sh
-svn up > svn.log || exit 1
-# grep -v revision svn.log | grep -v external | grep -v ^$
-# if [ "$?" != "0" ]
-# then
-#   echo "no changes - skipped"
-#   exit 0
-# fi
 
 export LC_ALL=C
 
