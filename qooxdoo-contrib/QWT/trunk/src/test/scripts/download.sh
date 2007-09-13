@@ -4,9 +4,11 @@ export MAVEN_OPTS="-Xmx96m -client"
 rm -rf $DIR
 mkdir $DIR
 cd $DIR
-wget http://qooxdoo-contrib.svn.sourceforge.net/viewvc/*checkout*/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/src/download/pom.xml
-mvn
-mvn qwt:new -Dpackage=foo.bar
+# can't use wget, it's not available on all machines:
+cp src/download/pom.xml .
+mvn || exit 1
+mvn qwt:new -Dpackage=foo.bar || exit 1
 cd bar
-mvn clean package
+mvn clean package || exit 1
+
 
