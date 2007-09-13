@@ -1,7 +1,7 @@
 #/bin/sh
 cd target
 export DIR=download
-export MAVEN_OPTS="-Xmx64m -client"
+export MAVEN_OPTS="-Xmx62m -client"
 rm -rf $HOME/.m2/repository
 rm -rf $DIR
 mkdir $DIR || exit 1
@@ -9,8 +9,8 @@ mkdir $DIR || exit 1
 cp ../src/download/pom.xml $DIR
 cd $DIR || exit 1
 mvn --batch-mode || exit 1
-mvn qwt:new -Dpackage=foo.bar || exit 1
+mvn --batch-mode qwt:new -Dpackage=foo.bar || exit 1
 cd bar
-mvn clean package || exit 1
+mvn --batch-mode clean package || exit 1
 
 
