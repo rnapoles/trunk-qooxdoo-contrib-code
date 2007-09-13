@@ -19,7 +19,6 @@
 
 package org.qooxdoo.sushi.memory;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
