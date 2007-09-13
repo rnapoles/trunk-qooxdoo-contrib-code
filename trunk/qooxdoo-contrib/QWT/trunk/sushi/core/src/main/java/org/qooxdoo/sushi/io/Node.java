@@ -377,10 +377,14 @@ public abstract class Node {
     }
 
     public Node writeBytes(byte ... bytes) throws IOException {
+        return writeBytes(bytes, 0, bytes.length);
+    }
+
+    public Node writeBytes(byte[] bytes, int ofs, int len) throws IOException {
         OutputStream out;
         
         out = createOutputStream();
-        out.write(bytes);
+        out.write(bytes, ofs, len);
         out.close();
         return this;
     }

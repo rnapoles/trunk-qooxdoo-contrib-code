@@ -21,6 +21,7 @@ package org.qooxdoo.sushi.memory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class Context {
     }
     
     // default
-    void store(String path, byte[] data) throws IOException {
+    void store(String path, byte[] data, int used) throws IOException {
         Object old;
         FileNode file;
         
@@ -97,12 +98,12 @@ public class Context {
         if (old instanceof FileNode) {
             ((FileNode) old).delete();
         }
-        if (data.length > io.maxInMemorySize) {
+        if (used > io.maxInMemorySize) {
             file = io.createTempFile();
-            file.writeBytes(data);
+            file.writeBytes(data, 0, used);
             store.put(path, file);
         } else {
-            store.put(path, data);
+            store.put(path, Arrays.copyOf(data, used));
         }
     }
 
