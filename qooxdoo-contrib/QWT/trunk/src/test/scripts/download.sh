@@ -1,6 +1,4 @@
 #/bin/sh
-svn up > svn.log || exit 1
-
 export DIR=tmp-download
 export MAVEN_OPTS="-Xmx64m -client"
 mkdir $DIR
