@@ -155,9 +155,9 @@ public class MemoryNode extends Node {
         return new ByteArrayOutputStream() {
             @Override
             public void close() throws IOException {
-                super.close();
                 type = Type.FILE;
                 context.store(path, this.buf, this.count);
+                super.close();
             }
         };
     }
