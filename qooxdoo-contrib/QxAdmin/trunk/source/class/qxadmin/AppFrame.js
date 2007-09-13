@@ -633,6 +633,9 @@ qx.Class.define("qxadmin.AppFrame",
           },
           {
             label : "api"
+          },
+          {
+            label : "test"
           }
           ]
         };
@@ -1906,7 +1909,7 @@ qx.Class.define("qxadmin.AppFrame",
       var req = new qx.io.remote.Request(url);
 
       req.setTimeout(180000);
-      req.setProhibitCaching(false);
+      req.setProhibitCaching(true);
 
       req.addEventListener("completed", function(evt)
       {
