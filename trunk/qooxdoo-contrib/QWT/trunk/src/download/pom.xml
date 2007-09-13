@@ -68,6 +68,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <artifactId>maven-antrun-plugin</artifactId>
         <configuration>
           <tasks>
+            <tstamp>
+              <format property="now" pattern="yyyyMMddHHmmss"/>
+            </tstamp>
+            <echo>now: ${now}</echo>
+
             <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-sourceforge.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
   <groupId>org.apache.maven.plugins</groupId>
   <artifactId>plugin</artifactId>
@@ -77,7 +82,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <versions>
       <version>${qwt.version}</version>
     </versions>
-    <lastUpdated>20070912202456</lastUpdated>
+    <lastUpdated>${now}</lastUpdated>
   </versioning>
 </metadata>
 ]]></echo>
