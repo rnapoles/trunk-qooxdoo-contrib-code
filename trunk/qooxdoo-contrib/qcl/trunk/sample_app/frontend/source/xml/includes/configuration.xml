@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qooxdoo.org"
+	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension"
+	xmlns:qcl="http://qooxdoo-contrib.sourceforge.net/qcl">
+
+	<qcl:configManager 
+		id="configManager"
+		serviceName="sample_app.config.configManager" />
+	
+	<qxt:script>
+		// retrieve configuration from server
+		configManager.updateClient();
+	</qxt:script>
+	
+</qxt:include-definition>
