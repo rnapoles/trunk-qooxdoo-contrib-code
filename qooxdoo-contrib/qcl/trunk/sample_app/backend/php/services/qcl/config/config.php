@@ -77,6 +77,17 @@ class qcl_config extends qcl_jsonrpc_object
 	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false ){}
 
 	/**
+	 * updates a config property
+	 * requires permission "qcl.config.permissions.manage"
+	 * 
+	 * @param mixed $id ID of property
+	 * @param string $key Key to update
+	 * @param mixed $value Value
+	 * @return true if success 
+	 */
+	function update( $id, $key, $value ){}
+
+	/**
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
 	 * 

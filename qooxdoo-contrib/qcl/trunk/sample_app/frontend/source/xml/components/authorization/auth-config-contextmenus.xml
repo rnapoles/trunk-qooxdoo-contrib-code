@@ -12,6 +12,8 @@
 		<qx:permission name="qcl.auth.permissions.permission.create"/>
 		<qx:permission name="qcl.auth.permissions.item.delete"/>
 		<qx:permission name="qcl.auth.permissions.item.edit"/>
+		<qx:permission name="qcl.auth.permissions.item.move"/>
+		<qx:permission name="qcl.auth.permissions.item.remove"/>
 	</qx:security>
 	
 	<qx:menu id="contextMenuAuthConfig">
@@ -35,6 +37,12 @@
 		</qx:menuButton>
 
 		<qx:menuSeparator />
+
+		<qx:menuButton text="Remove from Role" 
+			enabled="false" 
+			enableOnPermission="qcl.auth.permissions.item.remove">
+			<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.remove" />
+		</qx:menuButton>
 
 		<qx:menuButton text="Delete" 
 			enabled="false" 

@@ -169,7 +169,25 @@ class qcl_config_db extends qcl_config
 
 		return $this->db->getLastInsertId();
 	} 
-
+	
+	/**
+	 * updates a config property
+	 * requires permission "qcl.config.permissions.manage"
+	 * 
+	 * @param mixed $id ID of property
+	 * @param string $key Key to update
+	 * @param mixed $value Value
+	 * @return true if success 
+	 */
+	function update( $id, $key, $value )
+	{
+		$this->user->requirePermission("qcl.config.permissions.manage");
+		$row = array();
+		$row[$this->key_id] = $id;
+		$row[$key] = $value;
+		$this->db->update($this->table,$row);
+		return true;
+	} 
 	/**
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
@@ -214,17 +232,29 @@ class qcl_config_db extends qcl_config
 	 * @param string $mask return only a subset of entries that start with $mask
 	 * @return array Array
 	 */
-	function getAll( $mask )
+	function getAll( $mask=null )
 	{
 		$activeUserId = $this->user->getActiveUserId();
 		
-		// get all rows containing mask
-		$rows = $this->db->getAllRows("
-			SELECT * 
-			FROM `{$this->table}`
-			WHERE `{$this->key_name}` LIKE '$mask%'
-			ORDER BY `{$this->key_name}`			
-		");
+		if ( $mask )
+		{
+			// get all rows containing mask
+			$rows = $this->db->getAllRows("
+				SELECT * 
+				FROM `{$this->table}`
+				WHERE `{$this->key_name}` LIKE '$mask%'
+				ORDER BY `{$this->key_name}`			
+			");			
+		}
+		else
+		{
+			// get all rows 
+			$rows = $this->db->getAllRows("
+				SELECT * 
+				FROM `{$this->table}`
+				ORDER BY `{$this->key_name}`			
+			");			
+		}
 		
 		$result = array();
 		foreach ( $rows as $row )

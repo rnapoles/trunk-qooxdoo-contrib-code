@@ -73,7 +73,15 @@
 					enabled="false"
 					enableOnPermission="qcl.auth.permissions.item.delete">
 					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.delete"/>
-				</qx:toolBarButton>				
+				</qx:toolBarButton>		
+				
+				<qx:toolBarButton 
+					text="Remove"
+					icon="icon/22/actions/edit-delete.png"
+					enabled="false"
+					enableOnPermission="qcl.auth.permissions.item.remove">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.remove"/>
+				</qx:toolBarButton>								
 				
 		</qx:toolBar>		
 		

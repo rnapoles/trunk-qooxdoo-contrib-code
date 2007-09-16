@@ -22,9 +22,11 @@
 ************************************************************************ */
 
 /**
- * This manager is to be exended by Permission, Role and User Manager singletons.
+ * This manager is not to be used directly, but is exended by the Permission, Role and 
+ * User Manager singletons.
  * It inherits from qx.util.manager.Object but overrides its add and remove method in
- * order to provide an efficient look-up index for the "name" of the managed object.
+ * order to provide an efficient look-up index for the "namedId" (a dot-separated
+ * identifying name similar to a class name) of the managed object.
  */
 qx.Class.define("qcl.auth.Manager",
 {

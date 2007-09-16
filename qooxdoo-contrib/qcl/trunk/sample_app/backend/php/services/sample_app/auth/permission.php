@@ -13,8 +13,14 @@ class class_permission extends qcl_auth_permission
    // class variables, overriding parent classses
    //-------------------------------------------------------------
    
-   var $nodeType			= "sample_app.types.Permission";
-
+	var $nodeType			= "sample_app.types.Permission";
+	
+	/* metadata on fields */
+	var $meta = array(
+   		'namedId'		=> array( 'required' => true ),
+		'name'			=> array( 'required' => true ),
+   		'note'			=> array( )
+	);
    //-------------------------------------------------------------
    // internal methods 
    //-------------------------------------------------------------

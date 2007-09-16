@@ -35,38 +35,56 @@ class class_configManager extends qcl_jsonrpc_object
 	 * creates a config property, overwriting any previous entry
 	 * requires permission "qcl.config.permissions.manage"
 	 * 
-	 * @param string $params[0]->name The name of the property (i.e., myapplication.config.locale)
-	 * @param string $params[0]->type The type of the property (string|number|object|boolean)
-	 * @param string $$params[0]->permissionRead The permission name that is needed to access 
+	 * @param string $params[1]->name The name of the property (i.e., myapplication.config.locale)
+	 * @param string $params[1]->type The type of the property (string|number|object|boolean)
+	 * @param string $params[1]->permissionRead The permission name that is needed to access 
 	 * 		  and read this property (optional)
-	 * @param string $$params[0]->permissionWrite The permission name that is needed to access 
+	 * @param string $params[1]->permissionWrite The permission name that is needed to access 
 	 * 		  and read this property (optional)
-	 * @param boolean $$params[0]->allowUserVariants If true, allow users to create their 
+	 * @param boolean $params[1]->allowUserVariants If true, allow users to create their 
 	 * 		  own variant of the configuration setting 
 	 * @return true if success 
 	 */
 	function method_create($params)
 	{
-		$result = $this->config->create(
-			$params[0]->name, 
-			$params[0]->type, 
-			$params[0]->permissionRead, 
-			$params[0]->permissionWrite,
-			$params[0]->allowUserVariants
+		$id = $this->config->create(
+			$params[1]->name, 
+			$params[1]->type, 
+			$params[1]->permissionRead, 
+			$params[1]->permissionWrite,
+			$params[1]->allowUserVariants
 		);
-		return $result;
+		$this->addMessage( "qcl.config.messages.key.created", $id );
+		return $this->getResult();
 	} 
-
+	
+	/**
+	 * updates a config property
+	 * requires permission "qcl.config.permissions.manage"
+	 * 
+	 * @param mixed  $params[1] ID of property
+	 * @param string $params[2] Key to update
+	 * @param mixed  $params[3] Value
+	 * @return true if success 
+	 */
+	function method_update( $params )
+	{
+		$this->config->update($params[1],$params[2],$params[3]);
+		$this->addMessage( "qcl.config.messages.key.updated", $params[1] );
+		return $this->getResult();
+	}
+	
+	
 	/**
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
 	 * 
-	 * @param mixed $ref Id or name of the property (i.e., myapplication.config.locale)
+	 * @param mixed $params[1] Id or name of the property (i.e., myapplication.config.locale)
 	 * @return true if success 
 	 */
 	function method_delete( $params )
 	{ 
-		return $this->config->delete($params[0]);
+		return $this->config->delete($params[1]);
 	} 
 	 
 	/**
@@ -100,11 +118,15 @@ class class_configManager extends qcl_jsonrpc_object
 	 */
 	function method_getAll( $params )
 	{
-		$rows = $this->config->getAll( $params[0]);
+		$rows = $this->config->getAll( $params[0] );
 		$table = array();
+		
 		foreach( $rows as $row )
 		{
-			//$userid  = $row[$this->user->key_id];
+			$userId  	= $row[$this->config->key_userId];
+			$user		= $userId ? $this->user->getById($userId) : null;
+			$userName  	= $user ? $user[$this->user->key_namedId] : $userId ;
+			$row[$this->config->key_userId] = $userName;
 			$table[] = array_values($row);
 		}
 		$this->set( "tabledatamodel", $table );
