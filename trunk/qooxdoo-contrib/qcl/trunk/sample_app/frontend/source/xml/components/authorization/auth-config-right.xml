@@ -17,6 +17,7 @@
 		sortAfterDrop="true"
 		allowDragOut="false"
 		enableDragDrop="true"
+		dragAction="javascript:['move','copy']"
 		
 		dataBinding="true"
 		serviceName="sample_app.auth.authConfig"
@@ -46,7 +47,7 @@
 					]]>
 				</qx:condition>
 			</qx:permission>
-			
+
 		</qx:security>
 			
 		<!-- EVENTS & MESSAGES -->	
@@ -113,12 +114,19 @@
 			}
 		</qx:messageSubscriber>
 		
-		<!-- drop -->
+		<!-- drag and  drop -->
+		
+		<qxt:script>
+			// additional supportsDrop check (hooks into MDragAndDropSupport)
+			// to prevent to drop on parents that already contain a reference/copy of itself
+			authConfigRightTree.supportsDropCallback = authConfigLeftTree.supportsDropCallback; 
+		</qxt:script>
 		
 		<qx:eventListener type="dragdrop">
 			<![CDATA[
 		
 			var dropData 	 = this.getDropData(event);
+			var action		 = event.getAction();
 			var selection  = dropData.nodeData;
 			var targetNode = dropData.targetNode;
 			if ( this.getNodeType(targetNode) != "qcl.auth.types.Role" ) return;
@@ -128,7 +136,10 @@
 			selection.forEach(function(sourceNode){	
 				var permissionId 		 		= parseInt(sourceNode.data.id);
 				var sourceNodeRoleId   	= parseInt(this.nodeGet(sourceNode.parentNodeId).data.id);
-				this.updateServer("sample_app.auth.permission.removeFromRole", permissionId, sourceNodeRoleId );
+				if ( action == "move" )
+				{
+					this.updateServer("sample_app.auth.permission.removeFromRole", permissionId, sourceNodeRoleId );
+				}
 				this.updateServer("sample_app.auth.permission.addToRole", 			permissionId, targetNodeRoleId );
 			}, this);
 			
@@ -187,7 +198,7 @@
 			this.getDataModel().clearData(); this.updateClient();
 		</qx:messageSubscriber>		
 		
-		<!-- remove items -->
+		<!-- delete or remove items. the server calls are handled in the left tree, we need only handle the response -->
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.role.deleted">
 			qx.event.message.Bus.dispatch( "qcl.auth.messages.reload" );
@@ -195,6 +206,16 @@
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.permission.deleted">
 			this.getDataModel().clearData(); this.updateClient();
+		</qx:messageSubscriber>
+				
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.roleRemoved">
+			// listen to message only if this is not a drag and drop session
+			if ( ! this.getUserData("dropData") )
+			{
+				console.log("permission removed");
+				this.getDataModel().prune(authConfigWindow.getUserData("currentNode"),true);
+				this.getDataModel().setData();
+			}
 		</qx:messageSubscriber>
 
 		<!-- messages triggering a reload -->

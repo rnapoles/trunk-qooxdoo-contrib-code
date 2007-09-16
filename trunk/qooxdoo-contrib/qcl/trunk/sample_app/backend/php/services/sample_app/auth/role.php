@@ -14,7 +14,13 @@ class class_role extends qcl_auth_role
    //-------------------------------------------------------------
   
    var $nodeType			= "sample_app.types.Role";
-
+   
+	/* metadata on fields */
+	var $meta = array(
+   		'namedId'		=> array( 'required' => true ),
+		'name'			=> array( 'required' => true ),
+   		'note'			=> array( )
+	);
    //-------------------------------------------------------------
    // internal methods 
    //-------------------------------------------------------------
