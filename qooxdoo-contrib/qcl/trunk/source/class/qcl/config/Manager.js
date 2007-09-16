@@ -65,14 +65,12 @@ qx.Class.define("qcl.config.Manager",
   construct : function()
   {
 		this.base(arguments);
+    this.setDataBinding(true);
+    
     // subscribe to server message with change key events
     qx.event.message.Bus.subscribe("qcl.config.messages.server.changeConfigKey",function(message){
       var data = message.getData();
-      for ( key in data )
-      {
-        this.getConfigMap()[key] = data[key];
-      }
-      this.createDispatchEvent("changeConfigMap");
+      this.set(data,true); // do not notify server since change originates on server
     });
   },
   
@@ -84,7 +82,7 @@ qx.Class.define("qcl.config.Manager",
  
   events :
   {
-    "changeConfigMap" : "qx.event.type.ChangeEvent"
+    "changeConfigMap" : "qx.event.type.DataEvent"
   },
 
   /*
@@ -114,8 +112,6 @@ qx.Class.define("qcl.config.Manager",
 
   members :
   {
-
-    
 		/**
 		 * gets a config value
 		 */
@@ -126,26 +122,34 @@ qx.Class.define("qcl.config.Manager",
 
     /**
 		 * sets a config value
+		 * @param {Map} data key-value pairs with config data
+		 * @param {Boolean} noServerUpdate If true, do not notify server of change
+		 * dispatches changeConfigMap data event
 		 */
-		set : function ( namedId, value )
+		set : function ( data, noServerUpdate )
 		{
-			var configEntry = this.getConfigMap()[namedId];
-        
-      if ( value == configEntry.value ) 
+			var configMap = this.getConfigMap(); 
+      
+      // set data
+      for ( key in data )
       {
-       return; // nothing to do. 
+        if ( typeof data[key] != configMap[key].type )
+        {
+          this.error("Invalid value '" + data[key] + "' Should be " + configMap[key].type + "but is " + typeof data[key] );
+        }                
+        configMap[key].oldValue = configMap[key].value; 
+        configMap[key].value = data[key];
       }
       
-      if ( typeof value != configEntry.type )
+      //dispatch event
+      this.createDispatchDataEvent("changeConfigMap",configMap);
+      
+      // update server unless update is prevented
+      if ( ! noServerUpdate )
       {
-        this.error("Invalid value '" + value + "' Should be " + configEntry.type + "but is " + typeof value );
+        this.updateServer( data );  
       }
-      configEntry  = value;
-      this.updateServer( namedId, value );
-      this.createDispatchEvent("changeConfigMap");
 		}    
-
-
   },
 
   /*

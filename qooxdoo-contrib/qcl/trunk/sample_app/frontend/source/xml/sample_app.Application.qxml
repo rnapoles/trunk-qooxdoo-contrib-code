@@ -13,8 +13,9 @@
 		<qxt:include src="/includes/scripts-start.xml"/>
 		<qxt:include src="/includes/resources.xml"/>
 	
-		<!-- security -->
+		<!-- security and configuration -->
 		<qxt:include src="/includes/security.xml"/>
+		<qxt:include src="/includes/configuration.xml"/>
 		
 		<!-- components -->
 		<qxt:include src="/components/loading-popup.xml"/>
