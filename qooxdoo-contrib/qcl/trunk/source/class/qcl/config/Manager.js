@@ -66,12 +66,13 @@ qx.Class.define("qcl.config.Manager",
   {
 		this.base(arguments);
     this.setDataBinding(true);
+    this.__configMap = [];
     
     // subscribe to server message with change key events
     qx.event.message.Bus.subscribe("qcl.config.messages.server.changeConfigKey",function(message){
       var data = message.getData();
-      this.set(data,true); // do not notify server since change originates on server
-    });
+      this.setData(data,true); // do not notify server since change originates on server
+    },this);
   },
   
   /*
@@ -84,25 +85,6 @@ qx.Class.define("qcl.config.Manager",
   {
     "changeConfigMap" : "qx.event.type.DataEvent"
   },
-
-  /*
-  *****************************************************************************
-     PROPERTIES
-  *****************************************************************************
-  */
-
-  properties :
-  {
-    /**
-     * the map of configurations settings
-     */
-    configMap :
-    {
-      check  : "Object",
-      event  : "changeConfigMap",
-      init   : []  
-    }	
-  },
   
   /*
   *****************************************************************************
@@ -112,21 +94,65 @@ qx.Class.define("qcl.config.Manager",
 
   members :
   {
+
+    
+    /**
+     * sets all configuration keys at once and dispatches all change events
+     * @param configMap {Map} 
+     */
+    setConfigMap : function (configMap)
+    {
+      if ( typeof configMap != "object" )
+      {
+        this.error ("Invalid parameter - configMap needs to be a hash map");
+      }
+      
+      this.__configMap = configMap;
+      
+      // dispatch events
+      for ( var key in configMap )
+      {
+        this.createDispatchDataEvent( "changeConfigKey." + key , configMap[key].value );
+      }
+      
+      return true;
+    },
+    
+    /**
+     * returns hashmap of configuration keys
+     */
+    getConfigMap : function()
+    {
+      return this.__configMap;
+    },
+
 		/**
 		 * gets a config value
 		 */
-		get : function ( namedId )
+		getKey : function ( key )
 		{
-			return this.getConfigMap()[namedId].value;
+			return this.getConfigMap()[key].value;
 		},
-
+    
+    /**
+     * sets a config value
+     * @param {String} key
+     * @param {Mixed} value
+     */
+    setKey : function (key, value)
+    {
+      var data = {};
+      data[key] = value;
+      return this.setData(data);
+    },
+    
     /**
 		 * sets a config value
 		 * @param {Map} data key-value pairs with config data
 		 * @param {Boolean} noServerUpdate If true, do not notify server of change
 		 * dispatches changeConfigMap data event
 		 */
-		set : function ( data, noServerUpdate )
+		setData : function ( data, noServerUpdate )
 		{
 			var configMap = this.getConfigMap(); 
       
@@ -137,19 +163,38 @@ qx.Class.define("qcl.config.Manager",
         {
           this.error("Invalid value '" + data[key] + "' Should be " + configMap[key].type + "but is " + typeof data[key] );
         }                
-        configMap[key].oldValue = configMap[key].value; 
-        configMap[key].value = data[key];
+        
+        var configMapChanged = false;
+        
+        if ( configMap[key].value != data[key] )
+        {
+          configMap[key].oldValue = configMap[key].value; 
+          configMap[key].value = data[key];
+          
+          //dispatch event
+          this.createDispatchDataEvent( "changeConfigKey." + key , data[key] );   
+          configMapChanged = true;       
+        }
       }
       
-      //dispatch event
-      this.createDispatchDataEvent("changeConfigMap",configMap);
-      
       // update server unless update is prevented
-      if ( ! noServerUpdate )
+      if ( configMapChanged && ! noServerUpdate )
       {
         this.updateServer( data );  
       }
-		}    
+      return true;
+		},
+    
+    /**
+     * create a special event listener that handles only changes of specific keys
+     * @param key {String} the config key to monitor
+     * @param callbackFunction {Function} the callback function to call when the key has changed
+     * @param context {Object} the object that serves as execution context
+     */ 
+     addConfigChangeEventListener : function (key,callbackFunc,context)
+     {
+       this.addEventListener( "changeConfigKey." + key, callbackFunc, context );
+     }   
   },
 
   /*

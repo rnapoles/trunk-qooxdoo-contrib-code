@@ -8,6 +8,7 @@
 		<qx:permission name="sample_app.permissions.default.logout"/>
 		<qx:permission name="sample_app.permissions.access.manage"/>
 		<qx:permission name="sample_app.permissions.config.manage"/>
+		<qx:permission name="sample_app.permissions.preferences.manage"/>
 	</qx:security>
 	
 	<!-- toolbar -->
@@ -70,6 +71,14 @@
 						enabled="false"
 						enableOnPermission="sample_app.permissions.config.manage">		
 						<qx:eventListener type="execute" dispatchMessage="qcl.config.commands.editor.show" />
+					</qx:menuButton>
+					
+					<qx:menuSeparator />
+					
+					<qx:menuButton text="Preferences"
+						enabled="false"
+						enableOnPermission="sample_app.permissions.preferences.manage">		
+						<qx:eventListener type="execute" dispatchMessage="qcl.config.commands.preferences.show" />
 					</qx:menuButton>
 														
 				</qx:menu>

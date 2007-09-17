@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Erstellungszeit: 10. September 2007 um 01:10
+-- Erstellungszeit: 17. September 2007 um 22:42
 -- Server Version: 5.0.21
 -- PHP-Version: 4.4.2-pl1
 -- 
@@ -19,16 +19,22 @@
 DROP TABLE IF EXISTS `config`;
 CREATE TABLE `config` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(50) character set latin1 NOT NULL default '',
+  `namedId` varchar(50) collate latin1_general_ci NOT NULL,
   `type` varchar(20) character set latin1 NOT NULL default '',
-  `value` text character set latin1,
+  `value` tinytext collate latin1_general_ci,
+  `permissionRead` varchar(50) collate latin1_general_ci default NULL,
+  `permissionWrite` varchar(50) collate latin1_general_ci default NULL,
+  `userId` int(11) default NULL,
+  `note` varchar(100) collate latin1_general_ci default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=32 ;
 
 -- 
 -- Daten für Tabelle `config`
 -- 
 
+INSERT INTO `config` VALUES (30, 'sample_app.application.name', 'string', 'qooxdoo component library (qcl) sample application', NULL, NULL, NULL, NULL);
+INSERT INTO `config` VALUES (31, 'sample_app.application.splashTextHtml', 'string', '<h2>qooxdoo component library sample application</h2>\n<p>(c) 2007 Christian Boulanger. Use admin/admin, manager/manager, or user/user for login ...</p>', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -49,8 +55,11 @@ CREATE TABLE `link_roles_permissions` (
 
 INSERT INTO `link_roles_permissions` VALUES (4, 1);
 INSERT INTO `link_roles_permissions` VALUES (1, 4);
-INSERT INTO `link_roles_permissions` VALUES (2, 6);
 INSERT INTO `link_roles_permissions` VALUES (7, 9);
+INSERT INTO `link_roles_permissions` VALUES (4, 12);
+INSERT INTO `link_roles_permissions` VALUES (2, 14);
+INSERT INTO `link_roles_permissions` VALUES (4, 16);
+INSERT INTO `link_roles_permissions` VALUES (2, 17);
 
 -- --------------------------------------------------------
 
@@ -78,6 +87,7 @@ INSERT INTO `link_user_roles` VALUES (7, 4);
 INSERT INTO `link_user_roles` VALUES (9, 4);
 INSERT INTO `link_user_roles` VALUES (10, 4);
 INSERT INTO `link_user_roles` VALUES (11, 2);
+INSERT INTO `link_user_roles` VALUES (11, 4);
 INSERT INTO `link_user_roles` VALUES (14, 4);
 INSERT INTO `link_user_roles` VALUES (16, 4);
 INSERT INTO `link_user_roles` VALUES (17, 4);
@@ -111,16 +121,18 @@ CREATE TABLE `permissions` (
   `name` varchar(50) character set utf8 NOT NULL default '',
   `note` varchar(255) character set utf8 default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=18 ;
 
 -- 
 -- Daten für Tabelle `permissions`
 -- 
 
-INSERT INTO `permissions` VALUES (1, 'sample_app.permissions.default.*', 'Default Permission which will be granted when a us', 'Without this permission, the user cannot operate the GUI at all');
+INSERT INTO `permissions` VALUES (1, 'sample_app.permissions.default.*', 'Default Permission', 'Without this permission, the user cannot operate the GUI at all');
 INSERT INTO `permissions` VALUES (4, '*', 'Can do everything', 'Master permission - should only be given to the system administrator');
-INSERT INTO `permissions` VALUES (6, 'sample_app.permissions.manage', 'Management Tasks', NULL);
+INSERT INTO `permissions` VALUES (14, 'qcl.auth.permissions.*', 'Manage Authentication', 'User is allowed to add/edit/delete users, roles and permissions');
 INSERT INTO `permissions` VALUES (7, 'asdb', '', NULL);
+INSERT INTO `permissions` VALUES (17, 'sample_app.permissions.access.manage', 'Can change access to this application', NULL);
+INSERT INTO `permissions` VALUES (16, 'sample_app.permissions.preferences.manage', 'Can change the application''s preferences', 'This allows only access, individual preference settings might be protected');
 
 -- --------------------------------------------------------
 
@@ -135,7 +147,7 @@ CREATE TABLE `roles` (
   `name` varchar(50) character set latin1 NOT NULL default '',
   `note` varchar(255) character set latin1 default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=10 ;
 
 -- 
 -- Daten für Tabelle `roles`
@@ -160,7 +172,7 @@ CREATE TABLE `users` (
   `email` varchar(255) character set latin1 default NULL,
   `note` mediumtext character set latin1,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=45 ;
 
 -- 
 -- Daten für Tabelle `users`
@@ -174,7 +186,7 @@ INSERT INTO `users` VALUES (6, 'Jones, Raelene', 'jones', 'c2c32d685a8169c8e6724
 INSERT INTO `users` VALUES (7, 'Soames, Netta', 'soames', '1e72a29502a1a2bf01926e59bc75248d', 'netta.soames@bibliograph.org', '');
 INSERT INTO `users` VALUES (9, 'Howe, Jaime', 'howe', '967fc0ee903cd7fd9388cc6e9c3cc0e0', 'jaime.howe@bibliograph.org', '');
 INSERT INTO `users` VALUES (10, 'Tomey, Morton', 'tomey', 'e83fefe6389add51a1520328ad1740aa', 'morton.tomey@bibliograph.org', '');
-INSERT INTO `users` VALUES (11, 'Nickolson, Kerri', 'nickolson', 'cefb301474cb45378690b7d451c034af', 'kerri.nickolson@bibliograph.org', '');
+INSERT INTO `users` VALUES (11, 'Nickolson, Kerri', 'manager', 'manager', 'kerri.nickolson@bibliograph.org', '');
 INSERT INTO `users` VALUES (14, 'Mills, Lacy', 'mills', 'ce1eb05bd44c9eab33b92eef261731c7', 'lacy.mills@bibliograph.org', '');
 INSERT INTO `users` VALUES (16, 'Millard, Steve', 'millard', '81b8a1b77068d06e1c8190825253066f', 'steve.millard@bibliograph.org', '');
 INSERT INTO `users` VALUES (17, 'Dean, Hedley', 'dean', '61b5a63b2efe2d81584b3d52afd4ebec', 'hedley.dean@bibliograph.org', '');
@@ -183,7 +195,7 @@ INSERT INTO `users` VALUES (19, 'Reichard, Valentine', 'reichard', 'c00a35ddba52
 INSERT INTO `users` VALUES (21, 'Roche, Mitchell', 'roche', '8c676a88df49c6e1127bb3bf7a4eeb5e', 'mitchell.roche@bibliograph.org', '');
 INSERT INTO `users` VALUES (23, 'Rumbaugh, Irene', 'rumbaugh', '79ae3e10d1ff66922e58d98656315b9e', 'irene.rumbaugh@bibliograph.org', '');
 INSERT INTO `users` VALUES (28, 'Murray, Mayson', 'murray', '81581341cec0f27c1aeb114425ddf085', 'mayson.murray@bibliograph.org', '');
-INSERT INTO `users` VALUES (30, 'Branson, Rosemary', 'branson', '4a60d61eabbcdea8a2cbea26dec047e6', 'rosemary.branson@bibliograph.org', '');
+INSERT INTO `users` VALUES (30, 'Branson, Rosemary', 'user', 'user', 'rosemary.branson@bibliograph.org', '');
 INSERT INTO `users` VALUES (31, 'Kiefer, Louisa', 'kiefer', '6fdcbf9b3aec9bbc76429c1fae3e465b', 'louisa.kiefer@bibliograph.org', '');
 INSERT INTO `users` VALUES (34, 'Moore, Deforest', 'moore', '79f867c59a6bed4234837066b1748b8f', 'deforest.moore@bibliograph.org', '');
 INSERT INTO `users` VALUES (35, 'Wentzel, Logan', 'wentzel', '2e1d1e3fe8265865efbc8cbb4baaf4e8', 'logan.wentzel@bibliograph.org', '');
