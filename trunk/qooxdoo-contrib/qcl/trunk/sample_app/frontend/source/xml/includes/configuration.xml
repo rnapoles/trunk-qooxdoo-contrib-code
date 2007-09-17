@@ -4,9 +4,19 @@
 	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension"
 	xmlns:qcl="http://qooxdoo-contrib.sourceforge.net/qcl">
 
-	<qcl:configManager 
+	<qx:configManager 
 		id="configManager"
-		serviceName="sample_app.config.configManager" />
+		serviceName="sample_app.config.configManager" >
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+			this.updateClient()
+		</qx:messageSubscriber>
+		
+		<qx:messageSubscriber filter="sample_app.messages.logout">
+			this.updateClient()
+		</qx:messageSubscriber>
+
+	</qx:configManager>
 	
 	<qxt:script>
 		// retrieve configuration from server

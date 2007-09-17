@@ -35,8 +35,15 @@ class qcl_config_manager extends qcl_jsonrpc_object
    	 */
    	function method_updateClient($params)
    	{
-   		$mask = $params[0];
-   		$this->set( "configMap", $this->config->getAll( $mask ) );
+   		$mask 	= $params[0];
+   		$rows 	= $this->config->getAll( $mask );
+   		$result	= array();
+   		foreach ( $rows as $row )
+   		{
+   			unset($row[$this->config->key_id]);
+   			$result[$row[$this->config->key_name]] = $row;
+   		}
+   		$this->set( "configMap", $result );
    		return $this->getResult(); 
    	}
    	
@@ -44,12 +51,12 @@ class qcl_config_manager extends qcl_jsonrpc_object
    	 * default update server method: updates selected config keys
    	 * @param object $params[1] map of configuration key values to update 
    	 */
-   	function method_updateClient($params)
+   	function method_updateServer($params)
    	{
 		$map = $params[1];
-		foreach( get_object_vars( $map ) as $key )
+		foreach( get_object_vars( $map ) as $key => $value )
 		{
-			$this->config->set( $key, $map->$key );
+			$this->config->set( $key, $value );
 		}   		
    		return $this->getResult(); 
    	}
@@ -93,8 +100,20 @@ class qcl_config_manager extends qcl_jsonrpc_object
 	 */
 	function method_update( $params )
 	{
-		$this->config->update($params[1],$params[2],$params[3]);
-		$this->addMessage( "qcl.config.messages.key.updated", $params[1] );
+		$id 	= $params[1];
+		$key	= $params[2];
+		$value	= $params[3];
+		
+		$this->config->update($id,$key,$value);
+		$this->addMessage( "qcl.config.messages.key.updated", $id );
+		
+		if ( $key == "value" )
+		{
+			$row = $this->config->getRowById($id);
+			$data = array();
+			$data[$row[$this->config->key_name]] = $row[$this->config->key_value]; 
+			$this->addMessage( "qcl.config.messages.server.changeConfigKey", $data );	
+		}
 		return $this->getResult();
 	}
 	
@@ -108,18 +127,9 @@ class qcl_config_manager extends qcl_jsonrpc_object
 	 */
 	function method_delete( $params )
 	{ 
-		return $this->config->delete($params[1]);
+		$this->config->delete($params[1]);
+		return $this->getResult();
 	} 
-	 
-	/**
-	 * gets config property value
-	 * @param string $param[0] name of the property (i.e., myapplication.config.locale) 
-	 * @return value of property or null if value does not exist.
-	 */
-	function method_get( $params )
-	{
-		return $this->config->get($params[0]);	
-	} 	  
  
 	/**
 	 * sets config property
@@ -132,7 +142,11 @@ class qcl_config_manager extends qcl_jsonrpc_object
 	 */
 	function method_set( $params )
 	{
-		return $this->config->set( $params[0], $params[1], $params[2] );
+		$this->config->set( $params[0], $params[1], $params[2] );
+		$data = array();
+		$data[$params[0]] = $params[1];
+		$this->addMessage( "qcl.config.messages.server.changeConfigKey", $data );
+		return $this->getResult();
 	}
 	
 	/**

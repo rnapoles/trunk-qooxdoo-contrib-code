@@ -729,7 +729,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 					case "security":
 						this.setSecurity(data.security);
 						break;
-						    
+					
+          case "configMap":
+						this.setConfigMap(data.configMap);
+						break;	    
           
           default:
             try

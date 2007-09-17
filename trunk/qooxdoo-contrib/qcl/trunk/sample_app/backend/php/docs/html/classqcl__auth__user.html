@@ -53,6 +53,8 @@ Collaboration diagram for qcl_auth_user:</div>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqcl__auth__user.html#240d571f8a582de2b27fe10c2e2d60fc">setActiveUser</a> ($data)</td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqcl__auth__user.html#281269faae4cb38e93533c5c39c9b3f2">getActiveUserId</a> ()</td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqcl__auth__user.html#dc4855b63f4988f1ac2e0b942c9b5738">hasPermission</a> ($requestedPermission, $user=null)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqcl__auth__user.html#5fa0922391bd6989697dacff20f57e1f">requirePermission</a> ($permission)</td></tr>
@@ -166,9 +168,9 @@ get list of roles (ids) that belong to a user <dl compact><dt><b>Parameters:</b>
 
 <p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00053">53</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="object_8php-source.html#l00070">qcl_jsonrpc_object::$result</a>, <a class="el" href="common_8php-source.html#l00058">qcl_auth_common::getIdFromRef()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
+<p>References <a class="el" href="object_8php-source.html#l00070">qcl_jsonrpc_object::$result</a>, <a class="el" href="common_8php-source.html#l00052">qcl_auth_common::getIdFromRef()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00128">getPermissions()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00099">getRoleIds()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00107">getRoleNamedIds()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00115">getRoleRecords()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00255">getSecurity()</a>, and <a class="el" href="sample__app_2auth_2user_8php-source.html#l00057">class_user::method_getRoles()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00128">getPermissions()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00099">getRoleIds()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00107">getRoleNamedIds()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00115">getRoleRecords()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00264">getSecurity()</a>, and <a class="el" href="sample__app_2auth_2user_8php-source.html#l00057">class_user::method_getRoles()</a>.</p>
 
 </div>
 </div><p>
@@ -280,9 +282,9 @@ get list of permission (ids) that belong to a user <dl compact><dt><b>Parameters
 
 <p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00128">128</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="object_8php-source.html#l00070">qcl_jsonrpc_object::$result</a>, <a class="el" href="common_8php-source.html#l00058">qcl_auth_common::getIdFromRef()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00053">getRoles()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
+<p>References <a class="el" href="object_8php-source.html#l00070">qcl_jsonrpc_object::$result</a>, <a class="el" href="common_8php-source.html#l00052">qcl_auth_common::getIdFromRef()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00053">getRoles()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00209">hasPermission()</a>, and <a class="el" href="sample__app_2auth_2user_8php-source.html#l00049">class_user::method_getPermissions()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00218">hasPermission()</a>, and <a class="el" href="sample__app_2auth_2user_8php-source.html#l00049">class_user::method_getPermissions()</a>.</p>
 
 </div>
 </div><p>
@@ -321,9 +323,9 @@ authenticate a user with a password <dl compact><dt><b>Parameters:</b></dt><dd>
 
 <p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00154">154</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="common_8php-source.html#l00112">qcl_auth_common::getByName()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00196">setActiveUser()</a>.</p>
+<p>References <a class="el" href="common_8php-source.html#l00107">qcl_auth_common::getByName()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00196">setActiveUser()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00367">method_authenticate()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00376">method_authenticate()</a>.</p>
 
 </div>
 </div><p>
@@ -347,7 +349,7 @@ gets active user information which is persisted during a session <dl class="retu
 
 <p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00187">187</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00209">hasPermission()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00367">method_authenticate()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00218">hasPermission()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00376">method_authenticate()</a>.</p>
 
 </div>
 </div><p>
@@ -376,7 +378,29 @@ sets active user information <dl compact><dt><b>Parameters:</b></dt><dd>
 
 <p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00196">196</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00154">authenticate()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00367">method_authenticate()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00400">method_logout()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00154">authenticate()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00376">method_authenticate()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00409">method_logout()</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="281269faae4cb38e93533c5c39c9b3f2"></a><!-- doxytag: member="qcl_auth_user::getActiveUserId" ref="281269faae4cb38e93533c5c39c9b3f2" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">qcl_auth_user::getActiveUserId           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+gets active user record id <dl class="return" compact><dt><b>Returns:</b></dt><dd>int </dd></dl>
+
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00205">205</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
 </div>
 </div><p>
@@ -413,11 +437,11 @@ checks if active user has the given permission respects wildcards, i.e. myapp.pe
   </table>
 </dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00209">209</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00218">218</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="qcl_2auth_2user_8php-source.html#l00187">getActiveUser()</a>, <a class="el" href="common_8php-source.html#l00112">qcl_auth_common::getByName()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00128">getPermissions()</a>.</p>
+<p>References <a class="el" href="qcl_2auth_2user_8php-source.html#l00187">getActiveUser()</a>, <a class="el" href="common_8php-source.html#l00107">qcl_auth_common::getByName()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00128">getPermissions()</a>.</p>
 
-<p>Referenced by <a class="el" href="sample__app_2auth_2user_8php-source.html#l00065">class_user::method_hasPermission()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00238">requirePermission()</a>.</p>
+<p>Referenced by <a class="el" href="sample__app_2auth_2user_8php-source.html#l00065">class_user::method_hasPermission()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00247">requirePermission()</a>.</p>
 
 </div>
 </div><p>
@@ -439,11 +463,11 @@ checks if active user has the given permission respects wildcards, i.e. myapp.pe
 
 <p>
 requires a specific permission if active user does not have the permission, abort with an error 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00238">238</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00247">247</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="qcl_2auth_2user_8php-source.html#l00209">hasPermission()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
+<p>References <a class="el" href="qcl_2auth_2user_8php-source.html#l00218">hasPermission()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00413">method_addToRole()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00431">method_removeFromRole()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00422">method_addToRole()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00440">method_removeFromRole()</a>.</p>
 
 </div>
 </div><p>
@@ -471,11 +495,11 @@ gets userdata and security policies <dl compact><dt><b>Parameters:</b></dt><dd>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>array security policy and user data </dd></dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00255">255</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00264">264</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="common_8php-source.html#l00112">qcl_auth_common::getByName()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00053">getRoles()</a>.</p>
+<p>References <a class="el" href="common_8php-source.html#l00107">qcl_auth_common::getByName()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00053">getRoles()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00367">method_authenticate()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00376">method_authenticate()</a>.</p>
 
 </div>
 </div><p>
@@ -512,11 +536,11 @@ add user(s) to role(s) <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00287">287</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00296">296</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="common_8php-source.html#l00058">qcl_auth_common::getIdFromRef()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
+<p>References <a class="el" href="common_8php-source.html#l00052">qcl_auth_common::getIdFromRef()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00413">method_addToRole()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00422">method_addToRole()</a>.</p>
 
 </div>
 </div><p>
@@ -553,11 +577,11 @@ removes user(s) from role(s) <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00320">320</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00329">329</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="common_8php-source.html#l00058">qcl_auth_common::getIdFromRef()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
+<p>References <a class="el" href="common_8php-source.html#l00052">qcl_auth_common::getIdFromRef()</a>, and <a class="el" href="object_8php-source.html#l00216">qcl_jsonrpc_object::raiseError()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00431">method_removeFromRole()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00440">method_removeFromRole()</a>.</p>
 
 </div>
 </div><p>
@@ -579,9 +603,9 @@ removes user(s) from role(s) <dl compact><dt><b>Parameters:</b></dt><dd>
 
 <p>
 default update client method: authenticate user 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00357">357</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00366">366</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="qcl_2auth_2user_8php-source.html#l00367">method_authenticate()</a>.</p>
+<p>References <a class="el" href="qcl_2auth_2user_8php-source.html#l00376">method_authenticate()</a>.</p>
 
 </div>
 </div><p>
@@ -609,11 +633,11 @@ default update client method: authenticate user <dl compact><dt><b>Parameters:</
   </table>
 </dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00367">367</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00376">376</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00154">authenticate()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00187">getActiveUser()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00255">getSecurity()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00196">setActiveUser()</a>.</p>
+<p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00154">authenticate()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00187">getActiveUser()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00264">getSecurity()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00196">setActiveUser()</a>.</p>
 
-<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00357">method_updateClient()</a>.</p>
+<p>Referenced by <a class="el" href="qcl_2auth_2user_8php-source.html#l00366">method_updateClient()</a>.</p>
 
 </div>
 </div><p>
@@ -634,7 +658,7 @@ default update client method: authenticate user <dl compact><dt><b>Parameters:</
 
 <p>
 logout current user 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00400">400</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00409">409</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
 <p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00196">setActiveUser()</a>.</p>
 
@@ -665,9 +689,9 @@ add user(s) to role(s) <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00413">413</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00422">422</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00287">addToRole()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00238">requirePermission()</a>.</p>
+<p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00296">addToRole()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00247">requirePermission()</a>.</p>
 
 </div>
 </div><p>
@@ -696,15 +720,15 @@ removes user(s) from role(s) <dl compact><dt><b>Parameters:</b></dt><dd>
   </table>
 </dl>
 
-<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00431">431</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
+<p>Definition at line <a class="el" href="qcl_2auth_2user_8php-source.html#l00440">440</a> of file <a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a>.</p>
 
-<p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00320">removeFromRole()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00238">requirePermission()</a>.</p>
+<p>References <a class="el" href="object_8php-source.html#l00184">qcl_jsonrpc_object::addMessage()</a>, <a class="el" href="object_8php-source.html#l00174">qcl_jsonrpc_object::getResult()</a>, <a class="el" href="qcl_2auth_2user_8php-source.html#l00329">removeFromRole()</a>, and <a class="el" href="qcl_2auth_2user_8php-source.html#l00247">requirePermission()</a>.</p>
 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
 <li>F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/auth/<a class="el" href="qcl_2auth_2user_8php-source.html">user.php</a></ul>
-<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 11 00:51:46 2007 for qcl sample application by&nbsp;
+<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 17 22:43:12 2007 for qcl sample application by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.3 </small></address>
 </body>

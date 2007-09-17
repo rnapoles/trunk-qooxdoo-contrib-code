@@ -11,7 +11,7 @@
 	<!-- SECURITY POLICIES -->
 	
 	<qx:security>
-		<qx:permission name="qcl.config.permissions.manage" />
+		<qx:permission name="qcl.config.permissions.manage"  />
 	</qx:security>
 	
 	<qx:window 
@@ -22,12 +22,12 @@
 		modal="false" onAppear="this.centerToBrowser()">
 		
 		<qx:messageSubscriber filter="qcl.config.commands.editor.show">
-			this.setDisplay(true);
+			this.show();
 			qx.event.message.Bus.dispatch("qcl.config.messages.editor.reload","");
 		</qx:messageSubscriber>
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.logout">
-			this.setDisplay(false);
+			this.hide();
 		</qx:messageSubscriber>		
 		 
 		<qx:verticalBoxLayout dimension="100%,100%">
@@ -81,12 +81,13 @@
 		</qxt:script>
 
 		<qxt:script>
+			<![CDATA[
 			// cell editor for value
 			var configEditorValueCellEditor = new qx.ui.table.celleditor.Dynamic;
 			configEditorValueCellEditor.setCellEditorFactoryFunction(function(cellInfo){
-				var model 				= cellInfo.table.getTableModel();
-				var typeColIndex 	= model.getColumnIndexById("type");
-				var type  			 	= model.getValue(cellInfo.row,typeColIndex);
+				var model = cellInfo.table.getTableModel();
+				var type  = model.getValue(model.getColumnIndexById("type"),cellInfo.row);
+				var value	= model.getValue(model.getColumnIndexById("value"),cellInfo.row);
 				var cellEditor;
 				switch( type )
 				{
@@ -116,11 +117,20 @@
 						break;				
 						
 					default:
-						cellEditor = new qx.ui.table.celleditor.TextField;
+						if ( value.length > 10 )
+						{
+							// todo: insert window/textarea cell editor
+							cellEditor = new qx.ui.table.celleditor.TextField;
+						}
+						else
+						{
+							cellEditor = new qx.ui.table.celleditor.TextField;
+						}
 	
 				}
 				return cellEditor;
 			});
+			]]>
 		</qxt:script>
 
 		<qxt:script>

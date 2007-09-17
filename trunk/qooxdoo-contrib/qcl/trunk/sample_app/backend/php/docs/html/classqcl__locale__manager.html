@@ -77,8 +77,9 @@ Collaboration diagram for qcl_locale_manager:</div>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
-manages locales and translations this is only a stub which does not do any translation to be implemented 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00011">11</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+manages locales and translations ported from qooxdoo javascript implementation this is only a stub which does not do any translation yet to be implemented &amp; turned into an interface/abstract class - we can implement gettext-based, db-based, file-based etc. although gettext-based makes most sense since qooxdoo frontend can use those, too.<p>
+qcl/locale/ |-- locale.php abstract class |-- gettext.php subclass |-- db.php subclass etc. 
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00019">19</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 <hr><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" name="53092ec2acd8db41c73ca74cc90be2f6"></a><!-- doxytag: member="qcl_locale_manager::__construct" ref="53092ec2acd8db41c73ca74cc90be2f6" args="($locale=null, $domain=null, $locale_dir=null)" -->
 <div class="memitem">
@@ -113,9 +114,9 @@ manages locales and translations this is only a stub which does not do any trans
 
 <p>
 constructor 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00023">23</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00031">31</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
-<p>References <a class="el" href="manager_8php-source.html#l00015">$domain</a>, <a class="el" href="manager_8php-source.html#l00014">$locale</a>, <a class="el" href="manager_8php-source.html#l00016">$locale_dir</a>, <a class="el" href="manager_8php-source.html#l00047">setDomain()</a>, and <a class="el" href="manager_8php-source.html#l00042">setLocale()</a>.</p>
+<p>References <a class="el" href="locale_2manager_8php-source.html#l00023">$domain</a>, <a class="el" href="locale_2manager_8php-source.html#l00022">$locale</a>, <a class="el" href="locale_2manager_8php-source.html#l00024">$locale_dir</a>, <a class="el" href="locale_2manager_8php-source.html#l00055">setDomain()</a>, and <a class="el" href="locale_2manager_8php-source.html#l00050">setLocale()</a>.</p>
 
 </div>
 </div><p>
@@ -155,7 +156,7 @@ Translate a message<p>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>string </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00060">60</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00068">68</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -209,7 +210,7 @@ static <dl compact><dt><b>Parameters:</b></dt><dd>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>string </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00078">78</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00086">86</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -233,7 +234,7 @@ Get the language code of the currnt locale<p>
 This is the first part of a locale definition. The language for "de_DE" would be "de"<p>
 member <dl class="return" compact><dt><b>Returns:</b></dt><dd>{String} language code </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00098">98</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00106">106</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -257,7 +258,7 @@ Get the territory code of the currnt locale<p>
 This is the second part of a locale definition. The territory for "de_DE" would be "DE"<p>
 member <dl class="return" compact><dt><b>Returns:</b></dt><dd>{String} territory code </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00112">112</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00120">120</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -281,7 +282,7 @@ Return the available application locales<p>
 This corresponds to the Makefile APPLICATION_LOCALES setting<p>
 member <dl class="return" compact><dt><b>Returns:</b></dt><dd>{String[]} array of available locales </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00127">127</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00135">135</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -310,7 +311,7 @@ member <dl compact><dt><b>Parameters:</b></dt><dd>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>{String} language </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00140">140</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00148">148</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -349,7 +350,7 @@ member <dl compact><dt><b>Parameters:</b></dt><dd>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>{void} </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00168">168</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00176">176</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
@@ -395,13 +396,13 @@ member <dl compact><dt><b>Parameters:</b></dt><dd>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>{String} translated message. </dd></dl>
 
-<p>Definition at line <a class="el" href="manager_8php-source.html#l00193">193</a> of file <a class="el" href="manager_8php-source.html">manager.php</a>.</p>
+<p>Definition at line <a class="el" href="locale_2manager_8php-source.html#l00201">201</a> of file <a class="el" href="locale_2manager_8php-source.html">manager.php</a>.</p>
 
 </div>
 </div><p>
 <hr>The documentation for this class was generated from the following file:<ul>
-<li>F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/locale/<a class="el" href="manager_8php-source.html">manager.php</a></ul>
-<hr size="1"><address style="text-align: right;"><small>Generated on Tue Sep 11 00:51:48 2007 for qcl sample application by&nbsp;
+<li>F:/xampp/htdocs/qooxdoo-contrib/qcl/trunk/sample_app/backend/php/services/qcl/locale/<a class="el" href="locale_2manager_8php-source.html">manager.php</a></ul>
+<hr size="1"><address style="text-align: right;"><small>Generated on Mon Sep 17 22:43:14 2007 for qcl sample application by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.3 </small></address>
 </body>

@@ -22,12 +22,12 @@
 		modal="false" onAppear="this.centerToBrowser()">
 		
 		<qx:messageSubscriber filter="qcl.auth.commands.access.manage">
-			this.setDisplay(true);
+			this.show();
 			qx.event.message.Bus.dispatch("qcl.auth.messages.reload");
 		</qx:messageSubscriber>
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.logout">
-			this.setDisplay(false);
+			this.hide();
 		</qx:messageSubscriber>		
 		 
 		

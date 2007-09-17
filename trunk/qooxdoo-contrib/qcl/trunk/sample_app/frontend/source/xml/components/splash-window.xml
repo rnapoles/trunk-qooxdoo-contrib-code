@@ -17,8 +17,9 @@
 		<qx:label backgroundColor="white" border="black" 
 			dimension="100%,100%" padding="10"
 			textAlign="center">
-			<h2>qooxdoo component library sample application</h2>
-			<p>2007 (c) Christian Boulanger. Use admin / admin to log in.</p>
+				<qx:configChangeEventListener key="sample_app.application.splashTextHtml">
+					this.setText(event.getData());
+				</qx:configChangeEventListener>
 		</qx:label>
 
 		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">

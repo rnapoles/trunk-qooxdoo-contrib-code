@@ -16,6 +16,7 @@
 		}
 		
 		// patch current qooxdoo code
+		
 		qx.ui.core.Widget.prototype.supportsDrop = function (dragCache)
 		{
       var supportsDropMethod = this.getSupportsDropMethod();
