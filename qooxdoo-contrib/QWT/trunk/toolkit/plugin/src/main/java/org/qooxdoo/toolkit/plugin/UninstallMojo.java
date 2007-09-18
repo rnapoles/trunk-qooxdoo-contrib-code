@@ -26,14 +26,14 @@ import org.apache.maven.settings.Settings;
 /**
  * Removes the Qwt Profile.
  *
- * @goal remove
+ * @goal uninstall
  */
-public class RemoveMojo extends SettingsMojo {
+public class UninstallMojo extends SettingsMojo {
     @Override
     public void doExecute(Settings settings) throws MojoExecutionException {
         Profile p;
         
-        p = (Profile) settings.getProfilesAsMap().get("qwt");
+        p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p == null) {
             throw new MojoExecutionException("qwt profile not found");
         }
