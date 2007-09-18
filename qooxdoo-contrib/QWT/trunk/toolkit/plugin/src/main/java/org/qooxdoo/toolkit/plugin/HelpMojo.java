@@ -41,8 +41,8 @@ public class HelpMojo extends Base {
         info("  start compiled application           mvn qwt:run");
         info("  jmx console for running application  jconsole");
         info("");
-        info("  add Maven setting for qwt            mvn qwt:install");
-        info("  remove Maven setting for qwt         mvn qwt:uninstall");
+        info("  add Maven user setting for Qwt       mvn qwt:install");
+        info("  remove Maven user settings for Qwt   mvn qwt:uninstall");
         info("See also: http://qooxdoo.org/documentation/contrib/contributions/qwt");
     }
 }
