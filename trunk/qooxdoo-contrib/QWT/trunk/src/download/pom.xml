@@ -33,11 +33,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </pluginRepositories>
 
   <build>
+    <defaultGoal>generate-sources</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
         <version>${qwt.version}</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals><goal>install</goal></goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
