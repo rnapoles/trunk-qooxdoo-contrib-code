@@ -58,12 +58,14 @@ public abstract class SettingsMojo extends Base {
             }
         }
         doExecute(settings);
-        node.copyFile(old);
+        if (node.exists()) {
+            node.copyFile(old);
+            info(old + " contains the original file.");
+        }
         dest = node.createWriter();
         new SettingsXpp3Writer().write(dest, settings);
         dest.close();
         info(node + " has been modified.");
-        info(old + " contains the original file.");
     }
 
     protected abstract void doExecute(Settings settings) throws MojoExecutionException;

@@ -59,7 +59,7 @@ public class InstallMojo extends SettingsMojo {
         Repository r;
         
         r = new Repository();
-        r.setId("sourceforge");
+        r.setId("qooxdoo");
         r.setUrl("http://qooxdoo-contrib.sourceforge.net/maven/repository");
         lst = new ArrayList<Repository>();
         lst.add(r);
