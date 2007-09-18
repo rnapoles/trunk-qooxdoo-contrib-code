@@ -40,6 +40,9 @@ public class HelpMojo extends Base {
         info("  generate eclipse files               mvn eclipse:eclipse");
         info("  start compiled application           mvn qwt:run");
         info("  jmx console for running application  jconsole");
+        info("");
+        info("  add Maven setting for qwt            mvn qwt:install");
+        info("  remove Maven setting for qwt         mvn qwt:uninstall");
         info("See also: http://qooxdoo.org/documentation/contrib/contributions/qwt");
     }
 }

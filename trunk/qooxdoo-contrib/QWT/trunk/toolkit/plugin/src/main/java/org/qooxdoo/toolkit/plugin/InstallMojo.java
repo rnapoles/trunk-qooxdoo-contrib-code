@@ -31,9 +31,9 @@ import org.apache.maven.settings.Settings;
 /**
  * Adds a Qwt Profile to the Maven User Settings.
  *
- * @goal setup
+ * @goal install
  */
-public class SetupMojo extends SettingsMojo {
+public class InstallMojo extends SettingsMojo {
     @Override
     public void doExecute(Settings settings) throws MojoExecutionException {
         Profile p;
@@ -41,7 +41,7 @@ public class SetupMojo extends SettingsMojo {
         
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p != null) {
-            throw new MojoExecutionException("qwt profile already exists, run qwt:remove to remove");
+            throw new MojoExecutionException("qwt profile already exists, run qwt:uninstall to remove");
         }
         info("creating profile");
         p = new Profile();
