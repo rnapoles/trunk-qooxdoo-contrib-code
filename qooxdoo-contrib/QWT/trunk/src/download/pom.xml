@@ -50,7 +50,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <executions>
           <execution>
             <phase>generate-sources</phase>
-            <goals><goal>help</goal></goals>
+            <goals><goal>install</goal></goals>
           </execution>
         </executions>
       </plugin>
@@ -71,8 +71,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <tstamp>
               <format property="now" pattern="yyyyMMddHHmmss"/>
             </tstamp>
-            <echo>now: ${now}</echo>
-
             <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-local.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
   <groupId>org.apache.maven.plugins</groupId>
   <artifactId>plugin</artifactId>
