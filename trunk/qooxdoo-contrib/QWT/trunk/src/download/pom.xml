@@ -71,7 +71,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <tstamp>
               <format property="now" pattern="yyyyMMddHHmmss"/>
             </tstamp>
-            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-local.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
+            <echo>Installing Maven Bug workaround ...</echo>
+            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-qooxdoo.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
   <groupId>org.apache.maven.plugins</groupId>
   <artifactId>plugin</artifactId>
   <version>${qwt.version}</version>
@@ -84,7 +85,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </versioning>
 </metadata>
 ]]></echo>
-            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/maven-metadata-local.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
+            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/maven-metadata-qooxdoo.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
   <plugins>
     <plugin>
       <name>QWT Plugin</name>
