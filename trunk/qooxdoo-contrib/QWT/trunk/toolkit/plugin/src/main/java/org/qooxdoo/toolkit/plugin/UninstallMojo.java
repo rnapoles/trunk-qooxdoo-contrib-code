@@ -24,19 +24,25 @@ import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
 
 /**
- * Removes the Qwt Profile.
- *
+ * @description Remove Maven user settings for Qwt.
  * @goal uninstall
  */
 public class UninstallMojo extends SettingsMojo {
     @Override
     public void doExecute(Settings settings) throws MojoExecutionException {
         Profile p;
-        
+
+        info("removing qwt settings from " + node);
+        info("- profile: " + PROFILE);
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p == null) {
-            throw new MojoExecutionException("qwt profile not found");
+            throw new MojoExecutionException("qwt settings not found: " + PROFILE);
         }
         settings.removeProfile(p);
+        info("- pluginGroup: " + PROFILE);
+        if (!settings.getPluginGroups().contains(GROUP)) {
+            throw new MojoExecutionException("pluginGroup not found: " + GROUP);
+        }
+        settings.removePluginGroup(GROUP);
     }
 }

@@ -17,7 +17,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <repositories>
     <repository>
-      <id>qooxdoo-contrib</id>
+      <id>qooxdoo</id>
       <url>http://qooxdoo-contrib.sourceforge.net/maven/repository</url>
       <snapshots><enabled>true</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
@@ -25,94 +25,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>qooxdoo-contrib</id>
+      <id>qooxdoo</id>
       <url>http://qooxdoo-contrib.sourceforge.net/maven/repository</url>
       <snapshots><enabled>true</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
     </pluginRepository>
   </pluginRepositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.qooxdoo.toolkit</groupId>
-      <artifactId>server</artifactId>
-      <version>${qwt.version}</version>
-    </dependency>
-  </dependencies>
-
   <build>
     <defaultGoal>generate-sources</defaultGoal>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+        <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
         <version>${qwt.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals><goal>install</goal></goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals><goal>sources</goal></goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <configuration>
-          <tasks>
-            <tstamp>
-              <format property="now" pattern="yyyyMMddHHmmss"/>
-            </tstamp>
-            <echo>Installing Maven Bug workaround ...</echo>
-            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/plugin/maven-metadata-qooxdoo.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>plugin</artifactId>
-  <version>${qwt.version}</version>
-  <versioning>
-    <latest>${qwt.version}</latest>
-    <versions>
-      <version>${qwt.version}</version>
-    </versions>
-    <lastUpdated>${now}</lastUpdated>
-  </versioning>
-</metadata>
-]]></echo>
-            <echo file="${user.home}/.m2/repository/org/apache/maven/plugins/maven-metadata-qooxdoo.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><metadata>
-  <plugins>
-    <plugin>
-      <name>QWT Plugin</name>
-      <prefix>qwt</prefix>
-      <artifactId>plugin</artifactId>
-    </plugin>
-  </plugins>
-</metadata>
-]]></echo>
-          </tasks>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals><goal>run</goal></goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals><goal>clean</goal></goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

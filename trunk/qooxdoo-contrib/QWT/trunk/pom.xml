@@ -259,15 +259,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <distributionManagement>
     <repository>
-      <id>sourceforge</id>
+      <id>qooxdoo</id>
       <url>scp://shell.sf.net/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository</url>
     </repository>
     <snapshotRepository>
-      <id>sourceforge</id>
+      <id>qooxdoo</id>
       <url>scp://shell.sf.net/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository</url>
     </snapshotRepository>
     <site>
-      <id>sourceforge</id>
+      <id>qooxdoo</id>
       <url>scp://shell.sf.net/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/sites/qwt</url>
     </site>
   </distributionManagement>

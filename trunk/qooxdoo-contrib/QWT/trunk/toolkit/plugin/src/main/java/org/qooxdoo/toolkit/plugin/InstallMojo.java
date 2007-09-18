@@ -29,7 +29,7 @@ import org.apache.maven.settings.Repository;
 import org.apache.maven.settings.Settings;
 
 /**
- * Adds a Qwt Profile to the Maven User Settings.
+ * Adds Maven user settings for Qwt.
  *
  * @goal install
  */
@@ -39,19 +39,25 @@ public class InstallMojo extends SettingsMojo {
         Profile p;
         Activation activation;
         
+        info("adding qwt setting to " + node +":");
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p != null) {
-            throw new MojoExecutionException("qwt profile already exists, run qwt:uninstall to remove");
+            throw new MojoExecutionException("profile already exists: " + PROFILE);
         }
-        info("creating profile");
+        info("+ adding profile: " + PROFILE);
         p = new Profile();
-        p.setId("qwt");
+        p.setId(PROFILE);
         settings.getProfiles().add(p);
         activation = new Activation();
         activation.setActiveByDefault(true);
         p.setActivation(activation);
         p.setPluginRepositories(repos());
         p.setRepositories(repos());
+        info("+ adding pluginGroup: " + GROUP);
+        if (settings.getPluginGroups().contains(GROUP)) {
+            throw new MojoExecutionException("pluginGroup already exists: " + GROUP);
+        }
+        settings.addPluginGroup(GROUP);
     }
 
     private List<Repository> repos() {

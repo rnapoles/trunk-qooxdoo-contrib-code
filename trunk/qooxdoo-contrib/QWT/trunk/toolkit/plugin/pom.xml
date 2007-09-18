@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!--  CAUTION: not "org.qooxdoo.toolkit" because I want an automatically-mapped plugin group: -->  
-  <groupId>org.apache.maven.plugins</groupId>
+  <groupId>org.qooxdoo.toolkit</groupId>
 
   <!--  CAUTION: not "qwt-maven-plugin" because I don't want to inherit scm defs etc: -->  
   <artifactId>plugin</artifactId>

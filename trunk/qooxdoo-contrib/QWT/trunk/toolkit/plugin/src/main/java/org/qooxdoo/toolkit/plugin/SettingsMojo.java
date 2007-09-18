@@ -35,17 +35,18 @@ import org.qooxdoo.sushi.io.FileNode;
  * @requiresProject false
  */
 public abstract class SettingsMojo extends Base {
-    protected static final String PROFILE = "qwt";
-    
+    protected static final String PROFILE = "qooxdoo";
+    protected static final String GROUP = "org.qooxdoo.toolkit";
+
+    protected FileNode node = (FileNode) io.getHome().join(".m2/settings.xml");
+
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
-        FileNode node;
         FileNode old;
         SettingsXpp3Reader reader;
         Settings settings;
         Writer dest;
         
-        node = (FileNode) io.getHome().join(".m2/settings.xml");
         old = (FileNode) io.getHome().join(".m2/settings.xml.old");
         if (!node.exists()) {
             settings = new Settings();
