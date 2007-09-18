@@ -41,7 +41,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+        <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
         <version>${qwt.version}</version>
         <executions>
