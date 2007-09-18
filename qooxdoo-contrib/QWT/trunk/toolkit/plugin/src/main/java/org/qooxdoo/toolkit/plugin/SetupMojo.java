@@ -19,8 +19,6 @@
 
 package org.qooxdoo.toolkit.plugin;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,60 +27,31 @@ import org.apache.maven.settings.Activation;
 import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Repository;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.settings.io.xpp3.SettingsXpp3Reader;
-import org.apache.maven.settings.io.xpp3.SettingsXpp3Writer;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.qooxdoo.sushi.io.FileNode;
 
 /**
- * Creates Maven User Settings for QWT.
+ * Adds a Qwt Profile to the Maven User Settings.
  *
- * @requiresProject false
  * @goal setup
  */
-public class SetupMojo extends Base {
+public class SetupMojo extends SettingsMojo {
     @Override
-    public void doExecute() throws MojoExecutionException, IOException {
-        FileNode node;
-        FileNode orig;
-        SettingsXpp3Reader reader;
-        Settings settings;
+    public void doExecute(Settings settings) throws MojoExecutionException {
         Profile p;
         Activation activation;
-        Writer dest;
         
-        node = (FileNode) io.getHome().join(".m2/settings.xml");
-        orig = (FileNode) io.getHome().join(".m2/settings.xml.orig");
-        if (!node.exists()) {
-            info("creating new settings");
-            settings = new Settings();
-        } else {
-            reader = new SettingsXpp3Reader();
-            try {
-                settings = reader.read(node.createReader());
-            } catch (XmlPullParserException e) {
-                throw new MojoExecutionException("cannot read " + node, e);
-            }
-            if (!orig.exists()) {
-                node.copyFile(orig);
-            }
+        p = (Profile) settings.getProfilesAsMap().get(PROFILE);
+        if (p != null) {
+            throw new MojoExecutionException("qwt profile already exists, run qwt:remove to remove");
         }
-        info("settings: ");
-        p = (Profile) settings.getProfilesAsMap().get("qwt");
-        if (p == null) {
-            info("creating profile");
-            p = new Profile();
-            p.setId("qwt");
-            settings.getProfiles().add(p);
-        } 
+        info("creating profile");
+        p = new Profile();
+        p.setId("qwt");
+        settings.getProfiles().add(p);
         activation = new Activation();
         activation.setActiveByDefault(true);
         p.setActivation(activation);
         p.setPluginRepositories(repos());
         p.setRepositories(repos());
-        dest = node.createWriter();
-        new SettingsXpp3Writer().write(dest, settings);
-        dest.close();
     }
 
     private List<Repository> repos() {
