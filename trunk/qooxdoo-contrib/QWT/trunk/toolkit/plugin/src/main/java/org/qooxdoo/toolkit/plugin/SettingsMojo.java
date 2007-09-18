@@ -69,5 +69,5 @@ public abstract class SettingsMojo extends Base {
         info(node + " has been modified.");
     }
 
-    protected abstract void doExecute(Settings settings) throws MojoExecutionException;
+    protected abstract void doExecute(Settings settings) throws MojoExecutionException, IOException;
 }

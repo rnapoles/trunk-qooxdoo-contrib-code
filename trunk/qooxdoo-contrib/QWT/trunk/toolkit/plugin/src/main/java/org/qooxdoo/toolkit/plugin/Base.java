@@ -24,11 +24,11 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.xml.sax.SAXException;
 
 public abstract class Base extends AbstractMojo {
     protected final IO io = new IO();
@@ -46,6 +46,14 @@ public abstract class Base extends AbstractMojo {
     }
     
     protected abstract void doExecute() throws MojoExecutionException, IOException, XmlException, SAXException;
+    
+    protected String getVersion() {
+        try {
+            return new ResourceNode(io, "qwt.version").readString().trim();
+        } catch (IOException e) {
+            throw new RuntimeException("unkown version");
+        }        
+    }
     
     protected void warn(String msg, Exception e) {
         getLog().warn(msg, e);

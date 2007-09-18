@@ -67,7 +67,7 @@ public class NewMojo extends Base {
         map.put("%ARTIFACT%", artifact);
         map.put("%GROUP%", group);
         // TODO:
-        map.put("%QWT_VERSION%", new ResourceNode(io, "qwt.version").readString().trim());
+        map.put("%QWT_VERSION%", getVersion());
         replaceContent(dest, map);
         info("SUCCESS: new application written to " + dest.getAbsolute());
         info("Run 'mvn qwt:help' for help");
