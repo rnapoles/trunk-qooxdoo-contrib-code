@@ -26,10 +26,10 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Loader;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Embedded;
 import org.apache.maven.plugin.MojoExecutionException;
-
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 
@@ -90,13 +90,13 @@ public class RunMojo extends WebappBase {
     }
 
     private Context createContext(Embedded embedded) throws MojoExecutionException, IOException {
-        WebappLoader loader;
+        Loader loader;
         Context context;
 
         if (!webapp.isDirectory()) {
             webapp();
         }
-        loader = new WebappLoader(this.getClass().getClassLoader());
+        loader = embedded.createLoader(this.getClass().getClassLoader());
         loader.setReloadable(true);
         loader.addRepository(uri(webapp.join("WEB-INF/classes")));
         for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
