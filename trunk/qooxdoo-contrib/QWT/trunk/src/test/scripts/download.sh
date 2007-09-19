@@ -16,6 +16,6 @@ mvn --batch-mode qx:new -Dpackage=foo.bar || exit 1
 cd bar
 mvn --batch-mode clean package || exit 1
 mvn --batch-mode qx:uninstall || exit 1
-cd ..
+cd /
 mvn --batch-mode qx:help && exit 1
 
