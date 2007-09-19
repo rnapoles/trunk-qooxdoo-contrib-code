@@ -4,6 +4,7 @@ cd target || exit 1
 export DIR=download
 export MAVEN_OPTS="-Xmx62m -client"
 rm -rf $HOME/.m2/repository
+rm $HOME/.m2/settings.xml
 rm -rf $DIR
 mkdir $DIR || exit 1
 # can't use wget, it's not available on all machines:
