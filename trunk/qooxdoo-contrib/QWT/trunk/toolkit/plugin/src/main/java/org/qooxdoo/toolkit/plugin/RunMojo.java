@@ -104,8 +104,8 @@ public class RunMojo extends WebappBase {
             loader.addRepository(uri(jar));
         }
         context = embedded.createContext("/" + id, webapp.getAbsolute());
-        context.setLoader(loader);
         context.setReloadable(true);
+        context.setLoader(loader);
         return context;
     }
 
