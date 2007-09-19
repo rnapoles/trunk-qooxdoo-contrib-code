@@ -19,3 +19,5 @@ mvn --batch-mode qx:uninstall || exit 1
 cd /
 mvn --batch-mode qx:help && exit 1
 
+exit 0
+
