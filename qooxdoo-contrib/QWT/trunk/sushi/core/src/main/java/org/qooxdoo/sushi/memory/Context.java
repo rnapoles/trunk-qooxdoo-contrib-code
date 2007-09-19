@@ -93,6 +93,7 @@ public class Context {
     void store(String path, byte[] data, int used) throws IOException {
         Object old;
         FileNode file;
+        byte[] copy;
         
         old = store.get(path);
         if (old instanceof FileNode) {
@@ -103,8 +104,9 @@ public class Context {
             file.writeBytes(data, 0, used);
             store.put(path, file);
         } else {
-            store.put(path, Arrays.copyOf(data, used));
+            copy = new byte[used];
+            System.arraycopy(data, 0, copy, 0, used);
+            store.put(path, copy);
         }
     }
-
 }
