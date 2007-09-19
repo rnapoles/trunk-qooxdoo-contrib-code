@@ -31,18 +31,23 @@ import org.apache.maven.plugin.MojoExecutionException;
 public class HelpMojo extends Base {
     @Override
     public void doExecute() throws IOException, MojoExecutionException {
-        info("QWT Cheat Sheet");
-        info("  create new application               mvn qx:new -Dpackage=foo.bar.Baz");
-        info("  remove generated files               mvn clean");
-        info("  compile application                  mvn compile");
-        info("  compile and test application         mvn test");
-        info("  compile, test and build war          mvn package");
-        info("  generate eclipse files               mvn eclipse:eclipse");
-        info("  start compiled application           mvn qx:run");
-        info("  jmx console for running application  jconsole");
+        info("QWT commands");
+        info("  mvn qx:new -Dpackage=foo.bar.baz     create new application");
+        info("  mvn qx:run                           start application");
         info("");
-        info("  add Maven user setting for Qwt       mvn qx:install");
-        info("  remove Maven user settings for Qwt   mvn qx:uninstall");
+        info("  mvn qx:install                       add Maven user setting for QWT");
+        info("  mvn qx:uninstall                     remove Maven user settings for QWT");
+        info("");
+        info("Standard Maven commands");
+        info("  mvn clean                            remove generated files");
+        info("  mvn compile                          compile application");
+        info("  mvn test                             compile and test application");
+        info("  mvn package                          compile, test and build war");
+        info("  mvn eclipse:eclipse                  generate eclipse files");
+        info("");
+        info("Misc");
+        info("  jconsole                             jmx console for running application");
+        info("");
         info("See also: http://qooxdoo.org/documentation/contrib/contributions/qwt");
     }
 }
