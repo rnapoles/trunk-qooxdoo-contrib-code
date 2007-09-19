@@ -155,7 +155,6 @@ public abstract class WebappBase extends Base {
         webapp.mkdir();
         webinf.mkdir();
         lib.mkdir();
-        contextXml();
         webXml(webinf.join("web.xml"));
 
         if (images.exists()) {
@@ -163,7 +162,10 @@ public abstract class WebappBase extends Base {
         } else {
             info("no images: " + images);
         }
-        
+
+        if (!classesDirectory.exists()) {
+            throw new MojoExecutionException("missing " + classesDirectory + " - did you compile?");
+        }
         classesDirectory.link((FileNode) webinf.join(classesDirectory.getName()));
         sourceDirectory.link((FileNode) webinf.join("src"));
         for (Object obj : project.getArtifacts()) {
@@ -200,26 +202,6 @@ public abstract class WebappBase extends Base {
         return artifact.getGroupId() + "-" + artifact.getFile().getName();
     }
 
-    // TODO: security problem?
-    public void contextXml() throws IOException, MojoExecutionException {
-        Node dir;
-        StringBuilder builder;
-        
-        dir = webapp.join("META-INF");
-        dir.mkdir();
-        builder = new StringBuilder("<Context allowLinking='true' reloadable='true' >\n");
-
-        // I didn't find a way to configure log output of 
-        //   builder.append("  <Value className='org.apache.catalina.valves.RequestDumperValve' />\n");
-        // in my webapp - I could modify tomcat, but I don't want to 
-        
-        builder.append("  <Valve className='org.apache.catalina.valves.AccessLogValve' \n" + 
-                       "         pattern='%h %t \"%r\" %s %b %T' \n" + 
-                       "         prefix='" + project.getArtifactId() + "-access.' />\n");
-        builder.append("</Context>\n");
-        generate(dir.join("context.xml"), builder.toString());
-    }
-    
     //--
     
     private void generate(Node file, String str) throws MojoExecutionException {
