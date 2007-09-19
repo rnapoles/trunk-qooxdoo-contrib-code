@@ -1,5 +1,6 @@
 #/bin/sh
-cd target
+mkdir target
+cd target || exit 1
 export DIR=download
 export MAVEN_OPTS="-Xmx62m -client"
 rm -rf $HOME/.m2/repository
