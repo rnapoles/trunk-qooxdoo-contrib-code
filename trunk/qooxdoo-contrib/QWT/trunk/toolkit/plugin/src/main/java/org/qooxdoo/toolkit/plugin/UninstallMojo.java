@@ -36,13 +36,15 @@ public class UninstallMojo extends SettingsMojo {
         info("- profile: " + PROFILE);
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p == null) {
-            throw new MojoExecutionException("qwt settings not found: " + PROFILE);
+            warn("qwt settings not found: " + PROFILE);
+        } else {
+            settings.removeProfile(p);
         }
-        settings.removeProfile(p);
         info("- pluginGroup: " + PROFILE);
         if (!settings.getPluginGroups().contains(GROUP)) {
-            throw new MojoExecutionException("pluginGroup not found: " + GROUP);
+            warn("pluginGroup not found: " + GROUP);
+        } else {
+            settings.removePluginGroup(GROUP);
         }
-        settings.removePluginGroup(GROUP);
     }
 }

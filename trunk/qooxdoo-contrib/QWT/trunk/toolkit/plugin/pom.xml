@@ -70,7 +70,7 @@
       <plugin>
         <artifactId>maven-plugin-plugin</artifactId>
         <configuration>
-          <goalPrefix>qwt</goalPrefix>
+          <goalPrefix>qx</goalPrefix>
         </configuration>
       </plugin>
       <plugin>

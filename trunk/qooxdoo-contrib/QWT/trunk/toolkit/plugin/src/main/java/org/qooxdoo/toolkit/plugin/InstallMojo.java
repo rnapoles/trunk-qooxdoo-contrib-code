@@ -81,7 +81,7 @@ public class InstallMojo extends SettingsMojo {
      * Bug 3099: Maven 2.0.7 does not load profiles when executed without pom.xml.
      * Install defines repositories in a profile in the user settings, there's no 
      * way to define them outside of projects and profiles, not even in the system settings. 
-     * Thus, qwt:new wouldn't find the qwt plugin which makes it quite useless.
+     * Thus, qx:new wouldn't find the qwt plugin which makes it quite useless.
      * As a work-around, I generate maven-metadata-local.xml files: local is always
      * search for plugins.    
      */ 
