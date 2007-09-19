@@ -24,7 +24,7 @@ import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
 
 /**
- * @description Remove Maven user settings for Qwt.
+ * @description Remove Maven user settings for Qooxdoo.
  * @goal uninstall
  */
 public class UninstallMojo extends SettingsMojo {
@@ -32,11 +32,11 @@ public class UninstallMojo extends SettingsMojo {
     public void doExecute(Settings settings) throws MojoExecutionException {
         Profile p;
 
-        info("removing qwt settings from " + node);
+        info("removing qooxdoo settings from " + node);
         info("- profile: " + PROFILE);
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p == null) {
-            warn("qwt settings not found: " + PROFILE);
+            warn("profile not found: " + PROFILE);
         } else {
             settings.removeProfile(p);
         }

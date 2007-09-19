@@ -33,7 +33,7 @@ import org.apache.maven.settings.Settings;
 import org.qooxdoo.sushi.io.Node;
 
 /**
- * Adds Maven user settings for Qwt.
+ * Adds Maven user settings for Qooxdoo.
  *
  * @goal install
  */
@@ -43,7 +43,7 @@ public class InstallMojo extends SettingsMojo {
         Profile p;
         Activation activation;
         
-        info("adding qwt setting to " + node +":");
+        info("adding qooxdoo setting to " + node +":");
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p != null) {
             throw new MojoExecutionException("profile already exists: " + PROFILE);
@@ -99,8 +99,8 @@ public class InstallMojo extends SettingsMojo {
                 "<metadata>\n" +
                 "  <plugins>\n" +
                 "    <plugin>\n" +
-                "      <name>QWT Plugin</name>\n" +
-                "      <prefix>qwt</prefix>\n" + 
+                "      <name>Toolkit Maven Plugin</name>\n" +
+                "      <prefix>qx</prefix>\n" + 
                 "      <artifactId>plugin</artifactId>\n" +
                 "    </plugin>\n" +
                 "  </plugins>\n" + 
