@@ -59,6 +59,10 @@ public abstract class Base extends AbstractMojo {
         getLog().warn(msg, e);
     }
 
+    protected void warn(String msg) {
+        getLog().warn(msg);
+    }
+
     protected void info(String msg) {
         getLog().info(msg);
     }

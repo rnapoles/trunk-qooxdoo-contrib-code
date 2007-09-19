@@ -70,7 +70,7 @@ public class NewMojo extends Base {
         map.put("%QWT_VERSION%", getVersion());
         replaceContent(dest, map);
         info("SUCCESS: new application written to " + dest.getAbsolute());
-        info("Run 'mvn qwt:help' for help");
+        info("Run 'mvn qx:help' for help");
     }
 
     private void unpack(FileNode dest) throws IOException {

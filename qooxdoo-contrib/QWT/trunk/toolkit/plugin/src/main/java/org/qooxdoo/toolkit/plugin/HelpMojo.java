@@ -32,17 +32,17 @@ public class HelpMojo extends Base {
     @Override
     public void doExecute() throws IOException, MojoExecutionException {
         info("QWT Cheat Sheet");
-        info("  create new application               mvn qwt:new -Dpackage=foo.bar.Baz");
+        info("  create new application               mvn qx:new -Dpackage=foo.bar.Baz");
         info("  remove generated files               mvn clean");
         info("  compile application                  mvn compile");
         info("  compile and test application         mvn test");
         info("  compile, test and build war          mvn package");
         info("  generate eclipse files               mvn eclipse:eclipse");
-        info("  start compiled application           mvn qwt:run");
+        info("  start compiled application           mvn qx:run");
         info("  jmx console for running application  jconsole");
         info("");
-        info("  add Maven user setting for Qwt       mvn qwt:install");
-        info("  remove Maven user settings for Qwt   mvn qwt:uninstall");
+        info("  add Maven user setting for Qwt       mvn qx:install");
+        info("  remove Maven user settings for Qwt   mvn qx:uninstall");
         info("See also: http://qooxdoo.org/documentation/contrib/contributions/qwt");
     }
 }
