@@ -12,7 +12,7 @@
 		
 		function utf8_decode( string )
 		{
-		  return decodeURIComponent( escape( s ) );
+		  return decodeURIComponent( escape( string ) );
 		}
 		
 		// patch current qooxdoo code

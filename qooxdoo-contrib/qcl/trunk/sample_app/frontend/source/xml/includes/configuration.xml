@@ -18,6 +18,10 @@
 
 	</qx:configManager>
 	
+	<qx:eventListener type="appear">
+		alert("appear event!");
+	</qx:eventListener>
+	
 	<qxt:script>
 		// retrieve configuration from server
 		configManager.updateClient();
