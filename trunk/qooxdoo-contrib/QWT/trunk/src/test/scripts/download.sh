@@ -12,7 +12,7 @@ mkdir $DIR || exit 1
 cp ../src/download/pom.xml $DIR
 cd $DIR || exit 1
 mvn --batch-mode || exit 1
-mvn --batch-mode qwt:new -Dpackage=foo.bar || exit 1
+mvn --batch-mode qx:new -Dpackage=foo.bar || exit 1
 cd bar
 mvn --batch-mode clean package || exit 1
 

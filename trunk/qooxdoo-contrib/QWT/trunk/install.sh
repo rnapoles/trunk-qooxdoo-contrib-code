@@ -1,6 +1,6 @@
 # TODO
 # i'd love to replay this script by simpliy running "mvn clean install",
-# but the various modules have plugin dependencies on the qwt-maven-plugin ...
+# but the various modules have plugin dependencies on the Toolkit Maven Plugin ...
 
 export MVN="mvn $INSTALL_OPTS"
 
