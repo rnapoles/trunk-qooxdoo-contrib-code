@@ -1,5 +1,0 @@
-The qxjsonrpc package provides JSON-RPC backend functionality useful for
-WEB applications using the qooxdoo library ( http://qooxdoo.org ) or
-simply requiring a JSON-RPC compatible datasource.
-
-More information: http://python.cx.hu
