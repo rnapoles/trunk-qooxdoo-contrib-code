@@ -27,7 +27,6 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
-import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Embedded;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
