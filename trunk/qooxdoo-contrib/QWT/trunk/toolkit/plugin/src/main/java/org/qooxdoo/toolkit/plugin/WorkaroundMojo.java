@@ -47,11 +47,11 @@ public class WorkaroundMojo extends SettingsMojo {
         String version;
         String timestamp;
 
-        info("adding workaround for http://jira.codehaus.org/browse/MNG-3099");
+        info("installing workaround for http://jira.codehaus.org/browse/MNG-3099 in your local repository");
         version = getVersion();
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         repo = io.getHome().join(".m2/repository/org/qooxdoo/toolkit");
-        repo.join("maven-metadata-local.xml").writeString(
+        write(repo.join("maven-metadata-local.xml"), 
                 "<?xml version='1.0' encoding='UTF-8'?>\n" +
                 "<metadata>\n" +
                 "  <plugins>\n" +
@@ -62,7 +62,7 @@ public class WorkaroundMojo extends SettingsMojo {
                 "    </plugin>\n" +
                 "  </plugins>\n" + 
                 "</metadata>\n");
-        repo.join("plugin/maven-metadata-local.xml").writeString(
+        write(repo.join("plugin/maven-metadata-local.xml"), 
                 "<?xml version='1.0' encoding='UTF-8'?>\n" +
                 "<metadata>\n" + 
                 "  <groupId>org.apache.maven.plugins</groupId>\n" +
@@ -77,5 +77,10 @@ public class WorkaroundMojo extends SettingsMojo {
                 "  </versioning>\n" + 
                 "</metadata>\n");
         return false;
+    }
+    
+    private void write(Node file, String content) throws IOException {
+        info("* " + file);
+        file.writeString(content);
     }
 }
