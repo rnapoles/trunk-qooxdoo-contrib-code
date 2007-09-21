@@ -43,9 +43,26 @@ public class SimpleTypeTest extends ModelBase {
         assertEquals("2", type.valueToString(2));
         assertEquals(2, type.stringToValue("2"));
     }
+
+    @Test
+    public void longX() throws SimpleTypeException {
+        check(Long.TYPE, "2", new Long(2));
+    }
     
     @Test
-    public void booleaan() throws SimpleTypeException {
+    public void floatX() throws SimpleTypeException {
+        check(Float.class, "2", new Float(2), "2.0");
+        check(Float.TYPE, "2.0", new Float(2));
+    }
+
+    @Test
+    public void doubleX() throws SimpleTypeException {
+        check(Double.TYPE, "4.9", new Double(4.9), "4.9");
+        check(Double.class, "2.0", new Double(2));
+    }
+    
+    @Test
+    public void booleanX() throws SimpleTypeException {
         SimpleType type; 
         
         type = (SimpleType) METADATA.type(Boolean.TYPE);
@@ -83,5 +100,17 @@ public class SimpleTypeTest extends ModelBase {
         } catch (SimpleTypeException e) {
             // ok
         }
+    }
+    
+    private void check(Class<?> clazz, String str, Object value) throws SimpleTypeException {
+        check(clazz, str, value, str);
+    }
+    
+    private void check(Class<?> clazz, String str, Object value, String out) throws SimpleTypeException {
+        SimpleType type;
+        
+        type = (SimpleType) METADATA.type(clazz);
+        assertEquals(value, type.stringToValue(str));
+        assertEquals(out, type.valueToString(value));
     }
 }
