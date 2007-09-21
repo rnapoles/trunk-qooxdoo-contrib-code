@@ -41,7 +41,7 @@ public class Reflect {
     });
     
     private static final List<?> WRAPPER_TYPES = Arrays.asList(new Class[] {
-        Void.class, Boolean.class, Byte.class, Character.class, Integer.class, Long.class, Float.TYPE, Double.class
+        Void.class, Boolean.class, Byte.class, Character.class, Integer.class, Long.class, Float.class, Double.class
     });
     
     public static Class<?> getWrapper(Class<?> primitive) {

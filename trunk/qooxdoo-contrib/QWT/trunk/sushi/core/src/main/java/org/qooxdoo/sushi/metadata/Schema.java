@@ -28,7 +28,9 @@ import java.util.Map;
 import org.qooxdoo.sushi.metadata.simpletypes.BooleanType;
 import org.qooxdoo.sushi.metadata.simpletypes.CharacterType;
 import org.qooxdoo.sushi.metadata.simpletypes.ClassType;
+import org.qooxdoo.sushi.metadata.simpletypes.DoubleType;
 import org.qooxdoo.sushi.metadata.simpletypes.EnumType;
+import org.qooxdoo.sushi.metadata.simpletypes.FloatType;
 import org.qooxdoo.sushi.metadata.simpletypes.IntType;
 import org.qooxdoo.sushi.metadata.simpletypes.LongType;
 import org.qooxdoo.sushi.metadata.simpletypes.MethodType;
@@ -50,6 +52,8 @@ public class Schema {
         add(new StringType(this));
         add(new IntType(this));
         add(new LongType(this));
+        add(new FloatType(this));
+        add(new DoubleType(this));
         add(new BooleanType(this));
         add(new CharacterType(this));
         add(new VoidType(this));
@@ -57,6 +61,14 @@ public class Schema {
         add(new MethodType(this));
     }
     
+    public ComplexType complex(Class<?> clazz) {
+        return (ComplexType) type(clazz);
+    }
+
+    public SimpleType simple(Class<?> clazz) {
+        return (SimpleType) type(clazz);
+    }
+
     /**
      * This method is the main purpose of this class.
      * @return never null 
