@@ -29,22 +29,27 @@ import org.apache.maven.settings.Settings;
  */
 public class UninstallMojo extends SettingsMojo {
     @Override
-    public void doExecute(Settings settings) throws MojoExecutionException {
+    public boolean doExecute(Settings settings) throws MojoExecutionException {
         Profile p;
-
+        boolean modified;
+        
+        modified = false;
         info("removing qooxdoo settings from " + node);
         info("- profile: " + PROFILE);
         p = (Profile) settings.getProfilesAsMap().get(PROFILE);
         if (p == null) {
             warn("profile not found: " + PROFILE);
         } else {
+            modified = true;
             settings.removeProfile(p);
         }
         info("- pluginGroup: " + PROFILE);
         if (!settings.getPluginGroups().contains(GROUP)) {
             warn("pluginGroup not found: " + GROUP);
         } else {
+            modified = true;
             settings.removePluginGroup(GROUP);
         }
+        return modified;
     }
 }

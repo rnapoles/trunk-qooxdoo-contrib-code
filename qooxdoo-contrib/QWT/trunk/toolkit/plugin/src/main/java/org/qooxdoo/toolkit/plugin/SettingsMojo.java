@@ -21,6 +21,8 @@ package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Settings;
@@ -28,6 +30,7 @@ import org.apache.maven.settings.io.xpp3.SettingsXpp3Reader;
 import org.apache.maven.settings.io.xpp3.SettingsXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.Node;
 
 /**
  * Base class for Mojos that modify settings.
@@ -58,16 +61,18 @@ public abstract class SettingsMojo extends Base {
                 throw new MojoExecutionException("cannot read " + node, e);
             }
         }
-        doExecute(settings);
-        if (node.exists()) {
-            node.copyFile(old);
-            info(old + " contains the original file.");
+        if (doExecute(settings)) { 
+            if (node.exists()) {
+                node.copyFile(old);
+                info(old + " contains the original file.");
+            }
+            dest = node.createWriter();
+            new SettingsXpp3Writer().write(dest, settings);
+            dest.close();
+            info(node + " has been modified.");
         }
-        dest = node.createWriter();
-        new SettingsXpp3Writer().write(dest, settings);
-        dest.close();
-        info(node + " has been modified.");
     }
 
-    protected abstract void doExecute(Settings settings) throws MojoExecutionException, IOException;
+    protected abstract boolean doExecute(Settings settings) throws MojoExecutionException, IOException;
+
 }
