@@ -254,7 +254,7 @@ public class Unit implements UnitMBean {
         FileNode gz;
         
         gz = (FileNode) index.getParent().join(index.getName() + ".gz");
-        if (!gz.isFile()) {
+        if (!gz.isFile() || (index.lastModified() > gz.lastModified())) {
             index.gzip(gz);
         }
         return gz;
