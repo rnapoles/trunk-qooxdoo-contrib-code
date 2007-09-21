@@ -26,11 +26,10 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Loader;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Embedded;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Node;
 
 /**
  * Starts QWT application in an embedded Tomcat. 
@@ -83,35 +82,25 @@ public class RunMojo extends WebappBase {
         engine.setName("engine");
         engine.addChild(host);
         engine.setDefaultHost(host.getName());
+        engine.setParentClassLoader(getClass().getClassLoader());
+        engine.setBackgroundProcessorDelay(2);
         embedded.addEngine(engine);
         embedded.addConnector(embedded.createConnector((InetAddress) null, port, false));
         return embedded;
     }
 
     private Context createContext(Embedded embedded) throws MojoExecutionException, IOException {
-        Loader loader;
-        Context context;
+        StandardContext context;
 
         if (!webapp.isDirectory()) {
             webapp();
         }
-        loader = embedded.createLoader(this.getClass().getClassLoader());
-        loader.setReloadable(true);
-        loader.addRepository(uri(webapp.join("WEB-INF/classes")));
-        for (Node jar : webapp.find("WEB-INF/lib/*.jar")) {
-            debug("adding jar " + jar);
-            loader.addRepository(uri(jar));
-        }
-        context = embedded.createContext("/" + id, webapp.getAbsolute());
+        context = (StandardContext) embedded.createContext("/" + id, webapp.getAbsolute());
+        context.setAllowLinking(true);
         context.setReloadable(true);
-        context.setLoader(loader);
         return context;
     }
 
-    private String uri(Node node) {
-        return ((FileNode) node).toURI().toString();
-    }
-    
     private Embedded info(Embedded embedded) {
         info("");
         info("Starting embedded Tomcat for application '" + id + "' - press ctrl-c to quit ");
