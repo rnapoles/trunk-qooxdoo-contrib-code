@@ -21,8 +21,6 @@ package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Settings;
@@ -30,7 +28,6 @@ import org.apache.maven.settings.io.xpp3.SettingsXpp3Reader;
 import org.apache.maven.settings.io.xpp3.SettingsXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Node;
 
 /**
  * Base class for Mojos that modify settings.
