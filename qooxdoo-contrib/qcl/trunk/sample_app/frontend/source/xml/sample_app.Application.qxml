@@ -18,22 +18,19 @@
 		<qxt:include src="/includes/configuration.xml"/>
 		
 		<!-- components -->
-		<qxt:include-base name="component-dir" path="/components/"/>
 		<qxt:include-base name="components" path="../../../../../../../qcl/trunk/source/xml/components/"/>
-		
 		<qxt:include base="components" src="loading-popup-widget/loading-popup-simple.xml"/>
 		<qxt:include base="components" src="error-alert-widget/error-alert-simple.xml"/>	
 		<qxt:include base="components" src="login-widget/login-window-simple.xml"/>	
 		<qxt:include base="components" src="splash-widget/splash-widget-simple.xml"/>	
 		<qxt:include base="components" src="authorization-widget/authorization-widget-main.xml"/>	
 		<qxt:include base="components" src="config-editor-widget/config-editor-main.xml"/>
-		<qxt:include base="component-dir" src="preferencesWidget/preferences-main.xml"/>	
 		
 		<!-- contextmenus -->	
 		<!--qxt:include src="/includes/contextmenus.xml"/-->		
 		
 		<!-- popup windows -->
-		<!--qxt:include src="/includes/windows.xml"/-->
+		<qxt:include src="/includes/preferences/preferences-main.xml"/>	
 		
 		<!-- main window layout -->
 		<qxt:include src="/includes/main.xml"/>
