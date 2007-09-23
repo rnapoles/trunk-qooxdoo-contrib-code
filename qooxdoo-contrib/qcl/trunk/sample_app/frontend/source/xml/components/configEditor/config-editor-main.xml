@@ -6,7 +6,7 @@
 	<!-- authorization configuration -->
 	
 	<!-- includes -->
-	<qxt:include src="/components/configEditor/config-editor-contextmenus.xml"/>
+	<qxt:include base="components" src="config-editor-widget/config-editor-contextmenu.xml"/>
 
 	<!-- SECURITY POLICIES -->
 	
@@ -163,10 +163,16 @@
 				editable="true" />
 			<qx:tableColumn key="userId" label="User/Status"  width="100" cellrenderer="configEditorUserIdCellRenderer"/>
 			
-			<!-- reload  -->
+			<!-- (re)load  -->
 			
 			<qx:messageSubscriber filter="qcl.config.messages.editor.reload">
-				this.updateClient( 'sample_app.config.configManager.getAll', message.getData() || configEditorFilter.getValue() || "" );
+				// get service prefix from application name
+				var appClassName = qx.core.Init.getInstance().getApplication().classname;
+				var appName			 = appClassName.substring(0,appClassName.indexOf("."));
+				this.setUserData("servicePrefix",appName + ".");
+			
+				// (re)load data
+				this.updateClient( appName + '.config.configManager.getAll', message.getData() || configEditorFilter.getValue() || "" );
 			</qx:messageSubscriber>
 			
 			<!-- create new -->
@@ -182,7 +188,7 @@
 					'permissionWrite' : null,
 					'userId' : null
 				};
-				this.updateServer( 'sample_app.config.configManager.create', this.__newConfigKey );
+				this.updateServer( this.getUserData("servicePrefix") + 'config.configManager.create', this.__newConfigKey );
 			</qx:messageSubscriber>
 			
 			<qx:messageSubscriber filter="qcl.config.messages.key.created">
@@ -200,7 +206,7 @@
 				this.getSelectionModel().iterateSelection(function(index){
 					var model = this.getTableModel();
 					var name = model.getValue( model.getColumnIndexById( "name" ), index );
-					this.updateServer( 'sample_app.config.configManager.delete', name );
+					this.updateServer( this.getUserData("servicePrefix") +  'config.configManager.delete', name );
 					model.removeRows( index, 1 );
 				},this);
 			</qx:messageSubscriber>
@@ -226,7 +232,7 @@
 				var value 	= model.getValue(changedData.firstColumn,changedData.firstRow);
 				  
 			  // send change to server							  
-			  this.updateServer( "sample_app.config.configManager.update", id, key, value );
+			  this.updateServer( this.getUserData("servicePrefix") + "config.configManager.update", id, key, value );
 				]]>
 			</qx:eventListener>
 			

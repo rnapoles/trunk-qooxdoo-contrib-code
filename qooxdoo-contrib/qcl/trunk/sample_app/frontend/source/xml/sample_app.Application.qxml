@@ -18,13 +18,16 @@
 		<qxt:include src="/includes/configuration.xml"/>
 		
 		<!-- components -->
-		<qxt:include src="/components/loading-popup.xml"/>
-		<qxt:include src="/components/remote-error-log.xml"/>	
-		<qxt:include src="/components/login-window.xml"/>	
-		<qxt:include src="/components/splash-window.xml"/>	
-		<qxt:include src="/components/authorization/auth-config-main.xml"/>	
-		<qxt:include src="/components/configEditor/config-editor-main.xml"/>
-		<qxt:include src="/components/preferencesWidget/preferences-main.xml"/>	
+		<qxt:include-base name="component-dir" path="/components/"/>
+		<qxt:include-base name="components" path="../../../../../../../qcl/trunk/source/xml/components/"/>
+		
+		<qxt:include base="components" src="loading-popup-widget/loading-popup-simple.xml"/>
+		<qxt:include base="components" src="error-alert-widget/error-alert-simple.xml"/>	
+		<qxt:include base="components" src="login-widget/login-window-simple.xml"/>	
+		<qxt:include base="components" src="splash-widget/splash-widget-simple.xml"/>	
+		<qxt:include base="components" src="authorization-widget/authorization-widget-main.xml"/>	
+		<qxt:include base="components" src="config-editor-widget/config-editor-main.xml"/>
+		<qxt:include base="component-dir" src="preferencesWidget/preferences-main.xml"/>	
 		
 		<!-- contextmenus -->	
 		<!--qxt:include src="/includes/contextmenus.xml"/-->		

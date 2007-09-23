@@ -13,7 +13,7 @@
 
 		<!-- events and messages -->
 		
-		<qx:messageSubscriber filter="error-*">
+		<qx:messageSubscriber filter="qcl.databinding.messages.rpc.error">
 			message.getData() == false ? this.hide() : this.show();
 		</qx:messageSubscriber>
 		
@@ -24,14 +24,8 @@
 			width="100%" height="100%">
 
 			<qx:textArea id="errorText" height="1*" width="100%"> 
-				<qx:messageSubscriber filter="error-*">
+				<qx:messageSubscriber filter="qcl.databinding.messages.rpc.error">
 					var msg = new Date() + ": " + message.getData();
-					this.setValue(msg);
-					this.setScrollTop ( 100000 );
-				</qx:messageSubscriber>
-				<qx:messageSubscriber filter="server.log">
-					var msg = new Date() + ": " + message.getData();
-					if (this.getValue()) msg = this.getValue() +  "\n" + msg;
 					this.setValue(msg);
 					this.setScrollTop ( 100000 );
 				</qx:messageSubscriber>

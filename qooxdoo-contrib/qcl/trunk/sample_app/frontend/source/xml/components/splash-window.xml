@@ -17,7 +17,7 @@
 		<qx:label backgroundColor="white" border="black" 
 			dimension="100%,100%" padding="10"
 			textAlign="center">
-				<qx:configChangeEventListener key="sample_app.application.splashTextHtml">
+				<qx:configChangeEventListener key="$namespace.application.splashTextHtml">
 					this.setText(event.getData());
 				</qx:configChangeEventListener>
 		</qx:label>
