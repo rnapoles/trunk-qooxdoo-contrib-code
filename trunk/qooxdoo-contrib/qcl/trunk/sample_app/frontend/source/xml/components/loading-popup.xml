@@ -13,18 +13,18 @@
 				label="Loading, please wait..." 
 				backgroundColor="white">
 				
-				<qx:messageSubscriber filter="datamanager-rpc-*">
+				<qx:messageSubscriber filter="qcl.databinding.messages.rpc.*">
 					<![CDATA[
 					var status = message.getName();
 					var timestamp = message.getData()
 					var queue = this.getUserData("queue") || [];
 					switch ( status )
 					{
-					  case "datamanager-rpc-start":
+					  case "qcl.databinding.messages.rpc.start":
 					    queue.push(timestamp);
 					    break;
 					  
-					  case "datamanager-rpc-end":
+					  case "qcl.databinding.messages.rpc.end":
 					    for (var i=0; i<queue.length; i++)
 					    {
 					      if (queue[i]==timestamp)
