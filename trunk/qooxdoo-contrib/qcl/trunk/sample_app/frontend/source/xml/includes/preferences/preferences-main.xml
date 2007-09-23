@@ -4,9 +4,6 @@
 	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
 
   <!-- preferences widget-->
-	
-	<!-- includes -->
-	<qxt:include src="/components/configEditor/config-editor-contextmenus.xml"/>
 
 	<!-- SECURITY POLICIES -->
 	
@@ -35,7 +32,7 @@
 				id="buttonView" 
 				barPosition="top">
 			
-				<qxt:include src="/components/preferencesWidget/preferences-general.xml" />
+				<qxt:include src="/includes/preferences/preferences-general.xml" />
 				<!-- add more preference pages -->
 				<!--  qxt:include src="/components/preferencesWidget/preferences-foo.xml" /-->
 				
