@@ -3,9 +3,6 @@
 	xmlns:qx="http://www.qooxdoo.org"
 	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
 	
-	<!-- context menus -->
-	<qxt:include src="/includes/contextmenus/contextmenu-people.xml"/>
-	<qxt:include src="/includes/contextmenus/contextmenu-times.xml"/>
-	<qxt:include src="/includes/contextmenus/contextmenu-places.xml"/>		
+	<!-- context menus -->	
 		
 </qxt:include-definition>	

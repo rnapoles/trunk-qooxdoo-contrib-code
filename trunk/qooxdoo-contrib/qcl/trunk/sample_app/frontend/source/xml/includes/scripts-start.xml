@@ -16,6 +16,8 @@
 		}
 		
 		// patch current qooxdoo code
+		// this can be removed when bug 644 /http://bugzilla.qooxdoo.org/show_bug.cgi?id=644)
+		// is fixed 
 		
 		qx.ui.core.Widget.prototype.supportsDrop = function (dragCache)
 		{
@@ -75,6 +77,8 @@
         return null;
       }
     });
+    
+    // end patch
 		
 	</qxt:script>
 	
