@@ -190,7 +190,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       
       // start request
       var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-rpc-start",timestamp));
+      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
       
       // get widget data
       var widgetData = this.__getWidgetData();
@@ -199,7 +199,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       var callbackFunc = function(result, ex, id)
       {
          // notify of end of request
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-rpc-end",timestamp));		         
+        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));		         
         request.reset();
         request.dispose();
         request = null; // dispose rpc object
@@ -223,7 +223,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           // dispatch error message, todo
           qx.event.message.Bus.dispatch( 
            new qx.event.message.Message(
-             "error-rpc",
+             "qcl.databinding.messages.rpc.error",
              "Async exception (#" + id + "): " + ex.message
             )
           );
@@ -234,7 +234,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       var request = rpc.callAsync(callbackFunc,serviceMethod,widgetData,param1,param2,param3);
       
       // pass request object to subscribers  
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-rpc-object",request));      
+      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));      
     },
     
     
@@ -265,14 +265,14 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       _this=this;
       req.addEventListener("completed", function(e)
       {
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-post-end",req));
+        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.post.end",req));
         req = null;
         var result = e.getData().getContent();
         _this.createDispatchDataEvent("dataSent",result);
       });
       
       var failureFunc = function(e){
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-post-abort",req));
+        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.post.abort",req));
         req=null;
         this.warn (e.getData().getStatusCode().toString());
       }
@@ -281,7 +281,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       req.addEventListener("timeout", failureFunc);
       req.addEventListener("aborted", failureFunc);
       
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-post-start",req));
+      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.post.start",req));
       req.send();        
 
     },
@@ -476,16 +476,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       
       // notify of start of request
       var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-rpc-start",timestamp));
+      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
       
       // callback function
       var callbackFunc = function(result, ex, id) {
         // notify of end of request
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-rpc-end",timestamp));
+        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));
         request.reset();
         request.dispose();
         request = null; // dispose rpc object
-          
+
         if (ex == null) 
         {  
           // server messages
@@ -509,7 +509,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
            // dispatch error message
            qx.event.message.Bus.dispatch( 
              new qx.event.message.Message(
-               "error-rpc",
+               "qcl.databinding.messages.rpc.error",
                "Async exception (#" + id + "): " + ex.message
              )
            );
@@ -520,7 +520,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        var request = rpc.callAsync(callbackFunc,serviceMethod,param1,param2,param3);
         
        // pass request object to subscribers  
-       qx.event.message.Bus.dispatch(new qx.event.message.Message("datamanager-rpc-object",request));       
+       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));       
     },
 
 

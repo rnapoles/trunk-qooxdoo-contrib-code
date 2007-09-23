@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qooxdoo.org"
+	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
+	
+	<!-- grid to edit properties-->
+	
+	<qx:verticalBoxLayout dimension="100%,100%">
+		
+		<qxt:script>
+		
+	    // cell renderer factory function
+    // returns a cell renderer instance
+  	var propertyCellRendererFactoryFunc = function (cellInfo)
+    {
+      var table 			 = cellInfo.table;	
+			var tableModel 	 = table.getTableModel();
+			var rowData			 = tableModel.getRowData(cellInfo.row);
+			var metaData		 = rowData[3];
+
+			for ( var cmd in metaData )
+			{
+				switch ( cmd )
+				{	  
+          case "type":
+            switch ( metaData['type'])
+            {
+              case "checkbox": return new qx.ui.table.cellrenderer.Boolean;
+              case "password": return new qx.ui.table.cellrenderer.Password;
+            }
+            break;
+            
+          case "options":
+            var renderer = new qx.ui.table.cellrenderer.Replace;
+            var replaceMap = {};
+            metaData['options'].forEach(function(row){
+              if (row instanceof Array)
+              {
+                replaceMap[row[0]]=row[2];
+              }
+            });
+            renderer.setReplaceMap(replaceMap);
+						renderer.addReversedReplaceMap();    
+            return renderer;							
+				}
+      }
+      return new qx.ui.table.cellrenderer.Default;	
+    }
+
+    // create the  "meta" cell renderer object
+		propertyCellRendererFactory = 
+			new qx.ui.table.cellrenderer.Dynamic(propertyCellRendererFactoryFunc);    
+		
+    // cell editor factory function 
+    // returns a cellEditorFactory instance based on data in the row itself
+		var propertyCellEditorFactoryFunc = function (cellInfo) 
+		{
+			var table 			= cellInfo.table;	
+			var tableModel 	= table.getTableModel();
+			var rowData			= tableModel.getRowData(cellInfo.row);
+			var metaData		= rowData[3];
+			var cellEditor 	= new qx.ui.table.celleditor.TextField;	
+			var validationFunc 	= null;
+			 
+			for ( var cmd in metaData )
+			{
+				switch ( cmd )
+				{	
+					case "options":
+						cellEditor = new qx.ui.table.celleditor.ComboBox;
+						cellEditor.setListData( metaData['options'] );
+						cellEditor.setEditable( false );
+						break;
+
+          case "type":
+             switch ( metaData['type'] )
+             {
+               case "password":
+                 cellEditor = new qx.ui.table.celleditor.PasswordField; break;  
+               case "checkbox":
+						     cellEditor = new qx.ui.table.celleditor.CheckBox; break;
+               case "email":
+    						 cellEditor.setValidationFunction (function( newValue, oldValue ){
+    							 var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*\.(\w{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/;
+    							 if ( re.test(newValue) ) return newValue;
+    							 alert("You did not enter a valid email address");
+    							 return oldValue;  
+    						 });
+    						 break;
+             }
+						
+						break;
+						
+					case "editable":
+						cellEditor.setEditable( metaData['editable'] === true );
+						break;										
+
+					case "regExp":
+						cellEditor.setValidationFunction (function( newValue, oldValue ){
+							var re = new RegExp(metaData['regExp']);
+							if ( re.test(newValue) ) return newValue;
+							alert(metaData['failMsg']);
+							return oldValue;  
+						});
+						break;
+            
+ 					case "validationFunc":
+            cellEditor.setValidationFunction (metaData['validationFunc']);
+						break;
+						
+					case "required":
+						cellEditor.setValidationFunction (function( newValue, oldValue ){
+							if (! newValue)
+							{
+								alert("You need to supply a value here");
+								return oldValue;
+							}
+							return newValue;  
+						});
+						break;										
+				}	
+			}
+			return cellEditor;
+		}
+		
+    // create a "meta" cell editor object
+		propertyCellEditorFactory = 
+			new qx.ui.table.celleditor.Dynamic(propertyCellEditorFactoryFunc);
+			
+		</qxt:script>
+		
+		
+		<qx:table  
+			id="authConfigPropertyEditor"
+			dimension="100%,100%"
+			tableModel="simple"
+			columnVisibilityButtonVisible="false"
+			keepFirstVisibleRowComplete="true"
+			statusBarVisible="false"
+			border="inset-thin"
+			dataBinding="true">
+				
+			<qx:tableColumn label="Property" display="false"/>
+			<qx:tableColumn label="Property" width="100"/>
+			<qx:tableColumn label="Edit Value" width="400" 
+				editable="true" 
+				cellrenderer="propertyCellRendererFactory"
+				celleditor="propertyCellEditorFactory"/>
+			
+			<!-- user has changed selection in tree, load new data -->
+			
+			<qx:messageSubscriber filter="qcl.auth.messages.changeItem">
+				<![CDATA[
+					var item = message.getData();
+					if ( item && typeof item == "object" )
+					{
+						this.setUserData("id",item.id);
+						this.setUserData("service",item.service);
+						this.updateClient(item.service + ".getData", item.id);
+					}
+				]]>
+			</qx:messageSubscriber>
+			
+			<!-- load user, role, permission -->
+			
+			<qx:messageSubscriber filter="qcl.auth.messages.*">
+			
+					// check message
+					var service = null;
+					switch ( message.getName() )
+					{
+						case "qcl.auth.messages.user.load": service = ".auth.user"; break; 
+						case "qcl.auth.messages.permission.load": service = ".auth.permission"; break;
+						case "qcl.auth.messages.role.load": service = ".auth.role"; break;
+					}
+					
+					if ( ! service ) return;
+							
+					// get service name from application name and method
+					var appClassName = qx.core.Init.getInstance().getApplication().classname;
+					var appName	= appClassName.substring(0,appClassName.indexOf("."));
+					var service	= appName + service;
+					this.setUserData("service",service);
+					
+					// save user id
+					var id = message.getData();
+					this.setUserData("id",id);
+					
+					// load from backend
+					this.updateClient(service + ".getData",id);
+			</qx:messageSubscriber>
+			
+			<qx:messageSubscriber filter="qcl.auth.messages.properties.clear">
+					this.getTableModel().setData([]);
+			</qx:messageSubscriber>				
+
+			<!-- change selection event, used for exchanging cell editor -->
+			
+			<qx:eventListener type="changeSelection" qxt:modifier=".getSelectionModel()" >
+				<![CDATA[
+					
+				]]>
+			</qx:eventListener>
+			
+			<!-- user has edited data, send data to server -->
+			
+			<qx:eventListener type="dataChanged" qxt:modifier=".getTableModel()" >
+				<![CDATA[
+				if ( event instanceof qx.event.type.DataEvent )
+				{
+					var changedData = event.getData();
+					
+					// has only one cell has changed, i.e. edited ?
+					if ( changedData.firstRow==changedData.lastRow &&
+							 changedData.firstColumn==changedData.lastColumn )
+					{
+					  // get service information
+					  var service  = this.getUserData("service");
+					  var id			 = this.getUserData("id");
+					  
+					  // get changed data
+					  var model 	= this.getTableModel();
+					  var key   	= model.getValue(0,changedData.firstRow);
+					  var value 	= model.getValue(changedData.firstColumn,changedData.firstRow);
+					  
+					  // send change to server							  
+					  var data 	 	= {};
+					  data[key] 	= value;
+					  this.updateServer( service + ".update", data, id );
+					}
+				}
+				]]>
+			</qx:eventListener>
+
+		</qx:table>
+		
+	</qx:verticalBoxLayout>
+	
+</qxt:include-definition>	
