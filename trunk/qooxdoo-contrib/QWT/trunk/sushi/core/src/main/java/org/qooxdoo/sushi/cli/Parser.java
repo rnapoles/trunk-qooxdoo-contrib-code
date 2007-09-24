@@ -47,6 +47,7 @@ public class Parser {
         Parser parser;
         Option option;
         Value value;
+        Remaining remaining;
         Child child;
         
         parser = new Parser(metadata);
@@ -58,6 +59,10 @@ public class Parser {
             value = m.getAnnotation(Value.class);
             if (value != null) {
                 parser.addValue(value.position(), ArgumentMethod.create(value.name(), metadata, m));
+            }
+            remaining = m.getAnnotation(Remaining.class);
+            if (remaining != null) {
+                parser.addValue(0, ArgumentMethod.create(remaining.name(), metadata, m));
             }
             child = m.getAnnotation(Child.class);
             if (child != null) {
@@ -74,6 +79,10 @@ public class Parser {
                 if (value != null) {
                     parser.addValue(value.position(), ArgumentField.create(value.name(), metadata, f));
                 }
+                remaining = f.getAnnotation(Remaining.class);
+                if (remaining != null) {
+                    parser.addValue(0, ArgumentField.create(remaining.name(), metadata, f));
+                }
             }
             cl = cl.getSuperclass();
         }
@@ -84,7 +93,7 @@ public class Parser {
     
     private final Schema metadata;
     private final Map<String, Argument> options;
-    private final List<Argument> values;
+    private final List<Argument> values; // and remaining at index 0
     private final Map<String, ChildMethod> children;
     
     public Parser(Schema metadata) {

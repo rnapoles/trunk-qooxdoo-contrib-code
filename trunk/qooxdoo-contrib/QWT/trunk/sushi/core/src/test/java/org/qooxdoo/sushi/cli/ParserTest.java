@@ -224,7 +224,7 @@ public class ParserTest {
             this.first = first;
         }
 
-        @Value(name = "remaining")
+        @Remaining(name = "remaining")
         public void remaining(FileNode str) {
             remaining.add(str);
         }
@@ -261,7 +261,7 @@ public class ParserTest {
             this.remaining = new ArrayList<String>();
         }
         
-        @Value(name = "remaining")
+        @Remaining(name = "remaining")
         public void remaining(String str) {
             remaining.add(str);
         }
