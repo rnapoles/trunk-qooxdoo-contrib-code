@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <packaging>pom</packaging>
 
   <properties>
-    <sushi.version>1.0.0-SNAPSHOT</sushi.version>
+    <sushi.version>1.0.0</sushi.version>
   </properties>
 
   <modules>
