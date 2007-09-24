@@ -26,6 +26,7 @@ import org.qooxdoo.sushi.cli.Cli;
 import org.qooxdoo.sushi.cli.Command;
 import org.qooxdoo.sushi.cli.Option;
 import org.qooxdoo.sushi.cli.Value;
+import org.qooxdoo.sushi.cli.Remaining;
 
 public class CliSample extends Cli implements Command {
     public static void main(String[] args) {
@@ -43,7 +44,7 @@ public class CliSample extends Cli implements Command {
 
     private List<String> remaining = new ArrayList<String>();
     
-    @Value(name = "remaining")
+    @Remaining
     public void addRemaining(String str) {
         remaining.add(str);
     }

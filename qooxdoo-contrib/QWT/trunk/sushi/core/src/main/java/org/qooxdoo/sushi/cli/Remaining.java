@@ -26,7 +26,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD})
-public @interface Value {
-    String name();
-    int position();
+public @interface Remaining {
+    String name() default "remaining";
 }
