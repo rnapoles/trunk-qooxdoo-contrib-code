@@ -77,7 +77,7 @@ public class QooxdooTest {
         assertNotNull(engine.eval("window.qx"));
         assertEquals("function", engine.eval("typeof qx.Class.createNamespace"));
         engine.eval("qx.Class.createNamespace('qx.Foo', 1)");
-        assertEquals(1, engine.eval("window.qx.Foo"));
+        assertEquals(1.0, engine.eval("window.qx.Foo"));
         assertEquals(true, engine.eval("window.qx.Foo === qx.Foo"));
     }
 
