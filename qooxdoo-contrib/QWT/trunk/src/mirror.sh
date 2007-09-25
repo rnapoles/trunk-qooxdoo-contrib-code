@@ -1,6 +1,6 @@
 #/bin/sh
-scp -r mlhartme@shell.sf.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository/org/eclipse eclipse
-cd repo/org
-scp -r qooxdoo billy@devel.schlund.de:public_html/repository/org/qooxdoo
+# TODO: merge into existing directories
+scp -r -p mlhartme@shell.sf.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository/org/qooxdoo/sushi sushi
+scp -r -p sushi billy@devel.schlund.de:public_html/repository/org/qooxdoo/sushi
 
 
