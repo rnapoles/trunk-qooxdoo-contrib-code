@@ -14,13 +14,13 @@
     
     <menu name="Documentation">
       <item name="Home" href="index.html"/>
+      <item name="Core Javadoc" href="core/apidocs/index.html"/>
     </menu>
 
     <menu name="Modules">
       <item name="core" href="core"/>
       <item name="svn" href="svn"/>
       <item name="ssh" href="ssh"/>
-      <item name="maven" href="maven"/>
     </menu>
 
     ${reports}
