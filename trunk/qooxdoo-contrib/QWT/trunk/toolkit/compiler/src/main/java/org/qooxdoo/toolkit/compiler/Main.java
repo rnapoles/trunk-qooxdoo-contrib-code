@@ -28,6 +28,7 @@ import org.qooxdoo.sushi.cli.ArgumentException;
 import org.qooxdoo.sushi.cli.Cli;
 import org.qooxdoo.sushi.cli.Command;
 import org.qooxdoo.sushi.cli.Option;
+import org.qooxdoo.sushi.cli.Remaining;
 import org.qooxdoo.sushi.cli.Value;
 import org.qooxdoo.sushi.io.Node;
 
@@ -68,7 +69,7 @@ public class Main extends Cli implements Command {
         this.dest = dest;
     }
 
-    @Value(name="source")
+    @Remaining(name="source")
     public void file(Node node) {
         if (!node.isDirectory()) {
             throw new ArgumentException("no such directory: " + node);
