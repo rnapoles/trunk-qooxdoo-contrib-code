@@ -62,14 +62,6 @@ public class ExpressionTest extends Base {
     //--
     
     @Test
-    public void infixExpression() {
-        expr("1+2", "1 + 2", 3.0);
-        expr("1+2+3", "1 + 2 + 3", 6.0);
-        expr("1+2-3", "1 + 2 - 3", 0.0);
-        expr("'A'-5", "65 - 5", 60.0);
-    }
-
-    @Test
     public void incExpression() {
         stmt("int i = 0;" +
              "i++;" +
@@ -203,6 +195,15 @@ public class ExpressionTest extends Base {
         expr("\"a\" instanceof String", ANY, true);
     }
     
+    @Test
+    public void infixExpression() {
+        expr("1+2", "1 + 2", 3.0);
+        expr("1+2+3", "1 + 2 + 3", 6.0);
+        expr("1+2-3", "1 + 2 - 3", 0.0);
+        expr("'A'-5", "65 - 5", 60.0);
+        expr("\"A\"+\"B\"", "stringConcat(\"A\",\"B\")", "AB");
+    }
+
     @Test
     public void infixSame() {
         expr("1 == 2", "1 === 2", false);
