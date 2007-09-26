@@ -19,7 +19,6 @@
 
 package org.qooxdoo.toolkit.runtime;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -123,8 +122,7 @@ public class CollectionTest extends Base2 {
     
     @Test
     public void hashMapOpsIterator() throws Exception {
-        stmt("/* TODO: */ Object o2 = new java.util.HashMap.Entry(null, null);" +
-             "java.util.HashMap m = new java.util.HashMap(); " +
+        stmt("java.util.HashMap m = new java.util.HashMap(); " +
              "m.put(\"a\", \"1\");" +
              "m.put(\"b\", \"2\");" +
              "m.put(\"c\", \"3\");" +

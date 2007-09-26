@@ -201,7 +201,7 @@ public class Module {
 
     //--
 
-    // graph with method- or contructor nodes
+    // graph with method- or constructor nodes
     public void callGraph(DependencyGraph graph, Repository repository) {
         String from;
 

@@ -242,13 +242,14 @@ public class Repository implements Iterable<Module> {
     public List<Module> sequence(List<Module> done, Module ... mains) {
         DependencyGraph calls;
         DependencyGraph loads;
-        List<String> usedList;
+        List<String> called;
         Module used;
         String init;
         boolean changed;
         List<String> sequence;
         List<Module> result;
         
+        loads = loadGraph();
         calls = callGraph();
         calls.add(ROOT);
         for (Module main : mains) {
@@ -256,11 +257,10 @@ public class Repository implements Iterable<Module> {
                 calls.add(ROOT, chunk.name);
             }
         }
-        loads = loadGraph();
         do {
             changed = false;
-            usedList = modulenames(calls, loads);
-            for (String name : usedList) {
+            called = calledmodules(calls, loads);
+            for (String name : called) {
                 if (!name.equals(ROOT)) {
                     used = get(name);
                     if (!name.equals(used.getName())) {
@@ -279,7 +279,7 @@ public class Repository implements Iterable<Module> {
             }
         } while (changed);
         
-        loads.retain(usedList);
+        loads.retain(called);
         sequence = loads.sort();
         if (loads.size() != 0) {
             throw new IllegalStateException();
@@ -324,7 +324,7 @@ public class Repository implements Iterable<Module> {
         return builder.toString();
     }
 
-    private static List<String> modulenames(DependencyGraph calls, DependencyGraph loads) {
+    private static List<String> calledmodules(DependencyGraph calls, DependencyGraph loads) {
         List<String> names;
         List<String> result;
         
