@@ -249,6 +249,7 @@ public class StatementCompiler extends ExpressionCompiler {
 
     private void enhancedForIterable(String iterator, String parameter, EnhancedForStatement f) {
         deps().add("java.lang.Iterable" + Module.SEP + "iterator");
+        deps().add("java.util.Iterator" + Module.SEP + "next");
         js.append("for (var ", iterator, " = ");
         expr(f.getExpression());
         js.append(".iterator(); ", iterator, ".hasNext(); ) ");
