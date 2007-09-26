@@ -39,6 +39,6 @@ public class Object {
     }
     
     public String toString() {
-        return "foo"; // TODO getClass().getName() + "@" + hashCode();
+        return /*TODO getClass().getName() +*/ "java.lang.Object" + '@' + hashCode();
     }
 }

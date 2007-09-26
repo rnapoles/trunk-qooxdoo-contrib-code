@@ -20,8 +20,8 @@
 package java.lang;
 
 public interface CharSequence {
-    int length();
     char charAt(int index);
+    int length();
     CharSequence subSequence(int start, int end);
     String toString();
 }

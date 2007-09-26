@@ -67,43 +67,45 @@ public class StringBuilder implements Appendable, CharSequence {
 
     //--
     
-    public void append(boolean b) {
-        append(b ? "true" : "false");
+    public StringBuilder append(boolean b) {
+        return append(b ? "true" : "false");
     }
 
-    public void append(char c) {
+    public StringBuilder append(char c) {
         ensureCapacity(used + 1);
         data[used++] = c;
+        return this;
     }
     
-    public void append(int n) {
-        append(Integer.toString(n));
+    public StringBuilder append(int n) {
+        return append(Integer.toString(n));
     }
     
-    public void append(long n) {
-        append(Long.toString(n));
+    public StringBuilder append(long n) {
+        return append(Long.toString(n));
     }
 
-    public void append(float d) {
-        append(Float.toString(d));
+    public StringBuilder append(float d) {
+        return append(Float.toString(d));
     }
 
-    public void append(double d) {
-        append(Double.toString(d));
+    public StringBuilder append(double d) {
+        return append(Double.toString(d));
     }
 
-    public void append(char[] c) {
-        append(c, 0, c.length);
+    public StringBuilder append(char[] c) {
+        return append(c, 0, c.length);
     }
 
-    public void append(char[] c, int start, int end) {
-        ensureCapacity(used + start - end);
-        for (int i = start; i < end; i++) {
+    public StringBuilder append(char[] c, int start, int count) {
+        ensureCapacity(used + count);
+        for (int i = start; i < start + count; i++) {
             data[used++] = c[i];
         }
+        return this;
     }
 
-    public void append(String str) {
+    public StringBuilder append(String str) {
         int max;
         
         max = str.length();
@@ -112,24 +114,26 @@ public class StringBuilder implements Appendable, CharSequence {
             data[used + i] = str.charAt(i);
         }
         used += max;
+        return this;
     }
     
-    public void append(StringBuffer buffer) {
-        append(buffer.data, 0, buffer.used);
+    public StringBuilder append(StringBuffer buffer) {
+        return append(buffer.data, 0, buffer.used);
     }
 
-    public void append(Object obj) {
-        append(obj.toString());
+    public StringBuilder append(Object obj) {
+        return append(obj.toString());
     }
     
-    public void append(CharSequence cs) {
-        append(cs, 0, cs.length());
+    public StringBuilder append(CharSequence cs) {
+        return append(cs, 0, cs.length());
     }
 
-    public void append(CharSequence cs, int start, int end) {
+    public StringBuilder append(CharSequence cs, int start, int end) {
         for (int i = start; i < end; i++) {
             append(cs.charAt(i));
         }
+        return this;
     }
 
 
