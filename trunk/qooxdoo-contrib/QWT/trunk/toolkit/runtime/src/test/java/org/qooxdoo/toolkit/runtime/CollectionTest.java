@@ -98,7 +98,7 @@ public class CollectionTest extends Base2 {
                 );
     }
 
-    @Ignore // TODO
+    @Test
     public void hashMapOps() throws Exception {
         stmt("java.util.HashMap m = new java.util.HashMap(); " +
              "assertTrue(m.size() == 0);" +
@@ -116,14 +116,15 @@ public class CollectionTest extends Base2 {
              ANY, "new Foo().code(); true");
     }
     
-    @Ignore // TODO
+    @Test
     public void hashMapIterator() throws Exception {
         expr("new java.util.HashMap().entrySet().iterator().hasNext()", ANY, false);
     }
     
-    @Ignore // TODO
+    @Test
     public void hashMapOpsIterator() throws Exception {
-        stmt("java.util.HashMap m = new java.util.HashMap(); " +
+        stmt("/* TODO: */ Object o2 = new java.util.HashMap.Entry(null, null);" +
+             "java.util.HashMap m = new java.util.HashMap(); " +
              "m.put(\"a\", \"1\");" +
              "m.put(\"b\", \"2\");" +
              "m.put(\"c\", \"3\");" +
@@ -131,7 +132,7 @@ public class CollectionTest extends Base2 {
              "assertTrue(m.keySet().size() == 3);" +
              "assertTrue(m.values().size() == 3);" +
              "assertTrue(m.entrySet().size() == 3);" +
-             "/*assertTrue(m.entrySet().iterator().hasNext());*/" +
+             "assertTrue(m.entrySet().iterator().hasNext());" +
              "for (Object obj : m.entrySet()) {" +
              "  java.util.Map.Entry entry = (java.util.Map.Entry) obj;" +
              "  assertTrue(m.get(entry.getKey()).equals(entry.getValue()));" +

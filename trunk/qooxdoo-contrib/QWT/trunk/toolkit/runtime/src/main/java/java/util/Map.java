@@ -22,11 +22,18 @@ package java.util;
 public interface Map<K, V> {
     int size();
     boolean isEmpty();
+    
+    boolean containsKey(Object key);
+    boolean containsValue(Object value);
+    
     V get(K key);
     void put(K key, V value);
     V remove(Object key);
     void clear();
+    
     Set<Map.Entry<K, V>> entrySet();
+    Set<K> keySet();
+    Collection<V> values();
     
     public static interface Entry<K, V> {
         K getKey();
