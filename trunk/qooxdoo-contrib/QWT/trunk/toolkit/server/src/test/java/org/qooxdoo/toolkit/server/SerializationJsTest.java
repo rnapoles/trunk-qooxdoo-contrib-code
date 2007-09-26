@@ -22,14 +22,12 @@ package org.qooxdoo.toolkit.server;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.Repository;
 
-@Ignore
 public class SerializationJsTest {
     // TODO: using a static ENGINE fails when running the tests in surefire ...
     private JavaScriptEngine engine;
