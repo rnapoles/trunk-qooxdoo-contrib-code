@@ -123,4 +123,5 @@ public class StringTest extends Base2 {
         expr("\"123456\".substring(2, 4)", ANY, ANY,
              "x.toString() == '34'");
     }
+    
 }
