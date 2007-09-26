@@ -88,11 +88,13 @@ public class StringTest extends Base2 {
         expr("\"ab\".length()", ANY, 2);
     }
 
-    public void todoIndexOf() {
+    @Test
+    public void indexOf() {
         expr("\"hello\".indexOf(\"ll\")", ANY, 2);
     }
 
-    public void todoLastIndexOf() {
+    @Test
+    public void lastIndexOf() {
         expr("\"hellollo\".lastIndexOf(\"ll\")", ANY, 5);
     }
 
