@@ -19,6 +19,10 @@
 
 package java.util;
 
+/** 
+ * I cannot use JavaScript Objects as maps because HashMaps support arbitrary keys, Object
+ * maps support strings only.
+ */
 public class HashMap<K, V> implements Map<K, V> {
     private static final int CHUNK = 32;
    
@@ -128,6 +132,31 @@ public class HashMap<K, V> implements Map<K, V> {
         return new EntrySet<K, V>(this);
     }
 
+    public boolean containsKey(Object key) {
+        return contains(0, key);
+    }
+
+    public boolean containsValue(Object value) {
+        return contains(1, value);
+    }
+
+    private boolean contains(int ofs, Object obj) {
+        for (int i = ofs; i < data.length; i += 2) {
+            if (obj.equals(data[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<K> keySet() {
+        return new DataSet<K>(0, (K[]) data, used);
+    }
+
+    public Collection<V> values() {
+        return new DataSet<V>(1, (V[]) data, used);
+    }
+
     //--
     
     /** @return index for key */
@@ -148,6 +177,30 @@ public class HashMap<K, V> implements Map<K, V> {
             add = Math.max(CHUNK, (data.length / 2) * 3 / 2);
             data = new Object[Math.max(minSize, add) * 2];
             putAll(old);
+        }
+    }
+    
+    //--
+    
+    public static class Entry<K, V> implements Map.Entry<K, V> {
+        private final K key;
+        private final V value;
+        
+        public Entry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+        
+        public V setValue(V value) {
+            throw new UnsupportedOperationException();
         }
     }
     
@@ -224,25 +277,77 @@ public class HashMap<K, V> implements Map<K, V> {
         }
     }
     
-    public static class Entry<K, V> implements Map.Entry<K, V> {
-        private final K key;
-        private final V value;
+    public static class DataSet<T> implements Set<T> {
+        private final T[] data;
+        private final int ofs;
+        private final int used;
         
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
+        public DataSet(int ofs, T[] data, int used) {
+            this.data = data;
+            this.ofs = ofs;
+            this.used = used;
         }
 
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-        
-        public V setValue(V value) {
+        public void add(T obj) {
             throw new UnsupportedOperationException();
+        }
+
+        public void addAll(Collection<? extends T> collection) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean isEmpty() {
+            return used == 0;
+        }
+
+        public Iterator<T> iterator() {
+            return new DataIterator<T>(data, ofs);
+        }
+
+        public boolean remove(T obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        public int size() {
+            return used;
+        }
+    }
+
+    public static class DataIterator<T> implements Iterator<T> {
+        private final Object[] data;
+        int ofs;
+
+        public DataIterator(Object[] data, int ofs) {
+            this.data = data;
+            this.ofs = ofs;
+            skip();
+        }
+
+        public boolean hasNext() {
+            return ofs < data.length;
+        }
+        
+        public T next() {
+            T result;
+            
+            result = (T) data[ofs];
+            ofs += 2;
+            skip();
+            return result; 
+        }
+        
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+        
+        private void skip() {
+            while (ofs < data.length && data[ofs] == null) {
+                ofs += 2;
+            }
         }
     }
 }
