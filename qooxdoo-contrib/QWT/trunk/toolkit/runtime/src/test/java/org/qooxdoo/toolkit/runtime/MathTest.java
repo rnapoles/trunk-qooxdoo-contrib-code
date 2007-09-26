@@ -17,17 +17,17 @@
    
  ************************************************************************ */
 
-package java.lang;
+package org.qooxdoo.toolkit.runtime;
 
-public class Math {
-    public static int max(int left, int right) {
-        return left > right ? left : right;
+import org.junit.Test;
+
+
+public class MathTest extends Base2 {
+    @Test
+    public void floor() throws Exception {
+        expr("Math.floor(2)", ANY, 2.0);
+        expr("Math.floor(2.0)", ANY, 2.0);
+        expr("Math.floor(2.1)", ANY, 2.0);
+        expr("Math.floor(1.9)", ANY, 1.0);
     }
-    
-    public static int min(int left, int right) {
-        return left < right ? left : right;
-    }
-    
-    /** @native return Math.floor(d); */
-    public static native double floor(double d);
 }
