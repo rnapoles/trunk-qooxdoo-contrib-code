@@ -46,23 +46,13 @@ public class ArrayList<T> implements List<T> {
         if (used == data.length) {
             ensureCapacity(used + CHUNK);
         }
-        data[used] = obj;
-        used++;
-    }
-
-    private void ensureCapacity(int newSize) {
-        T[] newData;
-
-        if (used > newSize) {
-            newData = (T[]) new Object[newSize];
-            System.arraycopy(data, 0, newData, 0, used);
-            data = newData;
-        }
+        data[used++] = obj;
     }
 
     public void addAll(Collection<? extends T> collection) {
+        ensureCapacity(used + collection.size());
         for (T obj : collection) {
-            add(obj);
+            data[used++] = obj;
         }
     }
 
@@ -99,15 +89,6 @@ public class ArrayList<T> implements List<T> {
         }
     }
     
-    private int index(T obj) {
-        for (int i = 0; i < used; i++) {
-            if (data[i].equals(obj)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    
     public void clear() {
         used = 0;
     }
@@ -133,7 +114,7 @@ public class ArrayList<T> implements List<T> {
             }
             idx = 0;
             for (T ele : c) {
-                if (!get(idx).equals(ele)) {
+                if (!data[idx].equals(ele)) {
                     return false;
                 }
             }
@@ -162,7 +143,29 @@ public class ArrayList<T> implements List<T> {
         }
 
         public void remove() {
-            dest.remove(pos - 1);
+            pos--;
+            dest.remove(pos);
+        }
+    }
+    
+    //--
+    
+    private int index(T obj) {
+        for (int i = 0; i < used; i++) {
+            if (data[i].equals(obj)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    private void ensureCapacity(int newSize) {
+        T[] newData;
+
+        if (newSize > used) {
+            newData = (T[]) new Object[newSize];
+            System.arraycopy(data, 0, newData, 0, used);
+            data = newData;
         }
     }
 }
