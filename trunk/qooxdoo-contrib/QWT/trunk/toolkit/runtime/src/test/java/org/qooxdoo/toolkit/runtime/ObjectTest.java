@@ -27,8 +27,13 @@ public class ObjectTest extends Base2 {
     public void object() throws Exception {
         expr("new Object()", ANY, ANY, 
                 "x instanceof java.lang.Object", 
-                "x.hashCode() == 1", 
-                "x.toString() == 'java.lang.Object@1'");
+                "x.hashCode() == 1");
+    }
+
+    @Test
+    public void objectToString() throws Exception {
+        expr("new Object().toString()", ANY, ANY, 
+                "x == 'java.lang.Object@1'");
     }
 
     @Test
@@ -36,6 +41,6 @@ public class ObjectTest extends Base2 {
         expr("new Object().getClass()", ANY, ANY,
                 "x instanceof java.lang.Class", 
                 "x instanceof java.lang.Object", 
-                "x.getName() =='java.lang.Object'");
+                "x.getName() == 'java.lang.Object'");
     }
 }
