@@ -22,7 +22,7 @@ package java.lang;
 import java.io.IOException;
 
 public interface Appendable {
-    void append(char c) throws IOException;
-    void append(CharSequence cs) throws IOException;
-    void append(CharSequence cs, int start, int end) throws IOException;
+    Appendable append(char c) throws IOException;
+    Appendable append(CharSequence cs) throws IOException;
+    Appendable append(CharSequence cs, int start, int end) throws IOException;
 }

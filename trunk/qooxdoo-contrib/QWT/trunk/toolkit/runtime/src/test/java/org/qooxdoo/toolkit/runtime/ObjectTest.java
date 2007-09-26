@@ -28,7 +28,7 @@ public class ObjectTest extends Base2 {
         expr("new Object()", ANY, ANY, 
                 "x instanceof java.lang.Object", 
                 "x.hashCode() == 1", 
-                "x.toString() == 'foo'");
+                "x.toString() == 'java.lang.Object@1'");
     }
 
     @Test
