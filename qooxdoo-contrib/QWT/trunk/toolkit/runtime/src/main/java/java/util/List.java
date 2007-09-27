@@ -24,4 +24,6 @@ public interface List<T> extends Collection<T> {
     void set(int idx, T obj);
     boolean remove(T obj);
     T remove(int idx);
+    int indexOf(Object obj);
+    int lastIndexOf(Object obj);
 }
