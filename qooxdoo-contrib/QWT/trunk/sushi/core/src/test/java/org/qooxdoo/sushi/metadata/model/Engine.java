@@ -43,7 +43,7 @@ public class Engine {
     public void setTurbo(boolean turbo) {
         this.turbo = turbo;
     }
-    
+
     public int getPs() {
         return ps;
     }
