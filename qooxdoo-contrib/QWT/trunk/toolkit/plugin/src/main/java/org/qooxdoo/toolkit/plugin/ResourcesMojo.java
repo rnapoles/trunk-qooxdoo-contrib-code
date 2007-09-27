@@ -47,9 +47,11 @@ public class ResourcesMojo extends FrameworkBase {
     }
 
     private void resource() throws IOException {
+        final String nuvola = "icon/Nuvola/16";
         FileNode src;
         FileNode dest;
-        FileNode icon;
+        Node icon;
+        FileNode destNuvola;
         
         src = (FileNode) frameworkDir.join("source/resource");
         dest = (FileNode) classes().join(src.getName());
@@ -68,6 +70,10 @@ public class ResourcesMojo extends FrameworkBase {
         if (icon == null) {
             throw new IOException(src + ": missing 'icon' directory");
         }
+        
+        destNuvola = (FileNode) dest.join(nuvola);
+        destNuvola.getParent().mkdirs();
+        ((FileNode) src.join(nuvola)).link(destNuvola);
     }
 
     private FileNode classes() {

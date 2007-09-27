@@ -46,6 +46,13 @@ public class RunMojo extends WebappBase {
     private int port = 8080;
 
     /**
+     * Context path
+     * 
+     * @parameter expression = "/";
+     */
+    private String contextPath;
+    
+    /**
      * The directory to create Tomcat home.
      * 
      * @parameter expression = "${project.build.directory}/tomcat"
@@ -58,6 +65,9 @@ public class RunMojo extends WebappBase {
 
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
+        if (!contextPath.startsWith("/")) {
+            throw new MojoExecutionException("contextPath does not start with '/': " + contextPath);
+        }
         run(info(create()));
     }
 
@@ -106,7 +116,7 @@ public class RunMojo extends WebappBase {
         if (!webapp.isDirectory()) {
             webapp();
         }
-        context = (StandardContext) embedded.createContext("/" + id, webapp.getAbsolute());
+        context = (StandardContext) embedded.createContext(contextPath, webapp.getAbsolute());
         context.setAllowLinking(true);
         context.setReloadable(true);
         return context;
@@ -117,7 +127,7 @@ public class RunMojo extends WebappBase {
         info("Starting embedded Tomcat for application '" + id + "' - press ctrl-c to quit ");
         info("  CATALINA_HOME: " + embedded.getCatalinaHome());
         info("  CATALINA_BASE: " + embedded.getCatalinaBase());
-        info("  URL: http://localhost:" + port + "/" + id);
+        info("  URL: http://localhost:" + port + contextPath);
         info("");
         return embedded;
     }
