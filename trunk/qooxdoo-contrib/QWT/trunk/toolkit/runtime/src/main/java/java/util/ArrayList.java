@@ -60,6 +60,24 @@ public class ArrayList<T> implements List<T> {
         return used == 0;
     }
 
+    public int indexOf(Object obj) {
+        for (int i = 0; i < used; i++) {
+            if (data[i].equals(obj)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(Object obj) {
+        for (int i = used - 1; i >= 0; i--) {
+            if (data[i].equals(obj)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public Iterator<T> iterator() {
         return new ArrayListIterator<T>(this);
     }
