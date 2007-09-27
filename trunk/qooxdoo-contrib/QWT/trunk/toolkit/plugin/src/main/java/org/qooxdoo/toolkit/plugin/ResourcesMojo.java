@@ -34,7 +34,7 @@ import org.qooxdoo.sushi.util.Program;
  * @goal resources
  * @phase generate-resources
  */
-public class ResourcesMojo extends OrigBase {
+public class ResourcesMojo extends FrameworkBase {
     /**
      * @parameter expression="${project}"
      * @required
@@ -51,7 +51,7 @@ public class ResourcesMojo extends OrigBase {
         FileNode src;
         FileNode dest;
         
-        src = (FileNode) origDir.join("frontend/framework/source/resource");
+        src = (FileNode) frameworkDir.join("source/resource");
         dest = (FileNode) classes().join(src.getName());
         dest.deleteOpt();
         dest.getParent().mkdirsOpt();
@@ -67,9 +67,9 @@ public class ResourcesMojo extends OrigBase {
         
         log = classes().join("log");
         log.mkdirOpt();
-        log(log.join("info.log"), "svn", "info", origDir.getAbsolute());
-        log(log.join("status.log"), "svn", "status", "-v", "-N", origDir.getAbsolute());
-        log(log.join("diff.log"), "svn", "diff", origDir.getAbsolute());
+        log(log.join("info.log"), "svn", "info", frameworkDir.getAbsolute());
+        log(log.join("status.log"), "svn", "status", "-v", "-N", frameworkDir.getAbsolute());
+        log(log.join("diff.log"), "svn", "diff", frameworkDir.getAbsolute());
     }
 
     private void log(Node file, String ... cmd) throws IOException {

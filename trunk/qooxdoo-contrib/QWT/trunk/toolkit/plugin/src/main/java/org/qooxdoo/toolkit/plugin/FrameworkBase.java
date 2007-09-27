@@ -29,39 +29,39 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
 
-public abstract class OrigBase extends Base {
+public abstract class FrameworkBase extends Base {
     /**
      * Svn url
      * @parameter
      * @required
      */
-    protected String origUrl;
+    protected String frameworkUrl;
     
     /**
      * Svn revision
      * @parameter
      * @required
      */
-    protected String origRevision;
+    protected String frameworkRevision;
 
     /**
      * Qooxdoo source directory
      * 
-     * @parameter expression="${basedir}/src/orig"
+     * @parameter expression="${basedir}/src/framework"
      */
-    protected Node origDir;
+    protected Node frameworkDir;
     
-    public void setOrigDir(String path) {
-        origDir = io.node(path);
+    public void setFrameworkDir(String path) {
+        frameworkDir = io.node(path);
     }
 
     @Override
     public void doExecute() throws IOException, SAXException, XmlException, MojoExecutionException {
         Program p;
         
-        if (!origDir.isDirectory()) {
-            p = new Program((FileNode) origDir.getParent());
-            p.add("svn", "co", "-r", origRevision, origUrl, origDir.getName());
+        if (!frameworkDir.isDirectory()) {
+            p = new Program((FileNode) frameworkDir.getParent());
+            p.add("svn", "co", "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
             p.exec(System.out);
         }
         doExecuteWithOrig();

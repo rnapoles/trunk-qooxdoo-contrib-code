@@ -44,8 +44,8 @@
         <artifactId>plugin</artifactId>
         <version>${qwt.version}</version>
         <configuration>
-          <origUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo</origUrl>
-          <origRevision>9424</origRevision>
+          <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
+          <frameworkRevision>9424</frameworkRevision>
         </configuration>
         <executions>
           <execution>
