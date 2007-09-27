@@ -39,6 +39,14 @@
   </dependencies>
   <build>
     <plugins>
+      <!--  TODO: http://jira.codehaus.org/browse/MJAR-30
+        plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+	    <configuration>
+	      <finalName>foo</finalName>
+          <excludes>**/.svn/**</excludes>
+        </configuration>
+      </plugin -->
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
