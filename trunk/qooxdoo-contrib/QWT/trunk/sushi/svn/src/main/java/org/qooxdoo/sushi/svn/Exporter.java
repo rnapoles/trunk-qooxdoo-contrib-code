@@ -35,6 +35,7 @@ import org.tmatesoft.svn.core.io.ISVNReporterBaton;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaProcessor;
 import org.tmatesoft.svn.core.io.diff.SVNDiffWindow;
 
+/** See https://wiki.svnkit.com/Updating_From_A_Repository */
 public class Exporter implements ISVNReporterBaton, ISVNEditor {
     private final long revision;
     private final Node dest;
