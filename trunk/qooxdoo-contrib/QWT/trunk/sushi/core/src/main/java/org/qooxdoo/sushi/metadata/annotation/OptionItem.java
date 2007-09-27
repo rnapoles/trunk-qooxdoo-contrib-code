@@ -32,15 +32,15 @@ import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.Type;
 
 public class OptionItem<T> extends Item<T> {
-    public static OptionItem create(Schema metadata, Field field) {
+    public static <T> OptionItem<T> create(Schema metadata, Field field) {
         String name;
-        Class type;
-        Class fieldType;
+        Class<?> type;
+        Class<?> fieldType;
         
         name = field.getName();
         type = field.getDeclaringClass();
         fieldType = field.getType();
-        return new OptionItem(name, fieldType, metadata.type(fieldType), 
+        return new OptionItem<T>(name, fieldType, metadata.type(fieldType), 
                 lookup(type, "get" + name), lookup(type, "set" + name),
                 field);
     }
@@ -49,9 +49,12 @@ public class OptionItem<T> extends Item<T> {
     private final Method getter;
     private final Method setter;
     
-    public OptionItem(String name, Class typeRaw, Type type, Method getter, Method setter, AnnotatedElement definition) {
+    public OptionItem(String name, Class<?> typeRaw, Type type, Method getter, Method setter, AnnotatedElement definition) {
         super(name, Cardinality.OPTION, type, definition);
         
+        if (typeRaw.isPrimitive()) {
+            throw new IllegalArgumentException("primitive type is not allowed for options: " + typeRaw);
+        }
         checkSetter(typeRaw, setter);
         checkGetter(typeRaw, getter);
         
