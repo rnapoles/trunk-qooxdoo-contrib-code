@@ -67,6 +67,24 @@ public class LoaderTest extends ModelBase {
     }
 
     @Test
+    public void bool() throws LoaderException {
+        assertEquals(true, bool("<boolean>true</boolean>"));
+        assertEquals(false, bool("<boolean>false</boolean>"));
+        try {
+            bool("<boolean></boolean>");
+            fail();
+        } catch (LoaderException e) {
+            one(e, "''");
+        }
+        try {
+            bool("<boolean>yes</boolean>");
+            fail();
+        } catch (LoaderException e) {
+            one(e, "'yes'");
+        }
+    }
+
+    @Test
     public void lng() throws LoaderException {
         assertEquals((long) -2, new ReflectSchema().type(Long.class).loadXml("<long>-2</long>").get());
     }
@@ -197,6 +215,10 @@ public class LoaderTest extends ModelBase {
 
     private Object integer(String str) throws LoaderException {
         return new ReflectSchema().type(Integer.class).loadXml(str).get();
+    }
+
+    private Object bool(String str) throws LoaderException {
+        return new ReflectSchema().type(Boolean.class).loadXml(str).get();
     }
 
     private Engine engine(String str) throws LoaderException {
