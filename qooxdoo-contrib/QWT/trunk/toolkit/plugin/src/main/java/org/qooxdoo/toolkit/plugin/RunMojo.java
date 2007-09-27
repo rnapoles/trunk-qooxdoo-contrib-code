@@ -58,22 +58,16 @@ public class RunMojo extends WebappBase {
 
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
-        run(info(createEmbedded()));
+        run(info(create()));
     }
 
-    private Embedded createEmbedded() throws IOException, MojoExecutionException {
-        String tomcatHome;
-        
+    private Embedded create() throws IOException, MojoExecutionException {
         Embedded embedded;
         Engine engine;
         Host host;
 
-        tomcatHome = tomcat.getAbsolute();
-        tomcat.mkdirsOpt();
-        embedded = new Embedded();
-        embedded.setCatalinaHome(tomcatHome);
-        embedded.setCatalinaBase(tomcatHome);
-        host = embedded.createHost("host", tomcatHome);
+        embedded = createEmbedded();
+        host = embedded.createHost("host", embedded.getCatalinaHome());
         host.setAutoDeploy(false);
         host.setDeployOnStartup(true);
         host.setXmlValidation(false);
@@ -86,6 +80,23 @@ public class RunMojo extends WebappBase {
         engine.setBackgroundProcessorDelay(2);
         embedded.addEngine(engine);
         embedded.addConnector(embedded.createConnector((InetAddress) null, port, false));
+        return embedded;
+    }
+
+    private Embedded createEmbedded() throws IOException, MojoExecutionException {
+        String tomcatHome;
+        Embedded embedded;
+ 
+        tomcatHome = tomcat.getAbsolute();
+        tomcat.mkdirsOpt();
+
+        // avoid "no default web.xml warning
+        tomcat.join("conf").mkdirOpt(); 
+        tomcat.join("conf/web.xml").writeString("<web-app />");
+        
+        embedded = new Embedded();
+        embedded.setCatalinaHome(tomcatHome);
+        embedded.setCatalinaBase(tomcatHome);
         return embedded;
     }
 
