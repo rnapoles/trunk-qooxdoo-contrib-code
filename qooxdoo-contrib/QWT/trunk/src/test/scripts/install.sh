@@ -8,6 +8,7 @@ export MAVEN_OPTS="-Xmx112m -client"
 
 export INSTALL_OPTS="--batch-mode -Dall"
 rm -rf $HOME/.m2/repository
+rm -rf toolkit/qooxdoo/src/framework
 ./install.sh || exit 1
 mvn site --batch-mode || exit 1
 mvn checkstyle:check --batch-mode || exit 1

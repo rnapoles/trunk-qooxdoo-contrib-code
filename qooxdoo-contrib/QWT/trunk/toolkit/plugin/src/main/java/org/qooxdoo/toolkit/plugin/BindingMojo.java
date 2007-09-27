@@ -39,8 +39,8 @@ import org.qooxdoo.sushi.xml.XmlException;
  * @phase generate-sources
  * @description Generates Binding classes, i.e. Java classes that compile to a given JavaScript class.
  */
-public class BindingMojo extends OrigBase {
-    private static final String CLASS = "frontend/framework/source/class";
+public class BindingMojo extends FrameworkBase {
+    private static final String CLASS = "source/class";
 
     /**
      * @description always generate, don't reuse existing stuff
@@ -93,8 +93,8 @@ public class BindingMojo extends OrigBase {
         Node doctree;
         Node output;
         
-        doctree = origDir.join("doctree.xml");
-        output = origDir.join("doctree.out");
+        doctree = frameworkDir.join("doctree.xml");
+        output = frameworkDir.join("doctree.out");
         doctree(doctree, output);
         binding(doctree, output);
     }
@@ -107,11 +107,11 @@ public class BindingMojo extends OrigBase {
         if (!all && doctree.isFile() && output.isFile()) {
             getLog().info(doctree + " and " + output + " exists, generation skipped.");
         } else {
-            origDir.checkDirectory();
-            generator = (FileNode) origDir.join("frontend/framework/tool/generator.py");
+            frameworkDir.checkDirectory();
+            generator = (FileNode) frameworkDir.join("tool/generator.py");
             generator.checkFile();
             dest = output.createOutputStream();
-            p = new Program((FileNode) origDir, generator.getAbsolute(),
+            p = new Program((FileNode) frameworkDir, generator.getAbsolute(),
                 "--cache-directory", ".cache",
                 "--print-dependencies",
                 "--generate-api", "--add-new-lines", "--class-path=" + CLASS, 
@@ -131,7 +131,7 @@ public class BindingMojo extends OrigBase {
         bindings.deleteOpt();
         bindings.mkdirs();
         try {
-            doctree = Doctree.loadAll(src, output, origDir.join(CLASS), undocumented);
+            doctree = Doctree.loadAll(src, output, frameworkDir.join(CLASS), undocumented);
         } catch (SAXParseException e) {
             throw new SAXException(e.getSystemId() + ":" + e.getLineNumber() + ":" + e.getMessage(), e); 
         }
