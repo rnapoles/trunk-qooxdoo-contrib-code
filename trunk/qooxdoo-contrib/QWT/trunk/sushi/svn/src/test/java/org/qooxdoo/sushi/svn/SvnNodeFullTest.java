@@ -19,17 +19,20 @@
 
 package org.qooxdoo.sushi.svn;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.tmatesoft.svn.core.SVNException;
-
+import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeTest;
+import org.tmatesoft.svn.core.SVNException;
 
-@org.junit.Ignore // TODO
 public class SvnNodeFullTest extends NodeTest {
     // created manually with 
     //    emerge --config =dev-util/subversion-1.3.1
@@ -109,5 +112,35 @@ public class SvnNodeFullTest extends NodeTest {
         root = (SvnNode) work;
         revision = ((SvnNode) root.join("file")).save("welcome".getBytes(), comment);
         assertTrue(root.changelog(revision, "viewsvn").contains(comment));
+    }
+    
+    @Test
+    public void export() throws IOException, SVNException {
+        SvnNode root;
+        FileNode dir;
+        
+        root = (SvnNode) work;
+        root.join("file").writeString("foo");
+        root.join("dir").mkdir().join("sub").writeString("bar");
+        dir = work.io.createTempDirectory();
+        root.export(dir);
+        assertEquals("foo", dir.join("file").readString());
+        assertEquals("bar", dir.join("dir/sub").readString());
+    }
+    
+    //
+
+    @Test
+    public static void main(String[] args) throws Exception {
+        IO io;
+        SvnNode root;
+        Node dest;
+        
+        io = new IO(); // /trunk/qooxdoo-contrib/QWT/trunk/application/grep
+        root = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib");
+        dest = new IO().getHome().join("grep");
+        dest.deleteOpt();
+        dest.mkdir();
+        root.export(dest);
     }
 }

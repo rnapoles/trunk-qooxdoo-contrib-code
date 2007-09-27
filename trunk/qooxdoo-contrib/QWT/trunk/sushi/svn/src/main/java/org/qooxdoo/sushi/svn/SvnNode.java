@@ -31,6 +31,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.qooxdoo.sushi.io.ChildrenException;
+import org.qooxdoo.sushi.io.DeleteException;
+import org.qooxdoo.sushi.io.ExistsException;
+import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.Misc;
+import org.qooxdoo.sushi.io.MkdirException;
+import org.qooxdoo.sushi.io.Node;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
@@ -50,15 +58,6 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
-
-import org.qooxdoo.sushi.io.ChildrenException;
-import org.qooxdoo.sushi.io.DeleteException;
-import org.qooxdoo.sushi.io.ExistsException;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Misc;
-import org.qooxdoo.sushi.io.MkdirException;
-import org.qooxdoo.sushi.io.Node;
 
 public class SvnNode extends Node {
     static {
@@ -384,9 +383,21 @@ public class SvnNode extends Node {
         }
         return left + SEPARATOR + right;
     }
+
+    public void export(Node dest) throws IOException, SVNException {
+        export(dest, getLatestRevision());
+    }
+
+    public void export(Node dest, long revision) throws IOException, SVNException {
+        Exporter exporter;
+        
+        this.checkDirectory();
+        dest.checkDirectory();
+        exporter = new Exporter(revision, dest, join(path, ""));
+        repository.update(revision, path, true, exporter, exporter);
+    }
     
-    //--
-    
+    // --
 
     public String changelog(long startRevision, String viewvc) throws SVNException {
         StringBuilder result;
