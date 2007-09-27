@@ -42,6 +42,14 @@ public class JavaScriptEngine {
         this.loaded = new ArrayList<Module>();
         this.engine = FACTORY.getEngineByName("JavaScript");
         this.console = new Console();
+        
+        // Remove Rhino's built-in Java-access-Packages 
+        // CAUTION: delete doesn't work!?
+        try {
+            engine.eval("org = new Object(); java = new Object();");
+        } catch (ScriptException e) {
+            throw new RuntimeException(e);
+        }
         put("console", console);
     }
 

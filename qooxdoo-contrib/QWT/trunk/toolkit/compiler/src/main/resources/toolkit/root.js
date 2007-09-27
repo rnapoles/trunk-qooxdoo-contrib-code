@@ -2,9 +2,6 @@
 
 global = this;
 
-// TODO: Rhino has built-in access to java objects ...
-delete java;
-
 var ALL_CLASSES = new Object();
 
 /*

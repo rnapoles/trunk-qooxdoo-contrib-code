@@ -204,8 +204,7 @@ public class AstCompiler extends Compiler {
                     compilationUnit.setProperty(CONTENTS, new String(source
                             .getContents()));
                     // TODO compilationUnit.setJavaElement(source);
-                    compilationUnit.setLineEndTable(compilationResult
-                            .getLineSeparatorPositions());
+                    compilationUnit.setLineEndTable(compilationResult.getLineSeparatorPositions());
                     ast.setDefaultNodeFlag(0);
                     ast.setOriginalModificationCount(ast.modificationCount());
                     result.add(compilationUnit);
