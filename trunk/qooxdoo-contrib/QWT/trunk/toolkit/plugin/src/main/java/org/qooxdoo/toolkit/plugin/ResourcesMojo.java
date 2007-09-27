@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Program;
@@ -50,12 +49,25 @@ public class ResourcesMojo extends FrameworkBase {
     private void resource() throws IOException {
         FileNode src;
         FileNode dest;
+        FileNode icon;
         
         src = (FileNode) frameworkDir.join("source/resource");
         dest = (FileNode) classes().join(src.getName());
         dest.deleteOpt();
-        dest.getParent().mkdirsOpt();
-        src.link(dest);
+        dest.mkdirs();
+        icon = null;
+        for (Node srcChild : src.children()) {
+            if (srcChild.getName().equals(".svn")) {
+                // ignore
+            } else if (srcChild.getName().equals("icon")) {
+                icon = (FileNode) srcChild;
+            } else {
+                ((FileNode) srcChild).link((FileNode) dest.join(srcChild.getName()));
+            }
+        }
+        if (icon == null) {
+            throw new IOException(src + ": missing 'icon' directory");
+        }
     }
 
     private FileNode classes() {
