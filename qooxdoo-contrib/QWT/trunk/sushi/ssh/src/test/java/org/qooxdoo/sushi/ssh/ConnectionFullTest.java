@@ -23,6 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +33,15 @@ import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.util.ExitCode;
 
 public class ConnectionFullTest {
+    public static String hostname() {
+        try {
+            InetAddress addr = InetAddress.getLocalHost();
+            return addr.getHostName();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }        
+    }
+    
     private static final IO IO_OBJ = new IO();
     
     private Connection con;
@@ -38,7 +50,7 @@ public class ConnectionFullTest {
     public void setUp() throws Exception {
         Host host;
         
-        host = new Host("localhost", User.withUserKey(IO_OBJ));
+        host = new Host(hostname(), User.withUserKey(IO_OBJ));
         con = host.connect();
     }
     
