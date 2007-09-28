@@ -140,28 +140,28 @@ public class Builder {
         return child;
     }
     
-    public static Element element(Element element, String name) {
+    public static Element element(Element parent, String name) {
         Document doc;
         Element result;
         
-        doc = element.getOwnerDocument();
+        doc = parent.getOwnerDocument();
         result = doc.createElement(name);
-        element.appendChild(result);
+        parent.appendChild(result);
         return result;
     }
     
-    public static Text text(Element element, String content) {
+    public static Text text(Element parent, String content) {
         Document doc;
         Text result;
         
-        doc = element.getOwnerDocument();
+        doc = parent.getOwnerDocument();
         result = doc.createTextNode(content);
-        element.appendChild(result);
+        parent.appendChild(result);
         return result;
     }
 
-    public static Text textElement(Element element, String name, String content) {
-        return text(element(element, name), content);
+    public static Text textElement(Element parent, String name, String content) {
+        return text(element(parent, name), content);
     }
 
     public static void clear(Element root) {
