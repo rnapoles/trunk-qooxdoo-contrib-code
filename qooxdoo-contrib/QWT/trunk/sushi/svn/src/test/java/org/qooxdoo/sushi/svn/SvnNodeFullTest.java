@@ -122,25 +122,21 @@ public class SvnNodeFullTest extends NodeTest {
         root = (SvnNode) work;
         root.join("file").writeString("foo");
         root.join("dir").mkdir().join("sub").writeString("bar");
+        root.join("dir/dir1/dir2").mkdirs();
+        root.join("dir/dir1/dir2").join("sub1").writeString("baz");
+
         dir = work.io.createTempDirectory();
         root.export(dir);
         assertEquals("foo", dir.join("file").readString());
         assertEquals("bar", dir.join("dir/sub").readString());
-    }
-    
-    //
+        assertEquals("baz", dir.join("dir/dir1/dir2/sub1").readString());
 
-    @Test
-    public static void main(String[] args) throws Exception {
-        IO io;
-        SvnNode root;
-        Node dest;
-        
-        io = new IO(); // /trunk/qooxdoo-contrib/QWT/trunk/application/grep
-        root = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib");
-        dest = new IO().getHome().join("grep");
-        dest.deleteOpt();
-        dest.mkdir();
-        root.export(dest);
+        dir = work.io.createTempDirectory();
+        ((SvnNode) root.join("dir")).export(dir);
+        assertEquals("bar", dir.join("sub").readString());
+
+        dir = work.io.createTempDirectory();
+        ((SvnNode) root.join("dir/dir1/dir2")).export(dir);
+        assertEquals("baz", dir.join("sub1").readString());
     }
 }

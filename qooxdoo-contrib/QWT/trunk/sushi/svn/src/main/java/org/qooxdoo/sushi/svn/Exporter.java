@@ -39,23 +39,11 @@ import org.tmatesoft.svn.core.io.diff.SVNDiffWindow;
 public class Exporter implements ISVNReporterBaton, ISVNEditor {
     private final long revision;
     private final Node dest;
-    private final String prefix;
     private SVNDeltaProcessor working;
     
-    public Exporter(long revision, Node dest, String prefix) {
-        if (prefix.equals("")) {
-            // ok
-        } else {
-            if (prefix.startsWith("/")) {
-                throw new IllegalArgumentException(prefix);
-            }
-            if (!prefix.endsWith("/")) {
-                throw new IllegalArgumentException(prefix);
-            }
-        }
+    public Exporter(long revision, Node dest) {
         this.revision = revision;
         this.dest = dest;
-        this.prefix = prefix;
         this.working = new SVNDeltaProcessor();
     }
 
@@ -152,9 +140,6 @@ public class Exporter implements ISVNReporterBaton, ISVNEditor {
     }
         
     private Node node(String path) {
-        if (!path.startsWith(prefix)) {
-            throw new IllegalArgumentException(prefix + " not in " + path);
-        }
-        return dest.join(path.substring(prefix.length()));
+        return dest.join(path);
     }
 }

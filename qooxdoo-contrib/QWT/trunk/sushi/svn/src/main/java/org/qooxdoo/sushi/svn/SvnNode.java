@@ -71,7 +71,7 @@ public class SvnNode extends Node {
     //--
     
     public static SvnNode create(IO io, String url) throws SVNException {
-        return create(io, url, "buidaemon", "marc");
+        return create(io, url, null, null);
     }
 
     public static SvnNode create(IO io, String url, String username, String password) throws SVNException {
@@ -82,11 +82,7 @@ public class SvnNode extends Node {
         if (url.endsWith(SEPARATOR)) {
             throw new IllegalArgumentException(url);
         }
-        repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(url));
-        repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(
-                SVNWCUtil.getDefaultConfigurationDirectory(),
-                username, password, 
-                false /* do not store credentials, not even when configured */));
+        repository = repository(SVNURL.parseURIEncoded(url), username, password);
         root = repository.getRepositoryRoot(true).toString();
         path = repository.getLocation().toString();
         if (root.equals(path)) {
@@ -100,6 +96,17 @@ public class SvnNode extends Node {
             path = path.substring(root.length());
         }
         return create(io, repository, path);
+    }
+    
+    private static SVNRepository repository(SVNURL url, String username, String password) throws SVNException {
+        SVNRepository repository;
+        
+        repository = SVNRepositoryFactory.create(url);
+        repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(
+                SVNWCUtil.getDefaultConfigurationDirectory(),
+                username, password, 
+                false /* do not store credentials, not even when configured */));
+        return repository;
     }
     
     public static SvnNode create(IO io, SVNRepository repository, String path) throws SVNException {
@@ -390,11 +397,19 @@ public class SvnNode extends Node {
 
     public void export(Node dest, long revision) throws IOException, SVNException {
         Exporter exporter;
+        SVNRepository sub;
         
         this.checkDirectory();
         dest.checkDirectory();
-        exporter = new Exporter(revision, dest, join(path, ""));
-        repository.update(revision, path, true, exporter, exporter);
+        exporter = new Exporter(revision, dest);
+        if (path.length() == 0) {
+            sub = repository;
+        } else {
+            // repository updates has a target to restrict the result, but it supports
+            // only one segment. So I have to create a new repository ...
+            sub = repository(repository.getLocation().appendPath(path, true), null, null); // TODO: auth
+        }
+        sub.update(revision, "", true, exporter, exporter);
     }
     
     // --
