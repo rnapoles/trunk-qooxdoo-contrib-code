@@ -12,7 +12,7 @@ Directory structure
 
   sushi          gerneral purpose stuff, like apache commons
   toolkit        qwt itself
-  application    example applications
+  examples       example applications
 
 
 See also: http://qooxdoo.org/documentation/contrib/contributions/qwt
