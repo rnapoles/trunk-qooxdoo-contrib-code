@@ -23,30 +23,40 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeTest;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 
-@Ignore
 public class SvnNodeFullTest extends NodeTest {
     // created manually with 
     //    emerge --config =dev-util/subversion-1.3.1
     // (see http://gentoo-wiki.com/HOWTO_Subversion)
-    private static final String ROOT = "file:////var/svn/repos";
-    private static final String TEST = ROOT + "/test";
+    private static SVNURL URL;
 
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        Node repo;
+
+        repo = IO.guessProjectHome(IO.getClass()).join("target/svnrepo");
+        repo.deleteOpt();
+        URL = SVNRepositoryFactory.createLocalRepository(new File(repo.getAbsolute()), null, true, true, true);
+    }
+    
     @Override
     public Node createWork() throws IOException {
         SvnNode node;
 
         try {
-            node = SvnNode.create(IO, TEST + "/work");
+            node = SvnNode.create(IO, URL + "/work");
             node.deleteOpt();
             node.mkdir();
             return node;
@@ -57,15 +67,15 @@ public class SvnNodeFullTest extends NodeTest {
 
     @Test
     public void path() throws SVNException {
-        assertEquals("", SvnNode.create(IO, ROOT).getPath());
-        assertEquals("test", SvnNode.create(IO, TEST).getPath());
-        assertEquals("test/work", work.getPath());
+        assertEquals("", SvnNode.create(IO, URL.toString()).getPath());
+        // assertEquals("test", SvnNode.create(IO, TEST).getPath());
+        assertEquals("work", work.getPath());
     }
  
     @Test
     public void invalid() throws SVNException {
         try {
-            SvnNode.create(IO, TEST + "/");
+            SvnNode.create(IO, URL + "/tailingslash/");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -88,7 +98,7 @@ public class SvnNodeFullTest extends NodeTest {
         long rootRevision;
         long fileRevision;
         
-        root = SvnNode.create(IO, TEST);
+        root = SvnNode.create(IO, URL.toString());
         rootRevision = root.getLatestRevision();
         fileRevision = ((SvnNode) root.join("work")).getLatestRevision();
         assertTrue(fileRevision <= rootRevision);
@@ -99,7 +109,7 @@ public class SvnNodeFullTest extends NodeTest {
         SvnNode root;
         List<Node> lst;
         
-        root = SvnNode.create(IO, TEST);
+        root = SvnNode.create(IO, URL.toString());
         lst = IO.filter().include("*").collect(root);
         assertEquals(1, lst.size());
     }
