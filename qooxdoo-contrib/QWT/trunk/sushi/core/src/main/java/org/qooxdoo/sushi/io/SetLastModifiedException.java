@@ -23,4 +23,9 @@ public class SetLastModifiedException extends NodeException {
     public SetLastModifiedException(Node node) {
         super(node);
     }
+
+    public SetLastModifiedException(Node node, Throwable e) {
+        this(node);
+        initCause(e);
+    }
 }
