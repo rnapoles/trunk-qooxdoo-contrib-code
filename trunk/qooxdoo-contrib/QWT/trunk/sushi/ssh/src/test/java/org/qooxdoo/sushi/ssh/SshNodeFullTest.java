@@ -60,7 +60,7 @@ public class SshNodeFullTest extends NodeTest {
     private SshNode create(String path) throws IOException, JSchException {
         Host host;
         
-        host = new Host("localhost", User.withUserKey(IO));
+        host = new Host(ConnectionFullTest.hostname(), User.withUserKey(IO));
         return new SshNode(IO, host, path);
     }
 }
