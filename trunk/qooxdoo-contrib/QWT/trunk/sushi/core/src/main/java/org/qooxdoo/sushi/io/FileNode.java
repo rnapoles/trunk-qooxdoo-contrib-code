@@ -128,6 +128,7 @@ public class FileNode extends Node {
         return file.canRead();
     }
     
+    @Override
     public long length() {
         return file.length();
     }
@@ -137,9 +138,10 @@ public class FileNode extends Node {
         return file.lastModified();
     }
     
-    public void setLastModified(long time) throws IOException {
+    @Override
+    public void setLastModified(long time) throws SetLastModifiedException {
         if (!file.setLastModified(time)) {
-            throw new IOException(file + ": setLastModified failed");
+            throw new SetLastModifiedException(this);
         }
     }
 

@@ -27,6 +27,7 @@ import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.SetLastModifiedException;
 
 public class ConsoleNode extends Node {
     public ConsoleNode(IO io) {
@@ -88,6 +89,16 @@ public class ConsoleNode extends Node {
         return System.currentTimeMillis();
     }
 
+    @Override
+    public long length() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setLastModified(long millis) throws SetLastModifiedException {
+        throw new SetLastModifiedException(this);
+    }
+    
     @Override
     public Node mkdir() throws MkdirException {
         throw new MkdirException(this);

@@ -41,9 +41,19 @@ public class ResourceNode extends Node {
         this.path = path;
     }
 
+    @Override
+    public long length() {
+        throw new UnsupportedOperationException();
+    }
+
     @Override 
     public long lastModified() {
         return 0;
+    }
+    
+    @Override
+    public void setLastModified(long millis) throws SetLastModifiedException {
+        throw new SetLastModifiedException(this);
     }
     
     @Override
