@@ -34,4 +34,4 @@ build toolkit/plugin
 build toolkit/runtime
 build toolkit/qooxdoo
 build toolkit/server
-build application
+build examples

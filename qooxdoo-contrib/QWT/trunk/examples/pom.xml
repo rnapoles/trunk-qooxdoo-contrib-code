@@ -8,8 +8,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.qooxdoo</groupId>
-  <artifactId>application</artifactId>
-  <name>Application</name>
+  <artifactId>examples</artifactId>
+  <name>Examples</name>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
