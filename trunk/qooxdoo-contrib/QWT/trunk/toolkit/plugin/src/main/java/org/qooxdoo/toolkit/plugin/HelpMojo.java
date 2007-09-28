@@ -33,6 +33,7 @@ public class HelpMojo extends Base {
     public void doExecute() throws IOException, MojoExecutionException {
         info("QWT commands");
         info("  mvn qx:new -Dpackage=foo.bar.baz     create new application");
+        info("  mvn qx:examples                      creates examples directory");
         info("  mvn qx:run                           start application");
         info("");
         info("  mvn qx:install                       add Maven user setting for QWT");
