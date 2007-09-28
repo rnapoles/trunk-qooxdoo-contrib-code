@@ -31,6 +31,10 @@ import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 
 public class User implements UserInfo {
+    public static User withUserKey(IO io) throws IOException {
+        return withUserKey(io, io.getHome().getName());
+    }
+
     public static User withUserKey(IO io, String name) throws IOException {
         return withUserKey(io, name, null);
     }
