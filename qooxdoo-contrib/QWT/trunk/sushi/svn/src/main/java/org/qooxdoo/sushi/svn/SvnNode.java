@@ -39,6 +39,7 @@ import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.SetLastModifiedException;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
@@ -323,6 +324,11 @@ public class SvnNode extends Node {
     }
 
     @Override
+    public long length() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isFile() {
         return kind() == SVNNodeKind.FILE;
     }
@@ -343,6 +349,11 @@ public class SvnNode extends Node {
     @Override
     public long lastModified() {
         return 0; // TODO
+    }
+
+    @Override
+    public void setLastModified(long millis) throws SetLastModifiedException {
+        throw new SetLastModifiedException(this);
     }
     
 
