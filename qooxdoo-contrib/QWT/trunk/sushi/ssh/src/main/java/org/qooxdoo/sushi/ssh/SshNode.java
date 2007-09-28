@@ -36,6 +36,7 @@ import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
@@ -208,19 +209,28 @@ public class SshNode extends Node {
         return test("-d");
     }
 
-    @Override
-    public long lastModified() {
-        return 0; // TODO
-    }
-
     private static final SimpleDateFormat TOUCH_FORMAT = new SimpleDateFormat("yyMMddHHmm.ss");
 
+    @Override
+    public long lastModified() {
+        String result;
+        
+        try {
+            result = host.exec("stat", "--format=%Y", slashPath).trim();
+        } catch (ExitCode e) {
+            throw new LastModifiedException(e);
+        } catch (JSchException e) {
+            throw new LastModifiedException(e);
+        }
+        return Long.parseLong(result) * 1000;
+    }
+
+    
     @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
         String stamp;
         
         stamp = TOUCH_FORMAT.format(new Date(millis));
-        System.out.println("stamp: " + stamp);
         try {
             host.exec("touch", "-t", stamp, slashPath);
         } catch (ExitCode e) {

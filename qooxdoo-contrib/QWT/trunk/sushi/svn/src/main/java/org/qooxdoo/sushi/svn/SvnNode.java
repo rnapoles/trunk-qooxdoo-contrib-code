@@ -36,6 +36,7 @@ import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
@@ -60,6 +61,8 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 public class SvnNode extends Node {
     static {
@@ -327,14 +330,10 @@ public class SvnNode extends Node {
     @Override
     public long length() {
         try {
-            return getDirEntry().getSize();
+            return repository.info(path, -1).getSize();
         } catch (SVNException e) {
             throw new LengthException(e);
         }
-    }
-
-    private SVNDirEntry getDirEntry() throws SVNException {
-        return repository.getDir(path, -1, false, null);
     }
     
     @Override
@@ -357,7 +356,11 @@ public class SvnNode extends Node {
 
     @Override
     public long lastModified() {
-        return 0; // TODO
+        try {
+            return repository.info(path, -1).getDate().getTime();
+        } catch (SVNException e) {
+            throw new LastModifiedException(e);
+        }
     }
 
     @Override

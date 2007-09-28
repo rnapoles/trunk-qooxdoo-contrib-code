@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.io;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -165,6 +166,34 @@ public abstract class NodeTest {
         file = work.join("foo").writeBytes();
         assertTrue(file.isFile());
         assertNull(file.children());
+    }
+
+    //
+    
+    @Test
+    public void modified() throws Exception {
+        Node file;
+        long modified;
+        
+        file = work.join("file");
+        file.writeBytes();
+        sameTime(file.lastModified(), System.currentTimeMillis());
+        modified = System.currentTimeMillis() - 1000 * 60 * 5;
+        try {
+            file.setLastModified(modified);
+        } catch (SetLastModifiedException e) {
+            // setLastModified is not supported - ignore
+            return;
+        }
+        sameTime(modified, file.lastModified());
+    }
+    private static void sameTime(long left, long right) {
+        if (Math.abs(left - right) >= 1000) {
+            fail("expected: " + time(left) + ", got " + time(right));
+        }
+    }
+    private static String time(long time) {
+        return time + " (" + new Date(time) + ")";
     }
 
     //-- read/write
@@ -413,7 +442,7 @@ public abstract class NodeTest {
     //-- other ops
 
     @Test 
-    public void testGzip() throws IOException {
+    public void gzip() throws IOException {
         final String str = "1234567890abc";
         Node normal;
         Node gzip;
