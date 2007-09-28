@@ -23,15 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
-
-import com.jcraft.jsch.JSchException;
-
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.util.ExitCode;
 
@@ -44,7 +38,7 @@ public class ConnectionFullTest {
     public void setUp() throws Exception {
         Host host;
         
-        host = new Host("todo.de", User.withUserKey(IO_OBJ, "michel"));
+        host = new Host("localhost", User.withUserKey(IO_OBJ));
         con = host.connect();
     }
     
