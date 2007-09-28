@@ -46,7 +46,7 @@ public class SvnNodeFullTest extends NodeTest {
     public static void setUpClass() throws Exception {
         Node repo;
 
-        repo = IO.guessProjectHome(IO.getClass()).join("target/svnrepo");
+        repo = IO.guessProjectHome(SvnNodeFullTest.class).join("target/svnrepo");
         repo.deleteOpt();
         URL = SVNRepositoryFactory.createLocalRepository(new File(repo.getAbsolute()), null, true, true, true);
     }
