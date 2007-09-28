@@ -26,13 +26,14 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeTest;
 import org.tmatesoft.svn.core.SVNException;
 
+@Ignore
 public class SvnNodeFullTest extends NodeTest {
     // created manually with 
     //    emerge --config =dev-util/subversion-1.3.1
