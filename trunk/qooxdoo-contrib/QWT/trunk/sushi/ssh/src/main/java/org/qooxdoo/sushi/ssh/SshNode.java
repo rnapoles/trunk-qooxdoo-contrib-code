@@ -36,9 +36,11 @@ import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.LengthException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.SetLastModifiedException;
 import org.qooxdoo.sushi.util.ExitCode;
 import org.qooxdoo.sushi.util.Strings;
 
@@ -61,6 +63,33 @@ public class SshNode extends Node {
         }
         this.host = host;
         this.slashPath = "/" + path;
+    }
+
+    @Override
+    public long length() {
+        String result;
+        
+        try {
+            result = host.exec("du", "-b", slashPath);
+        } catch (ExitCode e) {
+            throw new LengthException(e);
+        } catch (JSchException e) {
+            throw new LengthException(e);
+        }
+        return Long.parseLong(first(result));
+    }
+
+    private static String first(String str) {
+        int i;
+        int max;
+        
+        max = str.length();
+        for (i = 0; i < max; i++) {
+            if (Character.isWhitespace(str.charAt(i))) {
+                break;
+            }
+        }
+        return str.substring(0, i);
     }
 
     @Override
@@ -180,6 +209,11 @@ public class SshNode extends Node {
     @Override
     public long lastModified() {
         return 0; // TODO
+    }
+
+    @Override
+    public void setLastModified(long millis) throws SetLastModifiedException {
+        throw new SetLastModifiedException(this);
     }
     
     private boolean test(String flag) {

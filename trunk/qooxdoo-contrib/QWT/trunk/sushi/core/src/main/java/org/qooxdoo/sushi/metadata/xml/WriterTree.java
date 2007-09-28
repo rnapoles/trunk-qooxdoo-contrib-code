@@ -21,9 +21,6 @@ package org.qooxdoo.sushi.metadata.xml;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
-
-import org.qooxdoo.sushi.metadata.Item;
 
 /** 
  * You'll normally not use this class directly, use Data.toXml instead.
