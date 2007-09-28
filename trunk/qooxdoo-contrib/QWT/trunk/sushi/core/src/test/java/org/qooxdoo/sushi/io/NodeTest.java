@@ -188,7 +188,7 @@ public abstract class NodeTest {
         sameTime(modified, file.lastModified());
     }
     private static void sameTime(long left, long right) {
-        if (Math.abs(left - right) >= 1000) {
+        if (Math.abs(left - right) > 2000) {
             fail("expected: " + time(left) + ", got " + time(right));
         }
     }
