@@ -27,6 +27,7 @@ import org.qooxdoo.sushi.metadata.model.Car;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.Kind;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
+import org.qooxdoo.sushi.xml.Builder;
 
 import static org.junit.Assert.*;
 
@@ -59,6 +60,27 @@ public class SerializeTest extends ModelBase {
                 "<car>\n  <name></name>\n  <kind>normal</kind>\n  <seats>0</seats>\n" +
                 "  <engine>\n    <turbo>false</turbo>\n    <ps>0</ps>\n  </engine>\n" +
                 "</car>\n", run(new Car()));
+    }
+
+    @Test
+    public void carDom() throws IOException {
+        org.w3c.dom.Element root;
+        
+        root = new Builder().createDocument("root").getDocumentElement();
+        METADATA.instance(new Car()).toXml(root);
+        assertEquals(
+                "<root>\n" +
+                "<car>\n" +
+                "<name/>\n" +
+                "<kind>normal</kind>\n" +
+                "<seats>0</seats>\n" +
+                "<engine>\n" +
+                "<turbo>false</turbo>\n" +
+                "<ps>0</ps>\n" +
+                "</engine>\n" +
+                "</car>\n" +
+                "</root>\n", 
+                new org.qooxdoo.sushi.xml.Serializer().serialize(root));        
     }
 
     private String run(Object obj) {

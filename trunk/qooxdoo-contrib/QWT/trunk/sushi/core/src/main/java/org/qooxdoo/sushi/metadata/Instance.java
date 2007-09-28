@@ -31,8 +31,11 @@ import org.qooxdoo.sushi.csv.View;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeWriter;
 import org.qooxdoo.sushi.metadata.store.PropertyStore;
+import org.qooxdoo.sushi.metadata.xml.DomTree;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.metadata.xml.Serializer;
+import org.qooxdoo.sushi.metadata.xml.WriterTree;
+import org.w3c.dom.Element;
 
 /** Some object and its type. TODO: toCsv, fromCsv. */
 public class Instance<T> {
@@ -108,10 +111,21 @@ public class Instance<T> {
         toXml(writer);
         writer.close();
     }
-
+    
+    public void toXml(Element parent) throws IOException {
+        DomTree tree;
+        
+        tree = new DomTree(parent);
+        new Serializer(tree).run(type.getName(), type, get());
+        tree.done();
+    }
     
     public void toXml(Writer dest) throws IOException {
-        new Serializer(dest).run(0, type.getName(), type, get());
+        WriterTree tree;
+        
+        tree = new WriterTree(dest);
+        new Serializer(tree).run(type.getName(), type, get());
+        tree.done();
     }
 
     public Properties toProperties(String name) {
