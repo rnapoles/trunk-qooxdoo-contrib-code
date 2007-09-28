@@ -26,10 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import com.jcraft.jsch.JSchException;
 
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.DeleteException;
@@ -43,6 +43,8 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
 import org.qooxdoo.sushi.util.ExitCode;
 import org.qooxdoo.sushi.util.Strings;
+
+import com.jcraft.jsch.JSchException;
 
 public class SshNode extends Node {
     private final Host host;
@@ -211,9 +213,21 @@ public class SshNode extends Node {
         return 0; // TODO
     }
 
+    private static final SimpleDateFormat TOUCH_FORMAT = new SimpleDateFormat("yyMMddHHmm.ss");
+
     @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
-        throw new SetLastModifiedException(this);
+        String stamp;
+        
+        stamp = TOUCH_FORMAT.format(new Date(millis));
+        System.out.println("stamp: " + stamp);
+        try {
+            host.exec("touch", "-t", stamp, slashPath);
+        } catch (ExitCode e) {
+            throw new SetLastModifiedException(this, e);
+        } catch (JSchException e) {
+            throw new SetLastModifiedException(this, e);
+        }
     }
     
     private boolean test(String flag) {

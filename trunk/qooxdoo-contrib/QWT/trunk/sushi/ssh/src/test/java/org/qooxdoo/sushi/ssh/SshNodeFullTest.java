@@ -58,10 +58,24 @@ public class SshNodeFullTest extends NodeTest {
         assertTrue(root.children().length > 0);
     }
 
+    @Test
+    public void modified() throws Exception {
+        Node file;
+        long modified;
+        
+        file = work.join("file");
+        file.writeBytes();
+        assertTrue(file.lastModified() - System.currentTimeMillis() <= 1000);
+        modified = System.currentTimeMillis() - 1000 * 60 * 5;
+        file.setLastModified(modified);
+        assertTrue(file.lastModified() - modified <= 1000);
+    }
+
     private SshNode create(String path) throws IOException, JSchException {
         Host host;
         
         host = new Host("localhost", User.withUserKey(IO));
         return new SshNode(IO, host, path);
     }
+    
 }

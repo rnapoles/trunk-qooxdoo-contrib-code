@@ -22,10 +22,6 @@ package org.qooxdoo.sushi.metadata.xml;
 import java.io.IOException;
 import java.io.Writer;
 
-/** 
- * You'll normally not use this class directly, use Data.toXml instead.
- * TODO: clearify name against DomSerializer. 
- */
 public class WriterTree extends Tree {
     private final Writer dest;
     private int indent;
