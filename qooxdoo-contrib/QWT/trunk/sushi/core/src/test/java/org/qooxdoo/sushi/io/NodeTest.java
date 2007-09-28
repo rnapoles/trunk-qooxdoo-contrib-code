@@ -206,6 +206,7 @@ public abstract class NodeTest {
         
         file = work.join("foo").writeBytes(data1);
         data = file.readBytes();
+        assertEquals(0L, file.length());
         assertNotNull(data);
         assertEquals(0, data.length);
     }
@@ -216,6 +217,7 @@ public abstract class NodeTest {
         
         file = work.join("foo").writeString("some data");
         assertEquals("some data", file.readString());
+        assertEquals(9L, file.length());
         // read again
         assertEquals("some data", file.readString());
     }

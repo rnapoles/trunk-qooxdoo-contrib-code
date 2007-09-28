@@ -29,6 +29,7 @@ import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.SetLastModifiedException;
 
 /** You'll normally use IO.stringNode() to create instances */
 public class MemoryNode extends Node {
@@ -97,6 +98,16 @@ public class MemoryNode extends Node {
     @Override 
     public long lastModified() {
         return lastModified;
+    }
+    
+    @Override
+    public long length() {
+        return context.length(path);
+    }
+
+    @Override
+    public void setLastModified(long millis) throws SetLastModifiedException {
+        lastModified = millis;
     }
     
     

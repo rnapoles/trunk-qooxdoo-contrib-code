@@ -58,6 +58,17 @@ public class Context {
         return node;
     }
     
+    public long length(String path) {
+        Object obj;
+        
+        obj = store.get(path);
+        if (obj instanceof FileNode) {
+            return ((FileNode) obj).length();
+        } else {
+            return ((byte[]) obj).length;
+        }
+    }
+    
     public Node[] children(String path) throws IOException {
         String child;
         int idx;

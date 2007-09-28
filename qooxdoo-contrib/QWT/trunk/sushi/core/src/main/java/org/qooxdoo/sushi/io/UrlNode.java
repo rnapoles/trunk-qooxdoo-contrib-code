@@ -44,6 +44,16 @@ public class UrlNode extends Node {
     }
     
     @Override
+    public long length() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setLastModified(long millis) throws SetLastModifiedException {
+        throw new SetLastModifiedException(this);
+    }
+    
+    @Override
     public Node getBase() {
         return null;
     }
