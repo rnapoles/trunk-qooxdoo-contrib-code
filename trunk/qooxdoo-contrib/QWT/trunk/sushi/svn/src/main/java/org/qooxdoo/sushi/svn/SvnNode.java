@@ -36,6 +36,7 @@ import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.LengthException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
@@ -325,9 +326,17 @@ public class SvnNode extends Node {
 
     @Override
     public long length() {
-        throw new UnsupportedOperationException();
+        try {
+            return getDirEntry().getSize();
+        } catch (SVNException e) {
+            throw new LengthException(e);
+        }
     }
 
+    private SVNDirEntry getDirEntry() throws SVNException {
+        return repository.getDir(path, -1, false, null);
+    }
+    
     @Override
     public boolean isFile() {
         return kind() == SVNNodeKind.FILE;
