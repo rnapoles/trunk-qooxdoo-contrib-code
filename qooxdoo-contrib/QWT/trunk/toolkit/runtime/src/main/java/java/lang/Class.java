@@ -84,9 +84,11 @@ public class Class<T> {
         var result = new Array();
         var i = 0;
         for (name in props) {
-          if (!(props[name] instanceof Function)) {
-            result[i] = name;
-            i++;
+          if (name != 'classname') { // TODO
+            if (!(props[name] instanceof Function)) {
+              result[i] = name;
+              i++;
+            }
           }
         }
         return newInitializedArray.apply(null, result);
