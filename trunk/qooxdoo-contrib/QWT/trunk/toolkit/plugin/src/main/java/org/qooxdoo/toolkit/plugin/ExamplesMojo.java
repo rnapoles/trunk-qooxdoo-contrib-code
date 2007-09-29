@@ -40,7 +40,8 @@ public class ExamplesMojo extends Base {
         dest = io.getWorking().join("examples");
         dest.mkdir();
         try {
-            src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/examples");
+            src = SvnNode.create(io, 
+                    "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/examples");
             src.export(dest);
         } catch (SVNException e) {
             throw new MojoExecutionException("svn failure", e);
