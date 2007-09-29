@@ -59,53 +59,50 @@ public class Index {
         lines(writer, 
                 "window.qxsettings = {" +
                 "  'qx.version' : '" + qooxdoo.version + "'," +
-                "  'qx.application' : 'QwtApplication'" +
+                "  'qx.application' : '" + client + "'" +
                 "};");
         // TODO: no escaping!?
         modules(writer, Proxy.class.getName(), client);
+        // TODO: add all my classes to registry 
         
+        beforeMain(writer, declarations);
         lines(writer, 
-                "qx.Class.define('QwtApplication', {",
-                "  extend : qx.application.Gui,",
-                "  members : {",
-                "    main : function() {",
-                "      this.base(arguments);", 
-                "      var root = new " + client + "();");
-        initProxies(writer, declarations);
-        lines(writer, 
-                "      root.createRoot().addToDocument();" +
-                "      if (root.background) {" +
-                "        QWT_BACKGROUND = function() {" +
-                "          try {" +
-                "            root.background();" +
-                "          } finally {" +
-                "            window.setTimeout(\"QWT_BACKGROUND()\", 1000);" +
-                "          }" +
-                "        };" +
-                "        window.setTimeout(\"QWT_BACKGROUND()\", 1000)" +
-                "      }",
+                "QWT_BACKGROUND = 'foo';" +
+                "function QwtAfterMain() {",
+                "    var application = qx.core.Init.getInstance().getApplication();",
+                "    if (application.background) {",
+                "        QWT_BACKGROUND = function() {",
+                "            try {",
+                "                application.background();",
+                "            } finally {",
+                "                window.setTimeout(\"QWT_BACKGROUND()\", 1000);",
+                "            }",
+                "        };",
+                "        window.setTimeout(\"QWT_BACKGROUND()\", 1000);" +
                 "    }",
-                "  }",
-                "});");
-        lines(writer,
-              "    </script>",
-              "  </head>",
-              "  <body>",
-              "    <div></div>",
-              "  </body>",
-              "</html>");
+                "}",
+                "    </script>",
+                "  </head>",
+                "  <body>",
+                "    <div></div>",
+                "  </body>",
+                "</html>");
         writer.close();
     }
 
-    private void initProxies(Writer dest, Map<String, Class<?>> declarations) throws IOException {
+    private void beforeMain(Writer writer, Map<String, Class<?>> declarations) throws IOException {
         String name;
         String methods;
-        
+
+        lines(writer,
+                "function QwtBeforeMain() {" +
+                "    var application = qx.core.Init.getInstance().getApplication();");
         for (Map.Entry<String, Class<?>> entry : declarations.entrySet()) {
             name = entry.getKey();
             methods = Index.methods(entry.getValue());
-            dest.write("root.init" + Strings.capitalize(name) + "(new Proxy('" + name + "', " + methods + "));\n");
+            writer.write("    application.init" + Strings.capitalize(name) + "(new Proxy('" + name + "', " + methods + "));\n");
         }
+        lines(writer, "}");
     }
 
     private static String methods(Class<?> ifc) {

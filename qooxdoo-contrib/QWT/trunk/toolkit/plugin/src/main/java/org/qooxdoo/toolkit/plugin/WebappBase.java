@@ -59,10 +59,10 @@ public abstract class WebappBase extends Base {
     /**
      * Name of the Application class.
      *
-     * @parameter expression="${project.groupId}.${project.artifactId}.Main"
+     * @parameter expression="${project.groupId}.${project.artifactId}.Application"
      * @required
      */
-    private String main;
+    private String application;
 
     /**
      * Java files to include in JavaScript compilation. Ant-like patterns, separated by ','.
@@ -184,7 +184,7 @@ public abstract class WebappBase extends Base {
         str = WEB_XML.replace("${id}", id);
         str = str.replace("${name}", name);
         str = str.replace("${description}", description);
-        str = str.replace("${main}", main);
+        str = str.replace("${application}", application);
         str = str.replace("${includes}", Strings.join(",", includes));
         str = str.replace("${excludes}", Strings.join(",", excludes));
         generate(webXml, str);
@@ -228,8 +228,8 @@ public abstract class WebappBase extends Base {
         "      <servlet-name>${id}</servlet-name>\n" + 
         "      <servlet-class>org.qooxdoo.toolkit.server.Servlet</servlet-class>\n" + 
         "      <init-param>\n" + 
-        "          <param-name>main</param-name>\n" + 
-        "          <param-value>${main}</param-value>\n" + 
+        "          <param-name>application</param-name>\n" + 
+        "          <param-value>${application}</param-value>\n" + 
         "      </init-param>\n" + 
         "      <init-param>\n" + 
         "          <param-name>includes</param-name>\n" + 

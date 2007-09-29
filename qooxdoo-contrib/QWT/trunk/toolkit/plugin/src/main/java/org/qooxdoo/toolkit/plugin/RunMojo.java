@@ -124,10 +124,12 @@ public class RunMojo extends WebappBase {
 
     private Embedded info(Embedded embedded) {
         info("");
-        info("Starting embedded Tomcat for application '" + id + "' - press ctrl-c to quit ");
-        info("  CATALINA_HOME: " + embedded.getCatalinaHome());
-        info("  CATALINA_BASE: " + embedded.getCatalinaBase());
-        info("  URL: http://localhost:" + port + contextPath);
+        info("Starting embedded Tomcat - press ctrl-c to quit ");
+        debug("  CATALINA_HOME: " + embedded.getCatalinaHome());
+        debug("  CATALINA_BASE: " + embedded.getCatalinaBase());
+        info("  application: " +  id);
+        info("  url: http://localhost:" + port + contextPath);
+        info("  log: " + webapp.join("qwt.log"));
         info("");
         return embedded;
     }
