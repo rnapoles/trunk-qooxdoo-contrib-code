@@ -9,7 +9,7 @@
   
   <groupId>org.qooxdoo</groupId>
   <artifactId>widgets</artifactId>
-  <name>Widget Demo</name>
+  <name>Widget Example</name>
   <description>QWT Demo Web Application: no-sense-example, we just need a place 
     to try various widgets.</description>
   <version>${qwt.version}</version>
