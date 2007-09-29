@@ -39,22 +39,21 @@ function defineClass(Class, name, Base, interfaces) {
 	    Class.prototype = new Base();
 	}
 
-    // Create namespace
-
-    // for qooxdoo
-	if (name.indexOf("qx.") == -1) {
+	if (name.indexOf("qx.") != -1) {  // TODO: poor check ...
+		// already defined by Qooxdoo
+    } else {
+        var array = [];
+        for (var i = 3; i < arguments.length; i++) {
+            array.push(arguments[i]);
+        }
         var basename = qwtCreateNamespace(name, Class);
         Class.classname = Class.prototype.classname = name; 
         Class.basename = basename;
         Class.prototype.constructor = Class;
+		Class.$$implements = array;
+		Class.$$flatImplements = array; // TODO
 	}
 
-    var max = arguments.length - 3;
-    var array = new Array(max);
-    for (var i = 0; i < max; i++) {
-        array[i] = arguments[i + 3];
-    }
-    Class.interfaces = array;
     // metadata will be replaced by the Java Class object
     Class.metadata = name;
     ALL_CLASSES[name] = Class;
@@ -171,7 +170,7 @@ function findConstructor(current, Class) {
     if (current === Class) {
         return true;
     }
-    var interfaces = current.interfaces;
+    var interfaces = current.$$implements;
     var max = interfaces.length;    
     for (var i = 0; i < max; i++) {
         if (findConstructor(interfaces[i], Class)) {

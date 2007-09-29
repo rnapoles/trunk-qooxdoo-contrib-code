@@ -48,7 +48,7 @@ public class TypeTest extends Base {
              "getBase(Foo) === java.lang.Object",
              "getBase(java.lang.Object) === null",
              "Foo.prototype.constructor === Foo", 
-             "Foo.interfaces.length == 0", 
+             "Foo.$$implements.length == 0", 
              "x.__proto__ === Foo.prototype");
     }
     
@@ -298,8 +298,8 @@ public class TypeTest extends Base {
            "isQwtInterface(type.ifc)",
            "getBase(type.ifc) == null",
            "new type.user().instanceOf()", 
-           "type.user.interfaces.length == 1",
-           "type.user.interfaces[0] === type.ifc");
+           "type.user.$$implements.length == 1",
+           "type.user.$$implements[0] === type.ifc");
     }
 
     @Test
