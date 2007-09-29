@@ -1,6 +1,15 @@
 #/bin/sh
 # TODO: merge into existing directories
-scp -r -p mlhartme@shell.sf.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository/org/qooxdoo/sushi sushi
-scp -r -p sushi billy@devel.schlund.de:public_html/repository/org/qooxdoo/sushi
+export REPO=$HOME/qooxdoo-repo
 
+echo 
+echo Transfer from Billy
+echo
 
+rsync -v -a --delete --rsh="ssh -l billy" billy@devel.schlund.de:public_html/repository/org/qooxdoo $REPO
+
+echo 
+echo Transfer to Sourceforge
+echo
+
+rsync -v -a --delete --rsh="ssh -l mlhartme" $REPO/ mlhartme@shell.sourceforge.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository/org/
