@@ -17,6 +17,16 @@ function defineClass(Class, name, Base, interfaces) {
         return;
     }
 
+    if (typeof qx !== 'undefined') { // for Qooxdoo:
+        if (typeof qx.Class !== 'undefined') {
+            if (typeof qx.Class.getByName !== 'undefined') { // for bootstrapping
+                if (!qx.Class.getByName(name)) { 
+                    qx.Class.__registry[name] = Class;
+                }
+            }
+        }
+    }
+
     // TODO
     if (Class instanceof Function) {
         // ok
@@ -25,11 +35,22 @@ function defineClass(Class, name, Base, interfaces) {
         Class = Class.constructor;
     }
     if (Base) {
+	    Class.superclass = Base;  // for Qooxdoo
 	    Class.prototype = new Base();
 	}
-    Class.prototype.constructor = Class;
-	var max = arguments.length - 3;
-	var array = new Array(max);
+
+    // Create namespace
+
+    // for qooxdoo
+	if (name.indexOf("qx.") == -1) {
+        var basename = qwtCreateNamespace(name, Class);
+        Class.classname = Class.prototype.classname = name; 
+        Class.basename = basename;
+        Class.prototype.constructor = Class;
+	}
+
+    var max = arguments.length - 3;
+    var array = new Array(max);
     for (var i = 0; i < max; i++) {
         array[i] = arguments[i + 3];
     }
@@ -37,6 +58,26 @@ function defineClass(Class, name, Base, interfaces) {
     // metadata will be replaced by the Java Class object
     Class.metadata = name;
     ALL_CLASSES[name] = Class;
+}
+
+function qwtCreateNamespace(name, object) {
+    var splits = name.split(".");
+    var parent = global;
+    var part = splits[0];
+
+    for (var i=0, l=splits.length-1; i<l; i++, part=splits[i]) {
+        if (!parent[part]) {
+          parent = parent[part] = {};
+        } else {
+          parent = parent[part];
+        }
+    }
+
+    // store object
+    parent[part] = object;
+
+    // return last part name (i.e. classname)
+    return part;
 }
 
 function touchPackage(array) {

@@ -459,7 +459,7 @@ public class ExpressionCompiler extends Util {
         IMethodBinding binding;
         
         binding = m.resolveMethodBinding();
-        js.append("this.prototype.prototype.");
+        js.append("this.constructor.superclass.prototype.");
         js.append(context.getNaming().methodSimple(binding));
         js.append(".call(this");
         if (m.arguments().size() > 0) {
