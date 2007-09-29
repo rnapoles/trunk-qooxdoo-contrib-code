@@ -62,8 +62,6 @@ import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 public class SvnNode extends Node {
     static {
         FSRepositoryFactory.setup();
