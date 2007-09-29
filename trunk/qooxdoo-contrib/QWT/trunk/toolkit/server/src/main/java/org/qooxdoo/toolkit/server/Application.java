@@ -103,7 +103,7 @@ public class Application implements ApplicationMBean {
         this.first = null;
         
         binding = new Binding();
-        binding.setVariable("main", this);
+        binding.setVariable("application", this);
 
         this.shell = new GroovyShell(binding);
     }

@@ -19,14 +19,12 @@
 
 package %PACKAGE%;
 
-import qx.ui.core.Widget;
+import qx.application.Gui;
 import qx.ui.basic.Label;
 
-public class Main {
-    public Main() {
-    }
-    
-    public Widget createRoot() {
-        return new Label("Hello, world!");
+public class Application extends Gui {
+    public void main() {
+        super.main();
+        new Label("Hello, world!").addToDocument();
     }
 }

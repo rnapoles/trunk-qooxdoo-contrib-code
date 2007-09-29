@@ -29,7 +29,7 @@
         <artifactId>plugin</artifactId>
         <version>${qwt.version}</version>
         <configuration>
-          <main>${project.groupId}.${project.artifactId}.Main</main>
+          <application>${project.groupId}.${project.artifactId}.Application</application>
           <includes>
             <include>**/*.java</include>
             <include>**/*.java</include>

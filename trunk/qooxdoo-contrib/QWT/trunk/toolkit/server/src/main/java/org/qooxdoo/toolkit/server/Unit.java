@@ -61,7 +61,7 @@ public class Unit implements UnitMBean {
         context = config.getServletContext();
         name = "main";
         title = context.getServletContextName();
-        client = getParam(config, "main");
+        client = getParam(config, "application");
         dest = application.createUnitDirectory(name);
         return new Unit(
                 application.log,
@@ -85,16 +85,16 @@ public class Unit implements UnitMBean {
         return value;
     }
 
-    private static Map<String, Class<?>> getDeclarations(String client) throws ServletException {
+    private static Map<String, Class<?>> getDeclarations(String application) throws ServletException {
         final String prefix = "init";
         Class<?> cl;
         Map<String, Class<?>> result;
         
         result = new HashMap<String, Class<?>>();
         try {
-            cl = Class.forName(client);
+            cl = Class.forName(application);
         } catch (ClassNotFoundException e) {
-            throw new ServletException("client not found: " + client, e);
+            throw new ServletException("application not found: " + application, e);
         }
         for (Method m : cl.getDeclaredMethods()) {
             if (m.getName().startsWith(prefix)) {

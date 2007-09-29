@@ -19,10 +19,10 @@
 
 package org.qooxdoo.widgets;
 
+import qx.application.Gui;
 import qx.event.type.DataEvent;
 import qx.ui.basic.Image;
 import qx.ui.basic.Label;
-import qx.ui.core.Widget;
 import qx.ui.form.ComboBox;
 import qx.ui.layout.GridLayout;
 import qx.ui.layout.VerticalBoxLayout;
@@ -31,10 +31,10 @@ import qx.ui.pageview.tabview.Page;
 import qx.ui.pageview.tabview.TabView;
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
-public class Main {
+public class Application extends Gui {
     private IServices services;
     
-    public Main() {
+    public Application() {
     }
     
     public void background() {
@@ -46,9 +46,11 @@ public class Main {
         this.services = services;
     }
 
-    public Widget createRoot() {
+    @Override
+    public void main() {
         TabView view;
         
+        super.main();
         System.out.println("welcome!");
 
         new GridLayout().add(new Label("hi"), 1, 2);
@@ -60,7 +62,8 @@ public class Main {
 
         addWelcome(view);
         addControls(view);
-        return view;
+        
+        view.addToDocument();
     }
 
     private void addWelcome(TabView view) {
@@ -121,9 +124,9 @@ public class Main {
     }
     
     public static class Changes implements EventListener {
-        private final ComboBox dest;
+        private final ComboBox<?> dest;
 
-        public Changes(ComboBox dest) {
+        public Changes(ComboBox<?> dest) {
             this.dest = dest;
         }
 

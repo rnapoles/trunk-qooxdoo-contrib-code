@@ -1,3 +1,10 @@
+### qx/core/Init.java
+***
+this.debug("application: " + this.getApplication().classname);
+this.debug("application: " + this.getApplication().classname); QwtBeforeMain();
+***
+this.info("main runtime: " + (new Date - start) + "ms");
+this.info("main runtime: " + (new Date - start) + "ms"); QwtAfterMain();
 ### qx/ui/core/ClientDocumentBlocker.java
 ***
 public native void getFocusRoot();

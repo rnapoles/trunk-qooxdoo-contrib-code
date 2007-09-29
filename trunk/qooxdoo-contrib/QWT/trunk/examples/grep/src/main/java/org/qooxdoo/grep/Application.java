@@ -19,8 +19,10 @@
 
 package org.qooxdoo.grep;
 
+import org.qooxdoo.toolkit.qooxdoo.EventListener;
+
+import qx.application.Gui;
 import qx.event.type.DataEvent;
-import qx.ui.core.Widget;
 import qx.ui.form.Button;
 import qx.ui.form.TextField;
 import qx.ui.layout.HorizontalBoxLayout;
@@ -28,22 +30,24 @@ import qx.ui.layout.VerticalBoxLayout;
 import qx.ui.tree.Tree;
 import qx.ui.tree.TreeFile;
 import qx.ui.tree.TreeFolder;
-import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
-public class Main implements EventListener {
+public class Application extends Gui implements EventListener {
     private IServices find;
     private TextField text;
     private Button button;
     private Tree<String> tree;
     
-    public Main() {
+    public Application() {
     }
     
     public void initServices(IServices find) {
         this.find = find;
     }
 
-    public Widget createRoot() {
+    @Override
+    public void main() {
+        super.main();
+        
         HorizontalBoxLayout header;
         VerticalBoxLayout all;
         
@@ -59,7 +63,7 @@ public class Main implements EventListener {
         all = new VerticalBoxLayout();
         all.add(header);
         all.add(tree);
-        return all;
+        all.addToDocument();
     }
 
     public void notify(DataEvent obj) {
