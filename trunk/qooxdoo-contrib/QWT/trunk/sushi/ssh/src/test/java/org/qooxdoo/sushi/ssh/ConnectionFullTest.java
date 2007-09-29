@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -32,73 +33,78 @@ import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.util.ExitCode;
 
+import com.jcraft.jsch.JSchException;
+
 public class ConnectionFullTest {
-    public static String hostname() {
+    private static final IO IO_OBJ = new IO();
+    
+    public static Connection open() throws JSchException, IOException {
+        return Connection.create(ConnectionFullTest.hostname(), User.withUserKey(IO_OBJ));
+    }
+    
+    private static String hostname() {
         try {
             InetAddress addr = InetAddress.getLocalHost();
             return addr.getHostName();
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            return "localhost";
         }        
     }
     
-    private static final IO IO_OBJ = new IO();
-    
-    private Connection con;
+    private Connection connection;
 
     @Before
     public void setUp() throws Exception {
-        Host host;
-        
-        host = new Host(hostname(), User.withUserKey(IO_OBJ));
-        con = host.connect();
+        connection = Connection.create(hostname(), User.withUserKey(IO_OBJ));
     }
     
     @After
     public void tearDown() throws Exception {
-        con.close();
+        if (connection != null) {
+            connection.close();
+        }
     }
     
     @Test
     public void normal() throws Exception {
-        assertEquals("hello\n", con.exec("echo", "hello"));
-        assertEquals("again\n", con.exec("echo", "again"));
+        assertEquals("hello\n", connection.exec("echo", "hello"));
+        assertEquals("again\n", connection.exec("echo", "again"));
         try {
-            con.exec("commandnotfound");
+            connection.exec("commandnotfound");
             fail();
         } catch (ExitCode e) {
             assertTrue(e.output.contains("commandnotfound"));
         }
 
-        assertEquals("alive\n", con.exec("echo", "alive"));
+        assertEquals("alive\n", connection.exec("echo", "alive"));
     }
 
     @Test
     public void variablesLost() throws Exception {
-        assertEquals("\n", con.exec("echo", "$FOO"));
-        con.exec("export", "FOO=bar");
-        assertEquals("\n", con.exec("echo", "$FOO"));
+        assertEquals("\n", connection.exec("echo", "$FOO"));
+        connection.exec("export", "FOO=bar");
+        assertEquals("\n", connection.exec("echo", "$FOO"));
     }
 
     @Test
     public void directoryLost() throws Exception {
         String start;
         
-        start = con.exec("pwd");
-        assertEquals("/home\n", con.exec("cd", "/home", "&&", "pwd"));
-        assertEquals(start, con.exec("pwd"));
+        start = connection.exec("pwd");
+        assertEquals("/usr\n", connection.exec("cd", "/usr", "&&", "pwd"));
+        assertEquals(start, connection.exec("pwd"));
     }
 
     @Test
     public void shell() throws Exception {
-        assertEquals("", con.exec("exit", "0", "||", "echo", "dontprintthis"));
-        assertEquals("a\nb\n", con.exec("echo", "a", "&&", "echo", "b"));
-        assertEquals("a\n", con.exec("echo", "a", "||", "echo", "b"));
-        assertEquals("file\n", con.exec(
+        assertEquals("", connection.exec("exit", "0", "||", "echo", "dontprintthis"));
+        assertEquals("a\nb\n", connection.exec("echo", "a", "&&", "echo", "b"));
+        assertEquals("a\n", connection.exec("echo", "a", "||", "echo", "b"));
+        assertEquals("file\n", connection.exec(
                 "if", "test", "-a", "/etc/profile;", 
                 "then", "echo", "file;",
                 "else", "echo", "nofile;", "fi"));
-        assertEquals("nofile\n", con.exec(
+        assertEquals("nofile\n", connection.exec(
                 "if", "test", "-a", "nosuchfile;", 
                 "then", "echo", "file;",
                 "else", "echo", "nofile;", "fi"));
@@ -108,7 +114,7 @@ public class ConnectionFullTest {
     public void timeout() throws Exception {
         Exec exec;
         
-        exec = con.begin("sleep", "5");
+        exec = connection.begin("sleep", "5");
         try {
             exec.end(1000);
             fail();
@@ -120,7 +126,7 @@ public class ConnectionFullTest {
     @Test
     public void erroroutput() throws Exception {
         try {
-        	con.exec("echo", "foo", "&&", "exit", "1");
+        	connection.exec("echo", "foo", "&&", "exit", "1");
         	fail();
         } catch (ExitCode e) {
         	assertEquals(1, e.code);
@@ -132,7 +138,7 @@ public class ConnectionFullTest {
     public void duration() throws Exception {
         Exec exec;
         
-        exec = con.begin("sleep", "2");
+        exec = connection.begin("sleep", "2");
         exec.end();
         assertTrue(exec.duration() >= 2000);
         assertTrue(exec.duration() <= 2200);

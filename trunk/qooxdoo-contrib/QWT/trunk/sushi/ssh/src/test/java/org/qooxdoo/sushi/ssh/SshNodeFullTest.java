@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeTest;
@@ -31,15 +33,31 @@ import org.qooxdoo.sushi.io.NodeTest;
 import com.jcraft.jsch.JSchException;
 
 public class SshNodeFullTest extends NodeTest {
+    private static Connection connection;
+    
+    @BeforeClass
+    public static void start() throws Exception {
+        connection = ConnectionFullTest.open();
+    }
+
+    @AfterClass
+    public static void stop() throws Exception {
+        if (connection != null) {
+            connection.close();
+        }
+    }
+    
+    private SshNode create(String path) throws IOException, JSchException {
+        return new SshNode(IO, connection, path);
+    }
+
     @Override
     protected Node createWork() throws IOException {
         SshNode node;
         
         try {
-            node = create("tmp/sushifullworkdir");
-            if (node.exists()) {
-                node.delete();
-            }
+            node = create("tmp/sushisshworkdir");
+            node.deleteOpt();
             node.mkdir();
             return node;
         } catch (JSchException e) {
@@ -55,12 +73,5 @@ public class SshNodeFullTest extends NodeTest {
         assertEquals("", root.getPath());
         assertEquals("", root.getName());
         assertTrue(root.children().length > 0);
-    }
-
-    private SshNode create(String path) throws IOException, JSchException {
-        Host host;
-        
-        host = new Host(ConnectionFullTest.hostname(), User.withUserKey(IO));
-        return new SshNode(IO, host, path);
     }
 }

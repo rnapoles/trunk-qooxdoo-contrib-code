@@ -33,9 +33,15 @@ import org.qooxdoo.sushi.util.ExitCode;
 
 /** a session with a buffer */
 public class Connection {
+    public static Connection create(String host, User user) throws JSchException {
+        return new Host(host, user).connect();
+    }
+    
     private final Host host;
     private final Session session;
     private final Buffer buffer;
+    /** null if not probed yet */
+    private Boolean mac;
     
     public Connection(Host host, Session session, Buffer buffer) {
         this.host = host;
@@ -43,6 +49,13 @@ public class Connection {
         this.buffer = buffer;
     }
 
+    public boolean isMac() throws ExitCode, JSchException {
+        if (mac == null) {
+            mac = "Darwin\n".equals(exec("uname"));
+        }
+        return mac;
+    }
+    
     public Host getHost() {
         return host;
     }
