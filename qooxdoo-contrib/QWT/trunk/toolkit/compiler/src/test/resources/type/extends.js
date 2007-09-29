@@ -25,7 +25,7 @@ type.Ext.prototype.get = function() {
     return this.getB();
 }
 type.Ext.prototype.fn = function() {
-    return this.prototype.prototype.fn.call(this) + 5;
+    return this.constructor.superclass.prototype.fn.call(this) + 5;
 }
 type.Ext.create = function() {
     return newObject(type.Ext, type.Ext.init, []);

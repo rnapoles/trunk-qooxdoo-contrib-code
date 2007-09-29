@@ -139,7 +139,7 @@ public abstract class Base {
                 assertEquals(condition, true, engine.eval(condition));
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(test, e);
         }
         return compiled;
     }
