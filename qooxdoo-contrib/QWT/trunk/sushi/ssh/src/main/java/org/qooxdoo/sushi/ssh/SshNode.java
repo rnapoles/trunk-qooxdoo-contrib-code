@@ -48,14 +48,10 @@ import org.qooxdoo.sushi.util.Strings;
 import com.jcraft.jsch.JSchException;
 
 public class SshNode extends Node {
-    private final Host host;
+    private final Connection connection;
     private final String slashPath;
     
-    public SshNode(IO io, String host, User user, String path) throws JSchException {
-        this(io, new Host(host, user), path);
-    }
-
-    public SshNode(IO io, Host host, String path) {
+    public SshNode(IO io, Connection connection, String path) {
         super(io);
         
         if (path.startsWith("/")) {
@@ -64,7 +60,7 @@ public class SshNode extends Node {
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-        this.host = host;
+        this.connection = connection;
         this.slashPath = "/" + path;
     }
 
@@ -73,7 +69,13 @@ public class SshNode extends Node {
         String result;
         
         try {
-            result = host.exec("du", "-b", slashPath);
+            if (connection.isMac()) {
+                result = connection.exec("stat", "-f%z", slashPath);
+                result = result.trim();
+            } else {
+                result = connection.exec("du", "-b", slashPath);
+                result = first(result);
+            }
         } catch (ExitCode e) {
             throw new LengthException(e);
         } catch (JSchException e) {
@@ -101,8 +103,8 @@ public class SshNode extends Node {
     }
     
     @Override
-    public Node newInstance(String path) {
-        return new SshNode(io, host, path);
+    public SshNode newInstance(String path) {
+        return new SshNode(io, connection, path);
     }
 
     @Override
@@ -110,8 +112,8 @@ public class SshNode extends Node {
         return slashPath.substring(1);
     }
 
-    public Host getHost() {
-        return host;
+    public Connection getConnection() {
+        return connection;
     }
     
     //--
@@ -140,7 +142,7 @@ public class SshNode extends Node {
         String result;
         List<Node> nodes;
         
-        result = host.exec("ls", slashPath).trim();
+        result = connection.exec("ls", slashPath).trim();
         if (slashPath.equals(result)) {
             return null;
         }
@@ -161,7 +163,7 @@ public class SshNode extends Node {
         Throwable cause;
         
         try {
-            result = host.exec("rm", "-r", slashPath);
+            result = connection.exec("rm", "-r", slashPath);
             if (result.length() != 0) {
                 throw new JSchException("unexpected output: " + result);
             }
@@ -182,7 +184,7 @@ public class SshNode extends Node {
         String result;
 
         try {
-            result = host.exec("mkdir", slashPath);
+            result = connection.exec("mkdir", slashPath);
             if (result.length() != 0) {
                 throw new JSchException("unexpected output: " + result);
             }
@@ -216,7 +218,11 @@ public class SshNode extends Node {
         String result;
         
         try {
-            result = host.exec("stat", "--format=%Y", slashPath).trim();
+            if (connection.isMac()) {
+                result = connection.exec("stat", "-f%m", slashPath).trim();
+            } else {
+                result = connection.exec("stat", "--format=%Y", slashPath).trim();
+            }
         } catch (ExitCode e) {
             throw new LastModifiedException(e);
         } catch (JSchException e) {
@@ -232,7 +238,7 @@ public class SshNode extends Node {
         
         stamp = TOUCH_FORMAT.format(new Date(millis));
         try {
-            host.exec("touch", "-t", stamp, slashPath);
+            connection.exec("touch", "-t", stamp, slashPath);
         } catch (ExitCode e) {
             throw new SetLastModifiedException(this, e);
         } catch (JSchException e) {
@@ -242,7 +248,7 @@ public class SshNode extends Node {
     
     private boolean test(String flag) {
         try {
-            host.exec("test", flag, slashPath);
+            connection.exec("test", flag, slashPath);
             return true;
         } catch (ExitCode e) {
             return false;
@@ -285,7 +291,7 @@ public class SshNode extends Node {
     }
 
     public void get(final FileNode dest) throws JSchException, IOException, InterruptedException {
-        host.invoke(new Transfer("scp -f " + slashPath) { // "from"
+        connection.invoke(new Transfer("scp -f " + slashPath) { // "from"
             @Override
             public void doInvoke(Buffer buffer) throws JSchException, IOException {
                 String line;
@@ -357,7 +363,7 @@ public class SshNode extends Node {
     }
     
     public void put(final byte[] data) throws JSchException, IOException, InterruptedException {
-        host.invoke(new Transfer("scp -t " + slashPath) { // "to"
+        connection.invoke(new Transfer("scp -t " + slashPath) { // "to"
             @Override
             public void doInvoke(Buffer buffer) throws JSchException, IOException {
                 readAck();
@@ -375,6 +381,6 @@ public class SshNode extends Node {
     
     @Override
     protected boolean equalsNode(Node node) {
-        return host == ((SshNode) node).host;
+        return connection == ((SshNode) node).connection;
     }
 }
