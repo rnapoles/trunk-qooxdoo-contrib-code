@@ -169,17 +169,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       {
         var serviceName   = args[0].substr(0,args[0].lastIndexOf("."));
         var serviceMethod = args[0].substr(args[0].lastIndexOf(".")+1);
-        var param1 = args[1] || null;
-        var param2 = args[2] || null;
-        var param3 = args[3] || null;
+        var params = args.slice(1);
       }
       else
       {
         var serviceName   = this.getServiceName();
         var serviceMethod = this.getServiceMethodUpdateServer();
-        var param1 = args[0] || null;
-        var param2 = args[1] || null;
-        var param3 = args[2] || null;
+        var params = args;
       }			      
       
       rpc.setServiceName( serviceName )
@@ -231,7 +227,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        };
 
       // send request 
-      var request = rpc.callAsync(callbackFunc,serviceMethod,widgetData,param1,param2,param3);
+      var request = rpc.callAsync.apply(rpc,[callbackFunc,serviceMethod,widgetData].concat(params));
       
       // pass request object to subscribers  
       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));      
@@ -453,17 +449,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       {
         var serviceName   = args[0].substr(0,args[0].lastIndexOf("."));
         var serviceMethod = args[0].substr(args[0].lastIndexOf(".")+1);        
-        var param1 = args[1]|| null;
-        var param2 = args[2]|| null;
-        var param3 = args[3] || null;
+        var params = args.slice(1);
       }
       else
       {
-        var serviceName = this.getServiceName();
+        var serviceName   = this.getServiceName();
         var serviceMethod = this.getServiceMethodUpdateClient();
-        var param1 = args[0] || null;
-        var param2 = args[1] || null;
-        var param3 = args[2] || null;
+        var params = args;
       }      
       
       rpc.setTimeout(this.getTimeout());
@@ -517,7 +509,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        }
        
        // send request 
-       var request = rpc.callAsync(callbackFunc,serviceMethod,param1,param2,param3);
+       var request = rpc.callAsync.apply(rpc,[callbackFunc,serviceMethod].concat(params));
         
        // pass request object to subscribers  
        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));       
