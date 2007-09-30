@@ -227,7 +227,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        };
 
       // send request 
-      var request = rpc.callAsync.apply(rpc,[callbackFunc,serviceMethod,widgetData].concat(params));
+      params.unshift(widgetData);
+      params.unshift(serviceMethod);
+      params.unshift(callbackFunc);
+      var request = rpc.callAsync.apply(rpc,params);
       
       // pass request object to subscribers  
       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));      
@@ -291,17 +294,18 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     updateServer : function()
     {
         if ( ! this.getDataBinding() ) return false;
+        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
         
         switch (this.getTransport())
         {
           // use JSON-RPC
           case "jsonrpc":
-            this._updateServerJsonRpc(arguments);
+            this._updateServerJsonRpc(args);
             break;
 	         
 	        // simple post, to do: file upload 
 	        case "post":
-	         this._updateServerPost(arguments);
+	         this._updateServerPost(args);
    	      
    	      // unknown method  
 	        default:
@@ -443,19 +447,19 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     _updateClientJsonRpc : function(args)
     {
       var rpc = new qx.io.remote.Rpc();
-      
+     
       // service method and parameters
       if ( typeof args[0] == "string" && args[0].indexOf(".") > 0 )
       {
-        var serviceName   = args[0].substr(0,args[0].lastIndexOf("."));
-        var serviceMethod = args[0].substr(args[0].lastIndexOf(".")+1);        
-        var params = args.slice(1);
+        var serviceName    = args[0].substr(0,args[0].lastIndexOf("."));
+        var serviceMethod  = args[0].substr(args[0].lastIndexOf(".")+1);      
+        var params         = args.slice(1);
       }
       else
       {
-        var serviceName   = this.getServiceName();
-        var serviceMethod = this.getServiceMethodUpdateClient();
-        var params = args;
+        var serviceName    = this.getServiceName();
+        var serviceMethod  = this.getServiceMethodUpdateClient();
+        var params         = args;
       }      
       
       rpc.setTimeout(this.getTimeout());
@@ -509,7 +513,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        }
        
        // send request 
-       var request = rpc.callAsync.apply(rpc,[callbackFunc,serviceMethod].concat(params));
+       params.unshift(serviceMethod);
+       params.unshift(callbackFunc);
+       var request = rpc.callAsync.apply(rpc,params);
         
        // pass request object to subscribers  
        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));       
@@ -526,11 +532,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     {
         if ( ! this.getDataBinding() ) return false;
         
+        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
+        
         switch (this.getTransport())
         {         
           // use JSON-RPC
           case "jsonrpc":
-            this._updateClientJsonRpc(arguments);
+            this._updateClientJsonRpc(args);
 	           break;
 	        
 	        default:
