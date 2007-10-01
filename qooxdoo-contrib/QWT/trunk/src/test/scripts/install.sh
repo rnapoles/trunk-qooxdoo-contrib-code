@@ -10,6 +10,5 @@ export INSTALL_OPTS="--batch-mode -Dall -Dfull"
 rm -rf $HOME/.m2/repository
 rm -rf toolkit/qooxdoo/src/framework
 ./install.sh || exit 1
-mvn site --batch-mode || exit 1
+mvn site site:deploy --batch-mode || exit 1
 mvn checkstyle:check --batch-mode || exit 1
-
