@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.util.Strings;
