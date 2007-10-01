@@ -6,16 +6,5 @@
   </properties>
 
   <body>
-    <section name="The Qooxdoo Module">
-      <p>QWT's Qooxdoo module re-packages original Qooxdoo Distribution into a Maven aritfact 
-        to make it available for QWT applications. This is similar to Linux distributions re-packaging
-        software distributed in an arbitrary format to make it available in the distributions format. 
-        The version number follows the qooxdoo version.</p>
-        
-      <p>The Qooxdoo module consists of Binding classes, Qooxdoo resources, and Normal Java classes. 
-        Binding classes (in <code>qx</code>; one Java class for every Qooxdoo 
-        JavaScript class) are generated from Qooxdoo's JavaScript sources and merged with manual patches. 
-      </p>
-    </section>
   </body>
 </document>
