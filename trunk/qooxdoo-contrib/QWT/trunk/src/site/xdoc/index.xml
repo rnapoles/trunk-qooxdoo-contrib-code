@@ -13,31 +13,5 @@
       <p>Thanks to <a href="http://sourceforge.net/projects/qooxdoo-contrib"><img src="http://sourceforge.net/sflogo.php?group_id=190279&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
       for hosting these pages.</p>
     </section>
-    <section name="Development">
-      <subsection name="Building">
-        <p>QWT has a Maven multi-module build, just use the normal <code>mvn clean install</code>.
-        However, install fails when executed without running <code>./install.sh</code> once because 
-        I don't know how do model build-only-dependencies to the Plugin Module. 
-        See http://jira.codehaus.org/browse/MNG-1883 and http://jira.codehaus.org/browse/MNG-2668.</p>
-      </subsection>
-      <subsection name="Eclipse">
-        <source> 
-cd qwt
-mvn eclipse:eclipse
-</source>
-        <p>1) Create a project for every module.</p>
-        <p>2) Create an M2_REPO variable pointing to your ~/.m2/repository directory</p>
-      </subsection>
-      <subsection name="Modules">
-        <p>QWT has a Maven multi-module build with the following modules:</p>
-        <ul>
-          <li><a href="toolkit/compiler">Compiler</a>: translates Java to JavaScript. </li>
-          <li><a href="toolkit/runtime">Runtime</a>: Java Class Libraries translated to JavaScript. </li>
-          <li><a href="toolkit/qooxdoo">Qooxdoo</a>: Java representation for Qooxdoo JavaScript classes. </li>
-          <li><a href="toolkit/server">Server</a>: the servlet to drive applications. </li>
-          <li><a href="toolkit/plugin">Plugin</a> to integration with Maven. </li>
-        </ul>
-      </subsection>
-    </section>
   </body>
 </document>
