@@ -260,15 +260,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <distributionManagement>
     <repository>
       <id>billy</id>
-      <url>scp://devel.schlund.de/home/billy/public_html/repository</url>
+      <url>scpexe://devel.schlund.de/home/billy/public_html/repository</url>
     </repository>
     <snapshotRepository>
       <id>billy</id>
-      <url>scp://devel.schlund.de/home/billy/public_html/repository</url>
+      <url>scpexe://devel.schlund.de/home/billy/public_html/repository</url>
     </snapshotRepository>
     <site>
       <id>billy</id>
-      <url>scp://devel.schlund.de/home/billy/public_html/sites/qwt</url>
+      <url>scpexe://devel.schlund.de/home/billy/public_html/sites/qooxdoo</url>
     </site>
   </distributionManagement>
 
