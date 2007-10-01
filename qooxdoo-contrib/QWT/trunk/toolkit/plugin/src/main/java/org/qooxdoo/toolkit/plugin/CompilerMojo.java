@@ -37,7 +37,7 @@ import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.Node;
 
 /**
- * Helper code to build Qooxdoo module. Generates resources and repository.
+ * Compiles Java to JavaScript
  *
  * @goal compile
  * @phase compile
