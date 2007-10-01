@@ -3,9 +3,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.qooxdoo</groupId>
-  <artifactId>qwt</artifactId>
+  <artifactId>qooxdoo</artifactId>
   <version>1-SNAPSHOT</version>
-  <name>Qooxdoo Web Toolkit</name>
+  <name>Qooxdoo</name>
   <packaging>pom</packaging>
 
   <organization>

@@ -1,5 +1,13 @@
 #/bin/sh
 
+# Mirrors Billy parts to Qooxdoo-devel
+#
+# All Qwt distributions, deployments, go to billy;
+# the qooxdoo-devel repository is a mirror of the respective billy parts.
+# Advanteges:
+# o we have backups
+# o we can deploy sites automatically - without firewall problems.
+ 
 export ROOT=$HOME/mirror
 export REPO=$ROOT/repository
 export SITE=$ROOT/site
