@@ -50,6 +50,8 @@ public class HelpMojo extends Base {
         info("Misc");
         info("  jconsole                             jmx console for running application");
         info("");
+        info("Version of this plugin: " + getVersion());
+        info("");
         info("See also: http://qooxdoo.org/documentation/contrib/contributions/qwt");
     }
 }
