@@ -28,8 +28,7 @@ import org.apache.maven.settings.Settings;
 import org.qooxdoo.sushi.io.Node;
 
 /**
- * Adds Maven user settings for Qooxdoo.
- *
+ * Installs a Maven-bug-workaround in your local repository
  * @goal workaround
  */
 public class WorkaroundMojo extends SettingsMojo {

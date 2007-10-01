@@ -35,21 +35,21 @@ import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
 
 /**
+ * Generates Binding classes, i.e. Java classes that compile to a given JavaScript class.
  * @goal binding
  * @phase generate-sources
- * @description Generates Binding classes, i.e. Java classes that compile to a given JavaScript class.
  */
 public class BindingMojo extends FrameworkBase {
     private static final String CLASS = "source/class";
 
     /**
-     * @description always generate, don't reuse existing stuff
+     * Always generate, don't reuse existing stuff
      * @parameter expression="${all}"
      */
     private boolean all = false;
 
     /**
-     * @description directory where to place the bindings
+     * Directory where to place the bindings
      * @parameter
      * @required
      */
@@ -60,7 +60,8 @@ public class BindingMojo extends FrameworkBase {
     }
 
     /**
-     * @description class added manually to the doctree. Comma-separated list of include patterns.
+     * Classes added manually to the doctree. Comma-separated list of include patterns.
+     * 
      * @parameter expression="nothing"
      */
     private Filter undocumented = io.filter();
@@ -70,7 +71,8 @@ public class BindingMojo extends FrameworkBase {
     }
     
     /**
-     * @description patches to apply
+     * Patches to apply
+     * 
      * @parameter
      * @required
      */

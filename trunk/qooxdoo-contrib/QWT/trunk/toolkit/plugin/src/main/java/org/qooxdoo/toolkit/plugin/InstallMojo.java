@@ -30,8 +30,8 @@ import org.apache.maven.settings.Repository;
 import org.apache.maven.settings.Settings;
 
 /**
- * Adds Maven user settings for Qooxdoo.
- *
+ * Adds Qooxdoo settings to Maven's user settings.
+ * 
  * @goal install
  */
 public class InstallMojo extends WorkaroundMojo {

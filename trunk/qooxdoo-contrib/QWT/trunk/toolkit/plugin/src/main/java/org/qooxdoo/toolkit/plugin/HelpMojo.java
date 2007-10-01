@@ -24,7 +24,8 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
- * @description QWT Help.
+ * QWT Help.
+ * 
  * @requiresProject false
  * @goal help
  */

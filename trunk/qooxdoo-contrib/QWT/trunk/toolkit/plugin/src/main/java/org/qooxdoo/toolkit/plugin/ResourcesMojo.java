@@ -29,7 +29,7 @@ import org.qooxdoo.sushi.util.Program;
 
 /**
  * Packages Qooxdoo resources.
- *
+ * 
  * @goal resources
  * @phase generate-resources
  */

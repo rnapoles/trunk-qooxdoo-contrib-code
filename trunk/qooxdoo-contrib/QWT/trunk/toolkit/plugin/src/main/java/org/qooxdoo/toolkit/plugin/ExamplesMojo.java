@@ -27,7 +27,8 @@ import org.qooxdoo.sushi.svn.SvnNode;
 import org.tmatesoft.svn.core.SVNException;
 
 /**
- * @description Create an examples directory
+ * Create an examples directory
+ * 
  * @requiresProject false
  * @goal examples
  */

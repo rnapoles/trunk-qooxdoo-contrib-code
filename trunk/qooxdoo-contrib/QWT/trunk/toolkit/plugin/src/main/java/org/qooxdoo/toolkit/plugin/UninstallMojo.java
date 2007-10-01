@@ -24,7 +24,8 @@ import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Settings;
 
 /**
- * @description Remove Maven user settings for Qooxdoo.
+ * Removes qooxdoo settings from Maven's user settings.
+ * 
  * @goal uninstall
  */
 public class UninstallMojo extends SettingsMojo {

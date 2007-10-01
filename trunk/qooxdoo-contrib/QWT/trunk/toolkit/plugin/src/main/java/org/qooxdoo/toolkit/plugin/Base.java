@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.util.Strings;
@@ -33,6 +34,16 @@ import org.xml.sax.SAXException;
 public abstract class Base extends AbstractMojo {
     protected final IO io = new IO();
     
+    
+        
+    /**
+     * TODO: Internal parameter to work-around http://jira.codehaus.org/browse/MPLUGIN-31 
+     * @parameter expression="foo"
+     * @required
+     * @readonly
+     */
+    private String workaround;
+
     public void execute() throws MojoExecutionException {
         try {
             doExecute();

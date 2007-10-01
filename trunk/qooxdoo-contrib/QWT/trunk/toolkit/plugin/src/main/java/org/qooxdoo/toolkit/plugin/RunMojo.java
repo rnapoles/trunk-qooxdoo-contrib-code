@@ -32,8 +32,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
 
 /**
- * Starts QWT application in an embedded Tomcat. 
- * 
+ * Starts QWT application in an embedded Tomcat.
+ *  
  * @goal run
  * @requiresDependencyResolution runtime
  */
