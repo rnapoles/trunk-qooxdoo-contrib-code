@@ -116,7 +116,7 @@ public class Instance<T> {
         DomTree tree;
         
         tree = new DomTree(parent);
-        new Serializer(tree).run(type.getName(), type, get());
+        new Serializer(tree).run(Item.xmlName(type.getName()), type, get());
         tree.done();
     }
     

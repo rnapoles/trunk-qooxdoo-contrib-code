@@ -10,6 +10,10 @@ echo
 rsync -v -a --delete --rsh="ssh -l billy" billy@devel.schlund.de:public_html/repository/org/qooxdoo $REPO || exit 1
 rsync -v -a --delete --rsh="ssh -l billy" billy@devel.schlund.de:public_html/repository/org/eclipse/base $REPO/eclipse || exit 1
 
+echo Done. 
+echo Press return to continue.
+read
+
 echo 
 echo Transfer to Sourceforge
 echo
