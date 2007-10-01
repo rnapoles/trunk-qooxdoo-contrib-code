@@ -267,8 +267,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <url>scpexe://devel.schlund.de/home/billy/public_html/repository</url>
     </snapshotRepository>
     <site>
-      <id>qooxdoo</id>
-      <url>scp://shell.sf.net/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/sites/qwt</url>
+      <id>billy</id>
+      <url>scpexe://devel.schlund.de/home/billy/public_html/sites/qwt</url>
     </site>
   </distributionManagement>
 
