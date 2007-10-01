@@ -216,12 +216,10 @@ public abstract class WebappBase extends Base {
     private static final String ENCODING = "UTF-8";
     private static final String WEB_XML = 
         "<?xml version='1.0' encoding='" + ENCODING + "'?>\n" + 
-
-        "<web-app xmlns='http://java.sun.com/xml/ns/j2ee'\n" + 
-        "    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n" + 
-        "    xsi:schemaLocation='http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd'\n" + 
-        "    version='2.4'>\n" +
-        
+        "<web-app xmlns='http://java.sun.com/xml/ns/javaee'\n" +
+        "   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n" +
+        "   xsi:schemaLocation='http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd'\n" +
+        "   version='2.5'>\n" +
         "   <display-name>${name}</display-name>\n" + 
         "   <description>${description}</description>\n" + 
         "   <servlet>\n" + 
