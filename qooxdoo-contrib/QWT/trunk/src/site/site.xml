@@ -11,6 +11,9 @@
     <menu name="Documentation">
       <item name="Development" href="index.html"/>
     </menu>
+
+    ${reports}
+    ${modules}
   </body>
 </project>
 
