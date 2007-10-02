@@ -83,7 +83,7 @@ class qcl_jsonrpc_object extends patched_object {
 	}
 
 	/**
-	 * set singleton instance of a class
+	 * set (non-persistent) singleton instance of a class
 	 * @param object $instance reference to be set as singleton
 	 */
 	function &setSingleton( $instance ) 
@@ -96,7 +96,7 @@ class qcl_jsonrpc_object extends patched_object {
 	
 	
 	/**
-	 * get singleton instance of class
+	 * get (non-persistent) singleton instance of class
 	 * @param string $classname
 	 * @return object reference to singleton instance
 	 */
@@ -104,6 +104,33 @@ class qcl_jsonrpc_object extends patched_object {
 	{
         global $qcl_jsonrpc_singletons;
         $instance = &$qcl_jsonrpc_singletons[$classname];
+        if ( ! is_object ($instance) ) 
+        {
+            $instance = new $classname;
+        }
+        return $instance;
+    }
+
+	/**
+	 * set persistent singleton instance of a class
+	 * @param object $instance reference to be set as singleton
+	 */
+	function &setPersistentSingleton( $instance ) 
+	{
+        $classname = get_class ( $instance );
+        $_SESSION[ "qcl_jsonrpc_singleton_" . $classname ] = &$instance;
+        return $instance;
+    }
+	
+	
+	/**
+	 * get persistent singleton instance of class
+	 * @param string $classname
+	 * @return object reference to singleton instance
+	 */
+	function &getPersistentSingleton( $classname ) 
+	{
+        $instance = &$_SESSION[ "qcl_jsonrpc_singleton_" . $classname];
         if ( ! is_object ($instance) ) 
         {
             $instance = new $classname;

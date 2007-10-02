@@ -53,6 +53,7 @@ class qcl_db_pear extends qcl_db
 	
 	/**
 	 * queries database
+	 * @return PEAR_DB resultset
 	 */
 	function &query ( $sql )
 	{
@@ -74,23 +75,39 @@ class qcl_db_pear extends qcl_db
 
 	/**
 	 * get first row of result set
+	 * @param string 	$sql 				sql query
+	 * @param boolean  	$withColumnNames	if true (default), map values to column names 
 	 */
-	function &getRow ( $sql )
+	function &getRow ( $sql, $withColumnNames=true )
 	{
-		$res = $this->db->getRow( $sql );
+		$res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
 		if ( PEAR::isError ( $res ) ) {
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
 		}
 		return $res;		
 	}	
+
+	/**
+	 * gets the value of the first cell cell of the first row of the result set
+	 * useful for example for "SELECT count(*) ... " queries
+	 * return mixed
+	 */
+	function &getValue ( $sql ) 
+	{
+		$row = $this->getRow ( $sql, false );
+		return $row[0];
+	}
 	
 	/**
-	 * gets resultset mapped to array
+	 * gets full resultset
+	 * @param string 	$sql 				sql query
+	 * @param boolean  	$withColumnNames	if true (default), map values to column names
 	 */
-	function &getAllRows ( $sql )
+	function &getAllRows ( $sql, $withColumnNames=true )
 	{
-		$res = $this->db->getAll( $sql );
-		if ( PEAR::isError ( $res ) ) {
+		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
+		if ( PEAR::isError ( $res ) ) 
+		{
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
 		}
 		return $res;
@@ -120,11 +137,11 @@ class qcl_db_pear extends qcl_db
 		}
 		$values = implode (",", $values );
 		
-		$this->query ( utf8_decode("
+		$this->query ("
 			INSERT INTO 
 				`$table` (`$columns`) 
 			VALUES ($values)
-		"));
+		");
 		return $this->getLastInsertId();
 	}
 
@@ -147,11 +164,11 @@ class qcl_db_pear extends qcl_db
 		}
 		$pairs = implode ("," , $pairs );
 		
-		$this->query ( utf8_decode("
+		$this->query ( "
 			UPDATE `$table` 
 			SET $pairs
 			WHERE `$idColumn` = $id
-		"));
+		");
 	}
 
 	/**
