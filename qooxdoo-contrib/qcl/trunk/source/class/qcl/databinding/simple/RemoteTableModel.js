@@ -35,10 +35,29 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
   *****************************************************************************
   */
 
-  construct : function()
+  construct : function(serviceName)
   {
     this.base(arguments);
+    this.setServiceName(serviceName||"");
     this.setDataBinding(true);
+    
+    // setup event listener for handling data received by MDataManager mixin
+    this.addEventListener("dataReceived",function(e){
+      result = e.getData();
+      if ( result== null )
+      {
+        this.setRowCount(null);
+        this.setRowData([]);
+      }
+      else if ( "rowCount" in result ) 
+      {
+        this.setRowCount(result.rowCount);
+      }
+      else if ( "rowData" in result )
+      {
+        this.setRowData(result.rowData);
+      }
+    });
   },
   
   /*
@@ -115,10 +134,12 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      */
     _loadRowCount : function() 
     {
+      if ( ! this.getServiceName() ) return 0; // do not do any updates until service name is known
       this._updateClient( 
         this.getServiceName() + "." + this.getServiceMethodGetRowCount(),
         this.getQueryData()  
       );
+      this._rowCount = 0; // update is in progress
     },
 
     /**
@@ -136,11 +157,7 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      */
     getColumnIds : function ()
     {
-      for (var i, ids=[]; i < this.getColumnCount(); i++ )
-      {
-        ids.push(this.getColumnId(i));        
-      }
-      return ids;
+      return this._columnIdArr;
     },
     
     /**
@@ -158,7 +175,9 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      * @param lastRow {Integer} The index of the last row to load.
      * @return {void}
      */
-    _loadRowData : function(firstRow, lastRow) {
+    _loadRowData : function(firstRow, lastRow) 
+    {
+      if ( ! this.getServiceName() ) return []; // do not do any updates until service name is known
       this._updateClient( 
         this.getServiceName() + "." + this.getServiceMethodGetRowData(),
         this.getQueryData(),firstRow,lastRow  
@@ -169,7 +188,7 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      * receives the row data returned by the server and passes it on
      * to the _onRowDataLoaded function as required by qx.ui.table.model.Remote
      */
-    setRowCount : function (rowDataArr)
+    setRowData : function (rowDataArr)
     {
       this._onRowDataLoaded(rowDataArr);
     }
