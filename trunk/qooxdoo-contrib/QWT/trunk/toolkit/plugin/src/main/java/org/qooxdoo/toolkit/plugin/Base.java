@@ -59,7 +59,7 @@ public abstract class Base extends AbstractMojo {
     
     protected String getVersion() {
         try {
-            return new ResourceNode(io, "qwt.version").readString().trim();
+            return new ResourceNode(io, "toolkit.version").readString().trim();
         } catch (IOException e) {
             throw new RuntimeException("unkown version");
         }        

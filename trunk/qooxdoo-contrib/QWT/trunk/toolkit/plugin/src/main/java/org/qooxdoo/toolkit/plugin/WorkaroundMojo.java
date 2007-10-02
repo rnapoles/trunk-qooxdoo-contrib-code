@@ -64,7 +64,7 @@ public class WorkaroundMojo extends SettingsMojo {
         write(repo.join("plugin/maven-metadata-local.xml"), 
                 "<?xml version='1.0' encoding='UTF-8'?>\n" +
                 "<metadata>\n" + 
-                "  <groupId>org.apache.maven.plugins</groupId>\n" +
+                "  <groupId>org.qooxtoo.toolkit</groupId>\n" +
                 "  <artifactId>plugin</artifactId>\n" +
                 "  <version>" + version + "</version>\n" +
                 "  <versioning>\n" +
