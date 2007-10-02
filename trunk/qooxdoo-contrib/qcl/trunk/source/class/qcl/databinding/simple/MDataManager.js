@@ -371,7 +371,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           
           /* qx.ui.treeVirtual.SimpleTreeDataModel */ 
           case "treedatamodel":
-            if (this.classname != "qx.ui.treevirtual.TreeVirtual")
+            if (! this instanceof qx.ui.treevirtual.TreeVirtual )
             {
               this.error("Rpc datatype 'treedatamodel' only valid for qx.ui.treevirtual.TreeVirtual!");
               return false;
@@ -437,9 +437,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           
           /* qx.ui.table.model.Simple */
           case "tabledatamodel":
-            if (this.classname != "qx.ui.table.Table")
+            if ( ! this instanceof qx.ui.table.Table )
             {
-              this.error("Rpc datatype 'tabledatamodel' only valid for qx.ui.table.Table!");
+              this.error("Rpc datatype 'tabledatamodel' only valid for qx.ui.table.Table and subclasses!");
               return false;
             }          
             var dataModel = this.getTableModel();
