@@ -2,6 +2,12 @@
 
 global = this;
 
+// Remove Rhino's built-in Java-access-Packages
+// Firefox provides the same objects if Java is enabled. 
+// CAUTION: delete doesn't work!?
+org = new Object();
+java = new Object();
+
 var ALL_CLASSES = new Object();
 
 /*
