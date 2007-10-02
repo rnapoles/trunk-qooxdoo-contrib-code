@@ -21,6 +21,6 @@ $MVN install:install-file -Dfile=src/org.eclipse-base-3.2.2.jar -DgroupId=org.ec
 build . -N
 build sushi
 cd toolkit
-install.sh || exit 1
+./install.sh || exit 1
 cd ..
 build examples
