@@ -2,7 +2,7 @@
      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.qooxdoo</groupId>
-    <artifactId>examples</artifactId>
+    <artifactId>qooxdoo</artifactId>
     <version>1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -14,6 +14,10 @@
   <description>QWT Application. 
     Requirements: 1) show main QWT features; 2) code explainable in a single presentation 3) use advanced Qooxdoo Widgets
   </description>
+
+  <properties>
+    <toolkit.version>0.7.1</toolkit.version>
+  </properties>
 
   <dependencies>
     <dependency>

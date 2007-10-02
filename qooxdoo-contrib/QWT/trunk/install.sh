@@ -19,7 +19,7 @@ build() {
 }
 
 $MVN install:install-file -Dfile=src/org.eclipse-base-3.2.2.jar -DgroupId=org.eclipse -DartifactId=base -Dversion=3.2.2 -Dpackaging=jar || exit 1
-build . -N
+build .
 build sushi
 cd toolkit
 ./install.sh || exit 1
