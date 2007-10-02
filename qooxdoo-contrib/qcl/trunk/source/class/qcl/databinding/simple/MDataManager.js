@@ -155,6 +155,388 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       }
       newDataProvider.bindWidget(this);
     },    
+
+    /**
+     * public API function to update the widget from the server.
+     * Can have a variable number of arguments
+     * overriding classes can pass the arguments on like so:
+     * this._updateClient.apply(this,arguments)
+     * 
+     * @type member
+     * @return {void}
+     */
+    updateClient : function()
+    {
+      this._updateClient.apply(this,arguments);
+    },
+
+    /**
+     * private function doing the actual work of updating the widget
+     * from the server
+     *
+     * @type member
+     * @return {void}
+     */
+    _updateClient : function()
+    {
+        if ( ! this.getDataBinding() ) return false;
+        
+        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
+        
+        switch (this.getTransport())
+        {         
+          // use JSON-RPC
+          case "jsonrpc":
+            this._updateClientJsonRpc(args);
+	           break;
+	        
+	        default:
+            this.error ("Transport method " + this.getTransport() + " not implemented");
+            break; 
+        }
+    },
+
+    /**
+     * update the client using jsonrpc
+     */
+    _updateClientJsonRpc : function(args)
+    {
+      var rpc = new qx.io.remote.Rpc();
+     
+      // service method and parameters
+      if ( typeof args[0] == "string" && args[0].indexOf(".") > 0 )
+      {
+        var serviceName    = args[0].substr(0,args[0].lastIndexOf("."));
+        var serviceMethod  = args[0].substr(args[0].lastIndexOf(".")+1);      
+        var params         = args.slice(1);
+      }
+      else
+      {
+        var serviceName    = this.getServiceName();
+        var serviceMethod  = this.getServiceMethodUpdateClient();
+        var params         = args;
+      }      
+      
+      rpc.setTimeout(this.getTimeout());
+      rpc.setUrl(this.getServiceUrl());
+      rpc.setServiceName(serviceName);
+      rpc.setCrossDomain(this.getAllowCrossDomainRequests());
+      var _this = this;
+      
+      // start request
+      
+      // notify of start of request
+      var timestamp = new Date().getTime();
+      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
+      
+      // callback function
+      var callbackFunc = function(result, ex, id) {
+        // notify of end of request
+        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));
+        request.reset();
+        request.dispose();
+        request = null; // dispose rpc object
+
+        if (ex == null) 
+        {  
+          // server messages
+          if( qx.event.message && typeof result.__messages == "object" )
+          {
+            for (var key in result.__messages)
+            {
+              qx.event.message.Bus.dispatch( new qx.event.message.Message( key, result.__messages[key] ) ); 
+            }
+            delete (result.__messages);
+           }
+          
+           // handle received data	              
+           _this.__handleDataReceived (result);
+           
+           // notify that data has been received
+           _this.createDispatchDataEvent("dataReceived",result);
+           
+         } else {
+           // generic error handling; todo: delegate to event listeners
+           // dispatch error message
+           qx.event.message.Bus.dispatch( 
+             new qx.event.message.Message(
+               "qcl.databinding.messages.rpc.error",
+               "Async exception (#" + id + "): " + ex.message
+             )
+           );
+         }
+       }
+       
+       // send request 
+       params.unshift(serviceMethod);
+       params.unshift(callbackFunc);
+       var request = rpc.callAsync.apply(rpc,params);
+        
+       // pass request object to subscribers  
+       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));       
+    },
+    
+    /**
+     * handles the data sent from the server to update the local state
+     *
+     * @type member
+     * @return {void}
+     */    
+    __handleDataReceived : function(result)
+    {
+      if ( this.classname == "qcl.databinding.simple.DataProvider" )
+      {
+        this.populateBoundWidgets(result);
+      }
+      else
+      {
+        this.setWidgetData(result);  
+      }
+    },
+    
+    /**
+     * sets the widget state from the received data. Data must be a 
+     * hash map. 
+     * - When a property exists that corresponds to a key,
+     *   this property will be set with the value. 
+     * - If the key is "children", the data will be added as children
+     * - in other cases, it will be saved as userdata.
+     *
+     * @param data {Object} hash map
+     * @type member
+     * @return {void}
+     */  
+    setWidgetData : function (data)
+    {
+      // simple setter using auto-lookup of property name
+      if ( typeof data != "object" )
+      {
+        key = this._getWidgetDataProperties().split(",")[0]; // just use first one
+        this.set(key,data);
+        return;
+      }
+      
+      // extended setter using a hash map
+      for ( var key in data )
+      {
+        switch (key)
+        {
+          
+          /* add arbitrary children to widgets */
+          case "children":
+            var i, w, children = data[key];
+            this.removeAll();
+            for ( i=0; i<children.length;i++)
+            {
+              var props = children[i];
+              // create new child widget Todo: ouch eval security problem!!!
+              try 
+              {
+                w = eval ( "(new " + props.classname + ")" );
+                delete props.classname;
+                w.set(props);
+                this.add(w);
+              }
+              catch (e)
+              {
+                this.error (e);
+              }
+            }
+            break;
+            
+          /* set selected item on combo box */
+          case "selected":
+            if ( ! data[key] ) break;
+            switch (this.classname)
+            {
+              case "qx.ui.form.ComboBox":
+              case "qx.ui.form.ComboBoxEx":
+                this.setSelected(this.getList().findValue(data[key]['value']));
+                break;
+              case "qx.manager.selection.RadioManager":
+                var items = this.getItems();
+                for (var i=0; i<items.length; i++)
+                {
+                  if ( items[i].getValue() == data[key]['value'] )
+                  {
+                    this.setSelected(items[i]);
+                  }
+                }
+                break;               
+            }
+            break;
+          
+          /* qx.ui.treeVirtual.SimpleTreeDataModel */ 
+          case "treedatamodel":
+            if (this.classname != "qx.ui.treevirtual.TreeVirtual")
+            {
+              this.error("Rpc datatype 'treedatamodel' only valid for qx.ui.treevirtual.TreeVirtual!");
+              return false;
+            }
+            var dataModel = this.getDataModel();
+            var data = data.treedatamodel;
+						var pruneParent = true; // prune parent node once
+            
+            if ( data && typeof data == "object" && data.length )
+            {
+						  
+              // prune parent of first node, this assumes that all nodes 
+              // sent have the same parent.
+              var parentNode = this.nodeGet(data[0].parentNodeId||0); 
+              dataModel.prune(parentNode);  
+              dataModel.setState(parentNode,{bOpened:true});
+              
+              for (var i=0; i<data.length;i++)
+						  {
+						    var node = data[i];
+						    
+								// check node for commands; MUST NEVER BE FIRST NODE SENT!
+								if ( node.command )
+								{
+										switch(node.command)
+										{
+											case "render":
+												dataModel.setData();
+												break;		
+										}
+										continue;
+								}
+								
+						    // create node
+						    if( node.isBranch )
+						    {
+						      var nodeId = dataModel.addBranch( node.parentNodeId || 0 );
+						    }
+						    else
+						    {
+						      var nodeId = dataModel.addLeaf( node.parentNodeId || 0 );								      
+						    }
+						    
+						    // set node state, including custom properties
+						    delete node.parentNodeId;
+								dataModel.setState( nodeId, node );
+								
+								// drag data alias
+								if (this.setNodeType && node.data && node.data.type)
+								{
+									this.setNodeType( nodeId, node.data.type );
+								}
+ 
+						  }
+						  // update tree
+						  dataModel.setData();            
+            }
+            else
+            {
+              this.warn("Invalid rpc data!");
+            }
+            break;
+          
+          /* qx.ui.table.model.Simple */
+          case "tabledatamodel":
+            if (this.classname != "qx.ui.table.Table")
+            {
+              this.error("Rpc datatype 'tabledatamodel' only valid for qx.ui.table.Table!");
+              return false;
+            }          
+            var dataModel = this.getTableModel();
+            var data = data.tabledatamodel;
+            
+            // just replace the whole table, for dynamic loading use remoteTableModel
+            if ( data && typeof data == "object" && data.length )
+            {
+						  dataModel.setData(data);            
+            }
+            else if ( data && typeof data == "object" )
+            {
+						  dataModel.setData([]);            
+            }
+            else
+            {
+              this.warn("Invalid rpc data!");
+            }
+            break;
+					
+          /* qcl.auth */
+					case "security":
+						this.setSecurity(data.security);
+						break;
+					
+          /* qcl.config */
+          case "configMap":
+						this.setConfigMap(data.configMap);
+						break;	 
+          
+          /* qcl.databinding.simple.RemoteTableModel */  
+          case "rowCount":
+            this.setRowCount(data.rowCount);
+            break;
+          case "rowData":
+            this.setRowData(data.rowData);
+            break;
+                  
+          /* default: set property */    
+          default:
+            try
+            {
+              this.set( key, data[key] );
+            }          
+            catch(e)
+            {
+              this.warn( e );
+            }
+        }
+      }
+    },
+
+
+    /**
+     * public API function to update the server with widget data.
+     * Can have a variable number of arguments which will be passed onto
+     * the receiving server method after the first argument which is always
+     * the widget data
+     * overriding classes can pass the arguments on like so:
+     * this._updateServer.apply(this,arguments)
+     * 
+     * @type member
+     * @return {void}
+     */
+    updateServer : function()
+    {
+      this._updateServer.apply(this,arguments);
+    },
+    
+    /**
+     * private function doing the actual work of updating the server.
+     * Can have a variable number of arguments which will be passed onto
+     * the receiving server method after the first argument which is always
+     * the widget data.
+     *
+     * @type member
+     * @return {void}
+     */
+    _updateServer : function()
+    {
+        if ( ! this.getDataBinding() ) return false;
+        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
+        
+        switch (this.getTransport())
+        {
+          // use JSON-RPC
+          case "jsonrpc":
+            this._updateServerJsonRpc(args);
+            break;
+	         
+	        // simple post, to do: file upload 
+	        case "post":
+	         this._updateServerPost(args);
+   	      
+   	      // unknown method  
+	        default:
+            this.error ("Method " + this.getTransport() + " not implemented");
+            break;         
+        }
+    },
     
     /**
      * update server using jsonrpc
@@ -284,35 +666,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       req.send();        
 
     },
-    
-    /**
-     * updates remote datasource, i.e. transports widget state to the server
-     *
-     * @type member
-     * @return {void}
-     */
-    updateServer : function()
-    {
-        if ( ! this.getDataBinding() ) return false;
-        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
-        
-        switch (this.getTransport())
-        {
-          // use JSON-RPC
-          case "jsonrpc":
-            this._updateServerJsonRpc(args);
-            break;
-	         
-	        // simple post, to do: file upload 
-	        case "post":
-	         this._updateServerPost(args);
-   	      
-   	      // unknown method  
-	        default:
-            this.error ("Method " + this.getTransport() + " not implemented");
-            break;         
-        }
-    },
+
+
     
     /**
      * gets the data that should be sent to the server
@@ -440,312 +795,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       }
     },    
     
-    
-    /**
-     * update the client using jsonrpc
-     */
-    _updateClientJsonRpc : function(args)
-    {
-      var rpc = new qx.io.remote.Rpc();
-     
-      // service method and parameters
-      if ( typeof args[0] == "string" && args[0].indexOf(".") > 0 )
-      {
-        var serviceName    = args[0].substr(0,args[0].lastIndexOf("."));
-        var serviceMethod  = args[0].substr(args[0].lastIndexOf(".")+1);      
-        var params         = args.slice(1);
-      }
-      else
-      {
-        var serviceName    = this.getServiceName();
-        var serviceMethod  = this.getServiceMethodUpdateClient();
-        var params         = args;
-      }      
-      
-      rpc.setTimeout(this.getTimeout());
-      rpc.setUrl(this.getServiceUrl());
-      rpc.setServiceName(serviceName);
-      rpc.setCrossDomain(this.getAllowCrossDomainRequests());
-      var _this = this;
-      
-      // start request
-      
-      // notify of start of request
-      var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
-      
-      // callback function
-      var callbackFunc = function(result, ex, id) {
-        // notify of end of request
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));
-        request.reset();
-        request.dispose();
-        request = null; // dispose rpc object
-
-        if (ex == null) 
-        {  
-          // server messages
-          if( qx.event.message && typeof result.__messages == "object" )
-          {
-            for (var key in result.__messages)
-            {
-              qx.event.message.Bus.dispatch( new qx.event.message.Message( key, result.__messages[key] ) ); 
-            }
-            delete (result.__messages);
-           }
-          
-           // handle received data	              
-           _this.__handleDataReceived (result);
-           
-           // notify that data has been received
-           _this.createDispatchDataEvent("dataReceived",result);
-           
-         } else {
-           // generic error handling; todo: delegate to event listeners
-           // dispatch error message
-           qx.event.message.Bus.dispatch( 
-             new qx.event.message.Message(
-               "qcl.databinding.messages.rpc.error",
-               "Async exception (#" + id + "): " + ex.message
-             )
-           );
-         }
-       }
-       
-       // send request 
-       params.unshift(serviceMethod);
-       params.unshift(callbackFunc);
-       var request = rpc.callAsync.apply(rpc,params);
-        
-       // pass request object to subscribers  
-       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));       
-    },
-
-
-    /**
-     * updates local widget, i.e. pulls widget state from the server
-     *
-     * @type member
-     * @return {void}
-     */
-    updateClient : function()
-    {
-        if ( ! this.getDataBinding() ) return false;
-        
-        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
-        
-        switch (this.getTransport())
-        {         
-          // use JSON-RPC
-          case "jsonrpc":
-            this._updateClientJsonRpc(args);
-	           break;
-	        
-	        default:
-            this.error ("Transport method " + this.getTransport() + " not implemented");
-            break; 
-        }
-    },
-    
-    /**
-     * handles the data sent from the server to update the local state
-     *
-     * @type member
-     * @return {void}
-     */    
-    __handleDataReceived : function(result)
-    {
-      if ( this.classname == "qcl.databinding.simple.DataProvider" )
-      {
-        this.populateBoundWidgets(result);
-      }
-      else
-      {
-        this.setWidgetData(result);  
-      }
-    },
-    
-    /**
-     * sets the widget state from the received data. Data must be a 
-     * hash map. 
-     * - When a property exists that corresponds to a key,
-     *   this property will be set with the value. 
-     * - If the key is "children", the data will be added as children
-     * - in other cases, it will be saved as userdata.
-     *
-     * @param data {Object} hash map
-     * @type member
-     * @return {void}
-     */  
-    setWidgetData : function (data)
-    {
-      // simple setter using auto-lookup of property name
-      if ( typeof data != "object" )
-      {
-        key = this._getWidgetDataProperties().split(",")[0]; // just use first one
-        this.set(key,data);
-        return;
-      }
-      
-      // extended setter using a hash map
-      for ( var key in data )
-      {
-        switch (key)
-        {
-          // set children
-          case "children":
-            var i, w, children = data[key];
-            this.removeAll();
-            for ( i=0; i<children.length;i++)
-            {
-              var props = children[i];
-              // create new child widget Todo: ouch eval security problem!!!
-              try 
-              {
-                w = eval ( "(new " + props.classname + ")" );
-                delete props.classname;
-                w.set(props);
-                this.add(w);
-              }
-              catch (e)
-              {
-                this.error (e);
-              }
-            }
-            break;
-            
-          // set selected item
-          
-          case "selected":
-            if ( ! data[key] ) break;
-            switch (this.classname)
-            {
-              case "qx.ui.form.ComboBox":
-              case "qx.ui.form.ComboBoxEx":
-                this.setSelected(this.getList().findValue(data[key]['value']));
-                break;
-              case "qx.manager.selection.RadioManager":
-                var items = this.getItems();
-                for (var i=0; i<items.length; i++)
-                {
-                  if ( items[i].getValue() == data[key]['value'] )
-                  {
-                    this.setSelected(items[i]);
-                  }
-                }
-                break;               
-            }
-            break;
-            
-          case "treedatamodel":
-            if (this.classname != "qx.ui.treevirtual.TreeVirtual")
-            {
-              this.error("Rpc datatype 'treedatamodel' only valid for qx.ui.treevirtual.TreeVirtual!");
-              return false;
-            }
-            var dataModel = this.getDataModel();
-            var data = data.treedatamodel;
-						var pruneParent = true; // prune parent node once
-            
-            if ( data && typeof data == "object" && data.length )
-            {
-						  
-              // prune parent of first node, this assumes that all nodes 
-              // sent have the same parent.
-              var parentNode = this.nodeGet(data[0].parentNodeId||0); 
-              dataModel.prune(parentNode);  
-              dataModel.setState(parentNode,{bOpened:true});
-              
-              for (var i=0; i<data.length;i++)
-						  {
-						    var node = data[i];
-						    
-								// check node for commands; MUST NEVER BE FIRST NODE SENT!
-								if ( node.command )
-								{
-										switch(node.command)
-										{
-											case "render":
-												dataModel.setData();
-												break;		
-										}
-										continue;
-								}
-								
-						    // create node
-						    if( node.isBranch )
-						    {
-						      var nodeId = dataModel.addBranch( node.parentNodeId || 0 );
-						    }
-						    else
-						    {
-						      var nodeId = dataModel.addLeaf( node.parentNodeId || 0 );								      
-						    }
-						    
-						    // set node state, including custom properties
-						    delete node.parentNodeId;
-								dataModel.setState( nodeId, node );
-								
-								// drag data alias
-								if (this.setNodeType && node.data && node.data.type)
-								{
-									this.setNodeType( nodeId, node.data.type );
-								}
- 
-						  }
-						  // update tree
-						  dataModel.setData();            
-            }
-            else
-            {
-              this.warn("Invalid rpc data!");
-            }
-            break;
-            
-          case "tabledatamodel":
-            if (this.classname != "qx.ui.table.Table")
-            {
-              this.error("Rpc datatype 'tabledatamodel' only valid for qx.ui.table.Table!");
-              return false;
-            }          
-            var dataModel = this.getTableModel();
-            var data = data.tabledatamodel;
-            
-            // just replace the whole table, for dynamic loading use remoteTableModel
-            if ( data && typeof data == "object" && data.length )
-            {
-						  dataModel.setData(data);            
-            }
-            else if ( data && typeof data == "object" )
-            {
-						  dataModel.setData([]);            
-            }
-            else
-            {
-              this.warn("Invalid rpc data!");
-            }
-            break;
-						
-					case "security":
-						this.setSecurity(data.security);
-						break;
-					
-          case "configMap":
-						this.setConfigMap(data.configMap);
-						break;	    
-          
-          default:
-            try
-            {
-              this.set( key, data[key] );
-            }          
-            catch(e)
-            {
-              this.warn( e );
-            }
-        }
-      }
-    },
 
     /**
      * clears widget content
