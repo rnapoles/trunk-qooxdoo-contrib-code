@@ -11,7 +11,7 @@
   <groupId>org.qooxdoo.toolkit</groupId>
   <artifactId>server</artifactId>
   <name>Toolkit Server</name>
-  <version>${qwt.version}</version>
+  <version>${toolkit.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>
@@ -34,19 +34,19 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
       <classifier>tests</classifier>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>qooxdoo</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
     </dependency>
   </dependencies>
   <build>
@@ -54,7 +54,7 @@
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
-        <version>${qwt.version}</version>
+        <version>${toolkit.version}</version>
         <configuration>
           <sourcepath>${basedir}/src/main/java/org/qooxdoo/toolkit/server/Proxy.java:${basedir}/src/main/java/org/qooxdoo/toolkit/server/Parser.java:${basedir}/src/main/java/org/qooxdoo/toolkit/server/Serializer.java</sourcepath>
         </configuration>

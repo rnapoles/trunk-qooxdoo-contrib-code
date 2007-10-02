@@ -12,7 +12,7 @@
   <artifactId>compiler</artifactId>
   <name>Toolkit Compiler</name>
   <description>Translates JavaScript to Java</description>
-  <version>${qwt.version}</version>
+  <version>${toolkit.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>

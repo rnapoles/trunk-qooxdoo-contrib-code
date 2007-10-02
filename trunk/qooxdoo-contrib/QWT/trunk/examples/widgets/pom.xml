@@ -12,13 +12,13 @@
   <name>Widget Example</name>
   <description>QWT Demo Web Application: no-sense-example, we just need a place 
     to try various widgets.</description>
-  <version>${qwt.version}</version>
+  <version>${toolkit.version}</version>
 
   <dependencies>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>server</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
     </dependency>
   </dependencies>
  
@@ -27,7 +27,7 @@
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
-        <version>${qwt.version}</version>
+        <version>${toolkit.version}</version>
         <configuration>
           <application>${project.groupId}.${project.artifactId}.Application</application>
           <includes>

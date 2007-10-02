@@ -10,7 +10,7 @@
 
   <!--  CAUTION: not "qwt-maven-plugin" because I don't want to inherit scm defs etc: -->  
   <artifactId>plugin</artifactId>
-  <version>${qwt.version}</version>
+  <version>${toolkit.version}</version>
   <packaging>maven-plugin</packaging>
   <name>Toolkit Maven Plugin</name>
   <description>Generate New Project, War, Qooxdoo Java Proxies, Qooxdoo Repository and Qooxdoo Resources.</description>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -86,7 +86,7 @@
             <phase>process-resources</phase>
             <configuration>
               <tasks>
-                <echo file="${basedir}/target/classes/qwt.version">${project.version}</echo>
+                <echo file="${basedir}/target/classes/toolkit.version">${project.version}</echo>
                 <mkdir dir="${basedir}/target" />
                 <tar destfile="${basedir}/target/classes/skel.tar.gz" compression="gzip">
                   <tarfileset dir="${basedir}/src/skel">
