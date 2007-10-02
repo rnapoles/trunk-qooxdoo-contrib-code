@@ -1,3 +1,4 @@
 qooxdoo component library
 
-here are the classes that can be used in other projects
+in this folder, you find the javascript classes and xml components that you
+can reuse for your own projects. The xml components require qxtransformer. 
