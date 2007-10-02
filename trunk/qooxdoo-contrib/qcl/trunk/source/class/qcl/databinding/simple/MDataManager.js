@@ -264,7 +264,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                "Async exception (#" + id + "): " + ex.message
              )
            );
+           // notify that data has been received but failed
+           _this.createDispatchDataEvent("dataReceived",null);
          }
+
        }
        
        // send request 
@@ -466,14 +469,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "configMap":
 						this.setConfigMap(data.configMap);
 						break;	 
-          
-          /* qcl.databinding.simple.RemoteTableModel */  
-          case "rowCount":
-            this.setRowCount(data.rowCount);
-            break;
-          case "rowData":
-            this.setRowData(data.rowData);
-            break;
                   
           /* default: set property */    
           default:
@@ -594,7 +589,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             delete (result.__messages);
           }
           
-          // notify about sent data
+          // notify about sent data only if sending was successful
           _this.createDispatchDataEvent("dataSent",result);
           
         } else {
