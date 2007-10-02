@@ -212,6 +212,33 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           <consoleOutput>true</consoleOutput>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce-once</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>2.0.7</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>1.5</version>
+                </requireJavaVersion>
+                <requireOS>
+                  <family>unix</family>
+                </requireOS>            
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
