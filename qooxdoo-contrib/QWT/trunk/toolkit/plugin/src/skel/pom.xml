@@ -18,12 +18,16 @@
   <description>QWT Application</description>
   <packaging>jar</packaging>
 
+  <properties>
+    <toolkit.version>%TOOLKIT_VERSION%</toolkit.version>
+  </properties>
+  
   <build>
     <plugins>
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
-        <version>%QWT_VERSION%</version>
+        <version>${toolkit.version}</version>
         <configuration>
           <description>${project.description}</description>
           <application>${project.groupId}.${project.artifactId}.Application</application>
@@ -49,7 +53,7 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>server</artifactId>
-      <version>%QWT_VERSION%</version>
+      <version>${toolkit.version}</version>
     </dependency>
   </dependencies>
 </project>
