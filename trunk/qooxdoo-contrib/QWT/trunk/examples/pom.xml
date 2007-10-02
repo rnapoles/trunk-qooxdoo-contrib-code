@@ -13,6 +13,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <!-- CAUTION:
+         do not define common settings for the examples, 
+         because example have to build without this pom.
+   -->
   <modules>
     <module>widgets</module>
     <module>grep</module>
