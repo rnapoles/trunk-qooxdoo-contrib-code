@@ -17,7 +17,7 @@ build() {
   cd $back
 }
 
-$MVN install:install-file -Dfile=toolkit/org.eclipse-base-3.2.2.jar -DgroupId=org.eclipse -DartifactId=base -Dversion=3.2.2 -Dpackaging=jar || exit 1
+$MVN install:install-file -Dfile=src/org.eclipse-base-3.2.2.jar -DgroupId=org.eclipse -DartifactId=base -Dversion=3.2.2 -Dpackaging=jar || exit 1
 build . -N
 build sushi
 cd toolkit
