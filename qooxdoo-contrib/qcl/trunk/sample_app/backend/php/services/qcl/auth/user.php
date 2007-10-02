@@ -151,7 +151,7 @@ class qcl_auth_user extends qcl_auth_common
     * @param string $username
     * @param string $password (MD5-encoded) password
     */
-   function authenticate ( $username, $password )
+   function authenticate ( $username=null, $password=null )
    {
    		$row = $this->getByName ( $username );
    		
