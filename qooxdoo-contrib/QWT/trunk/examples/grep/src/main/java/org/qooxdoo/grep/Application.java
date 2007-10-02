@@ -19,6 +19,8 @@
 
 package org.qooxdoo.grep;
 
+import java.util.List;
+
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
 import qx.application.Gui;
@@ -69,11 +71,14 @@ public class Application extends Gui implements EventListener {
     public void notify(DataEvent obj) {
         String substring;
         TreeFolder<String> file;
+        List<Match> results;
         
         file = null;
         tree.removeAll();
         substring = text.getValue().toString();
-        for (Match match : find.find(substring)) {
+        results = find.find(substring);
+        System.out.println(results.size() + " results");
+        for (Match match : results) {
             if (file == null || !match.file.equals(file.getNode())) {
                 file = tree.addFolder(match.file);
             }
