@@ -53,10 +53,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>examples</module>
   </modules>
 
-  <properties>
-    <qwt.version>0.7-SNAPSHOT</qwt.version>
-  </properties>
-
   <scm>
     <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk</connection>
     <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk</developerConnection>

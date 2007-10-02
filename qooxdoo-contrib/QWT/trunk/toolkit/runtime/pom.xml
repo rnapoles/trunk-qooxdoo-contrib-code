@@ -12,21 +12,21 @@
   <artifactId>runtime</artifactId>
   <name>Toolkit Runtime</name>
   <description>Java Runtime Libraries translated to JavaScript</description>
-  <version>${qwt.version}</version>
+  <version>${toolkit.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
       <classifier>tests</classifier>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -43,7 +43,7 @@
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
-        <version>${qwt.version}</version>
+        <version>${toolkit.version}</version>
         <executions>
           <execution>
             <goals>

@@ -12,7 +12,7 @@
   <artifactId>qooxdoo</artifactId>
 
   <!-- versioning scheme similar to Gentoo package version -->
-  <version>${qwt.version}</version>
+  <version>${toolkit.version}</version>
 
   <name>Toolkit Qooxdoo</name>
   <description>Qooxdoo Binding classes and Resources</description>
@@ -22,18 +22,18 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>runtime</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
       <classifier>tests</classifier>
-      <version>${qwt.version}</version>
+      <version>${toolkit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -50,7 +50,7 @@
       <plugin>
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
-        <version>${qwt.version}</version>
+        <version>${toolkit.version}</version>
         <configuration>
           <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
           <frameworkRevision>9424</frameworkRevision>
