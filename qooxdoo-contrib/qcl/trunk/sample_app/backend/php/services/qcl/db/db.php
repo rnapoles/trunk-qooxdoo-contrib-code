@@ -73,6 +73,12 @@ class qcl_db extends qcl_jsonrpc_object
 	 * get first row of result set
 	 */
 	function &getRow ( $sql ) {}
+
+	/**
+	 * gets the value of the first cell cell of the first row of the result set
+	 * useful for example for "SELECT count(*) ... " queries
+	 */
+	function &getValue ( $sql ) {}
 	
 	/**
 	 * gets whole result set mapped to array
