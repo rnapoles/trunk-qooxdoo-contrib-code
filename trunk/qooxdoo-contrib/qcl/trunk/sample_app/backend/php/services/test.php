@@ -13,7 +13,7 @@ if ( $_POST )
 	$params = array();
 	foreach ( $_POST['params'] as $param )
 	{
-		if ( $param )
+		if ( $param !== "" )
 		{
 			if( is_numeric($param) or strstr("true false null", $param) 
 				or preg_match("/^[{[].*[}\]]$/",$param) )
