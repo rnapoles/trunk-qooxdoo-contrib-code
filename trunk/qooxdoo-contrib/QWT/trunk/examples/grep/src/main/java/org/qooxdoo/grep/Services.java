@@ -29,7 +29,7 @@ import org.qooxdoo.sushi.io.Node;
 public class Services implements IServices {
     private static final int MAX = 100;
     private final IO io = new IO();
-    private final Node root = io.getWorking().getParent().getParent();
+    private final Node root = io.getWorking();
 
     public List<Match> find(String substring) {
         List<Match> result;
