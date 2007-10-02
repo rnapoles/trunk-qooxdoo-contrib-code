@@ -1,4 +1,5 @@
-# TODO
+# Build Sushi, Toolkit, and examples.
+# No dependencies on the Repository configuration - all you need is standard Ibiblio.
 
 export MVN="mvn $INSTALL_OPTS"
 

@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   
   <!-- Feel free to use your own parent pom here. 
-       org.qooxdoo:application nails down plugin versions 
+       org.qooxdoo:qooxdoo nails down Maven plugin versions 
        and adjusts settings like Java 5 or ".classpath with source jars". -->
   <parent>
     <groupId>org.qooxdoo</groupId>
-    <artifactId>examples</artifactId>
+    <artifactId>qooxdoo</artifactId>
     <version>1-SNAPSHOT</version>
   </parent>
 
@@ -19,6 +19,7 @@
   <packaging>jar</packaging>
 
   <properties>
+    <!-- Here's the place to adjust the QWT Version you're using -->
     <toolkit.version>%TOOLKIT_VERSION%</toolkit.version>
   </properties>
   
