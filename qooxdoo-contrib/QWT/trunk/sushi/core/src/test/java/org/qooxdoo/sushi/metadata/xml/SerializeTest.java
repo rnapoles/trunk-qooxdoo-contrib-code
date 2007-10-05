@@ -19,17 +19,18 @@
 
 package org.qooxdoo.sushi.metadata.xml;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Test;
-
 import org.qooxdoo.sushi.metadata.model.Car;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.Kind;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
+import org.qooxdoo.sushi.metadata.model.Radio;
+import org.qooxdoo.sushi.metadata.model.Vendor;
 import org.qooxdoo.sushi.xml.Builder;
-
-import static org.junit.Assert.*;
 
 public class SerializeTest extends ModelBase {
     @Test
@@ -60,6 +61,33 @@ public class SerializeTest extends ModelBase {
                 "<car>\n  <name></name>\n  <kind>normal</kind>\n  <seats>0</seats>\n" +
                 "  <engine>\n    <turbo>false</turbo>\n    <ps>0</ps>\n  </engine>\n" +
                 "</car>\n", run(new Car()));
+    }
+
+    @Test
+    public void alias() throws IOException {
+        Vendor vendor;
+        
+        vendor = new Vendor();
+        vendor.cars().add(new Car("foo", Kind.NORMAL, 5, new Engine(), new Radio()));
+        vendor.cars().add(vendor.cars().get(0));
+        assertEquals(
+                "<vendor>\n" +
+                "  <id>0</id>\n" +
+                "  <car id='0'>\n" +
+                "    <name>foo</name>\n" +
+                "    <kind>normal</kind>\n" + 
+                "    <seats>5</seats>\n" + 
+                "    <engine>\n" + 
+                "      <turbo>false</turbo>\n" + 
+                "      <ps>0</ps>\n" + 
+                "    </engine>\n" + 
+                "    <radio>\n" + 
+                "      <cd>false</cd>\n" + 
+                "      <speaker>0</speaker>\n" +
+                "    </radio>\n" + 
+                "  </car>\n" + 
+                "  <car idref='0'/>\n" + 
+                "</vendor>\n" , run(vendor));
     }
 
     @Test

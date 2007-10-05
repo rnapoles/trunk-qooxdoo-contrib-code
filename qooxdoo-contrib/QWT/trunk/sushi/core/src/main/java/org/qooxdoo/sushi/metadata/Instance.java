@@ -34,6 +34,7 @@ import org.qooxdoo.sushi.metadata.store.PropertyStore;
 import org.qooxdoo.sushi.metadata.xml.DomTree;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.metadata.xml.Serializer;
+import org.qooxdoo.sushi.metadata.xml.Tree;
 import org.qooxdoo.sushi.metadata.xml.WriterTree;
 import org.w3c.dom.Element;
 
@@ -113,18 +114,20 @@ public class Instance<T> {
     }
     
     public void toXml(Element parent) throws IOException {
-        DomTree tree;
-        
-        tree = new DomTree(parent);
-        new Serializer(tree).run(Item.xmlName(type.getName()), type, get());
-        tree.done();
+        serialize(new DomTree(parent), Item.xmlName(type.getName()));
     }
     
     public void toXml(Writer dest) throws IOException {
-        WriterTree tree;
+        serialize(new WriterTree(dest), type.getName());
+    }
+
+    private void serialize(Tree tree, String name) throws IOException {
+        Object root;
+        List<Object> ids;
         
-        tree = new WriterTree(dest);
-        new Serializer(tree).run(type.getName(), type, get());
+        root = get();
+        ids = Serializer.ids(type, root);
+        new Serializer(tree, ids).run(name, type, root);
         tree.done();
     }
 
