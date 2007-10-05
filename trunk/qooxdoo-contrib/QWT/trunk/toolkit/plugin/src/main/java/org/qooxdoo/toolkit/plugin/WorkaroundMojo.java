@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Settings;
 import org.qooxdoo.sushi.io.Node;
@@ -32,6 +33,12 @@ import org.qooxdoo.sushi.io.Node;
  * @goal workaround
  */
 public class WorkaroundMojo extends SettingsMojo {
+    /**
+     * @parameter expression="${localRepository}"
+     * @required
+     */
+    private ArtifactRepository localRepository;
+    
     /** 
      * Bug 3099: Maven 2.0.7 does not load profiles when executed without pom.xml.
      * Install defines repositories in a profile in the user settings, there's no 
@@ -49,7 +56,7 @@ public class WorkaroundMojo extends SettingsMojo {
         info("installing workaround for http://jira.codehaus.org/browse/MNG-3099 in your local repository");
         version = getVersion();
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-        repo = io.getHome().join(".m2/repository/org/qooxdoo/toolkit");
+        repo = io.node(localRepository.getBasedir()).join("org/qooxdoo/toolkit");
         write(repo.join("maven-metadata-local.xml"), 
                 "<?xml version='1.0' encoding='UTF-8'?>\n" +
                 "<metadata>\n" +
