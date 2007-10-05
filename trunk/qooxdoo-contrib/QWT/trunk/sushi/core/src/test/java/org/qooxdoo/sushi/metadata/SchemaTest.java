@@ -43,9 +43,7 @@ public class SchemaTest {
         String schema;
 
         schema = new ReflectSchema().type(String.class).createSchema();
-        assertEquals(
-                "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>\n" +
+        assertEquals(Type.SCHEMA_HEAD + 
                 "  <xs:element name='string' type='xs:string'/>\n" +
                 "</xs:schema>",
                 schema);
@@ -64,15 +62,14 @@ public class SchemaTest {
         String schema;
 
         schema = new AnnotationSchema().type(Engine.class).createSchema();
-        assertEquals(
-                "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>\n" +
+        assertEquals(Type.SCHEMA_HEAD + 
                 "  <xs:element name='engine' type='engine'/>\n" +
                 "  <xs:complexType name='engine'>\n" +
-                "    <xs:sequence>\n" +
+                "    <xs:sequence minOccurs='0'>\n" +
                 "      <xs:element name='turbo' type='xs:boolean'/>\n" +
                 "      <xs:element name='ps' type='xs:int'/>\n" +
                 "    </xs:sequence>\n" +
+                "    <xs:attributeGroup ref='ids'/>\n" +
                 "  </xs:complexType>\n"+
                 "</xs:schema>",
                 schema);

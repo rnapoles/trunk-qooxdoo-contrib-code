@@ -24,14 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.ItemException;
 import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.metadata.Variable;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 public class ComplexElement extends Element {
     private final ComplexType type;
@@ -61,7 +60,17 @@ public class ComplexElement extends Element {
     }
     
     @Override
-    public Object done(List<SAXException> exceptions, Locator locator) {
+    public boolean isEmpty() {
+        for (List<Object> values : children.values()) {
+            if (values.size() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @Override
+    public Object create(List<SAXException> exceptions, Locator locator) {
         Object object;
         Item item;
         

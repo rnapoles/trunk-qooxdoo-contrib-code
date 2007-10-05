@@ -62,7 +62,12 @@ public class SimpleElement extends Element {
     }
 
     @Override
-    public Object done(List<SAXException> exceptions, Locator locator) {
+    public boolean isEmpty() {
+        return builder.length() == 0;
+    }
+
+    @Override
+    public Object create(List<SAXException> exceptions, Locator locator) {
         String str;
         
         str = builder.toString();
