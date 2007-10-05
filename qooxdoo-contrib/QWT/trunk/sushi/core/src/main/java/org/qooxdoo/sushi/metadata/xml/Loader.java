@@ -91,7 +91,7 @@ public class Loader extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXLoaderException {
         Element parent;
-        Item child;
+        Item<?> child;
 
         check(uri, localName);
         if (attrs.getLength() != 0) {
