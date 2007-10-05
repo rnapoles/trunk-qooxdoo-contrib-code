@@ -54,7 +54,7 @@ public class Serializer {
 
         items = type.items();
         tree.begin(name, items.size());
-        for (Item item : items) {
+        for (Item<?> item : items) {
             for (Object itemObj : item.get(obj)) {
                 run(item.getXmlName(), item.getType(), itemObj);
             }

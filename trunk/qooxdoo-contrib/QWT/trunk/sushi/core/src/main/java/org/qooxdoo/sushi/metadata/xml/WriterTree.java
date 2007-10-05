@@ -64,8 +64,6 @@ public class WriterTree extends Tree {
 
     @Override
     public void text(String name, String text) throws IOException {
-        String str;
-        
         indent();
         dest.write('<');
         dest.write(name);

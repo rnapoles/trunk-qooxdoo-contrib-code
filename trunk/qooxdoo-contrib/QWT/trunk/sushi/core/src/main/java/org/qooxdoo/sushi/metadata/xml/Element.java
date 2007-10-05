@@ -21,16 +21,15 @@ package org.qooxdoo.sushi.metadata.xml;
 
 import java.util.List;
 
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.SimpleType;
 import org.qooxdoo.sushi.metadata.Type;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 public abstract class Element {
-    public static Element create(Item owner, Type type) {
+    public static Element create(Item<?> owner, Type type) {
         if (type instanceof SimpleType) {
             return new SimpleElement(owner, (SimpleType) type);
         } else {
@@ -41,20 +40,20 @@ public abstract class Element {
     //--
 
     /** null for root element */
-    private final Item owner;
+    private final Item<?> owner;
     
-    protected Element(Item owner) {
+    protected Element(Item<?> owner) {
         this.owner = owner;
     }
     
-    public Item getOwner() {
+    public Item<?> getOwner() {
         return owner;
     }
     
-    public abstract Item lookup(String child);
+    public abstract Item<?> lookup(String child);
     public abstract Object done(List<SAXException> exceptions, Locator locator);
     public abstract Type getType();
     
-    public abstract void addChild(Item item, Object child);
+    public abstract void addChild(Item<?> item, Object child);
     public abstract boolean addContent(char[] ch, int start, int end);
 }

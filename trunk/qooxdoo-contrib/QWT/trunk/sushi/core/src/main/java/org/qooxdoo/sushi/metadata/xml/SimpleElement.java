@@ -33,7 +33,7 @@ public class SimpleElement extends Element {
     private final StringBuilder builder;
     private final SimpleType type;
 
-    public SimpleElement(Item owner, SimpleType type) {
+    public SimpleElement(Item<?> owner, SimpleType type) {
         super(owner);
 
         this.builder = new StringBuilder();
@@ -46,12 +46,12 @@ public class SimpleElement extends Element {
     }
 
     @Override
-    public Item lookup(String name) {
+    public Item<?> lookup(String name) {
         return null;
     }
 
     @Override
-    public void addChild(Item item, Object child) {
+    public void addChild(Item<?> item, Object child) {
         throw new IllegalStateException();
     }
 

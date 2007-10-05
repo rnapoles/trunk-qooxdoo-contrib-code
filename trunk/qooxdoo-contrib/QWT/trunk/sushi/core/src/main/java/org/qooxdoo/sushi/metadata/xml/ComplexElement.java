@@ -35,17 +35,17 @@ import org.qooxdoo.sushi.metadata.Variable;
 
 public class ComplexElement extends Element {
     private final ComplexType type;
-    private final Map<Item, List<Object>> children;
+    private final Map<Item<?>, List<Object>> children;
 
-    public ComplexElement(Item owner, ComplexType type) {
+    public ComplexElement(Item<?> owner, ComplexType type) {
         super(owner);
         
         if (owner != null && type != owner.getType()) {
             throw new IllegalArgumentException();
         }
         this.type = type;
-        this.children = new HashMap<Item, List<Object>>();
-        for (Item item : type.items()) {
+        this.children = new HashMap<Item<?>, List<Object>>();
+        for (Item<?> item : type.items()) {
             children.put(item, new ArrayList<Object>());
         }
     }
@@ -56,7 +56,7 @@ public class ComplexElement extends Element {
     }
     
     @Override
-    public void addChild(Item item, Object obj) {
+    public void addChild(Item<?> item, Object obj) {
         children.get(item).add(obj);
     }
     
@@ -66,7 +66,7 @@ public class ComplexElement extends Element {
         Item item;
         
         object = type.newInstance();
-        for (Map.Entry<Item, List<Object>> entry : children.entrySet()) {
+        for (Map.Entry<Item<?>, List<Object>> entry : children.entrySet()) {
             item = entry.getKey();
             try {
                 item.set(object, entry.getValue());
