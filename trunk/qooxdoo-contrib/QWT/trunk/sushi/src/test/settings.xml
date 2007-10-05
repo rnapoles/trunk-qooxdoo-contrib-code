@@ -1,4 +1,4 @@
 <settings>
-  <localRepository>/tmp/sushi-repository</localRepository>
+  <localRepository>~/.m2/sushi-repository</localRepository>
 </settings>
 
