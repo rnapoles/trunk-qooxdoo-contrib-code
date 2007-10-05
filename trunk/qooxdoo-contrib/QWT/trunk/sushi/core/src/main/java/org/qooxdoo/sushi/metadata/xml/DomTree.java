@@ -44,8 +44,23 @@ public class DomTree extends Tree {
     }
 
     @Override
-    public void begin(String name, int children) throws IOException {
-        parents.add(Builder.element(parent(), name));
+    public void ref(String name, int idref) throws IOException {
+        Element element;
+        
+        element = Builder.element(parent(), name);
+        element.setAttribute("idref", Integer.toString(idref));
+        parents.add(element);
+    }
+
+    @Override
+    public void begin(String name, int id, int children) throws IOException {
+        Element element;
+        
+        element = Builder.element(parent(), name);
+        if (id != -1) {
+            element.setAttribute("id", Integer.toString(id));
+        }
+        parents.add(element);
     }
 
     @Override

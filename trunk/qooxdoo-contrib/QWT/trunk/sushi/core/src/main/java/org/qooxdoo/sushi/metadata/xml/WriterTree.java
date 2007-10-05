@@ -41,11 +41,26 @@ public class WriterTree extends Tree {
     }
 
     @Override
-    public void begin(String name, int children) throws IOException {
+    public void ref(String name, int id) throws IOException {
+        indent();
+        dest.write("<");
+        dest.write(name);
+        dest.write(" idref='");
+        dest.write(Integer.toString(id));
+        dest.write("'/>\n");
+    }
+
+    @Override
+    public void begin(String name, int id, int children) throws IOException {
         indent();
         indent++;
         dest.write("<");
         dest.write(name);
+        if (id != -1) {
+            dest.write(" id='");
+            dest.write(Integer.toString(id));
+            dest.write('\'');
+        }
         if (children == 0) {
             dest.write("/>\n");
         } else {
