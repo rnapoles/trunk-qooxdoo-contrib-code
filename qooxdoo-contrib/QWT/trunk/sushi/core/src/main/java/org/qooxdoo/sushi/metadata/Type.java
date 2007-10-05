@@ -37,6 +37,14 @@ import org.qooxdoo.sushi.metadata.xml.Loader;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 
 public abstract class Type {
+    public static final String SCHEMA_HEAD = 
+        "<?xml version='1.0' encoding='UTF-8'?>\n" + 
+        "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>\n" +
+        "  <xs:attributeGroup name='ids'>\n" +
+        "    <xs:attribute name='id' type='xs:string'/>\n" +
+        "    <xs:attribute name='idref' type='xs:string'/>\n" +
+        "  </xs:attributeGroup>\n";
+        
     protected final Schema schema;
     protected final Class<?> type;
     protected final String name;
@@ -156,8 +164,8 @@ public abstract class Type {
         Set<Type> types;
 
         schema = new StringBuilder();
-        schema.append("<?xml version='1.0' encoding='UTF-8'?>\n");
-        schema.append("<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>\n");
+
+        schema.append(SCHEMA_HEAD);
         schema.append("  <xs:element name='" + getName() + "' type='" + getSchemaTypeName() + "'/>\n");
 
         types = new HashSet<Type>();

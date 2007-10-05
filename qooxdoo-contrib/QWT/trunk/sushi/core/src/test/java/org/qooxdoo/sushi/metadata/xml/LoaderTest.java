@@ -22,12 +22,11 @@ package org.qooxdoo.sushi.metadata.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.metadata.SimpleTypeException;
 import org.qooxdoo.sushi.metadata.Variable;
 import org.qooxdoo.sushi.metadata.model.Car;
@@ -35,6 +34,7 @@ import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
 import org.qooxdoo.sushi.metadata.model.Vendor;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;
+import org.xml.sax.SAXException;
 
 public class LoaderTest extends ModelBase {
     // primitives
@@ -126,6 +126,70 @@ public class LoaderTest extends ModelBase {
         assertEquals(2, car.getRadio().getSpeaker());
     }
 
+    @Test
+    public void id() throws LoaderException {
+        Vendor vendor;
+        
+        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        "  <id>100</id>" +
+        "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
+        "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
+        "  </car>" +
+        "  <car idref='foo'/>" +
+        "</vendor>").get();
+        assertEquals(100L, vendor.getId());
+        assertEquals(2, vendor.cars().size());
+        assertSame(vendor.cars().get(0), vendor.cars().get(1));
+    }
+
+    @Test(expected=LoaderException.class)
+    public void idNotFound() throws LoaderException {
+        Vendor vendor;
+        
+        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        "  <id>100</id>" +
+        "  <car idref='foo'/>" +
+        "</vendor>").get();
+        assertEquals(100L, vendor.getId());
+        assertEquals(2, vendor.cars().size());
+        assertSame(vendor.cars().get(0), vendor.cars().get(1));
+    }
+    
+    @Test(expected=LoaderException.class)
+    public void idDuplicate() throws LoaderException {
+        Vendor vendor;
+        
+        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        "  <id>100</id>" +
+        "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
+        "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
+        "  </car>" +
+        "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
+        "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
+        "  </car>" +
+        "</vendor>").get();
+        assertEquals(100L, vendor.getId());
+        assertEquals(2, vendor.cars().size());
+        assertSame(vendor.cars().get(0), vendor.cars().get(1));
+    }
+
+    @Test(expected=LoaderException.class)
+    public void idUnexpectedContent() throws LoaderException {
+        Vendor vendor;
+        
+        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        "  <id>100</id>" +
+        "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
+        "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
+        "  </car>" +
+        "  <car idref='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
+        "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
+        "  </car>" +
+        "</vendor>").get();
+        assertEquals(100L, vendor.getId());
+        assertEquals(2, vendor.cars().size());
+        assertSame(vendor.cars().get(0), vendor.cars().get(1));
+    }
     //-- 
     
     @Test

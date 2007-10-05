@@ -21,10 +21,17 @@ package org.qooxdoo.sushi.metadata.xml;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.metadata.Item;
+import org.qooxdoo.sushi.metadata.Type;
+import org.qooxdoo.sushi.xml.Builder;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -32,18 +39,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.metadata.Item;
-import org.qooxdoo.sushi.metadata.Type;
-import org.qooxdoo.sushi.xml.Builder;
-
 public class Loader extends DefaultHandler {
     private Locator locator;
     private final Type type;
     private final SAXParser parser;
     private final List<Element> elements;
     private Object result;
+    /** map's id's to Objects */
+    private Map<String, Object> storage;
     private List<SAXException> exceptions;
     
     public Loader(Type type) {
@@ -66,6 +69,7 @@ public class Loader extends DefaultHandler {
         elements.clear();
 
         locator = null;
+        storage = new HashMap<String, Object>();
         exceptions = new ArrayList<SAXException>();
         try {
             parser.parse(src, this);
@@ -92,14 +96,12 @@ public class Loader extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXLoaderException {
         Element parent;
         Item<?> child;
-
+        Element started;
+        
         check(uri, localName);
-        if (attrs.getLength() != 0) {
-            loaderException("unexpected attribute(s)");
-        }
         if (elements.size() == 0) {
             // this is the root element - the element name doesn't matter
-            elements.add(Element.create(null, type));
+            started = Element.create(null, type);
         } else {
             parent = peek();
             child = parent.lookup(qName);
@@ -107,10 +109,31 @@ public class Loader extends DefaultHandler {
                 // cannot recover
                 throw new SAXLoaderException("unknown element '" + qName + "'", locator);
             }
-            elements.add(Element.create(child, child.getType()));
+            started = Element.create(child, child.getType());
         }
+        elements.add(started);
+        attributes(attrs, started);
     }
 
+    private void attributes(Attributes attrs, Element started) {
+        int length;
+        String name;
+        String value;
+        
+        length = attrs.getLength();
+        for (int i = 0; i < length; i++) {
+            name = attrs.getQName(i);
+            value = attrs.getValue(i);
+            if (name.equals("id")) {
+                started.id = value;
+            } else if (name.equals("idref")) {
+                started.idref = value;
+            } else {
+                loaderException("unexected attribute " + name);
+            }
+        }
+        
+    }
     @Override
     public void endElement(String uri, String localName, String qName) {
         Element child;
@@ -118,7 +141,7 @@ public class Loader extends DefaultHandler {
 
         check(uri, localName);
         child = elements.remove(elements.size() - 1);
-        childObject = child.done(exceptions, locator);
+        childObject = child.done(storage, exceptions, locator);
         if (elements.size() == 0) {
             result = childObject;
         } else {
