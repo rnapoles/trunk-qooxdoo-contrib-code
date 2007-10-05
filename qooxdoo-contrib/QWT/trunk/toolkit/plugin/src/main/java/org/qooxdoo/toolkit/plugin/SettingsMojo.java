@@ -28,6 +28,7 @@ import org.apache.maven.settings.io.xpp3.SettingsXpp3Reader;
 import org.apache.maven.settings.io.xpp3.SettingsXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.Node;
 
 /**
  * Base class for Mojos that modify settings.
@@ -38,16 +39,27 @@ public abstract class SettingsMojo extends Base {
     protected static final String PROFILE = "qooxdoo";
     protected static final String GROUP = "org.qooxdoo.toolkit";
 
-    protected FileNode node = (FileNode) io.getHome().join(".m2/settings.xml");
-
+    // CAUTION: don't use expression "${settings}", it's predefined
+    /**
+     * Settings to be adjusted
+     * 
+     * @parameter expression="${user.settings}"
+     *            default-value="${user.home}/.m2/settings.xml"
+     */
+    protected Node node;
+    
+    public void setNode(String path) {
+        node = io.node(path);
+    }
+    
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
         FileNode old;
         SettingsXpp3Reader reader;
         Settings settings;
         Writer dest;
-        
-        old = (FileNode) io.getHome().join(".m2/settings.xml.old");
+
+        old = (FileNode) node.getParent().join("settings.xml.old");
         if (!node.exists()) {
             settings = new Settings();
         } else {
