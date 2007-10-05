@@ -9,7 +9,7 @@ rm -rf $HOME/.m2/qwt-download-repository  # failure is ok
 rm -rf $DIR
 mkdir $DIR || exit 1
 # can't use wget, it's not available on all machines:
-cp $SCRIPTS/../src/download/pom.xml $DIR
+cp $SCRIPTS/../../src/download/pom.xml $DIR || exit 1
 cd $DIR || exit 1
 mvn $FIX || exit 1
 rm pom.xml
