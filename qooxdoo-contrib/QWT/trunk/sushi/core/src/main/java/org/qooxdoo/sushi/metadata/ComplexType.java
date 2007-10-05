@@ -25,20 +25,20 @@ import java.util.Set;
 
 /** A list of items */
 public class ComplexType extends Type {
-    private final List<Item> items;
+    private final List<Item<?>> items;
 
     public ComplexType(Schema schema, Class<?> type, String name) {
         super(schema, type, name);
 
-        this.items = new ArrayList<Item>();
+        this.items = new ArrayList<Item<?>>();
     }
 
-    public List<Item> items() {
+    public List<Item<?>> items() {
         return items;
     }
 
-    public Item lookupXml(String name) {
-        for (Item item : items) {
+    public Item<?> lookupXml(String name) {
+        for (Item<?> item : items) {
             if (item.getXmlName().equals(name)) {
                 return item;
             }
@@ -46,8 +46,8 @@ public class ComplexType extends Type {
         return null;
     }
     
-    public Item lookup(String name) {
-        for (Item item : items) {
+    public Item<?> lookup(String name) {
+        for (Item<?> item : items) {
             if (item.getName().equals(name)) {
                 return item;
             }
@@ -83,7 +83,7 @@ public class ComplexType extends Type {
 
         dest.append("  <xs:complexType name='" + getName() + "'>\n");
         dest.append("    <xs:sequence minOccurs='0'>\n");
-        for (Item item : items) {
+        for (Item<?> item : items) {
             dest.append("      <xs:element name='" + item.getXmlName()
                     + "' type='" + item.getType().getSchemaTypeName()
                     + "'" + item.getCardinality().forSchema() + "/>\n");
@@ -92,7 +92,7 @@ public class ComplexType extends Type {
         dest.append("    <xs:attributeGroup ref='ids'/>\n");
         dest.append("  </xs:complexType>\n");
 
-        for (Item item : items) {
+        for (Item<?> item : items) {
             item.getType().addSchemaType(done, dest);
         }
     }

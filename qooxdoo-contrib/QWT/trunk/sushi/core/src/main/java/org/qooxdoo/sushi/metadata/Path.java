@@ -114,7 +114,7 @@ public class Path {
             if (!(current.getType() instanceof ComplexType)) {
                 throw new PathException("complex type expected: " + current.getType());
             }
-            item = ((ComplexType) current.getType()).lookup(step.name);
+            item = (Item) ((ComplexType) current.getType()).lookup(step.name);
             if (item == null) {
                 throw new PathException(current.getType().getName() + ": no such field: " + step);
             }

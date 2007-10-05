@@ -50,7 +50,7 @@ public class Serializer {
     }
 
     private void complex(String name, ComplexType type, Object obj) throws IOException {
-        List<Item> items;
+        List<Item<?>> items;
 
         items = type.items();
         tree.begin(name, items.size());
