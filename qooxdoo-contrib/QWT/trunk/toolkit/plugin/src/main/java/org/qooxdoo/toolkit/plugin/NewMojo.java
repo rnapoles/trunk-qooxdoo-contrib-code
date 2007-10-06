@@ -41,8 +41,8 @@ public class NewMojo extends Base {
     /**
      * Package name.
      *
-     * @parameter expression="${package}"
-     * @required
+     * @parameter expression="${package}" 
+     *            default-value="org.qooxdoo.sample"
      */
     private String pkg;
     
