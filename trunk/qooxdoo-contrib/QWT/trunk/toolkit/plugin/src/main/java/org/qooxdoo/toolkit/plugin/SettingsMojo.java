@@ -40,8 +40,10 @@ public abstract class SettingsMojo extends Base {
     protected static final String GROUP = "org.qooxdoo.toolkit";
 
     // CAUTION: don't use expression "${settings}", it's predefined
+    // Note: I checked Maven's startup code (in 2.0.7): there's no way
+    // to obtain the user settings from Maven :(
     /**
-     * Settings to be adjusted
+     * Settings to be adjusted. 
      * 
      * @parameter expression="${user.settings}"
      *            default-value="${user.home}/.m2/settings.xml"
