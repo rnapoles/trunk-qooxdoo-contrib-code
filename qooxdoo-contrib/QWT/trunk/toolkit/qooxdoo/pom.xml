@@ -24,7 +24,7 @@
       <artifactId>runtime</artifactId>
       <version>${toolkit.version}</version>
     </dependency>
-    <dependency>
+    <dependency><!--  TODO: get rid of this? -->
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
       <version>${toolkit.version}</version>
