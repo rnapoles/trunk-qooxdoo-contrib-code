@@ -15,13 +15,13 @@
   <version>${toolkit.version}</version>
 
   <properties>
-    <toolkit.version>0.7.1</toolkit.version>
+    <toolkit.version>0.7.2-SNAPSHOT</toolkit.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
-      <artifactId>server</artifactId>
+      <artifactId>qooxdoo</artifactId>
       <version>${toolkit.version}</version>
     </dependency>
   </dependencies>

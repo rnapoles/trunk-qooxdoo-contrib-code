@@ -21,12 +21,21 @@ package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Strings;
@@ -144,9 +153,10 @@ public abstract class WebappBase extends Base {
     public void webapp() throws MojoExecutionException, IOException {
         info("Building webapp...");
 
+        List<Artifact> projectDependencies;
+        List<Artifact> systemDependencies;
         FileNode webinf;
         FileNode lib;
-        Artifact artifact;
         String name;
         
         webinf = (FileNode) webapp.join(WEB_INF);
@@ -157,6 +167,7 @@ public abstract class WebappBase extends Base {
         lib.mkdir();
         webXml(webinf.join("web.xml"));
 
+        projectDependencies = project.getRuntimeArtifacts();
         if (images.exists()) {
             images.link((FileNode) webapp.join(images.getName()));
         } else {
@@ -168,14 +179,44 @@ public abstract class WebappBase extends Base {
         }
         classesDirectory.link((FileNode) webinf.join(classesDirectory.getName()));
         sourceDirectory.link((FileNode) webinf.join("src"));
-        for (Object obj : project.getArtifacts()) {
-            artifact = (Artifact) obj;
+        for (Artifact artifact : projectDependencies) {
             name = getLibName(artifact);
             if (name != null) {
-                debug("link " + artifact.getFile());
+                debug("project link " + artifact.getFile());
                 new FileNode(io, artifact.getFile()).link((FileNode) lib.join(name));
             }
         }
+        try {
+            systemDependencies = systemDependencies();
+        } catch (ArtifactResolutionException e) {
+            throw new MojoExecutionException("cannot resolve system dependencies", e);
+        } catch (ArtifactNotFoundException e) {
+            throw new MojoExecutionException("cannot resolve system dependencies", e);
+        }
+        for (Artifact artifact : systemDependencies) {
+            if (contains(projectDependencies, artifact)) {
+                debug("already project dependency: " + artifact);
+            } else {
+                name = getLibName(artifact);
+                if (name != null) {
+                    debug("system link " + artifact.getFile());
+                    new FileNode(io, artifact.getFile()).link((FileNode) lib.join(name));
+                }
+            }
+        }
+    }
+
+    private static boolean contains(List<Artifact> lst, Artifact artifact) throws MojoExecutionException {
+        for (Artifact ele : lst) {
+            if (ele.getGroupId().equals(artifact.getGroupId()) && ele.getArtifactId().equals(artifact.getArtifactId())) {
+                if (ele.getVersion().equals(artifact.getVersion())) {
+                    return true;
+                } else {
+                    throw new MojoExecutionException("project dependency conflicts with system dependency: " + ele + " vs. " + artifact);
+                }
+            }
+        }
+        return false;
     }
 
     public void webXml(Node webXml) throws MojoExecutionException {
@@ -243,4 +284,66 @@ public abstract class WebappBase extends Base {
         "      <url-pattern>/*</url-pattern>\n" + 
         "   </servlet-mapping>\n" + 
         "</web-app>\n";
+    
+    //-- resolve Server dependencies
+    
+    /**
+     * Used to look up Artifacts in the remote repository.
+     * 
+     * @parameter expression="${component.org.apache.maven.artifact.factory.ArtifactFactory}"
+     * @required
+     * @readonly
+     */
+    private ArtifactFactory artifactFactory;
+
+    /**
+     * Used to look up Artifacts in the remote repository.
+     * 
+     * @parameter expression="${component.org.apache.maven.artifact.resolver.ArtifactResolver}"
+     * @required
+     * @readonly
+     */
+    private ArtifactResolver artifactResolver;
+
+    /**
+     * @parameter expression="${localRepository}"
+     * @readonly
+     * @required
+     */
+    private ArtifactRepository localRepository;
+
+    /**
+     * @parameter expression="${project.remoteArtifactRepositories}"
+     * @readonly
+     * @required
+     */
+    private List<ArtifactRepository> remoteRepositories;
+   
+    /**
+     * @component role="org.apache.maven.artifact.metadata.ArtifactMetadataSource"
+     *            hint="maven"
+     * @required
+     * @readonly
+     */
+    protected ArtifactMetadataSource artifactMetadataSource;
+   
+    private List<Artifact> systemDependencies() throws ArtifactResolutionException, ArtifactNotFoundException {
+        Set<Artifact> artifacts;
+        List<Artifact> result;
+        ArtifactResolutionResult resolutionResult;
+        Artifact artifact;
+        
+        artifacts = new HashSet<Artifact>();
+        artifacts.add(artifactFactory.createArtifact("org.qooxdoo.toolkit", "server", getVersion(), null, "jar"));
+        resolutionResult = artifactResolver.resolveTransitively(artifacts, project.getArtifact(), 
+                remoteRepositories, localRepository, artifactMetadataSource);
+        result = new ArrayList<Artifact>();
+        for (Object obj : resolutionResult.getArtifacts()) {
+            artifact = (Artifact) obj;
+            if (!"test".equals(artifact.getScope())) {
+                result.add(artifact);
+            }
+        }
+        return result;
+    }
 }
