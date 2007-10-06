@@ -61,6 +61,7 @@ public class Qooxdoo {
         return new Qooxdoo(version, extract(str, "URL:"), Long.parseLong(extract(str, "Last Changed Rev:")), repository);
     }
 
+    // TODO: duplicates Qooxdoo Test code
     private static void patch(Repository repository) {
         addBootstrapDependency(repository);
         
