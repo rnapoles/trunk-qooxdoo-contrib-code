@@ -47,7 +47,7 @@ public class Qooxdoo {
         return create(io, repository);
     }
 
-    public static Qooxdoo create(IO io, Repository repository) {
+    private static Qooxdoo create(IO io, Repository repository) {
         String str;
         String version;
         
@@ -61,6 +61,7 @@ public class Qooxdoo {
         return new Qooxdoo(version, extract(str, "URL:"), Long.parseLong(extract(str, "Last Changed Rev:")), repository);
     }
 
+    // TODO: duplicates Server code
     private static void patch(Repository repository) {
         addBootstrapDependency(repository);
         
