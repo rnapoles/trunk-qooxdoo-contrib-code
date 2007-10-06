@@ -11,10 +11,10 @@
     <version>1-SNAPSHOT</version>
   </parent>
 
-  <groupId>%GROUP%</groupId>
-  <artifactId>%ARTIFACT%</artifactId>
+  <groupId>org.qooxdoo</groupId>
+  <artifactId>hello</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>%ARTIFACT%</name>
+  <name>hello</name>
   <description>QWT Application</description>
   <packaging>jar</packaging>
 
