@@ -39,7 +39,6 @@ import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.compiler.Problem;
 import org.qooxdoo.toolkit.compiler.Task;
-import org.qooxdoo.toolkit.qooxdoo.Qooxdoo;
 import org.qooxdoo.toolkit.repository.Repository;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;

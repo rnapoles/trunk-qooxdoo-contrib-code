@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.qooxdoo.toolkit.qooxdoo.Qooxdoo;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.sushi.io.Node;
