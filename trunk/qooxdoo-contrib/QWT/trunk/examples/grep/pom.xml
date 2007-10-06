@@ -25,6 +25,11 @@
       <artifactId>qooxdoo</artifactId>
       <version>${toolkit.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.qooxdoo.sushi</groupId>
+      <artifactId>core</artifactId>
+      <version>1.0.2</version>
+    </dependency>
   </dependencies>
  
   <build>
