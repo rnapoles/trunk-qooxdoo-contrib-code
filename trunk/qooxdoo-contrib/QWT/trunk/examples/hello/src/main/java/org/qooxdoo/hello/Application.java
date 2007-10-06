@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package %PACKAGE%;
+package org.qooxdoo.hello;
 
 import qx.application.Gui;
 import qx.ui.basic.Label;
