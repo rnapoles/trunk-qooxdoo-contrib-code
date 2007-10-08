@@ -53,6 +53,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk</url>
   </scm>
 
+  <modules>
+    <module>sushi</module>
+    <module>toolkit</module>
+    <module>application</module>
+  </modules>
+
   <profiles>
     <profile>
       <id>all</id>
