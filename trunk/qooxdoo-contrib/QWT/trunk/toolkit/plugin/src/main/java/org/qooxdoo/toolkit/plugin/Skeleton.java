@@ -27,7 +27,7 @@ public class Skeleton {
         }
         zip = Archive.createZip(io);
         System.out.println("running svn export");
-        src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/examples");
+        src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/application");
         src.export(zip.data);
         for (Node application : zip.data.children()) {
             if (application.isDirectory()) {
