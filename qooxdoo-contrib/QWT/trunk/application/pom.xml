@@ -8,16 +8,18 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.qooxdoo</groupId>
-  <artifactId>examples</artifactId>
-  <name>Examples</name>
+  <artifactId>application</artifactId>
+  <name>Application</name>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <!-- CAUTION:
-         do not define common settings for the examples, 
-         because example have to build without this pom.
+         this is not a parent pom for applications -
+         because they have to build if only the application
+         directory is checked-out
    -->
   <modules>
+    <module>hello</module>
     <module>widgets</module>
     <module>grep</module>
   </modules>
