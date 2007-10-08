@@ -2,11 +2,12 @@
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.qooxdoo</groupId>
-  <artifactId>qooxdoo</artifactId>
-  <version>2-SNAPSHOT</version>
-  <name>Qooxdoo</name>
-  <packaging>pom</packaging>
+install:install-file -Dfile=src/org.eclipse-base-3.2.2.jar -DgroupId=org.eclipse -DartifactId=base -Dversion=3.2.2 -Dpackaging=jar || exit 1
+
+  <groupId>org.eclipse</groupId>
+  <artifactId>base</artifactId>
+  <version>3.2.2</version>
+  <packaging>jar</packaging>
 
   <organization>
     <name>1&amp;1</name>
