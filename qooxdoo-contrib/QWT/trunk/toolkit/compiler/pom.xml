@@ -25,7 +25,7 @@
       <artifactId>core</artifactId>
       <version>3.2.0.666</version>
     </dependency>
-    <dependency><!-- generated with "tu eclipse-jar" -->
+    <dependency>
       <groupId>org.eclipse</groupId>
       <artifactId>base</artifactId>
       <version>3.2.2</version>

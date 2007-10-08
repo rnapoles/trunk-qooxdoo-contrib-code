@@ -19,21 +19,22 @@
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.cli.Command;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Program;
 
+/** Adjust the main method and run it generate the eclipse base jar file. */
 public class EclipseBase {
     private static final IO io = new IO();
     
     public static void main(String[] args) throws IOException {
-        eclipse(args[0], args[1]);
+        eclipse("/usr/local/eclipse-3.2.2", "3.2.2");
     }
     
     public static void eclipse(String dir, String version) throws IOException {
         FileNode root = io.node(dir + "/plugins");
-        FileNode dest = io.createTempFile();
+        Node dest = io.getWorking().join("org.eclipse-base-" + version + ".jar");
         merge(dest, root, 
                 "org.eclipse.osgi_*.jar",
                 "org.eclipse.equinox.common_*.jar",
@@ -42,16 +43,9 @@ public class EclipseBase {
                 "org.eclipse.core.resources_*.jar",
                 "org.eclipse.core.jobs_*.jar"
                 );
-        System.out.println("installing " + dest.getName());
-        new Program(io.getWorking(), "mvn", "install:install-file", 
-                "-Dversion=" + version, 
-                "-DgroupId=org.eclipse", 
-                "-DartifactId=base", 
-                "-Dfile=" + dest.getAbsolute(), 
-                "-Dpackaging=jar").exec(System.out);
     }
     
-    public static void merge(FileNode dest, FileNode dir, String... files) throws IOException {
+    public static void merge(Node dest, Node dir, String... files) throws IOException {
         FileNode tmp = io.createTempDirectory();
         FileNode jar;
         

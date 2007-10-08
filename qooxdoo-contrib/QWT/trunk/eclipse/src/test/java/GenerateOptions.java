@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.JavaCore;
 
+/** Run this to generate eclipse properties for compile configuration */
 public class GenerateOptions {
     public static void main(String[] args) throws IOException {
         String name;
