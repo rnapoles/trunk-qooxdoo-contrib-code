@@ -5,12 +5,13 @@ CAUTION: this is alpha software.
 
 Building
 
-  ./install.sh
+  mvn clean install
 
 
 Directory structure
 
   sushi          gerneral purpose stuff, like apache commons
+  eclipse        addition jar needed for the compiler
   toolkit        qwt itself
   application    example applications
 
