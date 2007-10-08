@@ -14,7 +14,7 @@
   <groupId>org.qooxdoo</groupId>
   <artifactId>hello</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>hello</name>
+  <name>Hello World Application</name>
   <description>QWT Application</description>
   <packaging>jar</packaging>
 
