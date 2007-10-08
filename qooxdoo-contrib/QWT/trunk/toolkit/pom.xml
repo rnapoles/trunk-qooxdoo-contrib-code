@@ -45,19 +45,24 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- not defined in parent pom necause this plugin is buggy (see below): -->
+        <version>1.0-alpha-3</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
             <goals>
-              <goal>enforce-once</goal>
+              <!-- TODO: should be enforce-once, but:
+                   o it causes cyclic dependencies: http://jira.codehaus.org/browse/MENFORCER-11
+                   o it doesn't work anyway: http://jira.codehaus.org/browse/MENFORCER-12 -->
+              <goal>enforce</goal>
             </goals>
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>2.0.6</version>
+                  <version>2.0.7</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>1.6</version>
+                  <version>1.5</version>
                 </requireJavaVersion>
                 <requireOS>
                   <family>unix</family>
