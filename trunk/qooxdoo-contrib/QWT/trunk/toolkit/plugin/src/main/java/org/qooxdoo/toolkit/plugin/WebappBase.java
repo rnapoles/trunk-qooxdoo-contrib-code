@@ -193,6 +193,7 @@ public abstract class WebappBase extends Base {
         } catch (ArtifactNotFoundException e) {
             throw new MojoExecutionException("cannot resolve system dependencies", e);
         }
+        info("adding systemdependencies: " + systemDependencies);
         for (Artifact artifact : systemDependencies) {
             if (contains(projectDependencies, artifact)) {
                 debug("already project dependency: " + artifact);

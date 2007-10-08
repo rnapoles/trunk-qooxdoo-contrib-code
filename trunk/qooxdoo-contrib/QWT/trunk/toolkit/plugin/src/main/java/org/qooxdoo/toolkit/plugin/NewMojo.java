@@ -20,16 +20,17 @@
 package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
+import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.ResourceNode;
-import org.qooxdoo.sushi.util.Program;
 
 /**
  * Generates a new application.
@@ -45,6 +46,14 @@ public class NewMojo extends Base {
      *            default-value="org.qooxdoo.sample"
      */
     private String pkg;
+    
+    /**
+     * Application to be generated.
+     *
+     * @parameter expression="${application}" 
+     *            default-value="hello"
+     */
+    private String application;
     
     @Override
     public void doExecute() throws IOException, MojoExecutionException {
@@ -64,9 +73,9 @@ public class NewMojo extends Base {
         unpack(dest);
         renameFiles(dest, "PACKAGE", pkg.replace('.', '/'));
         map = new HashMap<String, String>();
-        map.put("%PACKAGE%", pkg);
-        map.put("%ARTIFACT%", artifact);
-        map.put("%GROUP%", group);
+        map.put(Skeleton.PACKAGE, pkg);
+        map.put(Skeleton.ARTIFACT, artifact);
+        map.put(Skeleton.GROUP, group);
         // TODO:
         map.put("%TOOLKIT_VERSION%", getVersion());
         replaceContent(dest, map);
@@ -74,20 +83,26 @@ public class NewMojo extends Base {
         info("Run 'mvn qx:help' for help");
     }
 
-    private void unpack(FileNode dest) throws IOException {
-        FileNode skel;
+    private void unpack(FileNode dest) throws IOException, MojoExecutionException {
+        Archive archive;
+        Node src;
+        List<String> apps;
         
-        skel = io.createTempFile();
-        new ResourceNode(io, "skel.tar.gz").copyFile(skel);
+        archive = Archive.loadZip(new ResourceNode(io, Skeleton.NAME));
+        src = archive.data.join(application); 
+        if (!src.isDirectory()) {
+            apps = new ArrayList<String>();
+            for (Node child : archive.data.children()) {
+                if (child.isDirectory()) {
+                    apps.add(child.getName());
+                }
+            }
+            throw new MojoExecutionException("unkown application '" + application + "', choose one of " + apps);
+        }
         dest.mkdir();
-        untar(skel, dest);
+        src.copyDirectory(dest);
     }
 
-    private void untar(FileNode src, FileNode dest) throws IOException {
-        debug("cd " + dest + " && tar zxf " + src);
-        exec(dest, "tar", "zxf", src.getAbsolute());
-        
-    }
     private void replaceContent(FileNode dest, Map<String, String> props) throws IOException {
         Filter filter;
         FileNode file;
@@ -95,7 +110,7 @@ public class NewMojo extends Base {
         String changed;
         
         filter = io.filter();
-        filter.include("src/**/*.java", "pom.xml", "**/*.sh");
+        filter.include("src/**/*.java", "pom.xml");
         for (Node node : dest.find(filter)) {
             file = (FileNode) node;
             orig = file.readString();
@@ -127,9 +142,5 @@ public class NewMojo extends Base {
         destDir.mkdirsOpt();
         debug("mv " + src.getAbsolute() + " " + dest.getName());
         src.move(dest);
-    }
-
-    private void exec(FileNode dest, String ... cmd) throws IOException {
-        new Program(dest, cmd).execNoOutput();
     }
 }

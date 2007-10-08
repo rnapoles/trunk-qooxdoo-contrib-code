@@ -57,12 +57,18 @@ public abstract class Base extends AbstractMojo {
     
     protected abstract void doExecute() throws MojoExecutionException, IOException, XmlException, SAXException;
     
+    private String version = null;
+    
     protected String getVersion() {
-        try {
-            return new ResourceNode(io, "toolkit.version").readString().trim();
-        } catch (IOException e) {
-            throw new RuntimeException("unkown version");
-        }        
+        if (version == null) {
+            try {
+                version = new ResourceNode(io, "toolkit.version").readString().trim();
+            } catch (IOException e) {
+                throw new RuntimeException("unkown version");
+            }
+            info("Qooxdoo Plugin version: " + version);
+        }
+        return version;
     }
     
     protected void warn(String msg, Exception e) {
