@@ -83,19 +83,16 @@
         <executions>
           <execution>
             <id>skel</id>
-            <phase>process-resources</phase>
+            <phase>compile</phase>
             <configuration>
               <tasks>
-                <echo file="${basedir}/target/classes/toolkit.version">${project.version}</echo>
                 <mkdir dir="${basedir}/target" />
-                <tar destfile="${basedir}/target/classes/skel.tar.gz" compression="gzip">
-                  <tarfileset dir="${basedir}/src/skel">
-                    <exclude name="**/*.sh" />
-                  </tarfileset>
-                  <tarfileset dir="${basedir}/src/skel" mode="755">
-                    <include name="**/*.sh" />
-                  </tarfileset>
-                </tar>
+                <echo file="${basedir}/target/classes/toolkit.version">${project.version}</echo>
+                <java classname="org.qooxdoo.toolkit.plugin.Skeleton" 
+                      failonerror="true" fork="true"
+                      classpathref="maven.test.classpath">
+                  <arg value="${basedir}/target/classes" />
+                </java>
               </tasks>
             </configuration>
             <goals>
