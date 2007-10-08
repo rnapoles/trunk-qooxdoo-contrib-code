@@ -56,6 +56,7 @@ install:install-file -Dfile=src/org.eclipse-base-3.2.2.jar -DgroupId=org.eclipse
 
   <modules>
     <module>sushi</module>
+    <module>eclipse</module>
     <module>toolkit</module>
     <module>application</module>
   </modules>
