@@ -23,6 +23,7 @@ import qx.application.Gui;
 import qx.ui.basic.Label;
 
 public class Application extends Gui {
+    @Override
     public void main() {
         super.main();
         new Label("Hello, world!").addToDocument();
