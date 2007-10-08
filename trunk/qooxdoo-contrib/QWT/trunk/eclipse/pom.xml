@@ -6,6 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <artifactId>base</artifactId>
   <version>3.2.2</version>
   <packaging>jar</packaging>
+  <name>Eclipse Base</name>
 
   <build>
     <plugins>
@@ -18,7 +19,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
             <goals><goal>run</goal></goals>
             <configuration>
               <tasks>
-                <copy file="${basedir}/${pom.groupId}-${pom.artifactId}-${pom.version}.jar" toFile="${basedir}/target/${pom.build.finalName}.jar" />
+                <copy file="${basedir}/${pom.groupId}-${pom.artifactId}-${pom.version}.jar" 
+                      toFile="${basedir}/target/${pom.build.finalName}.jar"
+                      overwrite="true" />
               </tasks>
             </configuration>
           </execution>
