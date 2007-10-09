@@ -59,13 +59,20 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       nullable : true
     },
 
-    /** separator for multi-valued texts */
+    /** service method returning the autocomplete data */
     serviceMethodAutoComplete :
     {
       check : "String",
       init : "",
       nullable : true
-    }
+    },
+    
+    /** metadata for the service method  */
+    metaData :
+    {
+      init : null,
+      nullable : true
+    }    
     
   },
 
@@ -208,7 +215,8 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	           }, 
 	           this.getServiceMethodAutoComplete(), 
 	           input,
-	           this.__listBoxWidget ? true : false
+	           this.__listBoxWidget ? true : false,
+             this.getMetaData()
 	          );
 	          break;
 	          

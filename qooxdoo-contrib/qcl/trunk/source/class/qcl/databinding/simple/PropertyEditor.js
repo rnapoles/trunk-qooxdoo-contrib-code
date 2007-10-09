@@ -227,7 +227,12 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 							}
 							return newValue;  
 						});
-						break;										
+						break;		
+            
+          case "autocomplete":
+						cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditor;
+            cellEditor.setMetaData(metaData.autocomplete);
+						break;                        								
 				}	
 			}
 			return cellEditor;
