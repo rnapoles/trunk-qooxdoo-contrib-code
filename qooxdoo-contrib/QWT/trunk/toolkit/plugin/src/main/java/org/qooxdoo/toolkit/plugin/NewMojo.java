@@ -76,8 +76,7 @@ public class NewMojo extends Base {
         map.put(Skeleton.PACKAGE, pkg);
         map.put(Skeleton.ARTIFACT, artifact);
         map.put(Skeleton.GROUP, group);
-        // TODO:
-        map.put("%TOOLKIT_VERSION%", getVersion());
+        map.put(Skeleton.TOOLKIT_VERSION, getVersion());
         replaceContent(dest, map);
         info("SUCCESS: new application written to " + dest.getAbsolute());
         info("Run 'mvn qx:help' for help");
