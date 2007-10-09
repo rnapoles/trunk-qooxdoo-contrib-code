@@ -13,6 +13,7 @@ public class Skeleton {
     public static final String PACKAGE = "%PACKAGE%";
     public static final String GROUP = "%GROUP%";
     public static final String ARTIFACT = "%ARTIFACT%";
+    public static final String TOOLKIT_VERSION = "%TOOLKIT_VERSION%";
     
     private static final IO io = new IO();
     
