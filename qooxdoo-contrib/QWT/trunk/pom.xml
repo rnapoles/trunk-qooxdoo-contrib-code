@@ -60,7 +60,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>application</module>
   </modules>
 
-  <profiles>
+  <ciManagement>
+    <system>hudson</system>
+    <url>http://pustemanager:7080/hudson</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>michael.hartmeier@1und1.de</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+
+   <profiles>
     <profile>
       <id>all</id>
       <activation><property><name>full</name></property></activation>
