@@ -167,7 +167,11 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      *   Integer  firstRow 
      *   Integer  lastRow
      * The server jsonrpc response must look like so:
-     * { result : {  rowData : [ [ ... ],[...],...] }, ..}
+     * { result : {  rowData : [ 
+     *   { 'rowId1' : 'foo1',  'rowId2' : 'bar1', ... },
+     *   { 'rowId1' : 'foo2',  'rowId2' : 'bar2', ... },
+     *   ...
+     * ] }, ... }
      *
      * @type member
      * @abstract
