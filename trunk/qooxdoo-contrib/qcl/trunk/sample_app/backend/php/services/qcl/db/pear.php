@@ -88,15 +88,27 @@ class qcl_db_pear extends qcl_db
 	}	
 
 	/**
-	 * gets the value of the first cell cell of the first row of the result set
+	 * gets the value of the first cell of the first row of the result set
 	 * useful for example for "SELECT count(*) ... " queries
 	 * return mixed
 	 */
-	function &getValue ( $sql ) 
+	function getValue ( $sql ) 
 	{
 		$row = $this->getRow ( $sql, false );
 		return $row[0];
 	}
+
+	/**
+	 * gets the values of the first cell of each row of the result set
+	 * return mixed
+	 */
+	function getValues ( $sql ) 
+	{
+		$rows = $this->getAllRows ( $sql, false );
+		$result= array();
+		foreach($rows as $row) $result[] = $row[0];
+		return $result;
+	}	
 	
 	/**
 	 * gets full resultset
@@ -138,7 +150,7 @@ class qcl_db_pear extends qcl_db
 		$values = implode (",", $values );
 		
 		$this->query ("
-			INSERT INTO 
+			INSERT IGNORE INTO 
 				`$table` (`$columns`) 
 			VALUES ($values)
 		");
