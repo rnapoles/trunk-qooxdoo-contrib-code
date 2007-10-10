@@ -65,6 +65,7 @@ public class Clazz extends Item {
                     throw new XmlException("constructor method expected: " + m);
                 }
                 if (!m.getName().equals("ctor")) {
+                    // TODO throw new XmlException("unexpected method name: " + m.getName());
                 }
                 m.addPrefixes(clazz);
                 clazz.add(m);
@@ -213,6 +214,10 @@ public class Clazz extends Item {
     
     public List<String> getInterfaceNames() {
         return interfaceNames;
+    }
+
+    public List<Clazz> getInterfaces() {
+        return interfaces;
     }
 
     public void addInterface(Clazz ifc) {

@@ -1,14 +1,10 @@
 ### qx/core/Init.java
 ***
-this.debug("application: " + this.getApplication().classname);
-this.debug("application: " + this.getApplication().classname); QwtBeforeMain();
+this.debug("application: " + this.getApplication().classname + "[" + this.getApplication().toHashCode() + "]");
+this.debug("application: " + this.getApplication().classname + "[" + this.getApplication().toHashCode() + "]"); QwtBeforeMain();
 ***
 this.info("main runtime: " + (new Date - start) + "ms");
 this.info("main runtime: " + (new Date - start) + "ms"); QwtAfterMain();
-### qx/ui/core/ClientDocumentBlocker.java
-***
-public native void getFocusRoot();
-public native Object getFocusRoot();
 ### qx/util/manager/Value.java
 ***
 public native Object resolveDynamic(String value);
@@ -17,20 +13,6 @@ public native java.lang.Object resolveDynamic(String value);
 ***
 public native String toString_();
 public native java.lang.String toString_();
-### qx/ui/resizer/Resizer.java
-***
-public native void _changeHeight(Object value);
-public native void _changeHeight(int value);
-***
-public native void _changeWidth(Object value);
-public native void _changeWidth(int value);
-### qx/ui/resizer/ResizablePopup.java
-***
-public native void _changeHeight(Object value);
-public native void _changeHeight(int value);
-***
-public native void _changeWidth(Object value);
-public native void _changeWidth(int value);
 ### qx/core/Client.java
 ***
 this._fireBugActive = (window.console && console.log && console.debug && console.assert);

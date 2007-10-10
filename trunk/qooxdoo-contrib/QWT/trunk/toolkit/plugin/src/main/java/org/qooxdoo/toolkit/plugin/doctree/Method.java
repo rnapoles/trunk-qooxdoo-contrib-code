@@ -35,10 +35,13 @@ public class Method extends Item {
         Method method;
         Access a;
         String name;
-
+        Type returnType;
+        String docFrom;
+        
         isContructor = parser.getBoolean(element, "isCtor", false);
         a = access(element);
         name = element.getAttribute("name");
+        docFrom = Dom.getAttributeOpt(element, "docFrom");
         if (a == Access.PROTECTED) {
             if (name.startsWith("init")
                     || element.getAttribute("overriddenFrom") != null) {
@@ -47,18 +50,23 @@ public class Method extends Item {
                 a = Access.PUBLIC;
             }
         }
+        
+        returnType = isContructor ? null : parser.methodType(element);
         method = new Method(a, parser.getBoolean(element, "isAbstract", false),
-                !forInterface && !isContructor, parser.getBoolean(element,
-                        "isStatic", false), isContructor, isContructor ? null
-                        : parser.methodType(element),
-                isContructor ? simpleClass : name, parser.description(element),
+                !forInterface && !isContructor, parser.getBoolean(element, "isStatic", false), 
+                        isContructor, returnType,
+                isContructor ? simpleClass : name, parser.description(element), docFrom, 
                 isContructor ? "" : null);
+        for (Element e : parser.selector.elements(element, "errors/error")) {
+            method.errors.add(Dom.getAttribute(e, "msg"));
+        }
         for (Element e : parser.selector.elements(element, "params/param")) {
             method.add(Parameter.fromXml(parser, e));
         }
         return method;
     }
 
+    
     private static Access access(Element element) throws XmlException {
         String access;
 
@@ -77,14 +85,16 @@ public class Method extends Item {
     private final boolean isNative;
     private final boolean isStatic;
     private final boolean isConstructor;
-    private final Type type;
+    private Type type;
     private final String name;
+    private final String docFrom;
     private final String body;
     private final List<Parameter> params;
-
+    public final List<String> errors;
+    
     public Method(Access access, boolean isAbstract, boolean isNative,
             boolean isStatic, boolean isConstructor, Type type, String name,
-            String description, String body) {
+            String description, String docFrom, String body) {
         super(description);
         this.access = access;
         this.isAbstract = isAbstract;
@@ -93,19 +103,22 @@ public class Method extends Item {
         this.isConstructor = isConstructor;
         this.type = type;
         this.name = name;
+        this.docFrom = docFrom;
         this.body = body;
         this.params = new ArrayList<Parameter>();
+        this.errors = new ArrayList<String>();
         if (isNative) {
             setExtra("@alias");
         }
     }
 
+    /** add constructors with less arguments */
     public void addPrefixes(Clazz dest) {
         Method m;
 
         for (int count = 0; count < params.size(); count++) {
             m = new Method(access, isAbstract, isNative, isStatic,
-                    isConstructor, type, name, getDescription(), body);
+                    isConstructor, type, name, getDescription(), null, body);
             for (int j = 0; j < count; j++) {
                 m.params.add(new Parameter(params.get(j)));
             }
@@ -113,11 +126,37 @@ public class Method extends Item {
         }
     }
 
+    public void link(Doctree doctree, Clazz owner) {
+        Clazz clazz;
+        Method docFromMethod;
+        
+        docFromMethod = null;
+        if (docFrom != null) {
+            clazz = doctree.get(docFrom);
+            docFromMethod = clazz.findMethod(name, false);
+            if (docFromMethod == null) {
+                throw new IllegalArgumentException(docFrom + "." + name + " not found.");
+            }
+        } else if (errors.contains("Documentation is missing.")) {
+            for (Clazz i : owner.getInterfaces()) {
+                docFromMethod = i.findMethod(name, false);
+                if (docFromMethod != null) {
+                    break;
+                }
+            }
+        }
+        if (docFromMethod != null) {
+            this.type = docFromMethod.type;
+            this.params.clear();
+            this.params.addAll(docFromMethod.params);
+        }
+    }
+    
     public Method duplicate(String newName) {
         Method m;
 
         m = new Method(access, isAbstract, isNative, isStatic, isConstructor,
-                type, newName, getDescription(), body);
+                type, newName, docFrom, getDescription(), body);
         for (Parameter p : params) {
             m.params.add(new Parameter(p));
         }

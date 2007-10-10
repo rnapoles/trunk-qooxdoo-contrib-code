@@ -35,7 +35,7 @@ public class ClazzTest {
         
         clazz = new Clazz(ClazzType.CLASS, "foo.bar.Baz", "Base", "desc");
         clazz.addWithMethods(new Property("p", SimpleType.NUMBER, null, null));
-        clazz.methods.add(new Method(Access.PUBLIC, false, false, false, false, SimpleType.BOOLEAN, "ok", null, ""));
+        clazz.methods.add(new Method(Access.PUBLIC, false, false, false, false, SimpleType.BOOLEAN, "ok", null, null, ""));
         assertEquals("foo.bar.Baz", clazz.getFullName());
         assertEquals("foo.bar", clazz.getPackage());
         assertEquals("Baz", clazz.getName());
