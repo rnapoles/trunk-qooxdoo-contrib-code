@@ -145,7 +145,7 @@ qx.Class.define("inspector.Inspector", {
 
     // the native window for the api viewer
     _apiWindow: null,
-        
+     
     
    /*
     *********************************

@@ -275,7 +275,89 @@ qx.Class.define("inspector.console.Console", {
     *********************************
        PROTECTED
     *********************************
-    */
+    */    
+   _generateSettingsMap: function() {
+      // the first superclass is the class of the selected widget
+      var superclass = this._widget;
+      // create new properties array to store the propertey of a class
+      var properties = [];
+      // go threw the inheritance of the selected widget
+      for (var i = 1; ; i++) {
+        // store the properties and classnames in seperate array
+        var props = qx.Class.getByName(superclass.classname).$$properties;
+        // go threw all properties of the current class
+        for (var j in props) {
+          properties.push(props[j]);
+        }
+        // go threw all classes to the qx.core.Object class
+        if(qx.Class.getByName("qx.core.Object") == superclass) {
+          break;  
+        }       
+        // set the new class
+        superclass = qx.Class.getByName(superclass.classname).superclass;
+      }      
+      
+      // create a temp object to hold all changed properties
+      var props = {};
+      
+      // go threw all properties
+      for (var i in properties) {
+        // ignore the cahced properties
+        if (properties[i]._cached == true) {
+          continue;
+        }
+        
+        // read value
+        var getterName = "get" + qx.lang.String.toFirstUp(properties[i].name);
+        // try to read the value
+        try {
+          var value = this._widget[getterName].call(this._widget);
+          if (value instanceof Object) {
+            continue;
+          }
+        } catch (e) {
+          // continue the property
+          continue;
+        }
+        
+        // take care of the refined properties
+        var clazz = qx.Class.getByName(this._widget.classname);
+        if (clazz.prototype["__init$" + properties[i].name] == value) {
+          continue;
+        }
+            
+        // check if the value is the init or default value 
+        if (value != properties[i].defaultValue &&
+            value != properties[i].init) {
+           props[properties[i].name] = value;
+        }        
+      }
+      
+      // get the styles given by the theme
+      var styles = qx.theme.manager.Appearance.getInstance().styleFrom(this._widget.getAppearance(), {}); 
+      
+      // check for the theme properties
+      for (var propertyName in props) {
+        for (var stylePropertyName in styles) {
+          if (propertyName == stylePropertyName) {
+            if (props[propertyName] == styles[stylePropertyName]) {
+              delete props[propertyName];
+            }
+          }
+        }
+      }
+      
+      // build the javascript set code
+      var returnString = ".set({<br>"
+      for (var i in props) {
+        returnString += (i + ": " + props[i] + ", <br>");        
+      }
+      returnString += "});";
+            
+      return returnString;
+   },   
+   
+   
     /**
      * This function evaluates the given text and runs it a 
      * javascript code using the eval function. In subject to the 
@@ -526,8 +608,8 @@ qx.Class.define("inspector.console.Console", {
     },
     
     /**
-     * Prints out a standard text in black wit the leading ">> " to the console.
-     * @param text {String} the text to print out.
+     * Prints out a standard text in black with the leading ">> " to the console.
+     * @param text {String} The text to print out.
      */
     _printText: function(text) {
       var label = this._getLabel(">>>&nbsp;", text, "blue");
@@ -535,6 +617,17 @@ qx.Class.define("inspector.console.Console", {
       // scroll to the end of the console 
       this._scrollToLastLine();
     },
+    
+    
+    /**
+     * Prints out a code snippet in withe with black background to the console.
+     * @param code {String} The code to print out.
+     */
+    _printCode: function(code) {
+      var label = this._getLabel("", code, "white", null, "black");
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();    },
     
     
     /*
@@ -713,6 +806,12 @@ qx.Class.define("inspector.console.Console", {
       }, this);
 */      
 
+      var setButton = new qx.ui.toolbar.Button("Settings-Map");
+      this._toolbar.add(setButton);
+      setButton.addEventListener("execute", function() {
+        this._printCode(this._generateSettingsMap());
+      }, this);
+        
       // add a spacer to keep the help button rigth
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());      
 
