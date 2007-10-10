@@ -54,7 +54,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /** separator for multi-valued texts */
     separator :
     {
-      check : "String",
       init : "",
       nullable : true
     },
@@ -62,7 +61,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /** service method returning the autocomplete data */
     serviceMethodAutoComplete :
     {
-      check : "String",
       init : "",
       nullable : true
     },
@@ -147,12 +145,6 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       while ( content.charAt(start) == " ") start++;
       var input   = content.substr(start);
       
-      // is popup visible - then no lookup
-      if ( this.__listBoxWidget )
-      {
-        if ( this.getPopup().isSeeable() ) return false;
-      }
-      
     	// small timeout to detect if user has typed ahead or deleted input
     	var _this = this;
     	window.setTimeout(function(){
@@ -175,7 +167,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           // use JSON-RPC
           case "jsonrpc":
           
-			      var rpc = new qcl.remote.Rpc();
+			      var rpc = new qx.io.remote.Rpc();
 			      rpc.setTimeout(this.getTimeout());
 			      rpc.setUrl(this.getServiceUrl());
 			      rpc.setServiceName(this.getServiceName() );
@@ -196,7 +188,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	              {
 	                for (var key in result.__messages)
 	                {
-	                  qx.messagebus.Bus.dispatch( new qx.messagebus.Message( key, result.__messages[key] ) ); 
+	                  qx.messagebus.Bus.dispatch( key, result.__messages[key] ); 
 	                }
 	                delete (result.__messages);
 	              }
@@ -206,7 +198,9 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	              
 	            } else {
 	              // generic error handling; todo: delegate to event listeners
-	              _this.error ("Async(" + id + ") exception: " + 
+	              qx.messagebus.Bus.dispatch(
+                    "qcl.databinding.messages.rpc.error",
+                    "Async(" + id + ") exception: " + 
                     "origin: " + ex.origin +
                     "; code: " + ex.code +
                     "; message: " + ex.message
