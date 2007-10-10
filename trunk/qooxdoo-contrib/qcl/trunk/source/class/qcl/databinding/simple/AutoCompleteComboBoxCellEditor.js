@@ -94,9 +94,6 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
       cellEditor.setServiceName(metaData.serviceName);
       cellEditor.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
       cellEditor.setSeparator(metaData.separator);
-      delete metaData.ServiceName;
-      delete metaData.serviceMethodAutoComplete;
-      delete metaData.separator;
       
       // other metadata
       cellEditor.setMetaData(metaData);
@@ -110,21 +107,13 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
 
       var value = cellInfo.value;
 
-      // check if renderer does something with value
-      var cellRenderer = cellInfo.table.getTableColumnModel().getDataCellRenderer(cellInfo.col);
-      var label        = cellRenderer._getContentHtml(cellInfo);
-      if ( value != label )
-      {
-        value = label;
-      }
-
       // replace null values
       if ( value === null )
       {
         value = "";
       }
 
-      field.setValue("" + value);
+      field.setValue("" + value );
 
       field.addEventListener("appear", function() {
         this.selectAll();
