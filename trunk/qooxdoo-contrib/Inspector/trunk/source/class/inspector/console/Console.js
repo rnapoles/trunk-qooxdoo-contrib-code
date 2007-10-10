@@ -165,7 +165,7 @@ qx.Class.define("inspector.console.Console", {
       // get the current value of the textfield
       var value = this._textField.getComputedValue();
       // get the value to add to the textfield
-      var name = this._autoCompletePopup.getCurrentSelection();          
+      var name = this._autoCompletePopup.getCurrentSelection();
       // if something is selected
       if (name != "undefined") {
         // get the stuff after the dot in the textfield
