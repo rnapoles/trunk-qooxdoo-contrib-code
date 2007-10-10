@@ -44,16 +44,20 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     
     // initialize the table model
     this._tableModel = new qx.ui.table.model.Simple();
-    this._tableModel.setColumns(["function"]);
+    this._tableModel.setColumns(["", "function"]);
     
     // initialize table
     this._table = new qx.ui.table.Table(this._tableModel);
     this._table.setWidth(298);
-    this._table.setHeight(140);
+    this._table.setHeight(138);
     this._table.setShowCellFocusIndicator(false);
     this._table.setColumnVisibilityButtonVisible(false);
-    this._table.setStatusBarVisible(false);
-    this._table.getTableColumnModel().setColumnWidth(0, 282);    
+    this._table.setStatusBarVisible(true);
+    this._table.getTableColumnModel().setColumnWidth(0, 22);
+    this._table.getTableColumnModel().setColumnWidth(1, 260);
+    var renderer = new qx.ui.table.cellrenderer.Image(18, 18);
+    this._table.getTableColumnModel().setDataCellRenderer(0, renderer);
+    this._table.setRowHeight(20);     
     this.add(this._table);
     
     // set the colors of focused and not focues the same
@@ -121,7 +125,6 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       // select and focus the row
       this._table.getSelectionModel().addSelectionInterval(selectedIndex, selectedIndex);
       this._table.setFocusedCell(0, selectedIndex, true);
-      
     },
     
     
@@ -190,7 +193,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
         return;
       } else {
         // write the classname to the header cell
-        this._tableModel.setColumnNamesByIndex([object.classname]);        
+        this._tableModel.setColumnNamesByIndex(["", object.classname]);        
       }
       
       // generate the search object
@@ -202,6 +205,16 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       for (var name in object) {
         // apply the search term
         if (regExp.test(name)) {
+          
+          // check for the scope of the property / method
+          if (name.substring(0,2) ==  "__") {
+              var scope = "private";
+            } else if (name.substring(0,1) == "_") {
+              var scope = "protected";
+            } else {
+              var scope = "public";
+            }   
+          
           // if it is a function
           if (object[name] instanceof Function) {
             // add the opening bracket for the function arguments
@@ -218,22 +231,26 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
             }
             // add the ending bracket for the function arguments
             functionString += ")";
+
+            // create the image uri
+            var image = qx.io.Alias.getInstance().resolve("inspector/image/autocomplete/method_" + scope + "18.gif")  
             // add the function string to the data
-            data.push([functionString]);
+            data.push([image, functionString]);
 
           // if it is no function
           } else {
+            // create the image uri
+            var image = qx.io.Alias.getInstance().resolve("inspector/image/autocomplete/property_" + scope + "18.gif")            
             // add the name of the attribute to the data
-            data.push([name]);
+            data.push([image, name]);
           }        
         } 
       }
       
-      // load the data
+       // load the data
       this._tableModel.setData(data);
       // sort the data by name
-      this._tableModel.sortByColumn(0, true);
-      
+      this._tableModel.sortByColumn(1, true);            
       // set the popup to the current position
       this.setLeft(left);
       this.setTop(top);
@@ -268,7 +285,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       // if something is selected
       if (selectedIndex != -1) {
         // return the data in the model as a string
-        return this._tableModel.getData()[selectedIndex] + "";
+        return this._tableModel.getData()[selectedIndex][1] + "";
       }
       return null;
     }
