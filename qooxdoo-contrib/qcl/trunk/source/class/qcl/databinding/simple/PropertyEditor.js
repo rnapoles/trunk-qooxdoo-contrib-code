@@ -60,6 +60,21 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     this.setColumnVisibilityButtonVisible(false);
     this.setKeepFirstVisibleRowComplete(true);
     this.setStatusBarVisible(false);
+    
+    // navigation up and down
+    this.addEventListener("changeEditedChell",function(e){
+      this.stopEditing();
+      var direction = e.getData();
+      var col = this.getFocusedColumn(); 
+      var row = this.getFocusedRow();
+      this.setFocusedCell(
+        col,
+        row + ( direction == "Up"  ? -1 * (row > 0) : 1 * ( row < this.getTableModel().getRowCount() ) ),
+        true
+      );
+      this.startEditing();
+    });
+    
   },
 
   /*
