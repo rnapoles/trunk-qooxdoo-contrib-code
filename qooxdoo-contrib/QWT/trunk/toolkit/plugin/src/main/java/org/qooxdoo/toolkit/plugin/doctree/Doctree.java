@@ -117,6 +117,9 @@ public class Doctree {
             for (String s : c.getInterfaceNames()) {
                 c.addInterface(get(s));
             }
+            for (Method m : c.methods) {
+                m.link(this, c);
+            }
         }
         for (Clazz c : clazzes) {
             c.addBaseConstructors();

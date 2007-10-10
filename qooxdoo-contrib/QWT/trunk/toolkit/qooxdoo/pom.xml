@@ -10,8 +10,6 @@
   
   <groupId>org.qooxdoo.toolkit</groupId>
   <artifactId>qooxdoo</artifactId>
-
-  <!-- versioning scheme similar to Gentoo package version -->
   <version>${toolkit.version}</version>
 
   <name>Toolkit Qooxdoo</name>
@@ -54,7 +52,7 @@
         <version>${toolkit.version}</version>
         <configuration>
           <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
-          <frameworkRevision>9424</frameworkRevision>
+          <frameworkRevision>10524</frameworkRevision>
         </configuration>
         <executions>
           <execution>

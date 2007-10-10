@@ -69,7 +69,7 @@ public class Property extends Item {
         Method method;
         
         method = new Method(Access.PUBLIC, false, true, false, false, type, "get" + capitalize(name), 
-                opt("Getter: ",  getDescription()), null);
+                opt("Getter: ",  getDescription()), null, null);
         method.setExtra("@alias");
         return method;
     }
@@ -77,8 +77,8 @@ public class Property extends Item {
     public Method createClassSetter() {
         Method method;
         
-        method = new Method(Access.PUBLIC, false, true, false, false, SimpleType.VOID, setterName(), 
-                opt("Setter:", getDescription()), null);
+        method = new Method(Access.PUBLIC, false, true, false, false, SimpleType.VOID, setterName(),
+                opt("Setter:", getDescription()), null, null);
         method.add(new Parameter(type, name));
         method.setExtra("@alias");
         return method;
@@ -88,7 +88,7 @@ public class Property extends Item {
         Method method;
         
         method = new Method(Access.NONE, false, false, false, false, type, "get" + capitalize(name), 
-                opt("Getter: ",  getDescription()), null);
+                opt("Getter: ",  getDescription()), null, null);
         return method;
     }
     
@@ -96,7 +96,7 @@ public class Property extends Item {
         Method method;
         
         method = new Method(Access.NONE, false, false, false, false, SimpleType.VOID, setterName(), 
-                opt("Setter:", getDescription()), null);
+                opt("Setter:", getDescription()), null, null);
         method.add(new Parameter(type, name));
         return method;
     }
