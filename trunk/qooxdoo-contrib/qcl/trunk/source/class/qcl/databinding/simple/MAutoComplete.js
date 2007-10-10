@@ -94,34 +94,132 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       {
         case "qx.ui.form.TextField":
         case "qx.ui.form.TextArea":
-          this.__textFieldWidget = this;
-          this.__listBoxWidget = null;
+          this._textFieldWidget = this;
+          this._listBoxWidget = null;
           break;
+          
         case "qx.ui.form.ComboBox":
-        case "qx.ui.form.ComboBoxEx":
           if (!this.getEditable())
           {
             return false;
           }
-          this.__textFieldWidget = this.getField();
-          this.__listBoxWidget = this.getList();
+          // text field
+          this._textFieldWidget = this.getField();
+          
+          // disable inline find and default key and mouseover actions in the list box
+          this._listBoxWidget = this.getList();
+          this._listBoxWidget.setEnableInlineFind(false);
+          this._listBoxWidget._onkeypress  = this._onListBoxKeypress;
+          
           break;
+          
         default:
           this.error("Invalid widget!");
           return false;
       }
       
+      // setup key event listener 
+      this._textFieldWidget.addEventListener("keypress", this._handleTextFieldKeypress,this);
+      
       // setup or remove event listeners
       if (propValue)
       {
-        this.__textFieldWidget.setLiveUpdate(true);
-        this.__textFieldWidget.addEventListener("changeValue",this._handleAutoCompleteEvent,this);
+        this._textFieldWidget.setLiveUpdate(true);
+        this._lastKeyPress = (new Date).valueOf();
+        this._textFieldWidget.addEventListener("input",this._onInput,this);
+        this._textFieldWidget.addEventListener("changeValue",this._onChangeValue,this);
       }
       else
       {
-        this.__textFieldWidget.removeEventListener("changeValue",this._handleAutoCompleteEvent,this);
+        this._textFieldWidget.removeEventListener("input",this._onInput,this);
+        this._textFieldWidget.removeEventListener("changeValue",this._onChangeValue,this);
       }
     },    
+
+    /**
+     * overwrites the default onkeypress action of listbox widget
+     *
+     * @type member
+     * @param e {qx.event.type.KeyEvent} keyPress event
+     * @return {void}
+     */
+    _onListBoxKeypress : function(e)
+    {
+      // console.log("list box keypress event:" +  e.getKeyIdentifier());
+      
+      // selectively pass event to selection manager
+      switch (e.getKeyIdentifier()) 
+      {
+        case "Down":
+        case "Up":
+        case "PageUp":
+        case "PageDown":
+          this._manager.handleKeyPress(e);
+          break;
+                
+      }
+      
+    },
+
+    /**
+     * handles the keypress event of the textfield
+     *
+     * @type member
+     * @param e {qx.event.type.KeyEvent} keyPress event
+     * @return {void}
+     */
+    _handleTextFieldKeypress : function(e)
+    {
+      // console.log("text field keypress event:" +  e.getKeyIdentifier() );
+    },
+
+    /**
+     * event handler for value change to handle change triggered by the list box 
+     *
+     * @type member
+     * @return {Object}
+     */    
+    _onChangeValue : function(e)
+    {
+      if ( this._preventChange )
+      {
+        this._preventChange = false;
+        return;
+      }
+      
+      var content      = e.getData() || "";
+      var lastContent  = this._lastContent || "";
+      var separator    = this.getSeparator();
+      var sepPosCont   = content.lastIndexOf ( separator ) +1;
+      var sepPosLCont  = lastContent.lastIndexOf ( separator ) +1;
+       
+      // console.log("lastContent: " + lastContent + ", new content: " + content );
+      
+      /* add new content to existing content if
+       * - there is a separator character
+       * - the newly inserted content doesn't contain this character 
+       * - the previous content does contain it
+       * - the new content is not the old one without the final separator char - this is the  situation when backspacing  
+       */
+      if ( separator &&  !sepPosCont && sepPosLCont && ( content != lastContent.substr(0,sepPosLCont-1) ) )
+      {
+        this._preventChange = true;
+        var newContent = lastContent.substr(0,sepPosLCont) + " " + content;
+        this.setValue( newContent );
+        console.log("adding to existing content");
+        this._lastContent = newContent;
+      }
+      else
+      {
+        // synchronize textfield value with combobox value
+        this._preventChange = true;
+        this.setValue( content );
+        this._lastContent = content;
+      }
+
+      // console.log("saving content: " + this._lastContent );
+    },
+
 
     /**
      * event handler for event triggering the autocomplete action
@@ -129,28 +227,41 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      * @type member
      * @return {Object}
      */    
-    _handleAutoCompleteEvent : function(evt)
+    _onInput : function(e)
     {
-    	// flag to prevent matching
-    	if ( this._preventMatch )
-    	{
-    		this._preventMatch = false;
-    		return true;
-    	};
-    	
-    	// get input from the last separator or the beginning of the line
-    	var content = evt.getData() || "";
-      var sep     = this.getSeparator();
-      var start   = sep ? ( content.lastIndexOf ( sep ) + 1 ) : 0;
-      while ( content.charAt(start) == " ") start++;
-      var input   = content.substr(start);
+      // get and save current content of text field
+      var content = this._textFieldWidget.getValue();  
+      this._lastContent = content;
       
-    	// small timeout to detect if user has typed ahead or deleted input
-    	var _this = this;
-    	window.setTimeout(function(){
-    	   if ( content != _this.__textFieldWidget.getValue() ) return false;
-    	   _this._getAutoCompleteValues(input);  
-    	}, 400 );
+      // console.log( "user typed: " + content );
+    
+    	// timeout before sending request
+      var now = (new Date).valueOf(); 
+      if (( now - this._lastKeyPress) < 500) 
+      {
+        // console.log( "timeout not reached");
+        this._lastKeyPress = now;
+        return;
+      }
+    	      
+      // separator for multi-valued fields
+      var sep     = this.getSeparator();
+      
+      // start of text fragment to be matched
+      var start   = sep ? ( content.lastIndexOf ( sep ) + 1 ) : 0;
+      
+      // strip whitespace
+      while ( content.charAt(start) == " ") start++;
+      
+      // text fragment
+      var input = content.substr(start);
+      
+      // Store timestamp
+      this._lastKeyPress = (new Date).valueOf();
+
+      // Send request
+      // console.log( "sending request for " + input );
+      this._getAutoCompleteValues(input);
     },    
     
     /**
@@ -209,7 +320,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	           }, 
 	           this.getServiceMethodAutoComplete(), 
 	           input,
-	           this.__listBoxWidget ? true : false,
+	           this._listBoxWidget ? true : false,
              this.getMetaData()
 	          );
 	          break;
@@ -236,45 +347,91 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      */  
     _handleAutoCompleteValues : function (data)
     {
-
-      var input   = data.input;
-      var content = this.__textFieldWidget.getValue();
-      var sep     = this.getSeparator();
-      var start   = sep ? ( content.lastIndexOf ( sep ) + 1 ) : 0;
+      // user input at event time
+      var input = data.input;  
+           
+      // current content of text field
+      var content = this._textFieldWidget.getValue();              
+      
+      // separator for multi-value fields
+      var sep = this.getSeparator();                            
+      
+      // start of text fragment that needs to be matched
+      var start = sep ? ( content.lastIndexOf ( sep ) + 1 ) : 0;  
+      
+      // trim whitespace
       while ( content.charAt(start) == " ") start++;
+      
+      // get text fragment
       var cInput  = content.substr(start);
       
       // check whether input is still the same so that latecoming request
       // do not mess up the content
-      if (input != cInput) return false;
+      if (input != cInput)
+      {
+        // console.log ("we're late: " +  input + " != " + cInput );
+        return false;
+      } 
           
       // populate list widget and select matching entry
-      if ( this.__listBoxWidget && typeof data.options == "object" )
-      {
-        if ( ! data.options.length ) return false;
-        this.__listBoxWidget.removeAll();
-        for (var i=0; i<data.options.length; i++) 
+      if ( this._listBoxWidget && typeof data.options == "object" )
+      {        
+        if (data.options != this.lastOptions) 
         {
-          var l = data.options[i];
-          this.__listBoxWidget.add( new qx.ui.form.ListItem ( l.text, l.icon, l.value ) );
+          // console.log("emptying listbox:");
+          this._listBoxWidget.removeAll();
+          
+          if (!data.options.length) {
+            // console.log("no data, closing listbox:");
+            this._closePopup();
+            return false;
+          }
+          
+          // console.log("populating listbox:");
+          
+          for (var i = 0; i < data.options.length; i++) {
+            var l = data.options[i];
+            this._listBoxWidget.add(new qx.ui.form.ListItem(l.text, l.icon, l.value));
+          }
+          
+          // open popup 
+          if (!this._listBoxWidget.isSeeable()) {
+            // console.log("opening popup");
+            this._openPopup();
+          }
+          
+          delete this._lastOptions;
+          this._lastOptions = data.options;
         }
-        this._preventMatch = true;
-        if ( this._openPopup ) this._openPopup();
-        if ( this.setSelected ) this.setSelected( this.__listBoxWidget.findString( input ) );
-        this._preventMatch = false;
+      }
+
+      // console.log("deselecting scrolling matched item into view");
+      // deselect to prevent messing up the textbox
+      this._listBoxWidget._manager._deselectAll();
+      
+      // scroll matching item in the listbox into view
+      var matchedItem = this._listBoxWidget.findString(input);
+      if (matchedItem)
+      {
+        matchedItem.scrollIntoView();
       }
       
       // apply matched text and suggestion to content
       if (typeof data.suggest == "string")
       {
-        var nContent = content.substr(0,start) + data.suggest;
-        // set value without matching 
-        this._preventMatch = true;
-        this.__textFieldWidget.setValue( nContent );
-        this._preventMatch = false;
+        var part1 = content.substr(0,start);
+        var part2 = data.suggest;
+        var nContent =  part1 + part2;
+         
+        // console.log("setting: " + part1 + " + " + part2 );
+        
+        // set value 
+        this.setValue( nContent );
+        this._lastContent = nContent;
         
         // select suggested text
-        this.__textFieldWidget.selectFromTo( content.length, nContent.length );
+        this._textFieldWidget.selectFromTo( content.length, nContent.length );
+        // console.log("selecting from " + content.length + " to " + nContent.length );
       }
     }
   }
