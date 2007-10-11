@@ -95,8 +95,17 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     {
       check : "String",
       init : ""
-    }
-   
+    },
+    
+    /**
+     * enable or disable bound widgets
+     */
+     enableBoundWidgets :
+     {
+       check : "Boolean",
+       apply : "_applyEnableBoundWidgets",
+       init : true
+     }
   },
 
 	
@@ -108,6 +117,22 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
 
   members :
   {
+    
+    /**
+     * enables or disables bound widgets
+     */
+    _applyEnableBoundWidgets : function (value, oldValue)
+    {
+      var widgets = this.getBoundWidgets();
+      
+      for ( var name in widgets )
+      {
+        if ( widgets[name].setEnabled )
+        {
+          widgets[name].setEnabled(value);
+        }
+      }
+    },
     
     /**
      * binds a widget to this data provider
