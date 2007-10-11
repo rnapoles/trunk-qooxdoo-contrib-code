@@ -79,6 +79,9 @@ public class Qooxdoo {
         
         // TODO: called from Property initializer
         repository.get("qx.ui.treevirtual.MDragAndDropSupport").head().deps.add("qx.util.ColorUtil");
+        
+        // TODO:
+        repository.get("qx.ui.table.cellrenderer.Abstract").head().deps.add("qx.html.StyleSheet");
     }
 
     private static void addBootstrapDependency(Repository repository) {
