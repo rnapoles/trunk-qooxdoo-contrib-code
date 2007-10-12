@@ -739,7 +739,14 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             var getter = "get" + prop.charAt(0).toUpperCase() + prop.substr(1);
             if (typeof this[getter] == "function" )
             { 
-              data[prop] = this[getter]();  
+              if (stateProps.length > 1)
+              {
+                data[prop] = this[getter]();  
+              }
+              else
+              {
+                data = this[getter]();
+              }
             }
             else
             {
@@ -769,9 +776,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             return "checked";
           case "qx.ui.form.List":
             return "selected,children";
-          case "qx.ui.form.ComboBox":
-          case "qx.ui.form.ComboBoxEx":
-            return "value,selected";          
         	case "qx.manager.selection.RadioManager":
           case "qx.ui.listview.ListView":
 	        case "qx.ui.tree.Tree":
@@ -782,6 +786,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "qx.ui.form.ListItem":
           case "qx.ui.form.Spinner":
           case "qx.ui.form.RadioButton":
+          case "qx.ui.form.ComboBox":
+          case "qx.ui.form.ComboBoxEx":
             return "value";
           case "qx.ui.basic.Label":
             return "text";
