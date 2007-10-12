@@ -113,6 +113,7 @@ public class Clazz extends Item {
 
     //--
     
+    private boolean linked = false;
     private final ClazzType type;
     private final boolean isAbstract;
     private final String fullName;
@@ -175,6 +176,30 @@ public class Clazz extends Item {
         return currentPackage.equals(getPackage()) ? getName() : getFullName();
     }
     
+    public void link(Doctree doctree) {
+        String fullName;
+        Clazz c;
+        
+        if (linked) {
+            return;
+        }
+        linked = true;
+        fullName = getSuperClassFullName();
+        if (fullName != null) {
+            c = doctree.get(fullName);
+            c.link(doctree);
+            setSuperClass(c);
+        }
+        for (String s : getInterfaceNames()) {
+            c = doctree.get(s);
+            c.link(doctree);
+            addInterface(c);
+        }
+        for (Method m : methods) {
+            m.link(doctree, this);
+        }
+    }
+
     public void addBaseConstructors() {
         List<Method> cs;
         
@@ -249,6 +274,15 @@ public class Clazz extends Item {
             throw new IllegalArgumentException(getFullName() + ": duplicate method: " + method.getName());
         }
         methods.add(method);
+    }
+    
+    public Property findProperty(String name) {
+        for (Property p : properties) {
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+        return null;
     }
     
     public Method findMethod(String name, boolean isStatic) {

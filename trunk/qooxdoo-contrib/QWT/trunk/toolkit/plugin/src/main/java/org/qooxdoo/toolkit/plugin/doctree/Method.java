@@ -37,11 +37,13 @@ public class Method extends Item {
         String name;
         Type returnType;
         String docFrom;
+        String fromProperty;
         
         isContructor = parser.getBoolean(element, "isCtor", false);
         a = access(element);
         name = element.getAttribute("name");
         docFrom = Dom.getAttributeOpt(element, "docFrom");
+        fromProperty = Dom.getAttributeOpt(element, "fromProperty");
         if (a == Access.PROTECTED) {
             if (name.startsWith("init")
                     || element.getAttribute("overriddenFrom") != null) {
@@ -55,7 +57,7 @@ public class Method extends Item {
         method = new Method(a, parser.getBoolean(element, "isAbstract", false),
                 !forInterface && !isContructor, parser.getBoolean(element, "isStatic", false), 
                         isContructor, returnType,
-                isContructor ? simpleClass : name, parser.description(element), docFrom, 
+                isContructor ? simpleClass : name, parser.description(element), docFrom, fromProperty,
                 isContructor ? "" : null);
         for (Element e : parser.selector.elements(element, "errors/error")) {
             method.errors.add(Dom.getAttribute(e, "msg"));
@@ -88,13 +90,14 @@ public class Method extends Item {
     private Type type;
     private final String name;
     private final String docFrom;
+    private final String fromProperty;
     private final String body;
     private final List<Parameter> params;
     public final List<String> errors;
     
     public Method(Access access, boolean isAbstract, boolean isNative,
             boolean isStatic, boolean isConstructor, Type type, String name,
-            String description, String docFrom, String body) {
+            String description, String docFrom, String fromProperty, String body) {
         super(description);
         this.access = access;
         this.isAbstract = isAbstract;
@@ -104,6 +107,7 @@ public class Method extends Item {
         this.type = type;
         this.name = name;
         this.docFrom = docFrom;
+        this.fromProperty = fromProperty;
         this.body = body;
         this.params = new ArrayList<Parameter>();
         this.errors = new ArrayList<String>();
@@ -118,7 +122,7 @@ public class Method extends Item {
 
         for (int count = 0; count < params.size(); count++) {
             m = new Method(access, isAbstract, isNative, isStatic,
-                    isConstructor, type, name, getDescription(), null, body);
+                    isConstructor, type, name, getDescription(), null, null, body);
             for (int j = 0; j < count; j++) {
                 m.params.add(new Parameter(params.get(j)));
             }
@@ -129,26 +133,46 @@ public class Method extends Item {
     public void link(Doctree doctree, Clazz owner) {
         Clazz clazz;
         Method docFromMethod;
+        Property prop;
         
-        docFromMethod = null;
-        if (docFrom != null) {
-            clazz = doctree.get(docFrom);
-            docFromMethod = clazz.findMethod(name, false);
-            if (docFromMethod == null) {
-                throw new IllegalArgumentException(docFrom + "." + name + " not found.");
+        if (fromProperty != null) {
+            prop = owner.findProperty(fromProperty);
+            if (prop == null) {
+                throw new IllegalArgumentException("fromProperty " + fromProperty + " not found.");
             }
-        } else if (errors.contains("Documentation is missing.")) {
-            for (Clazz i : owner.getInterfaces()) {
-                docFromMethod = i.findMethod(name, false);
-                if (docFromMethod != null) {
-                    break;
+            if (name.startsWith("set") || name.startsWith("init")) {
+                params.clear();
+                params.add(new Parameter(prop.getType(), "arg"));
+                type = SimpleType.VOID;
+            } else if (name.startsWith("get") || name.startsWith("is") || name.startsWith("toggle")) {
+                params.clear();
+                type = prop.getType();
+            } else if (name.startsWith("reset")) {
+                // do nothing
+            } else {
+                throw new IllegalArgumentException("unexpected method name: " + name);
+            }
+        } else {
+            docFromMethod = null;
+            if (docFrom != null) {
+                clazz = doctree.get(docFrom);
+                docFromMethod = clazz.findMethod(name, false);
+                if (docFromMethod == null) {
+                    throw new IllegalArgumentException(docFrom + "." + name + " not found.");
+                }
+            } else if (errors.contains("Documentation is missing.")) {
+                for (Clazz i : owner.getInterfaces()) {
+                    docFromMethod = i.findMethod(name, false);
+                    if (docFromMethod != null) {
+                        break;
+                    }
                 }
             }
-        }
-        if (docFromMethod != null) {
-            this.type = docFromMethod.type;
-            this.params.clear();
-            this.params.addAll(docFromMethod.params);
+            if (docFromMethod != null) {
+                this.type = docFromMethod.type;
+                this.params.clear();
+                this.params.addAll(docFromMethod.params);
+            }
         }
     }
     
@@ -156,7 +180,7 @@ public class Method extends Item {
         Method m;
 
         m = new Method(access, isAbstract, isNative, isStatic, isConstructor,
-                type, newName, docFrom, getDescription(), body);
+                type, newName, getDescription(), docFrom, fromProperty, body);
         for (Parameter p : params) {
             m.params.add(new Parameter(p));
         }
