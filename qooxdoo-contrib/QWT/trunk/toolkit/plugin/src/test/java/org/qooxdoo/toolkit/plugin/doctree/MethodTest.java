@@ -24,6 +24,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.toolkit.plugin.binding.java.Access;
+import org.qooxdoo.toolkit.plugin.binding.java.Method;
+import org.qooxdoo.toolkit.plugin.binding.java.Parser;
+import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class MethodTest {
     private static final IO IO_OBJ = new IO();

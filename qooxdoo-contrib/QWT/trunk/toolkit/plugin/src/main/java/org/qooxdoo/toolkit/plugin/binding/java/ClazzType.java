@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.doctree;
+package org.qooxdoo.toolkit.plugin.binding.java;
 
 public enum ClazzType {
     CLASS("class"), INTERFACE("interface"), MIXIN("class");

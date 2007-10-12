@@ -25,6 +25,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.toolkit.plugin.binding.java.Access;
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.binding.java.ClazzType;
+import org.qooxdoo.toolkit.plugin.binding.java.Method;
+import org.qooxdoo.toolkit.plugin.binding.java.Property;
+import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class ClazzTest {
     private static final IO io = new IO();

@@ -17,17 +17,9 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.doctree;
+package org.qooxdoo.toolkit.plugin.binding.java;
 
-public class ComplexType implements Type {
-    private final String java;
-    
-    public ComplexType(String java) {
-        this.java = java;
-    }
 
-    public String getJavaName() {
-        return java;
-    }
-
+public interface Type {
+    String getJavaName();
 }
