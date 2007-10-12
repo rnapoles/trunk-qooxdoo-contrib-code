@@ -1,4 +1,4 @@
-package org.qooxdoo.toolkit.plugin.binding.java;
+package org.qooxdoo.toolkit.plugin.binding;
 
 import static org.junit.Assert.assertEquals;
 
