@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import org.qooxdoo.toolkit.compiler.Util;
-import org.qooxdoo.toolkit.plugin.patch.PatchException;
+import org.qooxdoo.toolkit.plugin.binding.patch.PatchException;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.ResourceNode;

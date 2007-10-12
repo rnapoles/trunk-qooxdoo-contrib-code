@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.patch;
+package org.qooxdoo.toolkit.plugin.binding.patch;
 
 import java.io.IOException;
 import java.util.ArrayList;

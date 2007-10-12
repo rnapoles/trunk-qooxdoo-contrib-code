@@ -28,7 +28,7 @@ import org.xml.sax.SAXParseException;
 
 import org.qooxdoo.toolkit.plugin.FrameworkBase;
 import org.qooxdoo.toolkit.plugin.binding.java.Doctree;
-import org.qooxdoo.toolkit.plugin.patch.PatchSet;
+import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;

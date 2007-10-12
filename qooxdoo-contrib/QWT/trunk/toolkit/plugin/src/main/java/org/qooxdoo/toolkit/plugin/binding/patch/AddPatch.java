@@ -17,8 +17,22 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.patch;
+package org.qooxdoo.toolkit.plugin.binding.patch;
 
-public interface Patch {
-    void apply(StringBuilder dest);
+public class AddPatch implements Patch {
+    public final String add;
+    
+    public AddPatch(String add) {
+        this.add = add;
+    }
+    
+    public void apply(StringBuilder clazz) {
+        int idx;
+        
+        idx = clazz.lastIndexOf("\n}");
+        if (idx == -1) {
+            throw new IllegalArgumentException();
+        }
+        clazz.insert(idx, add);
+    }
 }
