@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin;
+package org.qooxdoo.toolkit.plugin.binding;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,6 +26,7 @@ import org.apache.maven.project.MavenProject;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import org.qooxdoo.toolkit.plugin.FrameworkBase;
 import org.qooxdoo.toolkit.plugin.binding.java.Doctree;
 import org.qooxdoo.toolkit.plugin.patch.PatchSet;
 import org.qooxdoo.sushi.filter.Filter;
