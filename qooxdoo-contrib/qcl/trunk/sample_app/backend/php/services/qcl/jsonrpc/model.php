@@ -41,6 +41,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  	{
  		$this->controller = &$controller; 
  	}
+ 	
 	
 }	
 
