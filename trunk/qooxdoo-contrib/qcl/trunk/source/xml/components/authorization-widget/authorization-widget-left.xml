@@ -8,7 +8,7 @@
 		id="authConfigLeftTree" 
 		left="0" top="0" width="245" height="100%"
 		backgroundColor="white" border="inset"
-		selectionMode="single"
+		selectionMode="multipleInterval"
 		showCellFocusIndicator="false"
 		alwaysShowOpenCloseSymbol="true"
 		contextMenu="contextMenuAuthConfig"
@@ -131,10 +131,12 @@
 		<!-- messages triggering a (re)load -->
 		<qx:messageSubscriber filter="qcl.auth.messages.reload">
 			// set service name from application name
+			// todo: rewrite this
+			
 			var appClassName = qx.core.Init.getInstance().getApplication().classname;
 			var appName	= appClassName.substring(0,appClassName.indexOf("."));
 			this.setUserData( "servicePrefix", appName + ".");
-			this.setServiceName( appName + ".auth.authConfig");
+			this.setServiceName( appName + ".auth.user");
 			
 			// (re)load tree
 			this.getDataModel().clearData(); this.updateClient();

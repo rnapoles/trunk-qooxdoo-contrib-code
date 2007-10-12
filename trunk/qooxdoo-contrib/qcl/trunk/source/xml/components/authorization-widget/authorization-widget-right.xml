@@ -8,7 +8,7 @@
 		id="authConfigRightTree" 
 		left="0" top="0" width="245" height="100%"
 		backgroundColor="white" border="inset"
-		selectionMode="single"
+		selectionMode="multipleInterval"
 		showCellFocusIndicator="false"
 		alwaysShowOpenCloseSymbol="true"
 		contextMenu="contextMenuAuthConfig"
@@ -55,13 +55,25 @@
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.reload">
 			// set service name from application name
+			// todo: rewrite this
 			var appClassName = qx.core.Init.getInstance().getApplication().classname;
 			var appName	= appClassName.substring(0,appClassName.indexOf("."));
-			this.setServiceName( appName + ".auth.authConfig");
+			this.setServiceName( appName + ".auth.user");
 			this.setUserData( "servicePrefix" , appName + "."); 
 			
 			// (re)load tree
-			this.getDataModel().clearData();this.updateClient();
+			this.getDataModel().clearData();
+			
+			// send permission data ?
+			if ( this.getUserData("permissionsSynchronized") )
+			{
+				this.updateClient();
+			}
+			else
+			{
+				this.updateClient( qcl.auth.permission.Manager.getInstance().getNamedIds() );
+				this.setUserData("permissionsSynchronized",true);
+			}
 		</qx:messageSubscriber>		
 		
 		<!-- focus -->
