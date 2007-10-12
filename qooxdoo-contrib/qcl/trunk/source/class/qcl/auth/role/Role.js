@@ -205,7 +205,7 @@ qx.Class.define("qcl.auth.role.Role",
 				for (var key in permissions)
 				{
 					var pos = key.indexOf("*");
-					if (pos == 0 || key.substr(0, pos) == name.substr(0, pos))
+					if ( pos == 0 || ( pos > 0 && ( key.substr( 0, pos ) == name.substr( 0, pos ) ) ) )
 					{
 						return true;
 					}	
