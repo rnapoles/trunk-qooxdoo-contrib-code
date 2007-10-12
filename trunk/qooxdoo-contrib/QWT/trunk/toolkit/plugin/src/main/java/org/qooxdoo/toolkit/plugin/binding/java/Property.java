@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.doctree;
+package org.qooxdoo.toolkit.plugin.binding.java;
 
 import org.w3c.dom.Element;
 

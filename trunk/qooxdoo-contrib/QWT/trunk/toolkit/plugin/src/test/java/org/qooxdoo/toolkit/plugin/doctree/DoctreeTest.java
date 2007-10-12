@@ -28,6 +28,10 @@ import org.xml.sax.SAXParseException;
 
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.binding.java.Doctree;
+import org.qooxdoo.toolkit.plugin.binding.java.Property;
+import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class DoctreeTest {
     private static final IO IO_OBJ = new IO();

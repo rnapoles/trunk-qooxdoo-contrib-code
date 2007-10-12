@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.doctree;
+package org.qooxdoo.toolkit.plugin.binding.java;
 
-
-public interface Type {
-    String getJavaName();
+public enum Access {
+    PUBLIC, PROTECTED, PRIVATE, INTERNAL /* TODO */,
+    NONE
 }

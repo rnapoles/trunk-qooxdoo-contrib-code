@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.doctree;
+package org.qooxdoo.toolkit.plugin.binding.java;
 
 public enum SimpleType implements Type {
     VOID("void"), BOOLEAN("boolean"), NUMBER("int"), STRING("String"), OBJECT("Object"), 

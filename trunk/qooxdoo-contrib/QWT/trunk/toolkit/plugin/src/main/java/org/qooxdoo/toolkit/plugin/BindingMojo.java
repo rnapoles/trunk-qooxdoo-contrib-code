@@ -26,7 +26,7 @@ import org.apache.maven.project.MavenProject;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import org.qooxdoo.toolkit.plugin.doctree.Doctree;
+import org.qooxdoo.toolkit.plugin.binding.java.Doctree;
 import org.qooxdoo.toolkit.plugin.patch.PatchSet;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;

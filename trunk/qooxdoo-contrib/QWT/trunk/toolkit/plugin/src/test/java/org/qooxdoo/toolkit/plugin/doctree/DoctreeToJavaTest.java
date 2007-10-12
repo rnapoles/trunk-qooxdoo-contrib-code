@@ -22,6 +22,12 @@ package org.qooxdoo.toolkit.plugin.doctree;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.qooxdoo.toolkit.plugin.binding.java.Access;
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.binding.java.ClazzType;
+import org.qooxdoo.toolkit.plugin.binding.java.Method;
+import org.qooxdoo.toolkit.plugin.binding.java.Property;
+import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class DoctreeToJavaTest {
     @Test
