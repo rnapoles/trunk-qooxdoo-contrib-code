@@ -162,7 +162,7 @@ qx.Class.define("qcl.auth.Manager",
 		 */
 		create : function (name)
 		{
-			if ( name && typeof name == "object" && name.length )
+			if ( name instanceof Array )
 			{
 				var list=[];
 				name.forEach(function(name){
@@ -180,6 +180,7 @@ qx.Class.define("qcl.auth.Manager",
 				}
 				return list;
 			}
+      
 			if ( typeof name != "string" )
 			{
 				this.error ("Argument for create method must be a string!");
@@ -194,6 +195,9 @@ qx.Class.define("qcl.auth.Manager",
 				var typeLower = type.substr(type.lastIndexOf(".")+1);
 				var typeUpper = typeLower.substr(0,1).toUpperCase() + typeLower.substr(1);
 				obj = new qcl.auth[typeLower][typeUpper](name); // this automatically adds the new object to the manager
+				
+        // tell the world about it
+        qx.event.message.Bus.dispatch("qcl.auth.messages.object.created", [typeLower,name] );
 			}
 			return obj;
 		},
