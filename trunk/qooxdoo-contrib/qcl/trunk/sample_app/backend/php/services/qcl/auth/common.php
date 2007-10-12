@@ -101,18 +101,28 @@ class qcl_auth_common extends qcl_jsonrpc_object
    }
    
    /**
-    * get record by its (dot-separated) identifying name  
+    * get record by its (dot-separated) identifying name
+    * @deprecated 12.10.2007  
     * @return Array Db record set
     */
 	function getByName($name)
 	{
+		return $this->getByNamedId($name);
+	}
+
+   /**
+    * get record by its (dot-separated) identifying name  
+    * @return Array Db record set
+    */
+	function getByNamedId($namedId)
+	{
 		return $this->db->getRow("
 	            SELECT * 
 				FROM `{$this->table}` 
-				WHERE `{$this->key_namedId}` = '$name'
+				WHERE `{$this->key_namedId}` = '$namedId'
         ");   	
 	}
-
+	
 	/**
     * get record by reference
     * @param mixed $ref numeric id or string name
@@ -157,7 +167,75 @@ class qcl_auth_common extends qcl_jsonrpc_object
         }
         return $result;
    }
-   
+
+	/**
+	 * creates a new record and optionally links it to a role
+	 * @param string	$namedId
+	 * @param int		$parentId 	id of role (unused if class is qcl_auth_role)
+	 * @return int the id of the inserted row 
+	 */
+	function create( $namedId, $parentId=null )
+   	{
+   		if ( $this->namedIdExists ( $namedId ) )
+   		{
+   			$this->raiseError ( get_class($this) . "::create : '$namedId' already exists." );
+   		}
+   		
+   		// insert new empty record
+		$data = array();
+		$data[$this->key_namedId] = $namedId;
+		$itemId = $this->insert($data);
+		
+		// link to role
+		if ( is_a( $this, "qcl_auth_user") )
+		{
+			$this->addToRole ( $itemId, $parentId );
+		}
+		elseif ( is_a( $this, "qcl_auth_permission") )
+		{
+			$this->addToRole ( $itemId, $parentId );	
+		}	
+		return $itemId;
+   	}   
+
+	/**
+	 * gets id by namedId
+	 * @param string	$namedId
+	 * @param int id or null if record does not exist
+	 */
+	function getIdByNamedId( $namedId )
+	{
+		$row 		= $this->getByNamedId($namedId);
+		$namedId	= $row[$this->key_namedId];
+		return $namedId ? $namedId : null;
+	}
+
+	/**
+	 * checks if record with $namedId exists
+	 * @param string	$namedId
+	 * @param boolean result
+	 */
+	function namedIdExists( $namedId )
+	{
+		$namedId = $this->getIdByNamedId ( $namedId );
+		return $namedId ? true : false;
+	}
+
+	/**
+	 * creates a new record if the namedId id does not already exist and optionally links it to a role
+	 * @param string	$namedId
+	 * @param int		$parentId 	id of role (unused if class is qcl_auth_role)
+	 * @return int the id of the inserted or existing row 
+	 */
+	function createIfNotExists( $namedId, $parentId=null )
+   	{
+   		if ( $this->namedIdExists( $namedId ) )
+   		{
+   			return $this->getIdByNamedId( $namedId );
+   		}	
+		return $this->create( $namedId, $parentId );
+   	}   
+  
 	/**
 	 * inserts a record into a table and returns last_insert_id()
 	 * @param array $data associative array with the column names as keys and the column data as values
@@ -232,19 +310,7 @@ class qcl_auth_common extends qcl_jsonrpc_object
 		$namedId 		= $params[1];
 		$parentId 		= $params[2];
 		
-		// insert new empty record
-		$data = array();
-		$data[$this->key_namedId] = $namedId;
-		$itemId = $this->insert($data);
-		
-		if ( is_a( $this, "qcl_auth_user") )
-		{
-			$this->addToRole ( $itemId, $parentId );
-		}
-		elseif ( is_a( $this, "qcl_auth_permission") )
-		{
-			$this->addToRole ( $itemId, $parentId );	
-		}	
+		$this->create($namedId,$parentId);
 		
 		// load and show item 
 		$this->addMessage( "qcl.auth.messages.{$this->shortName}.created", $itemId );

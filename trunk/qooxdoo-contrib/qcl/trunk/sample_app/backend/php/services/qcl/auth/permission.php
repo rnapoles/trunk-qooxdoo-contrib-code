@@ -137,7 +137,7 @@ class qcl_auth_permission extends qcl_auth_common
     */
     function method_addToRole($params)
     {
-    	$this->user->requirePermission("qcl.auth.manage");
+    	$this->user->requirePermission("qcl.auth.permissions.manage");
     	
     	$permissionRefs 	= $params[1];
     	$roleRefs 			= $params[2];
@@ -155,7 +155,7 @@ class qcl_auth_permission extends qcl_auth_common
     */
     function method_removeFromRole($params)
     {
-    	$this->user->requirePermission("qcl.auth.manage");
+    	$this->user->requirePermission("qcl.auth.permissions.manage");
     	
     	$permissionRefs 	= $params[1];
     	$roleRefs 			= $params[2];
