@@ -17,14 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.patch;
+package org.qooxdoo.toolkit.plugin.binding.patch;
 
-public class PatchException extends RuntimeException {
-    public PatchException(String msg) {
-        super(msg);
-    }
-    public PatchException(String msg, Throwable cause) {
-        this(msg);
-        initCause(cause);
-    }
+public interface Patch {
+    void apply(StringBuilder dest);
 }

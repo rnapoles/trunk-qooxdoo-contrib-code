@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.memory.MemoryNode;
+import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 
 public class PatchSetTest {
     private final IO IO_OBJ = new IO();

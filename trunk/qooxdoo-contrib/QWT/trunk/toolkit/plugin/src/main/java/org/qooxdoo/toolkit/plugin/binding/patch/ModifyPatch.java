@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.patch;
+package org.qooxdoo.toolkit.plugin.binding.patch;
 
 public class ModifyPatch implements Patch {
     private final String from;
