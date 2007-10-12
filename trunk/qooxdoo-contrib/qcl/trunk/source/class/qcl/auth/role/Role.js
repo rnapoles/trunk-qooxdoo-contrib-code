@@ -188,24 +188,25 @@ qx.Class.define("qcl.auth.role.Role",
      */
     hasPermission : function(permissionRef)
     {
-			var name 				= this._manager.getNamedId(permissionRef); 
+			var permManager = qcl.auth.permission.Manager.getInstance();
+			var namedId			= permManager.getNamedId(permissionRef);
       var permissions = this.getPermissions();
 			
-			if ( name && typeof permissions[name] == "object" )
+			if ( namedId && typeof permissions[namedId] == "object" )
 			{
 				// permission is registered and has been added to this role
 				return true;	
 			}
-			else if ( name || typeof permissionRef == "string" )
+			else if ( namedId || typeof permissionRef == "string" )
 			{
 				// permission does not exist or has not been added but 
 				// added permissions may contain a wildcard
-				var name = name ? name : permissionRef;
+				var namedId = namedId ? namedId : permissionRef;
 			
 				for (var key in permissions)
 				{
 					var pos = key.indexOf("*");
-					if ( pos == 0 || ( pos > 0 && ( key.substr( 0, pos ) == name.substr( 0, pos ) ) ) )
+					if ( pos == 0 || ( pos > 0 && ( key.substr( 0, pos ) == namedId.substr( 0, pos ) ) ) )
 					{
 						return true;
 					}	
