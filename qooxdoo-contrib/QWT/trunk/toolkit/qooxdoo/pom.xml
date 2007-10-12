@@ -25,12 +25,6 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
-      <version>${toolkit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.qooxdoo.toolkit</groupId>
-      <artifactId>compiler</artifactId>
       <classifier>tests</classifier>
       <version>${toolkit.version}</version>
       <scope>test</scope>
@@ -52,7 +46,7 @@
         <version>${toolkit.version}</version>
         <configuration>
           <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
-          <frameworkRevision>10558</frameworkRevision>
+          <frameworkRevision>10524</frameworkRevision>
         </configuration>
         <executions>
           <execution>
@@ -69,6 +63,9 @@
           </execution>
           <execution>
             <id>compile</id>
+            <configuration>
+              <excludes>org/qooxdoo/toolkit/qooxdoo/Qooxdoo.java</excludes>
+            </configuration>
             <goals>
               <goal>compile</goal>
             </goals>
