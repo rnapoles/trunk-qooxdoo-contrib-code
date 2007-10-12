@@ -46,7 +46,7 @@
         <version>${toolkit.version}</version>
         <configuration>
           <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
-          <frameworkRevision>10524</frameworkRevision>
+          <frameworkRevision>10558</frameworkRevision>
         </configuration>
         <executions>
           <execution>
@@ -63,9 +63,6 @@
           </execution>
           <execution>
             <id>compile</id>
-            <configuration>
-              <excludes>org/qooxdoo/toolkit/qooxdoo/Qooxdoo.java</excludes>
-            </configuration>
             <goals>
               <goal>compile</goal>
             </goals>
