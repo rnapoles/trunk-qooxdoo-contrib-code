@@ -6,7 +6,7 @@ require_once  SERVICE_PATH . "qcl/db/db.php";
 
 /**
  * simple controller-model architecture for jsonrpc
- * common base class for models
+ * common base class for models based on a sql database
  */
 
 class qcl_db_model extends qcl_jsonrpc_model
@@ -15,8 +15,9 @@ class qcl_db_model extends qcl_jsonrpc_model
     // instance variables
     //-------------------------------------------------------------
     
-	var $db; // the database object 
-	
+	var $db; 				// the database object 
+    var $currentRecord;		// the current record
+         	
 	//-------------------------------------------------------------
     // internal methods
     //-------------------------------------------------------------
@@ -133,18 +134,81 @@ class qcl_db_model extends qcl_jsonrpc_model
 
 	/**
 	 * translates field names to column names and sets value of field in current record
+	 * @param string	$field			field name to translate
+	 * @param mixed		$value	
+	 * @param boolean	$forceUpdate	whether to update the database immediately (default:false)
+	 * @return void
 	 */
-	function setField ( $field, $value )
+	function setField ( $field, $value, $forceUpdate=false )
 	{
 		$varName 	= "key_$field";
 		$columnName	= $this->$varName;
 		
-		$data = array();
 		$this->currentRecord[$columnName]=$value;
-		$data[$this->key_id];
-		$data[$columnName] = $value;
-		$this->db->update($data);
+		
+		if ( $forceUpdate )
+		{
+			$data = array();
+			$data[$this->key_id];
+			$data[$columnName] = $value;
+			$this->db->update($data);
+		}
 	}
+
+	/**
+	 * inserts a record into a table and returns last_insert_id()
+	 * @return int the id of the inserted row 
+	 */
+	function create()
+   	{
+   		$row = array();
+   		$row[$this->key_id]=null;
+   		$id = $this->db->insert($this->table,$row);
+   		$this->getById($id);
+   		return $id;
+   	}
+
+	/**
+	 * inserts a record into a table and returns last_insert_id()
+	 * @param array $data associative array with the column names as keys and the column data as values
+	 * @return int the id of the inserted row 
+	 */
+	function insert( $row )
+   	{
+   		return $this->db->insert($this->table,$row);
+   	}
+
+	/**
+	 * updates a record in a table identified by id
+	 * @param array 	$data 	associative array with the column names as keys and the column data as values
+	 * @param boolean	$id		if the id key is not provided in the $data paramenter, provide it here (optional)
+	 * @return boolean success 
+	 */
+	function update ( $data=null, $id=null )   	
+	{
+		if ($data == null)
+		{
+			$data = $this->currentRecord;
+		}
+		else
+		{
+			if ( $id !== null )
+			{
+				$data[$this->key_id] = $id;
+			}
+		}
+		return $this->db->update( $this->table, $data, $this->key_id );
+	}   	
+	
+	/**
+	 * deletes one or more records in a table identified by id
+	 * @todo : check for linked entries, either delete them or refuse to delete
+	 * @param mixed $ids (array of) record id(s)
+	 */
+	function delete ( $ids )
+	{
+		$this->db->delete ( $this->table, $ids, $this->key_id );
+	} 
 	
 }	
 
