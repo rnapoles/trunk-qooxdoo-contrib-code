@@ -144,14 +144,19 @@ class qcl_db_model extends qcl_jsonrpc_model
 		$varName 	= "key_$field";
 		$columnName	= $this->$varName;
 		
+		if ( ! $columnName )
+		{
+			$this->raiseError ( "qcl_db_model::setField : Invalid field '$field'");
+		}
+		
 		$this->currentRecord[$columnName]=$value;
 		
 		if ( $forceUpdate )
 		{
 			$data = array();
-			$data[$this->key_id];
 			$data[$columnName] = $value;
-			$this->db->update($data);
+			$data[$this->key_id] = $this->currentRecord[$this->key_id];
+			$this->update($data);
 		}
 	}
 
