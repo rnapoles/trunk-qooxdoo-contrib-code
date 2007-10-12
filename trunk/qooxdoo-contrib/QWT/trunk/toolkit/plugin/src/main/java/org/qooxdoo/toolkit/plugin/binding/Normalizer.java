@@ -37,26 +37,26 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class Normalize extends DefaultHandler {
+public class Normalizer extends DefaultHandler {
     private Writer out;
     private final List<String> removes;
     private final Map<String, String> renames;
     
-    public Normalize() {
+    public Normalizer() {
         this(new ArrayList<String>(), new HashMap<String, String>());
     }
     
-    public Normalize(List<String> removes, Map<String, String> renames) {
+    public Normalizer(List<String> removes, Map<String, String> renames) {
         this.removes = removes;
         this.renames = renames;
     }
 
-    public Normalize rename(String in, String out) {
+    public Normalizer rename(String in, String out) {
         renames.put(in, out);
         return this;
     }
      
-    public Normalize removes(String ... elements) {
+    public Normalizer removes(String ... elements) {
         for (String element : elements) {
             removes.add(element);
         }

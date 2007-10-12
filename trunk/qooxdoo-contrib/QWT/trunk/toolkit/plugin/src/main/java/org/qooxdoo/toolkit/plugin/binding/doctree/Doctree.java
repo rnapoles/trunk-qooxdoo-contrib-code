@@ -28,14 +28,14 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
-import org.qooxdoo.toolkit.plugin.binding.Normalize;
+import org.qooxdoo.toolkit.plugin.binding.Normalizer;
 import org.qooxdoo.toolkit.plugin.binding.metadata.ReflectSchema;
 import org.xml.sax.SAXException;
 
 public class Doctree {
     private static final ReflectSchema SCHEMA = new ReflectSchema();
     private static final ComplexType TYPE = SCHEMA.complex(Doctree.class);
-    private static final Normalize N = new Normalize();
+    private static final Normalizer N = new Normalizer();
     
     static {
         try {
