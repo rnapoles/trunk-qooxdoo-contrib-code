@@ -25,6 +25,12 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
+      <version>${toolkit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.qooxdoo.toolkit</groupId>
+      <artifactId>compiler</artifactId>
       <classifier>tests</classifier>
       <version>${toolkit.version}</version>
       <scope>test</scope>
