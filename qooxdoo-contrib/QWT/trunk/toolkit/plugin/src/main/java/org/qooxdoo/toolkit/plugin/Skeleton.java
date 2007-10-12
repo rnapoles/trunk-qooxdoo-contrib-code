@@ -1,3 +1,22 @@
+/* ************************************************************************
+   
+   qooxdoo - the new era of web development
+   
+   http://qooxdoo.org
+   
+   Copyright:
+     2006-2007 1&1 Internet AG, Germany, http://www.1and1.org
+   
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+   
+   Authors:
+     * Michael Hartmeier (mlhartme)
+   
+ ************************************************************************ */
+
 package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
@@ -15,7 +34,7 @@ public class Skeleton {
     public static final String ARTIFACT = "%ARTIFACT%";
     public static final String TOOLKIT_VERSION = "%TOOLKIT_VERSION%";
     
-    private static final IO io = new IO();
+    private static final IO IO_OBJ = new IO();
     
     public static void main(String[] args) throws Exception {
         SvnNode src;
@@ -26,9 +45,10 @@ public class Skeleton {
             throw new IllegalArgumentException();
         
         }
-        zip = Archive.createZip(io);
+        zip = Archive.createZip(IO_OBJ);
         System.out.println("running svn export");
-        src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/application");
+        src = SvnNode.create(IO_OBJ, 
+                "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/application");
         src.export(zip.data);
         for (Node application : zip.data.children()) {
             if (application.isDirectory()) {
@@ -38,7 +58,7 @@ public class Skeleton {
                 System.out.println("deleting " + application);
             }
         }
-        dest = io.node(args[0]).join(NAME);
+        dest = IO_OBJ.node(args[0]).join(NAME);
         System.out.println("creating archive: " + dest);
         zip.save(dest);
     }
