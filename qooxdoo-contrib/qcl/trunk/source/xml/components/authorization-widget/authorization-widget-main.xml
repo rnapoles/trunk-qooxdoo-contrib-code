@@ -30,7 +30,6 @@
 			this.hide();
 		</qx:messageSubscriber>		
 		 
-		
 		<qx:verticalBoxLayout dimension="100%,100%">
 		
 		<!-- toolbar -->
