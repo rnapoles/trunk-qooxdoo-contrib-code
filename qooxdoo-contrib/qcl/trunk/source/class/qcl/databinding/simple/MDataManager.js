@@ -791,6 +791,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             return "value";
           case "qx.ui.basic.Label":
             return "text";
+          case "qx.ui.embed.HtmlEmbed":
+            return "html";
         	default:
         	 return null;
       }
