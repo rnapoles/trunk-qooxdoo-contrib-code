@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.plugin.binding.Style;
+import org.qooxdoo.toolkit.plugin.binding.Normalize;
 import org.xml.sax.SAXException;
 
 public class StyleTest {
@@ -53,9 +53,9 @@ public class StyleTest {
     private void check(String expected, String doc) throws IOException, SAXException {
         Node src;
         Node dest;
-        Style style;
+        Normalize style;
      
-        style = new Style();
+        style = new Normalize();
         style.removes("eles");
         style.rename("in", "out");
         src = IO_OBJ.stringNode(doc);
