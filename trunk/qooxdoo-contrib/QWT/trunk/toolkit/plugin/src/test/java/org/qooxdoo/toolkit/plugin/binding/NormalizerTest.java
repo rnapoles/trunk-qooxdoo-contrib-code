@@ -10,7 +10,7 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.plugin.binding.Normalizer;
 import org.xml.sax.SAXException;
 
-public class NormalizeTest {
+public class NormalizerTest {
     private static final IO IO_OBJ = new IO();
 
     @Test
