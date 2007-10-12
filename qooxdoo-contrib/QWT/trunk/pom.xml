@@ -178,13 +178,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <version>2.0-beta-5</version>
       </plugin>
       <plugin>
-        <!-- deploy source files -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <version>2.0.3</version>
         <executions>
           <execution>
-           <goals><goal>jar</goal></goals>
+            <!-- deploy source files -->
+            <goals><goal>jar</goal></goals>
           </execution>
         </executions>
       </plugin>

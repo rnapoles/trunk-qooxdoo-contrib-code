@@ -57,7 +57,7 @@ public class DoctreeToJavaTest {
         StringBuilder builder;
         
         builder = new StringBuilder();
-        new Method(Access.PRIVATE, false, false, false, false, SimpleType.STRING, "meth", null, null, "bd").toJava(builder);
+        new Method(Access.PRIVATE, false, false, false, false, SimpleType.STRING, "meth", null, null, null, "bd").toJava(builder);
         assertEquals("    private String meth() {\n"
                    + "bd" 
                    + "    }\n",

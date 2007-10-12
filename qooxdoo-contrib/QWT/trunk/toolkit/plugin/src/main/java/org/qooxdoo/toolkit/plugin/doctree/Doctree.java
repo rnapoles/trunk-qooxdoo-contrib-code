@@ -107,19 +107,8 @@ public class Doctree {
     }
     
     public void link() {
-        String fullName;
-
         for (Clazz c : clazzes) {
-            fullName = c.getSuperClassFullName();
-            if (fullName != null) {
-                c.setSuperClass(get(fullName));
-            }
-            for (String s : c.getInterfaceNames()) {
-                c.addInterface(get(s));
-            }
-            for (Method m : c.methods) {
-                m.link(this, c);
-            }
+            c.link(this);
         }
         for (Clazz c : clazzes) {
             c.addBaseConstructors();

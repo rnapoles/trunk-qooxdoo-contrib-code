@@ -272,9 +272,43 @@ public class ComboBox<T> extends qx.ui.layout.HorizontalBoxLayout
 *** 
 public class ListItem extends qx.ui.basic.Atom
 public class ListItem<T> extends qx.ui.basic.Atom
-***
-public native Object getValue();
-public native T getValue();
 *** 
-public native Object setValue(Object value);
-public native T setValue(T value);
+public native String getValue();
+public native T getValue();
+***   
+public native void setValue(String arg);
+public native T setValue(T arg);
+### qx/util/range/Range.java
+*** 
+public native int getMax();
+public native Integer getMax();
+*** 
+public native int getMin();
+public native Integer getMin();
+*** 
+public native boolean getWrap();
+public native Boolean getWrap();
+*** 
+public native void initMax(int arg);
+public native void initMax(Object arg);
+*** 
+public native void initMin(int arg);
+public native void initMin(Object arg);
+*** 
+public native void initWrap(boolean arg);
+public native void initWrap(Object arg);
+*** 
+public native boolean isWrap();
+public native Boolean isWrap();
+*** 
+public native void setMax(int arg);
+public native void setMax(Object arg);
+*** 
+public native void setMin(int arg);
+public native void setMin(Object arg);
+*** 
+public native void setWrap(boolean arg);
+public native void setWrap(Object arg);
+*** 
+public native boolean toggleWrap();
+public native Boolean toggleWrap();
