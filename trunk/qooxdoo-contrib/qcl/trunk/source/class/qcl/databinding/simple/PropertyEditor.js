@@ -99,8 +99,17 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     columnWidthValue :
     {
       apply : "_applyColumnWidthValue"
-    }    
+    },
     
+    /**
+     * whether the property editor is editable
+     */ 
+    editable : 
+    {
+      apply : "_applyEditable",
+      check: "Boolean",
+      init : true
+    }
   },
   
   /*
@@ -126,6 +135,14 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     _applyColumnWidthLabel : function(value,old)
     {
       this.getTableColumnModel().getBehavior().setWidth(2,value);
+    },
+    
+    /**
+     * applies the editable property
+     */
+    _applyEditable : function (value,old)
+    {
+      this.getTableModel().setColumnEditable(2,value);  
     },
     
     /**
