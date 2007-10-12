@@ -79,6 +79,8 @@ public class Normalize extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
+        String name;
+        
         check(uri, localName);
 
         if (removes.contains(qName)) {
@@ -88,12 +90,17 @@ public class Normalize extends DefaultHandler {
         write(renamed(qName));
         write('>');
         for (int i = 0, max = attrs.getLength(); i < max; i++) {
+            name = attrs.getQName(i);
+            if (removes.contains(name)) {
+                continue;
+            }
+            name = renamed(name);
             write('<');
-            write(attrs.getQName(i));
+            write(name);
             write('>');
             write(Serializer.escapeEntities(attrs.getValue(i)));
             write("</");
-            write(attrs.getLocalName(i));
+            write(name);
             write('>');
         }
     }
