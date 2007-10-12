@@ -222,6 +222,7 @@ class qcl_auth_user extends qcl_auth_common
    		$permissions 	= $this->getPermissions($username);
   		foreach($permissions as $permission)
   		{
+
   			if ( $permission == $requestedPermission )
   			{
   				return true;
@@ -421,7 +422,7 @@ class qcl_auth_user extends qcl_auth_common
     */
     function method_addToRole($params)
     {
-    	$this->requirePermission("qcl.auth.manage");
+    	$this->requirePermission("qcl.auth.permissions.manage");
     	
     	$userRefs 	= $params[1];
     	$roleRefs 	= $params[2];
@@ -439,7 +440,7 @@ class qcl_auth_user extends qcl_auth_common
     */
     function method_removeFromRole($params)
     {
-    	$this->requirePermission("qcl.auth.manage");
+    	$this->requirePermission("qcl.auth.permissions.manage");
     	
     	$userRefs 	= $params[1];
     	$roleRefs 	= $params[2];
@@ -449,7 +450,8 @@ class qcl_auth_user extends qcl_auth_common
     	$this->addMessage("qcl.auth.messages.user.roleRemoved",$userRefs); 
     	return $this->getResult();
     }
+
+
+
 }
-
-
 ?>
