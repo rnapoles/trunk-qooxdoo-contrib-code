@@ -146,3 +146,35 @@ class qcl_object extends patched_object {
 		}
    	}
 }
+
+
+// convenience functions, may be already defined
+
+/**
+ * PHP5 file_put_contents emulation
+ *
+ */
+if(!function_exists("file_put_contents")){
+    function file_put_contents($file,$data)
+    {
+        @unlink($file);
+        error_log($data,3,$file);
+    }
+}
+
+/**
+ * avoids if statements such as if($a) $c=$a; else $c=$b;
+ *
+ * @argument mixed 
+ * @argument mixed ...
+ * @return first non-null argument, otherwise false
+ */ 
+if(!function_exists("either")){
+    function either()
+    {
+            $arg_list = func_get_args();
+            foreach($arg_list as $arg)
+                    if($arg) return $arg;
+        return false;
+    } 
+}
