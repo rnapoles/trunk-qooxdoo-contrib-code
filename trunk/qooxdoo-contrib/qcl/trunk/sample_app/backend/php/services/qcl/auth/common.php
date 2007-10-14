@@ -1,16 +1,17 @@
 <?php
 
 // dependencies
-require_once  SERVICE_PATH . "qcl/jsonrpc/object.php";
-require_once  SERVICE_PATH . "qcl/db/db.php";
-require_once  SERVICE_PATH . "qcl/locale/manager.php";
+require_once ("qcl/jsonrpc/controller.php");
+require_once ("qcl/db/db.php");
+require_once ("qcl/locale/manager.php");
 
 /**
  * common base class for permissions, roles and users
  * providing a backend to the qcl.auth client package
+ * @todo: this class is controller and model at the same time, this needs to be changed!
  */
 
-class qcl_auth_common extends qcl_jsonrpc_object	
+class qcl_auth_common extends qcl_jsonrpc_controller	
 {
 
    //-------------------------------------------------------------
@@ -32,11 +33,12 @@ class qcl_auth_common extends qcl_jsonrpc_object
 
    /**
     * constructor 
+    * @param object refernce $controller
     */
    function __construct()
    {
 		parent::__construct();
-	 	$this->db = qcl_db::getSubclass($this->ini);
+	 	$this->db = &qcl_db::getSubclass(&$this);
    }   
 
 	//-------------------------------------------------------------

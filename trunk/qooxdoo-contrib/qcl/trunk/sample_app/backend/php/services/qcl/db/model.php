@@ -1,8 +1,8 @@
 <?php
 
 // dependencies
-require_once  SERVICE_PATH . "qcl/jsonrpc/model.php";
-require_once  SERVICE_PATH . "qcl/db/db.php";
+require_once ("qcl/jsonrpc/model.php");
+require_once ("qcl/db/db.php");
 
 /**
  * simple controller-model architecture for jsonrpc
@@ -24,11 +24,12 @@ class qcl_db_model extends qcl_jsonrpc_model
 
    /**
     * constructor 
+    * @param object reference $controller
     */
-	function __construct()
+	function __construct($controller)
    	{
-		parent::__construct();
-		$this->db = qcl_db::getSubclass($this->ini);
+		parent::__construct(&$controller);
+		$this->db = qcl_db::getSubclass(&$controller); // pass the controller to the object instance
 	}   	
 
 	//-------------------------------------------------------------
@@ -43,6 +44,16 @@ class qcl_db_model extends qcl_jsonrpc_model
  	function setDatasource ( $name )
  	{
  		$this->raiseError("qcl_db_model::setDatasource not implemented!");
+ 	}
+
+ 	/**
+ 	 * sets controller of this model and passes it to linked database object
+ 	 * @param object $controller
+ 	 */
+ 	function setController ( $controller )
+ 	{
+ 		$this->controller = &$controller; 
+ 		$this->db->setController(&$controller);
  	}
  	
    	/**

@@ -1,5 +1,5 @@
 <?php
-require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
+require_once ("qcl/jsonrpc/model.php");
 
 /**
  * abstract class for classes that implement configuration management
@@ -21,7 +21,7 @@ require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
  *   cached there.  
  */
 
-class qcl_config extends qcl_jsonrpc_object
+class qcl_config extends qcl_jsonrpc_model
 {    
 	//-------------------------------------------------------------
    	// class variables, can be overridden
@@ -36,9 +36,10 @@ class qcl_config extends qcl_jsonrpc_object
    	/**
    	 * constructor calls parent constructor
      */
-   	function __construct()
+   	function __construct($controller)
    	{
-		parent::__construct();
+		parent::__construct(&$controller);
+		$this->user = &$controller->user;
 	}
 
 	//-------------------------------------------------------------
@@ -49,10 +50,10 @@ class qcl_config extends qcl_jsonrpc_object
 	 * get config object based on initial configuration.
 	 * at the moment, a qcl_config_db object is used by default.
 	 */
-	function &getSubclass($ini)
+	function &getSubclass($controller)
 	{
-		require_once SERVICE_PATH . "qcl/config/db.php";
-		$config = new qcl_config_db();
+		require_once ("qcl/config/db.php");
+		$config = &new qcl_config_db(&$controller);
 		return $config;
 	}
 

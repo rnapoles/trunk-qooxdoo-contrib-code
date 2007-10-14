@@ -1,14 +1,14 @@
 <?php
 
 // dependencies
-require_once  SERVICE_PATH . "qcl/jsonrpc/object.php";
+require_once ("qcl/object.php");
 
 /**
  * simple controller-model architecture for jsonrpc
  * common base class for models
  */
 
-class qcl_jsonrpc_model extends qcl_jsonrpc_object
+class qcl_jsonrpc_model extends qcl_object
 {
 	//-------------------------------------------------------------
     // instance variables
@@ -23,9 +23,13 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
    /**
     * constructor 
     */
-	function __construct()
+	function __construct($controller=null)
    	{
 		parent::__construct();
+		if ( is_object($controller) )
+		{
+			$this->controller = &$controller;	
+		}
 	}   	
 
 	//-------------------------------------------------------------

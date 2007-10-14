@@ -1,15 +1,15 @@
 <?php
 
 // dependencies
-require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
-require_once SERVICE_PATH . "qcl/locale/manager.php";
-require_once SERVICE_PATH . "qcl/config/config.php";
+require_once ("qcl/jsonrpc/controller.php");
+require_once ("qcl/config/config.php");
+require_once ("qcl/locale/manager.php");
 
 /**
  * Service class providing data to the config manager on the client
  */
 
-class qcl_config_manager extends qcl_jsonrpc_object
+class qcl_config_manager extends qcl_jsonrpc_controller
 {
 
 	//-------------------------------------------------------------
@@ -22,7 +22,7 @@ class qcl_config_manager extends qcl_jsonrpc_object
    	function __construct()
    	{
 		parent::__construct();
-		$this->config 	= qcl_config::getSubclass($this->ini);
+		$this->config = &qcl_config::getSubclass(&$this);
 	}
 	
 	//-------------------------------------------------------------

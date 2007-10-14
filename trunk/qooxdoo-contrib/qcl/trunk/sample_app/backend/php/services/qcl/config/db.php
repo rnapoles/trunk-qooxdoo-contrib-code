@@ -31,13 +31,12 @@ class qcl_config_db extends qcl_config
    
    	/**
    	 * constructor calls parent constructor
-   	 * @param array $ini initial configuration
+   	 * @param object reference $controller
      */
-   	function __construct()
+   	function __construct($controller)
    	{
-		parent::__construct();
-		$this->db 	= qcl_db::getSubclass($this->ini);
-		$this->user = $this->getSingleton("class_user");
+		parent::__construct(&$controller);
+		$this->db = &qcl_db::getSubclass(&$controller);
 	}
 	
 	//-------------------------------------------------------------
