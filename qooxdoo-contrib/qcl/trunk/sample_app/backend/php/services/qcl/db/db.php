@@ -1,12 +1,12 @@
 <?php
 
-require_once SERVICE_PATH . "qcl/jsonrpc/object.php"; 
+require_once ("qcl/jsonrpc/model.php"); 
  
 /**
  * abstract class for rpc objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_db extends qcl_jsonrpc_object 
+class qcl_db extends qcl_object
 {
 
 	/**
@@ -20,13 +20,23 @@ class qcl_db extends qcl_jsonrpc_object
 	var $dsn;
 	
 	/**
-	 * constructor, reads database configuration
+	 * @var controller object
 	 */
-	function __construct()
+	var $controller;
+	
+	/**
+	 * constructor, reads database configuration
+	 * @param object reference $controller	
+	 */
+	function __construct($controller)
 	{
-		parent::__construct(); 
-		$this->dsn 	= $this->ini['database']['dsn'];
-		$this->db 	= $this->connect();
+		parent::__construct();
+		if ( ! is_a( $controller, "qcl_jsonrpc_controller" ) )
+		{
+			$this->raiseError ("qcl_db : Cannot instantiate " . get_class($this) . " object: No controller object provided.");
+		}
+		$this->controller = &$controller;
+		$this->init();	
 	}
 		
 	//-------------------------------------------------------------
@@ -35,23 +45,50 @@ class qcl_db extends qcl_jsonrpc_object
 	
 	/**
 	 * static method which returns a database object based on the configuration file
-	 * @param array $ini initial configuration array
+	 * @param object reference $controller	
 	 * @return always returns a PEAR object at the moment
 	 */
-	function &getSubclass($ini)
+	function &getSubclass($controller)
 	{
+		if ( ! is_a($controller,"qcl_jsonrpc_controller" ) )
+		{
+			$this->raiseError ("qcl_db : Cannot instantiate " . get_class($this) . " object: No controller object provided.");
+		}
 		//$db = &$this->getSingleton("qcl_db_pear");
 		//if ( ! $db )
 		//{
-			require_once SERVICE_PATH . "qcl/db/pear.php";
-			$db = new qcl_db_pear();
+			require_once ("qcl/db/pear.php");
+			$db = &new qcl_db_pear(&$controller);
 			//$this->setSingleton(&$db);
 		//}
 		return $db;
 	}		
-	
+
 	//-------------------------------------------------------------
-	// abstract methods
+	// instance methods 
+	//-------------------------------------------------------------
+
+	/**
+	 * initializes the object
+	 * @param string	$dsn 	optional dsn string overriding the dsn provided by the controller
+	 */
+	function init( $dsn = null )
+	{
+		$this->dsn 	= $dsn ? $dsn : $this->controller->getConfigValue("database.dsn");
+		$this->db 	= $this->connect();		
+	}
+
+	/**
+	 * getter for DSN 
+	 * return string
+	 */
+	function getDsn()
+	{
+		return $this->dsn;		
+	}
+
+	//-------------------------------------------------------------
+	// abstract methods to be implemented
 	//-------------------------------------------------------------
 
 	/**

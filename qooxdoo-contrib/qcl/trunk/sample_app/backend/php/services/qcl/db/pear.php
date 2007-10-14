@@ -5,7 +5,7 @@
  * relying on PEAR::DB for database access
  */
 
-require_once SERVICE_PATH . "qcl/db/db.php";
+require_once ("qcl/db/db.php");
 
 class qcl_db_pear extends qcl_db 
 {
@@ -16,10 +16,11 @@ class qcl_db_pear extends qcl_db
 
 	/**
 	 * constructor
+	 * @param object reference	$master 	The instantiating object, either a model or a controller
 	 */
-	function __construct()
+	function __construct($controller)
 	{
-		parent::__construct();
+		parent::__construct(&$controller);
 	}
 
 	//-------------------------------------------------------------
@@ -31,8 +32,8 @@ class qcl_db_pear extends qcl_db
 	 */
 	function &connect()
 	{
-		require_once "DB.php"; // load pear DB library
-		$db =& DB::connect( $this->dsn );
+		require_once ("DB.php"); // load pear DB library
+		$db =& DB::connect( $this->getDsn() );
 		if (PEAR::isError($db)) 
 		{
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
@@ -40,7 +41,7 @@ class qcl_db_pear extends qcl_db
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 		
 		// set encoding
-		$encoding = $this->ini['database']['encoding']; 
+		$encoding = $this->controller->getConfigValue("database.encoding"); 
 		if ($encoding)
 		{
 			$db->query("SET NAMES $encoding");

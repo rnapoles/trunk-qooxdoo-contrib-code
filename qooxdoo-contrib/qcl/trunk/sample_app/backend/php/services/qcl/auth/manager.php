@@ -1,8 +1,8 @@
 <?php
 
 // dependencies
-require_once SERVICE_PATH . "bibliograph/auth/__init__.php";
-require_once SERVICE_PATH . "qcl/locale/manager.php";
+require_once ("bibliograph/auth/__init__.php");
+require_once ("qcl/locale/manager.php");
 
 /**
  * base class providing data to authConfig fronend 

@@ -1,8 +1,8 @@
 <?php
 
 // dependencies
-require_once  SERVICE_PATH . "qcl/db/model.php";
-require_once  SERVICE_PATH . "qcl/locale/manager.php";
+require_once ("qcl/db/model.php");
+require_once ("qcl/locale/manager.php");
 
 /**
  * class implementing a basic tree structure based on an sql database table
@@ -29,10 +29,11 @@ class qcl_tree_model_db extends qcl_db_model
 
    /**
     * constructor 
+    * @param object reference $controller
     */
-	function __construct()
+	function __construct($controller)
    	{
-		parent::__construct();
+		parent::__construct(&$controller);
 	}   
 	
 	//-------------------------------------------------------------

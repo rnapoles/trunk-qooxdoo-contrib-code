@@ -1,7 +1,7 @@
 <?php
 
 // dependencies
-require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
+require_once ("qcl/object.php");
 
 /**
  * manages locales and translations
@@ -16,7 +16,7 @@ require_once SERVICE_PATH . "qcl/jsonrpc/object.php";
  * |-- gettext.php subclass
  * |-- db.php subclass etc. 
  */
-class qcl_locale_manager extends qcl_jsonrpc_object
+class qcl_locale_manager extends qcl_object
 {
   
 	var $locale 		= null;
@@ -246,3 +246,24 @@ function __($message)
 {
 	return $message;
 }
+
+/**
+     * translates a string with the sprintf formatting rules
+
+function __( )
+{  
+        $args           = func_get_args();
+        $msgId          = $args[0];
+		$context		= $args[1];
+        $translation    = Zophe::translate ( $msgId, $context );
+        if ( count ( $args ) > 2 ) {
+			$arguments      = array();
+			
+			for ( $i=2; $i<count($args); $i++)
+				$arguments[]= "\$args[$i]";   
+			$arguments      = implode ( ",", $arguments);
+			eval ( '$translation = sprintf($translation,' . $arguments . ");" );
+		}
+        return $translation;
+}
+**/

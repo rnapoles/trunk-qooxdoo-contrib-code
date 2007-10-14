@@ -30,12 +30,13 @@ class qcl_auth_user extends qcl_auth_common
    //-------------------------------------------------------------
    
    /**
-    * constructor calls parent constructor for database intiatization
+    * constructor 
+    * @param object reference $controller
     */
-   function __construct()
-   {
+	function __construct()
+   	{
 		parent::__construct();
-   }   
+	}   
  
    //-------------------------------------------------------------
    // non-rpc public methods 
