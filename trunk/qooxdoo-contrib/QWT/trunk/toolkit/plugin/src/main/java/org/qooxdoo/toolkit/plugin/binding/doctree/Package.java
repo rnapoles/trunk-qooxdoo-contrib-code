@@ -22,11 +22,10 @@ package org.qooxdoo.toolkit.plugin.binding.doctree;
 import java.util.List;
 
 public class Package {
-    public List<Package> packages;
-    public List<Clazz> classes;
-    public String desc;
-    
-    public String fullName;
     public String packageName;
+    public String fullName;
     public String name;
+    public List<Package> packages;
+    public List<Clazz> clazzes;
+    public Desc desc;
 }

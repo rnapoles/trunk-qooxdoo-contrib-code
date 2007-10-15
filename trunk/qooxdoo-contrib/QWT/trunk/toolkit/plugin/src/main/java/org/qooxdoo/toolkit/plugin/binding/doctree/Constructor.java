@@ -19,6 +19,6 @@
 
 package org.qooxdoo.toolkit.plugin.binding.doctree;
 
-public class Contructor {
+public class Constructor {
     public Method method;
 }

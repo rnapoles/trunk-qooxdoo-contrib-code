@@ -180,7 +180,7 @@
   </xs:element>
   <xs:element name="param">
     <xs:complexType>
-      <xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:sequence minOccurs="0">
         <xs:element minOccurs="0" ref="desc"/>
         <xs:element minOccurs="0" ref="types"/>
       </xs:sequence>
