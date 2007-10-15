@@ -23,6 +23,6 @@ import java.util.List;
 
 public class Return {
     public Desc desc;
-    public List<Entry> types;
+    public List<Entry> entries;
     public String defaultValue;
 }

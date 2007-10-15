@@ -58,13 +58,12 @@ public class ValueItem<T> extends Item<T> {
         
         switch (values.size()) {
         case 0:
-            value = null;
-            break;
+            return; // TODO
         case 1:
             value = values.iterator().next();
             break;
         default:
-            throw new IllegalArgumentException("" + values.size());
+            throw new IllegalArgumentException(this.getName() + ": " + values.size());
         }
         try {
             field.set(dest, value);

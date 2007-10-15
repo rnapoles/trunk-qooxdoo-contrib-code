@@ -20,5 +20,5 @@
 package org.qooxdoo.toolkit.plugin.binding.doctree;
 
 public class Desc {
-
+    public String text;
 }

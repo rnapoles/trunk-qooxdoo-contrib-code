@@ -22,8 +22,6 @@ package org.qooxdoo.toolkit.plugin.binding.doctree;
 import java.io.IOException;
 import java.util.List;
 
-import org.qooxdoo.sushi.archive.Archive;
-import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Instance;
@@ -38,33 +36,32 @@ public class Doctree {
     private static final Normalizer N = new Normalizer();
     
     static {
-        try {
-            init(new IO());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        init();
     }
 
-    public static void init(IO io) throws IOException, ClassNotFoundException {
-        Node jar;
-        Node root;
-        String name;
+    public static void init() {
+        N.removes("appearances", "states", "error", "types", "params", "constants", "events", "properties", "methods", "methods-static", "packages", "classes", "errors", "hasWarning", "hasError");
         
-        N.removes("packages", "classes", "errors", "hasWarning", "hasError");
         N.rename("class", "clazz");
-        
-        jar = io.locateClasspathItem(Doctree.class);
-        if (jar.isDirectory()) {
-            root = jar;
-        } else {
-            root = Archive.loadJar(jar).data;
-        }
-        for (Node clazz : root.find("org/qooxdoo/toolkit/plugin/binding/doctree/*.class")) {
-            name = clazz.getRelative(root);
-            name = name.replace('/', '.');
-            name = name.substring(0, name.length() - 6);
-            SCHEMA.complex(Class.forName(name));
-        }
+        N.rename("fullName", "full-name");
+        N.rename("packageName", "package-name");
+        N.rename("superClass", "super-class");
+        N.rename("return", "return_");
+        N.rename("defaultValue", "default-value");
+        N.rename("fromProperty", "from-property");
+        N.rename("propertyType", "property-type");
+        N.rename("isStatic", "is-static");
+        N.rename("isAbstract", "is-abstract");
+        N.rename("isCtor", "is-ctor");
+        N.rename("isMixin", "is-mixin");
+        N.rename("isSingleton", "is-singleton");
+        N.rename("isInternal", "is-internal");
+        N.rename("docFrom", "doc-from");
+        N.rename("oldProperty", "old-property");
+        N.rename("overriddenFrom", "overridden-from");
+        N.rename("allowNull", "allow-null");
+        N.rename("childClasses", "child-classes");
+        N.rename("possibleValues", "possible-values");
     }
 
     public static Doctree load(Node src) throws IOException, SAXException, LoaderException {
@@ -77,5 +74,7 @@ public class Doctree {
         return result.get();
     }
 
+    //--
+    
     public List<Package> packages;
 }

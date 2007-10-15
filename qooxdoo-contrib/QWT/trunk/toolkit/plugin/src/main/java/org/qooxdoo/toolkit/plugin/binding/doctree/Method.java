@@ -22,6 +22,7 @@ package org.qooxdoo.toolkit.plugin.binding.doctree;
 import java.util.List;
 
 public class Method {
+    public Deprecated deprecated;
     public Desc desc;
     public List<Param> params;
     public Return return_;

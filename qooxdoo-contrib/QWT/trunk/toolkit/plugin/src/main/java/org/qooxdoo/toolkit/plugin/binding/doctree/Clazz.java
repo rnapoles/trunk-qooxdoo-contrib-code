@@ -22,33 +22,30 @@ package org.qooxdoo.toolkit.plugin.binding.doctree;
 import java.util.List;
 
 public class Clazz {
-    public Desc desc;
-    public See see;
-    public Deprecated deprecated;
-    public Contructor contructor;
-    public List<Constant> constants;
-    public List<Event> events;
-    public List<Method> methods;
-    public List<Method> methodsStatic;
-    public List<Appearance> appearances;
-    public List<Property> properties;
+    public String name;
+    public String interfaces;
+    public String superClass;
+    public String fullName;
+    public String type;
+    public String packageName;
 
     public String access;
-    public String type;
-    public String fullName;
-    public String packageName;
-    public String name;
-    
-    public String superClass;
-    public String interfaces;
     public String mixins;
     public String includer;
     public String childClasses;
     public String implementations;
-    
     public boolean isAbstract;
     public boolean isInternal;
-    
     public boolean isStatic;
     public boolean isSingleton;
+
+    public Desc desc;
+    public See see;
+    public Deprecated deprecated;
+    public Constructor constructor;
+    public List<Constant> constants;
+    public List<Event> events;
+    public List<Method> methods;
+    public List<Appearance> appearances;
+    public List<Property> properties;
 }

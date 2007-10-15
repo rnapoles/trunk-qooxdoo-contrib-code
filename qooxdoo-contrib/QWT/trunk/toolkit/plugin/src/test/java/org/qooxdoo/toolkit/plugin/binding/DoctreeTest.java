@@ -15,6 +15,6 @@ public class DoctreeTest {
         IO io;
         
         io = new IO();
-        Doctree.load(new ResourceNode(io, "tree.xml"));
+        Doctree.load(new ResourceNode(io, "doctree.xml"));
     }
 }

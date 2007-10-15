@@ -23,7 +23,7 @@ import java.util.List;
 
 public class Constant {
     public Desc desc;
-    public List<Entry> types;
+    public List<Entry> entries;
     public String value;
     public String type;
     public String name;

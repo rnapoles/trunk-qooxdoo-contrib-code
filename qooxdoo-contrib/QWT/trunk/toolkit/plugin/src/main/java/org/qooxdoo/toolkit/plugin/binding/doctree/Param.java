@@ -23,7 +23,7 @@ import java.util.List;
 
 public class Param {
     public Desc desc;
-    public List<Entry> types;
+    public List<Entry> entries;
     public String name;
     public String defaultValue;
 }

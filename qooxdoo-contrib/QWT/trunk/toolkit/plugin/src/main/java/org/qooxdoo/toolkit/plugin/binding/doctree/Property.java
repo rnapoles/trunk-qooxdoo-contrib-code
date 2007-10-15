@@ -22,9 +22,9 @@ package org.qooxdoo.toolkit.plugin.binding.doctree;
 import java.util.List;
 
 public class Property {
-    public List<Desc> desc;
+    public Desc desc;
     public Deprecated deprecated;
-    public List<Entry> types;
+    public List<Entry> entries;
     
     public String propertyType;
     public String inheritable;
@@ -41,7 +41,7 @@ public class Property {
     public boolean allowNull;
     public boolean isMixin;
     public String check;
-    public String possibleValue;
+    public String possibleValues;
     public String refine;
     public boolean themeable;
 }

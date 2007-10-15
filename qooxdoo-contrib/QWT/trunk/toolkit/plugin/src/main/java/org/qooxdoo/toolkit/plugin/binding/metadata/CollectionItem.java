@@ -30,7 +30,7 @@ public class CollectionItem extends Item<Object> {
     private final Field field;
     
     public CollectionItem(Field field, Type type) {
-        super(field.getName(), Cardinality.SEQUENCE, type, field);
+        super(type.getType().getSimpleName().toLowerCase(), Cardinality.SEQUENCE, type, field);
 
         this.field = field;
     }

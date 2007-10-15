@@ -24,4 +24,6 @@ import java.util.List;
 public class Appearance {
     public Desc desc;
     public List<State> states;
+    public String name;
+    public String type;
 }

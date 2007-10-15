@@ -28,6 +28,7 @@ import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.simpletypes.FileNodeType;
+import org.qooxdoo.sushi.util.Strings;
 
 public class ReflectSchema extends Schema {
     public ReflectSchema() {
@@ -51,13 +52,51 @@ public class ReflectSchema extends Schema {
             } else if (field.isSynthetic()) {
                 item = null;  // e.g. this$0
             } else if (Collection.class.isAssignableFrom(fieldType)) {
-                item = new CollectionItem(field, type(Object.class));
+                item = new CollectionItem(field, type(guessCollectionType(type, field.getName())));
             } else {
                 item = new ValueItem<Object>(field, type(fieldType));
             }
             if (item != null) {
                 type.items().add(item);
             }
+        }
+    }
+    
+    private static Class<?> guessCollectionType(ComplexType parent, String field) {
+        String prefix;
+        Class<?> result; 
+        
+        prefix = parent.getType().getPackage().getName() + ".";
+        result = get(prefix, field);
+        if (result != null) {
+            return result;
+        }
+        if (field.endsWith("ies")) {
+            result = get(prefix, field.substring(0, field.length() - 3) + "y");
+            if (result != null) {
+                return result;
+            }
+        }
+        if (field.endsWith("es")) {
+            result = get(prefix, field.substring(0, field.length() - 2));
+            if (result != null) {
+                return result;
+            }
+        }
+        if (field.endsWith("s")) {
+            result = get(prefix, field.substring(0, field.length() - 1));
+            if (result != null) {
+                return result;
+            }
+        }
+        throw new IllegalArgumentException("no class for " + prefix + field);
+    }
+    
+    private static Class<?> get(String prefix, String name) {
+        try {
+            return Class.forName(prefix + Strings.capitalize(name));
+        } catch (ClassNotFoundException e) {
+            return null;
         }
     }
 }
