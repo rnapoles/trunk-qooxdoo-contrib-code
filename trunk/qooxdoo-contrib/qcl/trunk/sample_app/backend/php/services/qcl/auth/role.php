@@ -48,6 +48,9 @@ class qcl_auth_role extends qcl_auth_common
     */
    function getPermissions($roleRef,$getNamedIds=true)
    {
+		// hack- this should not be necessary
+		$this->permission 	= $this->getSingleton("class_bibliograph_auth_permission");
+		
 		$roleId = $this->getIdFromRef($roleRef);
 		if ( ! $roleId )
 		{
