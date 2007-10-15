@@ -21,7 +21,6 @@ package org.qooxdoo.sushi.metadata;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,12 +28,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.xml.sax.InputSource;
-
+import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.metadata.store.PropertyStore;
 import org.qooxdoo.sushi.metadata.xml.Loader;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
+import org.xml.sax.InputSource;
 
 public abstract class Type {
     public static final String SCHEMA_HEAD = 
@@ -85,40 +84,29 @@ public abstract class Type {
     
     //--
     
-    public <T> Instance<T> loadXml(String str) throws LoaderException {
-        StringReader reader;
-        
-        reader = new StringReader(str);
-        try {
-            return loadXml("string", reader);
-        } catch (IOException e) {
-            throw new RuntimeException("unexpected ioexception", e);
-        }
-    }
-
     public <T> Instance<T> loadXml(Node node) throws IOException, LoaderException {
         Reader src;
         Instance<T> result;
         
         src = node.createReader();
-        result = loadXml(node.getPath(), src);
+        result = loadXml(node.io, node.getPath(), src);
         src.close();
         return result;
     }
 
-    public <T> Instance<T> loadXml(String systemId, Reader src) throws IOException, LoaderException {
+    public <T> Instance<T> loadXml(IO io, String systemId, Reader src) throws IOException, LoaderException {
         InputSource input;
         
         input = new InputSource(src);
         input.setSystemId(systemId);
-        return loadXml(input);
+        return loadXml(io, input);
     }
 
-    public <T> Instance<T> loadXml(InputSource src) throws IOException, LoaderException {
+    public <T> Instance<T> loadXml(IO io, InputSource src) throws IOException, LoaderException {
         Loader loader;
         T obj;
         
-        loader = new Loader(this);
+        loader = Loader.createValidating(io, this);
         obj = (T) loader.run(src);
         return instance(obj);
     }
