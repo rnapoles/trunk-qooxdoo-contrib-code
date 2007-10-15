@@ -207,6 +207,10 @@ public class Builder {
         return Factories.saxParser(schema);
     }
 
+    public static SAXParser createSAXParser() throws IOException, SAXException {
+        return Factories.saxParser();
+    }
+
     // TODO: avoid problems with old xerces versions in classpath
     private static final DocumentBuilderFactory FACTORY_NON_VALIDATING;
     private static final ErrorHandler ERROR_HANDLER;
