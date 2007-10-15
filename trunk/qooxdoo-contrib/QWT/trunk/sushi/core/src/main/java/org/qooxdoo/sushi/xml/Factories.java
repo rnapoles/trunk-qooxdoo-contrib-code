@@ -33,9 +33,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.io.Node;
+import org.xml.sax.SAXException;
 
 /**
  * Create SaxParser- and DocumentBuilder Factories. 
@@ -61,6 +60,21 @@ public class Factories {
             parser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
             parser.setProperty(JAXP_SCHEMA_SOURCE, new ByteArrayInputStream(schema.readBytes()));
             return parser;
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static SAXParser saxParser() throws IOException, SAXException {
+        SAXParserFactory factory;
+        
+        factory = sax();
+        factory.setValidating(false);
+        factory.setNamespaceAware(false);
+        try {
+            return factory.newSAXParser();
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
