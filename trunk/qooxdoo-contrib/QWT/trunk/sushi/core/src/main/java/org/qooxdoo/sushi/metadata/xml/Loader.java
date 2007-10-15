@@ -48,19 +48,23 @@ public class Loader extends DefaultHandler {
     /** map's id's to Objects */
     private Map<String, Object> storage;
     private List<SAXException> exceptions;
-    
-    public Loader(Type type) {
+
+    public static Loader createValidating(IO io, Type type) {
         Node xsd;
         
-        this.type = type;
         try {
-            xsd = new IO().stringNode(type.createSchema());
-            this.parser = Builder.createValidatingSAXParser(xsd);
+            xsd = io.stringNode(type.createSchema());
+            return new Loader(type, Builder.createValidatingSAXParser(xsd));
         } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Loader(Type type, SAXParser parser) {
+        this.type = type;
+        this.parser = parser;
         this.elements = new ArrayList<Element>();
         this.result = null;
     }

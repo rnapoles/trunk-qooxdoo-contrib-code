@@ -26,8 +26,13 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+
 import org.junit.Test;
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.SimpleTypeException;
+import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.metadata.Variable;
 import org.qooxdoo.sushi.metadata.model.Car;
 import org.qooxdoo.sushi.metadata.model.Engine;
@@ -86,7 +91,7 @@ public class LoaderTest extends ModelBase {
 
     @Test
     public void lng() throws LoaderException {
-        assertEquals((long) -2, new ReflectSchema().type(Long.class).loadXml("<long>-2</long>").get());
+        assertEquals((long) -2, loadXml(new ReflectSchema().type(Long.class), "<long>-2</long>").get());
     }
 
     //-- complex types
@@ -105,7 +110,7 @@ public class LoaderTest extends ModelBase {
         Vendor vendor;
         Car car;
         
-        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -130,7 +135,7 @@ public class LoaderTest extends ModelBase {
     public void id() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -146,7 +151,7 @@ public class LoaderTest extends ModelBase {
     public void idNotFound() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car idref='foo'/>" +
         "</vendor>").get();
@@ -159,7 +164,7 @@ public class LoaderTest extends ModelBase {
     public void idDuplicate() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -177,7 +182,7 @@ public class LoaderTest extends ModelBase {
     public void idUnexpectedContent() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) METADATA.type(Vendor.class).loadXml("<vendor>" +
+        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -274,19 +279,19 @@ public class LoaderTest extends ModelBase {
     //--
     
     private Object str(String str) throws LoaderException {
-        return new ReflectSchema().type(String.class).loadXml(str).get();
+        return loadXml(new ReflectSchema().type(String.class), str).get();
     }
 
     private Object integer(String str) throws LoaderException {
-        return new ReflectSchema().type(Integer.class).loadXml(str).get();
+        return loadXml(new ReflectSchema().type(Integer.class), str).get();
     }
 
     private Object bool(String str) throws LoaderException {
-        return new ReflectSchema().type(Boolean.class).loadXml(str).get();
+        return loadXml(new ReflectSchema().type(Boolean.class), str).get();
     }
 
     private Engine engine(String str) throws LoaderException {
-        return (Engine) METADATA.type(Engine.class).loadXml(str).get();
+        return (Engine) loadXml(METADATA.type(Engine.class), str).get();
     }
     
     //--
@@ -303,5 +308,15 @@ public class LoaderTest extends ModelBase {
         assertEquals(1, e.causes().size());
         assertTrue(e.getMessage(), e.getMessage().contains(contains));
         return e.causes().get(0);
+    }
+
+    private static IO IO_OBJ = new IO();
+    
+    private static Instance<?> loadXml(Type type, String str) throws LoaderException {
+        try {
+            return type.loadXml(IO_OBJ.stringNode(str));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

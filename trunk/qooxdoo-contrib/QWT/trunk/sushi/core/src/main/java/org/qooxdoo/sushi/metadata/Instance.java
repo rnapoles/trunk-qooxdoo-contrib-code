@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import org.qooxdoo.sushi.csv.Csv;
 import org.qooxdoo.sushi.csv.View;
+import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeWriter;
 import org.qooxdoo.sushi.metadata.store.PropertyStore;
@@ -60,12 +61,14 @@ public class Instance<T> {
     public Instance<T> clone() {
         Type type;
         StringWriter tmp;
+        IO io;
         
+        io = new IO(); // TODO
         type = getType();
         tmp = new StringWriter();
         try {
             toXml(tmp);
-            return type.loadXml(tmp.getBuffer().toString());
+            return type.loadXml(io.stringNode(tmp.getBuffer().toString()));
         } catch (IOException e) {
             throw new RuntimeException("io exception from memory!?", e);
         } catch (LoaderException e) {
