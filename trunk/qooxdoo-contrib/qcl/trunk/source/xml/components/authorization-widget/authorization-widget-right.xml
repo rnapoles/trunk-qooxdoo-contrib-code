@@ -6,7 +6,7 @@
 	<!-- tree -->
 	<qx:virtualTree
 		id="authConfigRightTree" 
-		left="0" top="0" width="245" height="100%"
+		left="0" top="0" width="100%" height="100%"
 		backgroundColor="white" border="inset"
 		selectionMode="multipleInterval"
 		showCellFocusIndicator="false"
@@ -22,7 +22,7 @@
 		dataBinding="true"
 		serviceMethodUpdateClient="getRolesAndPermissions">
    				
-		<qx:virtualTreeColumn heading="Roles/Permissions" width="10*" minWidth="200"/>
+		<qx:virtualTreeColumn heading="Roles/Permissions" width="100%" />
 
 		<!-- SECURITY POLICIES -->
 		
