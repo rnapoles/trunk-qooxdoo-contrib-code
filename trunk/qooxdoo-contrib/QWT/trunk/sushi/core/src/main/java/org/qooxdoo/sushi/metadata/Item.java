@@ -108,6 +108,7 @@ public abstract class Item<T> {
 
     //--
     
+    /** name in singular. E.g. "package", not "packages" */
     private final String name;
     private final Cardinality cardinality;
     private final Type type;
