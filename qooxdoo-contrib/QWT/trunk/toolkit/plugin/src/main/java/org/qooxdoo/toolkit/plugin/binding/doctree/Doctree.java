@@ -20,14 +20,17 @@
 package org.qooxdoo.toolkit.plugin.binding.doctree;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.metadata.ComplexType;
-import org.qooxdoo.sushi.metadata.Instance;
+import org.qooxdoo.sushi.metadata.xml.Loader;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
+import org.qooxdoo.sushi.xml.Builder;
 import org.qooxdoo.toolkit.plugin.binding.Normalizer;
 import org.qooxdoo.toolkit.plugin.binding.metadata.ReflectSchema;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class Doctree {
@@ -66,12 +69,18 @@ public class Doctree {
 
     public static Doctree load(Node src) throws IOException, SAXException, LoaderException {
         Node tmp;
-        Instance<Doctree> result;
+        Doctree result;
+        InputStream in;
+        InputSource is;
         
+        // TODO: no validation
         tmp = src.io.stringNode("");
         N.run(src, tmp);
-        result = TYPE.loadXml(tmp);
-        return result.get();
+        in = tmp.createInputStream();
+        is = new InputSource(in);
+        result = (Doctree) new Loader(TYPE, Builder.createSAXParser()).run(is);
+        in.close();
+        return result;
     }
 
     //--
