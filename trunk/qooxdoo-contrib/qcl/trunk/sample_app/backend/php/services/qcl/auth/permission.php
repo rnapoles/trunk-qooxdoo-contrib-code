@@ -81,7 +81,7 @@ class qcl_auth_permission extends qcl_auth_common
 
 	    	foreach ( $roleRefs as $roleRef )
 	    	{
-	    		$roleId = qcl_auth_role::getIdFromRef($roleRef);
+	    		$roleId = $this->role->getIdFromRef($roleRef);
 	    		if ( !$roleId )
 	    		{
 	    			$this->raiseError("qcl_auth_permission::addToRole : Invalid role reference: $roleRef");
@@ -116,7 +116,7 @@ class qcl_auth_permission extends qcl_auth_common
 	    	
 	    	foreach ( $roleRefs as $roleRef )
 	    	{
-	    		$roleId = qcl_auth_role::getIdFromRef($roleRef);
+	    		$roleId = $this->role->getIdFromRef($roleRef);
 	    		if ( !$roleId )
 	    		{
 	    			$this->raiseError("qcl_auth_permission::removeFromRole : Invalid role reference: $roleRef");
