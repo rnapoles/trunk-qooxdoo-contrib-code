@@ -276,7 +276,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      */
     _treeClickHandler: function(e) {
       // if the changeSelection changes from false -> true
-      if (e.getData()) {
+      if (e.getValue()) {
         // stops the bubbeling of the event
         e.stopPropagation();    
         // get the selected widget
