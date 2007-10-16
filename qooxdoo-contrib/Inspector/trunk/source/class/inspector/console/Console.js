@@ -110,7 +110,7 @@ qx.Class.define("inspector.console.Console", {
       return [this].concat(this._autoCompletePopup.getComponents());
     },    
     
-    
+		
     /**
      * Appends the given string to the textfield.
      * @param string {String} The string to append.
@@ -350,6 +350,13 @@ qx.Class.define("inspector.console.Console", {
       // build the javascript set code
       var returnString = ".set({<br>"
       for (var i in props) {
+	      // if the property is a string
+				if (typeof props[i] == "string") {
+					// check for HTML code
+					props[i] = props[i].replace(/</g,"&lt;");
+	        props[i] = props[i].replace(/>/g,"&gt;");
+					props[i] = props[i].replace(/&/g,"&amp;");
+				}
         returnString += (i + ": " + props[i] + ", <br>");        
       }
       returnString += "});";
@@ -690,7 +697,7 @@ qx.Class.define("inspector.console.Console", {
     _setMainElementWidth: function(delta) {
       // do nothing
     },
-    
+		    
     
     /**
      * Sets the start position of the window.
@@ -703,7 +710,7 @@ qx.Class.define("inspector.console.Console", {
 			}
       // set the top position only if no other top position is set
 			if (this.getTop() == null) {
-	      this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());				
+        this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());				
 			}
     },
     

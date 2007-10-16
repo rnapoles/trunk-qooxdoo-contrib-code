@@ -512,6 +512,10 @@ qx.Class.define("inspector.menu.Menu", {
       this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
       this._hideEverythingButton.setCommand(this._hideEverythingCommand);
       this._inspectorMenu.add(this._hideEverythingButton);
+      // reset perspective button
+      var resetPerspectiveButton = new qx.ui.menu.Button("Reset");
+			resetPerspectiveButton.addEventListener("execute", this._inspector.resetPerspective, this._inspector);      
+      this._inspectorMenu.add(resetPerspectiveButton);			
       
       // listener which holds the bemubar down while the menu is shown
       this._inspectorMenu.addEventListener("mousemove", function() {

@@ -146,6 +146,15 @@ qx.Class.define("inspector.Inspector", {
     // the native window for the api viewer
     _apiWindow: null,
      
+		 
+    resetPerspective: function() {
+      // console
+			this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this._console.getInnerHeight());       
+      this._console.setLeft(0);
+			this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);
+			
+			       
+		},
     
    /*
     *********************************
