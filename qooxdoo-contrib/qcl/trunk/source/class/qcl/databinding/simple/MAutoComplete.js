@@ -295,11 +295,11 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	            if (ex == null) {
 	              
 	              // server messages
-	              if( qx.messagebus && typeof result.__messages == "object" )
+	              if( qx.event.message && typeof result.__messages == "object" )
 	              {
 	                for (var key in result.__messages)
 	                {
-	                  qx.messagebus.Bus.dispatch( key, result.__messages[key] ); 
+	                  qx.event.message.Bus.dispatch( key, result.__messages[key] ); 
 	                }
 	                delete (result.__messages);
 	              }
@@ -308,8 +308,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	              _this._handleAutoCompleteValues(result);
 	              
 	            } else {
-	              // generic error handling; todo: delegate to event listeners
-	              qx.messagebus.Bus.dispatch(
+	              qx.event.message.Bus.dispatch(
                     "qcl.databinding.messages.rpc.error",
                     "Async(" + id + ") exception: " + 
                     "origin: " + ex.origin +
