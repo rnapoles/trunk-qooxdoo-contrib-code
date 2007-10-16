@@ -354,13 +354,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             {
               case "qx.ui.form.ComboBox":
               case "qx.ui.form.ComboBoxEx":
-                this.setSelected(this.getList().findValue(data[key]['value']));
+                this.setSelected(this.getList().findValue(data[key]));
                 break;
               case "qx.manager.selection.RadioManager":
                 var items = this.getItems();
                 for (var i=0; i<items.length; i++)
                 {
-                  if ( items[i].getValue() == data[key]['value'] )
+                  if ( items[i].getValue() == data[key] )
                   {
                     this.setSelected(items[i]);
                   }
