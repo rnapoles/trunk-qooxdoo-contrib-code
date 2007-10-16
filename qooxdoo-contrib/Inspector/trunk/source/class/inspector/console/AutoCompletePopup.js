@@ -289,5 +289,15 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       }
       return null;
     }
-   }
+   },  
+  
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._controller = null;
+  }  
 });
