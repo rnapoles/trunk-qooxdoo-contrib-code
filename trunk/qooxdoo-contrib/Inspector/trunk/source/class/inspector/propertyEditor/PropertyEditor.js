@@ -708,5 +708,17 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._toolbar.add(this._gotoSelectedPropertyButton);
       this._gotoSelectedPropertyButton.addEventListener("execute", this._gotoSelectedPropertyButtonEventListener, this);
     }
-  }
+  },  
+  
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+		// reset the buttons
+    this._inheritedButton = null;
+		this._groupButton = null;
+  }  
 });
