@@ -305,14 +305,14 @@ class qcl_auth_user extends qcl_auth_common
 	    	$userId = $this->getIdFromRef($userRef);
 	    	if ( ! $userId )
 	    	{
-	    		$this->raiseError("Invalid user reference: $userRef");
+	    		$this->raiseError("qcl_auth_user::addToRole : Invalid user reference: $userRef");
 	    	}
 	    	foreach ( $roleRefs as $roleRef )
 	    	{
 	    		$roleId = $this->role->getIdFromRef($roleRef);
 		    	if ( ! $roleId )
 		    	{
-		    		$this->raiseError("Invalid role reference: $roleRef");
+		    		$this->raiseError("qcl_auth_user::addToRole : Invalid role reference: $roleRef");
 		    	}
 	    		$row = array();
 	    		$row[$this->role->foreignKey] = $roleId;
@@ -338,7 +338,7 @@ class qcl_auth_user extends qcl_auth_common
 	    	$userId = $this->getIdFromRef($userRef);
 	    	if ( ! $userId )
 	    	{
-	    		$this->raiseError("Invalid user reference: $userRef");
+	    		$this->raiseError("qcl_auth_user::removeFromRole : Invalid user reference: $userRef");
 	    	}
 	    	
 	    	foreach ( $roleRefs as $roleRef )
@@ -346,7 +346,7 @@ class qcl_auth_user extends qcl_auth_common
 	    		$roleId = $this->role->getIdFromRef($roleRef);
 		    	if ( ! $roleId )
 		    	{
-		    		$this->raiseError("Invalid role reference: $roleRef");
+		    		$this->raiseError("qcl_auth_user::removeFromRole : Invalid role reference: $roleRef");
 		    	}
 				$this->db->execute("
 					DELETE FROM `{$this->table_link_user_roles}`
