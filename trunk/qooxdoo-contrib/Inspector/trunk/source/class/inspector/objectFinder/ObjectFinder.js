@@ -387,6 +387,15 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
 			}
     },
     
+		
+		 /**
+     * Returns the name of the window. This name is used to stor the 
+     * position an the size of the window in a cookie.
+     * @return name {String} The name of the window.
+     */
+    _getName: function() {
+      return "ObjectFinder"; 
+    },    
     
     /**
      * Creates the table including the table model. Also register the 

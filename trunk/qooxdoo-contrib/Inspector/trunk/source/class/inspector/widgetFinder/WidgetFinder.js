@@ -548,6 +548,15 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       }
     },
     
+		
+    /**
+     * Returns the name of the window. This name is used to stor the 
+     * position an the size of the window in a cookie.
+     * @return name {String} The name of the window.
+     */
+    _getName: function() {
+      return "WidgetFinder"; 
+    },    		
     
     /**
      * Creates the tree and register the handler for the clicks on the tree

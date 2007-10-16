@@ -30,8 +30,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     // store the reference to the menu
     this._menu = menu;
     // set the zIndex to a higher one than the index of the find mode layer
-    this.setZIndex(1e5 + 3);
-
+    this.setZIndex(1e5 + 3)
     
     // initialize the window
     this.setCaption(inspector.Inspector.SETTINGS_CAPTION_TITLE);

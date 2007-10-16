@@ -60,7 +60,7 @@ qx.Class.define("inspector.AbstractWindow", {
     this._registerResizeHandler();
     
     // register the opacity handler
-//    this._registerOpacityHandler();
+    // this._registerOpacityHandler();
 
     // register a listener to kep the inspector windows alwasy on top
     this.addEventListener("changeZIndex", function(e) {
@@ -131,21 +131,80 @@ qx.Class.define("inspector.AbstractWindow", {
      * and the resize behavior of the window.
      */
     _registerResizeHandler: function() {
+			
+			// register the height handler
       this.addEventListener("changeHeight", function(e) {
-        var delta = e.getValue() - this._windowHeight;
+        // get the change of the height
+				var delta = e.getValue() - this._windowHeight;
+				// save the new height local
         this._windowHeight = e.getValue();
-        this._setMainElementHeight(delta);
+				// save the height in a cookie
+        qx.io.local.CookieApi.set(this.classname + "#Height", this._windowHeight);
+        // set the new height as delta
+        this._setMainElementHeight(delta, true);
       }, this);
+			
+			// register the width handler
       this.addEventListener("changeWidth", function(e) {
+				// get the change of the width
         var delta = e.getValue() - this._windowWidth;
+				// save the new width local
         this._windowWidth = e.getValue();
+				// save the width in a cookie
+        qx.io.local.CookieApi.set(this.classname + "#Width", this._windowWidth);
+				// set the new width
         this._setMainElementWidth(delta);
-      }, this);    
+      }, this);
+			
+			// register the appera handler
       this.addEventListener("appear", function(e) {
+				// store the diemensions of the window
         this._windowWidth = this.getOffsetWidth();
         this._windowHeight = this.getOffsetHeight();
-        this._setApearancePosition();
+
+        // check for the top coordinate set in a cookie
+        if (qx.io.local.CookieApi.get(this.classname + "#Top")) {
+					// set the stored top coordinate
+          this.setTop(parseInt(qx.io.local.CookieApi.get(this.classname + "#Top")));
+					// mark that top has been set
+					var setTop = true;
+        }
+        // check for the left coordinate set in a cookie
+        if (qx.io.local.CookieApi.get(this.classname + "#Left")) {
+					// set the left coordinate
+          this.setLeft(parseInt(qx.io.local.CookieApi.get(this.classname + "#Left")));
+					// mark that left has been set
+          var setLeft = true;
+        }
+				// check for the height set in a cookie
+        if (qx.io.local.CookieApi.get(this.classname + "#Height")) {
+          // set the left coordinate
+         this.setHeight(parseInt(qx.io.local.CookieApi.get(this.classname + "#Height")));
+          // mark that left has been set
+          var setHeight = true;
+        }
+        // check for the height set in a cookie
+        if (qx.io.local.CookieApi.get(this.classname + "#Width")) {
+          // set the left coordinate
+          this.setWidth(parseInt(qx.io.local.CookieApi.get(this.classname + "#Width")));
+          // mark that left has been set
+          var setWidth = true;
+        }
+				// if left, top, height or width has not been set
+				if (!setTop || !setLeft || !setHeight || !setWidth) {
+					// tell the application to choose the appereance position
+					this._setApearancePosition();					
+				}
       }, this);
+		
+		  // register the left position handler
+	    this.addEventListener("changeLeft", function(e) {
+	      qx.io.local.CookieApi.set(this.classname + "#Left", e.getValue());
+	    }, this);
+	    // register the top position handler
+	    this.addEventListener("changeTop", function(e) {
+	      qx.io.local.CookieApi.set(this.classname + "#Top", e.getValue());
+	    }, this);			
     },
     
     
@@ -191,7 +250,7 @@ qx.Class.define("inspector.AbstractWindow", {
      * @internal
      */       
     getComponents: function() {
-      // throw an exception if the method is caled on the abstract class
+      // throw an exception if the method is called on the abstract class
       throw new Error("Abstract method call (getComponents) in 'AbstractDebugerWindow'!");
     },
    
@@ -201,7 +260,7 @@ qx.Class.define("inspector.AbstractWindow", {
      * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
-      // throw an exception if the method is caled on the abstract class
+      // throw an exception if the method is called on the abstract class
       throw new Error("Abstract method call (_setMainElementHeight) in 'AbstractDebugerWindow'!");
     },
     
@@ -211,7 +270,7 @@ qx.Class.define("inspector.AbstractWindow", {
      * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
-      // throw an exception if the method is caled on the abstract class
+      // throw an exception if the method is called on the abstract class
       throw new Error("Abstract method call (_setMainElementWidth) in 'AbstractDebugerWindow'!");
     },
     
@@ -220,7 +279,7 @@ qx.Class.define("inspector.AbstractWindow", {
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
-      // throw an exception if the method is caled on the abstract class
+      // throw an exception if the method is called on the abstract class
       throw new Error("Abstract method call (_setApearancePosition) in 'AbstractDebugerWindow'!");
     },
     
@@ -231,7 +290,7 @@ qx.Class.define("inspector.AbstractWindow", {
      * and the statusbar.
      */
     _createMainElement: function() {
-      // throw an exception if the method is caled on the abstract class
+      // throw an exception if the method is called on the abstract class
       throw new Error("Abstract method call (_createMainElement) in 'AbstractDebugerWindow'!");
     },
 
