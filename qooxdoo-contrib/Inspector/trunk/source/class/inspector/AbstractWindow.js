@@ -132,13 +132,13 @@ qx.Class.define("inspector.AbstractWindow", {
      */
     _registerResizeHandler: function() {
       this.addEventListener("changeHeight", function(e) {
-        var delta = e.getData() - this._windowHeight;
-        this._windowHeight = e.getData();
+        var delta = e.getValue() - this._windowHeight;
+        this._windowHeight = e.getValue();
         this._setMainElementHeight(delta);
       }, this);
       this.addEventListener("changeWidth", function(e) {
-        var delta = e.getData() - this._windowWidth;
-        this._windowWidth = e.getData();
+        var delta = e.getValue() - this._windowWidth;
+        this._windowWidth = e.getValue();
         this._setMainElementWidth(delta);
       }, this);    
       this.addEventListener("appear", function(e) {
