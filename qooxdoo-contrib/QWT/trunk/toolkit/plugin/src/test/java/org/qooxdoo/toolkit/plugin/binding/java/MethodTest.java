@@ -69,6 +69,6 @@ public class MethodTest {
         org.qooxdoo.sushi.metadata.ComplexType type;
         
         type = org.qooxdoo.toolkit.plugin.binding.qx.Doctree.SCHEMA.complex(org.qooxdoo.toolkit.plugin.binding.qx.Method.class);
-        return ((org.qooxdoo.toolkit.plugin.binding.qx.Method) org.qooxdoo.toolkit.plugin.binding.qx.Doctree.load(type, IO_OBJ.stringNode(str))).createMethod("name", false);
+        return ((org.qooxdoo.toolkit.plugin.binding.qx.Method) org.qooxdoo.toolkit.plugin.binding.qx.Doctree.load(type, IO_OBJ.stringNode(str))).createJava("name", false);
     }
 }

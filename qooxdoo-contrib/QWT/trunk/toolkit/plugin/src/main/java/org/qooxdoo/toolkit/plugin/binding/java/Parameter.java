@@ -19,15 +19,8 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
-import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.qx.Entry;
-
 
 public class Parameter {
-    public static Parameter fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Param qx) throws XmlException {
-        return new Parameter(Entry.paramType(qx.entries), qx.name);
-    }
-
     private final Type type;
     private final String name;
     

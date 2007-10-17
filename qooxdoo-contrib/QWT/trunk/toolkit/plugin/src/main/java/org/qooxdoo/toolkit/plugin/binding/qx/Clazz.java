@@ -68,11 +68,11 @@ public class Clazz {
                     isAbstract, fullName, superClass, 
                     interfaces(), Desc.toJava(desc));
             for (org.qooxdoo.toolkit.plugin.binding.qx.Property p : properties) {
-                clazz.add(p.createField());
+                clazz.add(p.createJava());
             }
             ifc = (clazz.type == ClazzType.INTERFACE);
             if (constructor != null) {
-                m = constructor.method.createMethod(name, ifc);
+                m = constructor.method.createJava(name, ifc);
                 if (m.isStatic()) {
                     throw new XmlException("unexpected static method: " + m);
                 }
@@ -86,7 +86,7 @@ public class Clazz {
                 clazz.add(m);
             }
             for (org.qooxdoo.toolkit.plugin.binding.qx.Method child : methods) {
-                m = child.createMethod(name, ifc);
+                m = child.createJava(name, ifc);
                 if (m.isConstructor()) {
                     throw new XmlException("unexpected constructor method: " + m);
                 }
