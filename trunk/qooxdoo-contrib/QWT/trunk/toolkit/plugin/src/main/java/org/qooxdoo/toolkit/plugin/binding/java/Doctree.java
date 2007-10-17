@@ -37,7 +37,8 @@ import org.xml.sax.SAXException;
 
 /** Arbitrary collection of classes. */ 
 public class Doctree {
-    public static Doctree loadAll(Node src, Node output, Node jsroot, Filter undocumented) throws IOException, SAXException, LoaderException, XmlException {
+    public static Doctree loadAll(Node src, Node output, Node jsroot, Filter undocumented) 
+    throws IOException, SAXException, LoaderException, XmlException {
         Doctree doctree;
 
         doctree = loadRaw(src);

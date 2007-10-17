@@ -25,7 +25,7 @@ public class Method {
     public Deprecated deprecated;
     public Desc desc;
     public List<Param> params;
-    public Return return_;
+    public Return returN;
     public See see;
     public List<Error> errors;
     

@@ -101,7 +101,7 @@ public class Entry {
     public static Type methodType(org.qooxdoo.toolkit.plugin.binding.doctree.Method method) throws XmlException {
         Return ret;
         
-        ret = method.return_;
+        ret = method.returN;
         if (ret == null) {
             return SimpleType.VOID;
         } else {

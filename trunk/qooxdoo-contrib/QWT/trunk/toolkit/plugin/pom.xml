@@ -77,7 +77,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <!-- TODO -->
-          <excludes>org/qooxdoo/toolkit/plugin/doctree/Method.java</excludes>
+          <excludes>org/qooxdoo/toolkit/plugin/binding/java/Method.java</excludes>
         </configuration>
       </plugin>
       <plugin>
