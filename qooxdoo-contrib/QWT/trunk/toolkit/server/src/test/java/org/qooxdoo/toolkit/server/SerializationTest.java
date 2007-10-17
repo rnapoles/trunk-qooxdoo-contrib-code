@@ -68,6 +68,7 @@ public class SerializationTest {
     @Test
     public void string() {
         check("''", "");
+        check("'+20ac'", "\u20ac");
         check("'foo'", "foo");
         check("'%27'", "'");
         check("'%2f%2e'", "/.");

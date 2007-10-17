@@ -104,6 +104,11 @@ public class Parser {
                 result = result + (char) ((hex(str.charAt(idx + 1)) * 16 + hex(str.charAt(idx + 2))));
                 idx += 3;
                 break;
+            case '+':
+                result = result + (char) ((hex(str.charAt(idx + 1)) * 4096 + hex(str.charAt(idx + 2)) * 256 
+                        + hex(str.charAt(idx + 3)) * 16 + hex(str.charAt(idx + 4))));
+                idx += 5;
+                break;
             default:
                 idx++;
                 result = result + c;

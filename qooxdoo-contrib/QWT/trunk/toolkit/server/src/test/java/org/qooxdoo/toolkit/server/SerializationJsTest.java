@@ -68,6 +68,7 @@ public class SerializationJsTest {
     public void string() throws Exception {
         check("''");
         check("'abc'");
+        check("'+20ac'"); // Euro sign
     }
 
     @Test
