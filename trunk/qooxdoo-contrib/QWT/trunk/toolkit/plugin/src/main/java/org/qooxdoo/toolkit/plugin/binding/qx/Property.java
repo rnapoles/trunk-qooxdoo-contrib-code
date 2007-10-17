@@ -59,7 +59,7 @@ public class Property {
         }
     }
     
-    public Field createField() throws XmlException {
+    public Field createJava() throws XmlException {
         return new Field(name, propertyType(), overriddenFrom, Desc.toJava(desc));
     }
 }

@@ -21,9 +21,17 @@ package org.qooxdoo.toolkit.plugin.binding.qx;
 
 import java.util.List;
 
+import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.java.Parameter;
+
 public class Param {
     public Desc desc;
     public List<Entry> entries;
     public String name;
     public String defaultValue;
+    
+    public Parameter toJava() throws XmlException {
+        return new Parameter(Entry.paramType(entries), name);
+    }
+
 }

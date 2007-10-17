@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.binding.java.Modifier;
-import org.qooxdoo.toolkit.plugin.binding.java.Parameter;
 import org.qooxdoo.toolkit.plugin.binding.java.Type;
 
 public class Method {
@@ -48,8 +47,7 @@ public class Method {
     
     //--
     
-    public org.qooxdoo.toolkit.plugin.binding.java.Method createMethod(String simpleClass, boolean forInterface) throws XmlException {
-        boolean isContructor;
+    public org.qooxdoo.toolkit.plugin.binding.java.Method createJava(String simpleClass, boolean forInterface) throws XmlException {
         org.qooxdoo.toolkit.plugin.binding.java.Method method;
         Modifier a;
         Type returnType;
@@ -79,8 +77,8 @@ public class Method {
         for (Error e: errors) {
             method.errors.add(e.msg);
         }
-        for (org.qooxdoo.toolkit.plugin.binding.qx.Param p : params) {
-            method.add(Parameter.fromXml(p));
+        for (Param p : params) {
+            method.add(p.toJava());
         }
         return method;
     }
