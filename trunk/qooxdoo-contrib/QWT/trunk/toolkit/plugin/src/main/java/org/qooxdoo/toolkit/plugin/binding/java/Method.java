@@ -33,23 +33,23 @@ public class Method extends Item {
             boolean forInterface) throws XmlException {
         boolean isContructor;
         Method method;
-        Access a;
+        Modifier a;
         Type returnType;
         
         isContructor = qx.isCtor;
         a = access(qx);
-        if (a == Access.PROTECTED) {
+        if (a == Modifier.PROTECTED) {
             if (qx.name.startsWith("init") || qx.overriddenFrom != null) {
                 // TODO: System.out.println("TODO: changing visibility to
                 // PUBLIC: " + name);
-                a = Access.PUBLIC;
+                a = Modifier.PUBLIC;
             } else if (forInterface) {
                 // TODO: 
                 // System.out.println("TODO: changing visibility to PUBLIC: " + simpleClass + "." + name);
-                a = Access.PUBLIC;
+                a = Modifier.PUBLIC;
             } else {
                 // TODO: overriddenFrom not always assigned properly:
-                a = Access.PUBLIC;
+                a = Modifier.PUBLIC;
                 // System.out.println("not for interface: " + simpleClass + "." + name + " " + qx.overriddenFrom);
             }
         }
@@ -69,20 +69,20 @@ public class Method extends Item {
     }
 
     
-    private static Access access(org.qooxdoo.toolkit.plugin.binding.qx.Method qx) throws XmlException {
+    private static Modifier access(org.qooxdoo.toolkit.plugin.binding.qx.Method qx) throws XmlException {
         String access;
 
         access = qx.access;
         if (access == null) {
-            return Access.PUBLIC;
+            return Modifier.PUBLIC;
         } else {
-            return Access.valueOf(access.toUpperCase());
+            return Modifier.valueOf(access.toUpperCase());
         }
     }
 
     // --
 
-    private final Access access;
+    private final Modifier access;
     private final boolean isAbstract;
     private final boolean isNative;
     private final boolean isStatic;
@@ -95,7 +95,7 @@ public class Method extends Item {
     private final List<Parameter> params;
     public final List<String> errors;
     
-    public Method(Access access, boolean isAbstract, boolean isNative,
+    public Method(Modifier access, boolean isAbstract, boolean isNative,
             boolean isStatic, boolean isConstructor, Type type, String name,
             String description, String docFrom, String fromProperty, String body) {
         super(description);
@@ -130,10 +130,10 @@ public class Method extends Item {
         }
     }
 
-    public void link(Doctree doctree, Clazz owner) {
+    public void link(Set doctree, Clazz owner) {
         Clazz clazz;
         Method docFromMethod;
-        Property prop;
+        Field prop;
         
         if (fromProperty != null) {
             prop = owner.findProperty(fromProperty);
@@ -187,7 +187,7 @@ public class Method extends Item {
         return m;
     }
 
-    public Access getAccess() {
+    public Modifier getAccess() {
         return access;
     }
 
@@ -234,7 +234,7 @@ public class Method extends Item {
 
         builder.append(comment(true));
         builder.append(indent);
-        if (access != Access.NONE && access != Access.INTERNAL) {
+        if (access != Modifier.NONE && access != Modifier.INTERNAL) {
             builder.append(access.toString().toLowerCase());
             builder.append(' ');
         }

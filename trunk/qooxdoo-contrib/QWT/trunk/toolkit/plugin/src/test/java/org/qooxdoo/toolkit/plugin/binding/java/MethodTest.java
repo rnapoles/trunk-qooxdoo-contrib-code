@@ -55,7 +55,7 @@ public class MethodTest {
 
         assertEquals("bla", method.getName());
         assertEquals(null, method.getDescription());
-        assertEquals(Access.PRIVATE, method.getAccess());
+        assertEquals(Modifier.PRIVATE, method.getAccess());
         assertEquals(3, method.params().size());
         assertEquals("x", method.params().get(0).getName());
         assertEquals(SimpleType.NUMBER, method.params().get(0).getType());

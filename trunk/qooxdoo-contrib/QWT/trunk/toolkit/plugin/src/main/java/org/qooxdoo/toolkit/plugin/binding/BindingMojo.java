@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import org.qooxdoo.toolkit.plugin.FrameworkBase;
-import org.qooxdoo.toolkit.plugin.binding.java.Doctree;
+import org.qooxdoo.toolkit.plugin.binding.java.Set;
 import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
@@ -128,14 +128,14 @@ public class BindingMojo extends FrameworkBase {
     }
     
     protected void binding(Node src, Node output) throws IOException, SAXException, XmlException {
-        Doctree doctree;
+        Set doctree;
         PatchSet patchSet;
         
         patchSet = PatchSet.load(patches);
         bindings.deleteOpt();
         bindings.mkdirs();
         try {
-            doctree = Doctree.loadAll(src, output, frameworkDir.join(CLASS), undocumented);
+            doctree = Set.loadAll(src, output, frameworkDir.join(CLASS), undocumented);
         } catch (SAXParseException e) {
             throw new SAXException(e.getSystemId() + ":" + e.getLineNumber() + ":" + e.getMessage(), e); 
         } catch (LoaderException e) {

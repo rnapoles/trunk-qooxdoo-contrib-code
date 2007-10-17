@@ -25,11 +25,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.toolkit.plugin.binding.java.Access;
+import org.qooxdoo.toolkit.plugin.binding.java.Modifier;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
 import org.qooxdoo.toolkit.plugin.binding.java.ClazzType;
 import org.qooxdoo.toolkit.plugin.binding.java.Method;
-import org.qooxdoo.toolkit.plugin.binding.java.Property;
+import org.qooxdoo.toolkit.plugin.binding.java.Field;
 import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class ClazzTest {
@@ -40,8 +40,8 @@ public class ClazzTest {
         Clazz clazz;
         
         clazz = new Clazz(ClazzType.CLASS, "foo.bar.Baz", "Base", "desc");
-        clazz.addWithMethods(new Property("p", SimpleType.NUMBER, null, null));
-        clazz.methods.add(new Method(Access.PUBLIC, false, false, false, false, SimpleType.BOOLEAN, "ok", null, null, null, ""));
+        clazz.addWithMethods(new Field("p", SimpleType.NUMBER, null, null));
+        clazz.methods.add(new Method(Modifier.PUBLIC, false, false, false, false, SimpleType.BOOLEAN, "ok", null, null, null, ""));
         assertEquals("foo.bar.Baz", clazz.getFullName());
         assertEquals("foo.bar", clazz.getPackage());
         assertEquals("Baz", clazz.getName());
@@ -84,7 +84,7 @@ public class ClazzTest {
         Clazz clazz;
         
         clazz = new Clazz(ClazzType.INTERFACE, "foo.bar.Baz", "Base", "desc");
-        clazz.addWithMethods(new Property("p", SimpleType.NUMBER, null, null));
+        clazz.addWithMethods(new Field("p", SimpleType.NUMBER, null, null));
         assertEquals(
                 "/* Copyright (c) 1&1. All Rights Reserved. */\n" +
                 "\n" +

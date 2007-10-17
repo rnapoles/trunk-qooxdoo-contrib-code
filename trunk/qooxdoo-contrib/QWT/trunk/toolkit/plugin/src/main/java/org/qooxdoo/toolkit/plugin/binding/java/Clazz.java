@@ -42,7 +42,7 @@ public class Clazz extends Item {
                     qx.isAbstract, qx.fullName, qx.superClass, 
                     interfaces(qx.interfaces), Desc.toJava(qx.desc));
             for (org.qooxdoo.toolkit.plugin.binding.qx.Property p : qx.properties) {
-                clazz.add(Property.fromXml(p));
+                clazz.add(Field.fromXml(p));
             }
             ifc = (clazz.type == ClazzType.INTERFACE);
             if (qx.constructor != null) {
@@ -102,7 +102,7 @@ public class Clazz extends Item {
     public final Dependencies loadtime;
     public final Dependencies runtime;
     
-    public final List<Property> properties;
+    public final List<Field> properties;
 
     private String nativ;
     
@@ -124,7 +124,7 @@ public class Clazz extends Item {
         this.methods = new ArrayList<Method>();
         this.loadtime = new Dependencies();
         this.runtime = new Dependencies();
-        this.properties = new ArrayList<Property>();
+        this.properties = new ArrayList<Field>();
         this.nativ = null;
         setExtra("@augment " + fullName);
     }
@@ -149,7 +149,7 @@ public class Clazz extends Item {
         return currentPackage.equals(getPackage()) ? getName() : getFullName();
     }
     
-    public void link(Doctree doctree) {
+    public void link(Set doctree) {
         String fullName;
         Clazz c;
         
@@ -238,7 +238,7 @@ public class Clazz extends Item {
         return Collections.unmodifiableList(methods);
     }
 
-    public List<Property> fields() {
+    public List<Field> fields() {
         return Collections.unmodifiableList(properties);
     }
 
@@ -249,8 +249,8 @@ public class Clazz extends Item {
         methods.add(method);
     }
     
-    public Property findProperty(String name) {
-        for (Property p : properties) {
+    public Field findProperty(String name) {
+        for (Field p : properties) {
             if (p.getName().equals(name)) {
                 return p;
             }
@@ -267,11 +267,11 @@ public class Clazz extends Item {
         return null;
     }
     
-    public void add(Property property) {
+    public void add(Field property) {
         properties.add(property);
     }
 
-    public void addWithMethods(Property property) {
+    public void addWithMethods(Field property) {
         add(property);
         if (type == ClazzType.INTERFACE) {
             methods.add(property.createInterfaceGetter());
@@ -356,7 +356,7 @@ public class Clazz extends Item {
         }
         builder.append(" {\n");
         if (!ifc) {
-            for (Property prop : properties) {
+            for (Field prop : properties) {
                 if (prop.getOverriddenFrom() == null) {
                     prop.toJava(builder);
                     builder.append('\n');

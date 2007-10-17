@@ -29,8 +29,8 @@ import org.xml.sax.SAXParseException;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
-import org.qooxdoo.toolkit.plugin.binding.java.Doctree;
-import org.qooxdoo.toolkit.plugin.binding.java.Property;
+import org.qooxdoo.toolkit.plugin.binding.java.Set;
+import org.qooxdoo.toolkit.plugin.binding.java.Field;
 import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class DoctreeTest {
@@ -45,7 +45,7 @@ public class DoctreeTest {
     public void normal() throws Exception {
         List<Clazz> lst;
         Clazz clazz;
-        Property field;
+        Field field;
         
         lst = run(
                 "<doctree>" +
@@ -89,7 +89,7 @@ public class DoctreeTest {
     @Test 
     public void doctree() throws Exception {
         try {
-            Doctree.loadRaw(new ResourceNode(IO_OBJ, "doctree.xml"));
+            Set.loadRaw(new ResourceNode(IO_OBJ, "doctree.xml"));
         } catch (SAXParseException e) {
             throw new RuntimeException(e.getLineNumber() + ":" + e.getMessage(), e);
         }
@@ -97,24 +97,24 @@ public class DoctreeTest {
 
     
     private List<Clazz> run(String str) throws Exception {
-        return Doctree.loadRaw(IO_OBJ.stringNode(str)).clazzes();
+        return Set.loadRaw(IO_OBJ.stringNode(str)).clazzes();
     }
     
     //--
 
     @Test
     public void cut() {
-        assertEquals("bc", Doctree.cut("abcd", "a(bc)d"));
-        assertEquals("bc", Doctree.cut("abcd", "(bc)"));
+        assertEquals("bc", Set.cut("abcd", "a(bc)d"));
+        assertEquals("bc", Set.cut("abcd", "(bc)"));
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void cutNotFound() {
-        assertEquals("bc", Doctree.cut("abc", "a(bc)d"));
+        assertEquals("bc", Set.cut("abc", "a(bc)d"));
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void cutAmbiguou() {
-        assertEquals("bc", Doctree.cut("123123", "(12)"));
+        assertEquals("bc", Set.cut("123123", "(12)"));
     }
 }

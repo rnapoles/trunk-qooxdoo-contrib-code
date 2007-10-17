@@ -36,10 +36,10 @@ import org.qooxdoo.toolkit.plugin.binding.patch.PatchException;
 import org.xml.sax.SAXException;
 
 /** Arbitrary collection of classes. */ 
-public class Doctree {
-    public static Doctree loadAll(Node src, Node output, Node jsroot, Filter undocumented) 
+public class Set {
+    public static Set loadAll(Node src, Node output, Node jsroot, Filter undocumented) 
     throws IOException, SAXException, LoaderException, XmlException {
-        Doctree doctree;
+        Set doctree;
 
         doctree = loadRaw(src);
         doctree.addUndocumented(jsroot, undocumented);
@@ -48,12 +48,12 @@ public class Doctree {
         return doctree;
     }
     
-    public static Doctree loadRaw(Node src) throws IOException, SAXException, LoaderException, XmlException {
+    public static Set loadRaw(Node src) throws IOException, SAXException, LoaderException, XmlException {
         org.qooxdoo.toolkit.plugin.binding.qx.Doctree qx;
-        Doctree doctree;
+        Set doctree;
 
         qx = org.qooxdoo.toolkit.plugin.binding.qx.Doctree.load(src);
-        doctree = new Doctree();
+        doctree = new Set();
         for (org.qooxdoo.toolkit.plugin.binding.qx.Package p : qx.packages) {
             loadPackage(p, doctree);
         }
@@ -61,7 +61,7 @@ public class Doctree {
         return doctree;
     }
     
-    private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.qx.Package qx, Doctree doctree) throws XmlException {
+    private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.qx.Package qx, Set doctree) throws XmlException {
         for (org.qooxdoo.toolkit.plugin.binding.qx.Clazz c : qx.clazzes) {
             doctree.add(Clazz.fromXml(c));
         }
@@ -74,7 +74,7 @@ public class Doctree {
     
     public final List<Clazz> clazzes;
     
-    public Doctree() {
+    public Set() {
         this.clazzes = new ArrayList<Clazz>();
     }
     

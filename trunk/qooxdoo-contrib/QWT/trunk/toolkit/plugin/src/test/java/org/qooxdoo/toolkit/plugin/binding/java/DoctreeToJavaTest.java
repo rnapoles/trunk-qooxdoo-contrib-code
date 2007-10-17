@@ -22,11 +22,11 @@ package org.qooxdoo.toolkit.plugin.binding.java;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.qooxdoo.toolkit.plugin.binding.java.Access;
+import org.qooxdoo.toolkit.plugin.binding.java.Modifier;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
 import org.qooxdoo.toolkit.plugin.binding.java.ClazzType;
 import org.qooxdoo.toolkit.plugin.binding.java.Method;
-import org.qooxdoo.toolkit.plugin.binding.java.Property;
+import org.qooxdoo.toolkit.plugin.binding.java.Field;
 import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class DoctreeToJavaTest {
@@ -51,7 +51,7 @@ public class DoctreeToJavaTest {
     public void htmlComment() throws Exception {
         String comment;
         
-        comment = new Property("f", SimpleType.BOOLEAN, null, "<p>1</p><p>2</p>").comment(false);
+        comment = new Field("f", SimpleType.BOOLEAN, null, "<p>1</p><p>2</p>").comment(false);
         assertEquals("/**\n" +
                 " * <p>1</p><p>2</p>\n" +
                 " * @alias\n" +
@@ -63,7 +63,7 @@ public class DoctreeToJavaTest {
         StringBuilder builder;
         
         builder = new StringBuilder();
-        new Method(Access.PRIVATE, false, false, false, false, SimpleType.STRING, "meth", null, null, null, "bd").toJava(builder);
+        new Method(Modifier.PRIVATE, false, false, false, false, SimpleType.STRING, "meth", null, null, null, "bd").toJava(builder);
         assertEquals("    private String meth() {\n"
                    + "bd" 
                    + "    }\n",
@@ -73,10 +73,10 @@ public class DoctreeToJavaTest {
     @Test
     public void field() throws Exception {
         Clazz clazz;
-        Property p;
+        Field p;
         
         clazz = new Clazz(ClazzType.CLASS, "pkg.cn", null, null);
-        p = new Property("str", SimpleType.STRING, null, null);
+        p = new Field("str", SimpleType.STRING, null, null);
         clazz.addWithMethods(p);
         check(
                 "/* Copyright (c) 1&1. All Rights Reserved. */\n" 
