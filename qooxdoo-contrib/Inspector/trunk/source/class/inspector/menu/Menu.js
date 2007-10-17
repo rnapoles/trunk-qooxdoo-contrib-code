@@ -72,7 +72,7 @@ qx.Class.define("inspector.menu.Menu", {
     this.__createStartPopup();
     
     // create a atom to show the down arrows
-    downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
+    var downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
     downAtom.setWidth("100%");
     this.add(downAtom);    
   }, 
