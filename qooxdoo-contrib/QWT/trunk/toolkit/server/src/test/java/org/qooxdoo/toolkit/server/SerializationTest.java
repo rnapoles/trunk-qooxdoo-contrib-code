@@ -68,7 +68,10 @@ public class SerializationTest {
     @Test
     public void string() {
         check("''", "");
-        check("'+20ac'", "\u20ac");
+        check("'%00'", "\u0000");
+        check("'+0100'", "\u0100");
+        check("'+20ac'", "\u20ac"); // euro sign
+        check("'+ffff'", "\uffff");
         check("'foo'", "foo");
         check("'%27'", "'");
         check("'%2f%2e'", "/.");
