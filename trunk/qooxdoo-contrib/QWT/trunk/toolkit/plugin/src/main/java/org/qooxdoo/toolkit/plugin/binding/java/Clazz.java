@@ -24,40 +24,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.w3c.dom.Element;
-
-import org.qooxdoo.toolkit.repository.Dependencies;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Strings;
-import org.qooxdoo.sushi.xml.Dom;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.doctree.Desc;
+import org.qooxdoo.toolkit.repository.Dependencies;
 
 public class Clazz extends Item {
-    public static Clazz fromXml(Parser parser, Element element) throws XmlException {
+    public static Clazz fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Clazz qx) throws XmlException {
         String fullName;
         Clazz clazz;
-        String name;
         Method m;
-        Element constr;
+        org.qooxdoo.toolkit.plugin.binding.doctree.Constructor constr;
         boolean ifc;
         
-        fullName = Dom.getAttribute(element, "fullName");
-        name = Dom.getAttribute(element, "name");
+        fullName = qx.fullName;
         try {
             clazz = new Clazz(
-                    ClazzType.valueOf(Dom.getAttribute(element, "type").toUpperCase()),
-                    parser.getBoolean(element, "isAbstract", false),
+                    ClazzType.valueOf(qx.type.toUpperCase()),
+                    qx.isAbstract,
                     fullName,
-                    Dom.getAttributeOpt(element, "superClass"), 
-                    interfaces(element), 
-                    parser.description(element));
-            for (Element child : parser.selector.elements(element, "properties/property")) {
-                clazz.add(Property.fromXml(parser, child));
+                    qx.superClass, 
+                    interfaces(qx.interfaces), Desc.toJava(qx.desc));
+            for (org.qooxdoo.toolkit.plugin.binding.doctree.Property p : qx.properties) {
+                clazz.add(Property.fromXml(p));
             }
-            constr = parser.selector.elementOpt(element, "constructor");
+            constr = qx.constructor;
             ifc = (clazz.type == ClazzType.INTERFACE);
             if (constr != null) {
-                m = Method.fromXml(parser, name, parser.selector.element(constr, "method"), ifc);
+                m = Method.fromXml(constr.method, qx.name, ifc);
                 if (m.isStatic()) {
                     throw new XmlException("unexpected static method: " + m);
                 }
@@ -70,11 +65,8 @@ public class Clazz extends Item {
                 m.addPrefixes(clazz);
                 clazz.add(m);
             }
-            for (Element child : parser.selector.elements(element, "methods/method")) {
-                m = Method.fromXml(parser, name, child, ifc);
-                if (m.isStatic()) {
-                    throw new XmlException("unexpected static method: " + m);
-                }
+            for (org.qooxdoo.toolkit.plugin.binding.doctree.Method child : qx.methods) {
+                m = Method.fromXml(child, qx.name, ifc);
                 if (m.isConstructor()) {
                     throw new XmlException("unexpected constructor method: " + m);
                 }
@@ -84,26 +76,13 @@ public class Clazz extends Item {
                     System.out.println("TODO: " + e.getMessage());
                 }
             }
-            for (Element child : parser.selector.elements(element, "methods-static/method")) {
-                m = Method.fromXml(parser, name, child, ifc);
-                if (!m.isStatic()) {
-                    throw new XmlException("unexpected non-static method: " + m);
-                }
-                if (m.isConstructor()) {
-                    throw new XmlException("unexpected constructor method: " + m);
-                }
-                clazz.add(m);
-            }
         } catch (XmlException e) {
             throw new XmlException("class " + fullName + ": " + e.getMessage(), e);
         }
         return clazz;
     }
     
-    private static List<String> interfaces(Element element) {
-        String str;
-        
-        str = Dom.getAttributeOpt(element, "interfaces");
+    private static List<String> interfaces(String str) {
         if (str == null) {
             return new ArrayList<String>();
         } else {

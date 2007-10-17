@@ -19,17 +19,12 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
-import org.w3c.dom.Element;
-
-import org.qooxdoo.sushi.xml.Dom;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.doctree.Desc;
 
 public class Property extends Item {
-    public static Property fromXml(Parser parser, Element node) throws XmlException {
-        return new Property(node.getAttribute("name"),
-                parser.propertyType(node),
-                Dom.getAttributeOpt(node, "overriddenFrom"),
-                parser.description(node));
+    public static Property fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Property qx) throws XmlException {
+        return new Property(qx.name, qx.propertyType(), qx.overriddenFrom, Desc.toJava(qx.desc));
     }
     
     private final String name;

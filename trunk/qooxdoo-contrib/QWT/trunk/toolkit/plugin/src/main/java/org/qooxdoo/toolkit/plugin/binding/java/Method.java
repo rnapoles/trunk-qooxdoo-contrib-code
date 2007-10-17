@@ -23,14 +23,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.w3c.dom.Element;
-
-import org.qooxdoo.sushi.xml.Dom;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.doctree.Desc;
+import org.qooxdoo.toolkit.plugin.binding.doctree.Entry;
+import org.qooxdoo.toolkit.plugin.binding.doctree.Error;
 
 public class Method extends Item {
-    public static Method fromXml(Parser parser, String simpleClass,
-            Element element, boolean forInterface) throws XmlException {
+    public static Method fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Method qx, String simpleClass,
+            boolean forInterface) throws XmlException {
         boolean isContructor;
         Method method;
         Access a;
@@ -39,40 +39,46 @@ public class Method extends Item {
         String docFrom;
         String fromProperty;
         
-        isContructor = parser.getBoolean(element, "isCtor", false);
-        a = access(element);
-        name = element.getAttribute("name");
-        docFrom = Dom.getAttributeOpt(element, "docFrom");
-        fromProperty = Dom.getAttributeOpt(element, "fromProperty");
+        isContructor = qx.isCtor;
+        a = access(qx);
+        name = qx.name;
+        docFrom = qx.docFrom;
+        fromProperty = qx.fromProperty;
         if (a == Access.PROTECTED) {
-            if (name.startsWith("init")
-                    || element.getAttribute("overriddenFrom") != null) {
+            if (name.startsWith("init") || qx.overriddenFrom != null) {
                 // TODO: System.out.println("TODO: changing visibility to
                 // PUBLIC: " + name);
                 a = Access.PUBLIC;
+            } else if (forInterface) {
+                // TODO: 
+                // System.out.println("TODO: changing visibility to PUBLIC: " + simpleClass + "." + name);
+                a = Access.PUBLIC;
+            } else {
+                // TODO: overriddenFrom not always assigned properly:
+                a = Access.PUBLIC;
+                // System.out.println("not for interface: " + simpleClass + "." + name + " " + qx.overriddenFrom);
             }
         }
         
-        returnType = isContructor ? null : parser.methodType(element);
-        method = new Method(a, parser.getBoolean(element, "isAbstract", false),
-                !forInterface && !isContructor, parser.getBoolean(element, "isStatic", false), 
-                        isContructor, returnType,
-                isContructor ? simpleClass : name, parser.description(element), docFrom, fromProperty,
+        returnType = isContructor ? null : Entry.methodType(qx);
+        method = new Method(a, qx.isAbstract,
+                !forInterface && !isContructor, qx.isStatic, isContructor, returnType,
+                isContructor ? simpleClass : name, Desc.toJava(qx.desc), docFrom, fromProperty,
                 isContructor ? "" : null);
-        for (Element e : parser.selector.elements(element, "errors/error")) {
-            method.errors.add(Dom.getAttribute(e, "msg"));
+        for (Error e: qx.errors) {
+            method.errors.add(e.msg);
         }
-        for (Element e : parser.selector.elements(element, "params/param")) {
-            method.add(Parameter.fromXml(parser, e));
+        for (org.qooxdoo.toolkit.plugin.binding.doctree.Param p : qx.params) {
+            method.add(Parameter.fromXml(p));
         }
         return method;
     }
 
     
-    private static Access access(Element element) throws XmlException {
+    private static Access access(org.qooxdoo.toolkit.plugin.binding.doctree.Method qx) throws XmlException {
         String access;
 
-        access = Dom.getAttributeOpt(element, "access");
+        access = qx.access;
         if (access == null) {
             return Access.PUBLIC;
         } else {

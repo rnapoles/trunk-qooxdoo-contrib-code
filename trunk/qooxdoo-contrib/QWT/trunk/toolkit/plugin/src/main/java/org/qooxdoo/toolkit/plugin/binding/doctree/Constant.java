@@ -27,4 +27,5 @@ public class Constant {
     public String value;
     public String type;
     public String name;
+    public List<Error> errors;
 }
