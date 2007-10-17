@@ -52,7 +52,7 @@
         <version>${toolkit.version}</version>
         <configuration>
           <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
-          <frameworkRevision>10558</frameworkRevision>
+          <frameworkRevision>10590</frameworkRevision>
         </configuration>
         <executions>
           <execution>
