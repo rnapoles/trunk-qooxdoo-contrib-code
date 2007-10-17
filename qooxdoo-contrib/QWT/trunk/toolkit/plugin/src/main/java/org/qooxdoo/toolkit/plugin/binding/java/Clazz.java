@@ -27,15 +27,15 @@ import java.util.List;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Desc;
+import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
 import org.qooxdoo.toolkit.repository.Dependencies;
 
 public class Clazz extends Item {
-    public static Clazz fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Clazz qx) throws XmlException {
+    public static Clazz fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Clazz qx) throws XmlException {
         String fullName;
         Clazz clazz;
         Method m;
-        org.qooxdoo.toolkit.plugin.binding.doctree.Constructor constr;
+        org.qooxdoo.toolkit.plugin.binding.qx.Constructor constr;
         boolean ifc;
         
         fullName = qx.fullName;
@@ -46,7 +46,7 @@ public class Clazz extends Item {
                     fullName,
                     qx.superClass, 
                     interfaces(qx.interfaces), Desc.toJava(qx.desc));
-            for (org.qooxdoo.toolkit.plugin.binding.doctree.Property p : qx.properties) {
+            for (org.qooxdoo.toolkit.plugin.binding.qx.Property p : qx.properties) {
                 clazz.add(Property.fromXml(p));
             }
             constr = qx.constructor;
@@ -65,7 +65,7 @@ public class Clazz extends Item {
                 m.addPrefixes(clazz);
                 clazz.add(m);
             }
-            for (org.qooxdoo.toolkit.plugin.binding.doctree.Method child : qx.methods) {
+            for (org.qooxdoo.toolkit.plugin.binding.qx.Method child : qx.methods) {
                 m = Method.fromXml(child, qx.name, ifc);
                 if (m.isConstructor()) {
                     throw new XmlException("unexpected constructor method: " + m);

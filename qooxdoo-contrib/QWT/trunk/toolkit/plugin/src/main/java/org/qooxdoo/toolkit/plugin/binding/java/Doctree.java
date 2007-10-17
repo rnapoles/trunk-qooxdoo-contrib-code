@@ -49,23 +49,23 @@ public class Doctree {
     }
     
     public static Doctree loadRaw(Node src) throws IOException, SAXException, LoaderException, XmlException {
-        org.qooxdoo.toolkit.plugin.binding.doctree.Doctree qx;
+        org.qooxdoo.toolkit.plugin.binding.qx.Doctree qx;
         Doctree doctree;
 
-        qx = org.qooxdoo.toolkit.plugin.binding.doctree.Doctree.load(src);
+        qx = org.qooxdoo.toolkit.plugin.binding.qx.Doctree.load(src);
         doctree = new Doctree();
-        for (org.qooxdoo.toolkit.plugin.binding.doctree.Package p : qx.packages) {
+        for (org.qooxdoo.toolkit.plugin.binding.qx.Package p : qx.packages) {
             loadPackage(p, doctree);
         }
         doctree.link();
         return doctree;
     }
     
-    private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.doctree.Package qx, Doctree doctree) throws XmlException {
-        for (org.qooxdoo.toolkit.plugin.binding.doctree.Clazz c : qx.clazzes) {
+    private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.qx.Package qx, Doctree doctree) throws XmlException {
+        for (org.qooxdoo.toolkit.plugin.binding.qx.Clazz c : qx.clazzes) {
             doctree.add(Clazz.fromXml(c));
         }
-        for (org.qooxdoo.toolkit.plugin.binding.doctree.Package p : qx.packages) {
+        for (org.qooxdoo.toolkit.plugin.binding.qx.Package p : qx.packages) {
             loadPackage(p, doctree);
         }
     }

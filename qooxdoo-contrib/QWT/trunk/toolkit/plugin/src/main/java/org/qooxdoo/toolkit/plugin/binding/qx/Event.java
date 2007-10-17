@@ -17,8 +17,14 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-public class Deprecated {
+import java.util.List;
+
+public class Event {
     public Desc desc;
+    public List<Entry> entries;
+    public List<Error> errors;
+    public String event;
+    public String name;
 }

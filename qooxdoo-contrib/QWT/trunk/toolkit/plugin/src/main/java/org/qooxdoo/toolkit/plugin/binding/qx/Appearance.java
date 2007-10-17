@@ -17,8 +17,13 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-public class See {
+import java.util.List;
+
+public class Appearance {
+    public Desc desc;
+    public List<State> states;
     public String name;
+    public String type;
 }

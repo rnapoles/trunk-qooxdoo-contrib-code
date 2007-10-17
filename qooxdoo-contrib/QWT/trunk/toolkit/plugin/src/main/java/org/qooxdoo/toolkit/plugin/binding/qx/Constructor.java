@@ -17,12 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-public class Desc {
-    public static String toJava(Desc desc) {
-        return desc == null ? null : desc.text;
-    }
-
-    public String text;
+public class Constructor {
+    public Method method;
 }

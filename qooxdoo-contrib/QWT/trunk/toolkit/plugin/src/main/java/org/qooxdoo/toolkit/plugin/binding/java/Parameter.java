@@ -20,11 +20,11 @@
 package org.qooxdoo.toolkit.plugin.binding.java;
 
 import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Entry;
+import org.qooxdoo.toolkit.plugin.binding.qx.Entry;
 
 
 public class Parameter {
-    public static Parameter fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Param qx) throws XmlException {
+    public static Parameter fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Param qx) throws XmlException {
         return new Parameter(Entry.paramType(qx.entries), qx.name);
     }
 

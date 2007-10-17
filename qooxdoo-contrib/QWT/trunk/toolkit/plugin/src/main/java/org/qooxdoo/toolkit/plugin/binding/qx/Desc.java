@@ -17,13 +17,12 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-import java.util.List;
+public class Desc {
+    public static String toJava(Desc desc) {
+        return desc == null ? null : desc.text;
+    }
 
-public class Appearance {
-    public Desc desc;
-    public List<State> states;
-    public String name;
-    public String type;
+    public String text;
 }

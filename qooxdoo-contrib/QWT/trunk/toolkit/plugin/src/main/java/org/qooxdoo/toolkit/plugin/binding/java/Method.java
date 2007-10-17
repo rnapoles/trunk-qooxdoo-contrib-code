@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Desc;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Entry;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Error;
+import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
+import org.qooxdoo.toolkit.plugin.binding.qx.Entry;
+import org.qooxdoo.toolkit.plugin.binding.qx.Error;
 
 public class Method extends Item {
-    public static Method fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Method qx, String simpleClass,
+    public static Method fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Method qx, String simpleClass,
             boolean forInterface) throws XmlException {
         boolean isContructor;
         Method method;
@@ -68,14 +68,14 @@ public class Method extends Item {
         for (Error e: qx.errors) {
             method.errors.add(e.msg);
         }
-        for (org.qooxdoo.toolkit.plugin.binding.doctree.Param p : qx.params) {
+        for (org.qooxdoo.toolkit.plugin.binding.qx.Param p : qx.params) {
             method.add(Parameter.fromXml(p));
         }
         return method;
     }
 
     
-    private static Access access(org.qooxdoo.toolkit.plugin.binding.doctree.Method qx) throws XmlException {
+    private static Access access(org.qooxdoo.toolkit.plugin.binding.qx.Method qx) throws XmlException {
         String access;
 
         access = qx.access;
