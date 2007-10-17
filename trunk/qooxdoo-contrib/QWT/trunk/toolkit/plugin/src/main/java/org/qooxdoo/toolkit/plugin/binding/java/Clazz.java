@@ -32,27 +32,21 @@ import org.qooxdoo.toolkit.repository.Dependencies;
 
 public class Clazz extends Item {
     public static Clazz fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Clazz qx) throws XmlException {
-        String fullName;
         Clazz clazz;
         Method m;
-        org.qooxdoo.toolkit.plugin.binding.qx.Constructor constr;
         boolean ifc;
         
-        fullName = qx.fullName;
         try {
             clazz = new Clazz(
                     ClazzType.valueOf(qx.type.toUpperCase()),
-                    qx.isAbstract,
-                    fullName,
-                    qx.superClass, 
+                    qx.isAbstract, qx.fullName, qx.superClass, 
                     interfaces(qx.interfaces), Desc.toJava(qx.desc));
             for (org.qooxdoo.toolkit.plugin.binding.qx.Property p : qx.properties) {
                 clazz.add(Property.fromXml(p));
             }
-            constr = qx.constructor;
             ifc = (clazz.type == ClazzType.INTERFACE);
-            if (constr != null) {
-                m = Method.fromXml(constr.method, qx.name, ifc);
+            if (qx.constructor != null) {
+                m = Method.fromXml(qx.constructor.method, qx.name, ifc);
                 if (m.isStatic()) {
                     throw new XmlException("unexpected static method: " + m);
                 }
@@ -77,7 +71,7 @@ public class Clazz extends Item {
                 }
             }
         } catch (XmlException e) {
-            throw new XmlException("class " + fullName + ": " + e.getMessage(), e);
+            throw new XmlException("class " + qx.fullName + ": " + e.getMessage(), e);
         }
         return clazz;
     }
