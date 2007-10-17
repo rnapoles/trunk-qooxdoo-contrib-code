@@ -154,14 +154,18 @@ public class Serializer {
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
                 result = result + c;
             } else if (c >= 256) {
-                throw new UnsupportedOperationException("" + c);
+                result = result + "+" + digit2(c / 256) + digit2(c % 256);
             } else {
-                result = result + "%" + digit(c, 16) + digit(c, 1);
+                result = result + "%" + digit2(c);
             }
         }
         return result + "'";
     }
 
+    private static String digit2(int c) {
+        return "" + digit(c, 16) + digit(c, 1);        
+    }
+    
     private static char digit(int c, int div) {
         int digit;
 
