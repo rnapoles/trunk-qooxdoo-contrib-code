@@ -19,6 +19,6 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
-public enum Access {
+public enum Modifier {
     PUBLIC, PROTECTED, PRIVATE, INTERNAL /* TODO */, NONE
 }

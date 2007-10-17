@@ -22,16 +22,16 @@ package org.qooxdoo.toolkit.plugin.binding.java;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
 
-public class Property extends Item {
-    public static Property fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Property qx) throws XmlException {
-        return new Property(qx.name, qx.propertyType(), qx.overriddenFrom, Desc.toJava(qx.desc));
+public class Field extends Item {
+    public static Field fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Property qx) throws XmlException {
+        return new Field(qx.name, qx.propertyType(), qx.overriddenFrom, Desc.toJava(qx.desc));
     }
     
     private final String name;
     private final Type type;
     private final String overriddenFrom;
     
-    public Property(String name, Type type, String overriddenFrom, String description) {
+    public Field(String name, Type type, String overriddenFrom, String description) {
         super(description);
         if (name == null || "".equals(name) || name.indexOf('.') != -1) {
             throw new IllegalArgumentException("" + name);
@@ -63,7 +63,7 @@ public class Property extends Item {
     public Method createClassGetter() {
         Method method;
         
-        method = new Method(Access.PUBLIC, false, true, false, false, type, "get" + capitalize(name), 
+        method = new Method(Modifier.PUBLIC, false, true, false, false, type, "get" + capitalize(name), 
                 opt("Getter: ",  getDescription()), null, null, null);
         method.setExtra("@alias");
         return method;
@@ -72,7 +72,7 @@ public class Property extends Item {
     public Method createClassSetter() {
         Method method;
         
-        method = new Method(Access.PUBLIC, false, true, false, false, SimpleType.VOID, setterName(),
+        method = new Method(Modifier.PUBLIC, false, true, false, false, SimpleType.VOID, setterName(),
                 opt("Setter:", getDescription()), null, null, null);
         method.add(new Parameter(type, name));
         method.setExtra("@alias");
@@ -82,7 +82,7 @@ public class Property extends Item {
     public Method createInterfaceGetter() {
         Method method;
         
-        method = new Method(Access.NONE, false, false, false, false, type, "get" + capitalize(name), 
+        method = new Method(Modifier.NONE, false, false, false, false, type, "get" + capitalize(name), 
                 opt("Getter: ",  getDescription()), null, null, null);
         return method;
     }
@@ -90,7 +90,7 @@ public class Property extends Item {
     public Method createInterfaceSetter() {
         Method method;
         
-        method = new Method(Access.NONE, false, false, false, false, SimpleType.VOID, setterName(), 
+        method = new Method(Modifier.NONE, false, false, false, false, SimpleType.VOID, setterName(), 
                 opt("Setter:", getDescription()), null, null, null);
         method.add(new Parameter(type, name));
         return method;
