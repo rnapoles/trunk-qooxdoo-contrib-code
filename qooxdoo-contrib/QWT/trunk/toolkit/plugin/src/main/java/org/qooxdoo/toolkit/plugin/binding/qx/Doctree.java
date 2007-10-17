@@ -28,7 +28,9 @@ import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.xml.Loader;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.xml.Builder;
+import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.binding.Normalizer;
+import org.qooxdoo.toolkit.plugin.binding.java.Set;
 import org.qooxdoo.toolkit.plugin.binding.metadata.ReflectSchema;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -90,4 +92,16 @@ public class Doctree {
     //--
     
     public List<Package> packages;
+    
+    public Set createJava() throws IOException, SAXException, LoaderException, XmlException {
+        Set set;
+
+        set = new Set();
+        for (Package p : packages) {
+            p.addJava(set);
+        }
+        set.link();
+        return set;
+    }
+    
 }

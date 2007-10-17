@@ -33,41 +33,24 @@ import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.compiler.Util;
 import org.qooxdoo.toolkit.plugin.binding.patch.PatchException;
+import org.qooxdoo.toolkit.plugin.binding.qx.Doctree;
 import org.xml.sax.SAXException;
 
 /** Arbitrary collection of classes. */ 
 public class Set {
     public static Set loadAll(Node src, Node output, Node jsroot, Filter undocumented) 
     throws IOException, SAXException, LoaderException, XmlException {
-        Set doctree;
+        Set set;
 
-        doctree = loadRaw(src);
-        doctree.addUndocumented(jsroot, undocumented);
-        doctree.addNatives(jsroot);
-        doctree.addDependencies(output.readString());
-        return doctree;
+        set = loadRaw(src);
+        set.addUndocumented(jsroot, undocumented);
+        set.addNatives(jsroot);
+        set.addDependencies(output.readString());
+        return set;
     }
     
     public static Set loadRaw(Node src) throws IOException, SAXException, LoaderException, XmlException {
-        org.qooxdoo.toolkit.plugin.binding.qx.Doctree qx;
-        Set doctree;
-
-        qx = org.qooxdoo.toolkit.plugin.binding.qx.Doctree.load(src);
-        doctree = new Set();
-        for (org.qooxdoo.toolkit.plugin.binding.qx.Package p : qx.packages) {
-            loadPackage(p, doctree);
-        }
-        doctree.link();
-        return doctree;
-    }
-    
-    private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.qx.Package qx, Set doctree) throws XmlException {
-        for (org.qooxdoo.toolkit.plugin.binding.qx.Clazz c : qx.clazzes) {
-            doctree.add(c.createJava());
-        }
-        for (org.qooxdoo.toolkit.plugin.binding.qx.Package p : qx.packages) {
-            loadPackage(p, doctree);
-        }
+        return Doctree.load(src).createJava();
     }
     
     //--

@@ -21,6 +21,9 @@ package org.qooxdoo.toolkit.plugin.binding.qx;
 
 import java.util.List;
 
+import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.java.Set;
+
 public class Package {
     public String packageName;
     public String fullName;
@@ -28,4 +31,13 @@ public class Package {
     public List<Package> packages;
     public List<Clazz> clazzes;
     public Desc desc;
+    
+    public void addJava(Set dest) throws XmlException {
+        for (Clazz c : clazzes) {
+            dest.add(c.createJava());
+        }
+        for (Package p : packages) {
+            p.addJava(dest);
+        }
+    }
 }
