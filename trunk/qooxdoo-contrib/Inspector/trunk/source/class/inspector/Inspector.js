@@ -61,6 +61,10 @@ qx.Class.define("inspector.Inspector", {
   construct : function() {
     // Define alias for inspector resource path
     qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
+    
+    // Create the queue for the inspector windows
+    this._windowQueue = [];
+    
     // start the exclusion stategie
     this.beginExclusion();
     // create the inspector object
@@ -146,6 +150,72 @@ qx.Class.define("inspector.Inspector", {
 
     // the native window for the api viewer
     _apiWindow: null,
+   
+    // the qeueue of the inspector windows
+    _windowQueue: null,
+     
+ 
+   /*
+    *********************************
+        FOCUS HANDLING FOR THE INSPECTOR WINDOWS
+    *********************************
+    */     
+   /**
+    * Registers the given windows as a inspector window. This 
+    * will put the given window always at a higher zIndex than 1e6.
+    * @param window {qx.ui.window.Window} The window to add.
+    * @internal
+    */
+   registerWindow: function(window) {
+     // add the registered window to the queue as first element
+     this._windowQueue.unshift(window);
+     // add a changeActive eventlistener to the window
+     window.addEventListener("changeActive", function(e) {
+       // tell the manager to that a new window is selected
+       this._inspector.windowSelected(this);
+     }, window);
+     // add a changeZIndex listener to kepp the windows up to date even if a non inspector window is selected 
+     window.addEventListener("changeZIndex", function(e) {
+       // prevent recursive calls
+       if (!this._inChange) {
+         // set the zIndex to the inspector classes
+         this._inspector.windowSelected();        
+       }
+     }, window);     
+   },  
+   
+   
+   /**
+    * Set the zIndex in all registered Windows corresponding to ther last selections.
+    * The given window will get the highest zIndex.
+    * @param window {qx.ui.window.Window} The window with the highest zIndex.
+    * @internal 
+    */
+   windowSelected: function(window) {
+     // go threw all registered windows
+     for (var i = 0; i < this._windowQueue.length; i++) {
+       // if the current windows is found
+       if (this._windowQueue[i] == window) {
+         // delete the window in the queue
+         this._windowQueue.splice(i, 1);
+       }
+     }
+     // if a window is given  
+     if (window != null) {
+       // push the window to the first place
+       this._windowQueue.unshift(window);
+     }
+     
+     // go threw all windows again         
+     for (var i = 0; i < this._windowQueue.length; i++) {
+       // mark that the zIndex will be changed
+       this._windowQueue[i].setInChange(true);
+       // change the zIndex
+       this._windowQueue[i].setZIndex(1e6 + (this._windowQueue.length - i));
+       // unmark that the zIndex will be changed
+       this._windowQueue[i].setInChange(false);
+     }
+   },
      
      
    /*
@@ -154,7 +224,7 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */
     /**
-     * Sets
+     * Sets the dimensions and the position of all windows to a predefined value.
      */
     resetPerspective: function() {
       // reset the console, if existant

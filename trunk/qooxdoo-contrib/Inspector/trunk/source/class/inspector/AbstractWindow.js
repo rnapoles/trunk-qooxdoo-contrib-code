@@ -61,14 +61,9 @@ qx.Class.define("inspector.AbstractWindow", {
     
     // register the opacity handler
     // this._registerOpacityHandler();
-
-    // register a listener to kep the inspector windows alwasy on top
-    this.addEventListener("changeZIndex", function(e) {
-			if (e.getValue() != 1e6) {
-				this.setZIndex(1e6);
-			}
-		}, this); 
-		
+    
+    // register the windows as one of the inspector
+    this._inspector.registerWindow(this);    
   },
 
 
@@ -82,7 +77,7 @@ qx.Class.define("inspector.AbstractWindow", {
     *********************************
        ATTRIBUTES
     *********************************
-    */
+    */        
     // window components
     _mainLayout: null,
     _toolbar: null,
@@ -95,6 +90,9 @@ qx.Class.define("inspector.AbstractWindow", {
     // creating inspector reference
     _inspector: null,
     
+    // flatg to signal if the zIndx will be currently changed
+    _inChange: false,
+
     /*
     *********************************
        PUBLIC
@@ -107,6 +105,16 @@ qx.Class.define("inspector.AbstractWindow", {
 		isOpen: function() {
 			return this.getVisibility() && this.getDisplay();
 		},
+    
+    
+    /**
+     * Sets the flag for signaling that the zIndex is currently changed. 
+     * @param value {Boolean} true, if the changeevenet of the zIndex sould not be executed
+     * @internal
+     */
+    setInChange: function(value) {
+      this._inChange = value;
+    },
 
 	 
     /*
