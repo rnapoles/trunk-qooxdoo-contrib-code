@@ -21,6 +21,11 @@ package org.qooxdoo.toolkit.plugin.binding.qx;
 
 import java.util.List;
 
+import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.java.Modifier;
+import org.qooxdoo.toolkit.plugin.binding.java.Parameter;
+import org.qooxdoo.toolkit.plugin.binding.java.Type;
+
 public class Method {
     public Deprecated deprecated;
     public Desc desc;
@@ -40,4 +45,56 @@ public class Method {
     public boolean isStatic;
     public boolean isAbstract;
     public boolean isCtor;
+    
+    //--
+    
+    public org.qooxdoo.toolkit.plugin.binding.java.Method createMethod(String simpleClass, boolean forInterface) throws XmlException {
+        boolean isContructor;
+        org.qooxdoo.toolkit.plugin.binding.java.Method method;
+        Modifier a;
+        Type returnType;
+        
+        a = access(this);
+        if (a == Modifier.PROTECTED) {
+            if (name.startsWith("init") || overriddenFrom != null) {
+                // TODO: System.out.println("TODO: changing visibility to
+                // PUBLIC: " + name);
+                a = Modifier.PUBLIC;
+            } else if (forInterface) {
+                // TODO: 
+                // System.out.println("TODO: changing visibility to PUBLIC: " + simpleClass + "." + name);
+                a = Modifier.PUBLIC;
+            } else {
+                // TODO: overriddenFrom not always assigned properly:
+                a = Modifier.PUBLIC;
+                // System.out.println("not for interface: " + simpleClass + "." + name + " " + qx.overriddenFrom);
+            }
+        }
+        
+        returnType = isCtor ? null : Entry.methodType(this);
+        method = new org.qooxdoo.toolkit.plugin.binding.java.Method(a, isAbstract,
+                !forInterface && !isCtor, isStatic, isCtor, returnType,
+                isCtor ? simpleClass : name, Desc.toJava(desc), docFrom, fromProperty,
+                isCtor ? "" : null);
+        for (Error e: errors) {
+            method.errors.add(e.msg);
+        }
+        for (org.qooxdoo.toolkit.plugin.binding.qx.Param p : params) {
+            method.add(Parameter.fromXml(p));
+        }
+        return method;
+    }
+
+    
+    private static Modifier access(org.qooxdoo.toolkit.plugin.binding.qx.Method qx) throws XmlException {
+        String access;
+
+        access = qx.access;
+        if (access == null) {
+            return Modifier.PUBLIC;
+        } else {
+            return Modifier.valueOf(access.toUpperCase());
+        }
+    }
+
 }

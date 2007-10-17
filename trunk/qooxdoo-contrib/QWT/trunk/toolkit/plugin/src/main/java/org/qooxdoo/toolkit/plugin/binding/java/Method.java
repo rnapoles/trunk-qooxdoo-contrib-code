@@ -23,65 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
-import org.qooxdoo.toolkit.plugin.binding.qx.Entry;
-import org.qooxdoo.toolkit.plugin.binding.qx.Error;
-
 public class Method extends Item {
-    public static Method fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Method qx, String simpleClass,
-            boolean forInterface) throws XmlException {
-        boolean isContructor;
-        Method method;
-        Modifier a;
-        Type returnType;
-        
-        isContructor = qx.isCtor;
-        a = access(qx);
-        if (a == Modifier.PROTECTED) {
-            if (qx.name.startsWith("init") || qx.overriddenFrom != null) {
-                // TODO: System.out.println("TODO: changing visibility to
-                // PUBLIC: " + name);
-                a = Modifier.PUBLIC;
-            } else if (forInterface) {
-                // TODO: 
-                // System.out.println("TODO: changing visibility to PUBLIC: " + simpleClass + "." + name);
-                a = Modifier.PUBLIC;
-            } else {
-                // TODO: overriddenFrom not always assigned properly:
-                a = Modifier.PUBLIC;
-                // System.out.println("not for interface: " + simpleClass + "." + name + " " + qx.overriddenFrom);
-            }
-        }
-        
-        returnType = isContructor ? null : Entry.methodType(qx);
-        method = new Method(a, qx.isAbstract,
-                !forInterface && !isContructor, qx.isStatic, isContructor, returnType,
-                isContructor ? simpleClass : qx.name, Desc.toJava(qx.desc), qx.docFrom, qx.fromProperty,
-                isContructor ? "" : null);
-        for (Error e: qx.errors) {
-            method.errors.add(e.msg);
-        }
-        for (org.qooxdoo.toolkit.plugin.binding.qx.Param p : qx.params) {
-            method.add(Parameter.fromXml(p));
-        }
-        return method;
-    }
-
-    
-    private static Modifier access(org.qooxdoo.toolkit.plugin.binding.qx.Method qx) throws XmlException {
-        String access;
-
-        access = qx.access;
-        if (access == null) {
-            return Modifier.PUBLIC;
-        } else {
-            return Modifier.valueOf(access.toUpperCase());
-        }
-    }
-
-    // --
-
     private final Modifier access;
     private final boolean isAbstract;
     private final boolean isNative;

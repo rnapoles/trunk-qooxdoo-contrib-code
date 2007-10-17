@@ -22,6 +22,7 @@ package org.qooxdoo.toolkit.plugin.binding.qx;
 import java.util.List;
 
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.java.Field;
 import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 import org.qooxdoo.toolkit.plugin.binding.java.Type;
 
@@ -56,5 +57,9 @@ public class Property {
         } else {
             return Entry.type(check);
         }
+    }
+    
+    public Field createField() throws XmlException {
+        return new Field(name, propertyType(), overriddenFrom, Desc.toJava(desc));
     }
 }
