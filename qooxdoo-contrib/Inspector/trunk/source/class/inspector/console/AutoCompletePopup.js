@@ -40,7 +40,6 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     this.setHeight(140);
     this.setWidth(300);    
     this.addToDocument();
-		this.setZIndex(main.getZIndex() + 10);
     
     // initialize the table model
     this._tableModel = new qx.ui.table.model.Simple();
@@ -256,7 +255,8 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       this.setTop(top);
       // show the popup
       this.show();
-      this.bringToFront();  
+      // bring the popup in front of the console  
+      this.setZIndex(this._controller.getZIndex() + 1);
     },    
 
     
