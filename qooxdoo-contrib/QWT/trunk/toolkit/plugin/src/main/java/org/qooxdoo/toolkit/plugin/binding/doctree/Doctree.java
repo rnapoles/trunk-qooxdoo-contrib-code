@@ -43,13 +43,14 @@ public class Doctree {
     }
 
     public static void init() {
-        N.removes("appearances", "states", "errors", "types", "params", "constants", "events", "properties", "methods", "methods-static", "packages", "classes", "hasWarning", "hasError");
+        N.removes("appearances", "states", "errors", "types", "params", "constants", "events", "properties", 
+                "methods", "methods-static", "packages", "classes", "hasWarning", "hasError");
         
         N.rename("class", "clazz");
         N.rename("fullName", "full-name");
         N.rename("packageName", "package-name");
         N.rename("superClass", "super-class");
-        N.rename("return", "return_");
+        N.rename("return", "retur-n");
         N.rename("defaultValue", "default-value");
         N.rename("fromProperty", "from-property");
         N.rename("propertyType", "property-type");

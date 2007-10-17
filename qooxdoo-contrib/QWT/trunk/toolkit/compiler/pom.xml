@@ -54,9 +54,9 @@
           <execution>
             <id>enforce-versions</id>
             <goals>
-              <!-- TODO: should be enforce-once, placed in the parent pom ... but:
+              <!-- TODO: should be 'enforce-once', placed in the parent pom ... but:
                    o it causes cyclic dependencies: http://jira.codehaus.org/browse/MENFORCER-11
-                   o it doesn't work anyway: http://jira.codehaus.org/browse/MENFORCER-12 -->
+                   o 'enforce-once' is broken: http://jira.codehaus.org/browse/MENFORCER-12 -->
               <goal>enforce</goal>
             </goals>
             <configuration>
