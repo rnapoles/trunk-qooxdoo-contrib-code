@@ -17,14 +17,10 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-import java.util.List;
-
-public class Event {
-    public Desc desc;
-    public List<Entry> entries;
-    public List<Error> errors;
-    public String event;
-    public String name;
+public class Error {
+    public String msg;
+    public String column;
+    public String line;
 }

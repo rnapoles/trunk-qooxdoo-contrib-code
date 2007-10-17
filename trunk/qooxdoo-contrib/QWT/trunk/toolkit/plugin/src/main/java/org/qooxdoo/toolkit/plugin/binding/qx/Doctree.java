@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
 import java.io.IOException;
 import java.io.InputStream;

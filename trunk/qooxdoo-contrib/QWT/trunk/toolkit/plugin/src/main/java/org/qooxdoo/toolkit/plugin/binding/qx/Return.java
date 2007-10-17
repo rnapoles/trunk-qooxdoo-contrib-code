@@ -17,9 +17,12 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-public class State {
+import java.util.List;
+
+public class Return {
     public Desc desc;
-    public String name;
+    public List<Entry> entries;
+    public String defaultValue;
 }

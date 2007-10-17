@@ -17,10 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-public class Error {
-    public String msg;
-    public String column;
-    public String line;
+public class Deprecated {
+    public Desc desc;
 }

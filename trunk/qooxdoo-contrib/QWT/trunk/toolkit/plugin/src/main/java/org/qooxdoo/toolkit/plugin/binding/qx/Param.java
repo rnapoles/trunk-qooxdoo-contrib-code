@@ -17,8 +17,13 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.doctree;
+package org.qooxdoo.toolkit.plugin.binding.qx;
 
-public class Constructor {
-    public Method method;
+import java.util.List;
+
+public class Param {
+    public Desc desc;
+    public List<Entry> entries;
+    public String name;
+    public String defaultValue;
 }

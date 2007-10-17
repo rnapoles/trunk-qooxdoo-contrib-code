@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Doctree;
+import org.qooxdoo.toolkit.plugin.binding.qx.Doctree;
 import org.xml.sax.SAXException;
 
 public class DoctreeTest {

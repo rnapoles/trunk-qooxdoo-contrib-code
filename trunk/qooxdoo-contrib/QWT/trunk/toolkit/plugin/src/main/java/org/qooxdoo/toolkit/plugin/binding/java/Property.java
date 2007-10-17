@@ -20,10 +20,10 @@
 package org.qooxdoo.toolkit.plugin.binding.java;
 
 import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.doctree.Desc;
+import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
 
 public class Property extends Item {
-    public static Property fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Property qx) throws XmlException {
+    public static Property fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Property qx) throws XmlException {
         return new Property(qx.name, qx.propertyType(), qx.overriddenFrom, Desc.toJava(qx.desc));
     }
     
