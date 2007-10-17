@@ -26,6 +26,8 @@ $s*
 #post(qx.application.Gui)
 #post(org.qooxdoo.toolkit.server.Parser:run)
 #post(org.qooxdoo.toolkit.server.Serializer:run)
+#post(java.lang.Integer)
+#post(java.lang.Boolean)
 #require(qx.theme.ClassicRoyale)
 *$s
 
@@ -38,6 +40,12 @@ function qwtArguments(serviceArgs) {
       args = args + ",";
     }
     var arg = serviceArgs[i];
+    var type = typeof arg;
+    if (type === "boolean") {
+      arg = new java.lang.Boolean(arg);
+    } else if (type === "number") {
+      arg = new java.lang.Integer(arg);
+    } 
     args = args + org.qooxdoo.toolkit.server.Serializer.run(arg);
   }
   args = args + "]";

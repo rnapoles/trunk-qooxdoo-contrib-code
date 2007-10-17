@@ -48,4 +48,5 @@ public class Clazz {
     public List<Method> methods;
     public List<Appearance> appearances;
     public List<Property> properties;
+    public List<Error> errors;
 }

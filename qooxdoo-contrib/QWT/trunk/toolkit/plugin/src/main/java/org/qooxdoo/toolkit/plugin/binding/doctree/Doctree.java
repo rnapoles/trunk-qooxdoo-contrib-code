@@ -34,7 +34,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class Doctree {
-    private static final ReflectSchema SCHEMA = new ReflectSchema();
+    public static final ReflectSchema SCHEMA = new ReflectSchema();
     private static final ComplexType TYPE = SCHEMA.complex(Doctree.class);
     private static final Normalizer N = new Normalizer();
     
@@ -43,7 +43,7 @@ public class Doctree {
     }
 
     public static void init() {
-        N.removes("appearances", "states", "error", "types", "params", "constants", "events", "properties", "methods", "methods-static", "packages", "classes", "errors", "hasWarning", "hasError");
+        N.removes("appearances", "states", "errors", "types", "params", "constants", "events", "properties", "methods", "methods-static", "packages", "classes", "hasWarning", "hasError");
         
         N.rename("class", "clazz");
         N.rename("fullName", "full-name");
@@ -68,8 +68,12 @@ public class Doctree {
     }
 
     public static Doctree load(Node src) throws IOException, SAXException, LoaderException {
+        return (Doctree) load(TYPE, src);
+    }
+
+    public static Object load(ComplexType type, Node src) throws IOException, SAXException, LoaderException {
         Node tmp;
-        Doctree result;
+        Object result;
         InputStream in;
         InputSource is;
         
@@ -78,11 +82,10 @@ public class Doctree {
         N.run(src, tmp);
         in = tmp.createInputStream();
         is = new InputSource(in);
-        result = (Doctree) new Loader(TYPE, Builder.createSAXParser()).run(is);
+        result = new Loader(type, Builder.createSAXParser()).run(is);
         in.close();
         return result;
     }
-
     //--
     
     public List<Package> packages;

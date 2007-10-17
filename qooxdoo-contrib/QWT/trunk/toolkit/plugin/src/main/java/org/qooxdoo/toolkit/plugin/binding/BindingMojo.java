@@ -32,6 +32,7 @@ import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
 
@@ -137,6 +138,8 @@ public class BindingMojo extends FrameworkBase {
             doctree = Doctree.loadAll(src, output, frameworkDir.join(CLASS), undocumented);
         } catch (SAXParseException e) {
             throw new SAXException(e.getSystemId() + ":" + e.getLineNumber() + ":" + e.getMessage(), e); 
+        } catch (LoaderException e) {
+            throw new IOException(src.getName() + ": " + e.getMessage());
         }
         info(doctree.size() + " class docs loaded from " + src);
         doctree.toJava(bindings);

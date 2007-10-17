@@ -27,6 +27,7 @@ public class Method {
     public List<Param> params;
     public Return return_;
     public See see;
+    public List<Error> errors;
     
     public String access;
     public String fromProperty;

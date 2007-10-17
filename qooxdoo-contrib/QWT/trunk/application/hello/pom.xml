@@ -19,7 +19,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <!-- Here's the place to adjust the QWT Version you're using -->
+    <!-- This is the place to adjust the QWT Version you're using: -->
     <toolkit.version>0.7.2-SNAPSHOT</toolkit.version>
   </properties>
   

@@ -19,15 +19,13 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
-import org.w3c.dom.Element;
-
-import org.qooxdoo.sushi.xml.Dom;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.doctree.Entry;
 
 
 public class Parameter {
-    public static Parameter fromXml(Parser parser, Element node) throws XmlException {
-        return new Parameter(parser.paramType(node), Dom.getAttribute(node, "name"));
+    public static Parameter fromXml(org.qooxdoo.toolkit.plugin.binding.doctree.Param qx) throws XmlException {
+        return new Parameter(Entry.paramType(qx.entries), qx.name);
     }
 
     private final Type type;

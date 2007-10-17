@@ -26,22 +26,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import org.qooxdoo.toolkit.compiler.Util;
-import org.qooxdoo.toolkit.plugin.binding.patch.PatchException;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.util.Strings;
-import org.qooxdoo.sushi.xml.Builder;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.compiler.Util;
+import org.qooxdoo.toolkit.plugin.binding.patch.PatchException;
+import org.xml.sax.SAXException;
 
 /** Arbitrary collection of classes. */ 
 public class Doctree {
-    public static Doctree loadAll(Node src, Node output, Node jsroot, Filter undocumented) throws IOException, SAXException, XmlException {
+    public static Doctree loadAll(Node src, Node output, Node jsroot, Filter undocumented) throws IOException, SAXException, LoaderException, XmlException {
         Doctree doctree;
 
         doctree = loadRaw(src);
@@ -51,21 +47,26 @@ public class Doctree {
         return doctree;
     }
     
-    public static Doctree loadRaw(Node src) throws IOException, SAXException, XmlException {
-        Parser parser;
-        Builder builder;
-        Document doc;
+    public static Doctree loadRaw(Node src) throws IOException, SAXException, LoaderException, XmlException {
+        org.qooxdoo.toolkit.plugin.binding.doctree.Doctree qx;
         Doctree doctree;
-        
-        parser = new Parser();
-        builder = new Builder(new ResourceNode(src.io, "doctree.xsd"));
-        doc = builder.parse(src);
+
+        qx = org.qooxdoo.toolkit.plugin.binding.doctree.Doctree.load(src);
         doctree = new Doctree();
-        for (Element e : parser.selector.elements(doc.getDocumentElement(), "//class")) {
-            doctree.add(Clazz.fromXml(parser, e));
+        for (org.qooxdoo.toolkit.plugin.binding.doctree.Package p : qx.packages) {
+            loadPackage(p, doctree);
         }
         doctree.link();
         return doctree;
+    }
+    
+    private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.doctree.Package qx, Doctree doctree) throws XmlException {
+        for (org.qooxdoo.toolkit.plugin.binding.doctree.Clazz c : qx.clazzes) {
+            doctree.add(Clazz.fromXml(c));
+        }
+        for (org.qooxdoo.toolkit.plugin.binding.doctree.Package p : qx.packages) {
+            loadPackage(p, doctree);
+        }
     }
     
     //--

@@ -21,10 +21,15 @@ package org.qooxdoo.toolkit.plugin.binding.doctree;
 
 import java.util.List;
 
+import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
+import org.qooxdoo.toolkit.plugin.binding.java.Type;
+
 public class Property {
     public Desc desc;
     public Deprecated deprecated;
     public List<Entry> entries;
+    public List<Error> errors;
     
     public String propertyType;
     public String inheritable;
@@ -44,4 +49,12 @@ public class Property {
     public String possibleValues;
     public String refine;
     public boolean themeable;
+    
+    public Type propertyType() throws XmlException {
+        if (check == null) {
+            return SimpleType.OBJECT;
+        } else {
+            return Entry.type(check);
+        }
+    }
 }

@@ -71,6 +71,11 @@ public class MethodTest {
     }
 
     private Method run(String str) throws Exception {
-        return Method.fromXml(new Parser(), "name", IO_OBJ.stringNode(str).readXml().getDocumentElement(), false);
+        org.qooxdoo.sushi.metadata.ComplexType type;
+        
+        type = org.qooxdoo.toolkit.plugin.binding.doctree.Doctree.SCHEMA.complex(org.qooxdoo.toolkit.plugin.binding.doctree.Method.class);
+        return Method.fromXml((org.qooxdoo.toolkit.plugin.binding.doctree.Method) 
+                org.qooxdoo.toolkit.plugin.binding.doctree.Doctree.load(type, IO_OBJ.stringNode(str)), 
+                "name", false);
     }
 }
