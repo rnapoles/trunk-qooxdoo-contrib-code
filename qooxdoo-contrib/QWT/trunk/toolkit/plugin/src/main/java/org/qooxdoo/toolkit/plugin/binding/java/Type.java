@@ -19,7 +19,6 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
-
 public interface Type {
     String getJavaName();
 }

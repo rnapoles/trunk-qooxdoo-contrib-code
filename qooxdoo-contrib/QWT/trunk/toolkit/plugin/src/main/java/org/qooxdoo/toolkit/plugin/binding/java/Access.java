@@ -20,6 +20,5 @@
 package org.qooxdoo.toolkit.plugin.binding.java;
 
 public enum Access {
-    PUBLIC, PROTECTED, PRIVATE, INTERNAL /* TODO */,
-    NONE
+    PUBLIC, PROTECTED, PRIVATE, INTERNAL /* TODO */, NONE
 }

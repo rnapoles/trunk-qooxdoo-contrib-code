@@ -34,18 +34,12 @@ public class Method extends Item {
         boolean isContructor;
         Method method;
         Access a;
-        String name;
         Type returnType;
-        String docFrom;
-        String fromProperty;
         
         isContructor = qx.isCtor;
         a = access(qx);
-        name = qx.name;
-        docFrom = qx.docFrom;
-        fromProperty = qx.fromProperty;
         if (a == Access.PROTECTED) {
-            if (name.startsWith("init") || qx.overriddenFrom != null) {
+            if (qx.name.startsWith("init") || qx.overriddenFrom != null) {
                 // TODO: System.out.println("TODO: changing visibility to
                 // PUBLIC: " + name);
                 a = Access.PUBLIC;
@@ -63,7 +57,7 @@ public class Method extends Item {
         returnType = isContructor ? null : Entry.methodType(qx);
         method = new Method(a, qx.isAbstract,
                 !forInterface && !isContructor, qx.isStatic, isContructor, returnType,
-                isContructor ? simpleClass : name, Desc.toJava(qx.desc), docFrom, fromProperty,
+                isContructor ? simpleClass : qx.name, Desc.toJava(qx.desc), qx.docFrom, qx.fromProperty,
                 isContructor ? "" : null);
         for (Error e: qx.errors) {
             method.errors.add(e.msg);
