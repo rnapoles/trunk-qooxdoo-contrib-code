@@ -19,14 +19,7 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
-import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
-
 public class Field extends Item {
-    public static Field fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Property qx) throws XmlException {
-        return new Field(qx.name, qx.propertyType(), qx.overriddenFrom, Desc.toJava(qx.desc));
-    }
-    
     private final String name;
     private final Type type;
     private final String overriddenFrom;
