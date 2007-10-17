@@ -506,16 +506,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
 				this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
 			}
     },
-    
-		
-    /**
-     * Returns the name of the window. This name is used to stor the 
-     * position an the size of the window in a cookie.
-     * @return name {String} The name of the window.
-     */
-    _getName: function() {
-      return "PropertyEditor"; 
-    },    		
+	
     
     /**
      * Creates the two views for the editor and adds the full view as default view.

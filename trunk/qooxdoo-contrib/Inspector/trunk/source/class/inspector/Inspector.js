@@ -147,14 +147,44 @@ qx.Class.define("inspector.Inspector", {
     // the native window for the api viewer
     _apiWindow: null,
      
-		 
+     
+   /*
+    *********************************
+        RESET PERSPECTIVE
+    *********************************
+    */
+    /**
+     * Sets
+     */
     resetPerspective: function() {
-      // console
-			this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this._console.getInnerHeight());       
-      this._console.setLeft(0);
-			this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);
-			
-			       
+      // reset the console, if existant
+      if (this._console) {
+  			this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
+        this._console.setHeight(180);
+        this._console.setLeft(0);
+  			this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - 180);       
+      }
+      // reset the object finder, if existant
+      if (this._objectFinder) {
+        this._objectFinder.setWidth(350);
+        this._objectFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
+        this._objectFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
+        this._objectFinder.setTop(0);
+      }
+			// reset the widget finder, if existant
+      if (this._widgetFinder) {
+        this._widgetFinder.setWidth(350);
+        this._widgetFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
+        this._widgetFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
+        this._widgetFinder.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
+      }
+			// reset the propery editor, if existant
+      if (this._propertyEditor) {
+        this._propertyEditor.setWidth(350);
+        this._propertyEditor.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+        this._propertyEditor.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
+        this._propertyEditor.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+      }    
 		},
     
    /*
