@@ -25,69 +25,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.util.Strings;
-import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.binding.qx.Desc;
 import org.qooxdoo.toolkit.repository.Dependencies;
 
 public class Clazz extends Item {
-    public static Clazz fromXml(org.qooxdoo.toolkit.plugin.binding.qx.Clazz qx) throws XmlException {
-        Clazz clazz;
-        Method m;
-        boolean ifc;
-        
-        try {
-            clazz = new Clazz(
-                    ClazzType.valueOf(qx.type.toUpperCase()),
-                    qx.isAbstract, qx.fullName, qx.superClass, 
-                    interfaces(qx.interfaces), Desc.toJava(qx.desc));
-            for (org.qooxdoo.toolkit.plugin.binding.qx.Property p : qx.properties) {
-                clazz.add(p.createField());
-            }
-            ifc = (clazz.type == ClazzType.INTERFACE);
-            if (qx.constructor != null) {
-                m = qx.constructor.method.createMethod(qx.name, ifc);
-                if (m.isStatic()) {
-                    throw new XmlException("unexpected static method: " + m);
-                }
-                if (!m.isConstructor()) {
-                    throw new XmlException("constructor method expected: " + m);
-                }
-                if (!m.getName().equals("ctor")) {
-                    // TODO throw new XmlException("unexpected method name: " + m.getName());
-                }
-                m.addPrefixes(clazz);
-                clazz.add(m);
-            }
-            for (org.qooxdoo.toolkit.plugin.binding.qx.Method child : qx.methods) {
-                m = child.createMethod(qx.name, ifc);
-                if (m.isConstructor()) {
-                    throw new XmlException("unexpected constructor method: " + m);
-                }
-                try {
-                    clazz.add(m);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("TODO: " + e.getMessage());
-                }
-            }
-        } catch (XmlException e) {
-            throw new XmlException("class " + qx.fullName + ": " + e.getMessage(), e);
-        }
-        return clazz;
-    }
-    
-    private static List<String> interfaces(String str) {
-        if (str == null) {
-            return new ArrayList<String>();
-        } else {
-            return Strings.trim(Strings.split(",", str));
-        }
-    }
-
-    //--
-    
     private boolean linked = false;
-    private final ClazzType type;
+    public final ClazzType type;
     private final boolean isAbstract;
     private final String fullName;
 

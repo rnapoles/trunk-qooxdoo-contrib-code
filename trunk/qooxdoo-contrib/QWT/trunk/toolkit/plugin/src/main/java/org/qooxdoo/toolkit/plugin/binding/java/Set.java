@@ -63,7 +63,7 @@ public class Set {
     
     private static void loadPackage(org.qooxdoo.toolkit.plugin.binding.qx.Package qx, Set doctree) throws XmlException {
         for (org.qooxdoo.toolkit.plugin.binding.qx.Clazz c : qx.clazzes) {
-            doctree.add(Clazz.fromXml(c));
+            doctree.add(c.createJava());
         }
         for (org.qooxdoo.toolkit.plugin.binding.qx.Package p : qx.packages) {
             loadPackage(p, doctree);
