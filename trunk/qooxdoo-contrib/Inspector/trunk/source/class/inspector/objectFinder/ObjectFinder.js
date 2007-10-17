@@ -41,15 +41,15 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     this.base(arguments, main, name);
 
     // initialize the popup for the objects summary
-    this._objectsPopup = new qx.ui.popup.Popup();
-    this._objectsPopup.addToDocument();
-    this._objectsPopup.add(new qx.ui.basic.Label());
-    this._objectsPopup.setBackgroundColor("#FFFAD3");
-    this._objectsPopup.setBorder("black");
-    this._objectsPopup.setPadding(5, 10);
-    this._objectsPopup.setHeight(500);
-    this._objectsPopup.setWidth(350);
-    this._objectsPopup.setOverflow("auto");
+    this._popup = new qx.ui.popup.Popup();
+    this._popup.addToDocument();
+    this._popup.add(new qx.ui.basic.Label());
+    this._popup.setBackgroundColor("#FFFAD3");
+    this._popup.setBorder("black");
+    this._popup.setPadding(5, 10);
+    this._popup.setHeight(500);
+    this._popup.setWidth(350);
+    this._popup.setOverflow("auto");
 
     // load the obecjts into the table after the component is completely loaded
     var self = this;
@@ -79,7 +79,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     // the main elements of the object finder
     _table: null,
     _tableModel: null,
-    _objectsPopup: null,
+    _popup: null,
     
     // buttons and tooltips
     _reloadButton: null,
@@ -87,6 +87,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _findField: null,
     _autoReloadToolTip: null,
     _objectSummaryToolTip: null,
+    _pollutionToolTip: null,
     
     // timers
     _reloadTimer: null,    
@@ -106,7 +107,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      */
     getComponents: function() {
       return [this, this._table, this._reloadToolTip, 
-              this._autoReloadToolTip, this._objectsPopup, 
+              this._autoReloadToolTip, this._popup, 
               this._objectSummaryToolTip];
     },
     
@@ -502,7 +503,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         var data = this._getObjectsCountArray();
         // variable to save the summ of all objects
         var sum = 0; 
-        // create the test message
+        // create the message
         var message = "";
         for (var key = 0; key < data.length; key++) {
           message += "<tr><td>" + data[key][0] + ": </td><td>" + data[key][1] + "</td></tr>";
@@ -513,15 +514,58 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
                   message + "</tbody></table>";
                 
         // set the text to the lable in the popup
-        this._objectsPopup.getChildren()[0].setText(message);
+        this._popup.getChildren()[0].setText(message);
         // set the position of the poopup
-        this._objectsPopup.setTop(e.getPageY() + 3);
-        this._objectsPopup.setLeft(e.getPageX() + 3);
+        this._popup.setTop(e.getPageY() + 3);
+        this._popup.setLeft(e.getPageX() + 3);
         // show the popup
-        this._objectsPopup.show();
-        this._objectsPopup.bringToFront();        
+        this._popup.show();
+        this._popup.bringToFront();        
       }, this);
       
+      // pollution button
+      var pollutionButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/pollution.png"));
+      this._toolbar.add(pollutionButton);
+      // add the tooltip to the pollution button
+      this._pollutionToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.POLLUTION_BUTTON_TOOLTIP_TEXT, null);
+      pollutionButton.setToolTip(this._pollutionToolTip);
+      // add the event listener for the summary button to show the popup
+      pollutionButton.addEventListener("click", function(e) {
+        // fetch the data
+        var data = qx.dev.Pollution.extract("window");
+        
+        // create the message
+        var message = "";
+        for (var i = 0; i < data.length; i++) {
+          // print out the name of the object
+          message += "<tr><td>" + data[i]["key"] + ": </td>";
+          // if the object is a qooxdoo object
+          if (data[i]["value"] instanceof qx.core.Object) {
+            // add the name, hashcode and a link to select the element
+            message += "<td><u style='cursor: pointer;' " + 
+                       "onclick=\"inspector.Inspector.getInstance().setWidgetByDbKey(" + 
+                       data[i]["value"].getDbKey() + ", '');\";>" + data[i]["value"].classname + 
+                       " [" + data[i]["value"].toHashCode() + "]</u></td></tr>";
+          } else {
+            // print out the reference otherwise
+            message += "<td>" + data[i]["value"] + "</td></tr>";
+          }          
+        }
+        // build the table orund the message
+        message = "<table><tbody style='font-size:12px'>" + 
+                  "<tr><td><font size='4'>Pollution Report</font></b></td><td>&nbsp;</td></tr>" + 
+                  message + "</tbody></table>";        
+
+        // set the text to the lable in the popup
+        this._popup.getChildren()[0].setText(message);
+        // set the position of the poopup
+        this._popup.setTop(e.getPageY() + 3);
+        this._popup.setLeft(e.getPageX() + 3);
+        // show the popup
+        this._popup.show();
+        this._popup.bringToFront();        
+      }, this);
+                  
       // add a spacer
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());
       

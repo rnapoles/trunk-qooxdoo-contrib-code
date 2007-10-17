@@ -40,7 +40,8 @@ qx.Class.define("inspector.Inspector", {
     SET_DEFAULT_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to its initial value.",
     HIGHLIGHT_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Highlight the currently selected property.",
     GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Go to the currently selected property.",
-    OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a sommary of all objects.",
+    OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a summary of all objects.",
+    POLLUTION_BUTTON_TOOLTIP_TEXT: "Show the pollution of the global window object.",
     
     CONSOLE_CAPTION_TITLE: "Console",
     OBJECT_CAPTION_TITLE: "Objects",
