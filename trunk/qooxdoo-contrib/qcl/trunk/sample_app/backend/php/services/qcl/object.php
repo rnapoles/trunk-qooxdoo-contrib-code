@@ -85,8 +85,9 @@ class qcl_object extends patched_object {
 	/**
 	 * get (non-persistent) singleton instance of class.
 	 * if singleton already exists, return instance, otherwise
-	 * create new instance and pass a reference to the instantiating
-	 * object or a passed-through object to the constructor.
+	 * automatically load class file, create new instance and, if object is a controller, 
+	 * pass a reference to the instantiating object or, in other cases, an optional 
+	 * parameter to the constructor.
 	 * 
 	 * @param string 			$classname
 	 * @param object reference 	$controller		(optional) controller object to be passed
@@ -99,15 +100,61 @@ class qcl_object extends patched_object {
         $instance = &$qcl_jsonrpc_singletons[$classname];
         if ( ! is_a ( $instance, $classname ) ) 
         {
-            if ( ! is_a ( $controller, "qcl_jsonrpc_controller" ) )
-            {
-            	$controller = &$this;
-            }
-            $instance = new $classname(&$controller);
+            $instance = $this->getNewInstance( $classname, $controller );
         }
         return $instance;
     }
 	
+	/**
+	 * gets new instance of classname
+	 * if object is a subclass of qx_jsonrpc_controller, pass the object as constructor 
+	 * to the model class, otherwise pass optional parameter
+	 * @param string 			$classname
+	 * @param mixed reference 	$controller		(optional) controller object to be passed
+	 * 											to the singleton constructor  
+	 * @return object reference to singleton instance
+	 */
+	function &getNewInstance( $classname, $controller = null ) 
+	{       
+        // check for class existence
+        if ( ! class_exists ( $classname ) ) 
+        {
+            // delete JsonRpcClassPrefix
+	        if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
+	        {
+				$pathname = substr($classname,strlen(JsonRpcClassPrefix));        	
+	        }
+	        else
+	        {
+	        	$pathname = $classname;
+	        }
+	        
+	        // determine path name
+            $path = SERVICE_PATH . implode( "/", explode("_",$pathname ) ) . ".php";
+            if ( ! file_exists ( $path ) )
+            {
+        		$this->raiseError ( get_class($this) . "::getSingleton : Cannot instantiate class '$classname - file '" . addslashes($path) .  "' does not exist." );    	
+            }
+            
+            // load class file
+            require_once ( $path );
+            
+            // check class
+            if ( ! class_exists ( $classname) )
+            {
+        		$this->raiseError ( get_class($this) . "::getSingleton : Cannot instantiate class '$classname - file '" . addslashes($path) .  "' does not contain class definition." );    	
+            }
+        }
+        
+        // instantiate object
+        if ( is_a ( $this, "qcl_jsonrpc_controller" ) )
+        {
+        	$controller = &$this;
+        }
+        $instance = new $classname(&$controller);
+        return $instance;
+    }
+    	
 	/**
 	 * log function
 	 * @todo: implement
@@ -120,6 +167,7 @@ class qcl_object extends patched_object {
 	function raiseError( $message, $number=null, $file=null, $line=null )
 	{
 		global $error;
+		$message = get_class($this) . " - " . $message;
 		if ( $file and $line )
 		{
 			$message .= " in $file, line $line.";
@@ -137,7 +185,7 @@ class qcl_object extends patched_object {
 		if ( ! $html )
 		{
 			// we are in a jsonrpc request, send debug output as error message
-			trigger_error( print_r ( $var, true ) );
+			$this->raiseError( print_r ( $var, true ) );
 		}
 		else
 		{

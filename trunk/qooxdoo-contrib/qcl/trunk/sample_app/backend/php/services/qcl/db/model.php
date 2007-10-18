@@ -36,15 +36,6 @@ class qcl_db_model extends qcl_jsonrpc_model
    	// public non-rpc methods 
 	//-------------------------------------------------------------   
 
- 	/**
- 	 * sets data source for class
- 	 * @param string $name
- 	 * @todo un-hardcode table name conventions
- 	 */
- 	function setDatasource ( $name )
- 	{
- 		$this->raiseError("qcl_db_model::setDatasource not implemented!");
- 	}
 
  	/**
  	 * sets controller of this model and passes it to linked database object
@@ -111,12 +102,17 @@ class qcl_db_model extends qcl_jsonrpc_model
    
    /**
     * get and cache record by id 
+    * @param mixed $id
     * @return Array Db record set
     */
    	function getById( $id = null )
    	{
 		if ( $id !== null )
 		{
+			if ( ! is_numeric($id) )
+			{
+				$id = "'$id'";
+			}
 			$this->currentRecord = $this->db->getRow("
 	            SELECT * 
 				FROM `{$this->table}` 
@@ -127,7 +123,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 		{
 			if ( ! is_array( $this->currentRecord ) )
 			{
-				$this->raiseError("folder::getById : no id given, but no record cached!");
+				$this->raiseError("qcl_db_model::getById : no id given, but no record cached!");
 			}
 		}
         return $this->currentRecord;
@@ -140,6 +136,16 @@ class qcl_db_model extends qcl_jsonrpc_model
 	{
 		$varName 	= "key_$field";
 		$columnName	= $this->$varName;
+		if ( ! $columnName )
+		{
+			$columnName = $field;
+		}
+		
+		if ( ! $columnName )
+		{
+			$this->raiseError ( "qcl_db_model::getField : Invalid field '$field'");
+		}		
+		
 		return $this->currentRecord[$columnName];
 	}
 
@@ -154,6 +160,11 @@ class qcl_db_model extends qcl_jsonrpc_model
 	{
 		$varName 	= "key_$field";
 		$columnName	= $this->$varName;
+		
+		if ( ! $columnName )
+		{
+			$columnName = $field;
+		}
 		
 		if ( ! $columnName )
 		{
@@ -218,12 +229,20 @@ class qcl_db_model extends qcl_jsonrpc_model
 	
 	/**
 	 * deletes one or more records in a table identified by id
-	 * @todo : check for linked entries, either delete them or refuse to delete
 	 * @param mixed $ids (array of) record id(s)
 	 */
 	function delete ( $ids )
 	{
 		$this->db->delete ( $this->table, $ids, $this->key_id );
+	} 
+	
+	/**
+	 * deletes one or more records in a table matching a where condition
+	 * @param string 	$where where condition
+	 */
+	function deleteWhere ( $where )
+	{
+		$this->db->deleteWhere ( $this->table, $where );
 	} 
 	
 }	

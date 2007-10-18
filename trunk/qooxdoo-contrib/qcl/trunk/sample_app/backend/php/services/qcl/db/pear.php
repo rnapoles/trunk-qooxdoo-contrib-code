@@ -198,6 +198,18 @@ class qcl_db_pear extends qcl_db
 			WHERE `$idColumn` IN ($id_list)
 		");
 	}
+
+	/**
+	 * deletes one or more records in a table matching a where condition
+	 * @param string 	$where where condition
+	 */
+	function deleteWhere ( $table, $where )
+	{
+		$this->query ("
+			DELETE FROM `$table` 
+			WHERE $where
+		");
+	} 
 	
 	/**
 	 * escapes strings for use in sql queries

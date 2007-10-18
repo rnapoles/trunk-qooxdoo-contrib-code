@@ -33,7 +33,7 @@ class qcl_db extends qcl_object
 		parent::__construct();
 		if ( ! is_a( $controller, "qcl_jsonrpc_controller" ) )
 		{
-			$this->raiseError ("qcl_db : Cannot instantiate " . get_class($this) . " object: No controller object provided.");
+			$this->raiseError ("Cannot instantiate " . get_class($this) . " object: No controller object provided.");
 		}
 		$this->controller = &$controller;
 		$this->init();	
@@ -52,7 +52,7 @@ class qcl_db extends qcl_object
 	{
 		if ( ! is_a($controller,"qcl_jsonrpc_controller" ) )
 		{
-			$this->raiseError ("qcl_db : Cannot instantiate " . get_class($this) . " object: No controller object provided.");
+			$this->raiseError ("Cannot instantiate " . get_class($this) . " object: No controller object provided.");
 		}
 		//$db = &$this->getSingleton("qcl_db_pear");
 		//if ( ! $db )
@@ -143,6 +143,12 @@ class qcl_db extends qcl_object
 	 * @param string $idColumn name of column containing the record id 
 	 */
 	function delete ( $table, $data, $idColumn ) {}
+
+	/**
+	 * deletes one or more records in a table matching a where condition
+	 * @param string 	$where where condition
+	 */
+	function deleteWhere ( $where ){} 
 	
 	/**
 	 * escapes strings for use in sql queries
