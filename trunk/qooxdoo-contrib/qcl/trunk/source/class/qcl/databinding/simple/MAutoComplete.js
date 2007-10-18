@@ -229,6 +229,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      */    
     _onInput : function(e)
     {
+      // is a request pending?
+      if ( this._requestPending )
+      {
+        return; 
+      }
+      
       // get and save current content of text field
       var content = this._textFieldWidget.getValue();  
       this._lastContent = content;
@@ -288,14 +294,24 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 		        // start request
 			      var request = rpc.callAsync(
 			       function(result, ex, id){
-			        request.reset();
+			        
+              request.reset();
 			        request.dispose();
 	            request = null; // dispose rpc object
-	            
-	            if (ex == null) {
-	              
+	            _this._requestPending = false;
+              
+	            if (ex == null) 
+              {
+                
+                // server does not support autocomplete
+                if ( result === null )
+                {
+                  _this.setAutoComplete(false);
+                  return;
+                }
+                	              
 	              // server messages
-	              if( qx.event.message && typeof result.__messages == "object" )
+	              if( typeof result.__messages == "object" )
 	              {
 	                for (var key in result.__messages)
 	                {
@@ -303,11 +319,13 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	                }
 	                delete (result.__messages);
 	              }
-	              
+                
 	              // use the autocomplete values
 	              _this._handleAutoCompleteValues(result);
 	              
-	            } else {
+	            } 
+              else 
+              {
 	              qx.event.message.Bus.dispatch(
                     "qcl.databinding.messages.rpc.error",
                     "Async(" + id + ") exception: " + 
@@ -322,6 +340,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
 	           this._listBoxWidget ? true : false,
              this.getMetaData()
 	          );
+            this._requestPending = true;
 	          break;
 	          
 	         default:
