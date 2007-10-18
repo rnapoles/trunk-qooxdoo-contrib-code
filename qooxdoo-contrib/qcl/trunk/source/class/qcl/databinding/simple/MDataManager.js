@@ -130,6 +130,14 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     {
       check : "Boolean",
       init : false
+    },
+    
+    /** generic setter for options  */
+    itemSelected :
+    {
+      check : "Boolean",
+      init : false,
+      apply : "_applyItemSelected"
     }
     
   },
@@ -156,6 +164,33 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       newDataProvider.bindWidget(this);
     },    
 
+    /**
+     * Generic getter for options that can be selected
+     * (
+     * @param {Object} value
+     * @param {Object} old
+     */
+    _applyItemSelected : function(value,old)
+    {
+      // item might have not yet be attached to parent, set with timeout
+      qx.client.Timer.once(function(){
+        var parent = this;
+        while (parent)
+        {
+          switch (parent.classname)
+          {
+            case "qx.ui.form.List":
+              return parent.getManager().setSelectedItem(this);
+            case "qx.manager.selection.RadioManager":
+              return parent.setSelected(this);
+          }
+          var parent = parent.getParent();         
+        }
+        this.error("Did not find appropriate parent widget.");
+      },this,500);
+    },
+    
+    
     /**
      * public API function to update the widget from the server.
      * Can have a variable number of arguments
