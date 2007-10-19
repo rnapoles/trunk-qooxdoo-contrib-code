@@ -220,7 +220,7 @@ public class Unit implements UnitMBean {
         this.index = (FileNode) dir.join("index.html");
         index.writeBytes();
         this.linked = false;
-        this.compress = false;
+        this.compress = true;
     }
 
     public void setCompress(boolean compress) {

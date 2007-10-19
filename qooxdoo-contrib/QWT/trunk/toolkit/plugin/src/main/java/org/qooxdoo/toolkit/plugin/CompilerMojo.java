@@ -145,6 +145,7 @@ public class CompilerMojo extends Base {
     private List<Node> classpath() {
         List<Node> cp;
         List<?> artifacts;
+        String str;
         
         cp = new ArrayList<Node>();
         try {
@@ -152,8 +153,13 @@ public class CompilerMojo extends Base {
         } catch (DependencyResolutionRequiredException e) {
             throw new RuntimeException("TODO", e);
         }
-        for (Object path : artifacts) {
-            cp.add(io.node((String) path));
+        for (Object obj : artifacts) {
+            str = (String) obj;
+            if (str.equals(project.getBuild().getOutputDirectory())) {
+                // ignored -- I don't know why, but Maven 2.0.7 adds target/classes to it's output directory
+            } else {
+                cp.add(io.node(str));
+            }
         }
         return cp;
     }
