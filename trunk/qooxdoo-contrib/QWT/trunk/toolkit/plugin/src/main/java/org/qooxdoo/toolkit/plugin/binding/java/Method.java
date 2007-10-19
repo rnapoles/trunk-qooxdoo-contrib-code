@@ -76,6 +76,7 @@ public class Method extends Item {
         Clazz clazz;
         Method docFromMethod;
         Field prop;
+        GroupType gt;
         
         if (fromProperty != null) {
             prop = owner.findProperty(fromProperty);
@@ -84,7 +85,14 @@ public class Method extends Item {
             }
             if (name.startsWith("set") || name.startsWith("init")) {
                 params.clear();
-                params.add(new Parameter(prop.getType(), "arg"));
+                if (prop.getType() instanceof GroupType) {
+                    gt = (GroupType) prop.getType();
+                    for (String item : gt.items) {
+                        params.add(new Parameter(prop.getType(), item));
+                    }
+                } else {
+                    params.add(new Parameter(prop.getType(), "arg"));
+                }
                 type = SimpleType.VOID;
             } else if (name.startsWith("get") || name.startsWith("is") || name.startsWith("toggle")) {
                 params.clear();

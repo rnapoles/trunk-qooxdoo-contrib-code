@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.binding.java.Field;
+import org.qooxdoo.toolkit.plugin.binding.java.GroupType;
 import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 import org.qooxdoo.toolkit.plugin.binding.java.Type;
 
@@ -52,7 +53,9 @@ public class Property {
     public boolean themeable;
     
     public Type propertyType() throws XmlException {
-        if (check == null) {
+        if (group != null) {
+            return GroupType.parse(group);
+        } else if (check == null) {
             return SimpleType.OBJECT;
         } else {
             return Entry.type(check);
