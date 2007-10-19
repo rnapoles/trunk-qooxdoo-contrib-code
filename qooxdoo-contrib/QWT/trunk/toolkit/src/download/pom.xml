@@ -12,7 +12,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <artifactId>download</artifactId>
   <version>1.0.0</version>
   <name>Download Pom</name>
-  <description>A simple script to download QWT to the local repository.</description>
+  <description>A helper script to download QWT to the local repository.</description>
   <packaging>pom</packaging>
 
   <repositories>
