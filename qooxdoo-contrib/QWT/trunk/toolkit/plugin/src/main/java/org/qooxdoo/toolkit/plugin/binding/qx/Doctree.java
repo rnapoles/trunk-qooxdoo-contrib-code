@@ -20,7 +20,7 @@
 package org.qooxdoo.toolkit.plugin.binding.qx;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
@@ -77,15 +77,13 @@ public class Doctree {
     public static Object load(ComplexType type, Node src) throws IOException, SAXException, LoaderException {
         Node tmp;
         Object result;
-        InputStream in;
-        InputSource is;
+        Reader in;
         
         // TODO: no validation
         tmp = src.io.stringNode("");
         N.run(src, tmp);
-        in = tmp.createInputStream();
-        is = new InputSource(in);
-        result = new Loader(type, Builder.createSAXParser()).run(is);
+        in = tmp.createReader();
+        result = new Loader(type, Builder.createSAXParser()).run(new InputSource(in));
         in.close();
         return result;
     }
