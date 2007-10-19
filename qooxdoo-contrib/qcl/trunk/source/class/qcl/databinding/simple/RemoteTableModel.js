@@ -71,14 +71,13 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
 
     /** 
      * the data passed to the server methods which determine row count and row data
-     * it is up to the server method to interpret this data - it can be a full sql
-     * query string (not recommended) or just bits of data (in an array or object)
-     * to construct the query.
+     * it is up to the server method to interpret this data to construct the query.
      */
     queryData :
     {
+      check : "Object",
       nullable : true,
-      init : null
+      init : {}
     },
     
     /** 
@@ -102,6 +101,7 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
       nullable : false,
       init : "getRowData"
     }
+    
   },
 
   /*
@@ -146,8 +146,20 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      * receives the row count value returned by the server and passes it on
      * to the _onRowCountLoaded function as required by qx.ui.table.model.Remote
      */
-    setRowCount : function (rowCount)
+    setRowCount : function (rowCountInfo)
     {
+      // extended info?
+      if ( rowCountInfo && typeof rowCountInfo == "object" )
+      {
+        var rowCount = rowCountInfo.rowCount;
+        var queryData = this.getQueryData(); 
+        queryData.requestId = rowCountInfo.requestId;
+        console.log([rowCountInfo.requestId,rowCount]);
+      }
+      else
+      {
+        var rowCount = rowCountInfo;  
+      }
       this._onRowCountLoaded(rowCount);
     },
 
