@@ -137,6 +137,20 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     },    
 
     /**
+     * dispatches a hash map of messages
+     * @param messages {Array}
+     * @type member
+     * @return {void}
+     */
+    _dispatchMessages : function ( messages )
+    {
+      messages.forEach(function(message)
+      {
+        qx.event.message.Bus.dispatch( message.name, message.data ); 
+      });
+    },
+
+    /**
      * overwrites the default onkeypress action of listbox widget
      *
      * @type member
@@ -311,12 +325,12 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
                 }
                 	              
 	              // server messages
-	              if( typeof result.__messages == "object" )
+	              if( result.__messages && result.__messages instanceof Array )
 	              {
-	                for (var key in result.__messages)
+	                result.__messages.forEach(function(message)
 	                {
-	                  qx.event.message.Bus.dispatch( key, result.__messages[key] ); 
-	                }
+	                  qx.event.message.Bus.dispatch( message.name, message.data ); 
+	                });
 	                delete (result.__messages);
 	              }
                 

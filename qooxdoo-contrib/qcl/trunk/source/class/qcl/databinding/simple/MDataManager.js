@@ -275,14 +275,14 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         if (ex == null) 
         {  
           // server messages
-          if( qx.event.message && typeof result.__messages == "object" )
+          if( result.__messages && result.__messages instanceof Array )
           {
-            for (var key in result.__messages)
+            result.__messages.forEach(function(message)
             {
-              qx.event.message.Bus.dispatch( new qx.event.message.Message( key, result.__messages[key] ) ); 
-            }
+              qx.event.message.Bus.dispatch( message.name, message.data ); 
+            });
             delete (result.__messages);
-           }
+          }
           
            // handle received data	              
            _this.__handleDataReceived (result);
@@ -615,12 +615,12 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         if (ex == null) {
           
           // server messages
-          if( qx.event.message && typeof result.__messages == "object" )
+          if( result.__messages && result.__messages instanceof Array )
           {
-            for (var key in result.__messages)
+            result.__messages.forEach(function(message)
             {
-              qx.event.message.Bus.dispatch( new qx.event.message.Message( key, result.__messages[key] ) ); 
-            }
+              qx.event.message.Bus.dispatch( message.name, message.data ); 
+            });
             delete (result.__messages);
           }
           
