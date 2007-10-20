@@ -154,12 +154,51 @@ class qcl_object extends patched_object {
         $instance = new $classname(&$controller);
         return $instance;
     }
-    	
+   	/**
+   	 * save a variable in the session 
+   	 * the variables will be available on a class basis, the namespace of the 
+   	 * variables is the class name.
+   	 * @param string	$name	name of the variable
+   	 * @param mixed		$data	data to be saved
+   	 */
+   	function setSessionVar ( $name, $data )
+   	{
+   		$varName = get_class($this);
+   		$_SESSION[$varName] = &$data;
+   	}
+   	
+   	/**
+   	 * get a variable from the session 
+   	 * the variables are available on a class basis, the namespace of the 
+   	 * variables is the class name.
+   	 * @param string	$name	name of the variable
+   	 * @return reference a  reference to the session variable
+   	 */
+   	function &getSessionVar ( $name )
+   	{
+   		$varName = get_class($this);
+   		return $_SESSION[$varName];
+   	}
+   	 
 	/**
-	 * log function
-	 * @todo: implement
+	 * log to file on server
 	 */
-	function log( $string){}
+	function log($string,$withClassName="false")
+	{
+		if ( false )
+		{
+			$message = date("y-m-j H:i:s") . " (" . get_class($this) . "): " . $string . "\n";	
+		} 
+		else
+		{
+			$message = date("y-m-j H:i:s") . ": " . $string . "\n";
+		}
+		$file	 = SERVICE_PATH . "bibliograph/var/log/bibliograph.log";
+		if ( is_writable($file) )
+		{
+			error_log($message,3,$file);	
+		}
+	}
 		
 	/**
 	 * raises a server error and exits
@@ -172,6 +211,7 @@ class qcl_object extends patched_object {
 		{
 			$message .= " in $file, line $line.";
 		}
+		$this->log($message);
 		$error->setError( $number, stripslashes( $message ) );
  		$error->SendAndExit();
 	}
