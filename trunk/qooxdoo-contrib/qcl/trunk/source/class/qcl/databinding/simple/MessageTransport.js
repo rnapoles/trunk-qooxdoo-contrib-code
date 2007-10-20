@@ -107,39 +107,52 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
       init : 0,
       apply : "_applyInterval"
     },
-
-    /** the remote uri of the datasource  */
+    
+    /** 
+     * jsonrpc/get/post: the remote uri of the datasource 
+     * defaults to php backend
+     * @todo set default path in qx:application attribute
+     */ 
     serviceUrl :
     {
-      check : "String"
+      check : "String",
+      init : "../../backend/php/services/index.php"
     },
 
-    /** the service class name on the server */
+    /** jsonrpc: the service class name on the server */
     serviceName :
     {
       check : "String"
     },
 
-    /** the service name on the server */
+    /** jsonrpc: the service name on the server  */
     serviceMethod :
     {
-      check : "String"
+      check : "String",
+      init: "updateClient"
     },
-    
+
+    /** request id   */
+    requestId :
+    {
+      check : "String",
+      init: ""
+    },
+
     /** timeout for request */
     timeout :
     {
       check : "Integer",
       init : 10000
     },
-    
+
     /** if jsonrpc is used, whether cross-domain requests will be used  */
     allowCrossDomainRequests :
     {
       check : "Boolean",
       init : false
     }
-
+    
   },
 
 	
@@ -202,6 +215,31 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
     },
 
     /**
+     * dispatches a hash map of messages
+     * @param messages {Array}
+     * @type member
+     * @return {void}
+     */
+    _dispatchMessages : function ( messages )
+    {
+      messages.forEach(function(message)
+      {
+        qx.event.message.Bus.dispatch( message.name, message.data ); 
+      });
+    },
+
+    /**
+     * gets the timer for polling
+     *
+     * @type member
+     * @return {qx.client.Timer}
+     */  
+    getTimer : function()
+    {
+      return this._timer;
+    },
+    
+    /**
      * forwards messages from client to server
      *
      * @type member
@@ -224,7 +262,7 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
         {
           // use JSON-RPC
           case "jsonrpc":
-			      var rpc = new qcl.remote.Rpc();
+			      var rpc = new qx.io.remote.Rpc();
 			      rpc.setTimeout(_this.getTimeout());
 			      rpc.setUrl(_this.getServiceUrl());
 			      rpc.setServiceName(_this.getServiceName() );
@@ -236,13 +274,16 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 	            request = null; // dispose rpc object            
 	            if (ex == null) {
 	              // dispatch response events
-	              if (typeof result=="object" && typeof result.__messages == "object" )
+	              if (typeof result=="object" && result.__messages instanceof Array )
 	              {
 	               _this._dispatchMessages(result.__messages);
+                 delete result.__messages;
 	              }
 	            } else {
 	              // generic error handling; todo: proper error handling
-	              _this.error ("Async(" + id + ") exception: " + 
+	              qx.event.message.Bus.dispatch(
+                    "qcl.databinding.messages.rpc.error",
+                    "Async(" + id + ") exception: " + 
                     "origin: " + ex.origin +
                     "; code: " + ex.code +
                     "; message: " + ex.message
@@ -251,7 +292,8 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 	           }, 
 	           _this.getServiceMethod(),
 	           message.getName(),
-	           message.getData()
+	           message.getData(),
+             this.getRequestId()
 	          );
 	          break;
 	          
@@ -260,33 +302,6 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
             break;         
         }
       },this);
-    },
-
-    /**
-     * dispatches a hash map of messages
-     * @param messages {Object}
-     * @type member
-     * @return {void}
-     */
-    _dispatchMessages : function ( msgs )
-    {
-      for (var key in msgs)
-      {
-        var m = new qx.event.message.Message(key, msgs[key]);
-        m.setSender(this);
-        qx.event.message.Bus.dispatch(m);
-      }
-    },
-
-    /**
-     * gets the timer for polling
-     *
-     * @type member
-     * @return {qx.client.Timer}
-     */  
-    getTimer : function()
-    {
-      return this._timer;
     },
 
     /**
@@ -309,7 +324,7 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
         {
           // use JSON-RPC
           case "jsonrpc":
-			      var rpc = new qcl.remote.Rpc();
+			      var rpc = new qx.io.remote.Rpc();
 			      rpc.setTimeout(this.getTimeout());
 			      rpc.setUrl(this.getServiceUrl());
 			      rpc.setServiceName(this.getServiceName() );
@@ -325,23 +340,28 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 	            //check if interval has changed
 	            _this.getTimer().setInterval( _this.getInterval() );
 	            
-	            if (ex == null) {
+	            if (ex == null) 
+              {
 	              // dispatch response events
-	              if (typeof result=="object" && typeof result.__messages == "object" )
+	              if (typeof result=="object" && result.__messages instanceof Array )
 	              {
 	               _this._dispatchMessages(result.__messages);
+                 delete (result.__messages);
 	              }
 	            } else {
 	              // generic error handling;
 	              _this.getTimer().stop();
-	              _this.error ("Async(" + id + ") exception: " + 
+	              qx.event.message.Bus.dispatch(
+                    "qcl.databinding.messages.rpc.error",
+                    "Async(" + id + ") exception: " + 
                     "origin: " + ex.origin +
                     "; code: " + ex.code +
                     "; message: " + ex.message
                 );
 	            }
 	           }, 
-	           this.getServiceMethod()
+	           this.getServiceMethod(),
+             this.getRequestId()
 	          );
 	          break;
 	          

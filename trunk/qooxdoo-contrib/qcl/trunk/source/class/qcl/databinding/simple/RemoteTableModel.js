@@ -148,13 +148,12 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      */
     setRowCount : function (rowCountInfo)
     {
-      // extended info?
+      // has server set a request id?
       if ( rowCountInfo && typeof rowCountInfo == "object" )
       {
         var rowCount = rowCountInfo.rowCount;
         var queryData = this.getQueryData(); 
         queryData.requestId = rowCountInfo.requestId;
-        console.log([rowCountInfo.requestId,rowCount]);
       }
       else
       {
