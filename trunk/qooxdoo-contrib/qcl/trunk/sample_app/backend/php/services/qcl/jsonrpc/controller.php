@@ -136,22 +136,99 @@ class qcl_jsonrpc_controller extends qcl_object
 	 */
 	function addMessage ( $message, $data=true )
 	{
+		$messages =  $this->get("__messages");
+		
 		if ( is_string ($message) )
 		{
-			$msg = array();
-			$msg[$message]= $data;
+			$messages[] = array(
+				'name' => $message, 
+				'data' => $data
+			);
 		}
 		elseif( is_array($message) )
 		{
-			$msg = $message;
+			$messages = array_merge($messages,$message);
 		}
 		else
 		{
 			trigger_error ("Invalid parameter");
 		}
 		
-		$this->set("__messages", array_merge ( $this->get("__messages"), $msg )	);
+		$this->set("__messages", $messages );
 	}
+
+	//-------------------------------------------------------------
+    // message polling - put this into a separate class
+    //-------------------------------------------------------------
+	
+	/**
+	 * server messages
+	 * @param string 	$params[0]	request id
+	 */
+	function method_getServerMessages( $params )
+	{
+		$requestId 	= $params[0]; 
+		$className	= get_class($this);
+		$sessionId 	= session_id();
+		
+		// get messages from database and delete them
+		$db = $this->getSingleton("qcl_db_pear");
+		if ( $requestId )
+		{
+			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className' AND `request_id` = '$requestId'";
+		}
+		else
+		{
+			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className'";			
+		}
+
+		// get messages
+		$messages = $db->getAllRows("
+			SELECT * FROM `messages`
+			WHERE $whereQuery
+		");	
+		$this->log($whereQuery . ":" . count($messages));
+		// and delete them
+		$db->execute("
+			DELETE FROM `messages`
+			WHERE $whereQuery
+		");
+		
+		// send to server 
+		foreach ($messages as $message )
+		{ 
+			$this->addMessage( $message['name'], unserialize($message['data']) );
+		}
+		return $this->getResult();
+	}
+
+	/**
+	 * add server message
+	 * @param string 	$message
+	 * @param mixed		$data
+	 * @param string	$requestId 	(optional)
+	 */
+	function addServerMessage( $name, $data, $requestId = null)
+	{ 
+		$className	= get_class($this);
+		$sessionId 	= session_id();
+		
+		// create data row
+		$row = array(
+			'class'			=> $className,
+			'session_id'	=> $sessionId,
+			'request_id'	=> $requestId,
+			'name'			=> $name,
+			'data'			=> serialize($data)
+		);
+		
+		// insert messages into database
+		$db = $this->getSingleton("qcl_db_pear");
+		$db->insert("messages",$row);
+		
+		return;
+	}
+
 	
 	/**
 	* get service directory url
