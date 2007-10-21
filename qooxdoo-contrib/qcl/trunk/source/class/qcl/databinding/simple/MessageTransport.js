@@ -214,6 +214,7 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
       }
     },
 
+
     /**
      * dispatches a hash map of messages
      * @param messages {Array}
@@ -318,7 +319,7 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
       // add interval event
       this._timer.addEventListener("interval", function(message)
       { 
-        if ( !this.getEnabled() ) return false;
+        if ( ! this.isEnabled() || this._requestPending ) return false;
         
         switch ( this.getTransport() )
         {
@@ -336,7 +337,8 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 			        request.reset();
 			        request.dispose();
 	            request = null; 
-	            
+	            _this._requestPending = null;
+              
 	            //check if interval has changed
 	            _this.getTimer().setInterval( _this.getInterval() );
 	            
@@ -363,6 +365,9 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 	           this.getServiceMethod(),
              this.getRequestId()
 	          );
+            
+            // do not send another request until this one has returned
+            this._requestPending = rpc;
 	          break;
 	          
 	         default:

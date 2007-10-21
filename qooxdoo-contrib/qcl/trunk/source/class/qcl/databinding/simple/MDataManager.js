@@ -311,7 +311,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        var request = rpc.callAsync.apply(rpc,params);
         
        // pass request object to subscribers  
-       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));       
+       qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.object", request );
+       this.createDispatchDataEvent( "requestSent", request ); 
     },
     
     /**
@@ -572,7 +573,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * update server using jsonrpc
      */
     _updateServerJsonRpc : function (args)
-    {
+    {      
       // request objecgt
       var rpc = new qx.io.remote.Rpc();
       
@@ -645,7 +646,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       var request = rpc.callAsync.apply(rpc,params);
       
       // pass request object to subscribers  
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request));      
+      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request)); 
+      this.createDispatchDataEvent("requestSent",request);     
     },
     
     
