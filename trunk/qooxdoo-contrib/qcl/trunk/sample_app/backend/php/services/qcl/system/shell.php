@@ -23,6 +23,7 @@ require_once ("qcl/jsonrpc/model.php");
 	
  	/**
  	 * Constructor
+ 	 * @param string	working directory
  	 * @return bool true or false depending on whether shell access 
 	 * is possible
  	 **/

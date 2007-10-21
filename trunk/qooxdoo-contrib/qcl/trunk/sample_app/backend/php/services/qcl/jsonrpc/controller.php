@@ -107,7 +107,7 @@ class qcl_jsonrpc_controller extends qcl_object
 		}
 		else
 		{
-			$this->result[$first] = $value;
+			$this->result[$first] = &$value;
 		}
 	}
 	
@@ -136,8 +136,8 @@ class qcl_jsonrpc_controller extends qcl_object
 	 */
 	function addMessage ( $message, $data=true )
 	{
-		$messages =  $this->get("__messages");
-		
+		$messages =  (array) $this->get("__messages");
+		$this->log("Message $message"); // debug
 		if ( is_string ($message) )
 		{
 			$messages[] = array(
@@ -153,8 +153,8 @@ class qcl_jsonrpc_controller extends qcl_object
 		{
 			trigger_error ("Invalid parameter");
 		}
-		
 		$this->set("__messages", $messages );
+		
 	}
 
 	//-------------------------------------------------------------
@@ -187,7 +187,9 @@ class qcl_jsonrpc_controller extends qcl_object
 			SELECT * FROM `messages`
 			WHERE $whereQuery
 		");	
-		$this->log($whereQuery . ":" . count($messages));
+		
+		$this->log("### Polled for ". count($messages) . " messages.");
+		
 		// and delete them
 		$db->execute("
 			DELETE FROM `messages`
