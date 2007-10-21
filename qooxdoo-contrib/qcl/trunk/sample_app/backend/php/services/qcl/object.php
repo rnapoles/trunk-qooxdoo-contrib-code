@@ -164,7 +164,7 @@ class qcl_object extends patched_object {
    	function setSessionVar ( $name, $data )
    	{
    		$varName = get_class($this);
-   		$_SESSION[$varName] = &$data;
+   		$_SESSION[$varName][$name] = &$data;
    	}
    	
    	/**
@@ -177,7 +177,7 @@ class qcl_object extends patched_object {
    	function &getSessionVar ( $name )
    	{
    		$varName = get_class($this);
-   		return $_SESSION[$varName];
+   		return $_SESSION[$varName][$name];
    	}
    	 
 	/**

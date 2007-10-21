@@ -35,7 +35,8 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 			if ( ! is_object($domXmlObj) )
 			{
 				file_put_contents($debugfile,$xml);
-				$this->raiseError("Invalid xml data");
+				$this->error = ("Invalid xml data");
+				return false;
 				
 			}
 			
@@ -46,7 +47,8 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 			if ( ! is_object($domXmlObj) )
 			{
 				file_put_contents($debugfile,$xsl);
-				$this->raiseError("Invalid xsl data");
+				$this->error = ("Invalid xsl data");
+				return false;
 			}
 			
 			$domTranObj = $domXsltObj->process($domXmlObj,$params,false,$debugfile);
@@ -59,11 +61,8 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 			else
 			{
 				$message = "Transformation failed";
-				if ($debugfile)
-				{
-					$message .= file_get_contents($debugfile);
-				}
-				$this->raiseError($message);	
+				$this->error = ($message);	
+				return false;
 			}	
 			
 		}
