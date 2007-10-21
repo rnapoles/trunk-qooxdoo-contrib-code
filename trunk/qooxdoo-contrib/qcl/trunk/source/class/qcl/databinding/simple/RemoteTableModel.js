@@ -100,7 +100,19 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
       check : "String",
       nullable : false,
       init : "getRowData"
-    }
+    }, 
+    
+   /** 
+    * function that gets called before a row data request is launched.
+    * if the function returns an object, it is sent instead of the 
+    * value of the queryData property
+    */
+    callBeforeLoadRowData :
+    {
+      check : "Function",
+      nullable : true,
+      init : null
+    }  
     
   },
 
@@ -174,7 +186,8 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
     /**
      * Loads row data from the server. The service class on the server
      * must have the following signature: 
-     *   Mixed    queryData data from which to construct the query
+     *   Object   queryData data from which to construct the query, this 
+     *            object is taken from the queryData property
      *   Integer  firstRow 
      *   Integer  lastRow
      * The server jsonrpc response must look like so:
@@ -183,7 +196,11 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
      *   { 'rowId1' : 'foo2',  'rowId2' : 'bar2', ... },
      *   ...
      * ] }, ... }
-     *
+     * 
+     * If you define the callBeforeLoadRowData property with a function, this 
+     * function will be called with the method arguments before the query is 
+     * started. If the function returns an object, it is sent as the queryData 
+     * parameter.
      * @type member
      * @abstract
      * @param firstRow {Integer} The index of the first row to load.
@@ -193,9 +210,18 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
     _loadRowData : function(firstRow, lastRow) 
     {
       if ( ! this.getServiceName() ) return []; // do not do any updates until service name is known
+      var qd = this.getQueryData();
+      if ( this.getCallBeforeLoadRowData()  )
+      {
+        var result = this.getCallBeforeLoadRowData()(firstRow, lastRow);
+        if  ( typeof result == "object" )
+        {
+          qd = result;
+        } 
+      } 
       this._updateClient( 
         this.getServiceName() + "." + this.getServiceMethodGetRowData(),
-        this.getQueryData(),firstRow,lastRow  
+        qd, firstRow, lastRow  
       );
     },
 

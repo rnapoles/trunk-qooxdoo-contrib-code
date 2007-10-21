@@ -39,7 +39,10 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
   {
     // table model and resize behaviour
     var tableModel = new qx.ui.table.model.Simple();
-    tableModel.setColumns(["Property","Property","Edit Value","Metadata"],['id','label','value','metadata']);
+    tableModel.setColumns(
+      ["(hidden)",this.getPropertyColumnLabel(),this.getValueColumnLabel(),"(hidden)"],
+      ['id','label','value','metadata']
+    );
     tableModel.setColumnEditable(2,true);
     var resizeBehaviour = { tableColumnModel : function(obj){ return new qx.ui.table.columnmodel.Resize(obj); } };
     
@@ -109,6 +112,23 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
       apply : "_applyEditable",
       check: "Boolean",
       init : true
+    },
+    /**
+     * the label of the property column
+     */ 
+    propertyColumnLabel : 
+    {
+      check: "String",
+      init : "Property"
+    },
+    
+    /**
+     * the label of the value column
+     */ 
+    valueColumnLabel : 
+    {
+      check: "String",
+      init : "Edit Value"
     }
   },
   
