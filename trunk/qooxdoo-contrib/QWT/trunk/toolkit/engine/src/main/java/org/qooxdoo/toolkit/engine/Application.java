@@ -46,6 +46,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 
@@ -57,13 +58,14 @@ import org.qooxdoo.sushi.io.Node;
 /**
  * A server, a list of clients, plus some Jmx services. 
  * Currently, there's always exactly 1 client.
- * Every initialized servlet has exactly one application.
+ * Every initialized engine has exactly one application.
  */
 public class Application implements ApplicationMBean {
-    public static Application create(ServletConfig config) throws IOException {
+    public static Application create(ServletConfig config) throws IOException, ServletException {
         IO io;
         File docroot;
         FileNode node;
+        Application application;
         
         io = new IO();
         docroot = new File(config.getServletContext().getRealPath("/"));
@@ -72,7 +74,9 @@ public class Application implements ApplicationMBean {
         }
         docroot = docroot.getAbsoluteFile().getCanonicalFile();
         node = io.node(docroot);
-        return new Application(config.getServletName(), node, MimeTypes.create());
+        application = new Application(config.getServletName(), node, MimeTypes.create());
+        application.add(Client.create(config, application));
+        return application;
     }
     
     public final Logger log;
