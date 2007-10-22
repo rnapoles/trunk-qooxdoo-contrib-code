@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
 import java.util.HashMap;
 import java.util.Map;

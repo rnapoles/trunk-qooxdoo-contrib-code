@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.qooxdoo.toolkit.engine.MimeTypes;
 
 public class MimeTypeTest {
     @Test

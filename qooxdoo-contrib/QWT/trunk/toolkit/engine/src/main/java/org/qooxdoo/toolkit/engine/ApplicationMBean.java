@@ -17,8 +17,14 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
-public interface MBean { 
-    String getName(); 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+public interface ApplicationMBean extends MBean {
+    File getDocrootFile();
+    List<String> listJars() throws IOException;
+    Object groovy(String str);
 } 

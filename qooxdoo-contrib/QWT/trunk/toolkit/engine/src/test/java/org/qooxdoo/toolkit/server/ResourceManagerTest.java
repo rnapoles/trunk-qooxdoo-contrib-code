@@ -29,6 +29,9 @@ import static org.junit.Assert.*;
 
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.toolkit.engine.MimeTypes;
+import org.qooxdoo.toolkit.engine.Resource;
+import org.qooxdoo.toolkit.engine.ResourceManager;
 
 public class ResourceManagerTest {
     private ResourceManager rm;

@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.qooxdoo.toolkit.engine.Call;
 
 public class CallTest {
     private Object dest;

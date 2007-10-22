@@ -25,6 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.toolkit.compiler.Naming;
+import org.qooxdoo.toolkit.engine.Parser;
+import org.qooxdoo.toolkit.engine.Serializer;
+import org.qooxdoo.toolkit.engine.Unit;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.Repository;
 

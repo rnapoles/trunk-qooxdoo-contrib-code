@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
 /** 
  *  @augment org.qooxdoo.toolkit.server.Proxy

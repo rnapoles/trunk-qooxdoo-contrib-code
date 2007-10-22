@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

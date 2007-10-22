@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
 import java.util.ArrayList;
