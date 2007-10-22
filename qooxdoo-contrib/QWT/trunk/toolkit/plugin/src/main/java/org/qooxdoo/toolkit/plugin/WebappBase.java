@@ -37,7 +37,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.util.Strings;
 
 public abstract class WebappBase extends Base {
     /**
@@ -80,19 +79,20 @@ public abstract class WebappBase extends Base {
      */
     private String client;
 
+
     /**
      * Java files to include in JavaScript compilation. Ant-like patterns, separated by ','.
      *
-     * @parameter expression="**${file.separator}*.java"
+     * @parameter
      */
-    private List<String> includes = new ArrayList<String>();
+    private String includes = "**/*.java";
     
     /**
      * Java files to exclude from JavaScript compilation. Ant-like patterns, separated by ','.
      *
-     * @parameter expression="**${file.separator}common${file.separator}**${file.separator}*.java"
+     * @parameter
      */
-    private List<String> excludes = new ArrayList<String>();
+    private String excludes = "**/server/**/*.java";
     
     /**
      * Images.
@@ -235,8 +235,8 @@ public abstract class WebappBase extends Base {
         str = str.replace("${description}", description);
         str = str.replace("${server}", server);
         str = str.replace("${client}", client);
-        str = str.replace("${includes}", Strings.join(",", includes));
-        str = str.replace("${excludes}", Strings.join(",", excludes));
+        str = str.replace("${includes}", includes);
+        str = str.replace("${excludes}", excludes);
         generate(webXml, str);
     }
 

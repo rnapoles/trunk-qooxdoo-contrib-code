@@ -20,8 +20,6 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +51,6 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
 
     private final Client client;
     private final int no;
-    private final Map<String, Object> objects;
     
     // TODO: share between sessions?
     public final ResourceManager rm;
@@ -62,18 +59,6 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
         this.client = client;
         this.rm = rm;
         this.no = no;
-        this.objects = new HashMap<String, Object>();
-    }
-
-    public void addObject(String name, Object obj) {
-        if (objects.containsKey(name)) {
-            throw new IllegalArgumentException("duplicate object: " + name);
-        }
-        objects.put(name, obj);
-    }
-    
-    public Object lookupObject(String name) {
-        return objects.get(name);
     }
 
     public Client getClient() {

@@ -17,16 +17,23 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.qooxdoo;
+package org.qooxdoo.toolkit.engine;
 
-public class Server {
-    public void stop() {
-    }
-    
-    public Object clientStart() {
-        return null;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/** Stores Service Objects passed to clients. */
+public class Registry {
+    private final Map<Object, List<Session>> objects;
+
+    public Registry() {
+        this.objects = new HashMap<Object, List<Session>>();
     }
 
-    public void clientStop() {
+    public void add(Object obj) {
+        objects.put(obj, new ArrayList<Session>()); // TODO
     }
 }
+
