@@ -274,7 +274,7 @@ public abstract class WebappBase extends Base {
         "   <description>${description}</description>\n" + 
         "   <servlet>\n" + 
         "      <servlet-name>${id}</servlet-name>\n" + 
-        "      <servlet-class>org.qooxdoo.toolkit.server.Servlet</servlet-class>\n" + 
+        "      <servlet-class>org.qooxdoo.toolkit.engine.Servlet</servlet-class>\n" + 
         "      <init-param>\n" + 
         "          <param-name>server</param-name>\n" + 
         "          <param-value>${server}</param-value>\n" + 
@@ -298,7 +298,7 @@ public abstract class WebappBase extends Base {
         "   </servlet-mapping>\n" + 
         "</web-app>\n";
     
-    //-- resolve Server dependencies
+    //-- resolve engine dependencies
     
     /**
      * Used to look up Artifacts in the remote repository.
@@ -347,7 +347,7 @@ public abstract class WebappBase extends Base {
         Artifact artifact;
         
         artifacts = new HashSet<Artifact>();
-        artifacts.add(artifactFactory.createArtifact("org.qooxdoo.toolkit", "server", getVersion(), null, "jar"));
+        artifacts.add(artifactFactory.createArtifact("org.qooxdoo.toolkit", "engine", getVersion(), null, "jar"));
         resolutionResult = artifactResolver.resolveTransitively(artifacts, project.getArtifact(), 
                 remoteRepositories, localRepository, artifactMetadataSource);
         result = new ArrayList<Artifact>();

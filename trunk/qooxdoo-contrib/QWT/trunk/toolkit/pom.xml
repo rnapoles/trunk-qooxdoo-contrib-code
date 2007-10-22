@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <packaging>pom</packaging>
 
   <properties>
-    <toolkit.version>0.7.2</toolkit.version>
+    <toolkit.version>0.8.0-SNAPSHOT</toolkit.version>
   </properties>
 
   <modules>
