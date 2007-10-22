@@ -55,8 +55,8 @@ import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 
 /**
- * A list of units plus some Jmx services. 
- * Currently, there's always exactly 1 unit.
+ * A server, a list of clients, plus some Jmx services. 
+ * Currently, there's always exactly 1 client.
  * Every initialized servlet has exactly one application.
  */
 public class Application implements ApplicationMBean {
@@ -80,7 +80,7 @@ public class Application implements ApplicationMBean {
     private final FileNode docroot;
     
     private final MimeTypes mimeTypes;
-    private final Map<String, Client> units;
+    private final Map<String, Client> clients;
     private int nextMbeanId;
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
@@ -99,7 +99,7 @@ public class Application implements ApplicationMBean {
         this.nextMbeanId = 0;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.mbeans = new HashMap<MBean, ObjectName>();
-        this.units = new HashMap<String, Client>();
+        this.clients = new HashMap<String, Client>();
         this.first = null;
         
         binding = new Binding();
@@ -165,21 +165,21 @@ public class Application implements ApplicationMBean {
         return name;
     }
     
-    public void add(Client unit) {
+    public void add(Client client) {
         String name;
         
-        name = unit.getName();
-        if (units.containsKey(name)) {
-            throw new IllegalArgumentException("duplicate unit: " + name);
+        name = client.getName();
+        if (clients.containsKey(name)) {
+            throw new IllegalArgumentException("duplicate client: " + name);
         }
         if (first == null) {
             first = name;
         }
-        units.put(name, unit);
+        clients.put(name, client);
     }
 
     public Client lookup(String id) {
-        return units.get(id);
+        return clients.get(id);
     }
     
     public String getFirstApplication() {
@@ -189,8 +189,8 @@ public class Application implements ApplicationMBean {
     
     public void startup() {
         register(this);
-        for (Client unit : units.values()) {
-            register(unit);
+        for (Client client : clients.values()) {
+            register(client);
         }
         log.info("startup done");
     }
@@ -242,8 +242,8 @@ public class Application implements ApplicationMBean {
         return name.substring(name.lastIndexOf('.') + 1);
     }
     
-    public FileNode createUnitDirectory(String unit) throws IOException {
-        return (FileNode) docroot.join(unit).mkdirOpt();
+    public FileNode createClientDirectory(String client) throws IOException {
+        return (FileNode) docroot.join(client).mkdirOpt();
     }
 
     public ResourceManager createResourceManager(Node index, Node indexGz) throws IOException {

@@ -11,6 +11,7 @@
   <groupId>org.qooxdoo.toolkit</groupId>
   <artifactId>engine</artifactId>
   <name>Toolkit Engine</name>
+  <description>The servlet that drives an application</description>
   <version>${toolkit.version}</version>
   <packaging>jar</packaging>
 
