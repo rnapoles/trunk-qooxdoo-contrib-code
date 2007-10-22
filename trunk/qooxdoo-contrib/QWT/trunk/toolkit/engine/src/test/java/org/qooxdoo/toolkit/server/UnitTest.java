@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.toolkit.engine.Unit;
 
 public class UnitTest {
     @Test

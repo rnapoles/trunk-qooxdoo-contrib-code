@@ -17,13 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
-import java.util.Date;
-
-public interface UnitMBean extends MBean {
-    Date getCreated();
-    long getSize();
-    boolean getCompress();
-    void setCompress(boolean compress);
-} 
+public interface SessionMBean extends MBean {
+    int getNo();
+}

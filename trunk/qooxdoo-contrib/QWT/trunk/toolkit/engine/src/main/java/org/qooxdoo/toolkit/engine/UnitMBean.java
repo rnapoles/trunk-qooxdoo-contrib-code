@@ -17,14 +17,13 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import java.util.Date;
 
-public interface ApplicationMBean extends MBean {
-    File getDocrootFile();
-    List<String> listJars() throws IOException;
-    Object groovy(String str);
+public interface UnitMBean extends MBean {
+    Date getCreated();
+    long getSize();
+    boolean getCompress();
+    void setCompress(boolean compress);
 } 

@@ -17,8 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server;
+package org.qooxdoo.toolkit.engine;
 
-public interface SessionMBean extends MBean {
-    int getNo();
-}
+public interface MBean { 
+    String getName(); 
+} 
