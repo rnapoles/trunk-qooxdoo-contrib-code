@@ -24,7 +24,6 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.repository.Compressor;
@@ -47,7 +46,7 @@ public class Index {
     /** 
      * @param arguments  passed to the contructor. Key is the server-side id, value is the interface
      */
-    public void generate(String title, String client, Map<Integer, Class<?>> arguments) throws IOException {
+    public void generate(String title, String client, Class<?> formal, int id) throws IOException {
         Writer writer;
         
         writer = file.createWriter();
@@ -64,7 +63,7 @@ public class Index {
         modules(writer, Proxy.class.getName(), client);
         lines(writer,
                 "qx.core.Init.getInstance().setApplication(", 
-                createClient(client, arguments),
+                createClient(client, formal, id),
                 ");",
                 "    </script>",
                 "  </head>",
@@ -75,32 +74,31 @@ public class Index {
         writer.close();
     }
 
-    private String createClient(String client, Map<Integer, Class<?>> arguments) {
+    private String createClient(String client, Class<?> ifc, int id) {
         StringBuilder builder;
-        boolean first;
         
         builder = new StringBuilder();
-        builder.append("new ").append(client).append("(");
-        first = true;
-        for (Map.Entry<Integer, Class<?>> entry : arguments.entrySet()) {
-            if (first) {
-                first = false;
-            } else {
-                builder.append(", ");
-            }
-            builder.append("new Proxy(").append(entry.getKey()).append(",");
-            methods(entry.getValue(), builder);
-            builder.append(')');
+        if (ifc == null) {
+            builder.append("new ").append(client).append("(");
+        } else {
+            builder.append("newObject(").append(client).append(',').append(client).append(".init1,[");
+            builder.append("new Proxy(").append(id).append(",");
+            methods(ifc, builder);
+            builder.append(")]");
         }
         builder.append(')');
         return builder.toString(); 
     }
 
     private static String methods(Class<?> ifc, StringBuilder builder) {
+        boolean first;
+        
         builder.append("[");
+        first = true;
         for (Method m : ifc.getDeclaredMethods()) {
-            if (builder.length() == 1) {
+            if (first) {
                 builder.append("'");
+                first = false;
             } else {
                 builder.append(", '");
             }
