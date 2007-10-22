@@ -17,15 +17,13 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.hello;
+package org.qooxdoo.widgets.server;
 
-import qx.application.Gui;
-import qx.ui.basic.Label;
+import org.qooxdoo.widgets.common.PingService;
 
-public class Application extends Gui {
-    @Override
-    public void main() {
-        super.main();
-        new Label("Hello, world!").addToDocument();
+public class Ping implements PingService {
+    public String ping(String msg) {
+        System.out.println("ping " + msg);
+        return "jikes " + this.hashCode();
     }
 }

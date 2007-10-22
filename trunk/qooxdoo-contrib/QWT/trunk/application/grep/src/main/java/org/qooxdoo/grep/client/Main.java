@@ -17,10 +17,12 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.grep;
+package org.qooxdoo.grep.client;
 
 import java.util.List;
 
+import org.qooxdoo.grep.common.GrepService;
+import org.qooxdoo.grep.common.Match;
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
 import qx.application.Gui;
@@ -33,17 +35,14 @@ import qx.ui.tree.Tree;
 import qx.ui.tree.TreeFile;
 import qx.ui.tree.TreeFolder;
 
-public class Application extends Gui implements EventListener {
-    private IServices find;
+public class Main extends Gui implements EventListener {
+    private GrepService grep;
     private TextField text;
     private Button button;
     private Tree<String> tree;
     
-    public Application() {
-    }
-    
-    public void initServices(IServices find) {
-        this.find = find;
+    public Main(GrepService grep) {
+        this.grep = grep;
     }
 
     @Override
@@ -76,7 +75,7 @@ public class Application extends Gui implements EventListener {
         file = null;
         tree.removeAll();
         substring = text.getValue().toString();
-        results = find.find(substring);
+        results = grep.grep(substring);
         System.out.println(results.size() + " results");
         for (Match match : results) {
             if (file == null || !match.file.equals(file.getNode())) {

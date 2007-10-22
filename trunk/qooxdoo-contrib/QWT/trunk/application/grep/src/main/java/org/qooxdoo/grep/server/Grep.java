@@ -17,21 +17,23 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.grep;
+package org.qooxdoo.grep.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.qooxdoo.grep.common.GrepService;
+import org.qooxdoo.grep.common.Match;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 
-public class Services implements IServices {
+public class Grep implements GrepService {
     private static final int MAX = 100;
     private final IO io = new IO();
     private final Node root = io.getWorking();
 
-    public List<Match> find(String substring) {
+    public List<Match> grep(String substring) {
         List<Match> result;
         
         System.out.println("Searching " + root + " for substring '" + substring + "'");

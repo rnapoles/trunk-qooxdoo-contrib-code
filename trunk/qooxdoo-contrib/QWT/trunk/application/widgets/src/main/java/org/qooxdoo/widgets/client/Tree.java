@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets;
+package org.qooxdoo.widgets.client;
 
 public class Tree {
 }

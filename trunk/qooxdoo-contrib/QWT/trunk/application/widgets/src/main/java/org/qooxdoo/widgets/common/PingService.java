@@ -17,8 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets;
+package org.qooxdoo.widgets.common;
 
-public interface IServices {
+public interface PingService {
     String ping(String msg);
 }
