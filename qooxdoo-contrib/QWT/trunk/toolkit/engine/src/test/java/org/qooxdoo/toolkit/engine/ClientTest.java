@@ -44,8 +44,8 @@ public class ClientTest {
         src = io.guessProjectHome(getClass()).join("src/test/java");
         dest = io.createTempDirectory();
         app = new Client(Logger.getLogger("foo"), 
-        		src, new String[] { "**/application/*.java"} , new String[] {},
-                "id", "name", "org.qooxdoo.toolkit.engine.application.Main", dest);
+        		src, new String[] { "**/client/*.java"} , new String[] {},
+                "id", "name", "org.qooxdoo.toolkit.engine.client.Main", dest);
         idx = app.getIndex();
         assertTrue(idx.isFile());
     }

@@ -117,7 +117,7 @@ public class Engine extends HttpServlet {
         if (tmp != null) {
             client = (Client) tmp[0];
             path = (String) tmp[1];
-            if (path.equals("/" + client.getIndex().getName()) && !httpSession.isNew()) {
+            if (!httpSession.isNew() && path.equals("/" + client.getIndex().getName())) {
                 httpSession.invalidate();
                 httpSession = request.getSession();
                 if (!httpSession.isNew()) {
