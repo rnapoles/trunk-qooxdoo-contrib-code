@@ -26,10 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
-import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.util.Strings;
 
 /** generates application frame */
 public class Index {
@@ -45,8 +44,10 @@ public class Index {
         this.qooxdoo = qooxdoo;
     }
 
-    /** @return index file */
-    public void generate(String title, String client, Map<String, Class<?>> declarations) throws IOException {
+    /** 
+     * @param arguments  passed to the contructor. Key is the server-side id, value is the interface
+     */
+    public void generate(String title, String client, Map<String, Class<?>> arguments) throws IOException {
         Writer writer;
         
         writer = file.createWriter();
@@ -58,28 +59,13 @@ public class Index {
         lines(writer, 
                 "window.qxsettings = {" +
                 "  'qx.version' : '" + qooxdoo.version + "'," +
-                "  'qx.application' : '" + client + "'" +
                 "};");
         // TODO: no escaping!?
         modules(writer, Proxy.class.getName(), client);
-        // TODO: add all my classes to registry 
-        
-        beforeMain(writer, declarations);
-        lines(writer, 
-                "QWT_BACKGROUND = 'foo';" +
-                "function QwtAfterMain() {",
-                "    var application = qx.core.Init.getInstance().getApplication();",
-                "    if (application.background) {",
-                "        QWT_BACKGROUND = function() {",
-                "            try {",
-                "                application.background();",
-                "            } finally {",
-                "                window.setTimeout(\"QWT_BACKGROUND()\", 1000);",
-                "            }",
-                "        };",
-                "        window.setTimeout(\"QWT_BACKGROUND()\", 1000);" +
-                "    }",
-                "}",
+        lines(writer,
+                "qx.core.Init.getInstance().setApplication(", 
+                createClient(client, arguments),
+                ");",
                 "    </script>",
                 "  </head>",
                 "  <body>",
@@ -89,25 +75,28 @@ public class Index {
         writer.close();
     }
 
-    private void beforeMain(Writer writer, Map<String, Class<?>> declarations) throws IOException {
-        String name;
-        String methods;
-
-        lines(writer,
-                "function QwtBeforeMain() {" +
-                "    var application = qx.core.Init.getInstance().getApplication();");
-        for (Map.Entry<String, Class<?>> entry : declarations.entrySet()) {
-            name = entry.getKey();
-            methods = Index.methods(entry.getValue());
-            writer.write("    application.init" + Strings.capitalize(name) + "(new Proxy('" + name + "', " + methods + "));\n");
-        }
-        lines(writer, "}");
-    }
-
-    private static String methods(Class<?> ifc) {
+    private String createClient(String client, Map<String, Class<?>> arguments) {
         StringBuilder builder;
+        boolean first;
         
         builder = new StringBuilder();
+        builder.append("new ").append(client).append("(");
+        first = true;
+        for (Map.Entry<String, Class<?>> entry : arguments.entrySet()) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(", ");
+            }
+            builder.append("new Proxy('").append(entry.getKey()).append("', ");
+            methods(entry.getValue(), builder);
+            builder.append(')');
+        }
+        builder.append(')');
+        return builder.toString(); 
+    }
+
+    private static String methods(Class<?> ifc, StringBuilder builder) {
         builder.append("[");
         for (Method m : ifc.getDeclaredMethods()) {
             if (builder.length() == 1) {
