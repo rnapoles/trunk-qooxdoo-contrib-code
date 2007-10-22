@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -134,18 +135,26 @@ public class Client implements ClientMBean {
         linked = false;
     }
 
-    public FileNode getIndex() throws IOException, ServletException {
+    public FileNode getIndex() {
+        return index;
+    }
+    
+    public void update(Object arg) throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
-
+        Map<String, Class<?>> map;
+        
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            idx.generate(title, main, new HashMap());  // TODO
+            map = new HashMap<String, Class<?>>();
+            if (arg != null) {
+                map.put("root", arg.getClass()); // TODO
+            }
+            idx.generate(title, main, map); 
             log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
-        return index;
     }
     
     public FileNode getIndexGz() throws IOException, ServletException {
@@ -167,9 +176,10 @@ public class Client implements ClientMBean {
         Session session;
         Object obj;
         
+        obj = application.getServer().clientStart();
+        update(obj);
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
-        obj = application.getServer().clientStart();
         if (obj != null) {
             application.getRegistry().add(obj);
         }
