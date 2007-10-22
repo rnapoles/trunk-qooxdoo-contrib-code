@@ -20,20 +20,23 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Stores Service Objects passed to clients. */
 public class Registry {
-    private final Map<Object, List<Session>> objects;
+    private final List<Object> objects;
 
     public Registry() {
-        this.objects = new HashMap<Object, List<Session>>();
+        this.objects = new ArrayList<Object>();
     }
 
-    public void add(Object obj) {
-        objects.put(obj, new ArrayList<Session>()); // TODO
+    public int add(Object obj) {
+        objects.add(obj);
+        return objects.size() - 1;
+    }
+
+    public Object get(int id) {
+        return objects.get(id);
     }
 }
 

@@ -47,7 +47,7 @@ public class Index {
     /** 
      * @param arguments  passed to the contructor. Key is the server-side id, value is the interface
      */
-    public void generate(String title, String client, Map<String, Class<?>> arguments) throws IOException {
+    public void generate(String title, String client, Map<Integer, Class<?>> arguments) throws IOException {
         Writer writer;
         
         writer = file.createWriter();
@@ -75,20 +75,20 @@ public class Index {
         writer.close();
     }
 
-    private String createClient(String client, Map<String, Class<?>> arguments) {
+    private String createClient(String client, Map<Integer, Class<?>> arguments) {
         StringBuilder builder;
         boolean first;
         
         builder = new StringBuilder();
         builder.append("new ").append(client).append("(");
         first = true;
-        for (Map.Entry<String, Class<?>> entry : arguments.entrySet()) {
+        for (Map.Entry<Integer, Class<?>> entry : arguments.entrySet()) {
             if (first) {
                 first = false;
             } else {
                 builder.append(", ");
             }
-            builder.append("new Proxy('").append(entry.getKey()).append("', ");
+            builder.append("new Proxy(").append(entry.getKey()).append(",");
             methods(entry.getValue(), builder);
             builder.append(')');
         }

@@ -139,7 +139,8 @@ public class Engine extends HttpServlet {
                         if (httpSession.isNew()) {
                             application.log.info("no frame request so far -- probably cached by browser");
                         }
-                        call = Call.parse(session, path.substring(METHOD.length()), request);
+                        call = Call.parse(session.rm.getIO(), application.getRegistry(), 
+                                path.substring(METHOD.length()), request);
                         if (call == null) {
                             throw new IllegalArgumentException("no call: " + path);
                         }

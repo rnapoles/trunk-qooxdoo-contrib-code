@@ -32,10 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.qooxdoo.sushi.io.IO;
 
 public class Call {
-    public static Call parse(Session session, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
-        IO io;
+    public static Call parse(IO io, Registry registry, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
         int idx;
-        String destName;
+        String destStr;
         Object dest;
         InputStream src;
         String args;
@@ -44,13 +43,12 @@ public class Call {
         if (idx == -1) {
             throw new IllegalArgumentException(pathInfo);
         }
-        destName = pathInfo.substring(0, idx);
-        dest = null; // TODO session.lookupObject(destName);
+        destStr = pathInfo.substring(0, idx);
+        dest = registry.get(Integer.parseInt(destStr));
         if (dest == null) {
-            throw new ServletException("unkown object: " + destName);
+            throw new ServletException("unkown object: " + destStr);
         }
         src = request.getInputStream();
-        io = session.rm.getIO(); // TODO: encoding!?
         args = io.buffer.readString(src);
         src.close();
         return parseMethod(dest, pathInfo.substring(idx + 1), args);
