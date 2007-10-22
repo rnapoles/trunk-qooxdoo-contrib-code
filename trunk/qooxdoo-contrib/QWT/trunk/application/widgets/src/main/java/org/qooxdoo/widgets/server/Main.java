@@ -22,8 +22,20 @@ package org.qooxdoo.widgets.server;
 import org.qooxdoo.toolkit.qooxdoo.Server;
 
 public class Main extends Server {
+    private final Ping ping;
+    
+    public Main() {
+        ping = new Ping();
+        System.out.println("server start");
+    }
+    
+    @Override
+    public void stop() {
+        System.out.println("server stop");
+    }
+
     @Override
     public Object clientStart() {
-        return new Ping();
+        return ping;
     }
 }
