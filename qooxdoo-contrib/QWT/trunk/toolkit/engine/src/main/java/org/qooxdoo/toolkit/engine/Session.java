@@ -35,7 +35,7 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
     private static final String SESSION_ATTRIBUTE = "SESSION_CONTEXT";
 
     public static synchronized Session get(HttpSession httpSession, HttpServletRequest httpRequest, 
-            Application application, Unit unit)
+            Application application, Client unit)
         throws IOException, ServletException {
         Session session;
 
@@ -50,14 +50,14 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
 
     //--
 
-    private final Unit unit;
+    private final Client unit;
     private final int no;
     private final Map<String, Object> objects;
     
     // TODO: share between sessions?
     public final ResourceManager rm;
 
-    public Session(Unit unit, ResourceManager rm, int no) {
+    public Session(Client unit, ResourceManager rm, int no) {
         this.unit = unit;
         this.rm = rm;
         this.no = no;
@@ -75,7 +75,7 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
         return objects.get(name);
     }
 
-    public Unit getUnit() {
+    public Client getUnit() {
         return unit;
     }
 

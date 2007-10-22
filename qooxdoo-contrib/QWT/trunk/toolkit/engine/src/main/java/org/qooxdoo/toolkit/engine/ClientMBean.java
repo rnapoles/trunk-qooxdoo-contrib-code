@@ -21,7 +21,7 @@ package org.qooxdoo.toolkit.engine;
 
 import java.util.Date;
 
-public interface UnitMBean extends MBean {
+public interface ClientMBean extends MBean {
     Date getCreated();
     long getSize();
     boolean getCompress();

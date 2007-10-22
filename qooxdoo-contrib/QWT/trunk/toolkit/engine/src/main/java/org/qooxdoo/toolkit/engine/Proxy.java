@@ -20,12 +20,12 @@
 package org.qooxdoo.toolkit.engine;
 
 /** 
- *  @augment org.qooxdoo.toolkit.server.Proxy
+ *  @augment org.qooxdoo.toolkit.engine.Proxy
  *  @native
 $s*
 #post(qx.application.Gui)
-#post(org.qooxdoo.toolkit.server.Parser:run)
-#post(org.qooxdoo.toolkit.server.Serializer:run)
+#post(org.qooxdoo.toolkit.engine.Parser:run)
+#post(org.qooxdoo.toolkit.engine.Serializer:run)
 #post(java.lang.Integer)
 #post(java.lang.Boolean)
 #require(qx.theme.ClassicRoyale)
@@ -46,7 +46,7 @@ function qwtArguments(serviceArgs) {
     } else if (type === "number") {
       arg = new java.lang.Integer(arg);
     } 
-    args = args + org.qooxdoo.toolkit.server.Serializer.run(arg);
+    args = args + org.qooxdoo.toolkit.engine.Serializer.run(arg);
   }
   args = args + "]";
   return args;
@@ -90,7 +90,7 @@ function proxyMethod(object, method) {
         var args = qwtArguments(arguments)
         var result = qwtService(object, method, args);
         qwtLog("result: " + result);
-        var obj = org.qooxdoo.toolkit.server.Parser.run(result);
+        var obj = org.qooxdoo.toolkit.engine.Parser.run(result);
         if (obj instanceof java.lang.Integer) {
             // TODO
             return obj.intValue();

@@ -56,7 +56,7 @@
         <artifactId>plugin</artifactId>
         <version>${toolkit.version}</version>
         <configuration>
-          <sourcepath>${basedir}/src/main/java/org/qooxdoo/toolkit/server/Proxy.java:${basedir}/src/main/java/org/qooxdoo/toolkit/server/Parser.java:${basedir}/src/main/java/org/qooxdoo/toolkit/server/Serializer.java</sourcepath>
+          <sourcepath>${basedir}/src/main/java/org/qooxdoo/toolkit/engine/Proxy.java:${basedir}/src/main/java/org/qooxdoo/toolkit/engine/Parser.java:${basedir}/src/main/java/org/qooxdoo/toolkit/engine/Serializer.java</sourcepath>
         </configuration>
         <executions>
           <execution>

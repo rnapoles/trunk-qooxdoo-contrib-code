@@ -27,7 +27,7 @@ import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.engine.Parser;
 import org.qooxdoo.toolkit.engine.Serializer;
-import org.qooxdoo.toolkit.engine.Unit;
+import org.qooxdoo.toolkit.engine.Client;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.Repository;
 
@@ -42,7 +42,7 @@ public class SerializationJsTest {
         
         io = new IO();
         repository = Naming.createRootRepository(io);
-        repository.loadAll(Unit.classpath(io));
+        repository.loadAll(Client.classpath(io));
         engine = new JavaScriptEngine(repository);
         engine.load(Parser.class.getName(), Serializer.class.getName());
     }
@@ -100,8 +100,8 @@ public class SerializationJsTest {
 
     private void check(String str) throws Exception {
         assertEquals(str, engine.eval(
-                "var obj = org.qooxdoo.toolkit.server.Parser.run(\"" + str + "\");" +
-                "org.qooxdoo.toolkit.server.Serializer.run(obj).toString()"
+                "var obj = org.qooxdoo.toolkit.engine.Parser.run(\"" + str + "\");" +
+                "org.qooxdoo.toolkit.engine.Serializer.run(obj).toString()"
                 ));
     }
 }
