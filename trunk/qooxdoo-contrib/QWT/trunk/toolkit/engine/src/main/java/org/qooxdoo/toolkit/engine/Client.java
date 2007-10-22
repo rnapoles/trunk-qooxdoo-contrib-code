@@ -139,17 +139,17 @@ public class Client implements ClientMBean {
         return index;
     }
     
-    public void update(Object arg) throws IOException, ServletException {
+    public void update(Object arg, int id) throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
-        Map<String, Class<?>> map;
+        Map<Integer, Class<?>> map;
         
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            map = new HashMap<String, Class<?>>();
+            map = new HashMap<Integer, Class<?>>();
             if (arg != null) {
-                map.put("1", arg.getClass()); // TODO
+                map.put(id, arg.getClass()); // TODO
             }
             idx.generate(title, main, map); 
             log.info(this.index.length() + " bytes written to " + index);
@@ -175,14 +175,13 @@ public class Client implements ClientMBean {
         ResourceManager rm;
         Session session;
         Object obj;
+        int id;
         
         obj = application.getServer().clientStart();
-        update(obj);
+        id = obj != null ? application.getRegistry().add(obj) : 0;
+        update(obj, id);
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
-        if (obj != null) {
-            application.getRegistry().add(obj);
-        }
         return session;
     }
 
