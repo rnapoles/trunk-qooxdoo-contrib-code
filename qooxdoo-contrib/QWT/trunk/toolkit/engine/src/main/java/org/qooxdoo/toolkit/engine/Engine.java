@@ -48,7 +48,6 @@ public class Engine extends HttpServlet {
         }
         try {
             application = Application.create(config);       
-            application.add(Client.create(config, application));
         } catch (IOException e) {
             throw new ServletException("cannot load application", e);
         }
