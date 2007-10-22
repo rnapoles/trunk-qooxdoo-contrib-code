@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+/** a running client. */
 public class Session implements SessionMBean, HttpSessionBindingListener {
     public static final String ID = "WINDOW";
 
@@ -50,15 +51,15 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
 
     //--
 
-    private final Client unit;
+    private final Client client;
     private final int no;
     private final Map<String, Object> objects;
     
     // TODO: share between sessions?
     public final ResourceManager rm;
 
-    public Session(Client unit, ResourceManager rm, int no) {
-        this.unit = unit;
+    public Session(Client client, ResourceManager rm, int no) {
+        this.client = client;
         this.rm = rm;
         this.no = no;
         this.objects = new HashMap<String, Object>();
@@ -75,8 +76,8 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
         return objects.get(name);
     }
 
-    public Client getUnit() {
-        return unit;
+    public Client getClient() {
+        return client;
     }
 
     public String getName() {
