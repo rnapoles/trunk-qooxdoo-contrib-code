@@ -22,9 +22,7 @@ package org.qooxdoo.toolkit.engine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -139,19 +137,14 @@ public class Client implements ClientMBean {
         return index;
     }
     
-    public void update(Object arg, int id) throws IOException, ServletException {
+    public void update(Class<?> formal, int id) throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
-        Map<Integer, Class<?>> map;
         
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            map = new HashMap<Integer, Class<?>>();
-            if (arg != null) {
-                map.put(id, arg.getClass()); // TODO
-            }
-            idx.generate(title, main, map); 
+            idx.generate(title, main, formal, id); 
             log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
@@ -175,11 +168,13 @@ public class Client implements ClientMBean {
         ResourceManager rm;
         Session session;
         Object obj;
-        int id;
         
         obj = application.getServer().clientStart();
-        id = obj != null ? application.getRegistry().add(obj) : 0;
-        update(obj, id);
+        if (obj == null) {
+            update(null, 0);
+        } else {
+            update(obj.getClass(), application.getRegistry().add(obj));
+        }
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
         return session;
