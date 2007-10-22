@@ -173,13 +173,22 @@ public class Client implements ClientMBean {
         if (obj == null) {
             update(null, 0);
         } else {
-            update(obj.getClass(), application.getRegistry().add(obj));
+            update(serviceType(obj.getClass()), application.getRegistry().add(obj));
         }
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
         return session;
     }
 
+    private Class<?> serviceType(Class<?> type) {
+        for (Class<?> i : type.getInterfaces()) {
+            if (i.getName().endsWith("Service")) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("not a service: " + type.getName());
+    }
+    
     //--
     
     public String getName() {

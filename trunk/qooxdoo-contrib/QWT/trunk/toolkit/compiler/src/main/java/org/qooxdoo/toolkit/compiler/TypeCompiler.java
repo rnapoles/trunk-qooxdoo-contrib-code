@@ -210,47 +210,49 @@ public class TypeCompiler {
             // do not generate code
             return c;
         }
-        if (methodDecl.isConstructor() && Util.getAnnotationAugment(Util.getType(methodDecl)) != null) {
+        typeDecl = Util.getType(methodDecl);
+        if ((methodDecl.isConstructor() || Util.isAbstract(methodDecl)) && Util.getAnnotationAugment(typeDecl) != null) {
             // do not generate code
             return c;
         }
-        if (Util.isAbstract(methodDecl)) {
-            return c;
-        }
         c.referType(methodDecl.resolveBinding().getReturnType());
-        typeDecl = Util.getType(methodDecl);
         c.js.append(Naming.type(typeDecl));
         if (methodDecl.isConstructor() || Modifier.isStatic(methodDecl.getModifiers())) {
             c.js.append('.');
         } else {
             c.js.append(".prototype.");
         }
-        c.js.append(context.getNaming().methodSimple(methodDecl.resolveBinding()) + " = function(");
-        first = true;
-        for (Object arg : methodDecl.parameters()) {
-            if (first) {
-                first = false;
-            } else {
-                c.js.append(", ");
-            }
-            c.js.append(Naming.variable(((SingleVariableDeclaration) arg).resolveBinding()));
-        }
-        c.js.append(") ");
-        if (methodDecl.getBody() == null) {
-            if (!Modifier.isNative(methodDecl.getModifiers())) {
-                throw new IllegalStateException("empty body " + methodDecl.getName());
-            }    
-            Importer importer = Util.getAnnotationNative(methodDecl);
-            if (importer == null) {
-                throw new IllegalStateException("missing native annotation for native method: " + methodDecl.getName());
-            }
-            importer.require(module.head().deps.names());
-            importer.post(c.deps().names());
-            c.js.open();
-            c.js.append(importer.content);
-            c.js.close();
+        c.js.append(context.getNaming().methodSimple(methodDecl.resolveBinding()));
+        if (Util.isAbstract(methodDecl)) {
+            c.js.append(" = ABSTRACT;");
         } else {
-            c.statement(methodDecl.getBody());
+            c.js.append(" = function(");
+            first = true;
+            for (Object arg : methodDecl.parameters()) {
+                if (first) {
+                    first = false;
+                } else {
+                    c.js.append(", ");
+                }
+                c.js.append(Naming.variable(((SingleVariableDeclaration) arg).resolveBinding()));
+            }
+            c.js.append(") ");
+            if (methodDecl.getBody() == null) {
+                if (!Modifier.isNative(methodDecl.getModifiers())) {
+                    throw new IllegalStateException("empty body " + methodDecl.getName());
+                }    
+                Importer importer = Util.getAnnotationNative(methodDecl);
+                if (importer == null) {
+                    throw new IllegalStateException("missing native annotation for native method: " + methodDecl.getName());
+                }
+                importer.require(module.head().deps.names());
+                importer.post(c.deps().names());
+                c.js.open();
+                c.js.append(importer.content);
+                c.js.close();
+            } else {
+                c.statement(methodDecl.getBody());
+            }
         }
         return c;
     }

@@ -28,6 +28,7 @@ $s*
 #post(org.qooxdoo.toolkit.engine.Serializer:run)
 #post(java.lang.Integer)
 #post(java.lang.Boolean)
+#post(java.lang.reflect.Method)
 #require(qx.theme.ClassicRoyale)
 *$s
 
@@ -76,19 +77,23 @@ function qwtService(object, method, args) {
 
 //--
 
-function Proxy(object, methods) {
+function Proxy(id, class) {
+    var methods;
     var m;
   
+    java.lang.System.out.println("class: " + class); 
+    methods = java.lang.Class.forName(class).getDeclaredMethods();
     for (var i = 0; i < methods.length; i++) {
-        m = methods[i];
-        this[m] = proxyMethod(object, m);
+        m = methods[i].getName();
+        java.lang.System.out.println("name: " + m); 
+        this[m] = proxyMethod(id, m);
     }
 }
 
-function proxyMethod(object, method) {
+function proxyMethod(id, method) {
     return function() {
         var args = qwtArguments(arguments)
-        var result = qwtService(object, method, args);
+        var result = qwtService(id, method, args);
         qwtLog("result: " + result);
         var obj = org.qooxdoo.toolkit.engine.Parser.run(result);
         if (obj instanceof java.lang.Integer) {

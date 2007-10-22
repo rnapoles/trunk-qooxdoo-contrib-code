@@ -272,6 +272,7 @@ public class TypeTest extends Base {
              "class ArrayList<T> extends AbstractList<T>{ public T iterator() { return null;} }",
              "AbstractList=function() {}\n" +
              "defineClass(AbstractList, 'AbstractList', java.lang.Object);\n" +
+             "AbstractList.prototype.iterator = ABSTRACT;\n" +
              "ArrayList=function() {}\n" +
              "defineClass(ArrayList, 'ArrayList', AbstractList);\n" +
              "ArrayList.prototype.iterator=function() {\n" +

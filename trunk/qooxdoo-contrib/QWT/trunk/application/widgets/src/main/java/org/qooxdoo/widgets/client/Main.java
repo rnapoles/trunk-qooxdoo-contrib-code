@@ -40,10 +40,6 @@ public class Main extends Gui {
         this.ping = ping;
     }
     
-    public void background() {
-        System.out.println("back");
-    }
-    
     @Override
     public void main() {
         TabView view;

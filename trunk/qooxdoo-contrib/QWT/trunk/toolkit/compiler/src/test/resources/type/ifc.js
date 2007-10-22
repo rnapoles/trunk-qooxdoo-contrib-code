@@ -4,6 +4,7 @@ type.ifc=function() {
 defineClass(type.ifc, 'type.ifc', null);
 type.ifc.a = 0;
 type.ifc.b = 0;
+type.ifc.prototype.foo = ABSTRACT;
 type.ifc.cinit = function() {
 type.ifc.a = 3;
 type.ifc.b = 4;
