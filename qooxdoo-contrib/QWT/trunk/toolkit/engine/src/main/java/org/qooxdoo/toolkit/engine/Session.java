@@ -35,13 +35,13 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
     private static final String SESSION_ATTRIBUTE = "SESSION_CONTEXT";
 
     public static synchronized Session get(HttpSession httpSession, HttpServletRequest httpRequest, 
-            Application application, Client unit)
+            Application application, Client client)
         throws IOException, ServletException {
         Session session;
 
         session = (Session) httpSession.getAttribute(SESSION_ATTRIBUTE);
         if (session == null) {
-            session = unit.createSession(application);
+            session = client.start(application);
             application.register(session);
             httpSession.setAttribute(SESSION_ATTRIBUTE, session);
         }

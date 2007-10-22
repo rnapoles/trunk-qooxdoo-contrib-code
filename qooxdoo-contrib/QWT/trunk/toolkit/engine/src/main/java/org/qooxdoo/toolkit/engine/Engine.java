@@ -103,7 +103,7 @@ public class Engine extends HttpServlet {
         String error;
         Writer writer;
         HttpSession httpSession;
-        Client unit;
+        Client client;
         
         map = request.getParameterMap();
         if (map.size() > 0) {
@@ -114,21 +114,21 @@ public class Engine extends HttpServlet {
         }
         path = request.getPathInfo();
         httpSession = request.getSession();
-        tmp = getUnit(path);
+        tmp = getClient(path);
         if (tmp != null) {
-            unit = (Client) tmp[0];
+            client = (Client) tmp[0];
             path = (String) tmp[1];
-            if (path.equals("/" + unit.getIndex().getName()) && !httpSession.isNew()) {
+            if (path.equals("/" + client.getIndex().getName()) && !httpSession.isNew()) {
                 httpSession.invalidate();
                 httpSession = request.getSession();
                 if (!httpSession.isNew()) {
                     throw new RuntimeException();
                 }
                 application.log.info("forced new session");
-                unit.reload();
+                client.reload();
             }
             synchronized (httpSession) {
-                session = Session.get(httpSession, request, application, unit);
+                session = Session.get(httpSession, request, application, client);
                 String ae = request.getHeader("accept-encoding");
                 boolean compress = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
                 if (path.startsWith("/") && session.rm.render(path.substring(1), compress, response)) {
@@ -168,9 +168,9 @@ public class Engine extends HttpServlet {
         response.sendRedirect(url);
     }
 
-    private Object[] getUnit(String path) {
+    private Object[] getClient(String path) {
         int idx;
-        Client unit;
+        Client client;
         
         if (!path.startsWith("/")) {
             return null;
@@ -180,11 +180,11 @@ public class Engine extends HttpServlet {
         if (idx == -1) {
             return null;
         }
-        unit = application.lookup(path.substring(0, idx));
-        if (unit == null) {
+        client = application.lookup(path.substring(0, idx));
+        if (client == null) {
             return null;
         }
-        return new Object[] { unit, path.substring(idx) };
+        return new Object[] { client, path.substring(idx) };
     }
 
     private void log(Session session, Object obj) {

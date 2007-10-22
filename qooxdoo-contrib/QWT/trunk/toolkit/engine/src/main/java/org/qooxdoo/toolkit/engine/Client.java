@@ -34,17 +34,18 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import qx.ui.core.Widget;
-import org.qooxdoo.toolkit.compiler.CompilerException;
-import org.qooxdoo.toolkit.compiler.Naming;
-import org.qooxdoo.toolkit.compiler.Problem;
-import org.qooxdoo.toolkit.compiler.Task;
-import org.qooxdoo.toolkit.repository.Repository;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Strings;
+import org.qooxdoo.toolkit.compiler.CompilerException;
+import org.qooxdoo.toolkit.compiler.Naming;
+import org.qooxdoo.toolkit.compiler.Problem;
+import org.qooxdoo.toolkit.compiler.Task;
+import org.qooxdoo.toolkit.repository.Repository;
+
+import qx.ui.core.Widget;
 
 /**
  * Building block of an application, defines how do generate Index.html 
@@ -61,7 +62,7 @@ public class Client implements ClientMBean {
         name = "main";
         title = context.getServletContextName();
         client = getParam(config, "client");
-        dest = application.createUnitDirectory(name);
+        dest = application.createClientDirectory(name);
         return new Client(
                 application.log,
                 application.getDocroot().join("WEB-INF/src"), 
@@ -259,7 +260,7 @@ public class Client implements ClientMBean {
         return main;
     }
     
-    public synchronized Session createSession(Application application) throws IOException, ServletException {
+    public synchronized Session start(Application application) throws IOException, ServletException {
         ResourceManager rm;
         Session session;
         String name;
