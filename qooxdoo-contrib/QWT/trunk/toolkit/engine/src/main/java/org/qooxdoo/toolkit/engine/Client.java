@@ -120,7 +120,7 @@ public class Client implements ClientMBean {
         this.index = (FileNode) dir.join("index.html");
         index.writeBytes();
         this.linked = false;
-        this.compress = true;
+        this.compress = false;
     }
 
     public void setCompress(boolean compress) {
@@ -149,7 +149,7 @@ public class Client implements ClientMBean {
             idx = new Index(compress, this.index, qooxdoo);
             map = new HashMap<String, Class<?>>();
             if (arg != null) {
-                map.put("root", arg.getClass()); // TODO
+                map.put("1", arg.getClass()); // TODO
             }
             idx.generate(title, main, map); 
             log.info(this.index.length() + " bytes written to " + index);
