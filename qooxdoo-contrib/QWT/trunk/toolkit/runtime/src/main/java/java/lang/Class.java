@@ -20,6 +20,7 @@
 package java.lang;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class Class<T> {
     /**
@@ -82,12 +83,10 @@ public class Class<T> {
      * @native
         var props = this.jsClass.prototype;
         var result = new Array();
-        var i = 0;
         for (name in props) {
           if (name != 'classname') { // TODO
             if (!(props[name] instanceof Function)) {
-              result[i] = name;
-              i++;
+              result.push(name);
             }
           }
         }
@@ -105,5 +104,33 @@ public class Class<T> {
             fields[i] = new Field(names[i]);
         }
         return fields;
+    }
+
+    /**
+     * TODO: overloading; Java method name may be different
+     * TODO: contains base class methods
+     * 
+     * @native
+        var props = this.jsClass.prototype;
+        var result = new Array();
+        for (name in props) {
+          if (props[name] instanceof Function) {
+            result.push(name);
+          }
+        }
+        return newInitializedArray.apply(null, result);
+     */
+    public native String[] getDeclaredMethodNames();
+
+    public Method[] getDeclaredMethods() {
+        String[] names;
+        Method[] methods;
+        
+        names = getDeclaredMethodNames();
+        methods = new Method[names.length];
+        for (int i = 0; i < names.length; i++) {
+            methods[i] = new Method(names[i]);
+        }
+        return methods;
     }
 }

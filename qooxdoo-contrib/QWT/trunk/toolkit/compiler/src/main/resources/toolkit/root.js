@@ -8,6 +8,8 @@ global = this;
 org = new Object();
 java = new Object();
 
+ABSTRACT = function() {}
+
 var ALL_CLASSES = new Object();
 
 /*

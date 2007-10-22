@@ -21,7 +21,6 @@ package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class Index {
                 "  'qx.version' : '" + qooxdoo.version + "'," +
                 "};");
         // TODO: no escaping!?
-        modules(writer, Proxy.class.getName(), client);
+        modules(writer, array(Proxy.class.getName(), client, formal.getName()));
         lines(writer,
                 "qx.core.Init.getInstance().setApplication(", 
                 createClient(client, formal, id),
@@ -74,6 +73,18 @@ public class Index {
         writer.close();
     }
 
+    private static String[] array(String ... args) {
+        List<String> result;
+        
+        result = new ArrayList<String>();
+        for (String arg : args) {
+            if (arg != null) {
+                result.add(arg);
+            }
+        }
+        return result.toArray(new String[result.size()]);
+    }
+    
     private String createClient(String client, Class<?> ifc, int id) {
         StringBuilder builder;
         
@@ -82,33 +93,12 @@ public class Index {
             builder.append("new ").append(client).append("(");
         } else {
             builder.append("newObject(").append(client).append(',').append(client).append(".init1,[");
-            builder.append("new Proxy(").append(id).append(",");
-            methods(ifc, builder);
-            builder.append(")]");
+            builder.append("new Proxy(").append(id).append(",'").append(ifc.getName()).append("')]");
         }
         builder.append(')');
         return builder.toString(); 
     }
 
-    private static String methods(Class<?> ifc, StringBuilder builder) {
-        boolean first;
-        
-        builder.append("[");
-        first = true;
-        for (Method m : ifc.getDeclaredMethods()) {
-            if (first) {
-                builder.append("'");
-                first = false;
-            } else {
-                builder.append(", '");
-            }
-            builder.append(m.getName());
-            builder.append("'");
-        }
-        builder.append(']');
-        return builder.toString();
-    }
-    
     private void modules(Writer dest, String ... names) throws IOException {
         List<Module> modules;
         List<String> lst;

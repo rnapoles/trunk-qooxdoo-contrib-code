@@ -78,4 +78,21 @@ public class ReflectTest extends Base2 {
              "  }\n" +
              "}", ANY, "Empty.run()", ANY);
     }
+
+    @Test
+    public void method() throws Exception {
+        unit("import java.lang.reflect.Method;\n" +
+             "\n" +
+             "class Meths {\n" +
+             "  public void foo() {}\n" +
+             "  public void bar() {}\n" +
+             "  public static void run() throws Exception {\n" +
+             "    Method[] methods;\n" +
+             "    methods = Class.forName(\"Meths\").getDeclaredMethods();\n" +
+             "    if (methods.length < 2) {" +
+             "       throw new RuntimeException();\n" +
+             "    }\n" +
+             "  }\n" +
+             "}", ANY, "Meths.run()", ANY);
+    }
 }
