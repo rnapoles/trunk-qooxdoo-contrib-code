@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.server.application;
+package org.qooxdoo.toolkit.engine.application;
 
 public class Main {
 
