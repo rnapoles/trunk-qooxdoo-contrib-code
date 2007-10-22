@@ -17,7 +17,10 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets;
+package org.qooxdoo.widgets.client;
+
+import org.qooxdoo.toolkit.qooxdoo.EventListener;
+import org.qooxdoo.widgets.common.PingService;
 
 import qx.application.Gui;
 import qx.event.type.DataEvent;
@@ -29,23 +32,18 @@ import qx.ui.layout.VerticalBoxLayout;
 import qx.ui.pageview.tabview.Button;
 import qx.ui.pageview.tabview.Page;
 import qx.ui.pageview.tabview.TabView;
-import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
-public class Application extends Gui {
-    private IServices services;
+public class Main extends Gui {
+    private final PingService ping;
     
-    public Application() {
+    public Main(PingService ping) {
+        this.ping = ping;
     }
     
     public void background() {
         System.out.println("back");
     }
     
-    public void initServices(IServices services) {
-        System.out.println("init services");
-        this.services = services;
-    }
-
     @Override
     public void main() {
         TabView view;
@@ -103,22 +101,22 @@ public class Application extends Gui {
         but = new qx.ui.form.Button("Ping");
         but.setWidth(50);
         but.setHeight(20);
-        but.addExecuteListener(new Clicked(services));
+        but.addExecuteListener(new Clicked(ping));
         box.add(but);
         view.getPane().add(page);
     }
 
     // TODO: none-static class
     public static class Clicked implements EventListener {
-        private final IServices services;
+        private final PingService ping;
         
-        public Clicked(IServices services) {
-            this.services = services;
+        public Clicked(PingService ping) {
+            this.ping = ping;
         }
         
         public void notify(DataEvent obj) {
             System.out.println("clicked: " + obj);
-            Object result = services.ping("pong");
+            Object result = ping.ping("pong");
             System.out.println("result: " + result);
         }
     }

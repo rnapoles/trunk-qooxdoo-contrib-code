@@ -17,11 +17,15 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets;
+package org.qooxdoo.hello.client;
 
-public class Services implements IServices {
-    public String ping(String msg) {
-        System.out.println("ping " + msg);
-        return "jikes " + this.hashCode();
+import qx.application.Gui;
+import qx.ui.basic.Label;
+
+public class Main extends Gui {
+    @Override
+    public void main() {
+        super.main();
+        new Label("Hello, world!").addToDocument();
     }
 }

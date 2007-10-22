@@ -17,14 +17,10 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.grep;
+package org.qooxdoo.grep.common;
 
-public class Match {
-    public final String file;
-    public final String line;
-    
-    public Match(String file, String line) {
-        this.file = file;
-        this.line = line;
-    }
+import java.util.List;
+
+public interface GrepService {
+    List<Match> grep(String substring);
 }

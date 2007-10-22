@@ -33,16 +33,6 @@
         <groupId>org.qooxdoo.toolkit</groupId>
         <artifactId>plugin</artifactId>
         <version>${toolkit.version}</version>
-        <configuration>
-          <application>${project.groupId}.${project.artifactId}.Application</application>
-          <includes>
-            <include>**/*.java</include>
-            <include>**/*.java</include>
-          </includes>
-          <excludes>
-            <exclude>**/Services.java</exclude>
-          </excludes>
-        </configuration>
         <executions>
           <execution>
             <goals>
