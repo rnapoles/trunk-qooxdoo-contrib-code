@@ -274,7 +274,7 @@ public abstract class WebappBase extends Base {
         "   <description>${description}</description>\n" + 
         "   <servlet>\n" + 
         "      <servlet-name>${id}</servlet-name>\n" + 
-        "      <servlet-class>org.qooxdoo.toolkit.engine.Servlet</servlet-class>\n" + 
+        "      <servlet-class>org.qooxdoo.toolkit.engine.Engine</servlet-class>\n" + 
         "      <init-param>\n" + 
         "          <param-name>server</param-name>\n" + 
         "          <param-value>${server}</param-value>\n" + 

@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /** Main class */
-public class Servlet extends HttpServlet {
+public class Engine extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private static final String METHOD = "/method/";

@@ -34,7 +34,7 @@ import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.engine.Client;
 
-public class UnitTest {
+public class ClientTest {
     @Test
     public void normal() throws IOException, ServletException {
         IO io;

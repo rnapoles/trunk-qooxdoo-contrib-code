@@ -338,7 +338,7 @@ public class Client implements ClientMBean {
         cp = new ArrayList<Node>();
         cp.add(io.locateClasspathItem("/java/lang/Object.js"));
         cp.add(io.locateClasspathItem(Widget.class));
-        cp.add(io.locateClasspathItem(Servlet.class));
+        cp.add(io.locateClasspathItem(Engine.class));
         return cp;
     }
 }
