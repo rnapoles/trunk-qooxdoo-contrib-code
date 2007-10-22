@@ -65,24 +65,32 @@ public abstract class WebappBase extends Base {
     private String description;
 
     /**
-     * Name of the Application class.
+     * Name of the server class.
      *
-     * @parameter expression="${project.groupId}.${project.artifactId}.Application"
+     * @parameter expression="${project.groupId}.${project.artifactId}.server.Main"
      * @required
      */
-    private String application;
+    private String server;
+
+    /**
+     * Name of the client class.
+     *
+     * @parameter expression="${project.groupId}.${project.artifactId}.client.Main"
+     * @required
+     */
+    private String client;
 
     /**
      * Java files to include in JavaScript compilation. Ant-like patterns, separated by ','.
      *
-     * @parameter expression=""
+     * @parameter expression="**${file.separator}*.java"
      */
     private List<String> includes = new ArrayList<String>();
     
     /**
      * Java files to exclude from JavaScript compilation. Ant-like patterns, separated by ','.
      *
-     * @parameter expression=""
+     * @parameter expression="**${file.separator}common${file.separator}**${file.separator}*.java"
      */
     private List<String> excludes = new ArrayList<String>();
     
@@ -225,7 +233,8 @@ public abstract class WebappBase extends Base {
         str = WEB_XML.replace("${id}", id);
         str = str.replace("${name}", name);
         str = str.replace("${description}", description);
-        str = str.replace("${application}", application);
+        str = str.replace("${server}", server);
+        str = str.replace("${client}", client);
         str = str.replace("${includes}", Strings.join(",", includes));
         str = str.replace("${excludes}", Strings.join(",", excludes));
         generate(webXml, str);
@@ -267,8 +276,12 @@ public abstract class WebappBase extends Base {
         "      <servlet-name>${id}</servlet-name>\n" + 
         "      <servlet-class>org.qooxdoo.toolkit.server.Servlet</servlet-class>\n" + 
         "      <init-param>\n" + 
-        "          <param-name>application</param-name>\n" + 
-        "          <param-value>${application}</param-value>\n" + 
+        "          <param-name>server</param-name>\n" + 
+        "          <param-value>${server}</param-value>\n" + 
+        "      </init-param>\n" + 
+        "      <init-param>\n" + 
+        "          <param-name>client</param-name>\n" + 
+        "          <param-value>${client}</param-value>\n" + 
         "      </init-param>\n" + 
         "      <init-param>\n" + 
         "          <param-name>includes</param-name>\n" + 
