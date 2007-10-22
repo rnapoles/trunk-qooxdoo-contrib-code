@@ -256,7 +256,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       // show the popup
       this.show();
       // bring the popup in front of the console  
-      this.setZIndex(this._controller.getZIndex() + 1);
+      this.setZIndex(this._controller.getZIndexOfWindow() + 1);
     },    
 
     
