@@ -48,7 +48,7 @@ public class Servlet extends HttpServlet {
         }
         try {
             application = Application.create(config);       
-            application.add(Unit.create(config, application));
+            application.add(Client.create(config, application));
         } catch (IOException e) {
             throw new ServletException("cannot load application", e);
         }
@@ -103,7 +103,7 @@ public class Servlet extends HttpServlet {
         String error;
         Writer writer;
         HttpSession httpSession;
-        Unit unit;
+        Client unit;
         
         map = request.getParameterMap();
         if (map.size() > 0) {
@@ -116,7 +116,7 @@ public class Servlet extends HttpServlet {
         httpSession = request.getSession();
         tmp = getUnit(path);
         if (tmp != null) {
-            unit = (Unit) tmp[0];
+            unit = (Client) tmp[0];
             path = (String) tmp[1];
             if (path.equals("/" + unit.getIndex().getName()) && !httpSession.isNew()) {
                 httpSession.invalidate();
@@ -161,7 +161,7 @@ public class Servlet extends HttpServlet {
             }
         }
 
-        Unit first = application.lookup(application.getFirstApplication());
+        Client first = application.lookup(application.getFirstApplication());
         String url = request.getContextPath() + "/" + first.getName() + "/" + first.getIndex().getName();
         application.log.info("unknown request '" + path + "', redirect to " + url);
         httpSession.invalidate(); // because we expect new sessions for the frame only
@@ -170,7 +170,7 @@ public class Servlet extends HttpServlet {
 
     private Object[] getUnit(String path) {
         int idx;
-        Unit unit;
+        Client unit;
         
         if (!path.startsWith("/")) {
             return null;

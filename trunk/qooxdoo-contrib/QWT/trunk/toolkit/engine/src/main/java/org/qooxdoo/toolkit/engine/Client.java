@@ -49,8 +49,8 @@ import org.qooxdoo.sushi.util.Strings;
 /**
  * Building block of an application, defines how do generate Index.html 
  */
-public class Unit implements UnitMBean {
-    public static Unit create(ServletConfig config, Application application) throws IOException, ServletException {
+public class Client implements ClientMBean {
+    public static Client create(ServletConfig config, Application application) throws IOException, ServletException {
         ServletContext context;
         String name;
         String title;    
@@ -60,9 +60,9 @@ public class Unit implements UnitMBean {
         context = config.getServletContext();
         name = "main";
         title = context.getServletContextName();
-        client = getParam(config, "application");
+        client = getParam(config, "client");
         dest = application.createUnitDirectory(name);
-        return new Unit(
+        return new Client(
                 application.log,
                 application.getDocroot().join("WEB-INF/src"), 
                 getSplitParam(config, "includes"), 
@@ -115,9 +115,6 @@ public class Unit implements UnitMBean {
         String pkg;
         
         pkg = packageName(ifc.getName());
-        if (pkg.endsWith(".common")) {  // TODO
-            pkg = pkg.substring(0, pkg.length() - 7) + ".server";
-        }
         return createObject(pkg + "." + Strings.capitalize(name));
     }
 
@@ -131,7 +128,7 @@ public class Unit implements UnitMBean {
             throw new ServletException("class not found: " + className);
         }
         try {
-            constr = cfg.getDeclaredConstructor(new Class[] { Unit.class });
+            constr = cfg.getDeclaredConstructor(new Class[] { Client.class });
         } catch (SecurityException e) {
             throw new ServletException("cannot instantiate class " + className, e);
         } catch (NoSuchMethodException e) {
@@ -190,7 +187,7 @@ public class Unit implements UnitMBean {
     private final String title;
 
     /** first JavaScript class */
-    private final String client;
+    private final String main;
     
     /** server object declarations */
     private final Map<String, Class<?>> declarations;
@@ -202,8 +199,8 @@ public class Unit implements UnitMBean {
     
     //--
     
-    public Unit(Logger log, Node src, String[] includes, String[] excludes,   
-            String name, String title, String client, Map<String, Class<?>> declarations, FileNode dir) 
+    public Client(Logger log, Node src, String[] includes, String[] excludes,   
+            String name, String title, String main, Map<String, Class<?>> declarations, FileNode dir) 
     throws IOException {
         this.log = log;
         this.src = src;
@@ -212,9 +209,8 @@ public class Unit implements UnitMBean {
         this.classpath = classpath(src.io);
         this.name = name;
         this.title = title;
-        this.client = client;
+        this.main = main;
         this.declarations = declarations;
-
         this.nextSessionId = 0;
         
         this.index = (FileNode) dir.join("index.html");
@@ -242,7 +238,7 @@ public class Unit implements UnitMBean {
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            idx.generate(title, client, declarations);
+            idx.generate(title, main, declarations);
             log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
@@ -259,18 +255,18 @@ public class Unit implements UnitMBean {
         return gz;
     }
 
-    public String getClient() {
-        return client;
+    public String getMain() {
+        return main;
     }
     
-    public synchronized Session createSession(Application server) throws IOException, ServletException {
+    public synchronized Session createSession(Application application) throws IOException, ServletException {
         ResourceManager rm;
         Session session;
         String name;
         Object obj;
         Class<?> clazz;
         
-        rm = server.createResourceManager(getIndex(), getIndexGz());
+        rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
         for (Map.Entry<String, Class<?>> entry : declarations.entrySet()) {
             name = entry.getKey();

@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.engine.Unit;
+import org.qooxdoo.toolkit.engine.Client;
 
 public class UnitTest {
     @Test
@@ -40,15 +40,15 @@ public class UnitTest {
         IO io;
         Node src;
         FileNode dest;
-        Unit app;
+        Client app;
         FileNode idx;
         
         io = new IO();
         src = io.guessProjectHome(getClass()).join("src/test/java");
         dest = io.createTempDirectory();
-        app = new Unit(Logger.getLogger("foo"), 
+        app = new Client(Logger.getLogger("foo"), 
         		src, new String[] { "**/application/*.java"} , new String[] {},
-                "id", "name", "org.qooxdoo.toolkit.server.application.Main", 
+                "id", "name", "org.qooxdoo.toolkit.engine.application.Main", 
                 new HashMap<String, Class<?>>(), dest);
         idx = app.getIndex();
         assertTrue(idx.isFile());

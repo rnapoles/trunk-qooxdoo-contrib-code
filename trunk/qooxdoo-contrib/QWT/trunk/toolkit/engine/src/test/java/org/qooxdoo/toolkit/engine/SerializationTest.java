@@ -156,7 +156,7 @@ public class SerializationTest {
         Object obj;
         
         obj = new Data("A", null);
-        check("<'org%2eqooxdoo%2etoolkit%2eserver%2eSerializationTest%24Data',('b':null,'a':'A')>", obj);
+        check("<'org%2eqooxdoo%2etoolkit%2eengine%2eSerializationTest%24Data',('b':null,'a':'A')>", obj);
     }
 
     @Test
@@ -168,7 +168,7 @@ public class SerializationTest {
         obj = new Data("A", null);
         obj.b = obj;
         str = Serializer.run(obj);
-        assertEquals("<'org%2eqooxdoo%2etoolkit%2eserver%2eSerializationTest%24Data',('b':@0,'a':'A')>", str);
+        assertEquals("<'org%2eqooxdoo%2etoolkit%2eengine%2eSerializationTest%24Data',('b':@0,'a':'A')>", str);
         reloaded = (Data) Parser.run(str);
         assertEquals(obj.a, reloaded.a);
         assertSame(reloaded, reloaded.b);

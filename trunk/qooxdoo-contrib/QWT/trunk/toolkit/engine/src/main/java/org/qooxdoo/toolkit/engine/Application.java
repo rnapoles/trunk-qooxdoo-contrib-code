@@ -80,7 +80,7 @@ public class Application implements ApplicationMBean {
     private final FileNode docroot;
     
     private final MimeTypes mimeTypes;
-    private final Map<String, Unit> units;
+    private final Map<String, Client> units;
     private int nextMbeanId;
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
@@ -99,7 +99,7 @@ public class Application implements ApplicationMBean {
         this.nextMbeanId = 0;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.mbeans = new HashMap<MBean, ObjectName>();
-        this.units = new HashMap<String, Unit>();
+        this.units = new HashMap<String, Client>();
         this.first = null;
         
         binding = new Binding();
@@ -165,7 +165,7 @@ public class Application implements ApplicationMBean {
         return name;
     }
     
-    public void add(Unit unit) {
+    public void add(Client unit) {
         String name;
         
         name = unit.getName();
@@ -178,7 +178,7 @@ public class Application implements ApplicationMBean {
         units.put(name, unit);
     }
 
-    public Unit lookup(String id) {
+    public Client lookup(String id) {
         return units.get(id);
     }
     
@@ -189,7 +189,7 @@ public class Application implements ApplicationMBean {
     
     public void startup() {
         register(this);
-        for (Unit unit : units.values()) {
+        for (Client unit : units.values()) {
             register(unit);
         }
         log.info("startup done");
@@ -217,7 +217,7 @@ public class Application implements ApplicationMBean {
         ObjectName objectName;
         
         nextMbeanId++;
-        str = "org.qooxdoo.toolkit.server." + name + ":type=" + getName(mbean.getClass()) + ",name=" + mbean.getName();
+        str = "org.qooxdoo.toolkit.engine." + name + ":type=" + getName(mbean.getClass()) + ",name=" + mbean.getName();
         try {
             objectName = new ObjectName(str);
         } catch (MalformedObjectNameException e) {
