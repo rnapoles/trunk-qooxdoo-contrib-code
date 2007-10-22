@@ -139,7 +139,7 @@ public class SerializationTest {
     public void mapRecursive() {
         Map<String, Map<?, ?>> map;
         String str;
-        Map<String, Map> reloaded;
+        Map<String, Map<?, ?>> reloaded;
         
         map = new HashMap<String, Map<?, ?>>();
         map.put("self", map);
