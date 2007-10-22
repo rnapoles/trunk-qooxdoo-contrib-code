@@ -25,6 +25,8 @@ import groovy.lang.GroovyShell;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,11 +51,12 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.codehaus.groovy.control.CompilationFailedException;
-
-import qx.ui.basic.Image;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.toolkit.qooxdoo.Server;
+
+import qx.ui.basic.Image;
 
 /**
  * A server, a list of clients, plus some Jmx services. 
@@ -74,7 +77,8 @@ public class Application implements ApplicationMBean {
         }
         docroot = docroot.getAbsoluteFile().getCanonicalFile();
         node = io.node(docroot);
-        application = new Application(config.getServletName(), node, MimeTypes.create());
+        application = new Application(config.getServletName(), node,
+                Client.getParam(config, "server"), MimeTypes.create());
         application.add(Client.create(config, application));
         return application;
     }
@@ -83,22 +87,27 @@ public class Application implements ApplicationMBean {
     private final String name;
     private final FileNode docroot;
     
-    private final MimeTypes mimeTypes;
+    private final String serverClass;
+    private Server server;
+    
     private final Map<String, Client> clients;
+    private final MimeTypes mimeTypes;
     private int nextMbeanId;
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
     private String first;
-
+    private final Registry registry;
     private final GroovyShell shell;
     
-    public Application(String name, FileNode docroot, MimeTypes mimeTypes) throws IOException {
+    public Application(String name, FileNode docroot, String server, MimeTypes mimeTypes) throws IOException {
         Binding binding;
 
         this.log = createLogger(name, docroot);
         
         this.name = name;
         this.docroot = docroot;
+        this.serverClass = server;
+        this.server = null;
         this.mimeTypes = mimeTypes;
         this.nextMbeanId = 0;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -109,6 +118,7 @@ public class Application implements ApplicationMBean {
         binding = new Binding();
         binding.setVariable("application", this);
 
+        this.registry = new Registry();
         this.shell = new GroovyShell(binding);
     }
     
@@ -165,6 +175,10 @@ public class Application implements ApplicationMBean {
         }
     }
 
+    public Registry getRegistry() {
+        return registry;
+    }
+    
     public String getName() {
         return name;
     }
@@ -191,15 +205,51 @@ public class Application implements ApplicationMBean {
     }
     
     
-    public void startup() {
+    public void startup() throws ServletException {
         register(this);
         for (Client client : clients.values()) {
             register(client);
         }
+        server = (Server) createInstance(serverClass);
         log.info("startup done");
     }
+    
+    public Server getServer() {
+        return server;
+    }
+    
+    private static Object createInstance(String className) throws ServletException {
+        Class<?> cfg;
+        Constructor<?> constr;
+        
+        try {
+            cfg = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new ServletException("class not found: " + className);
+        }
+        try {
+            constr = cfg.getDeclaredConstructor(new Class[] {});
+        } catch (SecurityException e2) {
+            throw new ServletException("cannot instantiate class " + className, e2);
+        } catch (NoSuchMethodException e2) {
+            throw new ServletException("cannot instantiate class " + className, e2);
+        }
+        try {
+            return constr.newInstance();
+        } catch (IllegalAccessException e2) {
+            throw new ServletException("cannot instantiate class " + className, e2);
+        } catch (IllegalArgumentException e2) {
+            throw new ServletException("cannot instantiate class " + className, e2);
+        } catch (InstantiationException e2) {
+            throw new ServletException("cannot instantiate class " + className, e2);
+        } catch (InvocationTargetException e2) {
+            throw new ServletException("cannot instantiate class " + className, e2.getTargetException());
+        }
+    }
+
 
     public void shutdown() {
+        server.stop();
         for (ObjectName name : mbeans.values()) {
             try {
                 mbeanServer.unregisterMBean(name);

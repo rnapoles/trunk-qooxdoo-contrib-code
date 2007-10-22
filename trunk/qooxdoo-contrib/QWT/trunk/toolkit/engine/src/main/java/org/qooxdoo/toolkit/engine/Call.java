@@ -45,7 +45,7 @@ public class Call {
             throw new IllegalArgumentException(pathInfo);
         }
         destName = pathInfo.substring(0, idx);
-        dest = session.lookupObject(destName);
+        dest = null; // TODO session.lookupObject(destName);
         if (dest == null) {
             throw new ServletException("unkown object: " + destName);
         }

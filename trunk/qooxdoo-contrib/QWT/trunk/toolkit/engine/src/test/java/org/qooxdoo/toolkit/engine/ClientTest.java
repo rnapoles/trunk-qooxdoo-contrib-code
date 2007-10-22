@@ -22,17 +22,14 @@ package org.qooxdoo.toolkit.engine;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
 import org.junit.Test;
-
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.engine.Client;
 
 public class ClientTest {
     @Test
@@ -48,8 +45,7 @@ public class ClientTest {
         dest = io.createTempDirectory();
         app = new Client(Logger.getLogger("foo"), 
         		src, new String[] { "**/application/*.java"} , new String[] {},
-                "id", "name", "org.qooxdoo.toolkit.engine.application.Main", 
-                new HashMap<String, Class<?>>(), dest);
+                "id", "name", "org.qooxdoo.toolkit.engine.application.Main", dest);
         idx = app.getIndex();
         assertTrue(idx.isFile());
     }

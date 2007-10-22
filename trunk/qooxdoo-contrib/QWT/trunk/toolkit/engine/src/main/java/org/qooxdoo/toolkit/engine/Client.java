@@ -20,14 +20,10 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -68,14 +64,14 @@ public class Client implements ClientMBean {
                 application.getDocroot().join("WEB-INF/src"), 
                 getSplitParam(config, "includes"), 
                 getSplitParam(config, "excludes"),
-                name, title, client, getDeclarations(client), dest);
+                name, title, client, dest);
     }
 
     private static String[] getSplitParam(ServletConfig config, String name) throws ServletException {
         return Strings.toArray(Strings.trim(Strings.split(",", getParam(config, name))));
     }
 
-    private static String getParam(ServletConfig config, String name) throws ServletException {
+    public static String getParam(ServletConfig config, String name) throws ServletException {
         String value;
 
         value = config.getInitParameter(name);
@@ -83,96 +79,6 @@ public class Client implements ClientMBean {
             throw new ServletException("missing init parameter: " + name);
         }
         return value;
-    }
-
-    private static Map<String, Class<?>> getDeclarations(String application) throws ServletException {
-        final String prefix = "init";
-        Class<?> cl;
-        Map<String, Class<?>> result;
-        
-        result = new HashMap<String, Class<?>>();
-        try {
-            cl = Class.forName(application);
-        } catch (ClassNotFoundException e) {
-            throw new ServletException("application not found: " + application, e);
-        }
-        for (Method m : cl.getDeclaredMethods()) {
-            if (m.getName().startsWith(prefix)) {
-                if (!Void.TYPE.equals(m.getReturnType())) {
-                    if (m.getParameterTypes().length != 1) {
-                        throw new ServletException(m + ": return type void expected, got " + m.getReturnType());
-                    }
-                }
-                if (m.getParameterTypes().length != 1) {
-                    throw new ServletException(m + ": expected 1 argument, got " + m.getParameterTypes().length);
-                }
-                result.put(m.getName().substring(prefix.length()), m.getParameterTypes()[0]);
-            }
-        }
-        return result;
-    }
-
-    public Object createServiceObject(String name, Class<?> ifc) throws IOException, ServletException {
-        String pkg;
-        
-        pkg = packageName(ifc.getName());
-        return createObject(pkg + "." + Strings.capitalize(name));
-    }
-
-    private Object createObject(String className) throws ServletException {
-        Class<?> cfg;
-        Constructor<?> constr;
-        
-        try {
-            cfg = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new ServletException("class not found: " + className);
-        }
-        try {
-            constr = cfg.getDeclaredConstructor(new Class[] { Client.class });
-        } catch (SecurityException e) {
-            throw new ServletException("cannot instantiate class " + className, e);
-        } catch (NoSuchMethodException e) {
-            try {
-                constr = cfg.getDeclaredConstructor(new Class[] {});
-            } catch (SecurityException e2) {
-                throw new ServletException("cannot instantiate class " + className, e2);
-            } catch (NoSuchMethodException e2) {
-                throw new ServletException("cannot instantiate class " + className, e2);
-            }
-            try {
-                return constr.newInstance();
-            } catch (IllegalAccessException e2) {
-                throw new ServletException("cannot instantiate class " + className, e2);
-            } catch (IllegalArgumentException e2) {
-                throw new ServletException("cannot instantiate class " + className, e2);
-            } catch (InstantiationException e2) {
-                throw new ServletException("cannot instantiate class " + className, e2);
-            } catch (InvocationTargetException e2) {
-                throw new ServletException("cannot instantiate class " + className, e2.getTargetException());
-            }
-        }
-        try {
-            return constr.newInstance(this);
-        } catch (IllegalAccessException e) {
-            throw new ServletException("cannot instantiate class " + className, e);
-        } catch (IllegalArgumentException e) {
-            throw new ServletException("cannot instantiate class " + className, e);
-        } catch (InstantiationException e) {
-            throw new ServletException("cannot instantiate class " + className, e);
-        } catch (InvocationTargetException e) {
-            throw new ServletException("cannot instantiate class " + className, e.getTargetException());
-        }
-    }
-
-    private static String packageName(String className) {
-        int idx;
-        
-        idx = className.lastIndexOf('.');
-        if (idx == -1) {
-            throw new IllegalArgumentException();
-        }
-        return className.substring(0, idx);
     }
 
     //--
@@ -190,9 +96,6 @@ public class Client implements ClientMBean {
     /** first JavaScript class */
     private final String main;
     
-    /** server object declarations */
-    private final Map<String, Class<?>> declarations;
-    
     private int nextSessionId;
     private final FileNode index;
     private boolean linked;
@@ -201,7 +104,7 @@ public class Client implements ClientMBean {
     //--
     
     public Client(Logger log, Node src, String[] includes, String[] excludes,   
-            String name, String title, String main, Map<String, Class<?>> declarations, FileNode dir) 
+            String name, String title, String main, FileNode dir) 
     throws IOException {
         this.log = log;
         this.src = src;
@@ -211,7 +114,6 @@ public class Client implements ClientMBean {
         this.name = name;
         this.title = title;
         this.main = main;
-        this.declarations = declarations;
         this.nextSessionId = 0;
         
         this.index = (FileNode) dir.join("index.html");
@@ -239,7 +141,7 @@ public class Client implements ClientMBean {
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            idx.generate(title, main, declarations);
+            idx.generate(title, main, new HashMap());  // TODO
             log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
@@ -263,17 +165,13 @@ public class Client implements ClientMBean {
     public synchronized Session start(Application application) throws IOException, ServletException {
         ResourceManager rm;
         Session session;
-        String name;
         Object obj;
-        Class<?> clazz;
         
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
-        for (Map.Entry<String, Class<?>> entry : declarations.entrySet()) {
-            name = entry.getKey();
-            clazz = entry.getValue();
-            obj = createServiceObject(name, clazz);
-            session.addObject(name, obj);
+        obj = application.getServer().clientStart();
+        if (obj != null) {
+            application.getRegistry().add(obj);
         }
         return session;
     }
