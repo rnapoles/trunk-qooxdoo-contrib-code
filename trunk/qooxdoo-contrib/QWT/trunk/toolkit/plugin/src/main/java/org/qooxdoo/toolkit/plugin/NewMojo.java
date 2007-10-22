@@ -102,16 +102,14 @@ public class NewMojo extends Base {
         src.copyDirectory(dest);
     }
 
-    private void replaceContent(FileNode dest, Map<String, String> props) throws IOException {
+    private void replaceContent(Node dest, Map<String, String> props) throws IOException {
         Filter filter;
-        FileNode file;
         String orig;
         String changed;
         
         filter = io.filter();
         filter.include("src/**/*.java", "pom.xml");
-        for (Node node : dest.find(filter)) {
-            file = (FileNode) node;
+        for (Node file : dest.find(filter)) {
             orig = file.readString();
             changed = orig;
             for (Map.Entry<String, String> entry : props.entrySet()) {
