@@ -9,8 +9,8 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>org.qooxdoo.toolkit</groupId>
-  <artifactId>server</artifactId>
-  <name>Toolkit Server</name>
+  <artifactId>engine</artifactId>
+  <name>Toolkit Engine</name>
   <version>${toolkit.version}</version>
   <packaging>jar</packaging>
 

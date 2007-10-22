@@ -104,11 +104,12 @@ public class Skeleton {
         dest.mkdir();
         for (Node java : src.find("**/*.java")) {
             relative = java.getParent().getRelative(src);
-            if (!relative.equals("org/qooxdoo/" + application.getName())) {
+            if (!relative.startsWith("org/qooxdoo/" + application.getName())) {
                 throw new MojoExecutionException("unexpected source file location: " + relative);
             }
             str = java.readString();
-            str = replace1(str, "package " + pkg + ";", "package " + PACKAGE + ";");
+            str = replace1(str, "package " + pkg, "package " + PACKAGE);
+            str = str.replace("import " + pkg, "import " + PACKAGE);
             dest.join(java.getName()).writeString(str);
         }
         src.join("org").delete();
