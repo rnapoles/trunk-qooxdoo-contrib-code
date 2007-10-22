@@ -91,9 +91,11 @@ public class Skeleton {
     private static void fix(Node application, String part) throws IOException, MojoExecutionException {
         Node src;
         Node dest;
+        Node destFile;
         String relative;
         String str;
         String pkg;
+        String prefix;
         
         pkg = "org.qooxdoo." + application.getName();
         src = application.join("src/main", part);
@@ -101,16 +103,18 @@ public class Skeleton {
             return;
         }
         dest = application.join("src/main", part, "PACKAGE");
-        dest.mkdir();
         for (Node java : src.find("**/*.java")) {
-            relative = java.getParent().getRelative(src);
-            if (!relative.startsWith("org/qooxdoo/" + application.getName())) {
+            relative = java.getRelative(src);
+            prefix = "org/qooxdoo/" + application.getName() + "/";
+            if (!relative.startsWith(prefix)) {
                 throw new MojoExecutionException("unexpected source file location: " + relative);
             }
             str = java.readString();
             str = replace1(str, "package " + pkg, "package " + PACKAGE);
             str = str.replace("import " + pkg, "import " + PACKAGE);
-            dest.join(java.getName()).writeString(str);
+            destFile = dest.join(relative.substring(prefix.length()));
+            destFile.getParent().mkdirsOpt();
+            destFile.writeString(str);
         }
         src.join("org").delete();
     }
