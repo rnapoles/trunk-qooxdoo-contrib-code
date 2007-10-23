@@ -77,12 +77,12 @@ function qwtService(object, method, args) {
   }
 }
 
-function Proxy(id, class) {
+function Proxy(id, clazz) {
     var methods;
     var m;
   
-    java.lang.System.out.println("class: " + class); 
-    methods = java.lang.Class.forName(class).getDeclaredMethods();
+    java.lang.System.out.println("clazz: " + clazz); 
+    methods = java.lang.Class.forName(clazz).getDeclaredMethods();
     for (var i = 0; i < methods.length; i++) {
         m = methods[i].getName();
         java.lang.System.out.println("name: " + m); 
