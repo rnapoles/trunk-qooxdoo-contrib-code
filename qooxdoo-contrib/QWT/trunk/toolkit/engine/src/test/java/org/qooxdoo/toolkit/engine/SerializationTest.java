@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.qooxdoo.toolkit.engine.Parser;
-import org.qooxdoo.toolkit.engine.Serializer;
+import org.qooxdoo.toolkit.engine.common.Parser;
+import org.qooxdoo.toolkit.engine.common.Serializer;
 
 import static org.junit.Assert.*;
 
