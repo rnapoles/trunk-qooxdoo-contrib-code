@@ -30,6 +30,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.toolkit.engine.common.Parser;
+import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Call {
     public static Call parse(IO io, Registry registry, String pathInfo, HttpServletRequest request) throws IOException, ServletException {

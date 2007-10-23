@@ -17,15 +17,15 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.engine;
+package org.qooxdoo.toolkit.engine.client;
 
 /** 
- *  @augment org.qooxdoo.toolkit.engine.Proxy
+ *  @augment org.qooxdoo.toolkit.engine.client.Proxy
  *  @native
 $s*
 #post(qx.application.Gui)
-#post(org.qooxdoo.toolkit.engine.Parser:run)
-#post(org.qooxdoo.toolkit.engine.Serializer:run)
+#post(org.qooxdoo.toolkit.engine.common.Parser:run)
+#post(org.qooxdoo.toolkit.engine.common.Serializer:run)
 #post(java.lang.Integer)
 #post(java.lang.Boolean)
 #post(java.lang.reflect.Method)
@@ -47,7 +47,7 @@ function qwtArguments(serviceArgs) {
     } else if (type === "number") {
       arg = new java.lang.Integer(arg);
     } 
-    args = args + org.qooxdoo.toolkit.engine.Serializer.run(arg);
+    args = args + org.qooxdoo.toolkit.engine.common.Serializer.run(arg);
   }
   args = args + "]";
   return args;
@@ -95,7 +95,7 @@ function proxyMethod(id, method) {
         var args = qwtArguments(arguments)
         var result = qwtService(id, method, args);
         qwtLog("result: " + result);
-        var obj = org.qooxdoo.toolkit.engine.Parser.run(result);
+        var obj = org.qooxdoo.toolkit.engine.common.Parser.run(result);
         if (obj instanceof java.lang.Integer) {
             // TODO
             return obj.intValue();

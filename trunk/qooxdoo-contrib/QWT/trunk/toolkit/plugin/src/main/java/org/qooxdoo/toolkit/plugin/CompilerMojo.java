@@ -44,7 +44,7 @@ import org.qooxdoo.sushi.io.Node;
  * @requiresDependencyResolution
  */
 public class CompilerMojo extends Base {
-    private final Filter javaFilter = io.filter().include("**/*.java");
+    private Filter javaFilter = io.filter().include("**/*.java");
     
     /**
      * Internal parameter.
@@ -86,6 +86,8 @@ public class CompilerMojo extends Base {
     private String includes; // TODO: needed to tell maven the property name
     
     public void setIncludes(String in) throws IOException {
+        // TODO: removes **/*.java default include ...
+        javaFilter = io.filter(); 
         javaFilter.include(Base.split(in));
     }
 

@@ -25,9 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.toolkit.compiler.Naming;
-import org.qooxdoo.toolkit.engine.Parser;
-import org.qooxdoo.toolkit.engine.Serializer;
 import org.qooxdoo.toolkit.engine.Client;
+import org.qooxdoo.toolkit.engine.common.Parser;
+import org.qooxdoo.toolkit.engine.common.Serializer;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.Repository;
 
@@ -100,8 +100,8 @@ public class SerializationJsTest {
 
     private void check(String str) throws Exception {
         assertEquals(str, engine.eval(
-                "var obj = org.qooxdoo.toolkit.engine.Parser.run(\"" + str + "\");" +
-                "org.qooxdoo.toolkit.engine.Serializer.run(obj).toString()"
+                "var obj = org.qooxdoo.toolkit.engine.common.Parser.run(\"" + str + "\");" +
+                "org.qooxdoo.toolkit.engine.common.Serializer.run(obj).toString()"
                 ));
     }
 }
