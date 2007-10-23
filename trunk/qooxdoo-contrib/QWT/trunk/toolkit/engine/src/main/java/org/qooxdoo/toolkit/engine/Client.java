@@ -140,14 +140,14 @@ public class Client implements ClientMBean {
         return index;
     }
     
-    public void update(Class<?> formal, int id) throws IOException, ServletException {
+    public void update(String serialized) throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
         
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            idx.generate(title, main, formal, id); 
+            idx.generate(title, main, serialized); 
             application.log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
@@ -171,18 +171,15 @@ public class Client implements ClientMBean {
         ResourceManager rm;
         Session session;
         Object obj;
-        Class<?> formal;
+        String serialized;
         
         obj = application.getServer().clientStart();
         if (obj == null) {
-            update(null, 0);
+            serialized = null;
         } else {
-            formal = Serializer.getServiceType(obj.getClass());
-            if (formal == null) {
-                throw new IllegalArgumentException("" + obj);
-            }
-            update(formal, application.getRegistry().add(obj));
+            serialized = Serializer.run(application.getRegistry(), obj);
         }
+        update(serialized);
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
         return session;

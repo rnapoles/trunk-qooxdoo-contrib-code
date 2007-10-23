@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.toolkit.engine.common.Parser;
 import org.qooxdoo.toolkit.engine.common.Proxy;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
@@ -46,7 +47,7 @@ public class Index {
     /** 
      * @param arguments  passed to the contructor. Key is the server-side id, value is the interface
      */
-    public void generate(String title, String client, Class<?> formal, int id) throws IOException {
+    public void generate(String title, String client, String serialized) throws IOException {
         Writer writer;
         
         writer = file.createWriter();
@@ -59,10 +60,10 @@ public class Index {
                 "window.qxsettings = {" +
                 "  'qx.version' : '" + qooxdoo.version + "'," +
                 "};");
-        modules(writer, array(Proxy.class.getName(), client, formal.getName()));
+        modules(writer, Proxy.class.getName(), client);
         lines(writer,
                 "qx.core.Init.getInstance().setApplication(", 
-                createClient(client, formal, id),
+                createClient(client, serialized),
                 ");",
                 "    </script>",
                 "  </head>",
@@ -73,27 +74,15 @@ public class Index {
         writer.close();
     }
 
-    private static String[] array(String ... args) {
-        List<String> result;
-        
-        result = new ArrayList<String>();
-        for (String arg : args) {
-            if (arg != null) {
-                result.add(arg);
-            }
-        }
-        return result.toArray(new String[result.size()]);
-    }
-    
-    private String createClient(String client, Class<?> ifc, int id) {
+    private String createClient(String client, String serialized) {
         StringBuilder builder;
         
         builder = new StringBuilder();
-        if (ifc == null) {
+        if (serialized == null) {
             builder.append("new ").append(client).append("(");
         } else {
             builder.append("newObject(").append(client).append(',').append(client).append(".init1,[");
-            builder.append("new Proxy(").append(id).append(",'").append(ifc.getName()).append("')]");
+            builder.append(Parser.class.getName() + ".run(REGISTRY, \"").append(serialized).append("\")]");
         }
         builder.append(')');
         return builder.toString(); 
