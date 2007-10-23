@@ -60,6 +60,7 @@ public class Serializer {
     private String any(Object obj) {
         String result;
         boolean first;
+        Proxy proxy;
         Class<?> service;
         
         if (obj == null) {
@@ -72,10 +73,13 @@ public class Serializer {
             return "&" + obj;
         } else if (obj instanceof Integer) {
             return "#" + obj;
-        } 
+        } else if (obj instanceof Proxy) {
+            proxy = (Proxy) obj;
+            return "\\" + proxy.id + "," + string(proxy.type) + "\\";
+        }
         service = getServiceType(obj.getClass());
         if (service != null) {
-            return "|" + registry.addIfNew(obj) + "," + string(service.getName()) + "|";
+            return "/" + registry.addIfNew(obj) + "," + string(service.getName()) + "/";
         }
         for (int i = 0; i < objects.size(); i++) {
             if (objects.get(i) == obj) {
