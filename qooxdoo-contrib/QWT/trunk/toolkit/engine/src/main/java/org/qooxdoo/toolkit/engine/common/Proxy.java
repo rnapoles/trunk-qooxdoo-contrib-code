@@ -19,6 +19,8 @@
 
 package org.qooxdoo.toolkit.engine.common;
 
+import java.lang.reflect.Method;
+
 /** 
  *  @native
 $s*
@@ -77,47 +79,47 @@ function qwtService(object, method, args) {
   }
 }
 
-function Proxy(id, clazz) {
-    var methods;
-    var m;
-  
-    java.lang.System.out.println("clazz: " + clazz); 
-    methods = java.lang.Class.forName(clazz).getDeclaredMethods();
-    for (var i = 0; i < methods.length; i++) {
-        m = methods[i].getName();
-        java.lang.System.out.println("name: " + m); 
-        this[m] = proxyMethod(id, m);
-    }
-}
-
-function proxyMethod(id, method) {
-    return function() {
-        var args = qwtArguments(arguments)
-        var result = qwtService(id, method, args);
-        qwtLog("result: " + result);
-        var obj = org.qooxdoo.toolkit.engine.common.Parser.run(REGISTRY, result);
-        if (obj instanceof java.lang.Integer) {
-            // TODO
-            return obj.intValue();
-        } else if (obj instanceof java.lang.Boolean) {
-            // TODO
-            return obj.booleanValue();
-        } else {
-            return obj;
-        }
-    }
-}
 */
 
 public class Proxy {
     public final int id;
-    public final String type;
+    public final Class<?> type;
     
-    public Proxy(int id, String type) {
+    public Proxy(int id, Class<?> type) {
         this.id = id;
         this.type = type;
+        initMethods();
     }
-    
+
+    private void initMethods() {
+        Method[] methods;
+        
+        methods = type.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            initMethod(id, methods[i].getName());
+        }
+    }
+
+    /**
+     * @native
+     *   this[m] = function() {
+           var args = qwtArguments(arguments)
+           var result = qwtService(id, method, args);
+           qwtLog("result: " + result);
+           var obj = org.qooxdoo.toolkit.engine.common.Parser.run(REGISTRY, result);
+           if (obj instanceof java.lang.Integer) {
+               // TODO
+               return obj.intValue();
+           } else if (obj instanceof java.lang.Boolean) {
+               // TODO
+               return obj.booleanValue();
+           } else {
+               return obj;
+           }
+         }
+     */
+    private native void initMethod(int id, String method);
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Proxy) {
