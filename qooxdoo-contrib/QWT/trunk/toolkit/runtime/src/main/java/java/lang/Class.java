@@ -73,9 +73,17 @@ public class Class<T> {
      */
     public native Class<?> getSuperclass();
 
-    public Class<?>[] getInterfaces() {
-        return null; // TODO
-    }
+    /**
+     * @native
+          var ifcs = this.jsClass.$$$$implements;
+          var max = ifcs.length;
+          var result = newEmptyArray(max);
+          for (var i = 0; i < max; i++) {
+              result[i] = java.lang.Class.forJsClass(ifcs[i]);
+          }
+          return result;
+     */
+    public native Class<?>[] getInterfaces();
     
     /**
      * TODO
