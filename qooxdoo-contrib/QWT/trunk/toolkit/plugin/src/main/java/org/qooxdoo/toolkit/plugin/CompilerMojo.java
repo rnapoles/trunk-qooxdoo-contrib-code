@@ -83,7 +83,7 @@ public class CompilerMojo extends Base {
      *
      * @parameter expression=""
      */
-    private String includes; // TODO: needed to tell maven the property name
+    private String includes; // TODO: needed to tell maven the parameter name
     
     public void setIncludes(String in) throws IOException {
         // TODO: removes **/*.java default include ...
