@@ -29,8 +29,11 @@ $s*
 #post(java.lang.Integer)
 #post(java.lang.Boolean)
 #post(java.lang.reflect.Method)
+#require(org.qooxdoo.toolkit.engine.common.Registry);
 #require(qx.theme.ClassicRoyale)
 *$s
+
+REGISTRY = new org.qooxdoo.toolkit.engine.common.Registry();
 
 // takes an array, returns a string
 function qwtArguments(serviceArgs) {
@@ -47,7 +50,7 @@ function qwtArguments(serviceArgs) {
     } else if (type === "number") {
       arg = new java.lang.Integer(arg);
     } 
-    args = args + org.qooxdoo.toolkit.engine.common.Serializer.run(arg);
+    args = args + org.qooxdoo.toolkit.engine.common.Serializer.run(REGISTRY, arg);
   }
   args = args + "]";
   return args;
@@ -95,7 +98,7 @@ function proxyMethod(id, method) {
         var args = qwtArguments(arguments)
         var result = qwtService(id, method, args);
         qwtLog("result: " + result);
-        var obj = org.qooxdoo.toolkit.engine.common.Parser.run(result);
+        var obj = org.qooxdoo.toolkit.engine.common.Parser.run(REGISTRY, result);
         if (obj instanceof java.lang.Integer) {
             // TODO
             return obj.intValue();

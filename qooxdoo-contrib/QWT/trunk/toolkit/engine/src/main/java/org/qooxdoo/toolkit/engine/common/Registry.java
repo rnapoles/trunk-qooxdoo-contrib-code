@@ -30,6 +30,10 @@ public class Registry {
         this.objects = new ArrayList<Object>();
     }
 
+    public int size() {
+        return objects.size();
+    }
+
     public int add(Object obj) {
         objects.add(obj);
         return objects.size() - 1;

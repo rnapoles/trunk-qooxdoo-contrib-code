@@ -124,13 +124,36 @@ public class SerializationTest {
     }
 
     @Test
-    public void service() {
-        final String a = "eq";
-        Foo foo;
+    public void serviceToProxy() {
+        Foo service;
+        Registry r;
+        String str;
+        Proxy proxy;
+        
+        service = new Foo();
+        proxy = new Proxy(0, FooService.class.getName());
+        r = new Registry();
+        str = Serializer.run(r, service);
+        assertEquals(1, r.size());
+        assertEquals("/0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'/", str);
+        assertEquals(proxy, Parser.run(r, str));
+    }
 
+    @Test
+    public void proxyToService() {
+        Foo foo;
+        Registry r;
+        String str;
+        Proxy proxy;
+        
         foo = new Foo();
-        check("|0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'|", 
-                foo);
+        proxy = new Proxy(0, FooService.class.getName());
+        r = new Registry();
+        r.add(foo);
+        str = Serializer.run(r, proxy);
+        assertEquals(1, r.size());
+        assertEquals("\\0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'\\", str);
+        assertSame(foo, Parser.run(r, str));
     }
 
     @Test

@@ -65,8 +65,10 @@ public class Parser {
             return lonG();
         case '<':
             return object();
-        case '|':
-            return service();
+        case '/':
+            return serviceToProxy();
+        case '\\':
+            return proxyToService();
         case '[':
             return list();
         case '{':
@@ -132,10 +134,30 @@ public class Parser {
         return objects.get(no);
     }
 
-    private Object service() {
+    private Object serviceToProxy() {
+        int start;
+        int id;
+        String type; // TODO
+        
+        idx++;
+        start = idx;
+        idx = whileNumber();
+        id = Integer.parseInt(str.substring(start, idx));
+        if (peek() != ',') {
+            throw new IllegalArgumentException();
+        }
+        idx++;
+        type = string(false);
+        if (peek() != '/') {
+            throw new IllegalArgumentException();
+        }
+        idx++;
+        return new Proxy(id, type);
+    }
+
+    private Object proxyToService() {
         int start;
         int no;
-        String clazz; // TODO
         
         idx++;
         start = idx;
@@ -145,8 +167,8 @@ public class Parser {
             throw new IllegalArgumentException();
         }
         idx++;
-        clazz = string(false);
-        if (peek() != '|') {
+        string(false);
+        if (peek() != '\\') {
             throw new IllegalArgumentException();
         }
         idx++;
