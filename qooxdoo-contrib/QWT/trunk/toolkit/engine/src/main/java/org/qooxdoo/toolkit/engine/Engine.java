@@ -145,6 +145,9 @@ public class Engine extends HttpServlet {
             return;
         }
         httpSession = request.getSession();
+        if (httpSession.isNew()) {
+            httpSession.setMaxInactiveInterval(60 * 15); // TODO: configurable
+        }
         tmp = getClient(path);
         if (tmp != null) {
             client = (Client) tmp[0];

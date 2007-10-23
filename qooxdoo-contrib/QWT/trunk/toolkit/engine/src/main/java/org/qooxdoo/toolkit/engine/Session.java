@@ -76,14 +76,16 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
     //--
     
     public void valueBound(HttpSessionBindingEvent event) {
-        // to nothing
+        // do nothing
     }
 
     public void valueUnbound(HttpSessionBindingEvent event) {
-        // TODO: unregister((Session) event.getValue());
+        if (event.getValue() != this) {
+            throw new IllegalArgumentException();
+        }
+        client.getApplication().getServer().clientStop();
+        client.getApplication().unregister(this);
         // Silently ignore errors because the file might haven been deleted by the shutdown hook
-        // Caution: do not use Node.delete to avoid race conditions.
-        rm.getIO().getTemp().getFile().delete();
     }
 }
 
