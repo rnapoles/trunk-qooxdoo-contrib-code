@@ -100,8 +100,9 @@ public class SerializationJsTest {
 
     private void check(String str) throws Exception {
         assertEquals(str, engine.eval(
-                "var obj = org.qooxdoo.toolkit.engine.common.Parser.run(\"" + str + "\");" +
-                "org.qooxdoo.toolkit.engine.common.Serializer.run(obj).toString()"
+                "var registry = org.qooxdoo.toolkit.engine.common.Registry();" +
+                "var obj = org.qooxdoo.toolkit.engine.common.Parser.run(registry, \"" + str + "\");" +
+                "org.qooxdoo.toolkit.engine.common.Serializer.run(registry, obj)"
                 ));
     }
 }
