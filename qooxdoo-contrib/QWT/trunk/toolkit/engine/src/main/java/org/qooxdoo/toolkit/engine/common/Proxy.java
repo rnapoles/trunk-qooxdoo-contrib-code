@@ -96,15 +96,15 @@ public class Proxy {
         
         methods = type.getDeclaredMethods();
         for (int i = 0; i < methods.length; i++) {
-            initMethod(id, methods[i].getName());
+            addMethod(methods[i].getName());
         }
     }
 
     /**
      * @native
-     *   this[m] = function() {
+         this[name] = function() {
            var args = qwtArguments(arguments)
-           var result = qwtService(id, method, args);
+           var result = qwtService(this.id, name, args);
            qwtLog("result: " + result);
            var obj = org.qooxdoo.toolkit.engine.common.Parser.run(REGISTRY, result);
            if (obj instanceof java.lang.Integer) {
@@ -118,7 +118,8 @@ public class Proxy {
            }
          }
      */
-    private native void initMethod(int id, String method);
+    private void addMethod(String name) {
+    }
 
     @Override
     public boolean equals(Object obj) {

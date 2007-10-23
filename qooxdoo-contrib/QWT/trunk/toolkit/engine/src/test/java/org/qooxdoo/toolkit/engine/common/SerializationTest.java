@@ -131,7 +131,7 @@ public class SerializationTest {
         Proxy proxy;
         
         service = new Foo();
-        proxy = new Proxy(0, FooService.class.getName());
+        proxy = new Proxy(0, FooService.class);
         r = new Registry();
         str = Serializer.run(r, service);
         assertEquals(1, r.size());
@@ -147,7 +147,7 @@ public class SerializationTest {
         Proxy proxy;
         
         foo = new Foo();
-        proxy = new Proxy(0, FooService.class.getName());
+        proxy = new Proxy(0, FooService.class);
         r = new Registry();
         r.add(foo);
         str = Serializer.run(r, proxy);
