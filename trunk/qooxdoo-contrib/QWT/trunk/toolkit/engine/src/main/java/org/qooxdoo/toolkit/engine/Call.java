@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.toolkit.engine.common.Parser;
+import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Call {
@@ -53,13 +54,13 @@ public class Call {
         src = request.getInputStream();
         args = io.buffer.readString(src);
         src.close();
-        return parseMethod(dest, pathInfo.substring(idx + 1), args);
+        return parseMethod(registry, dest, pathInfo.substring(idx + 1), args);
     }
 
-    public static Call parseMethod(Object dest, String method, String args) {
+    public static Call parseMethod(Registry registry, Object dest, String method, String args) {
         Call call;
         
-        call = new Call(dest, lookup(dest.getClass(), method));
+        call = new Call(registry, dest, lookup(dest.getClass(), method));
         call.addArgs(args);
         return call;
     }
@@ -94,13 +95,15 @@ public class Call {
 
     //--
     
+    private final Registry registry;
     private final Object dest; 
     private final Method method;
     public final List<Object> args;
     
-    public Call(Object dest, Method method) {
+    public Call(Registry registry, Object dest, Method method) {
         // TODO: without this, Call cannot invoke methods from other packages
         method.setAccessible(true);
+        this.registry = registry;
         this.dest = dest;
         this.method = method;
         this.args = new ArrayList<Object>();
@@ -111,7 +114,7 @@ public class Call {
     }
     
     public void addArgs(String str) { 
-        args.addAll((List<?>) Parser.run(str));
+        args.addAll((List<?>) Parser.run(registry, str));
     }
 
     public String invoke() throws InvocationTargetException {
@@ -124,7 +127,7 @@ public class Call {
         } catch (InvocationTargetException e) {
             throw new RuntimeException("TODO", e.getTargetException());
         }
-        return Serializer.run(result);
+        return Serializer.run(registry, result);
     }
     
     @Override

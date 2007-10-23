@@ -73,6 +73,10 @@ public class Class<T> {
      */
     public native Class<?> getSuperclass();
 
+    public Class<?>[] getInterfaces() {
+        return null; // TODO
+    }
+    
     /**
      * TODO
      * @native return new (this.jsClass)();

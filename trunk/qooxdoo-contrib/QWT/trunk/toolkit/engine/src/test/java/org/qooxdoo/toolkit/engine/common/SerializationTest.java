@@ -19,6 +19,10 @@
 
 package org.qooxdoo.toolkit.engine.common;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,10 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.qooxdoo.toolkit.engine.common.Parser;
-import org.qooxdoo.toolkit.engine.common.Serializer;
-
-import static org.junit.Assert.*;
 
 public class SerializationTest {
     @Test
@@ -61,7 +61,7 @@ public class SerializationTest {
     @Test
     public void parseError() {
         try {
-            Parser.run("nul");
+            Parser.run(new Registry(), "nul");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -124,6 +124,16 @@ public class SerializationTest {
     }
 
     @Test
+    public void service() {
+        final String a = "eq";
+        Foo foo;
+
+        foo = new Foo();
+        check("|0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'|", 
+                foo);
+    }
+
+    @Test
     public void map() {
         Map<String, String> map;
         
@@ -140,13 +150,15 @@ public class SerializationTest {
         Map<String, Map<?, ?>> map;
         String str;
         Map<String, Map<?, ?>> reloaded;
+        Registry r;
         
+        r = new Registry();
         map = new HashMap<String, Map<?, ?>>();
         map.put("self", map);
         
-        str = Serializer.run(map);
+        str = Serializer.run(r, map);
         assertEquals("('self':@0)", str);
-        reloaded = (Map) Parser.run(str);
+        reloaded = (Map) Parser.run(r, str);
         assertEquals(1, reloaded.size());
         assertSame(reloaded, reloaded.get("self"));
     }
@@ -161,26 +173,32 @@ public class SerializationTest {
 
     @Test
     public void objectRecursive() {
+        Registry r;
         Data obj;
         String str;
         Data reloaded;
         
+        r = new Registry();
         obj = new Data("A", null);
         obj.b = obj;
-        str = Serializer.run(obj);
+        str = Serializer.run(r, obj);
         assertEquals("<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Data',('b':@0,'a':'A')>", str);
-        reloaded = (Data) Parser.run(str);
+        reloaded = (Data) Parser.run(r, str);
         assertEquals(obj.a, reloaded.a);
         assertSame(reloaded, reloaded.b);
     }
     
     private void check(String expected, Object obj) {
+        Registry r;
         String str;
         
-        str = Serializer.run(obj);
+        r = new Registry();
+        str = Serializer.run(r, obj);
         assertEquals(expected, str);
-        assertEquals(obj, Parser.run(str));
+        assertEquals(obj, Parser.run(r, str));
     }
+    
+    //--
     
     public static class Data {
         private final String a;
@@ -214,5 +232,13 @@ public class SerializationTest {
         private static boolean same(Object left, Object right) {
             return left == null ? right == null : left.equals(right);
         }
+    }
+ 
+    private static interface FooService {
+        void hello();
+    }
+    
+    private static class Foo implements FooService {
+        public void hello() { }
     }
 }

@@ -54,6 +54,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.qooxdoo.Server;
 
 import qx.ui.basic.Image;

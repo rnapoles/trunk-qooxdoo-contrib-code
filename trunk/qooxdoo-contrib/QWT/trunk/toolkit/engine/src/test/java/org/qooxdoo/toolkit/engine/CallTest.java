@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.toolkit.engine.Call;
+import org.qooxdoo.toolkit.engine.common.Registry;
 
 public class CallTest {
     private Object dest;
@@ -37,7 +38,7 @@ public class CallTest {
     @Test
     public void noFound() {
         try {
-            Call.parseMethod(dest, "nosuchmethod", "");
+            call("nosuchmethod", "");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -48,7 +49,7 @@ public class CallTest {
     public void noArgs() {
         Call call;
         
-        call = Call.parseMethod(dest, "notify", "[]");
+        call = call("notify", "[]");
         assertEquals("notify", call.getMethod().getName());
         assertEquals(0, call.args.size());
     }
@@ -57,7 +58,7 @@ public class CallTest {
     public void oneArg() {
         Call call;
         
-        call = Call.parseMethod(dest, "notify", "['x']");
+        call = call("notify", "['x']");
         assertEquals(1, call.args.size());
         assertEquals("x", call.args.get(0));
     }
@@ -66,9 +67,13 @@ public class CallTest {
     public void twoArgs() {
         Call call;
         
-        call = Call.parseMethod(dest, "notify", "['null',null]");
+        call = call("notify", "['null',null]");
         assertEquals(2, call.args.size());
         assertEquals("null", call.args.get(0));
         assertEquals(null, call.args.get(1));
+    }
+    
+    private Call call(String method, String args) {
+        return Call.parseMethod(new Registry(), dest, method, args);
     }
 }

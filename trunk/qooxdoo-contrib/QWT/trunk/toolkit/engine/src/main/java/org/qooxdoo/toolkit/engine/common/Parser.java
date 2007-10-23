@@ -27,12 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 public class Parser {
-    public static Object run(String str) {
+    public static Object run(Registry registry, String str) {
         Parser parser;
         Object result;
         
-        parser = new Parser(str);
+        parser = new Parser(registry, str);
         result = parser.any();
         if (parser.idx != str.length()) {
             throw parser.syntaxError();
@@ -41,11 +42,13 @@ public class Parser {
     }
 
     private final List<Object> objects;
+    private final Registry registry;
     private final String str;
     private int idx;
 
-    public Parser(String str) {
+    public Parser(Registry registry, String str) {
         this.objects = new ArrayList<Object>();
+        this.registry = registry;
         this.str = str;
         this.idx = 0;
     }
@@ -62,6 +65,8 @@ public class Parser {
             return lonG();
         case '<':
             return object();
+        case '|':
+            return service();
         case '[':
             return list();
         case '{':
@@ -125,6 +130,27 @@ public class Parser {
         idx = whileNumber();
         no = Integer.parseInt(str.substring(start, idx));
         return objects.get(no);
+    }
+
+    private Object service() {
+        int start;
+        int no;
+        String clazz; // TODO
+        
+        idx++;
+        start = idx;
+        idx = whileNumber();
+        no = Integer.parseInt(str.substring(start, idx));
+        if (peek() != ',') {
+            throw new IllegalArgumentException();
+        }
+        idx++;
+        clazz = string(false);
+        if (peek() != '|') {
+            throw new IllegalArgumentException();
+        }
+        idx++;
+        return registry.get(no);
     }
 
     private Integer integer() {

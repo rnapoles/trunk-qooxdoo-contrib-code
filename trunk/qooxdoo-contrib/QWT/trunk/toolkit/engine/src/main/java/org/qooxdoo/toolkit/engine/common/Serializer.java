@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 /** 
  * TODO
  * o use string builder when supported by Runtime
@@ -33,19 +34,33 @@ import java.util.Set;
  * o static fields 
  */ 
 public class Serializer {
-    public static String run(Object obj) {
-        return new Serializer().any(obj);
+    public static String run(Registry registry, Object obj) {
+        return new Serializer(registry).any(obj);
     }
     
-    private final List<Object> objects;
+    public static Class<?> getServiceType(Class<?> clazz) {
+        for (Class<?> i : clazz.getInterfaces()) {
+            if (i.getName().endsWith("Service")) {
+                return i;
+            }
+        }
+        return null;
+    }
     
-    public Serializer() {
-        objects = new ArrayList<Object>();
+    //--
+    
+    private final List<Object> objects;
+    private final Registry registry;
+    
+    public Serializer(Registry registry) {
+        this.objects = new ArrayList<Object>();
+        this.registry = registry;
     }
 
     private String any(Object obj) {
         String result;
         boolean first;
+        Class<?> service;
         
         if (obj == null) {
             return "null";
@@ -57,6 +72,10 @@ public class Serializer {
             return "&" + obj;
         } else if (obj instanceof Integer) {
             return "#" + obj;
+        } 
+        service = getServiceType(obj.getClass());
+        if (service != null) {
+            return "|" + registry.addIfNew(obj) + "," + string(service.getName()) + "|";
         }
         for (int i = 0; i < objects.size(); i++) {
             if (objects.get(i) == obj) {
