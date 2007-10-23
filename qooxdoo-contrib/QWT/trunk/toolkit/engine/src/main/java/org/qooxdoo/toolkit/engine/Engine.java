@@ -55,6 +55,15 @@ public class Engine extends HttpServlet {
     }
 
     @Override
+    public String getServletInfo() {
+        if (application == null) {
+            return "(not initialized)";
+        } else {
+            return application.getName();
+        }
+    }
+
+    @Override
     public void destroy() {
         application.shutdown();
         application = null;
@@ -98,15 +107,22 @@ public class Engine extends HttpServlet {
         try {
             processUnchecked(httpRequest, response);
         } catch (IOException e) {
-            application.log.log(Level.SEVERE, "IOException: " + e.getMessage(), e);
+            report(e, httpRequest);
+            throw e;
+        } catch (ServletException e) {
+            report(e, httpRequest);
             throw e;
         } catch (RuntimeException e) {
-            application.log.log(Level.SEVERE, "RuntimeException: " + e.getMessage(), e);
-            throw new ServletException(e);
+            report(e, httpRequest);
+            throw e;
         } catch (Error e) {
-            application.log.log(Level.SEVERE, "Error: " + e.getMessage(), e);
-            throw new ServletException(e);
+            report(e, httpRequest);
+            throw e;
         }
+    }
+    
+    private void report(Throwable e, HttpServletRequest request) {
+        application.log.log(Level.SEVERE, request.getPathInfo() + ": " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
     
     private void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -149,30 +165,25 @@ public class Engine extends HttpServlet {
                 if (path.startsWith("/") && session.rm.render(path.substring(1), compress, response)) {
                     return;
                 }
-                try {
-                    if (path != null && path.startsWith(METHOD)) {
-                        // TODO sync(session, httpRequest);
-                        if (httpSession.isNew()) {
-                            application.log.info("no frame request so far -- probably cached by browser");
-                        }
-                        call = Call.parse(session.rm.getIO(), application.getRegistry(), 
-                                path.substring(METHOD.length()), request);
-                        if (call == null) {
-                            throw new IllegalArgumentException("no call: " + path);
-                        }
-                        log(session, "invoke " + call);
-                        writer = createHtmlWriter(response);
-                        try {
-                            writer.write(call.invoke());
-                        } catch (InvocationTargetException e) {
-                            error = getReportableException(e.getTargetException());
-                            application.log.log(Level.SEVERE, error, e);
-                        }
-                        log(session, "done " + call);
-                        return;
+                if (path.startsWith(METHOD)) {
+                    // TODO sync(session, httpRequest);
+                    if (httpSession.isNew()) {
+                        application.log.info("no frame request so far -- probably cached by browser");
                     }
-                } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("cannot process '" + path + "'", e);
+                    call = Call.parse(session.rm.getIO(), application.getRegistry(), path.substring(METHOD.length()), request);
+                    if (call == null) {
+                        throw new IllegalArgumentException("no call: " + path);
+                    }
+                    log(session, "invoke " + call);
+                    writer = createHtmlWriter(response);
+                    try {
+                        writer.write(call.invoke());
+                    } catch (InvocationTargetException e) {
+                        error = getReportableException(e.getTargetException());
+                        application.log.log(Level.SEVERE, error, e);
+                    }
+                    log(session, "done " + call);
+                    return;
                 }
             }
         }

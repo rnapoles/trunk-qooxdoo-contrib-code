@@ -84,7 +84,10 @@ public class Application implements ApplicationMBean {
     }
     
     public final Logger log;
+
+    /** unique identifier */
     private final String name;
+    
     private final FileNode docroot;
     
     private final String serverClass;
@@ -103,7 +106,6 @@ public class Application implements ApplicationMBean {
         Binding binding;
 
         this.log = createLogger(name, docroot);
-        
         this.name = name;
         this.docroot = docroot;
         this.serverClass = server;
@@ -182,7 +184,7 @@ public class Application implements ApplicationMBean {
     public String getName() {
         return name;
     }
-    
+
     public void add(Client client) {
         String name;
         
