@@ -39,6 +39,12 @@
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
+      <artifactId>qooxdoo</artifactId>
+      <version>${toolkit.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>compiler</artifactId>
       <classifier>tests</classifier>
       <version>${toolkit.version}</version>
@@ -47,7 +53,9 @@
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
       <artifactId>qooxdoo</artifactId>
+      <classifier>tests</classifier>
       <version>${toolkit.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -57,7 +65,7 @@
         <artifactId>plugin</artifactId>
         <version>${toolkit.version}</version>
         <configuration>
-          <includes>**/common/*.java, **/client/*.java</includes>
+          <includes>**/common/*.java</includes>
         </configuration>
         <executions>
           <execution>

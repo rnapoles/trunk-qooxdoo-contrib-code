@@ -19,17 +19,22 @@
 
 package org.qooxdoo.toolkit.rhino;
 
-import org.qooxdoo.toolkit.qooxdoo.Qooxdoo;
-import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.xml.Xml;
+import org.qooxdoo.toolkit.qooxdoo.Qooxdoo;
+import org.qooxdoo.toolkit.repository.JavaScriptEngine;
+import org.qooxdoo.toolkit.repository.Repository;
 
 public class QooxdooEngine extends JavaScriptEngine {
     public final Xml xml;
     public final Document doc;
 
     public QooxdooEngine(IO io) {
-        super(Qooxdoo.load(io).repository);
+        this(Qooxdoo.load(io).repository);
+    }
+
+    public QooxdooEngine(Repository repository) {
+        super(repository);
         
         xml = new Xml();
         doc = new Document(xml, 
