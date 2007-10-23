@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.engine;
+package org.qooxdoo.toolkit.engine.common;
 
 import static org.junit.Assert.assertEquals;
 

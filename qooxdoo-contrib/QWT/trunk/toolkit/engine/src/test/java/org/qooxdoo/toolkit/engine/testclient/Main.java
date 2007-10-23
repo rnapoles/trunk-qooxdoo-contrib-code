@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.engine.client;
+package org.qooxdoo.toolkit.engine.testclient;
 
 public class Main {
 
