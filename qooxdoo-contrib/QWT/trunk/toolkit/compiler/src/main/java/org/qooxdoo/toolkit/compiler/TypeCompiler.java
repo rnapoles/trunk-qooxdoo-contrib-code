@@ -197,6 +197,7 @@ public class TypeCompiler {
         StatementCompiler c;
         AbstractTypeDeclaration typeDecl;
         boolean first;
+        Importer importer;
         
         c = new StatementCompiler(context);
         if (Util.getAnnotationAlias(methodDecl)) {
@@ -237,20 +238,17 @@ public class TypeCompiler {
                 c.js.append(Naming.variable(((SingleVariableDeclaration) arg).resolveBinding()));
             }
             c.js.append(") ");
-            if (methodDecl.getBody() == null) {
-                if (!Modifier.isNative(methodDecl.getModifiers())) {
-                    throw new IllegalStateException("empty body " + methodDecl.getName());
-                }    
-                Importer importer = Util.getAnnotationNative(methodDecl);
-                if (importer == null) {
-                    throw new IllegalStateException("missing native annotation for native method: " + methodDecl.getName());
-                }
+            importer = Util.getAnnotationNative(methodDecl);
+            if (importer != null) {
                 importer.require(module.head().deps.names());
                 importer.post(c.deps().names());
                 c.js.open();
                 c.js.append(importer.content);
                 c.js.close();
             } else {
+                if (methodDecl.getBody() == null) {
+                    throw new IllegalStateException("empty body " + methodDecl.getName());
+                }
                 c.statement(methodDecl.getBody());
             }
         }
