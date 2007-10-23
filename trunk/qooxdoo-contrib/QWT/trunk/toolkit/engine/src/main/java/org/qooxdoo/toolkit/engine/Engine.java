@@ -74,6 +74,22 @@ public class Engine extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         process(req, res);
     }
+
+    @Override
+    public long getLastModified(HttpServletRequest request) {
+        String path;
+        Object[] tmp;
+        Client client;
+        
+        path = request.getPathInfo();
+        application.log.info("getLastModified: " + path);
+        tmp = getClient(path);
+        if (tmp == null) {
+            return -1;
+        }
+        client = (Client) tmp[0];
+        return client.getIndex().lastModified();
+    }
     
     private void process(HttpServletRequest httpRequest, HttpServletResponse response) throws ServletException, IOException {
         if (application == null) {
@@ -104,14 +120,14 @@ public class Engine extends HttpServlet {
         HttpSession httpSession;
         Client client;
         
+        path = request.getPathInfo();
         map = request.getParameterMap();
         if (map.size() > 0) {
-            String url = request.getContextPath() + request.getPathInfo();
-            application.log.info("ignoring unexpected parameters " + map + ", redirect to " + url);
+            String url = request.getContextPath() + path;
+            application.log.warning("ignoring unexpected parameters " + map + ", redirect to " + url);
             response.sendRedirect(url);
             return;
         }
-        path = request.getPathInfo();
         httpSession = request.getSession();
         tmp = getClient(path);
         if (tmp != null) {
