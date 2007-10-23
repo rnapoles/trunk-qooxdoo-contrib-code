@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.engine.client.Proxy;
+import org.qooxdoo.toolkit.engine.common.Proxy;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
 
@@ -59,7 +59,6 @@ public class Index {
                 "window.qxsettings = {" +
                 "  'qx.version' : '" + qooxdoo.version + "'," +
                 "};");
-        // TODO: no escaping!?
         modules(writer, array(Proxy.class.getName(), client, formal.getName()));
         lines(writer,
                 "qx.core.Init.getInstance().setApplication(", 

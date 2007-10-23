@@ -24,26 +24,19 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.toolkit.compiler.Naming;
-import org.qooxdoo.toolkit.engine.Client;
-import org.qooxdoo.toolkit.engine.common.Parser;
-import org.qooxdoo.toolkit.engine.common.Serializer;
-import org.qooxdoo.toolkit.repository.JavaScriptEngine;
-import org.qooxdoo.toolkit.repository.Repository;
+import org.qooxdoo.toolkit.rhino.QooxdooEngine;
 
 public class SerializationJsTest {
     // TODO: using a static ENGINE fails when running the tests in surefire ...
-    private JavaScriptEngine engine;
+    private QooxdooEngine engine;
 
     @Before
     public void setUp() throws Exception {
         IO io;
-        Repository repository;
         
         io = new IO();
-        repository = Naming.createRootRepository(io);
-        repository.loadAll(Client.classpath(io));
-        engine = new JavaScriptEngine(repository);
+        engine = new QooxdooEngine(io);
+        engine.getRepository().loadDir(io.locateClasspathItem(Parser.class));
         engine.load(Parser.class.getName(), Serializer.class.getName());
     }
 
