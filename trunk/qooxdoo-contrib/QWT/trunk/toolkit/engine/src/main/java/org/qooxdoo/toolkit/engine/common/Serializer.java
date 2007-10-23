@@ -75,7 +75,7 @@ public class Serializer {
             return "#" + obj;
         } else if (obj instanceof Proxy) {
             proxy = (Proxy) obj;
-            return "\\" + proxy.id + "," + string(proxy.type) + "\\";
+            return "\\" + proxy.id + "," + string(proxy.type.getName()) + "\\";
         }
         service = getServiceType(obj.getClass());
         if (service != null) {

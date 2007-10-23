@@ -23,7 +23,11 @@ public class IllegalArgumentException extends RuntimeException {
     public IllegalArgumentException() {
         super();
     }
-    
+
+    public IllegalArgumentException(Throwable t) {
+        super(t);
+    }
+
     public IllegalArgumentException(String msg) {
         super(msg);
     }

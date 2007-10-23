@@ -137,7 +137,7 @@ public class Parser {
     private Object serviceToProxy() {
         int start;
         int id;
-        String type; // TODO
+        Class<?> type; // TODO
         
         idx++;
         start = idx;
@@ -147,7 +147,11 @@ public class Parser {
             throw new IllegalArgumentException();
         }
         idx++;
-        type = string(false);
+        try {
+            type = Class.forName(string(false));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException(e);
+        }
         if (peek() != '/') {
             throw new IllegalArgumentException();
         }
