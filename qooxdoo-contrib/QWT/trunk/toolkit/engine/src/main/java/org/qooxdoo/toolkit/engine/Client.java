@@ -37,6 +37,7 @@ import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.compiler.Problem;
 import org.qooxdoo.toolkit.compiler.Task;
+import org.qooxdoo.toolkit.engine.common.Serializer;
 import org.qooxdoo.toolkit.repository.Repository;
 
 import qx.ui.core.Widget;
@@ -170,27 +171,23 @@ public class Client implements ClientMBean {
         ResourceManager rm;
         Session session;
         Object obj;
+        Class<?> formal;
         
         obj = application.getServer().clientStart();
         if (obj == null) {
             update(null, 0);
         } else {
-            update(serviceType(obj.getClass()), application.getRegistry().add(obj));
+            formal = Serializer.getServiceType(obj.getClass());
+            if (formal == null) {
+                throw new IllegalArgumentException("" + obj);
+            }
+            update(formal, application.getRegistry().add(obj));
         }
         rm = application.createResourceManager(getIndex(), getIndexGz());
         session = new Session(this, rm, nextSessionId++);
         return session;
     }
 
-    private Class<?> serviceType(Class<?> type) {
-        for (Class<?> i : type.getInterfaces()) {
-            if (i.getName().endsWith("Service")) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("not a service: " + type.getName());
-    }
-    
     //--
     
     public String getName() {

@@ -72,6 +72,13 @@ public class StringTest extends Base2 {
     }
 
     @Test
+    public void endsWith() {
+        expr("\"abc\".endsWith(\"\")", ANY, true);
+        expr("\"abc\".endsWith(\"bc\")", ANY, true);
+        expr("\"abc\".endsWith(\"ab\")", ANY, false);
+    }
+
+    @Test
     public void equals() {
         expr("\"a\".equals(\"a\")", ANY, true);
         expr("\"a\".equals(new String(\"a\"))", ANY, true);

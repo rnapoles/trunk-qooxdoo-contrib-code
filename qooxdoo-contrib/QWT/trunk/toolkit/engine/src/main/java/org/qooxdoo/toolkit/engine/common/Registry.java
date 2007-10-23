@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.engine;
+package org.qooxdoo.toolkit.engine.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,15 @@ public class Registry {
     public int add(Object obj) {
         objects.add(obj);
         return objects.size() - 1;
+    }
+    
+    public int addIfNew(Object obj) {
+        for (int i = 0, max = objects.size(); i < max; i++) {
+            if (objects.get(i) == obj) {
+                return i;
+            }
+        }
+        return add(obj);
     }
 
     public Object get(int id) {

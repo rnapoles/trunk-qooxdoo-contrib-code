@@ -121,6 +121,17 @@ public final class String implements CharSequence {
     }
 
     // TODO
+    public boolean endsWith(String end) {
+        int ofs;
+        
+        ofs = length() - end.length();
+        if (ofs < 0) {
+            return false;
+        }
+        return myIndexOf(end, ofs) == ofs;
+    }
+
+    // TODO
     public int myIndexOf(String str, int ofs) {
         int max;
         
