@@ -36,6 +36,12 @@ public class Main extends Server {
 
     @Override
     public Object clientStart() {
+        System.out.println("client start");
         return ping;
+    }
+
+    @Override
+    public void clientStop() {
+        System.out.println("client stop");
     }
 }

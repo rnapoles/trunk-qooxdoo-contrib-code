@@ -291,6 +291,22 @@ public class Application implements ApplicationMBean {
         mbeans.put(mbean, objectName);
     }
 
+    public synchronized void unregister(MBean mbean) {
+        ObjectName name;
+        
+        name = mbeans.remove(mbean);
+        if (name == null) {
+            throw new IllegalArgumentException("" + mbean);
+        }
+        try {
+            mbeanServer.unregisterMBean(name);
+        } catch (InstanceNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (MBeanRegistrationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static String getName(Class<?> clazz) {
         String name;
         

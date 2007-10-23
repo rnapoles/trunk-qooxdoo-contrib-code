@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -58,8 +57,7 @@ public class Client implements ClientMBean {
         title = context.getServletContextName();
         client = getParam(config, "client");
         dest = application.createClientDirectory(name);
-        return new Client(
-                application.log,
+        return new Client(application,
                 application.getDocroot().join("WEB-INF/src"), 
                 getSplitParam(config, "includes"), 
                 getSplitParam(config, "excludes"),
@@ -83,7 +81,7 @@ public class Client implements ClientMBean {
     //--
 
     // CAUTION: not static!
-    private final Logger log;
+    private final Application application;
     private final Node src;
     private final String[] includes;
     private final String[] excludes;
@@ -102,10 +100,10 @@ public class Client implements ClientMBean {
     
     //--
     
-    public Client(Logger log, Node src, String[] includes, String[] excludes,   
+    public Client(Application application, Node src, String[] includes, String[] excludes,   
             String name, String title, String main, FileNode dir) 
     throws IOException {
-        this.log = log;
+        this.application = application;
         this.src = src;
         this.includes = includes;
         this.excludes = excludes;
@@ -121,6 +119,10 @@ public class Client implements ClientMBean {
         this.compress = false;
     }
 
+    public Application getApplication() {
+        return application;
+    }
+    
     public void setCompress(boolean compress) {
         this.compress = compress;
     }
@@ -145,7 +147,7 @@ public class Client implements ClientMBean {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
             idx.generate(title, main, formal, id); 
-            log.info(this.index.length() + " bytes written to " + index);
+            application.log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
     }
@@ -224,13 +226,13 @@ public class Client implements ClientMBean {
             throw new ServletException("no Java files in directory " + src.getAbsolute());
         }
         qooxdoo = Qooxdoo.create(io, task.repository);
-        log.info("qooxdoo: " + qooxdoo);
-        log.info("compiling: " + task.toString());
+        application.log.info("qooxdoo: " + qooxdoo);
+        application.log.info("compiling: " + task.toString());
         try {
             compiled = task.invoke();
         } catch (CompilerException e) {
             for (Problem p : e.problems()) {
-                log.severe(p.toString());
+                application.log.severe(p.toString());
             }
             throw new ServletException(e.problems().size() + " errors", e);
         }
@@ -240,7 +242,7 @@ public class Client implements ClientMBean {
         }
         tmp.mkdir();
         compiled.save(tmp);
-        log.info("done: " + compiled.size() + " file(s) written to " + tmp);
+        application.log.info("done: " + compiled.size() + " file(s) written to " + tmp);
         return qooxdoo;
     }
     

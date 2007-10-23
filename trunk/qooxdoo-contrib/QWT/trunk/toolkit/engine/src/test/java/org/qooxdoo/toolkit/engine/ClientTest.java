@@ -22,7 +22,6 @@ package org.qooxdoo.toolkit.engine;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -43,7 +42,7 @@ public class ClientTest {
         io = new IO();
         src = io.guessProjectHome(getClass()).join("src/test/java");
         dest = io.createTempDirectory();
-        app = new Client(Logger.getLogger("foo"), 
+        app = new Client(null, 
         		src, new String[] { "**/client/*.java"} , new String[] {},
                 "id", "name", "org.qooxdoo.toolkit.engine.client.Main", dest);
         idx = app.getIndex();
