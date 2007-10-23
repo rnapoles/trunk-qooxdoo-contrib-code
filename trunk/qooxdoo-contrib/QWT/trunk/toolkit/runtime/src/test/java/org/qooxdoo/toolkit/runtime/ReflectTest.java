@@ -41,11 +41,18 @@ public class ReflectTest extends Base2 {
     }
 
     @Test
-    public void getBase() throws Exception {
+    public void getSuperclass() throws Exception {
         expr("new java.util.ArrayList().getClass().getSuperclass()", ANY, ANY,
                 "x instanceof java.lang.Class",
                 "x.getName().toString() == 'java.lang.Object'"
                 );
+    }
+    
+    @Test
+    public void getInterfaces() throws Exception {
+        expr("new java.lang.Object().getClass().getInterfaces().length", ANY, 0.0);
+        expr("new java.util.ArrayList().getClass().getInterfaces().length", ANY, 1.0);
+        expr("new java.util.ArrayList().getClass().getInterfaces()[0].getName()", ANY, "java.util.List");
     }
     
     @Test
