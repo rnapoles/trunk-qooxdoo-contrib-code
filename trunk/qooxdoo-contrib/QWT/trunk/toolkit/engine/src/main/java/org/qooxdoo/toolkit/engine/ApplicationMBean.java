@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ApplicationMBean extends MBean {
+    String getName();
     File getDocrootFile();
     List<String> listJars() throws IOException;
     Object groovy(String str);
