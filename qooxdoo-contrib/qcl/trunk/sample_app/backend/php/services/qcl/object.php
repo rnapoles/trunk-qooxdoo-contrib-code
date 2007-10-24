@@ -179,7 +179,74 @@ class qcl_object extends patched_object {
    		$varName = get_class($this);
    		return $_SESSION[$varName][$name];
    	}
-   	 
+
+	/**
+	 * stores the object or arbitrary data in the filesystem.
+	 * @param mixed 	$id			Id under which to store the data. If no Id is given, use the class name
+	 * 								This allows to create persistent singletons.
+	 * @param mixed 	$data 		Data to store. If no data is provided, the object serializes itself
+	 * return string Path to file with stored data.
+	 */
+   	function store($id=null, $data=null)
+   	{
+   		if ( ! $id )
+   		{
+   			// use class name as id
+   			$id = get_class($this);
+   		}
+   		elseif ( substr($id,0,1) == "." )
+   		{
+   			// just the extension passed, create random unique id
+   			$id = md5(microtime()) . $id;
+   		}
+   		$path = QCL_TMP_PATH . "/" . $id;
+   		if ( ! $data )
+   		{
+   			$data = &$this;
+   		}
+   		if ( is_object ($data) )
+   		{
+   			$data = serialize($data);
+   		} 
+   		file_put_contents($path,$data);
+   		return $path;
+   	}
+   	
+   	/**
+   	 * retrieve stored object
+   	 * @param string 	$id		Id of data to be retrieved from filesystem
+   	 */
+   	function &retrieve ( $id=null )
+   	{
+   		if ( ! $id )
+   		{
+   			$id = get_class($this);
+   		}
+   		$path = QCL_TMP_PATH . "/" . $id;
+   		$data = file_get_contents($path);
+   		if ( is_object ( $obj = @unserialize($data) ) )
+   		{
+   			return $obj;
+   		}
+   		else
+   		{
+   			return $data;
+   		}
+   	}
+   	
+   	/**
+   	 * remove stored object
+   	 */
+   	function remove ( $id )
+   	{
+		if ( ! $id )
+   		{
+   			$id = get_class($this);
+   		}
+		$path = QCL_TMP_PATH . "/" . $id;
+		return unlink ($path);		
+   	}
+   	
 	/**
 	 * log to file on server
 	 */
