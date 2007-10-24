@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.io;
 
 public class MkdirException extends NodeException {
     public MkdirException(Node node) {
-        super(node);
+        super(node, "mkdir failed");
     }
     
     public MkdirException(Node node, Throwable e) {

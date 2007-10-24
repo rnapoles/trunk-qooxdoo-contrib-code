@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.io;
 
 public class DeleteException extends NodeException {
     public DeleteException(Node node) {
-        super(node);
+        super(node, "delete failed");
     }
 
     public DeleteException(Node node, Throwable cause) {
