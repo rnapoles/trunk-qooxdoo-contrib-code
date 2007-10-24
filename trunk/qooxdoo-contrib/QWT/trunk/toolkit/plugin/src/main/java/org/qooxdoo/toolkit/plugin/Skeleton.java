@@ -35,20 +35,23 @@ public class Skeleton {
     public static final String TOOLKIT_VERSION = "%TOOLKIT_VERSION%";
     
     private static final IO IO_OBJ = new IO();
+
+    private static final String PREFIX = "scm:svn:";
     
     public static void main(String[] args) throws Exception {
+        String url;
         SvnNode src;
         Archive zip;
         Node dest;
         
-        if (args.length != 1) {
+        if (args.length != 2) {
             throw new IllegalArgumentException();
         
         }
         zip = Archive.createZip(IO_OBJ);
-        System.out.println("running svn export");
-        src = SvnNode.create(IO_OBJ, 
-                "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/application");
+        url = getUrl(args[1]);
+        System.out.println("svn export " + url);
+        src = SvnNode.create(IO_OBJ, url);
         src.export(zip.data);
         for (Node application : zip.data.children()) {
             if (application.isDirectory()) {
@@ -61,6 +64,20 @@ public class Skeleton {
         dest = IO_OBJ.node(args[0]).join(NAME);
         System.out.println("creating archive: " + dest);
         zip.save(dest);
+    }
+    
+    private static String getUrl(String svn) {
+        int idx;
+        
+        if (!svn.startsWith(PREFIX)) {
+            throw new IllegalArgumentException(svn);
+        }
+        svn = svn.substring(PREFIX.length());
+        idx = svn.indexOf("toolkit/plugin");
+        if (idx == -1) {
+            throw new IllegalArgumentException(svn);
+        }
+        return svn.substring(0, idx) + "application";
     }
 
     private static final String PARENT = 
