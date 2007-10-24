@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.engine.common.Parser;
 import org.qooxdoo.toolkit.engine.common.Proxy;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
@@ -47,7 +46,7 @@ public class Index {
     /** 
      * @param arguments  passed to the contructor. Key is the server-side id, value is the interface
      */
-    public void generate(String title, String client, String serialized) throws IOException {
+    public void generate(String title, String client) throws IOException {
         Writer writer;
         
         writer = file.createWriter();
@@ -62,9 +61,15 @@ public class Index {
                 "};");
         modules(writer, Proxy.class.getName(), client);
         lines(writer,
-                "qx.core.Init.getInstance().setApplication(", 
-                createClient(client, serialized),
-                ");",
+                "function getApplication() {",
+                "  var argument = " + Proxy.class.getName() + ".parseArgument(REGISTRY, document.cookie);",
+                "  if (argument != null) {",
+                "    return newObject(" + client + "," + client + ".init1,[argument])", 
+                "  } else {",
+                "    return new " + client + "();",
+                "  }",
+                "}",
+                "qx.core.Init.getInstance().setApplication(getApplication())", 
                 "    </script>",
                 "  </head>",
                 "  <body>",
@@ -81,8 +86,6 @@ public class Index {
         if (serialized == null) {
             builder.append("new ").append(client).append("(");
         } else {
-            builder.append("newObject(").append(client).append(',').append(client).append(".init1,[");
-            builder.append(Parser.class.getName() + ".run(REGISTRY, \"").append(serialized).append("\")]");
         }
         builder.append(')');
         return builder.toString(); 

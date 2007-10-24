@@ -39,4 +39,9 @@ public class Throwable {
     public void initCause(Throwable cause) {
         this.cause = cause;
     }
+    
+    @Override
+    public String toString() {
+        return "" + msg;
+    }
 }

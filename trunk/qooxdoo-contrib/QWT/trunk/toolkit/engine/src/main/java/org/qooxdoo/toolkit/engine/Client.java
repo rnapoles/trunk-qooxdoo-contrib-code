@@ -37,7 +37,6 @@ import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.compiler.Problem;
 import org.qooxdoo.toolkit.compiler.Task;
-import org.qooxdoo.toolkit.engine.common.Serializer;
 import org.qooxdoo.toolkit.repository.Repository;
 
 import qx.ui.core.Widget;
@@ -140,14 +139,14 @@ public class Client implements ClientMBean {
         return index;
     }
     
-    public void update(String serialized) throws IOException, ServletException {
+    public void update() throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
         
         if (!linked) {
             qooxdoo = compile();
             idx = new Index(compress, this.index, qooxdoo);
-            idx.generate(title, main, serialized); 
+            idx.generate(title, main); 
             application.log.info(this.index.length() + " bytes written to " + index);
             linked = true;
         }
@@ -170,18 +169,12 @@ public class Client implements ClientMBean {
     public synchronized Session start(Application application) throws IOException, ServletException {
         ResourceManager rm;
         Session session;
-        Object obj;
-        String serialized;
+        Object argument;
         
-        obj = application.getServer().clientStart();
-        if (obj == null) {
-            serialized = null;
-        } else {
-            serialized = Serializer.run(application.getRegistry(), obj);
-        }
-        update(serialized);
+        argument = application.getServer().clientStart();
+        update();
         rm = application.createResourceManager(getIndex(), getIndexGz());
-        session = new Session(this, rm, nextSessionId++);
+        session = new Session(this, rm, nextSessionId++, argument);
         return session;
     }
 

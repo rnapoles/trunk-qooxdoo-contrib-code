@@ -22,10 +22,15 @@ package org.qooxdoo.toolkit.engine;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+
+import org.qooxdoo.toolkit.engine.common.Proxy;
+import org.qooxdoo.toolkit.engine.common.Serializer;
 
 /** a running client. */
 public class Session implements SessionMBean, HttpSessionBindingListener {
@@ -52,17 +57,31 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
     private final Client client;
     private final int no;
     
+    /** result from Server.createClient */
+    public final Object argument;
+    
     // TODO: share between sessions?
     public final ResourceManager rm;
 
-    public Session(Client client, ResourceManager rm, int no) {
+    public Session(Client client, ResourceManager rm, int no, Object argument) {
         this.client = client;
         this.rm = rm;
         this.no = no;
+        this.argument = argument;
     }
 
     public Client getClient() {
         return client;
+    }
+
+    public void addArgument(HttpServletResponse reponse) {
+        String serialized;
+        
+        if (argument != null) {
+            serialized = Serializer.run(client.getApplication().getRegistry(), argument);
+            System.out.println("serialized: " + serialized);
+            reponse.addCookie(new Cookie(Proxy.COOKIE, serialized));
+        }
     }
 
     public String getName() {
