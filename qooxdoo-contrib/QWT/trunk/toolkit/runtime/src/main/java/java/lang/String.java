@@ -42,7 +42,7 @@ public final class String implements CharSequence {
         return java.lang.Object.prototype.getClass.apply(this);
       */
     @Override
-    public native Class getClass();
+    public native Class<?> getClass();
      
     public String(String original) {
     }
@@ -149,6 +149,9 @@ public final class String implements CharSequence {
 
     /** @alias */
     public native String substring(int start, int end);
+
+    /** @alias */
+    public native String substring(int start);
 
     public java.lang.CharSequence subSequence(int start, int end) {
         return substring(start, end);

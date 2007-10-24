@@ -163,6 +163,9 @@ public class Engine extends HttpServlet {
             }
             synchronized (httpSession) {
                 session = Session.get(httpSession, request, application, client);
+                if (httpSession.isNew()) {
+                    session.addArgument(response);
+                }
                 String ae = request.getHeader("accept-encoding");
                 boolean compress = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
                 if (path.startsWith("/") && session.rm.render(path.substring(1), compress, response)) {

@@ -82,6 +82,34 @@ function qwtService(object, method, args) {
 */
 
 public class Proxy {
+    public static final String COOKIE = "qwtClientArgument";
+    private static final String COOKIE_X = COOKIE + "=\"";
+    
+    // TODO: move somewhere else
+    public static Object parseArgument(Registry registry, String str) {
+        int idx;
+
+        System.out.println("start: " + str);
+        if (str == null) {
+            return null;
+        }
+        idx = str.indexOf(COOKIE_X);
+        if (idx == -1) {
+            System.out.println("A: " + str);
+            throw new IllegalArgumentException(str);
+        }
+        str = str.substring(idx + COOKIE_X.length());
+        idx = str.indexOf("\"");
+        if (idx == -1) {
+            System.out.println("B: " + str);
+            throw new IllegalArgumentException(str);
+        }
+        str = str.substring(0, idx);
+        System.out.println("end: " + str);
+        return Parser.run(registry, str);
+    }
+    
+
     public final int id;
     public final Class<?> type;
     
