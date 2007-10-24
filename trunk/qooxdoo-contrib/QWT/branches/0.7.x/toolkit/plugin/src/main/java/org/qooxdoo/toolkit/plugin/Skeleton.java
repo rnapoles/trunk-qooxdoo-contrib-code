@@ -53,7 +53,7 @@ public class Skeleton {
         url = getUrl(args[1]);
 
         
-        // TODO
+        // TODO: sushi export fails for branches/0.7.x -- as a work-around, ich 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/branches";
         data = IO_OBJ.createTempDirectory();
         
