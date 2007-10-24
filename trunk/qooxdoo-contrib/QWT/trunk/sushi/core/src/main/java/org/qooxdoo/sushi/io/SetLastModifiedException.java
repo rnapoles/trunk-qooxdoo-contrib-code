@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.io;
 
 public class SetLastModifiedException extends NodeException {
     public SetLastModifiedException(Node node) {
-        super(node);
+        super(node, "setLastModified failed");
     }
 
     public SetLastModifiedException(Node node, Throwable e) {
