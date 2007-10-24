@@ -79,7 +79,6 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
         
         if (argument != null) {
             serialized = Serializer.run(client.getApplication().getRegistry(), argument);
-            System.out.println("serialized: " + serialized);
             reponse.addCookie(new Cookie(Proxy.COOKIE, serialized));
         }
     }

@@ -89,23 +89,19 @@ public class Proxy {
     public static Object parseArgument(Registry registry, String str) {
         int idx;
 
-        System.out.println("start: " + str);
         if (str == null) {
             return null;
         }
         idx = str.indexOf(COOKIE_X);
         if (idx == -1) {
-            System.out.println("A: " + str);
             throw new IllegalArgumentException(str);
         }
         str = str.substring(idx + COOKIE_X.length());
-        idx = str.indexOf("\"");
+        idx = str.indexOf("\"");  // TODO: indexOf(char) broken?
         if (idx == -1) {
-            System.out.println("B: " + str);
             throw new IllegalArgumentException(str);
         }
         str = str.substring(0, idx);
-        System.out.println("end: " + str);
         return Parser.run(registry, str);
     }
     
