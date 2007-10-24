@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.engine.common.Proxy;
+import org.qooxdoo.toolkit.engine.common.Transport;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
 
@@ -59,10 +59,11 @@ public class Index {
                 "window.qxsettings = {" +
                 "  'qx.version' : '" + qooxdoo.version + "'," +
                 "};");
-        modules(writer, Proxy.class.getName(), client);
+        modules(writer, Transport.class.getName(), client);
         lines(writer,
+                "REGISTRY = new org.qooxdoo.toolkit.engine.common.Registry() {",
                 "function getApplication() {",
-                "  var argument = " + Proxy.class.getName() + ".parseArgument(REGISTRY, document.cookie);",
+                "  var argument = " + Transport.class.getName() + ".clientArgument(REGISTRY, document.cookie);",
                 "  if (argument != null) {",
                 "    return newObject(" + client + "," + client + ".init1,[argument])", 
                 "  } else {",
@@ -77,18 +78,6 @@ public class Index {
                 "  </body>",
                 "</html>");
         writer.close();
-    }
-
-    private String createClient(String client, String serialized) {
-        StringBuilder builder;
-        
-        builder = new StringBuilder();
-        if (serialized == null) {
-            builder.append("new ").append(client).append("(");
-        } else {
-        }
-        builder.append(')');
-        return builder.toString(); 
     }
 
     private void modules(Writer dest, String ... names) throws IOException {
