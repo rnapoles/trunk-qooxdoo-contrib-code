@@ -29,7 +29,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.qooxdoo.toolkit.engine.common.Proxy;
 import org.qooxdoo.toolkit.engine.common.Serializer;
 
 /** a running client. */
@@ -79,7 +78,7 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
         
         if (argument != null) {
             serialized = Serializer.run(client.getApplication().getRegistry(), argument);
-            reponse.addCookie(new Cookie(Proxy.COOKIE, serialized));
+            reponse.addCookie(new Cookie(org.qooxdoo.toolkit.engine.common.Transport.COOKIE, serialized));
         }
     }
 

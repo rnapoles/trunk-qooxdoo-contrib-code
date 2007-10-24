@@ -32,6 +32,17 @@ public native void renderPadding(Object changes);
      */
     public native void addChangeValueListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
 
+### qx/io/remote/Request.java
++++
+    /**
+     * @native
+        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
+        this.addEventListener("completed", function(e) {
+          listener.notify(e);
+        });
+     */
+    public native void addCompletedListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
+
 ### qx/ui/form/Button.java
 +++
     /**
