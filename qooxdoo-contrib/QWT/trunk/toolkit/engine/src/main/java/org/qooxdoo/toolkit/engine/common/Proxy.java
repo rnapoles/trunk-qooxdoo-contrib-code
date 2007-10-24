@@ -122,6 +122,11 @@ public class Proxy {
     }
 
     @Override
+    public int hashCode() {
+        return id;
+    }
+    
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Proxy) {
             return ((Proxy) obj).id == id;
