@@ -43,9 +43,9 @@ qx.Class.define("inspector.console.Console", {
     // create a appende
     var appender = new inspector.console.Appender(this._consoleView);
     // remove all appenders
-    qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
+    // qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
     // add the console appender
-    qx.log.Logger.ROOT_LOGGER.addAppender(appender);
+    // qx.log.Logger.ROOT_LOGGER.addAppender(appender);
     
     // add a event listener if the console cahnged active
     this.addEventListener("changeActive", function(e) {
@@ -76,6 +76,7 @@ qx.Class.define("inspector.console.Console", {
     */
     // main elements
     _consoleView: null,
+    _domView: null,
 
     // buttons
     _clearButton: null,
@@ -251,7 +252,7 @@ qx.Class.define("inspector.console.Console", {
      * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
-      // do nothing
+      this._consoleView.setWidth(this._consoleView.getWidth() + delta)
     },
 		    
     
@@ -272,9 +273,38 @@ qx.Class.define("inspector.console.Console", {
     
     
     _createMainElement: function() {      
+      var tabView = new qx.ui.pageview.tabview.TabView();
+      // tabView.setEdge(20);
+
+      // tab view buttons
+      var consoleButton = new qx.ui.pageview.tabview.Button("Concole");
+      consoleButton.setChecked(true);
+      var domButton = new qx.ui.pageview.tabview.Button("DOM");
+      tabView.getBar().add(consoleButton, domButton);
+      
+      var consolePage = new qx.ui.pageview.tabview.Page(consoleButton);
+      var domPage = new qx.ui.pageview.tabview.Page(domButton);
+    
       // create and add a layout for the HTMLembedded and the textbox
       this._consoleView = new inspector.console.ConsoleView(this);
-      this._mainLayout.add(this._consoleView);
+      this._domView = new inspector.console.DomView(this);
+
+      this._consoleView.setWidth(500);
+      
+      tabView.getPane().setPadding(0);
+
+      // this._mainLayout.add(this._consoleView);
+      consolePage.add(this._consoleView);
+      domPage.add(this._domView);
+            
+      tabView.getPane().add(consolePage, domPage);
+      
+      
+      this._mainLayout.add(tabView);
+      
+      
+      
+      
       
       // register the clear event listener
       this._clearButton.addEventListener("click", this._consoleView.clear, this._consoleView);    

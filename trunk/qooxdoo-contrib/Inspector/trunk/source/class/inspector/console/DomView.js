@@ -36,8 +36,12 @@ qx.Class.define("inspector.console.DomView", {
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function() {
- 
+  construct : function(console) {
+    this.base(arguments);
+    // sorte the reference to the console window
+    this._console = console;
+    
+    this.add(new qx.ui.basic.Atom("Comming soon..."));
   },
 
 
@@ -52,6 +56,7 @@ qx.Class.define("inspector.console.DomView", {
        ATTRIBUTES
     *********************************
     */
+    _console: null,
    
     
     /*
