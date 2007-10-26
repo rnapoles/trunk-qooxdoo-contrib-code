@@ -28,9 +28,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.toolkit.compiler.Naming;
 
 /**
  * Container for modules with unique names, manages dependencies.
@@ -88,11 +88,15 @@ public class Repository implements Iterable<Module> {
     }
 
     public Module[] getAll(String ... names) {
+        return getAll(Arrays.asList(names));
+    }
+    
+    public Module[] getAll(List<String> names) {
         Module[] modules;
         
-        modules = new Module[names.length];
+        modules = new Module[names.size()];
         for (int i = 0; i < modules.length; i++) {
-            modules[i] = get(names[i]);
+            modules[i] = get(names.get(i));
         }
         return modules;
     }

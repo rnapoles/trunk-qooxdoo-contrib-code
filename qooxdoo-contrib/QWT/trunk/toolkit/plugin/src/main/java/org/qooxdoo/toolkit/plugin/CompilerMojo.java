@@ -20,21 +20,22 @@
 package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-
+import org.qooxdoo.sushi.filter.Filter;
+import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.compiler.Problem;
 import org.qooxdoo.toolkit.compiler.Task;
 import org.qooxdoo.toolkit.repository.MissingIndexException;
+import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.filter.Filter;
-import org.qooxdoo.sushi.io.Node;
 
 /**
  * Compiles Java to JavaScript
@@ -102,8 +103,31 @@ public class CompilerMojo extends Base {
         javaFilter.exclude(Base.split(ex));
     }
 
+    /**
+     * Source files to exclude
+     *
+     * @parameter expression=""
+     */
+    private String roots;
+
+    /**
+     * Where to save classes.
+     *
+     * @parameter expression="${project.build.directory}/all.js"
+     * @required
+     */
+    private Node allFile;
+    
+    public void setAllFile(String dir) throws IOException {
+        allFile = io.node(dir);
+    }
+
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
+        link(compile());
+    }
+
+    private Repository compile() throws MojoExecutionException, IOException {
         Task task;
         Repository compiled;
         long started;
@@ -142,8 +166,24 @@ public class CompilerMojo extends Base {
         info("repository written to " + output + ", "
                 + compiled.size() + " module(s), "
                 + (System.currentTimeMillis() - started) + " ms");
+        return task.repository;
     }
 
+    private void link(Repository all) throws IOException {
+        Writer dest;
+        String[] rootArray;
+        Module[] mains;
+        
+        if (roots == null || roots.trim().length() == 0) {
+            return;
+        }
+        info("linking: " + allFile);
+        dest = allFile.createWriter();
+        mains = all.getAll(Base.split(roots));
+        all.executable(dest, false, mains);
+        dest.close();
+    }
+    
     private List<Node> classpath() {
         List<Node> cp;
         List<?> artifacts;
