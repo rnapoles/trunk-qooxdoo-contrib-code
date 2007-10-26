@@ -42,6 +42,9 @@ qx.Class.define("inspector.console.ConsoleView", {
     // sorte the reference to the console window
     this._console = console;
     
+    this.setWidth("100%");
+    this.setHeight("100%");
+    
     // create the popup for the autocompletion
     this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
       
@@ -50,7 +53,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     this._htmlEmbed.setBorder("inset");
     this._htmlEmbed.setOverflow("scrollY");
     this._htmlEmbed.setWidth("100%");
-    this._htmlEmbed.setHeight(150);
+    this._htmlEmbed.setHeight(155);
     this.add(this._htmlEmbed);
     
     // create and add the textfield

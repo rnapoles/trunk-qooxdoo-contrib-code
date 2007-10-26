@@ -74,7 +74,16 @@ qx.Class.define("inspector.menu.Menu", {
     // create a atom to show the down arrows
     var downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
     downAtom.setWidth("100%");
-    this.add(downAtom);    
+    this.add(downAtom);
+    
+    // check after everything is loaded which window is open and mark it as open    
+    var self = this;
+    window.setTimeout(function() {
+      self._openConsoleButton.setChecked(self._inspector.isConsoleOpen());      
+      self._openObjectFinderButton.setChecked(self._inspector.isObjectFinderOpen());
+      self._openWidgetFinderButton.setChecked(self._inspector.isWidgetFinderOpen());
+      self._openPropertyEditorButton.setChecked(self._inspector.isPropertyEditorOpen());
+    }, 0);
   }, 
   
   
