@@ -20,5 +20,7 @@
 package java.lang.reflect;
 
 public class Proxy {
-    public native static Object newProxyInstance(Object classLoadernused, Class<?>[] interfaces, InvocationHandler ih);
+    public static Object newProxyInstance(Object classLoadernused, Class<?>[] interfaces, InvocationHandler ih) {
+        return null; // TODO
+    }
 }
