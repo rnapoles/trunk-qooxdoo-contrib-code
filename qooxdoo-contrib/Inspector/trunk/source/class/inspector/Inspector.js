@@ -762,6 +762,54 @@ qx.Class.define("inspector.Inspector", {
     },
     
     
+    /**
+     * Returns the state of the console window.
+     * @return {Boolean} true, if the console is open.
+     */
+    isConsoleOpen: function() {
+      if (this._console) {
+        return this._console.isOpen();
+      }
+      return false;
+    },
+
+
+    /**
+     * Returns the state of the object finder window.
+     * @return {Boolean} true, if the object finder is open.
+     */
+    isObjectFinderOpen: function() {
+      if (this._objectFinder) {
+        return this._objectFinder.isOpen();
+      }
+      return false;
+    },
+    
+    
+    /**
+     * Returns the state of the widget finder window.
+     * @return {Boolean} true, if the widget finder is open.
+     */    
+    isWidgetFinderOpen: function() {
+      if (this._widgetFinder) {
+        return this._widgetFinder.isOpen();
+      }
+      return false;
+    },
+    
+    
+    /**
+     * Returns the state of the property editor window.
+     * @return {Boolean} true, if the property editor is open.
+     */
+    isPropertyEditorOpen: function() {
+      if (this._propertyEditor) {
+        return this._propertyEditor.isOpen();
+      }
+      return false;
+    },
+    
+    
     /*
     *********************************
        HIDER

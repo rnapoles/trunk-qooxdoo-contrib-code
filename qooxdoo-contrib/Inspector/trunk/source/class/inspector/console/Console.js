@@ -244,6 +244,7 @@ qx.Class.define("inspector.console.Console", {
      */
     _setMainElementHeight: function(delta) {
        this._consoleView.setMainElementDeltaHeight(delta);        
+       this._domView.setMainElementDeltaHeight(delta);
     },
     
     
@@ -252,7 +253,8 @@ qx.Class.define("inspector.console.Console", {
      * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
-      this._consoleView.setWidth(this._consoleView.getWidth() + delta)
+      this._consoleView.setWidth(this._consoleView.getWidth() + delta);
+      this._domView.setWidth(this._domView.getWidth() + delta);
     },
 		    
     
@@ -272,40 +274,30 @@ qx.Class.define("inspector.console.Console", {
     },
     
     
-    _createMainElement: function() {      
+    _createMainElement: function() {   
+      // create the tabview   
       var tabView = new qx.ui.pageview.tabview.TabView();
-      // tabView.setEdge(20);
-
       // tab view buttons
       var consoleButton = new qx.ui.pageview.tabview.Button("Concole");
-      consoleButton.setChecked(true);
       var domButton = new qx.ui.pageview.tabview.Button("DOM");
-      tabView.getBar().add(consoleButton, domButton);
-      
+      consoleButton.setChecked(true);
+      tabView.getBar().add(consoleButton, domButton);      
+      // tabview pages
       var consolePage = new qx.ui.pageview.tabview.Page(consoleButton);
       var domPage = new qx.ui.pageview.tabview.Page(domButton);
-    
-      // create and add a layout for the HTMLembedded and the textbox
+      // content of the pages    
       this._consoleView = new inspector.console.ConsoleView(this);
       this._domView = new inspector.console.DomView(this);
-
-      this._consoleView.setWidth(500);
-      
+      // set the pane to the borders of the window      
       tabView.getPane().setPadding(0);
-
-      // this._mainLayout.add(this._consoleView);
+      // add the content of the pages to the pages
       consolePage.add(this._consoleView);
       domPage.add(this._domView);
-            
+      // add the pages to the tabview 
       tabView.getPane().add(consolePage, domPage);
-      
-      
+      // add the tabview to the window      
       this._mainLayout.add(tabView);
-      
-      
-      
-      
-      
+  
       // register the clear event listener
       this._clearButton.addEventListener("click", this._consoleView.clear, this._consoleView);    
       // register a handlert to print out the help text on the console
