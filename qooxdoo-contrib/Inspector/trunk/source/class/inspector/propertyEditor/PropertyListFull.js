@@ -573,8 +573,15 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
               }        
           }, this);
 
+          // get the popup
+          var popup = box.getPopup(); 
           // add the popup of the combobox to the array of popups to omit them in the treeview 
-          this._comboBoxPopups[this._comboBoxPopups.length] = box.getPopup();
+          this._comboBoxPopups[this._comboBoxPopups.length] = popup;
+          // add a listener so that the popup is always infont of the window
+          popup.addEventListener("appear", function() {
+            // set the zIndex to a higher one than the porperty editor window
+            popup.setZIndex(this._controller.getZIndex() + 1);
+          }, this);
           return box;
   
         // textfield
