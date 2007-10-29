@@ -43,12 +43,7 @@ public class Proxy {
     /**
      * @native
          this[name] = function() {
-           var Proxy = org.qooxdoo.toolkit.engine.common.Proxy;
-           var args = Proxy.arguments(arguments)
-           var result = qwtService(this.id, name, args);
-           qwtLog("result: " + result);
-           var obj = org.qooxdoo.toolkit.engine.common.Parser.run(REGISTRY, result);
-           return Proxy.unbox(obj);
+           return org.qooxdoo.toolkit.engine.common.Transport.invoke(REGISTRY, this.id, name, arguments);
          }
      */
     private void addMethod(String name) {

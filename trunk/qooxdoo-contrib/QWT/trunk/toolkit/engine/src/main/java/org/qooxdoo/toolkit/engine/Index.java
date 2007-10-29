@@ -61,7 +61,7 @@ public class Index {
                 "};");
         modules(writer, Transport.class.getName(), client);
         lines(writer,
-                "REGISTRY = new org.qooxdoo.toolkit.engine.common.Registry() {",
+                "REGISTRY = new org.qooxdoo.toolkit.engine.common.Registry();",
                 "function getApplication() {",
                 "  var argument = " + Transport.class.getName() + ".clientArgument(REGISTRY, document.cookie);",
                 "  if (argument != null) {",
