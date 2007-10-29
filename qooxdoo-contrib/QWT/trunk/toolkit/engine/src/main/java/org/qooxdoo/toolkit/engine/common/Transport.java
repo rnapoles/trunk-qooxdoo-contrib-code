@@ -34,17 +34,16 @@ $s*
 #post(java.lang.Integer)
 #post(java.lang.Boolean)
 #post(java.lang.reflect.Method)
-#require(org.qooxdoo.toolkit.engine.common.Registry);
+#require(org.qooxdoo.toolkit.engine.common.Registry)
 #require(qx.theme.ClassicRoyale)
 *$s
-
-REGISTRY = new org.qooxdoo.toolkit.engine.common.Registry();
 
 */
 
 public class Transport {
     public static final String COOKIE = "qwtClientArgument";
     private static final String COOKIE_X = COOKIE + "=\"";
+    public static String TODO;
     
     public static Object clientArgument(Registry registry, String str) {
         int idx;
@@ -54,7 +53,7 @@ public class Transport {
         }
         idx = str.indexOf(COOKIE_X);
         if (idx == -1) {
-            throw new IllegalArgumentException(str);
+            return null;
         }
         str = str.substring(idx + COOKIE_X.length());
         idx = str.indexOf("\"");  // TODO: indexOf(char) broken?
@@ -94,7 +93,7 @@ public class Transport {
         return obj;
     }
     
-    public static Object invoke(Registry registry, int object, String method, Object[] arguments) {
+    public static Object invoke(Registry registry, int object, String method, Object[] args) {
         String url;
         Result result;
         Request request;
@@ -103,7 +102,9 @@ public class Transport {
         result = new Result();
         request = new Request(url, "POST");
         request.addCompletedListener(result);
-        request.setData(arguments(registry, arguments));
+        TODO = argumentsString(registry, args);
+        System.out.println("data " + TODO);
+        request.setData(TODO);
         request.setAsynchronous(false);
         request.send();
         if (request.isCompleted()) {
@@ -112,7 +113,7 @@ public class Transport {
         return Parser.run(registry, result.text);
     }
 
-    public static String arguments(Registry registry, Object[] args) {
+    private static String argumentsString(Registry registry, Object[] args) {
         boolean first;
         StringBuilder builder;
         

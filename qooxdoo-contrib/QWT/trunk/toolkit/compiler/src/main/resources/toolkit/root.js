@@ -223,6 +223,10 @@ function stringConcat() {
         arg = arguments[i];
         if (typeof arg === 'string') {
 	        result = result + arg;
+        } else if (typeof arg === 'number') {
+	        result = result + arg;
+        } else if (typeof arg === 'undefined') {
+	        result = result + "undefined";  // TODO
         } else {
             result = result + arg.toString();
 	    }
