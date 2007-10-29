@@ -19,7 +19,7 @@
 
 package java.lang;
 
-
+/** TODO: toString is very expensive */
 public class StringBuilder implements Appendable, CharSequence {
     private static final int CHUNK = 16;
     
@@ -53,8 +53,10 @@ public class StringBuilder implements Appendable, CharSequence {
     }
     
     public void setLength(int length) {
-        ensureCapacity(length);
-        used = length;
+        if (length < used) {
+            ensureCapacity(length);
+            used = length;
+        }
     }
     
     public int capacity() {
@@ -66,6 +68,18 @@ public class StringBuilder implements Appendable, CharSequence {
     }
 
     //--
+    
+    public StringBuilder append(String str) {
+        int max;
+        
+        max = str.length();
+        ensureCapacity(used + max);
+        for (int i = 0; i < max; i++) {
+            data[used + i] = str.charCodeAt(i);
+        }
+        used += max;
+        return this;
+    }
     
     public StringBuilder append(boolean b) {
         return append(b ? "true" : "false");
@@ -105,18 +119,6 @@ public class StringBuilder implements Appendable, CharSequence {
         return this;
     }
 
-    public StringBuilder append(String str) {
-        int max;
-        
-        max = str.length();
-        ensureCapacity(used + max);
-        for (int i = 0; i < max; i++) {
-            data[used + i] = str.charAt(i);
-        }
-        used += max;
-        return this;
-    }
-    
     public StringBuilder append(StringBuffer buffer) {
         return append(buffer.data, 0, buffer.used);
     }
@@ -142,7 +144,12 @@ public class StringBuilder implements Appendable, CharSequence {
     
     @Override
     public String toString() {
-        return new String(data);
+        String result = "";
+
+        for (int i = 0; i < used; i++) {
+            result = result + data[i];
+        }
+        return result;
     }
     
     //--
@@ -150,7 +157,7 @@ public class StringBuilder implements Appendable, CharSequence {
     private void ensureCapacity(int newSize) {
         char[] newData;
 
-        if (used > newSize) {
+        if (newSize > data.length) {
             newData = new char[newSize];
             System.arraycopy(data, 0, newData, 0, used);
             data = newData;

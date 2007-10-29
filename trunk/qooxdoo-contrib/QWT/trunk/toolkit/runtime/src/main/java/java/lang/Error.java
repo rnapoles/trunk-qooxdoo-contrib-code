@@ -19,6 +19,12 @@
 
 package java.lang;
 
-public class Error {
-
+public class Error extends Throwable {
+    public Error() {
+        super();
+    }
+    
+    public Error(String str) {
+        super(str);
+    }
 }
