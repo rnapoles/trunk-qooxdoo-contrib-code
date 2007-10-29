@@ -221,7 +221,9 @@ function stringConcat() {
 	
     for (var i = 0; i < max; i++) {
         arg = arguments[i];
-        if (typeof arg === 'string') {
+        if (arg === null) {
+            result = result + 'null';
+        } else if (typeof arg === 'string') {
 	        result = result + arg;
         } else if (typeof arg === 'number') {
 	        result = result + arg;
