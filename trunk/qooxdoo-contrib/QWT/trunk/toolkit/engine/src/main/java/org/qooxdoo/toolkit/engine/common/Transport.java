@@ -43,7 +43,6 @@ $s*
 public class Transport {
     public static final String COOKIE = "qwtClientArgument";
     private static final String COOKIE_X = COOKIE + "=\"";
-    public static String TODO;
     
     public static Object clientArgument(Registry registry, String str) {
         int idx;
@@ -97,17 +96,17 @@ public class Transport {
         String url;
         Result result;
         Request request;
-        
-        url = "method/" + object + "_" + method;
+
+        // TODO: I'd prefer using the post method body to transfer arguments, 
+        // but qooxdoo Request does not yet support it ...
+        url = "method/" + object + "_" + method + argumentsString(registry, args);
         result = new Result();
-        request = new Request(url, "POST");
+        request = new Request(url, "POST", "text/plain");
         request.addCompletedListener(result);
-        TODO = argumentsString(registry, args);
-        System.out.println("data " + TODO);
-        request.setData(TODO);
         request.setAsynchronous(false);
+        request.setProhibitCaching(false); // supress nochach request paramete
         request.send();
-        if (request.isCompleted()) {
+        if (!request.isCompleted()) {
             throw new Error("error response: " + request.getState());
         }
         return Parser.run(registry, result.text);
@@ -138,7 +137,6 @@ public class Transport {
         public void notify(DataEvent event) { // TODO
             Object obj;
             
-            System.out.println("notify " + event);
             obj = event;
             text = (String) ((Response) obj).getContent();
         }
