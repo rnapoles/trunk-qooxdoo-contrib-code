@@ -2,6 +2,7 @@
 
 // dependencies
 require_once ("qcl/jsonrpc/model.php");
+require_once ("qcl/java/shell.php");
 
 // Directory where the jar files are located
 define("SAXON_DIR", SERVICE_PATH . "qcl/xslt/saxon/" );
@@ -52,7 +53,7 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
     	}
     	else
     	{
-    		$this->_useSaxon($xml,$xsl,$params=null,$debugfile=null);
+    		return $this->_useSaxonViaShell($xml,$xsl,$params=null,$debugfile=null);
     	}
     }
     
@@ -127,17 +128,84 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 		return  $xsl->transformToXML($doc);
 		 */    	
     }
-    
+
 	/**
 	 * transforms xml data with xsl stylesheet using the java saxon package (XSLT 2.0)
-	 * this requires the presence of the JavaBridge extension
+	 * through the shell
 	 * @param mixed 	$xml 		string or filename of xml file to transform
 	 * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
 	 * @param array 	$params 	an associated array to pass to the xsl as top-level parameters
 	 * @param string 	$debugfile 	file to write debug information to 
 	 * @return string transformed xml
 	 */ 
-    function _useSaxon($xml,$xsl,$params=null,$debugfile=null)
+    function _useSaxonViaShell($xml,$xsl,$params=null,$debugfile=null)
+	{	 		
+		// write xml to file if string
+		if ( !@is_file($xmlFile=$xml) )
+		{
+			$xmlFile = $this->store(".xml",$xml);  
+		}
+		
+		// write xsl to file if string
+		if ( !@is_file($xslFile=$xsl) )
+		{
+			$xslFile = $this->store(".xsl",$xsl);  
+		}
+		
+		$descriptorspec = array (
+		   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+		   2 => array("pipe", "w")   // stderr is a pipe that the child will write to
+		);
+
+		// start process
+		$saxoncmd = "java -jar " . SAXON_DIR . "saxon8.jar";
+		$cmd	  = "$saxoncmd -s $xmlFile $xslFile"; 
+		$process  = proc_open($cmd, $descriptorspec, $pipes);		
+		
+		// get results from process
+		if (is_resource($process)) 
+		{
+		    $stdout = $pipes[1];
+		    $stderr = $pipes[2];
+		    $result = ""; 
+		    $error  = ""; 
+		    
+		    // output
+		    while ( !feof($stdout) ) $result .= fgets($stdout,1024);
+			fclose($stdout);
+			
+			// error
+			while ( !feof($stderr) ) $error .= fgets($stderr,1024);
+			fclose($stderr);
+			
+			$this->error = $cmd . "=>" . $error; 
+		    
+			proc_close($process);
+		}
+		else
+		{
+			$this->error ="Could not start process";
+			return false;
+		}
+		
+		// Delete temporary files
+		if ($xml != $xmlFile) unlink ($xmlFile);
+		if ($xsl != $xslFile) unlink ($xslFile);
+
+		// Done!
+		return $result;
+	}
+    
+	/**
+	 * transforms xml data with xsl stylesheet using the java saxon package (XSLT 2.0)
+	 * by way of the JavaBridge extension
+	 * @param mixed 	$xml 		string or filename of xml file to transform
+	 * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
+	 * @param array 	$params 	an associated array to pass to the xsl as top-level parameters
+	 * @param string 	$debugfile 	file to write debug information to 
+	 * @return string transformed xml
+	 */ 
+    function _useSaxonViaJavaBridge($xml,$xsl,$params=null,$debugfile=null)
 	{
 		// include the jars
 		java_require(
@@ -158,27 +226,26 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 			$xslFile = $this->store(microtime().".xsl",$xsl);  
 		}
 		
+		$xslFile = SERVICE_PATH . "qcl/java/java/oaimarc_to_marcxml.xsl";
+		$xmlFile = "qcl/java/java/oai_marc.xml";
 		if (
 			$oXslSource = new java("javax.xml.transform.stream.StreamSource", "file://".$xslFile) and
 			$oXmlSource = new java("javax.xml.transform.stream.StreamSource", "file://".$xmlFile) and
 			$oFeatureKeys = new JavaClass("net.sf.saxon.FeatureKeys") and
-			$oTransformerFactory = new java("net.sf.saxon.TransformerFactoryImpl") and
-			$oErrorListenerStringWriter = new java("java.io.StringWriter") and
-			$oErrorListener	= new java("ErrorListenerImpl",&$oErrorListenerStringWriter)
+			$oTransformerFactory = new java("net.sf.saxon.TransformerFactoryImpl")
 		) {} else 
 		{
 			return $this->javaError();
 		}
-					
+		
 		//Disable source document validation
-		$oTransformerFactory->setAttribute($oFeatureKeys->SCHEMA_VALIDATION, 4);
-		$oTransformerFactory->setErrorListener($oErrorListener);
+		//$oTransformerFactory->setAttribute($oFeatureKeys->SCHEMA_VALIDATION, 4);
 		
 		// Create a new Transformer
 		if ( ! $oTransFormer = $oTransformerFactory->newTransformer($oXslSource) )
 		{
 			$this->log($xslFile);
-			return $this->javaError($oErrorListenerStringWriter);
+			return $this->javaError();
 		}
 				   
 		// Create a StreamResult to store the output
@@ -203,18 +270,15 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	/**
 	 * log a java error
 	 */
-	function javaError($oErrorListenerStringWriter=null)
+	function javaError()
 	{
 		$ex = java_last_exception_get();
-		$trace = new java("java.io.ByteArrayOutputStream");
-   		$ex->printStackTrace(new java("java.io.PrintStream", $trace));
-		$this->error = java_cast($trace,"string");
-		
-		if ( $oErrorListenerStringWriter )
+		if ( is_object($ex) )
 		{
-			$this->error .= "Error Listener says:" . java_cast($oErrorListenerStringWriter->toString(), "string");
+			$trace = new java("java.io.ByteArrayOutputStream");
+	   		$ex->printStackTrace(new java("java.io.PrintStream", $trace));
+			$this->error = java_cast($trace,"string");		
+			return false;			
 		}
-		
-		return false;
 	}
 }
