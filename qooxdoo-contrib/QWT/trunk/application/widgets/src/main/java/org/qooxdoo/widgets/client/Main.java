@@ -27,7 +27,6 @@ import qx.event.type.DataEvent;
 import qx.ui.basic.Image;
 import qx.ui.basic.Label;
 import qx.ui.form.ComboBox;
-import qx.ui.layout.GridLayout;
 import qx.ui.layout.VerticalBoxLayout;
 import qx.ui.pageview.tabview.Button;
 import qx.ui.pageview.tabview.Page;
@@ -47,7 +46,7 @@ public class Main extends Gui {
         super.main();
         System.out.println("welcome!");
 
-        new GridLayout().add(new Label("hi"), 1, 2);
+        ping.ping("startup");
         view = new TabView();
         view.setLeft(20);
         view.setTop(48);
