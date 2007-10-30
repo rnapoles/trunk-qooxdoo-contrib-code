@@ -33,8 +33,6 @@ import org.qooxdoo.toolkit.engine.common.Serializer;
 
 /** a running client. */
 public class Session implements SessionMBean, HttpSessionBindingListener {
-    public static final String ID = "WINDOW";
-
     private static final String SESSION_ATTRIBUTE = "SESSION_CONTEXT";
 
     public static synchronized Session get(HttpSession httpSession, HttpServletRequest httpRequest, 
