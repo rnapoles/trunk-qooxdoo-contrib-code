@@ -154,6 +154,8 @@ class qcl_object extends patched_object {
         $instance = new $classname(&$controller);
         return $instance;
     }
+    
+    
    	/**
    	 * save a variable in the session 
    	 * the variables will be available on a class basis, the namespace of the 
@@ -187,27 +189,23 @@ class qcl_object extends patched_object {
 	 * @param mixed 	$data 		Data to store. If no data is provided, the object serializes itself
 	 * return string Path to file with stored data.
 	 */
-   	function store($id=null, $data=null)
+   	function store($id=null, $data="")
    	{
    		if ( ! $id )
    		{
    			// use class name as id
-   			$id = get_class($this);
+   			$id = get_class($this) . ".tmp";
    		}
    		elseif ( substr($id,0,1) == "." )
    		{
    			// just the extension passed, create random unique id
    			$id = md5(microtime()) . $id;
    		}
-   		$path = QCL_TMP_PATH . "/" . $id;
-   		if ( ! $data )
+   		$path = QCL_TMP_PATH . $id;
+   		if ( $data )
    		{
-   			$data = &$this;
+   			$data = serialize($data);	
    		}
-   		if ( is_object ($data) )
-   		{
-   			$data = serialize($data);
-   		} 
    		file_put_contents($path,$data);
    		return $path;
    	}
@@ -220,18 +218,11 @@ class qcl_object extends patched_object {
    	{
    		if ( ! $id )
    		{
-   			$id = get_class($this);
+   			$id = get_class($this) . ".tmp";
    		}
-   		$path = QCL_TMP_PATH . "/" . $id;
+   		$path = QCL_TMP_PATH . $id;
    		$data = file_get_contents($path);
-   		if ( is_object ( $obj = @unserialize($data) ) )
-   		{
-   			return $obj;
-   		}
-   		else
-   		{
-   			return $data;
-   		}
+		return @unserialize($data);
    	}
    	
    	/**
@@ -243,7 +234,7 @@ class qcl_object extends patched_object {
    		{
    			$id = get_class($this);
    		}
-		$path = QCL_TMP_PATH . "/" . $id;
+		$path = QCL_TMP_PATH . $id;
 		return unlink ($path);		
    	}
    	
@@ -260,11 +251,8 @@ class qcl_object extends patched_object {
 		{
 			$message = date("y-m-j H:i:s") . ": " . $string . "\n";
 		}
-		$file	 = SERVICE_PATH . "bibliograph/var/log/bibliograph.log";
-		if ( is_writable($file) )
-		{
-			error_log($message,3,$file);	
-		}
+		$file	 = QCL_LOG_PATH . "bibliograph.log";
+		@error_log($message,3,$file);	
 	}
 		
 	/**
@@ -333,3 +321,24 @@ if(!function_exists("either")){
         return false;
     } 
 }
+
+/**
+ * php4 equivalent of stream_get_contents
+ * 
+ * @param resource $resource resource handle
+ */
+if( ! function_exists( "stream_get_contents" ) )
+{
+    function stream_get_contents($resource)
+    {
+		$stream = "";
+		while ( ! feof ( $resource ) ) 
+		{ 
+			$stream .= fread ( $resource );
+		}
+		return $stream;
+    } 
+}
+ 
+ 
+ 
