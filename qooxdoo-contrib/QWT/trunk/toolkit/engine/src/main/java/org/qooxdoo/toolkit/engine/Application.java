@@ -203,8 +203,9 @@ public class Application implements ApplicationMBean {
         return clients.get(id);
     }
     
-    public String getFirstApplication() {
-        return first;
+    /** @return never null */
+    public Client getFirstClient() {
+        return clients.get(first);
     }
     
     

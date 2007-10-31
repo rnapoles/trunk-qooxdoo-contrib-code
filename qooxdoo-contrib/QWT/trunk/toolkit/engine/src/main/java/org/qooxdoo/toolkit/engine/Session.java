@@ -57,12 +57,8 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
     /** result from Server.createClient */
     public final Object argument;
     
-    // TODO: share between sessions?
-    public final ResourceManager rm;
-
-    public Session(Client client, ResourceManager rm, int no, Object argument) {
+    public Session(Client client, int no, Object argument) {
         this.client = client;
-        this.rm = rm;
         this.no = no;
         this.argument = argument;
     }
