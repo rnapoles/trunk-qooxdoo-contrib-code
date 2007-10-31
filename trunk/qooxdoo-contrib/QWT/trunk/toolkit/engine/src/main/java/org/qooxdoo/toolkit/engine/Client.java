@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -51,17 +52,20 @@ public class Client implements ClientMBean {
         String title;    
         String client;
         FileNode dest;
+        Client result;
         
         context = config.getServletContext();
         name = "main";
         title = context.getServletContextName();
         client = getParam(config, "client");
         dest = application.createClientDirectory(name);
-        return new Client(application,
+        result = new Client(application,
                 application.getDocroot().join("WEB-INF/src"), 
                 getSplitParam(config, "includes"), 
                 getSplitParam(config, "excludes"),
                 name, title, client, dest);
+        result.link();
+        return result;
     }
 
     private static String[] getSplitParam(ServletConfig config, String name) throws ServletException {
@@ -95,8 +99,10 @@ public class Client implements ClientMBean {
     
     private int nextSessionId;
     private final FileNode index;
-    private boolean linked;
     private boolean compress;
+    private final ArrayBlockingQueue<ResourceManager> rms;
+
+    private static final int RM_COUNT = 10;
     
     //--
     
@@ -115,10 +121,21 @@ public class Client implements ClientMBean {
         
         this.index = (FileNode) dir.join("index.html");
         index.writeBytes();
-        this.linked = false;
         this.compress = false;
+        this.rms = new ArrayBlockingQueue<ResourceManager>(RM_COUNT);
     }
 
+    public ResourceManager allocate() {
+        try {
+            return rms.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e); // TODO
+        }
+    }
+    public void free(ResourceManager rm) {
+        rms.add(rm);
+    }
+    
     public Application getApplication() {
         return application;
     }
@@ -131,28 +148,24 @@ public class Client implements ClientMBean {
         return compress;
     }
     
-    public void reload() {
-        linked = false;
-    }
-
     public FileNode getIndex() {
         return index;
     }
     
-    public void update() throws IOException, ServletException {
+    public void link() throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
         
-        if (!linked) {
-            qooxdoo = compile();
-            idx = new Index(compress, this.index, qooxdoo);
-            idx.generate(title, main); 
-            application.log.info(this.index.length() + " bytes written to " + index);
-            linked = true;
+        qooxdoo = compile();
+        idx = new Index(compress, this.index, qooxdoo);
+        idx.generate(title, main); 
+        application.log.info(this.index.length() + " bytes written to " + index);
+        for (int i = 0; i < RM_COUNT; i++) {
+            rms.add(application.createResourceManager(getIndex(), getIndexGz()));
         }
     }
     
-    public FileNode getIndexGz() throws IOException, ServletException {
+    public FileNode getIndexGz() throws IOException {
         FileNode gz;
         
         gz = (FileNode) index.getParent().join(index.getName() + ".gz");
@@ -167,14 +180,11 @@ public class Client implements ClientMBean {
     }
     
     public synchronized Session start(Application application) throws IOException, ServletException {
-        ResourceManager rm;
         Session session;
         Object argument;
         
         argument = application.getServer().clientStart();
-        update();
-        rm = application.createResourceManager(getIndex(), getIndexGz());
-        session = new Session(this, rm, nextSessionId++, argument);
+        session = new Session(this, nextSessionId++, argument);
         return session;
     }
 
