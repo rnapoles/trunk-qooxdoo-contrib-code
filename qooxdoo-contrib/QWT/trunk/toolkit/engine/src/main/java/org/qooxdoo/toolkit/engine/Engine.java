@@ -30,7 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /** Main class */
 public class Engine extends HttpServlet {
@@ -131,7 +130,6 @@ public class Engine extends HttpServlet {
         ResourceManager rm;
         String path;
         Object[] tmp;
-        HttpSession httpSession;
         
         path = request.getPathInfo();
         map = request.getParameterMap();
@@ -141,16 +139,12 @@ public class Engine extends HttpServlet {
             response.sendRedirect(url);
             return;
         }
-        httpSession = request.getSession();
-        if (httpSession.isNew()) {
-            httpSession.setMaxInactiveInterval(60 * 15); // TODO: configurable
-        }
         tmp = getClient(path);
         if (tmp != null) {
             client = (Client) tmp[0];
             rm = client.allocate();
             try {
-                forClient(httpSession, request, response, rm, client, (String) tmp[1]);
+                forClient(request, response, rm, client, (String) tmp[1]);
             } finally {
                 client.free(rm);
             }
@@ -158,51 +152,42 @@ public class Engine extends HttpServlet {
             client = application.getFirstClient();
             String url = request.getContextPath() + "/" + client.getName() + "/" + client.getIndex().getName();
             application.log.info("unknown request '" + path + "', redirect to " + url);
-            httpSession.invalidate(); // because we expect new sessions for the frame only
             response.sendRedirect(url);
         }
     }
 
-    private void forClient(HttpSession httpSession, HttpServletRequest request, HttpServletResponse response, 
+    private void forClient(HttpServletRequest request, HttpServletResponse response, 
             ResourceManager rm, Client client, String path) throws IOException, ServletException {
         Session session;
         Call call;
         Writer writer;
         String error;
         
-        synchronized (httpSession) {
-            session = Session.get(httpSession, request, application, client);
-            if (httpSession.isNew()) {
-                session.addArgument(response);
-            }
-            String ae = request.getHeader("accept-encoding");
-            boolean compress = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
-            if (path.startsWith("/") && rm.render(path.substring(1), compress, response)) {
-                return;
-            }
-            if (path.startsWith(METHOD)) {
-                // TODO sync(session, httpRequest);
-                if (httpSession.isNew()) {
-                    application.log.info("no frame request so far -- probably cached by browser");
-                }
-                call = Call.parse(rm.getIO(), application.getRegistry(), path.substring(METHOD.length()), request);
-                if (call == null) {
-                    throw new IllegalArgumentException("no call: " + path);
-                }
-                log(session, "invoke " + call);
-                writer = createHtmlWriter(response);
-                try {
-                    writer.write(call.invoke());
-                } catch (InvocationTargetException e) {
-                    error = getReportableException(e.getTargetException());
-                    application.log.log(Level.SEVERE, error, e);
-                }
-                log(session, "done " + call);
-                return;
-            }
+        session = Session.get(request, application, client);
+        session.addArgument(response);
+        String ae = request.getHeader("accept-encoding");
+        boolean compress = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
+        if (path.startsWith("/") && rm.render(path.substring(1), compress, response)) {
+            return;
         }
-        
+        if (path.startsWith(METHOD)) {
+            call = Call.parse(rm.getIO(), application.getRegistry(), path.substring(METHOD.length()), request);
+            if (call == null) {
+                throw new IllegalArgumentException("no call: " + path);
+            }
+            log(session, "invoke " + call);
+            writer = createHtmlWriter(response);
+            try {
+                writer.write(call.invoke());
+            } catch (InvocationTargetException e) {
+                error = getReportableException(e.getTargetException());
+                application.log.log(Level.SEVERE, error, e);
+            }
+            log(session, "done " + call);
+            return;
+        }
     }
+    
     private Object[] getClient(String path) {
         int idx;
         Client client;

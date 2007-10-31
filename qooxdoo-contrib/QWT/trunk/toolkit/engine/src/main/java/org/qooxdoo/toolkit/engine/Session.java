@@ -25,7 +25,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -33,19 +32,12 @@ import org.qooxdoo.toolkit.engine.common.Serializer;
 
 /** a running client. */
 public class Session implements SessionMBean, HttpSessionBindingListener {
-    private static final String SESSION_ATTRIBUTE = "SESSION_CONTEXT";
-
-    public static synchronized Session get(HttpSession httpSession, HttpServletRequest httpRequest, 
-            Application application, Client client)
+    public static synchronized Session get(HttpServletRequest httpRequest, Application application, Client client)
         throws IOException, ServletException {
         Session session;
 
-        session = (Session) httpSession.getAttribute(SESSION_ATTRIBUTE);
-        if (session == null) {
-            session = client.start(application);
-            application.register(session);
-            httpSession.setAttribute(SESSION_ATTRIBUTE, session);
-        }
+        session = client.start(application);
+        application.register(session);
         return session;
     }
 
