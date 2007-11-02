@@ -35,6 +35,10 @@ qx.Interface.define("inspector.console.IView", {
     
     focus: function() {
       return true;
+    },
+
+    clear: function() {
+        return true;
     }
   }
 });

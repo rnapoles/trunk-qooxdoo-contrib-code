@@ -591,7 +591,34 @@ qx.Class.define("inspector.Inspector", {
       // set the widget
       this.setWidget(qx.core.Object.getDb()[dbKey], ref);
     },
+	
+	
+	/**
+	 * Tells the console to show the object assosiated with the id in the dom view.
+	 * @internal
+	 * @param id {Number} The given id. 
+	 */
+	inspectObjectByInternalId: function(id) {
+        // if the console existst
+		if (this._console != null) {
+			// tell the consol to do the rest
+            this._console.inspectObjectByInternalId(id);
+        }
+	},
    
+   
+    /**
+     * Selects the object represented by the internal index an the value of 
+     * this objects named key.
+     * @internal
+     * @param index {Number} The index in the internal array structure.
+     * @param key {String} The name of the value so select the object.
+     */
+	inspectObjectByDomSelecet: function(index, key) {
+		if (this._console != null) {
+		    this._console.inspectObjectByDomSelecet(index, key);
+		}
+	},   
       
     /*
     *********************************

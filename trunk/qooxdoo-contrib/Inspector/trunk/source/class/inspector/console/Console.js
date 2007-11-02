@@ -20,16 +20,6 @@
 qx.Class.define("inspector.console.Console", {
   
   extend : inspector.AbstractWindow,  
-
-  /*
-  *****************************************************************************
-     STATICS
-  *****************************************************************************
-  */  
-  statics: {
-    // the length of the history in the console
-    HISTORY_LENGTH: 20
-  },
     
   /*
   *****************************************************************************
@@ -77,10 +67,14 @@ qx.Class.define("inspector.console.Console", {
     // main elements
     _consoleView: null,
     _domView: null,
+	_tabView: null,
+	
 
     // buttons
     _clearButton: null,
     _helpButton: null,
+	// tabview buttons
+	_domButton: null,
     
     // the current widget
     _widget: null,
@@ -136,6 +130,42 @@ qx.Class.define("inspector.console.Console", {
     setAns: function(ans) {
       this._ans = ans;
     },
+	
+	
+    /**
+     * Sets the given object in the dom view.
+     * @param object {Object} The object to inspect.
+     */
+	inspectObject: function(object) {
+	    this._domView.setObject(object);
+		this._domButton.setChecked(true);
+	},
+	
+	
+	/**
+	 * Fetches the object from the console view and tells the dom view to show 
+	 * the objects properties.
+	 * @internal
+	 * @param id {Number} Set the object assosiated with the given id.
+	 */
+	inspectObjectByInternalId: function(id) {
+		// get the object
+		var o = this._consoleView.getObjectById(id);
+		// inspect the object
+		this.inspectObject(o);
+	},
+	
+	
+	/**
+	 * Sets a object in the dom view represented in the value (key) of the object
+	 * stored in an internal array on the index position.
+	 * @internal
+	 * @param index {Number} The internal index of the object. 
+	 * @param key {String} The name of the value to select.
+	 */
+	inspectObjectByDomSelecet: function(index, key) {
+        this._domView.setObjectByIndex(index, key);		
+	},
 
     
     /*
@@ -231,6 +261,14 @@ qx.Class.define("inspector.console.Console", {
       return returnString;
    },   
    
+   
+   /**
+    * Clears the views of the console.
+    */
+   _clearViews: function() {
+       this._consoleView.clear();
+	   this._domView.clear();
+   },
     
    
     /*
@@ -276,30 +314,30 @@ qx.Class.define("inspector.console.Console", {
     
     _createMainElement: function() {   
       // create the tabview   
-      var tabView = new qx.ui.pageview.tabview.TabView();
+      this._tabView = new qx.ui.pageview.tabview.TabView();
       // tab view buttons
       var consoleButton = new qx.ui.pageview.tabview.Button("Concole");
-      var domButton = new qx.ui.pageview.tabview.Button("DOM");
+      this._domButton = new qx.ui.pageview.tabview.Button("DOM");
       consoleButton.setChecked(true);
-      tabView.getBar().add(consoleButton, domButton);      
+      this._tabView.getBar().add(consoleButton, this._domButton);      
       // tabview pages
       var consolePage = new qx.ui.pageview.tabview.Page(consoleButton);
-      var domPage = new qx.ui.pageview.tabview.Page(domButton);
+      var domPage = new qx.ui.pageview.tabview.Page(this._domButton);
       // content of the pages    
       this._consoleView = new inspector.console.ConsoleView(this);
-      this._domView = new inspector.console.DomView(this);
+      this._domView = new inspector.console.DomViewHtml(this);
       // set the pane to the borders of the window      
-      tabView.getPane().setPadding(0);
+      this._tabView.getPane().setPadding(0);
       // add the content of the pages to the pages
       consolePage.add(this._consoleView);
       domPage.add(this._domView);
       // add the pages to the tabview 
-      tabView.getPane().add(consolePage, domPage);
+      this._tabView.getPane().add(consolePage, domPage);
       // add the tabview to the window      
-      this._mainLayout.add(tabView);
+      this._mainLayout.add(this._tabView);
   
       // register the clear event listener
-      this._clearButton.addEventListener("click", this._consoleView.clear, this._consoleView);    
+      this._clearButton.addEventListener("click", this._clearViews, this);    
       // register a handlert to print out the help text on the console
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
     },
