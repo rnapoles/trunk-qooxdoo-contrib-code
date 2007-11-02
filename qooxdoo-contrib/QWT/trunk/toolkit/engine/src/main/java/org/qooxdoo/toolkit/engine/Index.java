@@ -63,7 +63,7 @@ public class Index {
         lines(writer,
                 "REGISTRY = new org.qooxdoo.toolkit.engine.common.Registry();",
                 "function getApplication() {",
-                "  var argument = " + Transport.class.getName() + ".clientArgument(REGISTRY, document.cookie);",
+                "  var argument = " + Transport.class.getName() + ".clientArgument(REGISTRY);",
                 "  if (argument != null) {",
                 "    return newObject(" + client + "," + client + ".init1,[argument])", 
                 "  } else {",

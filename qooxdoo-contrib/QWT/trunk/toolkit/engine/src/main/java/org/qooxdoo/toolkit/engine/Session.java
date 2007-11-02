@@ -22,13 +22,9 @@ package org.qooxdoo.toolkit.engine;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
-
-import org.qooxdoo.toolkit.engine.common.Serializer;
 
 /** a running client. */
 public class Session implements SessionMBean, HttpSessionBindingListener {
@@ -57,15 +53,6 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
 
     public Client getClient() {
         return client;
-    }
-
-    public void addArgument(HttpServletResponse reponse) {
-        String serialized;
-        
-        if (argument != null) {
-            serialized = Serializer.run(client.getApplication().getRegistry(), argument);
-            reponse.addCookie(new Cookie(org.qooxdoo.toolkit.engine.common.Transport.COOKIE, serialized));
-        }
     }
 
     public String getName() {

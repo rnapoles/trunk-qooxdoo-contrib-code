@@ -31,11 +31,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.qooxdoo.toolkit.engine.common.Serializer;
+import org.qooxdoo.toolkit.engine.common.Transport;
+
 /** Main class */
 public class Engine extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    private static final String METHOD = "/method/";
 
     private Application application = null;
     
@@ -158,24 +159,21 @@ public class Engine extends HttpServlet {
 
     private void forClient(HttpServletRequest request, HttpServletResponse response, 
             ResourceManager rm, Client client, String path) throws IOException, ServletException {
-        Session session;
         Call call;
         Writer writer;
         String error;
         
-        session = Session.get(request, application, client);
-        session.addArgument(response);
         String ae = request.getHeader("accept-encoding");
         boolean compress = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
         if (path.startsWith("/") && rm.render(path.substring(1), compress, response)) {
             return;
         }
-        if (path.startsWith(METHOD)) {
-            call = Call.parse(rm.getIO(), application.getRegistry(), path.substring(METHOD.length()), request);
+        if (path.startsWith(Transport.METHOD)) {
+            call = Call.parse(rm.getIO(), application.getRegistry(), path.substring(Transport.METHOD.length()), request);
             if (call == null) {
                 throw new IllegalArgumentException("no call: " + path);
             }
-            log(session, "invoke " + call);
+            application.log.info("invoke " + call);
             writer = createHtmlWriter(response);
             try {
                 writer.write(call.invoke());
@@ -183,9 +181,20 @@ public class Engine extends HttpServlet {
                 error = getReportableException(e.getTargetException());
                 application.log.log(Level.SEVERE, error, e);
             }
-            log(session, "done " + call);
+            application.log.info("done " + call);
             return;
         }
+        if (path.equals(Transport.SESSION)) {
+            Session session;
+            
+            application.log.info("create session");
+            session = client.start(application);
+            writer = createHtmlWriter(response);
+            writer.write(Serializer.run(application.getRegistry(), session.argument));
+            return;
+        }
+        
+        throw new IllegalArgumentException(path);
     }
     
     private Object[] getClient(String path) {
@@ -207,16 +216,6 @@ public class Engine extends HttpServlet {
         return new Object[] { client, path.substring(idx) };
     }
 
-    private void log(Session session, Object obj) {
-        String str;
-        
-        str = obj.toString();
-        if (str.endsWith("\n")) {
-            str = str.substring(0, str.length() - 1);
-        }
-        application.log.info("[" + session.getNo() + "] " + str);
-    }
-    
     public String getReportableException(Throwable cause) {
         if (cause instanceof Error) {
             application.log.log(Level.SEVERE, "rethrowing error", cause);
