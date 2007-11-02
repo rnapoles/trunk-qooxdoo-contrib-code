@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.console.DomView", {
+qx.Class.define("inspector.console.DomViewHtml", {
   
   extend : qx.ui.layout.VerticalBoxLayout,  
   implement : inspector.console.IView,
