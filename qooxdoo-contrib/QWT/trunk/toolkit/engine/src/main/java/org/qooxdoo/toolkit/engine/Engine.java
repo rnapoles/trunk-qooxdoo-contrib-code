@@ -31,14 +31,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.qooxdoo.toolkit.engine.common.Serializer;
 import org.qooxdoo.toolkit.engine.common.Transport;
 
 /** Main class */
 public class Engine extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private Application application = null;
+    // TODO
+    public static Application application = null;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -184,23 +184,13 @@ public class Engine extends HttpServlet {
             application.log.info("done " + call);
             return;
         }
-        if (path.equals(Transport.SESSION)) {
-            Session session;
-            
-            application.log.info("create session");
-            session = client.start(application);
-            writer = createHtmlWriter(response);
-            writer.write(Serializer.run(application.getRegistry(), session.argument));
-            return;
-        }
-        
         throw new IllegalArgumentException(path);
     }
     
     private Object[] getClient(String path) {
         int idx;
         Client client;
-        
+
         if (!path.startsWith("/")) {
             return null;
         }
@@ -233,9 +223,9 @@ public class Engine extends HttpServlet {
     
     private static final String ENCODING = "UTF-8";
     private static final String CONTENT_TYPE = "text/html; charset=" + ENCODING;
-    private static Writer createHtmlWriter(HttpServletResponse response) throws IOException {
+    
+    public static Writer createHtmlWriter(HttpServletResponse response) throws IOException {
         response.setContentType(CONTENT_TYPE);
         return response.getWriter();
     }
-    
 }
