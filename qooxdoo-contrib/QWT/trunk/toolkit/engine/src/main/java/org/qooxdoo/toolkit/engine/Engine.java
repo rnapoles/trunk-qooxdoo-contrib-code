@@ -174,7 +174,7 @@ public class Engine extends HttpServlet {
                 throw new IllegalArgumentException("no call: " + path);
             }
             application.log.info("invoke " + call);
-            writer = createHtmlWriter(response);
+            writer = createTextWriter(response);
             try {
                 writer.write(call.invoke());
             } catch (InvocationTargetException e) {
@@ -208,7 +208,7 @@ public class Engine extends HttpServlet {
 
     public String getReportableException(Throwable cause) {
         if (cause instanceof Error) {
-            application.log.log(Level.SEVERE, "rethrowing error", cause);
+            application.log.log(Level.SEVERE, "re-throwing error", cause);
             throw (Error) cause;
         }
         if (cause instanceof RuntimeException) {
@@ -221,10 +221,11 @@ public class Engine extends HttpServlet {
     
     //--
     
-    private static final String ENCODING = "UTF-8";
-    private static final String CONTENT_TYPE = "text/html; charset=" + ENCODING;
+    public static final String ENCODING = "UTF-8";
+    public static final String CONTENT_TYPE = "text/plain";
     
-    public static Writer createHtmlWriter(HttpServletResponse response) throws IOException {
+    public static Writer createTextWriter(HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding(ENCODING);
         response.setContentType(CONTENT_TYPE);
         return response.getWriter();
     }
