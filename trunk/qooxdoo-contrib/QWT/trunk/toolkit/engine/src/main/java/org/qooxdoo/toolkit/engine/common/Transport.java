@@ -19,11 +19,6 @@
 
 package org.qooxdoo.toolkit.engine.common;
 
-import org.qooxdoo.toolkit.qooxdoo.EventListener;
-
-import qx.event.type.DataEvent;
-import qx.io.remote.Request;
-import qx.io.remote.Response;
 
 /** 
  *  @native
@@ -37,7 +32,6 @@ $s*
 #require(org.qooxdoo.toolkit.engine.common.Registry)
 #require(qx.theme.ClassicRoyale)
 *$s
-
 */
 
 public class Transport {
@@ -93,25 +87,30 @@ public class Transport {
     }
     
     public static Object invoke(Registry registry, int object, String method, Object[] args) {
-        String url;
-        Result result;
-        Request request;
+        String result;
 
-        // TODO: I'd prefer using the post method body to transfer arguments, 
-        // but qooxdoo Request does not yet support it ...
-        url = "method/" + object + "_" + method + argumentsString(registry, args);
-        result = new Result();
-        request = new Request(url, "POST", "text/plain");
-        request.addCompletedListener(result);
-        request.setAsynchronous(false);
-        request.setProhibitCaching(false); // supress nochach request paramete
-        request.send();
-        if (!request.isCompleted()) {
-            throw new Error("error response: " + request.getState());
-        }
-        return Parser.run(registry, result.text);
+        result = post("method/" + object + "_" + method, argumentsString(registry, args));
+        return Parser.run(registry, result);
     }
 
+
+    /**
+     * Qooxdoo Remote is not powerful enough ...
+     * 
+     * @native 
+
+      var req = new XMLHttpRequest();   
+      qwtLog("POST " + url);      
+      req.open("POST", url, false);   
+      req.setRequestHeader("Content-Type", "text/xml");   
+      req.send(body);     
+      if (req.status != 200) {    
+        throw new Error("error response: " + req.status);     
+      }   
+      return req.responseText;    
+    */
+    private native static String post(String url, String body);
+    
     private static String argumentsString(Registry registry, Object[] args) {
         boolean first;
         StringBuilder builder;
@@ -130,16 +129,4 @@ public class Transport {
         builder.append(']');
         return builder.toString();
     }
-    
-    private static class Result implements EventListener {
-        public String text;
-
-        public void notify(DataEvent event) { // TODO
-            Object obj;
-            
-            obj = event;
-            text = (String) ((Response) obj).getContent();
-        }
-    }
-
 }

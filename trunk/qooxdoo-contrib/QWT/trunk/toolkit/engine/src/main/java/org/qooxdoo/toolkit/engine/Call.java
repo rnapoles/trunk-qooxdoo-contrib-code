@@ -20,6 +20,7 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class Call {
         int idx;
         String destStr;
         Object dest;
-        int argStart;
         String args;
+        InputStream in;
         
         idx = pathInfo.indexOf('_');
         if (idx == -1) {
@@ -50,12 +51,10 @@ public class Call {
         if (dest == null) {
             throw new ServletException("unkown object: " + destStr);
         }
-        argStart = pathInfo.indexOf('[');
-        if (argStart == -1) {
-            throw new IllegalArgumentException(pathInfo);
-        }
-        args = pathInfo.substring(argStart);
-        return parseMethod(registry, dest, pathInfo.substring(idx + 1, argStart), args);
+        in = request.getInputStream();
+        args = io.buffer.readString(in);
+        in.close();
+        return parseMethod(registry, dest, pathInfo.substring(idx + 1), args);
     }
 
     public static Call parseMethod(Registry registry, Object dest, String method, String args) {
