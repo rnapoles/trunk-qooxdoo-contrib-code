@@ -86,7 +86,14 @@ public class Transport {
      * 
      * @native 
 
-      var req = new XMLHttpRequest();   
+      var req;
+      if (window.XMLHttpRequest) {
+          req = new XMLHttpRequest();
+      } else if (window.ActiveXObject) {
+          req = new ActiveXObject('Microsoft.XMLHTTP')
+      } else {
+          throw new Error("no xmlhttprequest");
+      }
       qwtLog("POST " + url);      
       req.open("POST", url, false);   
       req.setRequestHeader("Content-Type", "text/xml");   
@@ -96,7 +103,7 @@ public class Transport {
       }   
       return req.responseText;    
     */
-    private native static String post(String url, String body);
+    private static native String post(String url, String body);
     
     private static String argumentsString(Registry registry, Object[] args) {
         boolean first;
