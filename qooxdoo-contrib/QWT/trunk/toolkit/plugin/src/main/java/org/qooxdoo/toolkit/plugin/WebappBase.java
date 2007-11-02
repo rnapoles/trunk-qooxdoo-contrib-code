@@ -353,7 +353,7 @@ public abstract class WebappBase extends Base {
         result = new ArrayList<Artifact>();
         for (Object obj : resolutionResult.getArtifacts()) {
             artifact = (Artifact) obj;
-            if (!"test".equals(artifact.getScope())) {
+            if (!"test".equals(artifact.getScope()) && !"provided".equals(artifact.getScope())) {
                 result.add(artifact);
             }
         }

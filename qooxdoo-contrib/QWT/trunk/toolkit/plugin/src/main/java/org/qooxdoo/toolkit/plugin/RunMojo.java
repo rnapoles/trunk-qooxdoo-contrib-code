@@ -89,7 +89,8 @@ public class RunMojo extends WebappBase {
         engine.setParentClassLoader(getClass().getClassLoader());
         engine.setBackgroundProcessorDelay(2);
         embedded.addEngine(engine);
-        embedded.addConnector(embedded.createConnector((InetAddress) null, port, false));
+        embedded.addConnector(embedded.createConnector((InetAddress) null, port, 
+                "org.apache.coyote.http11.Http11NioProtocol"));
         return embedded;
     }
 
