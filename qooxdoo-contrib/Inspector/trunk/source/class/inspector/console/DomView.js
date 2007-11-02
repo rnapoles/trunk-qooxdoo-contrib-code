@@ -82,7 +82,11 @@ qx.Class.define("inspector.console.DomView", {
     
     focus: function() {
       // TODO
-    },        
+    },       
+	
+	clear: function() {
+	  // TODO
+	},
     
     /*
     *********************************

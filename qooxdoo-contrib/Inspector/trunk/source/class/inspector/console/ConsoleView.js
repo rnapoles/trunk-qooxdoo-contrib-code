@@ -41,9 +41,12 @@ qx.Class.define("inspector.console.ConsoleView", {
     this.base(arguments);
     // sorte the reference to the console window
     this._console = console;
-    
+    // set the dimensions
     this.setWidth("100%");
     this.setHeight("100%");
+    
+	// initialize the object folder    
+    this._objectFolder = [];
     
     // create the popup for the autocompletion
     this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
@@ -130,6 +133,10 @@ qx.Class.define("inspector.console.ConsoleView", {
     _ctrl: false,
     _autoCompletePopup: null,
     
+	// reference arrays used to stor the objects shown on the console view
+    _objectFolder: null,
+    _objectFolderIndex: 0,
+    
     
     /*
     *********************************
@@ -143,6 +150,17 @@ qx.Class.define("inspector.console.ConsoleView", {
     getComponents: function() {
       return [this].concat(this._autoCompletePopup.getComponents());
     },    
+    
+    
+	/**
+	 * Returns the object with the given index.
+	 * @internal 
+	 * @param {Number} The index of the object.
+	 * @return {Object} The object in the console view. 
+	 */
+    getObjectById: function(id) {
+        return this._objectFolder[id];
+    },
     
     
     /**
@@ -194,7 +212,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       this._textField.focus();
     },
     
-		
+        
     /**
      * Appends the given string to the textfield.
      * @param string {String} The string to append.
@@ -257,10 +275,14 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Clears the whole console screen.
+     * Clears the whole console view.
      */
     clear: function() {
-      this._htmlEmbed.setHtml("");      
+      // reset the veiw
+	  this._htmlEmbed.setHtml("");
+	  // reset the storage used for referencing the printed objects
+	  this._objectFolder = [];
+      this._objectFolderIndex = 0;
     },
     
     
@@ -269,10 +291,10 @@ qx.Class.define("inspector.console.ConsoleView", {
      * @param message {String} The error message.
      */    
     error: function(message) {
-			// open the console if it is not opened
-			if (!this._console.isOpen()) {
-				this._console.open();
-			}
+            // open the console if it is not opened
+            if (!this._console.isOpen()) {
+                this._console.open();
+            }
       // TODO check if it is visible
       var label = this._getLabel("", message, "red", "error", "#FFFFE0");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
@@ -289,7 +311,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // open the console if it is not opened
       if (!this._console.isOpen()) {
         this._console.open();
-      }			
+      }            
       // TODO check if it is visible
       var label = this._getLabel("", message, "black", "warning", "#00FFFF");           
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
@@ -306,7 +328,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // open the console if it is not opened
       if (!this._console.isOpen()) {
         this._console.open();
-      }			
+      }            
       // TODO check if it is visible
       var label = this._getLabel("", message, "black", "info");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
@@ -323,7 +345,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // open the console if it is not opened
       if (!this._console.isOpen()) {
         this._console.open();
-      }			
+      }            
       // TODO check if it is visible
       var label = this._getLabel("", message, "grey");        
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
@@ -423,7 +445,7 @@ qx.Class.define("inspector.console.ConsoleView", {
           // rest the history counter
           this._historyCounter = -1;
           // if the history is biger than it should be
-          if (this._history.length > inspector.console.Console.HISTORY_LENGTH) {
+          if (this._history.length > inspector.console.ConsoleView.HISTORY_LENGTH) {
             // remove the last element
             this._history.pop();            
           }
@@ -551,6 +573,9 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (returnValue instanceof qx.core.Object) {
         // print out the qooxdoo object
         this._printQxObject(returnValue);   
+        // store the object in the local reference folder
+        this._objectFolder[this._objectFolderIndex] = returnValue;
+        this._objectFolderIndex++;
         
       // check for arrays
       } else if (returnValue instanceof Array) {
@@ -566,12 +591,14 @@ qx.Class.define("inspector.console.ConsoleView", {
       // check for objects
       } else if (returnValue instanceof Object) {        
         // if yes, print out that it is one
-        var label = this._getLabel("", "---- " + returnValue + " (Object) ----", "#00008B")
+        var label = this._getLabel("", "<u style='cursor: pointer;' onclick='" + 
+                                       "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                       "'>" + returnValue + " </u>", "#AAAA00")
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
-        // go threw all elements and print them out
-        for (var i in returnValue) {
-          this._printReturnValue(i + ": " + returnValue[i]);
-        }
+        // store the object in the local reference folder
+        this._objectFolder[this._objectFolderIndex] = returnValue;
+        this._objectFolderIndex++;
+        
         return;
                      
       // everything else
@@ -594,7 +621,11 @@ qx.Class.define("inspector.console.ConsoleView", {
       // build the label string
       var label = this._getLabel("<u style='cursor: pointer;' " + 
                                  "onclick=\"inspector.Inspector.getInstance().setWidgetByDbKey(" + object.getDbKey() + ", 'console');\"" + 
-                                 ";>", object.classname + " [" + object.toHashCode() + "]</u>", "#006400")
+                                 ";> ", object.classname + " [" + object.toHashCode() + "]</u> " + 
+                                 "<u style='cursor: pointer; color: #AAAA00;' onclick='" + 
+                                       "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                       "'>" + object + " </u>"                                 
+                                 , "#006400")
       // append the label string
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);      
       // scroll to the end of the console 
