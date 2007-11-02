@@ -35,26 +35,13 @@ $s*
 */
 
 public class Transport {
-    public static final String COOKIE = "qwtClientArgument";
-    private static final String COOKIE_X = COOKIE + "=\"";
+    public static final String METHOD_RAW = "method/";
+    public static final String METHOD = "/" + METHOD_RAW;
+    public static final String SESSION_RAW = "session/";
+    public static final String SESSION = "/" + SESSION_RAW;
     
-    public static Object clientArgument(Registry registry, String str) {
-        int idx;
-
-        if (str == null) {
-            return null;
-        }
-        idx = str.indexOf(COOKIE_X);
-        if (idx == -1) {
-            return null;
-        }
-        str = str.substring(idx + COOKIE_X.length());
-        idx = str.indexOf("\"");  // TODO: indexOf(char) broken?
-        if (idx == -1) {
-            throw new IllegalArgumentException(str);
-        }
-        str = str.substring(0, idx);
-        return Parser.run(registry, str);
+    public static Object clientArgument(Registry registry) {
+        return Parser.run(registry, post(SESSION_RAW, null));
     }
     
     /**
@@ -89,7 +76,7 @@ public class Transport {
     public static Object invoke(Registry registry, int object, String method, Object[] args) {
         String result;
 
-        result = post("method/" + object + "_" + method, argumentsString(registry, args));
+        result = post(METHOD_RAW + object + "_" + method, argumentsString(registry, args));
         return Parser.run(registry, result);
     }
 
