@@ -32,6 +32,16 @@ $s*
 #require(org.qooxdoo.toolkit.engine.common.Registry)
 #require(qx.theme.ClassicRoyale)
 *$s
+
+    function qwtRequest() {
+      if (window.XMLHttpRequest) {
+          return new XMLHttpRequest();
+      } else if (window.ActiveXObject) {
+          return new ActiveXObject('Microsoft.XMLHTTP')
+      } else {
+          throw new Error("no XMLHttpRequest");
+      }
+    }
 */
 
 public class Transport {
@@ -41,8 +51,25 @@ public class Transport {
     public static final String SESSION = "/" + SESSION_RAW;
     
     public static Object clientArgument(Registry registry) {
-        return Parser.run(registry, post(SESSION_RAW, null));
+        return Parser.run(registry, startSession(SESSION_RAW));
     }
+
+    /**
+     * @native 
+
+      var req = qwtRequest();
+      qwtLog("POST " + url);      
+      req.onprogress = function(e) {
+        QWT_EVENT = e;
+        qwtLog("##progress " + req.responseText + ".");
+      }
+      req.open("POST", url, true);
+      req.setRequestHeader("Content-Type", "text/plain");
+      QWT_REQ = req;
+      req.send(null);
+      return "null";
+    */
+    private static native String startSession(String url);
     
     /**
      * @native
@@ -80,23 +107,15 @@ public class Transport {
         return Parser.run(registry, result);
     }
 
-
     /**
      * Qooxdoo Remote is not powerful enough ...
      * 
      * @native 
 
-      var req;
-      if (window.XMLHttpRequest) {
-          req = new XMLHttpRequest();
-      } else if (window.ActiveXObject) {
-          req = new ActiveXObject('Microsoft.XMLHTTP')
-      } else {
-          throw new Error("no xmlhttprequest");
-      }
+      var req = qwtRequest();
       qwtLog("POST " + url);      
       req.open("POST", url, false);   
-      req.setRequestHeader("Content-Type", "text/xml");   
+      req.setRequestHeader("Content-Type", "text/plain");   
       req.send(body);     
       if (req.status != 200) {    
         throw new Error("error response: " + req.status);     

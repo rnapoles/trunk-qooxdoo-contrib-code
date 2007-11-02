@@ -20,7 +20,6 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,35 +27,30 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.CometEvent;
 import org.apache.catalina.CometProcessor;
-import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Comet extends HttpServlet implements CometProcessor {
     public void event(CometEvent event) throws IOException, ServletException {
         String path;
+        HttpServletResponse response;
+        Client client;
         
         path = event.getHttpServletRequest().getPathInfo();
         if (!"/".equals(path)) {
             throw new IllegalArgumentException(path);
         }
+        client = Engine.application.getFirstClient(); // TODO
+        response = event.getHttpServletResponse();
         if (event.getEventType() == CometEvent.EventType.BEGIN) {
-            begin(event.getHttpServletResponse());
+            client.start(response);
+        } else if (event.getEventType() == CometEvent.EventType.END) {
+            client.stop(response);
+            event.close();
+        } else if (event.getEventType() == CometEvent.EventType.ERROR) {
+            System.out.println("error event");
+            client.stop(response);
+            event.close();
         } else {
             System.out.println("unkown event: " + event.getEventType());
         }
-    }
-    
-    private void begin(HttpServletResponse response) throws IOException, ServletException {
-        Session session;
-        Application application;
-        Client client;
-        Writer writer;
-
-        application = Engine.application;
-        client = application.getFirstClient(); // TODO
-        System.out.println("begin");
-        session = client.start(application);
-        writer = Engine.createHtmlWriter(response);
-        writer.write(Serializer.run(application.getRegistry(), session.argument));
-        writer.close();
     }
 }

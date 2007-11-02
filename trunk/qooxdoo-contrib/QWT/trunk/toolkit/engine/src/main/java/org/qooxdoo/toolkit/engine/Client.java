@@ -20,14 +20,18 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
@@ -38,6 +42,7 @@ import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.compiler.Problem;
 import org.qooxdoo.toolkit.compiler.Task;
+import org.qooxdoo.toolkit.engine.common.Serializer;
 import org.qooxdoo.toolkit.repository.Repository;
 
 import qx.ui.core.Widget;
@@ -102,6 +107,8 @@ public class Client implements ClientMBean {
     private boolean compress;
     private final ArrayBlockingQueue<ResourceManager> rms;
 
+    private final Map<HttpServletResponse, Session> sessions;
+    
     private static final int RM_COUNT = 10;
     
     //--
@@ -123,6 +130,7 @@ public class Client implements ClientMBean {
         index.writeBytes();
         this.compress = false;
         this.rms = new ArrayBlockingQueue<ResourceManager>(RM_COUNT);
+        this.sessions = new HashMap<HttpServletResponse, Session>();
     }
 
     public ResourceManager allocate() {
@@ -179,17 +187,6 @@ public class Client implements ClientMBean {
         return main;
     }
     
-    public synchronized Session start(Application application) throws IOException, ServletException {
-        Session session;
-        Object argument;
-        
-        argument = application.getServer().clientStart();
-        session = new Session(this, nextSessionId++, argument);
-        return session;
-    }
-
-    //--
-    
     public String getName() {
         return name;
     }
@@ -202,6 +199,35 @@ public class Client implements ClientMBean {
         return index.length();
     }
 
+    public Session start(HttpServletResponse response) throws IOException, ServletException {
+        Session session;
+        Writer writer;
+        Object argument;
+
+        System.out.println("start session");
+        writer = Engine.createTextWriter(response);
+        argument = application.getServer().clientStart();
+        session = new Session(this, nextSessionId++, writer, argument);
+        writer.write(Serializer.run(application.getRegistry(), session.argument));
+        writer.write('\n');
+        writer.flush();
+        if (sessions.put(response, session) != null) {
+            throw new IllegalStateException();
+        }
+        application.register(session);
+        return session;
+    }
+
+    public void stop(HttpServletResponse response) {
+        Session session;
+        
+        session = sessions.remove(response);
+        if (session == null) {
+            throw new IllegalStateException("no session for response " + response);
+        }
+        session.stop();
+    }
+    
     //--
     
     private Qooxdoo compile() throws IOException, ServletException {

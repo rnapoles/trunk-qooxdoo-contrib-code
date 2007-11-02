@@ -19,35 +19,21 @@
 
 package org.qooxdoo.toolkit.engine;
 
-import java.io.IOException;
+import java.io.Writer;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-
-/** a running client. */
-public class Session implements SessionMBean, HttpSessionBindingListener {
-    public static synchronized Session get(HttpServletRequest httpRequest, Application application, Client client)
-        throws IOException, ServletException {
-        Session session;
-
-        session = client.start(application);
-        application.register(session);
-        return session;
-    }
-
-    //--
-
+/** A running client. Create instances with Client.start. */
+public class Session implements SessionMBean {
     private final Client client;
     private final int no;
+    private final Writer writer;
     
     /** result from Server.createClient */
     public final Object argument;
     
-    public Session(Client client, int no, Object argument) {
+    public Session(Client client, int no, Writer writer, Object argument) {
         this.client = client;
         this.no = no;
+        this.writer = writer;
         this.argument = argument;
     }
 
@@ -63,16 +49,11 @@ public class Session implements SessionMBean, HttpSessionBindingListener {
         return no;
     }
 
-    //--
-    
-    public void valueBound(HttpSessionBindingEvent event) {
-        // do nothing
+    public Writer getWriter() {
+        return writer;
     }
 
-    public void valueUnbound(HttpSessionBindingEvent event) {
-        if (event.getValue() != this) {
-            throw new IllegalArgumentException();
-        }
+    public void stop() {
         client.getApplication().getServer().clientStop();
         client.getApplication().unregister(this);
         // Silently ignore errors because the file might haven been deleted by the shutdown hook
