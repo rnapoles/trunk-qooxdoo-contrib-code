@@ -51,25 +51,9 @@ public class Transport {
     public static final String SESSION = "/" + SESSION_RAW;
     
     public static Object clientArgument(Registry registry) {
-        return Parser.run(registry, startSession(SESSION_RAW));
+        return Parser.run(registry, post(SESSION_RAW, null));
     }
 
-    /**
-     * @native 
-
-      var req = qwtRequest();
-      qwtLog("POST " + url);      
-      req.onprogress = function(e) {
-        QWT_EVENT = e;
-        qwtLog("##progress " + req.responseText + ".");
-      }
-      req.open("POST", url, true);
-      req.setRequestHeader("Content-Type", "text/plain");
-      QWT_REQ = req;
-      req.send(null);
-      return "null";
-    */
-    private static native String startSession(String url);
     
     /**
      * @native
