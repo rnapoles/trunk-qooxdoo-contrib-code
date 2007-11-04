@@ -31,11 +31,10 @@ class qcl_db extends qcl_object
 	function __construct($controller)
 	{
 		parent::__construct();
-		if ( ! is_a( $controller, "qcl_jsonrpc_controller" ) )
+		if ( is_a( $controller, "qcl_jsonrpc_controller" ) )
 		{
-			$this->raiseError ("Cannot instantiate " . get_class($this) . " object: No controller object provided.");
+			$this->controller = &$controller;
 		}
-		$this->controller = &$controller;
 		$this->init();	
 	}
 		
@@ -74,8 +73,19 @@ class qcl_db extends qcl_object
 	 */
 	function init( $dsn = null )
 	{
-		$this->dsn 	= $dsn ? $dsn : $this->controller->getConfigValue("database.dsn");
-		$this->db 	= $this->connect();		
+		if ( $dsn )
+		{
+			$this->dsn 	= $dsn;
+		}
+		elseif ( $this->controller )
+		{
+			$this->dsn 	= $this->controller->getConfigValue("database.dsn");	
+		}
+		
+		if ( $this->dsn )
+		{
+			$this->db 	= $this->connect();	
+		}
 	}
 
 	/**

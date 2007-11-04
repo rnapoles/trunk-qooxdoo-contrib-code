@@ -75,12 +75,18 @@ class qcl_object extends patched_object {
 	 */
 	function &setSingleton( $instance ) 
 	{
-        global $qcl_jsonrpc_singletons;
         $classname = get_class ( $instance );
-        $qcl_jsonrpc_singletons[$classname] = &$instance;
+        $GLOBALS['qcl_jsonrpc_singletons'][$classname] = &$instance;
         return $instance;
     }
 	
+	/**
+	 * gets singleton instance when dealing with object copy
+	 */
+	function &getInstance()
+	{
+        return $this->getSingleton(get_class(&$this));
+	}
 	
 	/**
 	 * get (non-persistent) singleton instance of class.
@@ -96,11 +102,10 @@ class qcl_object extends patched_object {
 	 */
 	function &getSingleton( $classname, $controller = null ) 
 	{
-        global $qcl_jsonrpc_singletons;
-        $instance = &$qcl_jsonrpc_singletons[$classname];
-        if ( ! is_a ( $instance, $classname ) ) 
+        $instance = &$GLOBALS['qcl_jsonrpc_singletons'][$classname];
+        if ( ! $instance )  
         {
-            $instance = $this->getNewInstance( $classname, $controller );
+            $instance = $this->getNewInstance( $classname, &$controller );
         }
         return $instance;
     }
@@ -151,7 +156,7 @@ class qcl_object extends patched_object {
         {
         	$controller = &$this;
         }
-        $instance = new $classname(&$controller);
+        $instance = &new $classname(&$controller);
         return $instance;
     }
     
@@ -202,7 +207,7 @@ class qcl_object extends patched_object {
    			$id = md5(microtime()) . $id;
    		}
    		$path = QCL_TMP_PATH . $id;
-   		if ( $data )
+   		if ( is_object($data) or is_array($data) )
    		{
    			$data = serialize($data);	
    		}
@@ -222,7 +227,12 @@ class qcl_object extends patched_object {
    		}
    		$path = QCL_TMP_PATH . $id;
    		$data = file_get_contents($path);
-		return @unserialize($data);
+   		$obj = @unserialize($data);
+   		if ( is_object( $obj ) or is_array( $obj ) )
+   		{
+   			return $obj;
+   		}
+		return $data;
    	}
    	
    	/**
