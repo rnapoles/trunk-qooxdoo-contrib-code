@@ -47,6 +47,23 @@ class qcl_db_model extends qcl_jsonrpc_model
  		$this->db->setController(&$controller);
  	}
  	
+ 	/**
+ 	 * gets controller (singleton) of this model 
+ 	 * @return object 
+ 	 */
+ 	function &getController()
+ 	{
+ 		$controllerSingleton = &$this->controller->getInstance();
+ 		if (is_object($controllerSingleton))
+ 		{
+ 			return $controllerSingleton;
+ 		}
+ 		else
+ 		{
+ 			return $this->controller;
+ 		}
+ 	}
+ 	
    	/**
      * gets all database records or those that match a where condition
      * @param string 			$where   	where condition to match, if null, get all

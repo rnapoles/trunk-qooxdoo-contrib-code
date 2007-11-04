@@ -30,10 +30,16 @@ class qcl_db_pear extends qcl_db
 	/**
 	 * connects to database 
 	 */
-	function &connect()
+	function &connect($dsn = null)
 	{
 		require_once ("DB.php"); // load pear DB library
-		$db =& DB::connect( $this->getDsn() );
+		
+		if ( ! $dsn )
+		{
+			$dsn = $this->getDsn();
+		}
+		
+		$db =& DB::connect( $dsn );
 		if (PEAR::isError($db)) 
 		{
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
@@ -41,12 +47,18 @@ class qcl_db_pear extends qcl_db
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 		
 		// set encoding
-		$encoding = $this->controller->getConfigValue("database.encoding"); 
-		if ($encoding)
+		if ( $this->controller )
 		{
-			$db->query("SET NAMES $encoding");
-			$db->query("SET CHARACTER_SET $encoding");
+			$encoding = $this->controller->getConfigValue("database.encoding");	
 		}
+		else
+		{
+			$encoding = "utf8";
+		}
+		$db->query("SET NAMES $encoding");
+		$db->query("SET CHARACTER_SET $encoding");
+		
+		$this->db = &$db;
 		
  		return $db;
 	}

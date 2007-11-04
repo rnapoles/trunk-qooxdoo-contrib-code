@@ -27,11 +27,10 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	 * @param mixed 	$xml 		string or filename of xml file to transform
 	 * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
 	 * @param array 	$params 	an associated array to pass to the xsl as top-level parameters
-	 * @param string 	$debugfile 	file to write debug information to 
-	 * @param string	$version	XSLT version ("1.0" or "2.0"). XSLT 2.0 conversions require the javabridge extension
+	 * @param string	$version	XSLT version ("1.0" or "2.0"). XSLT 2.0 conversions require the java saxon library
 	 * @return string transformed xml
 	 */
-    function transform ($xml,$xsl,$params=null,$debugfile=null,$version="1.0")
+    function transform ($xml,$xsl,$params=null,$version="1.0")
     {
     	if ( $version < 2 )
     	{
