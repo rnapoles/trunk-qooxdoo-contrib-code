@@ -209,8 +209,7 @@ public class Client implements ClientMBean {
         argument = application.getServer().clientStart();
         session = new Session(this, nextSessionId++, writer, argument);
         writer.write(Serializer.run(application.getRegistry(), session.argument));
-        writer.write('\n');
-        writer.flush();
+        writer.close();
         if (sessions.put(response, session) != null) {
             throw new IllegalStateException();
         }

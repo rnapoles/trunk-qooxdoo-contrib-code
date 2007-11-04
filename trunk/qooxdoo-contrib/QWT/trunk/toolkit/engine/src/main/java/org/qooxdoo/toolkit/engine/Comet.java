@@ -29,6 +29,8 @@ import org.apache.catalina.CometEvent;
 import org.apache.catalina.CometProcessor;
 
 public class Comet extends HttpServlet implements CometProcessor {
+    private static final long serialVersionUID = 1L;
+
     public void event(CometEvent event) throws IOException, ServletException {
         String path;
         HttpServletResponse response;
