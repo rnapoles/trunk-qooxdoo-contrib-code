@@ -208,6 +208,7 @@ public class Client implements ClientMBean {
         writer = Engine.createTextWriter(response);
         argument = application.getServer().clientStart();
         session = new Session(this, nextSessionId++, writer, argument);
+        writer.write(session.getNo() + "\n");
         writer.write(Serializer.run(application.getRegistry(), session.argument));
         writer.close();
         if (sessions.put(response, session) != null) {
