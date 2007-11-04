@@ -51,10 +51,42 @@ public class Transport {
     public static final String SESSION = "/" + SESSION_RAW;
     
     public static Object clientArgument(Registry registry) {
-        return Parser.run(registry, post(SESSION_RAW, null));
+        String str;
+        Object argument;
+        int idx;
+        int no;
+        
+        str = post(SESSION_RAW, null);
+        idx = str.indexOf("\n");
+        if (idx == -1) {
+            throw new IllegalArgumentException(str);
+        }
+        no = Integer.parseInt(str.substring(0, idx));
+        argument = Parser.run(registry, str.substring(idx + 1));
+        requestEvent(SESSION_RAW, no);
+        return argument;
     }
 
+    /**
+     * @native
+         qwtLog("starting session " + sessionNo);
+
+         var req = qwtRequest();
+         req.onreadystatechange = function() {
+           if (req.readState == 4) {
+             org.qooxdoo.toolkit.engine.common.Transport.processEvent(sessionNo, req.responseText);
+           }
+         }
+         req.open("POST", url + sessionNo, true);   
+         req.setRequestHeader("Content-Type", "text/plain");   
+         req.send(null);     
+     */
+    private static native void requestEvent(String url, int sessionNo);
     
+    public static void processEvent(int sessionNo, String text) {
+        System.out.println(sessionNo + ": text=" + text);
+    }
+
     /**
      * @native
          var type = typeof obj;
