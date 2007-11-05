@@ -52,11 +52,11 @@ public class Comet extends HttpServlet implements CometProcessor {
         } else if (event.getEventType() == CometEvent.EventType.END) {
             System.out.println("end " + path + " " + event.getHttpServletResponse());
             // TODO: session(client, path).stop();
-            // event.close();
+            event.close();
         } else if (event.getEventType() == CometEvent.EventType.ERROR) {
             System.out.println("error " + path + " " + event.getHttpServletResponse());
             // TODO: session(client, path).stop();
-            // TODO event.close();
+            event.close();
         } else {
             System.out.println("unknown event: " + event.getEventType());
         }

@@ -20,7 +20,9 @@
 package org.qooxdoo.toolkit.engine.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -128,15 +130,16 @@ public class SerializationTest {
         Foo service;
         Registry r;
         String str;
-        Proxy proxy;
+        Object proxy;
         
         service = new Foo();
-        proxy = new Proxy(0, FooService.class);
         r = new Registry();
         str = Serializer.run(r, service);
         assertEquals(1, r.size());
         assertEquals("/0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'/", str);
-        assertEquals(proxy, Parser.run(r, str));
+        proxy = Parser.run(r, str);
+        assertNotNull(proxy);
+        assertTrue(java.lang.reflect.Proxy.isProxyClass(proxy.getClass()));
     }
 
     @Test
