@@ -150,7 +150,7 @@ public class SerializationTest {
         Proxy proxy;
         
         foo = new Foo();
-        proxy = new Proxy(0, FooService.class, null);
+        proxy = new Proxy(null, 0, FooService.class, null);
         r = new Registry();
         r.add(foo);
         str = Serializer.run(r, proxy);

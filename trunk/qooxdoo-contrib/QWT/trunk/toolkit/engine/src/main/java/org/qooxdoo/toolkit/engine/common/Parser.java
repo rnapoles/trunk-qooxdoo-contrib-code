@@ -158,7 +158,7 @@ public class Parser {
             throw new IllegalArgumentException();
         }
         idx++;
-        return Proxy.create(id, type, callListener);
+        return Proxy.create(registry, id, type, callListener);
     }
 
     private Object proxyToService() {

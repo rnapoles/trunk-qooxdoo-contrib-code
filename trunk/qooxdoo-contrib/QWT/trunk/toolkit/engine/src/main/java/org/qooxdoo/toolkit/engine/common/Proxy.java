@@ -24,23 +24,25 @@ import java.lang.reflect.Method;
 
 public class Proxy implements InvocationHandler {
     /** @native
-        return org.qooxdoo.toolkit.engine.common.Proxy.jsCreate(id, ifc);
+        return org.qooxdoo.toolkit.engine.common.Proxy.jsCreate(registry, id, ifc);
      */
-    public static Object create(int id, Class<?> ifc, CallListener listener) {
+    public static Object create(Registry registry, int id, Class<?> ifc, CallListener listener) {
         return java.lang.reflect.Proxy.newProxyInstance(Proxy.class.getClassLoader(), 
-                new Class[] { ifc }, new Proxy(id, ifc, listener));
+                new Class[] { ifc }, new Proxy(registry, id, ifc, listener));
     }
     
-    public static Object jsCreate(int id, Class<?> ifc) {
-        return new Proxy(id, ifc, null);
+    public static Object jsCreate(Registry registry, int id, Class<?> ifc) {
+        return new Proxy(registry, id, ifc, null);
     }
 
-    
+
+    public final Registry registry;
     public final int id;
     public final Class<?> type;
     public final CallListener listener;
     
-    public Proxy(int id, Class<?> type, CallListener listener) {
+    public Proxy(Registry registry, int id, Class<?> type, CallListener listener) {
+        this.registry = registry;
         this.id = id;
         this.type = type;
         this.listener = listener;
@@ -82,9 +84,20 @@ public class Proxy implements InvocationHandler {
     //--
     
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        StringBuilder builder;
         String str;
         
-        str = id + ": method " + method.getName();
+        builder = new StringBuilder();
+        builder.append(id);
+        builder.append(',');
+        builder.append(method.getName());
+        if (args != null) { // Java passes null if method takes no arguments
+            for (Object arg : args) {
+                builder.append(',');
+                builder.append(Serializer.run(registry, arg));
+            }
+        }
+        str = builder.toString();
         System.out.println(str);
         listener.notify(str);
         return null;
