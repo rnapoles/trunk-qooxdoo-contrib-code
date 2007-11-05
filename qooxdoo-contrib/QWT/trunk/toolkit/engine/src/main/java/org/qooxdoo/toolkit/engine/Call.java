@@ -36,18 +36,28 @@ import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Call {
-    public static Call parse(IO io, Registry registry, CallListener callListener, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
+    public static Call parse(IO io, Application application, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
         int idx;
         String destStr;
         Object dest;
         String args;
         InputStream in;
-        
+        Registry registry;
+        CallListener callListener;
+
+        idx = pathInfo.indexOf("/");
+        if (idx == -1) {
+            throw new IllegalArgumentException(pathInfo);
+        }
+        // TODO: firstClient
+        callListener = application.getFirstClient().lookup(Integer.parseInt(pathInfo.substring(0, idx)));
+        pathInfo = pathInfo.substring(idx + 1);
         idx = pathInfo.indexOf('_');
         if (idx == -1) {
             throw new IllegalArgumentException(pathInfo);
         }
         destStr = pathInfo.substring(0, idx);
+        registry = application.getRegistry();
         dest = registry.get(Integer.parseInt(destStr));
         if (dest == null) {
             throw new ServletException("unkown object: " + destStr);
