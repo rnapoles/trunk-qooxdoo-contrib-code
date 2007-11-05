@@ -19,6 +19,9 @@
 
 package org.qooxdoo.toolkit.engine;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletResponse;
 
 /** A running client. Create instances with Client.start. */
@@ -35,6 +38,32 @@ public class Session implements SessionMBean {
         this.client = client;
         this.no = no;
         this.argument = argument;
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    doRun();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            public void doRun() throws InterruptedException, IOException {
+                PrintWriter writer;
+                
+                while (true) {
+                    sleep(5000);
+                    if (listener != null) {
+                        writer = listener.getWriter();
+                        writer.println("ping");
+                        writer.close();
+                        listener = null;
+                    } else {
+                        System.out.println("no listener: ping");
+                    }
+                }
+            }
+        }.start();
     }
 
     public void setListener(HttpServletResponse listener) {
@@ -62,6 +91,14 @@ public class Session implements SessionMBean {
     public void stop() {
         client.getApplication().getServer().clientStop();
         client.getApplication().unregister(this);
+        if (listener != null) {
+            try {
+                listener.getWriter().close();
+            } catch (IOException e) {
+                throw new RuntimeException("TODO", e);
+            }
+            listener = null;
+        }
         // Silently ignore errors because the file might haven been deleted by the shutdown hook
     }
 }

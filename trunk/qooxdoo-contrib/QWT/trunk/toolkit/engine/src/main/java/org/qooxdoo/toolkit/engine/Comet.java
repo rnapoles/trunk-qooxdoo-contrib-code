@@ -35,33 +35,42 @@ public class Comet extends HttpServlet implements CometProcessor {
         String path;
         HttpServletResponse response;
         Client client;
-        int no;
-        Session session;
         
         path = event.getHttpServletRequest().getPathInfo();
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
         client = Engine.application.getFirstClient(); // TODO
-        response = event.getHttpServletResponse();
         if (event.getEventType() == CometEvent.EventType.BEGIN) {
+            System.out.println("start " + path + " " + event.getHttpServletResponse());
+            response = event.getHttpServletResponse();
             if ("/".equals(path)) {
                 client.start(response);
             } else {
-                no = Integer.parseInt(path.substring(1));
-                session = client.lookup(no);
-                System.out.println("event listener for session " + no + ": " + session);
-                session.setListener(response);
+                session(client, path).setListener(response);
             }
         } else if (event.getEventType() == CometEvent.EventType.END) {
-            client.stop(response);
-            event.close();
+            System.out.println("end " + path + " " + event.getHttpServletResponse());
+            // TODO: session(client, path).stop();
+            // event.close();
         } else if (event.getEventType() == CometEvent.EventType.ERROR) {
-            System.out.println("error event");
-            client.stop(response);
-            event.close();
+            System.out.println("error " + path + " " + event.getHttpServletResponse());
+            // TODO: session(client, path).stop();
+            // TODO event.close();
         } else {
-            System.out.println("unkown event: " + event.getEventType());
+            System.out.println("unknown event: " + event.getEventType());
         }
+    }
+    
+    private Session session(Client client, String path) {
+        Session session;
+        int no;
+        
+        no = Integer.parseInt(path.substring(1));
+        session = client.lookup(no);
+        if (session == null) {
+            throw new IllegalArgumentException("no session for path " + path);
+        }
+        return session;
     }
 }
