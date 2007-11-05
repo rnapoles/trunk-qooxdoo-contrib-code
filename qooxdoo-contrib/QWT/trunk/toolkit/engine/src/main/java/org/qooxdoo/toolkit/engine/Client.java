@@ -107,7 +107,7 @@ public class Client implements ClientMBean {
     private boolean compress;
     private final ArrayBlockingQueue<ResourceManager> rms;
 
-    private final Map<HttpServletResponse, Session> sessions;
+    private final Map<Integer, Session> sessions;
     
     private static final int RM_COUNT = 10;
     
@@ -130,7 +130,7 @@ public class Client implements ClientMBean {
         index.writeBytes();
         this.compress = false;
         this.rms = new ArrayBlockingQueue<ResourceManager>(RM_COUNT);
-        this.sessions = new HashMap<HttpServletResponse, Session>();
+        this.sessions = new HashMap<Integer, Session>();
     }
 
     public ResourceManager allocate() {
@@ -205,19 +205,23 @@ public class Client implements ClientMBean {
         Object argument;
 
         System.out.println("start session");
-        writer = Engine.createTextWriter(response);
         argument = application.getServer().clientStart();
-        session = new Session(this, nextSessionId++, writer, argument);
+        session = new Session(this, nextSessionId++, argument);
+        writer = Engine.createTextWriter(response);
         writer.write(session.getNo() + "\n");
         writer.write(Serializer.run(application.getRegistry(), session.argument));
         writer.close();
-        if (sessions.put(response, session) != null) {
+        if (sessions.put(session.getNo(), session) != null) {
             throw new IllegalStateException();
         }
         application.register(session);
         return session;
     }
 
+    public Session lookup(int no) {
+        return sessions.get(no);
+    }
+    
     public void stop(HttpServletResponse response) {
         Session session;
         

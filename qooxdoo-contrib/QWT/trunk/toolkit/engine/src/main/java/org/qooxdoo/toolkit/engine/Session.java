@@ -19,22 +19,32 @@
 
 package org.qooxdoo.toolkit.engine;
 
-import java.io.Writer;
+import javax.servlet.http.HttpServletResponse;
 
 /** A running client. Create instances with Client.start. */
 public class Session implements SessionMBean {
     private final Client client;
     private final int no;
-    private final Writer writer;
     
     /** result from Server.createClient */
     public final Object argument;
     
-    public Session(Client client, int no, Writer writer, Object argument) {
+    public HttpServletResponse listener;
+    
+    public Session(Client client, int no, Object argument) {
         this.client = client;
         this.no = no;
-        this.writer = writer;
         this.argument = argument;
+    }
+
+    public void setListener(HttpServletResponse listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException();
+        }
+        if (this.listener != null) {
+            throw new IllegalStateException();
+        }
+        this.listener = listener;
     }
 
     public Client getClient() {
@@ -47,10 +57,6 @@ public class Session implements SessionMBean {
 
     public int getNo() {
         return no;
-    }
-
-    public Writer getWriter() {
-        return writer;
     }
 
     public void stop() {

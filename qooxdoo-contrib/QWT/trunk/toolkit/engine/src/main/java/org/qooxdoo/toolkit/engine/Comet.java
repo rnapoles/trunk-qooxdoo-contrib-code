@@ -35,15 +35,24 @@ public class Comet extends HttpServlet implements CometProcessor {
         String path;
         HttpServletResponse response;
         Client client;
+        int no;
+        Session session;
         
         path = event.getHttpServletRequest().getPathInfo();
-        if (!"/".equals(path)) {
+        if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
         client = Engine.application.getFirstClient(); // TODO
         response = event.getHttpServletResponse();
         if (event.getEventType() == CometEvent.EventType.BEGIN) {
-            client.start(response);
+            if ("/".equals(path)) {
+                client.start(response);
+            } else {
+                no = Integer.parseInt(path.substring(1));
+                session = client.lookup(no);
+                System.out.println("event listener for session " + no + ": " + session);
+                session.setListener(response);
+            }
         } else if (event.getEventType() == CometEvent.EventType.END) {
             client.stop(response);
             event.close();
