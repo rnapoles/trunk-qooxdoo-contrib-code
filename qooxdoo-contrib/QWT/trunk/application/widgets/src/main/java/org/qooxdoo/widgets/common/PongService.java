@@ -17,14 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets.server;
+package org.qooxdoo.widgets.common;
 
-import org.qooxdoo.widgets.common.PingService;
-import org.qooxdoo.widgets.common.PongService;
-
-public class Ping implements PingService {
-    public void ping(PongService pong) {
-        System.out.println("ping");
-        pong.pong("pong");
-    }
+public interface PongService {
+    void pong(String msg);
 }

@@ -19,17 +19,16 @@
 
 package org.qooxdoo.toolkit.engine.common;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-public class Proxy {
-    private static final Handler HANDLER = new Handler();
-
+public class Proxy implements InvocationHandler {
     /** @native
         return org.qooxdoo.toolkit.engine.common.Proxy.jsCreate(id, ifc);
      */
     public static Object create(int id, Class<?> ifc) {
         return java.lang.reflect.Proxy.newProxyInstance(Proxy.class.getClassLoader(), 
-                new Class[] { ifc }, HANDLER);
+                new Class[] { ifc }, new Proxy(id, ifc));
     }
     
     public static Object jsCreate(int id, Class<?> ifc) {
@@ -76,5 +75,12 @@ public class Proxy {
         } else {
             return false;
         }
+    }
+    
+    //--
+    
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println(id + ": method " + method.getName());
+        return null;
     }
 }

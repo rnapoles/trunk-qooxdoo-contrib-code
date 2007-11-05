@@ -207,18 +207,18 @@ public class Client implements ClientMBean {
         argument = application.getServer().clientStart();
         session = new Session(this, nextSessionId++, argument);
         writer = Engine.createTextWriter(response);
-        writer.write(session.getNo() + "\n");
+        writer.write(session.getId() + "\n");
         writer.write(Serializer.run(application.getRegistry(), session.argument));
         writer.close();
-        if (sessions.put(session.getNo(), session) != null) {
-            throw new IllegalStateException("" + session.getNo());
+        if (sessions.put(session.getId(), session) != null) {
+            throw new IllegalStateException("" + session.getId());
         }
         application.register(session);
         return session;
     }
 
-    public Session lookup(int no) {
-        return sessions.get(no);
+    public Session lookup(int id) {
+        return sessions.get(id);
     }
     
     //--
