@@ -26,16 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 /** A running client. Create instances with Client.start. */
 public class Session implements SessionMBean {
     private final Client client;
-    private final int no;
+    private final int id;
     
     /** result from Server.createClient */
     public final Object argument;
     
     public HttpServletResponse listener;
     
-    public Session(Client client, int no, Object argument) {
+    public Session(Client client, int id, Object argument) {
         this.client = client;
-        this.no = no;
+        this.id = id;
         this.argument = argument;
     }
 
@@ -54,11 +54,11 @@ public class Session implements SessionMBean {
     }
 
     public String getName() {
-        return Integer.toString(no);
+        return Integer.toString(id);
     }
 
-    public int getNo() {
-        return no;
+    public int getId() {
+        return id;
     }
 
     public void stop() {

@@ -37,6 +37,9 @@ public class Main extends Gui {
     
     public Main(PingService ping) {
         this.ping = ping;
+        if (false) {
+            ping.ping(new Pong()); // TODO - force dependency to Ping
+        }
     }
     
     @Override
@@ -46,7 +49,6 @@ public class Main extends Gui {
         super.main();
         System.out.println("welcome!");
 
-        ping.ping("startup");
         view = new TabView();
         view.setLeft(20);
         view.setTop(48);
@@ -111,8 +113,7 @@ public class Main extends Gui {
         
         public void notify(DataEvent obj) {
             System.out.println("clicked: " + obj);
-            Object result = ping.ping("pong");
-            System.out.println("result: " + result);
+            ping.ping(new Pong());
         }
     }
     

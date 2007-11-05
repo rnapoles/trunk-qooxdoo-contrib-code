@@ -20,5 +20,5 @@
 package org.qooxdoo.toolkit.engine;
 
 public interface SessionMBean extends MBean {
-    int getNo();
+    int getId();
 }

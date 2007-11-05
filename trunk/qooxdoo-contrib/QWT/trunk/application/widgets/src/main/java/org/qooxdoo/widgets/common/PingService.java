@@ -20,5 +20,5 @@
 package org.qooxdoo.widgets.common;
 
 public interface PingService {
-    String ping(String msg);
+    void ping(PongService pong);
 }
