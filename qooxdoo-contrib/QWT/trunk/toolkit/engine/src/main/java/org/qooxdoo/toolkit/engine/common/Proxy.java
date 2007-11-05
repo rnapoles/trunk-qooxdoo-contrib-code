@@ -26,22 +26,24 @@ public class Proxy implements InvocationHandler {
     /** @native
         return org.qooxdoo.toolkit.engine.common.Proxy.jsCreate(id, ifc);
      */
-    public static Object create(int id, Class<?> ifc) {
+    public static Object create(int id, Class<?> ifc, CallListener listener) {
         return java.lang.reflect.Proxy.newProxyInstance(Proxy.class.getClassLoader(), 
-                new Class[] { ifc }, new Proxy(id, ifc));
+                new Class[] { ifc }, new Proxy(id, ifc, listener));
     }
     
     public static Object jsCreate(int id, Class<?> ifc) {
-        return new Proxy(id, ifc);
+        return new Proxy(id, ifc, null);
     }
 
     
     public final int id;
     public final Class<?> type;
+    public final CallListener listener;
     
-    public Proxy(int id, Class<?> type) {
+    public Proxy(int id, Class<?> type, CallListener listener) {
         this.id = id;
         this.type = type;
+        this.listener = listener;
         initMethods();
     }
 
@@ -80,7 +82,11 @@ public class Proxy implements InvocationHandler {
     //--
     
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println(id + ": method " + method.getName());
+        String str;
+        
+        str = id + ": method " + method.getName();
+        System.out.println(str);
+        listener.notify(str);
         return null;
     }
 }

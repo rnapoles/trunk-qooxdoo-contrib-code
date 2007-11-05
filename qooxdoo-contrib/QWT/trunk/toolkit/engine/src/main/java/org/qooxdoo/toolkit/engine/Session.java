@@ -20,11 +20,14 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.qooxdoo.toolkit.engine.common.CallListener;
+
 /** A running client. Create instances with Client.start. */
-public class Session implements SessionMBean {
+public class Session implements SessionMBean, CallListener {
     private final Client client;
     private final int id;
     
@@ -44,7 +47,7 @@ public class Session implements SessionMBean {
             throw new IllegalArgumentException();
         }
         if (this.listener != null) {
-            throw new IllegalStateException();
+            System.out.println("TODO: overwriting old listener: " + listener);
         }
         this.listener = listener;
     }
@@ -66,13 +69,28 @@ public class Session implements SessionMBean {
         client.getApplication().unregister(this);
         if (listener != null) {
             try {
-                listener.getWriter().close();
+                notify("");
             } catch (IOException e) {
-                throw new RuntimeException("TODO", e);
+                throw new RuntimeException(e);
             }
-            listener = null;
+        } else {
+            // TODO
         }
-        // Silently ignore errors because the file might haven been deleted by the shutdown hook
+        listener = null;
+        // silently ignore errors because the file might haven been deleted by the shutdown hook
+    }
+    
+    //--
+    
+    public void notify(String str) throws IOException {
+        PrintWriter writer;
+        
+        if (listener == null) {
+            throw new RuntimeException("TODO");
+        }
+        writer = listener.getWriter();
+        writer.print(str);
+        writer.close();
     }
 }
 

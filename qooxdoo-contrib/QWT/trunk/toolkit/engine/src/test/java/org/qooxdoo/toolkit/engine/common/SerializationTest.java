@@ -63,7 +63,7 @@ public class SerializationTest {
     @Test
     public void parseError() {
         try {
-            Parser.run(new Registry(), "nul");
+            Parser.run(new Registry(), null, "nul");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -137,7 +137,7 @@ public class SerializationTest {
         str = Serializer.run(r, service);
         assertEquals(1, r.size());
         assertEquals("/0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'/", str);
-        proxy = Parser.run(r, str);
+        proxy = Parser.run(r, null, str);
         assertNotNull(proxy);
         assertTrue(java.lang.reflect.Proxy.isProxyClass(proxy.getClass()));
     }
@@ -150,13 +150,13 @@ public class SerializationTest {
         Proxy proxy;
         
         foo = new Foo();
-        proxy = new Proxy(0, FooService.class);
+        proxy = new Proxy(0, FooService.class, null);
         r = new Registry();
         r.add(foo);
         str = Serializer.run(r, proxy);
         assertEquals(1, r.size());
         assertEquals("\\0,'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24FooService'\\", str);
-        assertSame(foo, Parser.run(r, str));
+        assertSame(foo, Parser.run(r, null, str));
     }
 
     @Test
@@ -184,7 +184,7 @@ public class SerializationTest {
         
         str = Serializer.run(r, map);
         assertEquals("('self':@0)", str);
-        reloaded = (Map) Parser.run(r, str);
+        reloaded = (Map) Parser.run(r, null, str);
         assertEquals(1, reloaded.size());
         assertSame(reloaded, reloaded.get("self"));
     }
@@ -209,7 +209,7 @@ public class SerializationTest {
         obj.b = obj;
         str = Serializer.run(r, obj);
         assertEquals("<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Data',('b':@0,'a':'A')>", str);
-        reloaded = (Data) Parser.run(r, str);
+        reloaded = (Data) Parser.run(r, null, str);
         assertEquals(obj.a, reloaded.a);
         assertSame(reloaded, reloaded.b);
     }
@@ -221,7 +221,7 @@ public class SerializationTest {
         r = new Registry();
         str = Serializer.run(r, obj);
         assertEquals(expected, str);
-        assertEquals(obj, Parser.run(r, str));
+        assertEquals(obj, Parser.run(r, null, str));
     }
     
     //--
