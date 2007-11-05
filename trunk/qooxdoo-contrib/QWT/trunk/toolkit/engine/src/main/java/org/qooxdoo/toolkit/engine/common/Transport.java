@@ -50,20 +50,21 @@ public class Transport {
     public static final String SESSION_RAW = "session/";
     public static final String SESSION = "/" + SESSION_RAW;
     
+    private static int sessionId = 0;
+    
     public static Object clientArgument(Registry registry) {
         String str;
         Object argument;
         int idx;
-        int no;
         
         str = post(SESSION_RAW, null);
         idx = str.indexOf("\n");
         if (idx == -1) {
             throw new IllegalArgumentException(str);
         }
-        no = Integer.parseInt(str.substring(0, idx));
+        sessionId = Integer.parseInt(str.substring(0, idx));
         argument = Parser.run(registry, null, str.substring(idx + 1));
-        requestEvent(SESSION_RAW, no);
+        requestEvent(SESSION_RAW, sessionId);
         return argument;
     }
 
@@ -122,7 +123,7 @@ public class Transport {
     public static Object invoke(Registry registry, int object, String method, Object[] args) {
         String result;
 
-        result = post(METHOD_RAW + object + "_" + method, argumentsString(registry, args));
+        result = post(METHOD_RAW + sessionId + "/" + object + "_" + method, argumentsString(registry, args));
         return Parser.run(registry, null, result);
     }
 
