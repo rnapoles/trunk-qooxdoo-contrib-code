@@ -30,12 +30,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.toolkit.engine.common.CallListener;
 import org.qooxdoo.toolkit.engine.common.Parser;
 import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Call {
-    public static Call parse(IO io, Registry registry, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
+    public static Call parse(IO io, Registry registry, CallListener callListener, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
         int idx;
         String destStr;
         Object dest;
@@ -54,13 +55,13 @@ public class Call {
         in = request.getInputStream();
         args = io.buffer.readString(in);
         in.close();
-        return parseMethod(registry, dest, pathInfo.substring(idx + 1), args);
+        return parseMethod(registry, callListener, dest, pathInfo.substring(idx + 1), args);
     }
 
-    public static Call parseMethod(Registry registry, Object dest, String method, String args) {
+    public static Call parseMethod(Registry registry, CallListener callListener, Object dest, String method, String args) {
         Call call;
         
-        call = new Call(registry, dest, lookup(dest.getClass(), method));
+        call = new Call(registry, callListener, dest, lookup(dest.getClass(), method));
         call.addArgs(args);
         return call;
     }
@@ -96,14 +97,16 @@ public class Call {
     //--
     
     private final Registry registry;
+    private final CallListener callListener;
     private final Object dest; 
     private final Method method;
     public final List<Object> args;
     
-    public Call(Registry registry, Object dest, Method method) {
+    public Call(Registry registry, CallListener callListener, Object dest, Method method) {
         // TODO: without this, Call cannot invoke methods from other packages
         method.setAccessible(true);
         this.registry = registry;
+        this.callListener = callListener;
         this.dest = dest;
         this.method = method;
         this.args = new ArrayList<Object>();
@@ -114,7 +117,7 @@ public class Call {
     }
     
     public void addArgs(String str) { 
-        args.addAll((List<?>) Parser.run(registry, str));
+        args.addAll((List<?>) Parser.run(registry, callListener, str));
     }
 
     public String invoke() throws InvocationTargetException {

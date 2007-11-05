@@ -62,7 +62,7 @@ public class Transport {
             throw new IllegalArgumentException(str);
         }
         no = Integer.parseInt(str.substring(0, idx));
-        argument = Parser.run(registry, str.substring(idx + 1));
+        argument = Parser.run(registry, null, str.substring(idx + 1));
         requestEvent(SESSION_RAW, no);
         return argument;
     }
@@ -123,7 +123,7 @@ public class Transport {
         String result;
 
         result = post(METHOD_RAW + object + "_" + method, argumentsString(registry, args));
-        return Parser.run(registry, result);
+        return Parser.run(registry, null, result);
     }
 
     /**

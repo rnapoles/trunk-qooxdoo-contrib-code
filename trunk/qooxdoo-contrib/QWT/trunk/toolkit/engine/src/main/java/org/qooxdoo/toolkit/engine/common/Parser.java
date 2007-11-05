@@ -29,11 +29,11 @@ import java.util.Set;
 
 
 public class Parser {
-    public static Object run(Registry registry, String str) {
+    public static Object run(Registry registry, CallListener callListener, String str) {
         Parser parser;
         Object result;
         
-        parser = new Parser(registry, str);
+        parser = new Parser(registry, callListener, str);
         result = parser.any();
         if (parser.idx != str.length()) {
             throw parser.syntaxError();
@@ -43,12 +43,14 @@ public class Parser {
 
     private final List<Object> objects;
     private final Registry registry;
+    private final CallListener callListener;
     private final String str;
     private int idx;
 
-    public Parser(Registry registry, String str) {
+    public Parser(Registry registry, CallListener callListener, String str) {
         this.objects = new ArrayList<Object>();
         this.registry = registry;
+        this.callListener = callListener;
         this.str = str;
         this.idx = 0;
     }
@@ -156,7 +158,7 @@ public class Parser {
             throw new IllegalArgumentException();
         }
         idx++;
-        return Proxy.create(id, type);
+        return Proxy.create(id, type, callListener);
     }
 
     private Object proxyToService() {

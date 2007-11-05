@@ -74,6 +74,6 @@ public class CallTest {
     }
     
     private Call call(String method, String args) {
-        return Call.parseMethod(new Registry(), dest, method, args);
+        return Call.parseMethod(new Registry(), null, dest, method, args);
     }
 }
