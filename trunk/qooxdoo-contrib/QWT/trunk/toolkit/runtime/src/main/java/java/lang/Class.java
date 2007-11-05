@@ -145,4 +145,8 @@ public class Class<T> {
         }
         return methods;
     }
+    
+    public ClassLoader getClassLoader() {
+        return null;
+    }
 }

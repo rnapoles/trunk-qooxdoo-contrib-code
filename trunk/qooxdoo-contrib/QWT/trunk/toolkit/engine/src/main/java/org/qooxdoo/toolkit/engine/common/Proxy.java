@@ -22,6 +22,21 @@ package org.qooxdoo.toolkit.engine.common;
 import java.lang.reflect.Method;
 
 public class Proxy {
+    private static final Handler HANDLER = new Handler();
+
+    /** @native
+        return org.qooxdoo.toolkit.engine.common.Proxy.jsCreate(id, ifc);
+     */
+    public static Object create(int id, Class<?> ifc) {
+        return java.lang.reflect.Proxy.newProxyInstance(Proxy.class.getClassLoader(), 
+                new Class[] { ifc }, HANDLER);
+    }
+    
+    public static Object jsCreate(int id, Class<?> ifc) {
+        return new Proxy(id, ifc);
+    }
+
+    
     public final int id;
     public final Class<?> type;
     
