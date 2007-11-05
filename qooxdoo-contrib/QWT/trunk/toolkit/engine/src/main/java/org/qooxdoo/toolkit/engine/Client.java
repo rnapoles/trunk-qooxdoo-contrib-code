@@ -204,7 +204,6 @@ public class Client implements ClientMBean {
         Writer writer;
         Object argument;
 
-        System.out.println("start session");
         argument = application.getServer().clientStart();
         session = new Session(this, nextSessionId++, argument);
         writer = Engine.createTextWriter(response);
@@ -212,7 +211,7 @@ public class Client implements ClientMBean {
         writer.write(Serializer.run(application.getRegistry(), session.argument));
         writer.close();
         if (sessions.put(session.getNo(), session) != null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("" + session.getNo());
         }
         application.register(session);
         return session;
@@ -220,16 +219,6 @@ public class Client implements ClientMBean {
 
     public Session lookup(int no) {
         return sessions.get(no);
-    }
-    
-    public void stop(HttpServletResponse response) {
-        Session session;
-        
-        session = sessions.remove(response);
-        if (session == null) {
-            throw new IllegalStateException("no session for response " + response);
-        }
-        session.stop();
     }
     
     //--

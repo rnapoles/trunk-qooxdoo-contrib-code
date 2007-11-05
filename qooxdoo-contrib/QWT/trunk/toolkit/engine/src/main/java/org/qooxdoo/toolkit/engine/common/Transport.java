@@ -73,7 +73,7 @@ public class Transport {
 
          var req = qwtRequest();
          req.onreadystatechange = function() {
-           if (req.readState == 4) {
+           if (req.readyState == 4) {
              org.qooxdoo.toolkit.engine.common.Transport.processEvent(sessionNo, req.responseText);
            }
          }
@@ -85,6 +85,7 @@ public class Transport {
     
     public static void processEvent(int sessionNo, String text) {
         System.out.println(sessionNo + ": text=" + text);
+        requestEvent(SESSION_RAW, sessionNo);
     }
 
     /**
