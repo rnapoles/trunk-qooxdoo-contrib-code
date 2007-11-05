@@ -174,7 +174,7 @@ public class Engine extends HttpServlet {
             if (call == null) {
                 throw new IllegalArgumentException("no call: " + path);
             }
-            application.log.info("invoke " + call);
+            application.log.info("invoke call");
             writer = createTextWriter(response);
             try {
                 writer.write(call.invoke());

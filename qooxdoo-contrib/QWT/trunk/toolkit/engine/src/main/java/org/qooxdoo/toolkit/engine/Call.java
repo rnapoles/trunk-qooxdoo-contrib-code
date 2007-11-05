@@ -36,7 +36,8 @@ import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Call {
-    public static Call parse(IO io, Application application, String pathInfo, HttpServletRequest request) throws IOException, ServletException {
+    public static Call parse(IO io, Application application, String pathInfo, HttpServletRequest request) 
+    throws IOException, ServletException {
         int idx;
         String destStr;
         Object dest;

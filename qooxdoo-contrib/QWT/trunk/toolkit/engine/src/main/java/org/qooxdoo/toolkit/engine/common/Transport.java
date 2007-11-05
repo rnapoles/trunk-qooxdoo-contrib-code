@@ -19,6 +19,8 @@
 
 package org.qooxdoo.toolkit.engine.common;
 
+import java.util.ArrayList;
+
 
 /** 
  *  @native
@@ -75,7 +77,7 @@ public class Transport {
          var req = qwtRequest();
          req.onreadystatechange = function() {
            if (req.readyState == 4) {
-             org.qooxdoo.toolkit.engine.common.Transport.processEvent(sessionNo, req.status, req.responseText);
+             org.qooxdoo.toolkit.engine.common.Transport.processCall(REGISTRY, sessionNo, req.status, req.responseText);
            }
          }
          req.open("POST", url + sessionNo, true);   
@@ -84,9 +86,9 @@ public class Transport {
      */
     private static native void requestEvent(String url, int sessionNo);
     
-    public static void processEvent(int sessionNo, int status, String text) {
-        System.out.println(sessionNo + ": text=" + text + ":\t" + status);
+    public static void processCall(Registry registry, int sessionNo, int status, String text) {
         if (status == 200) {
+            invokeCall(registry, text);
             requestEvent(SESSION_RAW, sessionNo);
         }
     }
@@ -161,5 +163,50 @@ public class Transport {
         }
         builder.append(']');
         return builder.toString();
+    }
+
+    private static void invokeCall(Registry registry, String str) {
+        int idx;
+        int prev;
+        Object obj;
+        ArrayList<Object> args;
+        String method;
+        
+        System.out.println("invoke " + str);
+        args = new ArrayList<Object>();
+        idx = str.indexOf(",");
+        if (idx == -1) {
+            throw new IllegalArgumentException(str);
+        }
+        obj = registry.get(Integer.parseInt(str.substring(0, idx)));
+        prev = idx + 1;
+        idx = str.indexOf(",");
+        System.out.println("got idx " + idx);
+        if (idx == -1) {
+            method = str.substring(prev);
+        } else {
+            method = str.substring(prev, idx);
+            System.out.println("method");
+            prev = idx + 1;
+            while (true) {
+                idx = str.indexOf(",", prev);
+                System.out.println("got next idx " + idx);
+                if (idx == -1) {
+                    args.add(Parser.run(registry, null, str.substring(prev)));
+                    break;
+                }
+                args.add(Parser.run(registry, null, str.substring(prev, idx)));
+                prev = idx + 1;
+            }
+        }
+        System.out.println("doInvoke " + method);
+        doInvoke(obj, method, args);
+    }
+    
+    /**
+     * @native
+         obj[method].apply(args.data);
+     */
+    private static void doInvoke(Object obj, String method, ArrayList<Object> args) {
     }
 }
