@@ -72,8 +72,6 @@ public class Transport {
 
     /**
      * @native
-         qwtLog("requestEvent " + sessionNo);
-
          var req = qwtRequest();
          req.onreadystatechange = function() {
            if (req.readyState == 4) {
