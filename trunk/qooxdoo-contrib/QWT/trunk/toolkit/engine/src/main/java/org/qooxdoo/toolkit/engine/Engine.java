@@ -82,16 +82,11 @@ public class Engine extends HttpServlet {
     @Override
     public long getLastModified(HttpServletRequest request) {
         String path;
-        Object[] tmp;
         Client client;
         
         path = request.getPathInfo();
         application.log.info("getLastModified: " + path);
-        tmp = getClient(path);
-        if (tmp == null) {
-            return -1;
-        }
-        client = (Client) tmp[0];
+        client = application.getClient();
         return client.getIndex().lastModified();
     }
     
@@ -125,8 +120,7 @@ public class Engine extends HttpServlet {
         Client client;
         ResourceManager rm;
         String path;
-        Object[] tmp;
-        
+
         path = request.getPathInfo();
         map = request.getParameterMap();
         if (map.size() > 0) {
@@ -135,20 +129,16 @@ public class Engine extends HttpServlet {
             response.sendRedirect(url);
             return;
         }
-        tmp = getClient(path);
-        if (tmp != null) {
-            client = (Client) tmp[0];
+        client = application.getClient();
+        if (path == null || "/".equals(path)) {
+            response.sendRedirect(request.getContextPath() + "/" + client.getIndex().getName());
+        } else {
             rm = client.allocate();
             try {
-                forClient(request, response, rm, (String) tmp[1]);
+                forClient(request, response, rm, path);
             } finally {
                 client.free(rm);
             }
-        } else {
-            client = application.getClient();
-            String url = request.getContextPath() + "/" + client.getName() + "/" + client.getIndex().getName();
-            application.log.info("unknown request '" + path + "', redirect to " + url);
-            response.sendRedirect(url);
         }
     }
 
@@ -183,26 +173,6 @@ public class Engine extends HttpServlet {
         throw new IllegalArgumentException(path);
     }
     
-    private Object[] getClient(String path) {
-        int idx;
-        Client client;
-
-        if (!path.startsWith("/")) {
-            return null;
-        }
-        path = path.substring(1);
-        idx = path.indexOf('/');
-        if (idx == -1) {
-            return null;
-        }
-        client = application.getClient();
-        if (client.getName().equals(path.substring(0, idx))) {
-            return new Object[] { client, path.substring(idx) };
-        } else {
-            return null;
-        }
-    }
-
     public String getReportableException(Throwable cause) {
         if (cause instanceof Error) {
             application.log.log(Level.SEVERE, "re-throwing error", cause);

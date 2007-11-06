@@ -307,8 +307,8 @@ public class Application implements ApplicationMBean {
         return name.substring(name.lastIndexOf('.') + 1);
     }
     
-    public FileNode createClientDirectory(String client) throws IOException {
-        return (FileNode) docroot.join(client).mkdirOpt();
+    public FileNode createClientDirectory() throws IOException {
+        return (FileNode) docroot.join("client").mkdirOpt();
     }
 
     public ResourceManager createResourceManager(Node index, Node indexGz) throws IOException {

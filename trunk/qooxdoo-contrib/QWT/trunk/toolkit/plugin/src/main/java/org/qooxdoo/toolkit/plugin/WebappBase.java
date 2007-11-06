@@ -302,7 +302,7 @@ public abstract class WebappBase extends Base {
         "   </servlet-mapping>\n" +
         "   <servlet-mapping>\n" +
         "      <servlet-name>comet</servlet-name>\n" +
-        "      <url-pattern>/main/session/*</url-pattern>\n" + 
+        "      <url-pattern>/session/*</url-pattern>\n" +
         "   </servlet-mapping>\n" +
         "</web-app>\n";
     

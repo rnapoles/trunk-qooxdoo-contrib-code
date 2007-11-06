@@ -46,7 +46,7 @@ public class ClientTest {
         dest = io.createTempDirectory();
         app = new Client(null, 
         		src, new String[] { "**/client/*.java"} , new String[] {},
-                "id", "name", "org.qooxdoo.toolkit.engine.client.Main", dest);
+                "id", "org.qooxdoo.toolkit.engine.client.Main", dest);
         idx = app.getIndex();
         assertTrue(idx.isFile());
     }
