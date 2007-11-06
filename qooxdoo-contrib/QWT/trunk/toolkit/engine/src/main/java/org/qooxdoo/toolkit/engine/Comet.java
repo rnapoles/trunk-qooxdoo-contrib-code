@@ -52,7 +52,7 @@ public class Comet extends HttpServlet implements CometProcessor {
         Session session;
 
         path = event.getHttpServletRequest().getPathInfo();
-        client = application.getFirstClient(); // TODO
+        client = application.getClient();
         session = session(client, path);
         if (session == null) {
             if (event.getEventType() != CometEvent.EventType.BEGIN) {
