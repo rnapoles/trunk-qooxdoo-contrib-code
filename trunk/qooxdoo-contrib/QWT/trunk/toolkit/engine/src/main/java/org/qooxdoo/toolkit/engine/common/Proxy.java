@@ -98,7 +98,6 @@ public class Proxy implements InvocationHandler {
             }
         }
         str = builder.toString();
-        System.out.println(str);
         listener.notify(str);
         return null;
     }

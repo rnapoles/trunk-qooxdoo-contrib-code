@@ -13,11 +13,10 @@
   <version>${toolkit.version}</version>
   <packaging>maven-plugin</packaging>
   <name>Toolkit Maven Plugin</name>
-  <description>Generate New Project, War, Qooxdoo Java Proxies, Qooxdoo Repository and Qooxdoo Resources.</description>
+  <description>Generate New Project, War, Qooxdoo Bindings, Qooxdoo Repository and Qooxdoo Resources.</description>
 
   <properties>
-    <!-- TODO: 6.0.14 -->
-    <tomcat.version>6.0.13</tomcat.version>
+    <tomcat.version>6.0.14</tomcat.version>
   </properties>
 
   <dependencies>
