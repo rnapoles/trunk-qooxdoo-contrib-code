@@ -29,48 +29,62 @@ import org.apache.catalina.CometEvent;
 import org.apache.catalina.CometProcessor;
 
 public class Comet extends HttpServlet implements CometProcessor {
+    /** millis */
+    private static final int SESSION_TIMEOUT = 1 * 60 * 1000;
+
     private static final long serialVersionUID = 1L;
 
     public void event(CometEvent event) throws IOException, ServletException {
         String path;
         HttpServletResponse response;
         Client client;
-        
+        Session session;
+
         path = event.getHttpServletRequest().getPathInfo();
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException(path);
-        }
         client = Engine.application.getFirstClient(); // TODO
-        if (event.getEventType() == CometEvent.EventType.BEGIN) {
-            System.out.println("start " + path + " " + event.getHttpServletResponse());
-            response = event.getHttpServletResponse();
-            if ("/".equals(path)) {
-                client.start(response);
-            } else {
-                session(client, path).setListener(response);
+        session = session(client, path);
+        if (session == null) {
+            if (event.getEventType() != CometEvent.EventType.BEGIN) {
+                throw new IllegalStateException(path + ": unexpected event " + event.getEventType());
             }
-        } else if (event.getEventType() == CometEvent.EventType.END) {
-            System.out.println("end " + path + " " + event.getHttpServletResponse());
-            // TODO: session(client, path).stop();
-            event.close();
-        } else if (event.getEventType() == CometEvent.EventType.ERROR) {
-            System.out.println("error " + path + " " + event.getHttpServletResponse());
-            // TODO: session(client, path).stop();
+            client.start(event.getHttpServletResponse());
             event.close();
         } else {
-            System.out.println("unknown event: " + event.getEventType());
+            switch (event.getEventType()) {
+               case BEGIN:
+                   event.setTimeout(SESSION_TIMEOUT);
+                   session.setListener(event.getHttpServletResponse());
+                   break;
+               case END:
+                   System.out.println("TODO: end " + path + " " + event.getHttpServletResponse());
+                   event.close();
+                   break;
+               case ERROR:
+                   if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
+                       session(client, path).stop();
+                   } else {
+                       System.out.println("TOOD: error " + path + " " + event.getHttpServletResponse());
+                       System.out.println("      subtype " + event.getEventSubType());
+                   }
+                   event.close();
+                   break;
+                 default:
+                     throw new IllegalArgumentException("unkown event: " + event.getEventType());
+            }
         }
     }
     
     private Session session(Client client, String path) {
-        Session session;
-        int no;
-        
-        no = Integer.parseInt(path.substring(1));
-        session = client.lookup(no);
-        if (session == null) {
-            throw new IllegalArgumentException("no session for path " + path);
+        int id;
+
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException(path);
         }
-        return session;
+        if (path.length() == 1) {
+            return null;
+        } else {
+            id = Integer.parseInt(path.substring(1));
+            return client.lookup(id);
+        }
     }
 }
