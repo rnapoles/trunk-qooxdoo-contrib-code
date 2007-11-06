@@ -65,6 +65,8 @@ import qx.ui.basic.Image;
  * Every initialized engine has exactly one application.
  */
 public class Application implements ApplicationMBean {
+    public static final String ATTRIBUTE_NAME = "qwt_application";
+    
     public static Application create(ServletConfig config) throws IOException, ServletException {
         IO io;
         File docroot;
