@@ -24,6 +24,8 @@ import org.qooxdoo.toolkit.engine.common.CallListener;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** A running client. Create instances with Client.start. */
 public class Session implements SessionMBean, CallListener {
@@ -33,29 +35,24 @@ public class Session implements SessionMBean, CallListener {
     /** result from Server.createClient */
     public final Object argument;
     
-    public CometEvent listener;
-    
+    private final ArrayBlockingQueue<CometEvent> listener;
+
     public Session(Client client, int id, Object argument) {
         this.client = client;
         this.id = id;
         this.argument = argument;
+        this.listener = new ArrayBlockingQueue<CometEvent>(1);
     }
 
     public void unsetListener(CometEvent listener) {
-        if (this.listener != listener) {
+        if (listener != this.listener.peek()) {
             throw new IllegalArgumentException();
         }
-        this.listener = null;
+        this.listener.clear();
     }
 
     public void setListener(CometEvent listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException();
-        }
-        if (this.listener != null) {
-            throw new IllegalStateException();
-        }
-        this.listener = listener;
+        this.listener.add(listener); // throws exception if list is full
     }
 
     public Client getClient() {
@@ -73,31 +70,29 @@ public class Session implements SessionMBean, CallListener {
     public void stop() {
         client.getApplication().getServer().clientStop();
         client.getApplication().unregister(this);
-        if (listener != null) {
-            try {
-                notify("");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            // TODO
+        if (listener.peek() != null) {
+            System.out.println("TODO: stopped with running listener");
+            listener.clear();
         }
-        listener = null;
-        // silently ignore errors because the file might haven been deleted by the shutdown hook
     }
     
     //--
     
     public void notify(String str) throws IOException {
         PrintWriter writer;
-        
-        if (listener == null) {
-            throw new RuntimeException("TODO");
+        CometEvent event;
+
+        try {
+            event = listener.poll(5, TimeUnit.SECONDS);
+            listener.add(event); // TODO
+        } catch (InterruptedException e) {
+            listener.clear();
+            throw new IOException("client is unavailable");
         }
-        writer = listener.getHttpServletResponse().getWriter();
+        writer = event.getHttpServletResponse().getWriter();
         writer.print(str);
         writer.close();
-        // CAUTION: do not close listener - that's done by the end event
+        // CAUTION: do not close event or remove the event - that's done by the end event
     }
 }
 
