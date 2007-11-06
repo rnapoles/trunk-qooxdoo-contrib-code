@@ -182,7 +182,7 @@ public class Engine extends HttpServlet {
                 error = getReportableException(e.getTargetException());
                 application.log.log(Level.SEVERE, error, e);
             }
-            application.log.info("done " + call);
+            application.log.info("done call");
             return;
         }
         throw new IllegalArgumentException(path);

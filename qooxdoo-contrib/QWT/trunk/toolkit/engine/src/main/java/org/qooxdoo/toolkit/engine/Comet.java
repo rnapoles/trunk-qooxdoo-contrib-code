@@ -53,7 +53,7 @@ public class Comet extends HttpServlet implements CometProcessor {
             switch (event.getEventType()) {
                case BEGIN:
                    event.setTimeout(SESSION_TIMEOUT);
-                   session.setListener(event.getHttpServletResponse());
+                   session.setListener(event);
                    break;
                case END:
                    System.out.println("TODO: end " + path + " " + event.getHttpServletResponse());
