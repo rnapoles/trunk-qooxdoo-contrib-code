@@ -60,9 +60,7 @@ import org.qooxdoo.toolkit.qooxdoo.Server;
 import qx.ui.basic.Image;
 
 /**
- * A server, a list of clients, plus some Jmx services. 
- * Currently, there's always exactly 1 client.
- * Every initialized engine has exactly one application.
+ * A server, a client, some Jmx services. Every initialized webapp has exactly one application.
  */
 public class Application implements ApplicationMBean {
     public static synchronized Application get(ServletContext context) throws ServletException {
@@ -95,7 +93,7 @@ public class Application implements ApplicationMBean {
         docroot = docroot.getAbsoluteFile().getCanonicalFile();
         node = io.node(docroot);
         application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"), MimeTypes.create());
-        application.add(Client.create(context, application));
+        application.client = Client.create(context, application);
         return application;
     }
     
@@ -108,13 +106,13 @@ public class Application implements ApplicationMBean {
     
     private final String serverClass;
     private Server server;
-    
-    private final Map<String, Client> clients;
+
+    /** assigned once */
+    private Client client;
     private final MimeTypes mimeTypes;
     private int nextMbeanId;
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
-    private String first;
     private final Registry registry;
     private final GroovyShell shell;
     
@@ -130,8 +128,7 @@ public class Application implements ApplicationMBean {
         this.nextMbeanId = 0;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.mbeans = new HashMap<MBean, ObjectName>();
-        this.clients = new HashMap<String, Client>();
-        this.first = null;
+        this.client = null;
         
         binding = new Binding();
         binding.setVariable("application", this);
@@ -201,36 +198,15 @@ public class Application implements ApplicationMBean {
         return name;
     }
 
-    public void add(Client client) {
-        String name;
-        
-        name = client.getName();
-        if (clients.containsKey(name)) {
-            throw new IllegalArgumentException("duplicate client: " + name);
-        }
-        if (first == null) {
-            first = name;
-        }
-        clients.put(name, client);
-    }
-
-    public Client lookup(String id) {
-        return clients.get(id);
-    }
-    
-    /** @return never null */
-    public Client getFirstClient() {
-        return clients.get(first);
-    }
-    
-    
     public void startup() throws ServletException {
         register(this);
-        for (Client client : clients.values()) {
-            register(client);
-        }
+        register(client);
         server = (Server) createInstance(serverClass);
         log.info("startup done");
+    }
+
+    public Client getClient() {
+        return client;
     }
     
     public Server getServer() {
@@ -247,7 +223,7 @@ public class Application implements ApplicationMBean {
             throw new ServletException("class not found: " + className);
         }
         try {
-            constr = cfg.getDeclaredConstructor(new Class[] {});
+            constr = cfg.getDeclaredConstructor(new Class<?>[] {});
         } catch (SecurityException e2) {
             throw new ServletException("cannot instantiate class " + className, e2);
         } catch (NoSuchMethodException e2) {

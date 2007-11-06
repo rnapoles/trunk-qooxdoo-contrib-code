@@ -41,7 +41,6 @@ public class Engine extends HttpServlet {
     
     @Override
     public void init(ServletConfig config) throws ServletException {
-        System.out.println("engine init");
         super.init(config);
         if (application != null) {
             throw new IllegalStateException();
@@ -141,12 +140,12 @@ public class Engine extends HttpServlet {
             client = (Client) tmp[0];
             rm = client.allocate();
             try {
-                forClient(request, response, rm, client, (String) tmp[1]);
+                forClient(request, response, rm, (String) tmp[1]);
             } finally {
                 client.free(rm);
             }
         } else {
-            client = application.getFirstClient();
+            client = application.getClient();
             String url = request.getContextPath() + "/" + client.getName() + "/" + client.getIndex().getName();
             application.log.info("unknown request '" + path + "', redirect to " + url);
             response.sendRedirect(url);
@@ -154,7 +153,7 @@ public class Engine extends HttpServlet {
     }
 
     private void forClient(HttpServletRequest request, HttpServletResponse response, 
-            ResourceManager rm, Client client, String path) throws IOException, ServletException {
+            ResourceManager rm, String path) throws IOException, ServletException {
         Call call;
         Writer writer;
         String error;
@@ -196,11 +195,12 @@ public class Engine extends HttpServlet {
         if (idx == -1) {
             return null;
         }
-        client = application.lookup(path.substring(0, idx));
-        if (client == null) {
+        client = application.getClient();
+        if (client.getName().equals(path.substring(0, idx))) {
+            return new Object[] { client, path.substring(idx) };
+        } else {
             return null;
         }
-        return new Object[] { client, path.substring(idx) };
     }
 
     public String getReportableException(Throwable cause) {

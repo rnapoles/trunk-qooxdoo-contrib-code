@@ -50,8 +50,7 @@ public class Call {
         if (idx == -1) {
             throw new IllegalArgumentException(pathInfo);
         }
-        // TODO: firstClient
-        callListener = application.getFirstClient().lookup(Integer.parseInt(pathInfo.substring(0, idx)));
+        callListener = application.getClient().lookup(Integer.parseInt(pathInfo.substring(0, idx)));
         pathInfo = pathInfo.substring(idx + 1);
         idx = pathInfo.indexOf('_');
         if (idx == -1) {
