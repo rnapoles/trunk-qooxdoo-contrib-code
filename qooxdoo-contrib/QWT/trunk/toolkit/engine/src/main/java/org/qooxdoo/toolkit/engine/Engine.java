@@ -169,7 +169,7 @@ public class Engine extends HttpServlet {
             if (call == null) {
                 throw new IllegalArgumentException("no call: " + path);
             }
-            application.log.info("invoke call");
+            application.log.info("method begin");
             writer = createTextWriter(response);
             try {
                 writer.write(call.invoke());
@@ -177,7 +177,7 @@ public class Engine extends HttpServlet {
                 error = getReportableException(e.getTargetException());
                 application.log.log(Level.SEVERE, error, e);
             }
-            application.log.info("done call");
+            application.log.info("method end");
             return;
         }
         throw new IllegalArgumentException(path);
