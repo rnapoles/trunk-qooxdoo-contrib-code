@@ -37,11 +37,11 @@ import org.qooxdoo.toolkit.engine.common.Transport;
 public class Engine extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // TODO
-    public static Application application = null;
+    public Application application = null;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
+        System.out.println("engine init");
         super.init(config);
         if (application != null) {
             throw new IllegalStateException();
@@ -52,6 +52,7 @@ public class Engine extends HttpServlet {
             throw new ServletException("cannot load application", e);
         }
         application.startup();
+        config.getServletContext().setAttribute(Application.ATTRIBUTE_NAME, application);
     }
 
     @Override

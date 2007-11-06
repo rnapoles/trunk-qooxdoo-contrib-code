@@ -19,20 +19,33 @@
 
 package org.qooxdoo.toolkit.engine;
 
-import java.io.IOException;
+import org.apache.catalina.CometEvent;
+import org.apache.catalina.CometProcessor;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.CometEvent;
-import org.apache.catalina.CometProcessor;
+import java.io.IOException;
 
 public class Comet extends HttpServlet implements CometProcessor {
     /** millis */
     private static final int SESSION_TIMEOUT = 5 * 60 * 1000;
 
     private static final long serialVersionUID = 1L;
+
+    private Application application;
+
+    @Override
+    public void init(ServletConfig config) {
+        ServletContext context;
+
+        System.out.println("comet init");
+        context = config.getServletContext();
+        application = (Application) context.getAttribute(Application.ATTRIBUTE_NAME);
+        System.out.println("application: " + application);
+    }
 
     public void event(CometEvent event) throws IOException, ServletException {
         String path;
@@ -41,7 +54,7 @@ public class Comet extends HttpServlet implements CometProcessor {
         Session session;
 
         path = event.getHttpServletRequest().getPathInfo();
-        client = Engine.application.getFirstClient(); // TODO
+        client = application.getFirstClient(); // TODO
         session = session(client, path);
         if (session == null) {
             if (event.getEventType() != CometEvent.EventType.BEGIN) {
