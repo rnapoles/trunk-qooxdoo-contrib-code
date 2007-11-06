@@ -41,12 +41,19 @@ public class Session implements SessionMBean, CallListener {
         this.argument = argument;
     }
 
+    public void unsetListener(CometEvent listener) {
+        if (this.listener != listener) {
+            throw new IllegalArgumentException();
+        }
+        this.listener = null;
+    }
+
     public void setListener(CometEvent listener) {
         if (listener == null) {
             throw new IllegalArgumentException();
         }
         if (this.listener != null) {
-            System.out.println("TODO: overwriting old listener: " + listener);
+            throw new IllegalStateException();
         }
         this.listener = listener;
     }
@@ -90,8 +97,7 @@ public class Session implements SessionMBean, CallListener {
         writer = listener.getHttpServletResponse().getWriter();
         writer.print(str);
         writer.close();
-        listener.close();
-        listener = null;
+        // CAUTION: do not close listener - that's done by the end event
     }
 }
 
