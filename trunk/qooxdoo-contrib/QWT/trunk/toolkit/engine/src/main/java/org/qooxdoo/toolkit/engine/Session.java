@@ -19,12 +19,11 @@
 
 package org.qooxdoo.toolkit.engine;
 
+import org.apache.catalina.CometEvent;
+import org.qooxdoo.toolkit.engine.common.CallListener;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.qooxdoo.toolkit.engine.common.CallListener;
 
 /** A running client. Create instances with Client.start. */
 public class Session implements SessionMBean, CallListener {
@@ -34,7 +33,7 @@ public class Session implements SessionMBean, CallListener {
     /** result from Server.createClient */
     public final Object argument;
     
-    public HttpServletResponse listener;
+    public CometEvent listener;
     
     public Session(Client client, int id, Object argument) {
         this.client = client;
@@ -42,7 +41,7 @@ public class Session implements SessionMBean, CallListener {
         this.argument = argument;
     }
 
-    public void setListener(HttpServletResponse listener) {
+    public void setListener(CometEvent listener) {
         if (listener == null) {
             throw new IllegalArgumentException();
         }
@@ -88,9 +87,11 @@ public class Session implements SessionMBean, CallListener {
         if (listener == null) {
             throw new RuntimeException("TODO");
         }
-        writer = listener.getWriter();
+        writer = listener.getHttpServletResponse().getWriter();
         writer.print(str);
         writer.close();
+        listener.close();
+        listener = null;
     }
 }
 
