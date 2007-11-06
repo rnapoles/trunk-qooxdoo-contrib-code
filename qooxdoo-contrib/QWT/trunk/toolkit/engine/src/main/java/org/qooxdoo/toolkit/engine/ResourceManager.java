@@ -37,8 +37,6 @@ public class ResourceManager {
         return new ResourceManager(new IO().setWorking(basedir), mimeTypes);
     }
     
-    public static final String TEMP_PREFX = "/temp/";
-    
     private final IO io;
     private final MimeTypes mimeTypes;
     private final Map<String, Resource> statics;

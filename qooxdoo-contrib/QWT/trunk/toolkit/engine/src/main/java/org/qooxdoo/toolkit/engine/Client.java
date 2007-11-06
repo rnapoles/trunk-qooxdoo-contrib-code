@@ -51,21 +51,19 @@ import qx.ui.core.Widget;
  */
 public class Client implements ClientMBean {
     public static Client create(ServletContext context, Application application) throws IOException, ServletException {
-        String name;
-        String title;    
+        String title;
         String client;
         FileNode dest;
         Client result;
         
-        name = "main";
         title = context.getServletContextName();
         client = getParam(context, "client");
-        dest = application.createClientDirectory(name);
+        dest = application.createClientDirectory();
         result = new Client(application,
                 application.getDocroot().join("WEB-INF/src"), 
                 getSplitParam(context, "includes"),
                 getSplitParam(context, "excludes"),
-                name, title, client, dest);
+                title, client, dest);
         result.link();
         return result;
     }
@@ -93,7 +91,6 @@ public class Client implements ClientMBean {
     private final String[] excludes;
     private final List<Node> classpath;
     
-    private final String name;
     private final String title;
 
     /** first JavaScript class */
@@ -111,14 +108,13 @@ public class Client implements ClientMBean {
     //--
     
     public Client(Application application, Node src, String[] includes, String[] excludes,   
-            String name, String title, String main, FileNode dir) 
+            String title, String main, FileNode dir) 
     throws IOException {
         this.application = application;
         this.src = src;
         this.includes = includes;
         this.excludes = excludes;
         this.classpath = classpath(src.io);
-        this.name = name;
         this.title = title;
         this.main = main;
         this.nextSessionId = 0;
@@ -185,7 +181,7 @@ public class Client implements ClientMBean {
     }
     
     public String getName() {
-        return name;
+        return "client";
     }
     
     public Date getCreated() {
