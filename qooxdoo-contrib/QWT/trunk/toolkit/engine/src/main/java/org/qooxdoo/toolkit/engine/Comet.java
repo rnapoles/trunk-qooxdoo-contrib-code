@@ -38,13 +38,11 @@ public class Comet extends HttpServlet implements CometProcessor {
     private Application application;
 
     @Override
-    public void init(ServletConfig config) {
+    public void init(ServletConfig config) throws ServletException {
         ServletContext context;
 
-        System.out.println("comet init");
         context = config.getServletContext();
-        application = (Application) context.getAttribute(Application.ATTRIBUTE_NAME);
-        System.out.println("application: " + application);
+        application = Application.get(context);
     }
 
     public void event(CometEvent event) throws IOException, ServletException {

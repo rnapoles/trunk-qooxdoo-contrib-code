@@ -21,43 +21,26 @@ package org.qooxdoo.toolkit.engine;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.qooxdoo.Server;
-
 import qx.ui.basic.Image;
+
+import javax.management.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.*;
+import java.util.logging.Formatter;
 
 /**
  * A server, a list of clients, plus some Jmx services. 
@@ -65,24 +48,37 @@ import qx.ui.basic.Image;
  * Every initialized engine has exactly one application.
  */
 public class Application implements ApplicationMBean {
-    public static final String ATTRIBUTE_NAME = "qwt_application";
-    
-    public static Application create(ServletConfig config) throws IOException, ServletException {
+    public static synchronized Application get(ServletContext context) throws ServletException {
+        final String attribute = "qwt_application";
+        Application application;
+
+        application = (Application) context.getAttribute(attribute);
+        if (application == null) {
+            try {
+                application = create(context);
+            } catch (IOException e) {
+                throw new ServletException("cannot create application", e);
+            }
+            context.setAttribute(attribute, application);
+        }
+        return application;
+    }
+
+    private static Application create(ServletContext context) throws IOException, ServletException {
         IO io;
         File docroot;
         FileNode node;
         Application application;
         
         io = new IO();
-        docroot = new File(config.getServletContext().getRealPath("/"));
+        docroot = new File(context.getRealPath("/"));
         if (!docroot.isDirectory()) {
             throw new IllegalStateException(docroot.toString());
         }
         docroot = docroot.getAbsoluteFile().getCanonicalFile();
         node = io.node(docroot);
-        application = new Application(config.getServletName(), node,
-                Client.getParam(config, "server"), MimeTypes.create());
-        application.add(Client.create(config, application));
+        application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"), MimeTypes.create());
+        application.add(Client.create(context, application));
         return application;
     }
     
