@@ -51,36 +51,34 @@ import qx.ui.core.Widget;
  * Building block of an application, defines how do generate Index.html 
  */
 public class Client implements ClientMBean {
-    public static Client create(ServletConfig config, Application application) throws IOException, ServletException {
-        ServletContext context;
+    public static Client create(ServletContext context, Application application) throws IOException, ServletException {
         String name;
         String title;    
         String client;
         FileNode dest;
         Client result;
         
-        context = config.getServletContext();
         name = "main";
         title = context.getServletContextName();
-        client = getParam(config, "client");
+        client = getParam(context, "client");
         dest = application.createClientDirectory(name);
         result = new Client(application,
                 application.getDocroot().join("WEB-INF/src"), 
-                getSplitParam(config, "includes"), 
-                getSplitParam(config, "excludes"),
+                getSplitParam(context, "includes"),
+                getSplitParam(context, "excludes"),
                 name, title, client, dest);
         result.link();
         return result;
     }
 
-    private static String[] getSplitParam(ServletConfig config, String name) throws ServletException {
-        return Strings.toArray(Strings.trim(Strings.split(",", getParam(config, name))));
+    private static String[] getSplitParam(ServletContext context, String name) throws ServletException {
+        return Strings.toArray(Strings.trim(Strings.split(",", getParam(context, name))));
     }
 
-    public static String getParam(ServletConfig config, String name) throws ServletException {
+    public static String getParam(ServletContext context, String name) throws ServletException {
         String value;
 
-        value = config.getInitParameter(name);
+        value = context.getInitParameter(name);
         if (value == null) {
             throw new ServletException("missing init parameter: " + name);
         }

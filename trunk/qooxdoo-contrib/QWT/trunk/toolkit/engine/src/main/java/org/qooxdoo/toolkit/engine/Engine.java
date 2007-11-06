@@ -46,13 +46,8 @@ public class Engine extends HttpServlet {
         if (application != null) {
             throw new IllegalStateException();
         }
-        try {
-            application = Application.create(config);       
-        } catch (IOException e) {
-            throw new ServletException("cannot load application", e);
-        }
+        application = Application.get(config.getServletContext());
         application.startup();
-        config.getServletContext().setAttribute(Application.ATTRIBUTE_NAME, application);
     }
 
     @Override

@@ -272,38 +272,38 @@ public abstract class WebappBase extends Base {
         "   version='2.5'>\n" +
         "   <display-name>${name}</display-name>\n" + 
         "   <description>${description}</description>\n" + 
-        "   <servlet>\n" + 
-        "      <servlet-name>${id}</servlet-name>\n" + 
+        "   <context-param>\n" +
+        "      <param-name>server</param-name>\n" +
+        "      <param-value>${server}</param-value>\n" +
+        "   </context-param>\n" +
+        "   <context-param>\n" +
+        "      <param-name>client</param-name>\n" +
+        "      <param-value>${client}</param-value>\n" +
+        "   </context-param>\n" +
+        "   <context-param>\n" +
+        "      <param-name>includes</param-name>\n" +
+        "      <param-value>${includes}</param-value>\n" +
+        "   </context-param>\n" +
+        "   <context-param>\n" +
+        "      <param-name>excludes</param-name>\n" +
+        "      <param-value>${excludes}</param-value>\n" +
+        "   </context-param>\n" +
+        "   <servlet>\n" +
+        "      <servlet-name>engine</servlet-name>\n" +
         "      <servlet-class>org.qooxdoo.toolkit.engine.Engine</servlet-class>\n" + 
-        "      <init-param>\n" + 
-        "          <param-name>server</param-name>\n" + 
-        "          <param-value>${server}</param-value>\n" + 
-        "      </init-param>\n" + 
-        "      <init-param>\n" + 
-        "          <param-name>client</param-name>\n" + 
-        "          <param-value>${client}</param-value>\n" + 
-        "      </init-param>\n" + 
-        "      <init-param>\n" + 
-        "          <param-name>includes</param-name>\n" + 
-        "          <param-value>${includes}</param-value>\n" + 
-        "      </init-param>\n" + 
-        "      <init-param>\n" + 
-        "          <param-name>excludes</param-name>\n" + 
-        "          <param-value>${excludes}</param-value>\n" + 
-        "      </init-param>\n" + 
-        "   </servlet>\n" + 
+        "   </servlet>\n" +
         "   <servlet>\n" + 
-        "      <servlet-name>${id}-comet</servlet-name>\n" + 
+        "      <servlet-name>comet</servlet-name>\n" +
         "      <servlet-class>org.qooxdoo.toolkit.engine.Comet</servlet-class>\n" + 
         "   </servlet>\n" + 
-        "   <servlet-mapping>\n" + 
-        "      <servlet-name>${id}-comet</servlet-name>\n" + 
+        "   <servlet-mapping>\n" +
+        "      <servlet-name>engine</servlet-name>\n" +
+        "      <url-pattern>/*</url-pattern>\n" +
+        "   </servlet-mapping>\n" +
+        "   <servlet-mapping>\n" +
+        "      <servlet-name>comet</servlet-name>\n" +
         "      <url-pattern>/main/session/*</url-pattern>\n" + 
         "   </servlet-mapping>\n" +
-        "   <servlet-mapping>\n" + 
-        "      <servlet-name>${id}</servlet-name>\n" + 
-        "      <url-pattern>/*</url-pattern>\n" + 
-        "   </servlet-mapping>\n" + 
         "</web-app>\n";
     
     //-- resolve engine dependencies
