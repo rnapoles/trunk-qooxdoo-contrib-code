@@ -172,7 +172,6 @@ public class Transport {
         ArrayList<Object> args;
         String method;
         
-        System.out.println("invoke " + str);
         args = new ArrayList<Object>();
         idx = str.indexOf(",");
         if (idx == -1) {
@@ -180,17 +179,14 @@ public class Transport {
         }
         obj = registry.get(Integer.parseInt(str.substring(0, idx)));
         prev = idx + 1;
-        idx = str.indexOf(",");
-        System.out.println("got idx " + idx);
+        idx = str.indexOf(",", prev);
         if (idx == -1) {
             method = str.substring(prev);
         } else {
             method = str.substring(prev, idx);
-            System.out.println("method");
             prev = idx + 1;
             while (true) {
                 idx = str.indexOf(",", prev);
-                System.out.println("got next idx " + idx);
                 if (idx == -1) {
                     args.add(Parser.run(registry, null, str.substring(prev)));
                     break;
@@ -199,13 +195,12 @@ public class Transport {
                 prev = idx + 1;
             }
         }
-        System.out.println("doInvoke " + method);
         doInvoke(obj, method, args);
     }
     
     /**
      * @native
-         obj[method].apply(args.data);
+         obj[method].apply(obj, args.data);
      */
     private static void doInvoke(Object obj, String method, ArrayList<Object> args) {
     }
