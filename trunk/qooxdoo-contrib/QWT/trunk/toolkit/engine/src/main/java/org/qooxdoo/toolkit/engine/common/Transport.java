@@ -72,7 +72,7 @@ public class Transport {
 
     /**
      * @native
-         qwtLog("starting session " + sessionNo);
+         qwtLog("requestEvent " + sessionNo);
 
          var req = qwtRequest();
          req.onreadystatechange = function() {
