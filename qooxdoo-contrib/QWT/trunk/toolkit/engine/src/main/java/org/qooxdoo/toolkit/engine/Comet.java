@@ -30,7 +30,7 @@ import org.apache.catalina.CometProcessor;
 
 public class Comet extends HttpServlet implements CometProcessor {
     /** millis */
-    private static final int SESSION_TIMEOUT = 1 * 60 * 1000;
+    private static final int SESSION_TIMEOUT = 5 * 60 * 1000;
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +56,7 @@ public class Comet extends HttpServlet implements CometProcessor {
                    session.setListener(event);
                    break;
                case END:
-                   System.out.println("TODO: end " + path + " " + event.getHttpServletResponse());
+                   session.unsetListener(event);
                    event.close();
                    break;
                case ERROR:
