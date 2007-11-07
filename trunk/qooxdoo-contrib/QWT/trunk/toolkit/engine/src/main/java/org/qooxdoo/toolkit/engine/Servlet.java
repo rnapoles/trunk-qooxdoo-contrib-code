@@ -138,7 +138,8 @@ public abstract class Servlet extends HttpServlet {
     
     //--
     
-    protected abstract void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) throws IOException, ServletException;
+    protected abstract void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) 
+    throws IOException, ServletException;
     
     private void report(Throwable e, HttpServletRequest request) {
         application.log.log(Level.SEVERE, request.getPathInfo() + ": " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
