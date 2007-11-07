@@ -98,18 +98,17 @@ public class Client implements ClientMBean {
     
     private int nextSessionId;
     private final FileNode index;
-    private boolean compress;
+    private boolean minimize;
     private final ArrayBlockingQueue<ResourceManager> rms;
 
     private final Map<Integer, Session> sessions;
     
-    private static final int RM_COUNT = 10;
+    private static final int RM_COUNT = 5;
     
     //--
     
     public Client(Application application, Node src, String[] includes, String[] excludes,   
-            String title, String main, FileNode dir) 
-    throws IOException {
+            String title, String main, FileNode dir) {
         this.application = application;
         this.src = src;
         this.includes = includes;
@@ -118,11 +117,12 @@ public class Client implements ClientMBean {
         this.title = title;
         this.main = main;
         this.nextSessionId = 0;
-        
         this.index = (FileNode) dir.join("index.html");
-        index.writeBytes();
-        this.compress = false;
+        this.minimize = false;
         this.rms = new ArrayBlockingQueue<ResourceManager>(RM_COUNT);
+        for (int i = 0; i < RM_COUNT; i++) {
+            rms.add(application.createResourceManager(dir));
+        }
         this.sessions = new HashMap<Integer, Session>();
     }
 
@@ -141,12 +141,12 @@ public class Client implements ClientMBean {
         return application;
     }
     
-    public void setCompress(boolean compress) {
-        this.compress = compress;
+    public void setMinimize(boolean minimize) {
+        this.minimize = minimize;
     }
     
-    public boolean getCompress() {
-        return compress;
+    public boolean getMinimize() {
+        return minimize;
     }
     
     public FileNode getIndex() {
@@ -156,26 +156,16 @@ public class Client implements ClientMBean {
     public void link() throws IOException, ServletException {
         Qooxdoo qooxdoo;
         Index idx;
-        
-        qooxdoo = compile();
-        idx = new Index(compress, this.index, qooxdoo);
-        idx.generate(title, main); 
-        application.log.info(this.index.length() + " bytes written to " + index);
-        for (int i = 0; i < RM_COUNT; i++) {
-            rms.add(application.createResourceManager(getIndex().getParent()));
-        }
-    }
-    
-    public FileNode getIndexGz() throws IOException {
         FileNode gz;
         
+        qooxdoo = compile();
+        idx = new Index(minimize, this.index, qooxdoo);
+        idx.generate(title, main); 
         gz = (FileNode) index.getParent().join(index.getName() + ".gz");
-        if (!gz.isFile() || (index.lastModified() > gz.lastModified())) {
-            index.gzip(gz);
-        }
-        return gz;
+        index.gzip(gz);
+        application.log.info(this.index.length() + " bytes written to " + index);
     }
-
+    
     public String getMain() {
         return main;
     }

@@ -24,6 +24,6 @@ import java.util.Date;
 public interface ClientMBean extends MBean {
     Date getCreated();
     long getSize();
-    boolean getCompress();
-    void setCompress(boolean compress);
+    boolean getMinimize();
+    void setMinimize(boolean minimize);
 } 

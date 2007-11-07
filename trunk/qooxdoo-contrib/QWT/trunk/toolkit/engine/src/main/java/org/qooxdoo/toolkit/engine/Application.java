@@ -193,6 +193,9 @@ public class Application implements ApplicationMBean {
     }
 
     public void startup() throws ServletException {
+        if (server != null) {
+            throw new IllegalStateException();
+        }
         register(this);
         register(client);
         server = (Server) createInstance(serverClass);
@@ -253,6 +256,7 @@ public class Application implements ApplicationMBean {
             h.close();
             log.removeHandler(h);
         }
+        server = null;
     }
     
     public synchronized void register(MBean mbean) {
@@ -304,7 +308,7 @@ public class Application implements ApplicationMBean {
         return (FileNode) docroot.join("client").mkdirOpt();
     }
 
-    public ResourceManager createResourceManager(Node clientDir) throws IOException {
+    public ResourceManager createResourceManager(Node clientDir) {
         ResourceManager rm;
 
         rm = ResourceManager.create(docroot);
