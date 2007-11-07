@@ -295,7 +295,7 @@ public class Application implements ApplicationMBean {
 
         rm = ResourceManager.create(docroot);
         rm.addPrefix("", clientDir);
-        rm.addFilePrefix("src/");
+        rm.addFilePrefix("images/");
         rm.addResourcePrefix("resource/");
         return rm;
     }

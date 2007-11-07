@@ -48,13 +48,23 @@ public class ResourceManager {
     }
 
     public void addFilePrefix(String prefix) {
-        addPrefix(prefix, io.getWorking().join(prefix));
+        addPrefix(prefix, io.getWorking().join(trim(prefix)));
     }
 
     public void addResourcePrefix(String prefix) {
-        addPrefix(prefix, new ResourceNode(io, prefix));
+        addPrefix(prefix, new ResourceNode(io, trim(prefix)));
     }
 
+    private static String trim(String str) {
+        if (str.length() == 0) {
+            return str;
+        } if (str.endsWith("/")) {
+            return str.substring(0, str.length() - 1);
+        } else {
+            throw new IllegalArgumentException(str);
+        }
+    }
+    
     public void addPrefix(String prefix, Node root) {
         if (prefix.length() > 0) {
             if (prefix.startsWith("/")) {
