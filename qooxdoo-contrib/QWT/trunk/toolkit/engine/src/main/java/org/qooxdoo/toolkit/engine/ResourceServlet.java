@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** Performs application startup and servers resources. */
-public class Engine extends Base {
+public class ResourceServlet extends Servlet {
     private Client client;
     
     @Override

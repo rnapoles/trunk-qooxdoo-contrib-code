@@ -189,7 +189,7 @@ public class Client implements ClientMBean {
 
         argument = application.getServer().clientStart();
         session = new Session(this, nextSessionId++, argument);
-        writer = Engine.createTextWriter(response);
+        writer = ResourceServlet.createTextWriter(response);
         writer.write(session.getId() + "\n");
         writer.write(Serializer.run(application.getRegistry(), session.argument));
         writer.close();
@@ -251,7 +251,7 @@ public class Client implements ClientMBean {
         cp = new ArrayList<Node>();
         cp.add(io.locateClasspathItem("/java/lang/Object.js"));
         cp.add(io.locateClasspathItem(Widget.class));
-        cp.add(io.locateClasspathItem(Engine.class));
+        cp.add(io.locateClasspathItem(ResourceServlet.class));
         return cp;
     }
 }

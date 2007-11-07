@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class Comet extends HttpServlet implements CometProcessor {
+public class SessionServlet extends HttpServlet implements CometProcessor {
     /** millis */
     private static final int SESSION_TIMEOUT = 5 * 60 * 1000;
 

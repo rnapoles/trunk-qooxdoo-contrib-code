@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.qooxdoo.sushi.io.Buffer;
 
 /** Main class */
-public class Method extends Base {
+public class MethodServlet extends Servlet {
     @Override
     protected void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Client client;
