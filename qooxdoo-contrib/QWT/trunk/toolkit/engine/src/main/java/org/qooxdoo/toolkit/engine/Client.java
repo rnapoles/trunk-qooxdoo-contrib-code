@@ -33,6 +33,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.filter.Filter;
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
@@ -99,11 +100,10 @@ public class Client implements ClientMBean {
     private int nextSessionId;
     private final FileNode index;
     private boolean minimize;
-    private final ArrayBlockingQueue<ResourceManager> rms;
-
+    private final ArrayBlockingQueue<Buffer> buffers;
     private final Map<Integer, Session> sessions;
     
-    private static final int RM_COUNT = 5;
+    private static final int BUFFER_COUNT = 5;
     
     //--
     
@@ -119,22 +119,22 @@ public class Client implements ClientMBean {
         this.nextSessionId = 0;
         this.index = (FileNode) dir.join("index.html");
         this.minimize = false;
-        this.rms = new ArrayBlockingQueue<ResourceManager>(RM_COUNT);
-        for (int i = 0; i < RM_COUNT; i++) {
-            rms.add(application.createResourceManager(dir));
+        this.buffers = new ArrayBlockingQueue<Buffer>(BUFFER_COUNT);
+        for (int i = 0; i < BUFFER_COUNT; i++) {
+            buffers.add(new Buffer(Buffer.UTF_8));
         }
         this.sessions = new HashMap<Integer, Session>();
     }
 
-    public ResourceManager allocate() {
+    public Buffer allocate() {
         try {
-            return rms.take();
+            return buffers.take();
         } catch (InterruptedException e) {
             throw new RuntimeException(e); // TODO
         }
     }
-    public void free(ResourceManager rm) {
-        rms.add(rm);
+    public void free(Buffer buffer) {
+        buffers.add(buffer);
     }
     
     public Application getApplication() {

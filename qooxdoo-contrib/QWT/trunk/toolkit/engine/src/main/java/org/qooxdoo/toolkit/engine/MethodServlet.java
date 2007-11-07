@@ -35,14 +35,14 @@ public class MethodServlet extends Servlet {
     @Override
     protected void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Client client;
-        ResourceManager rm;
+        Buffer buffer;
 
         client = application.getClient();
-        rm = client.allocate();
+        buffer = client.allocate();
         try {
-            doProcessUnchecked(request, response, rm.getBuffer(), request.getPathInfo());
+            doProcessUnchecked(request, response, buffer, request.getPathInfo());
         } finally {
-            client.free(rm);
+            client.free(buffer);
         }
     }
 

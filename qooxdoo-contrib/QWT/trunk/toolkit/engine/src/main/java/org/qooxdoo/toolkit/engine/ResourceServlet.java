@@ -27,6 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.qooxdoo.sushi.io.Buffer;
+
 /** Performs application startup and servers resources. */
 public class ResourceServlet extends Servlet {
     private Client client;
@@ -54,47 +56,41 @@ public class ResourceServlet extends Servlet {
         application.log.info("getLastModified: " + path);
         if (path == null || "/".equals(path)) {
             return -1;
-        } else {
-            rm = client.allocate();
-            try {
-                resource = rm.lookup(path.substring(1));
-                if (resource != null) {
-                    return resource.getLastModified();
-                } else {
-                    return -1;
-                }
-            } finally {
-                client.free(rm);
-            }
         }
+        rm = application.getResourceManager();
+        resource = rm.lookup(path.substring(1));
+        if (resource == null) {
+            return -1;
+        } 
+        return resource.getLastModified();
     }
     
     @Override
     protected void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        ResourceManager rm;
+        Buffer buffer;
         String path;
 
         path = request.getPathInfo();
         if (path == null || "/".equals(path)) {
             response.sendRedirect(request.getContextPath() + "/" + client.getIndex().getName());
         } else {
-            rm = client.allocate();
+            buffer = client.allocate();
             try {
-                doProcessUnchecked(request, response, rm, path);
+                doProcessUnchecked(request, response, buffer, path);
             } finally {
-                client.free(rm);
+                client.free(buffer);
             }
         }
     }
 
     private void doProcessUnchecked(HttpServletRequest request, HttpServletResponse response, 
-            ResourceManager rm, String path) throws IOException, ServletException {
+            Buffer buffer, String path) throws IOException, ServletException {
         String ae;
         boolean gz;
         
         ae = request.getHeader("accept-encoding");
         gz = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
-        if (path != null && path.startsWith("/") && rm.render(path.substring(1), gz, response)) {
+        if (path != null && path.startsWith("/") && application.getResourceManager().render(buffer, path.substring(1), gz, response)) {
             // done
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

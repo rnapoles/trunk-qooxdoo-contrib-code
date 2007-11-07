@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 
@@ -71,6 +72,6 @@ public class ResourceManagerTest {
         res = rm.lookup(path);
         assertNotNull(path, res);
         dest = new ByteArrayOutputStream();
-        res.copy(dest);
+        res.copy(new Buffer(), dest);
     }
 }

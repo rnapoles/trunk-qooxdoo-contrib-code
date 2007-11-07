@@ -82,6 +82,7 @@ public class Application implements ApplicationMBean {
         File docroot;
         FileNode node;
         Application application;
+        ResourceManager rm;
         
         io = new IO();
         docroot = new File(context.getRealPath("/"));
@@ -90,7 +91,11 @@ public class Application implements ApplicationMBean {
         }
         docroot = docroot.getAbsoluteFile().getCanonicalFile();
         node = io.node(docroot);
-        application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"));
+        rm = ResourceManager.create(node);
+        rm.addPrefix("", createClientDirectory(node));
+        rm.addFilePrefix("images/");
+        rm.addResourcePrefix("resource/");
+        application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"), rm);
         application.client = Client.create(context, application);
         return application;
     }
@@ -107,12 +112,15 @@ public class Application implements ApplicationMBean {
 
     /** assigned once */
     private Client client;
+    
+    private final ResourceManager rm;
+    
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
     private final Registry registry;
     private final GroovyShell shell;
     
-    public Application(String name, FileNode docroot, String server) throws IOException {
+    public Application(String name, FileNode docroot, String server, ResourceManager rm) throws IOException {
         Binding binding;
 
         this.log = createLogger(name, docroot);
@@ -120,6 +128,7 @@ public class Application implements ApplicationMBean {
         this.docroot = docroot;
         this.serverClass = server;
         this.server = null;
+        this.rm = rm;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.mbeans = new HashMap<MBean, ObjectName>();
         this.client = null;
@@ -184,6 +193,10 @@ public class Application implements ApplicationMBean {
         }
     }
 
+    public ResourceManager getResourceManager() {
+        return rm;
+    }
+    
     public Registry getRegistry() {
         return registry;
     }
@@ -305,16 +318,10 @@ public class Application implements ApplicationMBean {
     }
     
     public FileNode createClientDirectory() throws IOException {
-        return (FileNode) docroot.join("client").mkdirOpt();
+        return createClientDirectory(docroot);
     }
 
-    public ResourceManager createResourceManager(Node clientDir) {
-        ResourceManager rm;
-
-        rm = ResourceManager.create(docroot);
-        rm.addPrefix("", clientDir);
-        rm.addFilePrefix("images/");
-        rm.addResourcePrefix("resource/");
-        return rm;
+    public static FileNode createClientDirectory(Node docroot) throws IOException {
+        return (FileNode) docroot.join("client").mkdirOpt();
     }
 }
