@@ -110,7 +110,7 @@ public class ResourceManager {
             return null;
         }
         type = MimeType.get(normal);
-        if ("text/html".equals(type)) {
+        if (type.compressable) {
             compressed = normal.getParent().join(normal.getName() + ".gz");
             if (!compressed.exists()) {
                 compressed = null;

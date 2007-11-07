@@ -23,14 +23,19 @@ import org.qooxdoo.sushi.io.Node;
 
 public enum MimeType {
     XML("text/xml"),
-    HTML("text/html"),
+    HTML("text/html", true),
     GIF("image/gif"),
     PNG("image/png");
 
     public final String code;
-
+    public final boolean compressable;
+    
     private MimeType(String code) {
+        this(code, false);
+    }
+    private MimeType(String code, boolean compressable) {
         this.code = code;
+        this.compressable = compressable;
     }
 
     public static MimeType get(Node node) {
