@@ -289,19 +289,19 @@ public abstract class WebappBase extends Base {
         "      <param-value>${excludes}</param-value>\n" +
         "   </context-param>\n" +
         "   <servlet>\n" +
-        "      <servlet-name>engine</servlet-name>\n" +
-        "      <servlet-class>org.qooxdoo.toolkit.engine.Engine</servlet-class>\n" + 
+        "      <servlet-name>resource</servlet-name>\n" +
+        "      <servlet-class>org.qooxdoo.toolkit.engine.ResourceServlet</servlet-class>\n" + 
         "   </servlet>\n" +
         "   <servlet>\n" +
         "      <servlet-name>method</servlet-name>\n" +
-        "      <servlet-class>org.qooxdoo.toolkit.engine.Method</servlet-class>\n" + 
+        "      <servlet-class>org.qooxdoo.toolkit.engine.MethodServlet</servlet-class>\n" + 
         "   </servlet>\n" +
         "   <servlet>\n" + 
-        "      <servlet-name>comet</servlet-name>\n" +
-        "      <servlet-class>org.qooxdoo.toolkit.engine.Comet</servlet-class>\n" + 
+        "      <servlet-name>session</servlet-name>\n" +
+        "      <servlet-class>org.qooxdoo.toolkit.engine.SessionServlet</servlet-class>\n" + 
         "   </servlet>\n" + 
         "   <servlet-mapping>\n" +
-        "      <servlet-name>engine</servlet-name>\n" +
+        "      <servlet-name>resource</servlet-name>\n" +
         "      <url-pattern>/*</url-pattern>\n" +
         "   </servlet-mapping>\n" +
         "   <servlet-mapping>\n" +
@@ -309,7 +309,7 @@ public abstract class WebappBase extends Base {
         "      <url-pattern>/method/*</url-pattern>\n" +
         "   </servlet-mapping>\n" +
         "   <servlet-mapping>\n" +
-        "      <servlet-name>comet</servlet-name>\n" +
+        "      <servlet-name>session</servlet-name>\n" +
         "      <url-pattern>/session/*</url-pattern>\n" +
         "   </servlet-mapping>\n" +
         "</web-app>\n";

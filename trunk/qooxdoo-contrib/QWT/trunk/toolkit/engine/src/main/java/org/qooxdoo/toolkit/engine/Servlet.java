@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** Main class */
-public abstract class Base extends HttpServlet {
+public abstract class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected Application application = null;
