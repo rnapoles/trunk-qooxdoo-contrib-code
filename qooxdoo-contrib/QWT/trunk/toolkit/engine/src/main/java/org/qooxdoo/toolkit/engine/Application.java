@@ -110,7 +110,6 @@ public class Application implements ApplicationMBean {
     /** assigned once */
     private Client client;
     private final MimeTypes mimeTypes;
-    private int nextMbeanId;
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
     private final Registry registry;
@@ -125,7 +124,6 @@ public class Application implements ApplicationMBean {
         this.serverClass = server;
         this.server = null;
         this.mimeTypes = mimeTypes;
-        this.nextMbeanId = 0;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.mbeans = new HashMap<MBean, ObjectName>();
         this.client = null;
@@ -265,7 +263,6 @@ public class Application implements ApplicationMBean {
         String str;
         ObjectName objectName;
         
-        nextMbeanId++;
         str = "org.qooxdoo.toolkit.engine." + name + ":type=" + getName(mbean.getClass()) + ",name=" + mbean.getName();
         try {
             objectName = new ObjectName(str);
