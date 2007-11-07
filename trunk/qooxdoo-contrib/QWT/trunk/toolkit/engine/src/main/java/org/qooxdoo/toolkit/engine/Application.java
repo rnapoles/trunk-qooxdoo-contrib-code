@@ -76,7 +76,7 @@ public class Application implements ApplicationMBean {
         }
         docroot = docroot.getAbsoluteFile().getCanonicalFile();
         node = io.node(docroot);
-        application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"), MimeTypes.create());
+        application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"));
         application.client = Client.create(context, application);
         return application;
     }
@@ -93,13 +93,12 @@ public class Application implements ApplicationMBean {
 
     /** assigned once */
     private Client client;
-    private final MimeTypes mimeTypes;
     private final MBeanServer mbeanServer;
     private final Map<MBean, ObjectName> mbeans;
     private final Registry registry;
     private final GroovyShell shell;
     
-    public Application(String name, FileNode docroot, String server, MimeTypes mimeTypes) throws IOException {
+    public Application(String name, FileNode docroot, String server) throws IOException {
         Binding binding;
 
         this.log = createLogger(name, docroot);
@@ -107,7 +106,6 @@ public class Application implements ApplicationMBean {
         this.docroot = docroot;
         this.serverClass = server;
         this.server = null;
-        this.mimeTypes = mimeTypes;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.mbeans = new HashMap<MBean, ObjectName>();
         this.client = null;
@@ -295,7 +293,7 @@ public class Application implements ApplicationMBean {
     public ResourceManager createResourceManager(Node clientDir) throws IOException {
         ResourceManager rm;
 
-        rm = ResourceManager.create(docroot, mimeTypes);
+        rm = ResourceManager.create(docroot);
         rm.addPrefix("", clientDir);
         rm.addFilePrefix("src/");
         rm.addResourcePrefix("resource/");

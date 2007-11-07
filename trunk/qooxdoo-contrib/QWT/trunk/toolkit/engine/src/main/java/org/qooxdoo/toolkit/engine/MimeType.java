@@ -19,23 +19,28 @@
 
 package org.qooxdoo.toolkit.engine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import org.qooxdoo.sushi.io.Node;
 
-import org.junit.Test;
+public enum MimeType {
+    XML("text/xml"),
+    HTML("text/html"),
+    GIF("image/gif"),
+    PNG("image/png");
 
-public class MimeTypeTest {
-    @Test
-    public void normal() throws Exception {
-        assertEquals(MimeType.XML, MimeType.get("foo.xml"));
-        assertNotNull(MimeType.get("foo.html"));
-        try {
-            MimeType.get("foo.nosuchext");
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
+    public final String code;
+
+    private MimeType(String code) {
+        this.code = code;
     }
 
+    public static MimeType get(Node node) {
+        return get(node.getPath());
+    }
+
+    public static MimeType get(String path) {
+        String ext;
+
+        ext = path.substring(path.lastIndexOf('.') + 1).toUpperCase(); // ok for -1
+        return MimeType.valueOf(ext);
+    }
 }

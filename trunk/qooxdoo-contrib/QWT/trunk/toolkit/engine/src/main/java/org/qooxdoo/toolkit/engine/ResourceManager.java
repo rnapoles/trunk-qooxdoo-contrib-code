@@ -31,17 +31,15 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.ResourceNode;
 
 public class ResourceManager {
-    public static ResourceManager create(FileNode basedir, MimeTypes mimeTypes) throws IOException {
-        return new ResourceManager(new IO().setWorking(basedir), mimeTypes);
+    public static ResourceManager create(FileNode basedir) throws IOException {
+        return new ResourceManager(new IO().setWorking(basedir));
     }
     
     private final IO io;
-    private final MimeTypes mimeTypes;
     private final Map<String, Node> prefixes;
     
-    public ResourceManager(IO io, MimeTypes mimeTypes) {
+    public ResourceManager(IO io) {
         this.io = io;
-        this.mimeTypes = mimeTypes;
         this.prefixes = new HashMap<String, Node>();
     }
     
@@ -90,7 +88,7 @@ public class ResourceManager {
         Node compressed;
         int idx;
         String prefix;
-        String type;
+        MimeType type;
 
         if (path == null) {
             return null;
@@ -111,7 +109,7 @@ public class ResourceManager {
         if (!normal.exists()) {
             return null;
         }
-        type = mimeTypes.get(normal);
+        type = MimeType.get(normal);
         if ("text/html".equals(type)) {
             compressed = normal.getParent().join(normal.getName() + ".gz");
             if (!compressed.exists()) {

@@ -19,36 +19,28 @@
 
 package org.qooxdoo.toolkit.engine;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.ResourceNode;
-import org.qooxdoo.toolkit.engine.MimeTypes;
-import org.qooxdoo.toolkit.engine.Resource;
-import org.qooxdoo.toolkit.engine.ResourceManager;
 
 public class ResourceManagerTest {
     private ResourceManager rm;
 
     @Before
     public void setUp() {
-        MimeTypes mt;
         IO io;
         FileNode home;
         
-        mt = MimeTypes.create();
-        mt.add("class", "application/java");
         io = new IO();
         home = io.guessProjectHome(ResourceManager.class);
         io.setWorking(home);
-        rm = new ResourceManager(io, mt);
+        rm = new ResourceManager(io);
         rm.addResourcePrefix("resource/");
         rm.addFilePrefix("src/");
         rm.addPrefix("", home);

@@ -30,9 +30,9 @@ import org.qooxdoo.sushi.io.Node;
 public class Resource {
     private final Node normal;
     private final Node compressed;
-    private final String type;
+    private final MimeType type;
 
-    public Resource(Node normal, Node compressed, String type) {
+    public Resource(Node normal, Node compressed, MimeType type) {
         this.normal = normal;
         this.compressed = compressed;
         this.type = type;
@@ -48,7 +48,7 @@ public class Resource {
             node = normal;
         }
         dest.setDateHeader("Last-Modified", node.lastModified());
-        dest.setContentType(type);
+        dest.setContentType(type.code);
         copy(node, dest.getOutputStream());
         // do not flush/close dest: response would be committed
     }
