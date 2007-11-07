@@ -360,8 +360,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       {
         switch (key)
         {
-          
-          /* add arbitrary children to widgets */
+          /* add arbitrary children to widgets, including event listeners */
           case "children":
             var i, w, children = data[key];
             this.removeAll();
@@ -371,8 +370,21 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               // create new child widget Todo: ouch eval security problem!!!
               try 
               {
+                // classname
                 w = eval ( "(new " + props.classname + ")" );
                 delete props.classname;
+                
+                // event listeners
+                if ( typeof props.events == "object" )
+                {
+                  for ( var type in props.events )
+                  {
+                    w.addEventListener(type,function(event){
+                      eval(props.events[type]);
+                    });
+                  }
+                }
+                
                 w.set(props);
                 this.add(w);
               }

@@ -159,6 +159,11 @@ qx.Class.define("qcl.config.Manager",
       // set data
       for ( key in data )
       {
+        if ( !configMap[key] )
+        {
+          this.error("'" + key + "' is no registered config key.");
+        }
+        
         if ( typeof data[key] != configMap[key].type )
         {
           this.error("Invalid value '" + data[key] + "' Should be " + configMap[key].type + "but is " + typeof data[key] );

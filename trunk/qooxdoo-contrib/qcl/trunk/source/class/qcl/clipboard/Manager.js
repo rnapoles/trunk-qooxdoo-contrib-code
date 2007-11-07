@@ -102,11 +102,18 @@ qx.Class.define("qcl.clipboard.Manager",
      * #param vData[Any]: Any value for the mimetype
      *
      * @type member
-     * @param vMimeType {var} TODOC
-     * @param vData {var} TODOC
+     * @param vMimeType {var} mime type
+     * @param vData {var} data to be added
+     * @param doNotClear {Boolean} if set, add data to clipboard without replacing existing data
      * @return {void}
      */
-    addData : function(vMimeType, vData) {
+    addData : function(vMimeType, vData, doNotClear ) 
+    {
+      if ( ! doNotClear )
+      {
+        this.clearData();
+      }
+      
       this.__data[vMimeType] = vData;
       
       // inform the event listeners
