@@ -49,15 +49,13 @@ import qx.ui.core.Widget;
  * Building block of an application, defines how do generate Index.html 
  */
 public class Client implements ClientMBean {
-    public static Client create(ServletContext context, Application application) throws IOException, ServletException {
+    public static Client create(ServletContext context, Application application, FileNode dest) throws IOException, ServletException {
         String title;
         String client;
-        FileNode dest;
         Client result;
         
         title = context.getServletContextName();
         client = getParam(context, "client");
-        dest = application.createClientDirectory();
         result = new Client(application,
                 application.getDocroot().join("WEB-INF/src"), 
                 getSplitParam(context, "includes"),

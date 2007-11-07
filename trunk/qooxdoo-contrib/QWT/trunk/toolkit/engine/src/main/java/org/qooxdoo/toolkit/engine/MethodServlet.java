@@ -46,7 +46,6 @@ public class MethodServlet extends Servlet {
         }
         path = path.substring(1);
         application.log.info("call begin " + path);
-        System.out.println("call: " + path);
         call = Call.parse(buffer, application, path, request);
         if (call == null) {
             throw new IllegalArgumentException("unkown call: " + path);
@@ -61,7 +60,7 @@ public class MethodServlet extends Servlet {
         application.log.info("call end");
     }
     
-    public String getReportableException(Throwable cause) {
+    private String getReportableException(Throwable cause) {
         if (cause instanceof Error) {
             application.log.log(Level.SEVERE, "re-throwing error", cause);
             throw (Error) cause;

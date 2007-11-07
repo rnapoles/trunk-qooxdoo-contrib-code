@@ -20,7 +20,6 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -31,13 +30,10 @@ import org.qooxdoo.sushi.io.Buffer;
 
 /** Performs application startup and servers resources. */
 public class ResourceServlet extends Servlet {
-    private Client client;
-    
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         application.startup();
-        client = application.getClient();
     }
 
     @Override
@@ -49,7 +45,6 @@ public class ResourceServlet extends Servlet {
     @Override
     public long getLastModified(HttpServletRequest request) {
         String path;
-        ResourceManager rm;
         Resource resource;
         
         path = request.getPathInfo();
@@ -57,8 +52,7 @@ public class ResourceServlet extends Servlet {
         if (path == null || "/".equals(path)) {
             return -1;
         }
-        rm = application.getResourceManager();
-        resource = rm.lookup(path.substring(1));
+        resource = application.getResourceManager().lookup(path.substring(1));
         if (resource == null) {
             return -1;
         } 
@@ -73,11 +67,11 @@ public class ResourceServlet extends Servlet {
         
         path = request.getPathInfo();
         if (path == null || "/".equals(path)) {
-            response.sendRedirect(request.getContextPath() + "/" + client.getIndex().getName());
+            response.sendRedirect(request.getContextPath() + "/" + application.getClient().getIndex().getName());
         } else {
             ae = request.getHeader("accept-encoding");
             gz = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
-            if (path != null && path.startsWith("/") && application.getResourceManager().render(buffer, path.substring(1), gz, response)) {
+            if (path.startsWith("/") && application.getResourceManager().render(buffer, path.substring(1), gz, response)) {
                 // done
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
