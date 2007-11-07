@@ -135,42 +135,48 @@ public class Engine extends HttpServlet {
         } else {
             rm = client.allocate();
             try {
-                forClient(request, response, rm, path);
+                doProcessUnchecked(request, response, rm, path);
             } finally {
                 client.free(rm);
             }
         }
     }
 
-    private void forClient(HttpServletRequest request, HttpServletResponse response, 
+    private void doProcessUnchecked(HttpServletRequest request, HttpServletResponse response, 
             ResourceManager rm, String path) throws IOException, ServletException {
+        String ae;
+        boolean gz;
+        
+        ae = request.getHeader("accept-encoding");
+        gz = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
+        if (path.startsWith(Transport.METHOD)) {
+            processCall(request, response, rm, path);
+        } else if (path.startsWith("/") && rm.render(path.substring(1), gz, response)) {
+            // done
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void processCall(HttpServletRequest request, HttpServletResponse response, ResourceManager rm, String path)
+    throws IOException, ServletException {
         Call call;
         Writer writer;
         String error;
-        
-        String ae = request.getHeader("accept-encoding");
-        boolean compress = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
-        if (path.startsWith("/") && rm.render(path.substring(1), compress, response)) {
-            return;
+
+        application.log.info("call begin");
+        call = Call.parse(rm.getBuffer(), application, path.substring(Transport.METHOD.length()), request);
+        if (call == null) {
+            throw new IllegalArgumentException("unkown call: " + path);
         }
-        if (path.startsWith(Transport.METHOD)) {
-            call = Call.parse(rm.getBuffer(), application, 
-                    path.substring(Transport.METHOD.length()), request);
-            if (call == null) {
-                throw new IllegalArgumentException("no call: " + path);
-            }
-            application.log.info("method begin");
-            writer = createTextWriter(response);
-            try {
-                writer.write(call.invoke());
-            } catch (InvocationTargetException e) {
-                error = getReportableException(e.getTargetException());
-                application.log.log(Level.SEVERE, error, e);
-            }
-            application.log.info("method end");
-            return;
+        writer = createTextWriter(response);
+        try {
+            writer.write(call.invoke());
+        } catch (InvocationTargetException e) {
+            error = getReportableException(e.getTargetException());
+            application.log.log(Level.SEVERE, error, e);
         }
-        throw new IllegalArgumentException(path);
+        application.log.info("call end");
     }
     
     public String getReportableException(Throwable cause) {
