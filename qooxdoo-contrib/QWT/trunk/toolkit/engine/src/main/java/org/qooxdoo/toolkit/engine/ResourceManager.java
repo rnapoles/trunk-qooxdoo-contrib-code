@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.ResourceNode;
 
 public class ResourceManager {
-    public static ResourceManager create(FileNode basedir) throws IOException {
+    public static ResourceManager create(FileNode basedir) {
         return new ResourceManager(new IO().setWorking(basedir));
     }
     
