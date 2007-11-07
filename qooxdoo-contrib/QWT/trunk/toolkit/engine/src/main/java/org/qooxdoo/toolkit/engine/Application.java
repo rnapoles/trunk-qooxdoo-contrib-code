@@ -79,24 +79,26 @@ public class Application implements ApplicationMBean {
 
     private static Application create(ServletContext context) throws IOException, ServletException {
         IO io;
-        File docroot;
-        FileNode node;
+        File docrootFile;
+        FileNode docroot;
+        FileNode clientDir;
         Application application;
         ResourceManager rm;
         
         io = new IO();
-        docroot = new File(context.getRealPath("/"));
-        if (!docroot.isDirectory()) {
-            throw new IllegalStateException(docroot.toString());
+        docrootFile = new File(context.getRealPath("/"));
+        docrootFile = docrootFile.getAbsoluteFile().getCanonicalFile();
+        if (!docrootFile.isDirectory()) {
+            throw new IllegalStateException(docrootFile.toString());
         }
-        docroot = docroot.getAbsoluteFile().getCanonicalFile();
-        node = io.node(docroot);
-        rm = ResourceManager.create(node);
-        rm.addPrefix("", createClientDirectory(node));
+        docroot = io.node(docrootFile);
+        clientDir = (FileNode) docroot.join("client").mkdirOpt();
+        rm = ResourceManager.create(docroot);
+        rm.addPrefix("", clientDir);
         rm.addFilePrefix("images/");
         rm.addResourcePrefix("resource/");
-        application = new Application(context.getServletContextName(), node, Client.getParam(context, "server"), rm);
-        application.client = Client.create(context, application);
+        application = new Application(context.getServletContextName(), docroot, Client.getParam(context, "server"), rm);
+        application.client = Client.create(context, application, clientDir);
         return application;
     }
     
@@ -315,13 +317,5 @@ public class Application implements ApplicationMBean {
         
         name = clazz.getName();
         return name.substring(name.lastIndexOf('.') + 1);
-    }
-    
-    public FileNode createClientDirectory() throws IOException {
-        return createClientDirectory(docroot);
-    }
-
-    public static FileNode createClientDirectory(Node docroot) throws IOException {
-        return (FileNode) docroot.join("client").mkdirOpt();
     }
 }
