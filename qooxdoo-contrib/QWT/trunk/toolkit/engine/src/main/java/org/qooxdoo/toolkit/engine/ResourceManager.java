@@ -92,7 +92,7 @@ public class ResourceManager {
         }
     }
 
-    public Resource lookup(String path) throws IOException {
+    public Resource lookup(String path) {
         String suffix;
         Node dir;
         Node normal;

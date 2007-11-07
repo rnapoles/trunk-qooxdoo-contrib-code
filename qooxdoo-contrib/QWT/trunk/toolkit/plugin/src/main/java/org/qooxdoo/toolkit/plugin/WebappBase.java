@@ -292,6 +292,10 @@ public abstract class WebappBase extends Base {
         "      <servlet-name>engine</servlet-name>\n" +
         "      <servlet-class>org.qooxdoo.toolkit.engine.Engine</servlet-class>\n" + 
         "   </servlet>\n" +
+        "   <servlet>\n" +
+        "      <servlet-name>method</servlet-name>\n" +
+        "      <servlet-class>org.qooxdoo.toolkit.engine.Method</servlet-class>\n" + 
+        "   </servlet>\n" +
         "   <servlet>\n" + 
         "      <servlet-name>comet</servlet-name>\n" +
         "      <servlet-class>org.qooxdoo.toolkit.engine.Comet</servlet-class>\n" + 
@@ -299,6 +303,10 @@ public abstract class WebappBase extends Base {
         "   <servlet-mapping>\n" +
         "      <servlet-name>engine</servlet-name>\n" +
         "      <url-pattern>/*</url-pattern>\n" +
+        "   </servlet-mapping>\n" +
+        "   <servlet-mapping>\n" +
+        "      <servlet-name>method</servlet-name>\n" +
+        "      <url-pattern>/method/*</url-pattern>\n" +
         "   </servlet-mapping>\n" +
         "   <servlet-mapping>\n" +
         "      <servlet-name>comet</servlet-name>\n" +
