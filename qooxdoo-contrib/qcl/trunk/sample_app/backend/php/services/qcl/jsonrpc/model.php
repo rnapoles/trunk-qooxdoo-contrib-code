@@ -28,7 +28,7 @@ class qcl_jsonrpc_model extends qcl_object
 		parent::__construct();
 		if ( is_object($controller) )
 		{
-			$this->controller = &$controller;	
+			$this->setController(&$controller);	
 		}
 	}   	
 
@@ -46,7 +46,22 @@ class qcl_jsonrpc_model extends qcl_object
  		$this->controller = &$controller; 
  	}
  	
-	
+ 	/**
+ 	 * gets controller (singleton) of this model 
+ 	 * @return object 
+ 	 */
+ 	function &getController()
+ 	{
+ 		$controllerSingleton = &$this->controller->getInstance();
+ 		if ( is_object($controllerSingleton) )
+ 		{
+ 			return $controllerSingleton;
+ 		}
+ 		else
+ 		{
+ 			return $this->controller;
+ 		}
+ 	}	
 }	
 
 ?>

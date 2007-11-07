@@ -15,7 +15,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     // instance variables
     //-------------------------------------------------------------
     
-	var $db; 				// the database object 
+	var $db; 				// the database object
     var $currentRecord;		// the current record
          	
 	//-------------------------------------------------------------
@@ -24,12 +24,16 @@ class qcl_db_model extends qcl_jsonrpc_model
 
    /**
     * constructor 
-    * @param object reference $controller
+    * @param object reference 	$controller
+    * @param boolean			$initialize 	if true(default), initialize attached database object
     */
-	function __construct($controller)
+	function __construct($controller,$initialize=true)
    	{
 		parent::__construct(&$controller);
-		$this->db = qcl_db::getSubclass(&$controller); // pass the controller to the object instance
+		if ( $initialize ) 
+		{
+			$this->init();
+		}
 	}   	
 
 	//-------------------------------------------------------------
@@ -37,31 +41,26 @@ class qcl_db_model extends qcl_jsonrpc_model
 	//-------------------------------------------------------------   
 
 
+	/**
+	 * initializes the internal database handler
+	 * @param string 			$dsn
+	 */
+	function init($dsn=null)
+	{
+		$this->db = &qcl_db::getSubclass(&$this->controller,$dsn);
+	}
+	
  	/**
  	 * sets controller of this model and passes it to linked database object
  	 * @param object $controller
  	 */
  	function setController ( $controller )
  	{
- 		$this->controller = &$controller; 
- 		$this->db->setController(&$controller);
- 	}
- 	
- 	/**
- 	 * gets controller (singleton) of this model 
- 	 * @return object 
- 	 */
- 	function &getController()
- 	{
- 		$controllerSingleton = &$this->controller->getInstance();
- 		if (is_object($controllerSingleton))
+ 		$this->controller = &$controller;
+ 		if ( $this->db )
  		{
- 			return $controllerSingleton;
- 		}
- 		else
- 		{
- 			return $this->controller;
- 		}
+ 			$this->db->setController(&$controller);	
+ 		} 
  	}
  	
    	/**

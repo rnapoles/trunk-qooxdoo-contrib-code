@@ -26,16 +26,17 @@ class qcl_db extends qcl_object
 	
 	/**
 	 * constructor, reads database configuration
-	 * @param object reference $controller	
+	 * @param object reference 	$controller	
+	 * @param string			$dsn			(optional) dsn parameter. If omitted, the default database is used		
 	 */
-	function __construct($controller)
+	function __construct($controller,$dsn=null)
 	{
 		parent::__construct();
 		if ( is_a( $controller, "qcl_jsonrpc_controller" ) )
 		{
 			$this->controller = &$controller;
 		}
-		$this->init();	
+		$this->init($dsn);	
 	}
 		
 	//-------------------------------------------------------------
@@ -44,22 +45,20 @@ class qcl_db extends qcl_object
 	
 	/**
 	 * static method which returns a database object based on the configuration file
-	 * @param object reference $controller	
+	 * @param object reference $controller
+	 * @param string			$dsn			(optional) dsn parameter. If omitted, the default database is used.	
 	 * @return always returns a PEAR object at the moment
 	 */
-	function &getSubclass($controller)
+	function &getSubclass($controller,$dsn=null)
 	{
 		if ( ! is_a($controller,"qcl_jsonrpc_controller" ) )
 		{
 			$this->raiseError ("Cannot instantiate " . get_class($this) . " object: No controller object provided.");
 		}
-		//$db = &$this->getSingleton("qcl_db_pear");
-		//if ( ! $db )
-		//{
-			require_once ("qcl/db/pear.php");
-			$db = &new qcl_db_pear(&$controller);
-			//$this->setSingleton(&$db);
-		//}
+
+		require_once ("qcl/db/pear.php");
+		$db = &new qcl_db_pear(&$controller,$dsn);
+
 		return $db;
 	}		
 
