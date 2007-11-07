@@ -25,14 +25,17 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.Node;
 
 public class Resource {
+    private final Buffer buffer;
     private final Node normal;
     private final Node compressed;
     private final MimeType type;
 
-    public Resource(Node normal, Node compressed, MimeType type) {
+    public Resource(Buffer buffer, Node normal, Node compressed, MimeType type) {
+        this.buffer = buffer;
         this.normal = normal;
         this.compressed = compressed;
         this.type = type;
@@ -61,7 +64,8 @@ public class Resource {
         InputStream src;
 
         src = node.createInputStream();
-        node.io.buffer.copy(src, dest);
+        // CAUTION: do not use node buffer because to avoid concurrent modifications!
+        buffer.copy(src, dest);
         src.close();
     }
 }

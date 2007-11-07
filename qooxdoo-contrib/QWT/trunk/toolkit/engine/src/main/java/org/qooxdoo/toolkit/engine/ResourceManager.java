@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
@@ -43,8 +44,8 @@ public class ResourceManager {
         this.prefixes = new HashMap<String, Node>();
     }
     
-    public IO getIO() {
-        return io;
+    public Buffer getBuffer() {
+        return io.buffer;
     }
 
     public void addFilePrefix(String prefix) {
@@ -128,6 +129,6 @@ public class ResourceManager {
         } else {
             compressed = null;
         }
-        return new Resource(normal, compressed, type);
+        return new Resource(io.buffer, normal, compressed, type);
     }
 }

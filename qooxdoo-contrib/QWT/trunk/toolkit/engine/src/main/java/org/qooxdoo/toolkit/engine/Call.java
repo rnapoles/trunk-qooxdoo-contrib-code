@@ -29,14 +29,14 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.toolkit.engine.common.CallListener;
 import org.qooxdoo.toolkit.engine.common.Parser;
 import org.qooxdoo.toolkit.engine.common.Registry;
 import org.qooxdoo.toolkit.engine.common.Serializer;
 
 public class Call {
-    public static Call parse(IO io, Application application, String pathInfo, HttpServletRequest request) 
+    public static Call parse(Buffer buffer, Application application, String pathInfo, HttpServletRequest request) 
     throws IOException, ServletException {
         int idx;
         String destStr;
@@ -63,7 +63,7 @@ public class Call {
             throw new ServletException("unkown object: " + destStr);
         }
         in = request.getInputStream();
-        args = io.buffer.readString(in);
+        args = buffer.readString(in);
         in.close();
         return parseMethod(registry, callListener, dest, pathInfo.substring(idx + 1), args);
     }
