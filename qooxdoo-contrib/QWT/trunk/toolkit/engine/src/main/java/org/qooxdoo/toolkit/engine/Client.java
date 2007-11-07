@@ -162,7 +162,7 @@ public class Client implements ClientMBean {
         idx.generate(title, main); 
         application.log.info(this.index.length() + " bytes written to " + index);
         for (int i = 0; i < RM_COUNT; i++) {
-            rms.add(application.createResourceManager(getIndex(), getIndexGz()));
+            rms.add(application.createResourceManager(getIndex().getParent()));
         }
     }
     

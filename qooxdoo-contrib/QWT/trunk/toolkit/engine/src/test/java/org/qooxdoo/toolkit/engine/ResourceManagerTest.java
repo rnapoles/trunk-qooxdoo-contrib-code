@@ -29,6 +29,7 @@ import static org.junit.Assert.*;
 
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.toolkit.engine.MimeTypes;
 import org.qooxdoo.toolkit.engine.Resource;
 import org.qooxdoo.toolkit.engine.ResourceManager;
@@ -50,44 +51,34 @@ public class ResourceManagerTest {
         rm = new ResourceManager(io, mt);
         rm.addResourcePrefix("resource/");
         rm.addFilePrefix("src/");
-        rm.addStatic("pom.xml", home.join("pom.xml"), null);
+        rm.addPrefix("", home);
     }
 
     @Test
     public void statiC() throws Exception {
         read("pom.xml");
-        assertNull(rm.lookup("notfound"));
+        assertNull(rm.lookup("notfound.xml"));
     }
 
     @Test
     public void resource() throws Exception {
         read("resource/widget/Windows/arrows/down.gif");
-        try {
-            read("resource/widget/Windows/arrows/nosuchfile.png");
-            fail();
-        } catch (IOException e) {
-            // ok
-        }
+        assertNull(rm.lookup("resource/widget/Windows/arrows/nosuchfile.png"));
     }
 
     @Test
     public void file() throws Exception {
         read("src/test/resources/resource.xml");
-        try {
-            read("src/nosuchfile.xml");
-            fail();
-        } catch (IOException e) {
-            // ok
-        }
+        assertNull(rm.lookup("src/nosuchfile.xml"));
     }
 
     private void read(String path) throws Exception {
         Resource res;
         ByteArrayOutputStream dest;
         
-        dest = new ByteArrayOutputStream();
         res = rm.lookup(path);
-        assertNotNull(res);
+        assertNotNull(path, res);
+        dest = new ByteArrayOutputStream();
         res.copy(dest);
     }
 }
