@@ -154,7 +154,7 @@ public class Engine extends HttpServlet {
             return;
         }
         if (path.startsWith(Transport.METHOD)) {
-            call = Call.parse(rm.getIO(), application, 
+            call = Call.parse(rm.getBuffer(), application, 
                     path.substring(Transport.METHOD.length()), request);
             if (call == null) {
                 throw new IllegalArgumentException("no call: " + path);
