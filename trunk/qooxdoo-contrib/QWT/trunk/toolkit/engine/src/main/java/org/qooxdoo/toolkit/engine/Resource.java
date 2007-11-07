@@ -29,13 +29,11 @@ import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.Node;
 
 public class Resource {
-    private final Buffer buffer;
     private final Node normal;
     private final Node compressed;
     private final MimeType type;
 
-    public Resource(Buffer buffer, Node normal, Node compressed, MimeType type) {
-        this.buffer = buffer;
+    public Resource(Node normal, Node compressed, MimeType type) {
         this.normal = normal;
         this.compressed = compressed;
         this.type = type;
@@ -45,7 +43,7 @@ public class Resource {
         return normal.lastModified();
     }
     
-    public void copy(boolean compress, HttpServletResponse dest) throws IOException {
+    public void copy(Buffer buffer, boolean compress, HttpServletResponse dest) throws IOException {
         Node node;
         
         if (compress && compressed != null) {
@@ -56,15 +54,15 @@ public class Resource {
         }
         dest.setDateHeader("Last-Modified", node.lastModified());
         dest.setContentType(type.code);
-        copy(node, dest.getOutputStream());
+        copy(buffer, node, dest.getOutputStream());
         // do not flush/close dest: response would be committed
     }
 
-    public void copy(OutputStream dest) throws IOException {
-        copy(normal, dest);
+    public void copy(Buffer buffer, OutputStream dest) throws IOException {
+        copy(buffer, normal, dest);
     }
 
-    private void copy(Node node, OutputStream dest) throws IOException {
+    private void copy(Buffer buffer, Node node, OutputStream dest) throws IOException {
         InputStream src;
 
         src = node.createInputStream();

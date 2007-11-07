@@ -44,10 +44,6 @@ public class ResourceManager {
         this.prefixes = new HashMap<String, Node>();
     }
     
-    public Buffer getBuffer() {
-        return io.buffer;
-    }
-
     public void addFilePrefix(String prefix) {
         addPrefix(prefix, io.getWorking().join(trim(prefix)));
     }
@@ -80,12 +76,12 @@ public class ResourceManager {
         }
     }
 
-    public boolean render(String path, boolean compress, HttpServletResponse httpResponse) throws IOException {
+    public boolean render(Buffer buffer, String path, boolean compress, HttpServletResponse httpResponse) throws IOException {
         Resource resource;
         
         resource = lookup(path);
         if (resource != null) {
-            resource.copy(compress, httpResponse);
+            resource.copy(buffer, compress, httpResponse);
             return true;
         } else {
             return false;
@@ -129,6 +125,6 @@ public class ResourceManager {
         } else {
             compressed = null;
         }
-        return new Resource(io.buffer, normal, compressed, type);
+        return new Resource(normal, compressed, type);
     }
 }
