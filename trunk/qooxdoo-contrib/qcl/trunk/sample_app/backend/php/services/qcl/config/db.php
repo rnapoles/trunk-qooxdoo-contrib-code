@@ -145,7 +145,7 @@ class qcl_config_db extends qcl_config
 	 */
 	function get($name)
 	{
-		$row = $this->_getRow($name);
+		$row = $this->getRow($name);
 		return $row[$this->key_value];	
 	} 
 
@@ -169,7 +169,7 @@ class qcl_config_db extends qcl_config
 			");
 			
 			// admins can read default value
-			if ( $userId == 0 and $this->user->hasPermission ("qcl.config.permissions.manage") )
+			if ( $userRef === 0 and $this->user->hasPermission ("qcl.config.permissions.manage") )
 			{
 				return $row;
 			}

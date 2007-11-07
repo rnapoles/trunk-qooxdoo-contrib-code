@@ -17,10 +17,11 @@ class qcl_db_pear extends qcl_db
 	/**
 	 * constructor
 	 * @param object reference	$master 	The instantiating object, either a model or a controller
+	 * @param string			$dsn			(optional) dsn parameter. If omitted, the default database is used
 	 */
-	function __construct($controller)
+	function __construct($controller, $dsn=null)
 	{
-		parent::__construct(&$controller);
+		parent::__construct(&$controller,$dsn);
 	}
 
 	//-------------------------------------------------------------
@@ -30,7 +31,7 @@ class qcl_db_pear extends qcl_db
 	/**
 	 * connects to database 
 	 */
-	function &connect($dsn = null)
+	function &connect($dsn=null)
 	{
 		require_once ("DB.php"); // load pear DB library
 		
@@ -38,15 +39,15 @@ class qcl_db_pear extends qcl_db
 		{
 			$dsn = $this->getDsn();
 		}
-		
+
 		$db =& DB::connect( $dsn );
 		if (PEAR::isError($db)) 
 		{
-			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
+			$this->raiseError( $db->getMessage() . ": " . $db->getUserInfo() );
 		}
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 		
-		// set encoding
+		// set encoding to do: this needs to be a property of the datasource model
 		if ( $this->controller )
 		{
 			$encoding = $this->controller->getConfigValue("database.encoding");	

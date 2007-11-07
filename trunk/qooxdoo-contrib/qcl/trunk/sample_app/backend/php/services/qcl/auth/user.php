@@ -1,5 +1,7 @@
 <?php
 
+require_once ("qcl/auth/__init__.php");
+
 /**
  * class providing data on users
  * providing a backend to the qcl.auth client package
