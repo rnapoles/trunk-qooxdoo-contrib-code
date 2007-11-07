@@ -33,25 +33,14 @@ import org.qooxdoo.sushi.io.Buffer;
 /** Main class */
 public class MethodServlet extends Servlet {
     @Override
-    protected void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Client client;
-        Buffer buffer;
-
-        client = application.getClient();
-        buffer = client.allocate();
-        try {
-            doProcessUnchecked(request, response, buffer, request.getPathInfo());
-        } finally {
-            client.free(buffer);
-        }
-    }
-
-    private void doProcessUnchecked(HttpServletRequest request, HttpServletResponse response, 
-            Buffer buffer, String path) throws IOException, ServletException {
+    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) 
+    throws IOException, ServletException {
+        String path;
         Call call;
         Writer writer;
         String error;
 
+        path = request.getPathInfo();
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }

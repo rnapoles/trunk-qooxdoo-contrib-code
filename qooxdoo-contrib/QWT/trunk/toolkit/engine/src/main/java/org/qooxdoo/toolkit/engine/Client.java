@@ -26,14 +26,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.filter.Filter;
-import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
@@ -100,10 +98,7 @@ public class Client implements ClientMBean {
     private int nextSessionId;
     private final FileNode index;
     private boolean minimize;
-    private final ArrayBlockingQueue<Buffer> buffers;
     private final Map<Integer, Session> sessions;
-    
-    private static final int BUFFER_COUNT = 5;
     
     //--
     
@@ -119,24 +114,9 @@ public class Client implements ClientMBean {
         this.nextSessionId = 0;
         this.index = (FileNode) dir.join("index.html");
         this.minimize = false;
-        this.buffers = new ArrayBlockingQueue<Buffer>(BUFFER_COUNT);
-        for (int i = 0; i < BUFFER_COUNT; i++) {
-            buffers.add(new Buffer(Buffer.UTF_8));
-        }
         this.sessions = new HashMap<Integer, Session>();
     }
 
-    public Buffer allocate() {
-        try {
-            return buffers.take();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e); // TODO
-        }
-    }
-    public void free(Buffer buffer) {
-        buffers.add(buffer);
-    }
-    
     public Application getApplication() {
         return application;
     }
@@ -189,7 +169,7 @@ public class Client implements ClientMBean {
 
         argument = application.getServer().clientStart();
         session = new Session(this, nextSessionId++, argument);
-        writer = ResourceServlet.createTextWriter(response);
+        writer = Servlet.createTextWriter(response);
         writer.write(session.getId() + "\n");
         writer.write(Serializer.run(application.getRegistry(), session.argument));
         writer.close();

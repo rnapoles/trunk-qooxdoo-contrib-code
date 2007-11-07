@@ -22,6 +22,7 @@ package org.qooxdoo.toolkit.engine;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
@@ -30,11 +31,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Main class */
+import org.qooxdoo.sushi.io.Buffer;
+
+/** Base class */
 public abstract class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected Application application = null;
+    
+    private static final int BUFFER_COUNT = 5;
+    private final ArrayBlockingQueue<Buffer> buffers;
+
+    protected Servlet() {
+        this.buffers = new ArrayBlockingQueue<Buffer>(BUFFER_COUNT);
+        for (int i = 0; i < BUFFER_COUNT; i++) {
+            buffers.add(new Buffer(Buffer.UTF_8));
+        }
+    }
     
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -76,7 +89,8 @@ public abstract class Servlet extends HttpServlet {
 
     public void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path;
-        Map<String, String> map;
+        Map<?, ?> map;
+        Buffer buffer;
         
         if (application == null) {
             throw new IllegalStateException();
@@ -89,8 +103,9 @@ public abstract class Servlet extends HttpServlet {
             response.sendRedirect(url);
             return;
         }
+        buffer = allocate();
         try {
-            processUnchecked(request, response);
+            doProcess(request, response, buffer);
         } catch (IOException e) {
             report(e, request);
             throw e;
@@ -103,10 +118,27 @@ public abstract class Servlet extends HttpServlet {
         } catch (Error e) {
             report(e, request);
             throw e;
+        } finally {
+            free(buffer);
         }
     }
+
+    //-- 
     
-    protected abstract void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
+    private Buffer allocate() {
+        try {
+            return buffers.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e); // TODO
+        }
+    }
+    private void free(Buffer buffer) {
+        buffers.add(buffer);
+    }
+    
+    //--
+    
+    protected abstract void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) throws IOException, ServletException;
     
     private void report(Throwable e, HttpServletRequest request) {
         application.log.log(Level.SEVERE, request.getPathInfo() + ": " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);

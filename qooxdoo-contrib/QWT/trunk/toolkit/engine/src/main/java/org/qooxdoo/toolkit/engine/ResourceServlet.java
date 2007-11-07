@@ -66,45 +66,22 @@ public class ResourceServlet extends Servlet {
     }
     
     @Override
-    protected void processUnchecked(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Buffer buffer;
+    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) throws IOException, ServletException {
         String path;
-
+        String ae;
+        boolean gz;
+        
         path = request.getPathInfo();
         if (path == null || "/".equals(path)) {
             response.sendRedirect(request.getContextPath() + "/" + client.getIndex().getName());
         } else {
-            buffer = client.allocate();
-            try {
-                doProcessUnchecked(request, response, buffer, path);
-            } finally {
-                client.free(buffer);
+            ae = request.getHeader("accept-encoding");
+            gz = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
+            if (path != null && path.startsWith("/") && application.getResourceManager().render(buffer, path.substring(1), gz, response)) {
+                // done
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         }
-    }
-
-    private void doProcessUnchecked(HttpServletRequest request, HttpServletResponse response, 
-            Buffer buffer, String path) throws IOException, ServletException {
-        String ae;
-        boolean gz;
-        
-        ae = request.getHeader("accept-encoding");
-        gz = (ae != null && ae.toLowerCase().indexOf("gzip") != -1);
-        if (path != null && path.startsWith("/") && application.getResourceManager().render(buffer, path.substring(1), gz, response)) {
-            // done
-        } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        }
-    }
-
-    //--
-    
-    public static final String ENCODING = "UTF-8";
-    public static final String CONTENT_TYPE = "text/plain";
-    
-    public static Writer createTextWriter(HttpServletResponse response) throws IOException {
-        response.setCharacterEncoding(ENCODING);
-        response.setContentType(CONTENT_TYPE);
-        return response.getWriter();
     }
 }
