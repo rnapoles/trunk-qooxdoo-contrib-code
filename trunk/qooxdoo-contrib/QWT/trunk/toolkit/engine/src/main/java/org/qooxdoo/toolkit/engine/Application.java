@@ -21,43 +21,27 @@ package org.qooxdoo.toolkit.engine;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import org.codehaus.groovy.control.CompilationFailedException;
+import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.toolkit.engine.common.Registry;
+import org.qooxdoo.toolkit.qooxdoo.Server;
+import qx.ui.basic.Image;
 
+import javax.management.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.FileHandler;
+import java.util.*;
+import java.util.logging.*;
 import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
-import org.codehaus.groovy.control.CompilationFailedException;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.toolkit.engine.common.Registry;
-import org.qooxdoo.toolkit.qooxdoo.Server;
-
-import qx.ui.basic.Image;
 
 /**
  * A server, a client, some Jmx services. Every initialized webapp has exactly one application.
@@ -308,12 +292,12 @@ public class Application implements ApplicationMBean {
         return (FileNode) docroot.join("client").mkdirOpt();
     }
 
-    public ResourceManager createResourceManager(Node index, Node indexGz) throws IOException {
+    public ResourceManager createResourceManager(Node clientDir) throws IOException {
         ResourceManager rm;
 
         rm = ResourceManager.create(docroot, mimeTypes);
-        rm.addStatic(index.getName(), index, indexGz);
-        rm.addFilePrefix(Image.PREFIX);
+        rm.addPrefix("", clientDir);
+        rm.addFilePrefix("src/");
         rm.addResourcePrefix("resource/");
         return rm;
     }

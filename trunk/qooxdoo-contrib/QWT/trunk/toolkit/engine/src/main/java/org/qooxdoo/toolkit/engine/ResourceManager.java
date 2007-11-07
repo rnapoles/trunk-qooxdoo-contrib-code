@@ -20,9 +20,7 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,45 +37,38 @@ public class ResourceManager {
     
     private final IO io;
     private final MimeTypes mimeTypes;
-    private final Map<String, Resource> statics;
-    private final List<String> resourcePrefixes;
-    private final List<String> filePrefixes;
+    private final Map<String, Node> prefixes;
     
     public ResourceManager(IO io, MimeTypes mimeTypes) {
         this.io = io;
         this.mimeTypes = mimeTypes;
-        this.statics = new HashMap<String, Resource>();
-        this.resourcePrefixes = new ArrayList<String>();
-        this.filePrefixes = new ArrayList<String>();
+        this.prefixes = new HashMap<String, Node>();
     }
     
     public IO getIO() {
         return io;
     }
-    
-    public void addStatic(String path, Node normal, Node compressed) {
-        if (statics.containsKey(path)) {
-            throw new IllegalArgumentException(path);
-        }
-        statics.put(path, new Resource(normal, compressed, mimeTypes.get(normal)));
+
+    public void addFilePrefix(String prefix) {
+        addPrefix(prefix, io.getWorking().join(prefix));
     }
 
     public void addResourcePrefix(String prefix) {
-        addPrefix(resourcePrefixes, prefix);
+        addPrefix(prefix, new ResourceNode(io, prefix));
     }
-    
-    public void addFilePrefix(String prefix) {
-        addPrefix(filePrefixes, prefix);
-    }
-    
-    private static void addPrefix(List<String> prefixes, String prefix) {
-        if (prefix.startsWith("/")) {
+
+    public void addPrefix(String prefix, Node root) {
+        if (prefix.length() > 0) {
+            if (prefix.startsWith("/")) {
+                throw new IllegalArgumentException(prefix);
+            }
+            if (!prefix.endsWith("/")) {
+                throw new IllegalArgumentException(prefix);
+            }
+        }
+        if (prefixes.put(prefix, root) != null) {
             throw new IllegalArgumentException(prefix);
         }
-        if (!prefix.endsWith("/")) {
-            throw new IllegalArgumentException(prefix);
-        }
-        prefixes.add(prefix);
     }
 
     public boolean render(String path, boolean compress, HttpServletResponse httpResponse) throws IOException {
@@ -93,30 +84,42 @@ public class ResourceManager {
     }
 
     public Resource lookup(String path) throws IOException {
-        Node node;
-        
-        if (path == null) {
-            node = null;
-        } else if (matches(filePrefixes, path)) {
-            node = io.getWorking().join(path);
-        } else if (matches(resourcePrefixes, path)) {
-            node = new ResourceNode(io, path);
-        } else {
-            return statics.get(path);
-        }
-        if (node == null) {
-            return null;
-        } else {
-            return new Resource(node, null, mimeTypes.get(node));
-        }
-    }
+        String suffix;
+        Node dir;
+        Node normal;
+        Node compressed;
+        int idx;
+        String prefix;
+        String type;
 
-    private static boolean matches(List<String> prefixes, String path) {
-        for (String prefix : prefixes) {
-            if (path.startsWith(prefix)) {
-                return true;
-            }
+        if (path == null) {
+            return null;
         }
-        return false;
+        idx = path.indexOf('/');
+        if (idx == -1) {
+            prefix = "";
+            suffix = path;
+        } else {
+            prefix = path.substring(0, idx + 1);
+            suffix = path.substring(idx + 1);
+        }
+        dir = prefixes.get(prefix);
+        if (dir == null) {
+            return null;
+        }
+        normal = dir.join(suffix);
+        if (!normal.exists()) {
+            return null;
+        }
+        type = mimeTypes.get(normal);
+        if ("text/html".equals(type)) {
+            compressed = normal.getParent().join(normal.getName() + ".gz");
+            if (!compressed.exists()) {
+                compressed = null;
+            }
+        } else {
+            compressed = null;
+        }
+        return new Resource(normal, compressed, type);
     }
 }
