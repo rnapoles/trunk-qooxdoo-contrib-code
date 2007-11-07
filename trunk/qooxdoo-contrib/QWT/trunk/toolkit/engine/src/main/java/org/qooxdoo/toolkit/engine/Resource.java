@@ -41,6 +41,10 @@ public class Resource {
         this.type = type;
     }
 
+    public long getLastModified() {
+        return normal.lastModified();
+    }
+    
     public void copy(boolean compress, HttpServletResponse dest) throws IOException {
         Node node;
         
