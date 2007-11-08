@@ -72,6 +72,7 @@ class qcl_db_pear extends qcl_db
 	function &query ( $sql )
 	{
 		global $error;
+		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->query( $sql );
 		if (PEAR::isError($res)) {
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
