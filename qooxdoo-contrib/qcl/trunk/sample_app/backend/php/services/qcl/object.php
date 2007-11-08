@@ -268,11 +268,14 @@ class qcl_object extends patched_object {
 	{
 		if ( QCL_LOG_LEVEL and QCL_LOG_LEVEL <= $logLevel)
 		{
-			
 			$message = date("y-m-j H:i:s");
 			if ( $logLevel = QCL_LOG_DEBUG )
 			{
 				$message .= " [" . get_class($this) ."]";
+			}
+			if ( $this->user )
+			{
+				$message .= "(" . $this->user->getActiveUserName() . ")";
 			}
 			$message .= ": " . $string . "\n";
 			@error_log($message,3,QCL_LOG_FILE);			

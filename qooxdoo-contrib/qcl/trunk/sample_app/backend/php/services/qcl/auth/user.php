@@ -209,7 +209,16 @@ class qcl_auth_user extends qcl_auth_common
    {
    		return $_SESSION['qcl_auth_user_activeUser'][$this->key_id]; 
    }
-   
+
+   /**
+    * gets active user name
+    * @return int
+    */
+   function getActiveUserName()
+   {
+   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_namedId]; 
+   }
+  
    /**
     * checks if active user has the given permission
     * respects wildcards, i.e. myapp.permissions.* covers
