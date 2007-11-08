@@ -46,6 +46,7 @@ class qcl_tree_model_db extends qcl_db_model
 	 */
 	function getChildren ( $parentId )
 	{
+		$parentId = (int) $parentId;
 		return $this->getAll("{$this->key_parentId} = $parentId", $this->key_position );
 	}
 	
@@ -55,6 +56,7 @@ class qcl_tree_model_db extends qcl_db_model
 	 */
 	function getChildIds ( $parentId )
 	{
+		$parentId = (int) $parentId;
 		return $this->getValues($this->key_id, "{$this->key_parentId} = $parentId", $this->key_position );
 	}	
 	
@@ -64,6 +66,7 @@ class qcl_tree_model_db extends qcl_db_model
 	 */
 	function getChildCount ( $parentId )
 	{
+		$parentId = (int) $parentId;
 		$count = $this->db->getRow("
 			SELECT COUNT(*) 
 			FROM {$this->table}
@@ -79,11 +82,14 @@ class qcl_tree_model_db extends qcl_db_model
 	 */
 	function reorder ( $parentId )
 	{
-		$children = $this->getChildren ( $parentId );
+		$parentId = (int) $parentId;
+		$childIds = $this->getChildIds ( $parentId );
 		$index = 0;
-		foreach ( $children as $data )
+		foreach ( $childIds as $id )
 		{
-			$data[$this->key_position] = $index++;
+			$data=array();
+			$data[$this->key_id] 		= $id;
+			$data[$this->key_position] 	= $index++;
 			$this->update($data);
 		}
 		return true;
@@ -97,6 +103,7 @@ class qcl_tree_model_db extends qcl_db_model
    	*/
 	function changePosition ( $folderId, $parentId, $position )
 	{
+		$parentId = (int) $parentId;
 		$children = $this->getChildren ( $parentId );
 		$index = 0;
 		foreach ( $children as $data )
@@ -122,6 +129,7 @@ class qcl_tree_model_db extends qcl_db_model
    	*/
 	function changeParent ( $folderId, $parentId )
 	{
+		$parentId = (int) $parentId;
 		$this->db->execute("
 			UPDATE {$this->table}
 			SET `{$this->key_parentId}` = $parentId
@@ -137,6 +145,7 @@ class qcl_tree_model_db extends qcl_db_model
 	 */
 	function setParentId($parentId,$forceUpdate=false)
 	{
+		$parentId = (int) $parentId;
 		$this->setField("parentId",$parentId,$forceUpdate);
 	}
 }
