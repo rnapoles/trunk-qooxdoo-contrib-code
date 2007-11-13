@@ -19,9 +19,8 @@
 
 package org.qooxdoo.sushi.io;
 
-/** TODO: node exception */
-public class ExistsException extends RuntimeException {
-    public ExistsException(Throwable cause) {
-        super(cause);
+public class ExistsException extends NodeException {
+    public ExistsException(Node node, Throwable cause) {
+        super(node, "exists failed", cause);
     }
 }

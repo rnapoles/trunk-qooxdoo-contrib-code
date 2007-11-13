@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.qooxdoo.sushi.filter.Filter;
-import org.qooxdoo.sushi.memory.MemoryNode;
 import org.qooxdoo.sushi.memory.Context;
+import org.qooxdoo.sushi.memory.MemoryNode;
 import org.qooxdoo.sushi.util.Reflect;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Xml;
@@ -266,22 +266,22 @@ public class IO {
     }
 
     public FileNode guessProjectHome(Class<?> c) {
-        Node node;
+        FileNode node;
         
         node = locateClasspathItem(c);
         if (node.isDirectory()) {
             if (node.getName().endsWith("classes")) {
-                node = node.getParent();
+                node = (FileNode) node.getParent();
             }
         } else {
             if (node.getName().endsWith(".jar")) {
-                node = node.getParent();
+                node = (FileNode) node.getParent();
             }
         }
         if (node.getName().endsWith("target")) {
-            node = node.getParent();
+            node = (FileNode) node.getParent();
         }
-        return (FileNode) node;
+        return node;
     }
 
     /**

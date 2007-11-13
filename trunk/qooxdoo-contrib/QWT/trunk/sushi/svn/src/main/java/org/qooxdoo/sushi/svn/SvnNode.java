@@ -166,7 +166,7 @@ public class SvnNode extends Node {
     }
     
     @Override
-    public Node[] children() {
+    public Node[] children() throws ChildrenException {
         try {
             return list();
         } catch (SVNException e) {
@@ -263,6 +263,8 @@ public class SvnNode extends Node {
                 throw new DeleteException(this, new FileNotFoundException());
             }
             delete("sushi delete");
+        } catch (ExistsException e) {
+            throw new DeleteException(this, e);
         } catch (SVNException e) {
             throw new DeleteException(this, e);
         }
@@ -310,11 +312,11 @@ public class SvnNode extends Node {
     }
 
     @Override
-    public boolean exists() {
+    public boolean exists() throws ExistsException {
         try {
             return exists(repository.getLatestRevision());
         } catch (SVNException e) {
-            throw new ExistsException(e);
+            throw new ExistsException(this, e);
         }
     }
     
@@ -326,38 +328,38 @@ public class SvnNode extends Node {
     }
 
     @Override
-    public long length() {
+    public long length() throws LengthException {
         try {
             return repository.info(path, -1).getSize();
         } catch (SVNException e) {
-            throw new LengthException(e);
+            throw new LengthException(this, e);
         }
     }
     
     @Override
-    public boolean isFile() {
+    public boolean isFile() throws ExistsException {
         return kind() == SVNNodeKind.FILE;
     }
 
     @Override
-    public boolean isDirectory() {
+    public boolean isDirectory() throws ExistsException {
         return kind() == SVNNodeKind.DIR;
     }
     
-    private SVNNodeKind kind() {
+    private SVNNodeKind kind() throws ExistsException {
         try {
             return repository.checkPath(path, repository.getLatestRevision());
         } catch (SVNException e) {
-            throw new ExistsException(e);
+            throw new ExistsException(this, e);
         }
     }
 
     @Override
-    public long lastModified() {
+    public long lastModified() throws LastModifiedException {
         try {
             return repository.info(path, -1).getDate().getTime();
         } catch (SVNException e) {
-            throw new LastModifiedException(e);
+            throw new LastModifiedException(this, e);
         }
     }
 
@@ -380,7 +382,11 @@ public class SvnNode extends Node {
         SVNDeltaGenerator deltaGenerator;
         String checksum;
         
-        exists = exists();
+        try {
+            exists = exists();
+        } catch (ExistsException e) {
+            throw (SVNException) e.getCause();
+        }
         editor = repository.getCommitEditor(comment, null);
         editor.openRoot(-1);
         if (exists) {

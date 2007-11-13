@@ -25,11 +25,16 @@ public abstract class NodeException extends IOException {
     public final Node node;
     
     public NodeException(Node node) {
-        this(node, null);
+        this(node, (String) null);
     }
 
     public NodeException(Node node, String msg) {
         super(node.toString() + (msg == null ? "" : ": " + msg));
         this.node = node;
+    }
+
+    public NodeException(Node node, String msg, Throwable cause) {
+        this(node, msg);
+        initCause(cause);
     }
 }

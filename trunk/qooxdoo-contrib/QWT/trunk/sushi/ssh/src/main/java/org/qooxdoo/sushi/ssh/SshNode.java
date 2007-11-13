@@ -65,7 +65,7 @@ public class SshNode extends Node {
     }
 
     @Override
-    public long length() {
+    public long length() throws LengthException {
         String result;
         
         try {
@@ -77,9 +77,9 @@ public class SshNode extends Node {
                 result = first(result);
             }
         } catch (ExitCode e) {
-            throw new LengthException(e);
+            throw new LengthException(this, e);
         } catch (JSchException e) {
-            throw new LengthException(e);
+            throw new LengthException(this, e);
         }
         return Long.parseLong(first(result));
     }
@@ -197,24 +197,24 @@ public class SshNode extends Node {
     }
 
     @Override
-    public boolean exists() {
+    public boolean exists() throws ExistsException {
         return test("-a");
     }
     
     @Override
-    public boolean isFile() {
+    public boolean isFile() throws ExistsException {
         return test("-f");
     }
 
     @Override
-    public boolean isDirectory() {
+    public boolean isDirectory() throws ExistsException {
         return test("-d");
     }
 
     private static final SimpleDateFormat TOUCH_FORMAT = new SimpleDateFormat("yyMMddHHmm.ss");
 
     @Override
-    public long lastModified() {
+    public long lastModified() throws LastModifiedException {
         String result;
         
         try {
@@ -224,9 +224,9 @@ public class SshNode extends Node {
                 result = connection.exec("stat", "--format=%Y", slashPath).trim();
             }
         } catch (ExitCode e) {
-            throw new LastModifiedException(e);
+            throw new LastModifiedException(this, e);
         } catch (JSchException e) {
-            throw new LastModifiedException(e);
+            throw new LastModifiedException(this, e);
         }
         return Long.parseLong(result) * 1000;
     }
@@ -246,14 +246,14 @@ public class SshNode extends Node {
         }
     }
     
-    private boolean test(String flag) {
+    private boolean test(String flag) throws ExistsException {
         try {
             connection.exec("test", flag, slashPath);
             return true;
         } catch (ExitCode e) {
             return false;
         } catch (JSchException e) {
-            throw new ExistsException(e);
+            throw new ExistsException(this, e);
         }
     }
 

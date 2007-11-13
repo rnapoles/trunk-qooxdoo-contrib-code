@@ -341,7 +341,7 @@ public abstract class NodeTest {
     //-- mkdir
     
     @Test
-    public void mkdir() throws MkdirException {
+    public void mkdir() throws IOException {
         Node dir;
         
         dir = work.join("dir");
