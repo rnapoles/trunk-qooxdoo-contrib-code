@@ -249,12 +249,13 @@ public class FileNode extends Node {
      * @throws IOException if a file cannot be deleted
      */
     @Override
-    public void delete() throws DeleteException {
+    public FileNode delete() throws DeleteException {
         try {
             delete(file);
         } catch (IOException e) {
             throw new DeleteException(this, e);
         }
+        return this;
     }
     
     protected static void delete(File file) throws IOException {

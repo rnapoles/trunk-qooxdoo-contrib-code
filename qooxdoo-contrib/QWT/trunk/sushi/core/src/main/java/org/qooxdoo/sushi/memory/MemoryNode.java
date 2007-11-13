@@ -132,7 +132,7 @@ public class MemoryNode extends Node {
     }
     
     @Override
-    public void delete() throws DeleteException {
+    public MemoryNode delete() throws DeleteException {
         if (type == Type.NONE) {
             throw new DeleteException(this, new FileNotFoundException());
         }
@@ -142,6 +142,7 @@ public class MemoryNode extends Node {
             }
         }
         type = Type.NONE;
+        return this;
     }
 
     @Override
