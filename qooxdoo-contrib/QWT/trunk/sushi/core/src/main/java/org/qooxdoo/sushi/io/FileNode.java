@@ -37,7 +37,7 @@ public class FileNode extends Node {
     /** null for absolute files */
     private final FileNode base;
     
-    /** never null */
+    /** never null, always absolute */
     private final File file;
 
     public FileNode(IO io, File file) {
