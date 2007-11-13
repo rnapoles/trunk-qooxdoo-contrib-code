@@ -433,9 +433,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 						  
               // prune parent of first node, this assumes that all nodes 
               // sent have the same parent.
-              var parentNode = this.nodeGet(data[0].parentNodeId||0); 
-              dataModel.prune(parentNode);  
-              dataModel.setState(parentNode,{bOpened:true});
+              var parentNodeId = data[0].parentNodeId || 0; 
+              dataModel.prune(parentNodeId);  
+              dataModel.setState(parentNodeId,{bOpened:true});
               
               for (var i=0; i<data.length;i++)
 						  {
@@ -463,6 +463,17 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 						      var nodeId = dataModel.addLeaf( node.parentNodeId || 0 );								      
 						    }
 						    
+                // index node id to data properties put into user data
+                if ( node.index )
+                {
+                  if (!this.getUserData(node.index.name))
+                  {
+                    this.setUserData(node.index.name,{});  
+                  }                    
+                  this.getUserData(node.index.name)[node.index.key]=nodeId;
+                  delete node.index;
+                }
+                
 						    // set node state, including custom properties
 						    delete node.parentNodeId;
 								dataModel.setState( nodeId, node );
