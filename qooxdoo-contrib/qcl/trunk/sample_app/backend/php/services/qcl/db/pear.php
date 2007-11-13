@@ -95,6 +95,7 @@ class qcl_db_pear extends qcl_db
 	 */
 	function &getRow ( $sql, $withColumnNames=true )
 	{
+		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
 		if ( PEAR::isError ( $res ) ) {
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
@@ -132,6 +133,7 @@ class qcl_db_pear extends qcl_db
 	 */
 	function &getAllRows ( $sql, $withColumnNames=true )
 	{
+		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
 		if ( PEAR::isError ( $res ) ) 
 		{
