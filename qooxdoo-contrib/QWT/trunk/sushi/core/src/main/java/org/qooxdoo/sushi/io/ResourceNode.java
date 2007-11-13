@@ -126,7 +126,7 @@ public class ResourceNode extends Node {
     }
 
     @Override
-    public Node[] children() {
+    public ResourceNode[] list() {
         return null;
     }
 

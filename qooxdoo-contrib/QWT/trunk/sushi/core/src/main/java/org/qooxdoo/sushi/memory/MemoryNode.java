@@ -137,7 +137,7 @@ public class MemoryNode extends Node {
             throw new DeleteException(this, new FileNotFoundException());
         }
         if (type == Type.DIRECTORY) {
-            for (Object obj : children()) {
+            for (MemoryNode obj : list()) {
                 ((MemoryNode) obj).delete();
             }
         }
@@ -145,12 +145,12 @@ public class MemoryNode extends Node {
     }
 
     @Override
-    public Node[] children() {
+    public MemoryNode[] list() {
         if (type != Type.DIRECTORY) {
             return null;
         }
         try {
-            return context.children(path);
+            return context.list(path);
         } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }

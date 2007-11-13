@@ -166,9 +166,23 @@ public class SvnNode extends Node {
     }
     
     @Override
-    public Node[] children() throws ChildrenException {
+    public SvnNode[] list() throws ChildrenException {
+        List<SVNDirEntry> lst;
+        SvnNode[] result;
+        SVNDirEntry entry;
+        
         try {
-            return list();
+            if (repository.checkPath(path, -1) != SVNNodeKind.DIR) {
+                return null;
+            }
+            lst = new ArrayList<SVNDirEntry>();
+            repository.getDir(path, -1, false, lst);
+            result = new SvnNode[lst.size()];
+            for (int i = 0; i < result.length; i++) {
+                entry = lst.get(i);
+                result[i] = new SvnNode(io, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath()));
+            }
+            return result;
         } catch (SVNException e) {
             throw new ChildrenException(this, e);
         }
@@ -203,24 +217,6 @@ public class SvnNode extends Node {
         result = new ArrayList<Long>();
         for (SVNFileRevision rev : revisions) {
             result.add(rev.getRevision());
-        }
-        return result;
-    }
-
-    public SvnNode[] list() throws SVNException {
-        List<SVNDirEntry> lst;
-        SvnNode[] result;
-        SVNDirEntry entry;
-        
-        if (repository.checkPath(path, -1) != SVNNodeKind.DIR) {
-            return null;
-        }
-        lst = new ArrayList<SVNDirEntry>();
-        repository.getDir(path, -1, false, lst);
-        result = new SvnNode[lst.size()];
-        for (int i = 0; i < result.length; i++) {
-            entry = lst.get(i);
-            result[i] = new SvnNode(io, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath()));
         }
         return result;
     }

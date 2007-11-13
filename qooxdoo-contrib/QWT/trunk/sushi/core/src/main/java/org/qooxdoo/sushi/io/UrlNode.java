@@ -141,7 +141,7 @@ public class UrlNode extends Node {
     }
 
     @Override
-    public Node[] children() {
+    public UrlNode[] list() {
         return null;
     }
 

@@ -147,12 +147,9 @@ public class FileNode extends Node {
 
     //-- locating
     
-    @Override
-    public Node[] children() {
-        return list();
-    }
     
     /** @return null when called for a file; non-null otherwise */
+    @Override
     public FileNode[] list() {
         File[] children;
         FileNode[] result;

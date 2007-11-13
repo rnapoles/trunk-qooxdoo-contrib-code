@@ -55,7 +55,7 @@ public class Resolver {
         
         result = new ArrayList<String>();
         for (Node node : nodes.values()) {
-            for (Node child : node.children()) {
+            for (Node child : node.list()) {
                 result.add(child.getName());
             }
         }

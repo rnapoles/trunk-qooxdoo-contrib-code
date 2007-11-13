@@ -258,7 +258,7 @@ public class Filter {
             remainingIncludes = includes;
             remainingExcludes = excludes;
         }
-        children = node.children();
+        children = node.list();
         if (children == null) {
             // ignore file
         } else {
