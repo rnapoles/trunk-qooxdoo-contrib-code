@@ -152,7 +152,7 @@ public class SvnNode extends Node {
     }
     
     @Override
-    public Node newInstance(String path) {
+    public SvnNode newInstance(String path) {
         try {
             return create(io, repository, path);
         } catch (SVNException e) {

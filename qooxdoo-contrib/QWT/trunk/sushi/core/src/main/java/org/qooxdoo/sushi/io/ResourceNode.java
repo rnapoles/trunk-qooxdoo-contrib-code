@@ -66,7 +66,7 @@ public class ResourceNode extends Node {
     }
     
     @Override
-    public Node newInstance(String path) {
+    public ResourceNode newInstance(String path) {
         return new ResourceNode(io, loader, path);
     }
     

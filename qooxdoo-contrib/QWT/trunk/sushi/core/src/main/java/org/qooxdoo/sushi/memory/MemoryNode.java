@@ -77,7 +77,7 @@ public class MemoryNode extends Node {
     }
     
     @Override
-    public Node newInstance(String path) {
+    public MemoryNode newInstance(String path) {
         return context.node(path);
     }
 

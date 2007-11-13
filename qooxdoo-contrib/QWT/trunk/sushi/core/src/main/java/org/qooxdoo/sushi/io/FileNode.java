@@ -65,7 +65,7 @@ public class FileNode extends Node {
     }
     
     @Override
-    public Node newInstance(String path) {
+    public FileNode newInstance(String path) {
         return new FileNode(io, base, new File("/" + path));
     }
     

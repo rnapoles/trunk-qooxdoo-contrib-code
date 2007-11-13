@@ -98,7 +98,7 @@ public abstract class Node {
     }
     
     public Node join(String... names) {
-        return this.join(Arrays.asList(names));
+        return join(Arrays.asList(names));
     }
 
     //-- input stream functionality
@@ -362,11 +362,11 @@ public abstract class Node {
         return this;
     }
 
-    public void mkdirs() throws IOException {
+    public Node mkdirs() throws IOException {
         if (exists()) {
             throw new IOException("cannot create directories: " + this);
         }
-        mkdirsOpt();
+        return mkdirsOpt();
     }
 
     //-- output create functionality
