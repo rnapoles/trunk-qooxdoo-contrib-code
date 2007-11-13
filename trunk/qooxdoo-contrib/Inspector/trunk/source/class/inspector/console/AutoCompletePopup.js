@@ -59,11 +59,6 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     this._table.setRowHeight(20);     
     this.add(this._table);
     
-    // set the colors of focused and not focues the same
-    var renderer = this._table.getDataRowRenderer();
-    renderer.setBgcolFocusedSelectedBlur(renderer.getBgcolFocusedSelected());
-    renderer.setBgcolSelectedBlur(renderer.getBgcolSelected());
-    
     // add the click event listener to the table
     this._table.addEventListener("click", function(e) {
       // if it is a click on the pane
