@@ -172,9 +172,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       } else {
         // if no filter is applied get the whole data
         var data = this._getData();
-      }	
+      }    
       // set the new data in the model
-      this._setData(data);		
+      this._setData(data);        
     },
 
 
@@ -203,12 +203,12 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       //  go threw all objects
       for (var key in objects) {
         // IE Bug: only take the qooxdoo objects and not the added functions
-				if (objects[key] instanceof qx.core.Object) {
-					// add the object to the data array
-	        data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});					
-				}
+        if (objects[key] instanceof qx.core.Object) {
+          // add the object to the data array
+          data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});                    
+        }
       }
-			
+            
       // apply a filfer if needed
       if (filter != null) {
         // create a new temporary array to store the filterd data
@@ -247,7 +247,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _getClearObjects: function() {
       // get the array of excludes
       var excludes = this._inspector.getExcludes();
-			// get a copy of the objects db
+      // get a copy of the objects db
       var objects = qx.lang.Array.clone(qx.core.Object.getDb());
       // create a array to store the references of the original db
       var dbKeys = new Array(objects.length);
@@ -323,15 +323,15 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       var objects = this._getData();
       // go threw all objects, count them and put the count into a hash 
       for (var key in objects) {
-				// if the class has not been seen jet
+        // if the class has not been seen jet
         if (tempData[objects[key][1]] == undefined) {
-					// create a entry for the class
+          // create a entry for the class
           tempData[objects[key][1]] = 0;
         }
-				// add one ocurance for the class
-        tempData[objects[key][1]] = tempData[objects[key][1]] + 1;									    
+        // add one ocurance for the class
+        tempData[objects[key][1]] = tempData[objects[key][1]] + 1;                                        
       }
-      // create the data array      
+      // create the data array
       var data = [];
       // go threw all values of the hash and put them into the array
       for (var key in tempData) {
@@ -377,15 +377,15 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      */
     _setApearancePosition: function() {
       // if left is not set
-			if (this.getLeft() == null) {
-				// position the window to the right 
-	      this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);				
-			}
-			// if the height is not set
-			if (this.getHeight() == "auto") {
-	      // Make the window 25% of the screen heigth heigh 
-	      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);				
-			}
+      if (this.getLeft() == null) {
+        // position the window to the right 
+        this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);                
+      }
+      // if the height is not set
+      if (this.getHeight() == "auto") {
+        // Make the window 25% of the screen heigth heigh 
+        this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);                
+      }
     },
      
     
@@ -402,19 +402,14 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._table = new qx.ui.table.Table(this._tableModel);
       this._table.setHeight("1*");
       
-			this._table.setWidth(320);
+      this._table.setWidth(320);
       this._table.setShowCellFocusIndicator(false);
-      this._table.setColumnVisibilityButtonVisible(false);			
+      this._table.setColumnVisibilityButtonVisible(false);            
       this._mainLayout.add(this._table);
       // initialize the column model
       var columnModel = this._table.getTableColumnModel();
       columnModel.setColumnWidth(0,50);
       columnModel.setColumnWidth(1,254);
-			
-      // reset the colors of not focused
-      var renderer = this._table.getDataRowRenderer();
-      renderer.setBgcolFocusedSelectedBlur(renderer.getBgcolFocusedSelected());
-      renderer.setBgcolSelectedBlur(renderer.getBgcolSelected());
       
       // register the selction change handler
       this._table.getSelectionModel().addEventListener("changeSelection", function(e) {
@@ -450,9 +445,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * Also register the handlers for the search field and the buttons.
      */
     _addToolbarButtons: function() {
-			// tell the toolbar to senter ist children
-			this._toolbar.setVerticalChildrenAlign("middle");
-			
+      // tell the toolbar to senter ist children
+      this._toolbar.setVerticalChildrenAlign("middle");
+            
       // create and add the reload button
       this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/reload.png"));
       this._toolbar.add(this._reloadButton);
@@ -596,7 +591,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         this._searchTimer = window.setTimeout(function() {          
           // fetch the objecty data
           var newData = self._getData(filterText);
-					// set the new data
+          // set the new data
           self._setData(newData);
         }, 300);
       }, this);
