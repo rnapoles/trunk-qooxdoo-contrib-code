@@ -73,7 +73,7 @@ public class UrlNode extends Node {
     }
     
     @Override
-    public Node newInstance(String path) {
+    public UrlNode newInstance(String path) {
         try {
             return new UrlNode(io, new URL(url, path));
         } catch (MalformedURLException e) {
