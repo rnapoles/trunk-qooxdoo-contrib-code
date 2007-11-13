@@ -389,6 +389,11 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * @param widget {qx.core.Object} The object which should be selected.
      */
     _selectWidgetInTheTree: function (widget) {
+			// check for null references
+			if (widget == null) {
+				return;
+			}
+			
 			// create a array of parents
 			var parents = [];
 			// save the parrents in that array
