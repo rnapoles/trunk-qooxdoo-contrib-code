@@ -156,9 +156,8 @@ public class SvnNodeFullTest extends NodeTest {
         Node dir;
         SvnNode svn;
         
-        dir = IO.getWorking().join("foo").deleteOpt().mkdir();
-        svn = SvnNode.create(IO, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/application");
+        dir = IO.createTempDirectory();
+        svn = SvnNode.create(IO, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/branches/0.7.2/application");
         svn.export(dir);
-        // dir.delete();
     }
 }
