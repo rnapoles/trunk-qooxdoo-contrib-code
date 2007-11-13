@@ -16,10 +16,9 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
 qx.Class.define("inspector.objectFinder.ObjectFinder", {
   
-  extend : inspector.AbstractWindow,  
+  extend: inspector.AbstractWindow,  
 
   /*
   *****************************************************************************
@@ -522,6 +521,10 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         
         // create the message
         var message = "";
+				// if no polution is detected
+				if (data.length == 0) {
+					message += "<i>No polution detected!</i>";
+				}
         for (var i = 0; i < data.length; i++) {
           // print out the name of the object
           message += "<tr><td>" + data[i]["key"] + ": </td>";
@@ -549,7 +552,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         this._popup.setLeft(e.getPageX() + 3);
         // show the popup
         this._popup.show();
-        this._popup.bringToFront();        
+				       
       }, this);
                   
       // add a spacer
