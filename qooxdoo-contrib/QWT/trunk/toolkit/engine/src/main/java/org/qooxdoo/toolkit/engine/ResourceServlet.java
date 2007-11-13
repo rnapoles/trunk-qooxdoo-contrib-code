@@ -20,6 +20,7 @@
 package org.qooxdoo.toolkit.engine;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -52,11 +53,16 @@ public class ResourceServlet extends Servlet {
         if (path == null || "/".equals(path)) {
             return -1;
         }
-        resource = application.getResourceManager().lookup(path.substring(1));
-        if (resource == null) {
+        try {
+            resource = application.getResourceManager().lookup(path.substring(1));
+            if (resource == null) {
+                return -1;
+            } 
+            return resource.getLastModified();
+        } catch (IOException e) {
+            application.log.log(Level.SEVERE, path + ": getLastModified failed", e);
             return -1;
-        } 
-        return resource.getLastModified();
+        }
     }
     
     @Override

@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.Node;
 
 public class Resource {
@@ -39,7 +40,7 @@ public class Resource {
         this.type = type;
     }
 
-    public long getLastModified() {
+    public long getLastModified() throws LastModifiedException {
         return normal.lastModified();
     }
     

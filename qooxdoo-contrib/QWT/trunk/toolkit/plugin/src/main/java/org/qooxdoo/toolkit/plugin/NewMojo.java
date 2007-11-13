@@ -91,7 +91,7 @@ public class NewMojo extends Base {
         src = archive.data.join(application); 
         if (!src.isDirectory()) {
             apps = new ArrayList<String>();
-            for (Node child : archive.data.children()) {
+            for (Node child : archive.data.list()) {
                 if (child.isDirectory()) {
                     apps.add(child.getName());
                 }
