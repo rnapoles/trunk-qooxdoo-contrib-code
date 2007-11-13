@@ -132,13 +132,14 @@
 						cellEditor = new qx.ui.table.celleditor.ComboBox;
 						cellEditor.setListData(["true","false"]);
 						cellEditor.setEditable(false);
+						/* the following makes no sense
 						cellEditor.setValidationFunction(function(value,oldValue){
 							if ( value == "true" )
 							{
 								return true; 
 							}
 							return false;
-						});
+						});**/
 						break;				
 						
 					default:

@@ -10,6 +10,7 @@
 			<qx:atom
 				border="outset-thin"
 				padding="10"
+				icon="icon/16/actions/ajax-loader.gif" 
 				label="Loading, please wait..." 
 				backgroundColor="white">
 				
