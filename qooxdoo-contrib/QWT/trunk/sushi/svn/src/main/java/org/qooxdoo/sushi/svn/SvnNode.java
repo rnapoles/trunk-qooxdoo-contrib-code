@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.qooxdoo.sushi.io.ChildrenException;
+import org.qooxdoo.sushi.io.ListException;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
@@ -166,7 +166,7 @@ public class SvnNode extends Node {
     }
     
     @Override
-    public SvnNode[] list() throws ChildrenException {
+    public SvnNode[] list() throws ListException {
         List<SVNDirEntry> lst;
         SvnNode[] result;
         SVNDirEntry entry;
@@ -184,7 +184,7 @@ public class SvnNode extends Node {
             }
             return result;
         } catch (SVNException e) {
-            throw new ChildrenException(this, e);
+            throw new ListException(this, e);
         }
     }
     

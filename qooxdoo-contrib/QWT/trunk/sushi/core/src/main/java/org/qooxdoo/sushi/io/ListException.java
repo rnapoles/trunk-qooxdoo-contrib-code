@@ -19,8 +19,8 @@
 
 package org.qooxdoo.sushi.io;
 
-public class ChildrenException extends NodeException {
-    public ChildrenException(Node node, Throwable cause) {
+public class ListException extends NodeException {
+    public ListException(Node node, Throwable cause) {
         super(node, "cannot get child nodes", cause);
     }
 }
