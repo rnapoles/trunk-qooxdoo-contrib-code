@@ -43,6 +43,8 @@ qx.Class.define("inspector.console.DomViewHtml", {
     this._htmlEmbed.setHeight(174);
     this.add(this._htmlEmbed);
     
+    this._htmlEmbed.setHtmlProperty("id", "qx_srcview");
+    
     // creaete the array used to  stor the naviagating path
     this._objectsArray = [];
   },
@@ -195,14 +197,14 @@ qx.Class.define("inspector.console.DomViewHtml", {
           returnString += "<tr>" + 
                             "<td width='40%' valign='top'><font size='2'><b>" + key + "</b></font>" +  
                             "</td>";
-					// if the object holds a reference to itself
+          // if the object holds a reference to itself
           if (qxObject[key] == qxObject) {
-						// print out a message for a self index
-						returnString += "<td><font color='#AAAAAA' size='2'><i>self reference</i></font></td></tr>";
-					} else {
-						// print out the objects value
-            returnString += "<td>" + this._getObject(qxObject[key], index, key) + "</td></tr>";          						
-					}
+            // print out a message for a self index
+            returnString += "<td><font color='#AAAAAA' size='2'><i>self reference</i></font></td></tr>";
+          } else {
+            // print out the objects value
+            returnString += "<td>" + this._getObject(qxObject[key], index, key) + "</td></tr>";                      
+          }
 
         }
         // end the table 
@@ -216,14 +218,18 @@ qx.Class.define("inspector.console.DomViewHtml", {
       
       // if the current object is a function
       if (qxObject instanceof Function) {
-          // print out the toString stuff (function code)
-          returnString += "<div style='margin-top: 10px; padding: 10px;  border-top: 1px #666666 solid; color: #666666; font-family: Helvetica;'><font size='2'>" + qxObject + "</font></div>";
+        // get the code of the function as a string
+        var functionCode = qxObject.toString();
+        // let qooxdoo highlight the javascript code
+        functionCode = "<pre>" + qx.dev.Tokenizer.javaScriptToHtml(functionCode) + "</pre>";
+        // print out the function code
+        returnString += "<div style='margin-top: 10px; padding: 10px;  border-top: 1px #666666 solid;'>" + functionCode + "</div>";
       }
       
       return returnString;
     },
-    
-    
+       
+   
     /**
      * Creates a html div as a string. This html shows a
      * path back threw the selected objects.
