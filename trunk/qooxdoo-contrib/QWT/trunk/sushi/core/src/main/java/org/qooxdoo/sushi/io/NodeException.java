@@ -24,10 +24,6 @@ import java.io.IOException;
 public abstract class NodeException extends IOException {
     public final Node node;
     
-    public NodeException(Node node) {
-        this(node, (String) null);
-    }
-
     public NodeException(Node node, String msg) {
         super(node.toString() + (msg == null ? "" : ": " + msg));
         this.node = node;
