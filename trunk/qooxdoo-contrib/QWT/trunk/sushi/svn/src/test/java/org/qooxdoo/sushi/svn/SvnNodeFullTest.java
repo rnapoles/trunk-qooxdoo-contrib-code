@@ -150,4 +150,15 @@ public class SvnNodeFullTest extends NodeTest {
         ((SvnNode) root.join("dir/dir1/dir2")).export(dir);
         assertEquals("baz", dir.join("sub1").readString());
     }
+
+    @Test
+    public void exportLongPath() throws IOException, SVNException {
+        Node dir;
+        SvnNode svn;
+        
+        dir = IO.getWorking().join("foo").deleteOpt().mkdir();
+        svn = SvnNode.create(IO, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/application");
+        svn.export(dir);
+        // dir.delete();
+    }
 }

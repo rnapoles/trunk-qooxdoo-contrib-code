@@ -31,13 +31,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.qooxdoo.sushi.io.ListException;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
+import org.qooxdoo.sushi.io.ListException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
@@ -253,7 +253,7 @@ public class SvnNode extends Node {
     }
 
     @Override
-    public void delete() throws DeleteException {
+    public SvnNode delete() throws DeleteException {
         try {
             if (!exists()) {
                 throw new DeleteException(this, new FileNotFoundException());
@@ -264,6 +264,7 @@ public class SvnNode extends Node {
         } catch (SVNException e) {
             throw new DeleteException(this, e);
         }
+        return this;
     }
     
     /** @return revision */ 

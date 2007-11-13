@@ -63,7 +63,7 @@ public class UrlNode extends Node {
     }
 
     @Override
-    public void delete() throws DeleteException {
+    public Node delete() throws DeleteException {
         throw new DeleteException(this);
     }
 

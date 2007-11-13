@@ -70,8 +70,12 @@ public abstract class Node {
     public abstract OutputStream createOutputStream() throws IOException;
 
     public abstract Node[] list() throws ListException;
+
+    /** @return this */ 
     public abstract Node mkdir() throws MkdirException;
-    public abstract void delete() throws DeleteException;
+    
+    /** @return this */ 
+    public abstract Node delete() throws DeleteException;
 
     // status methods
     

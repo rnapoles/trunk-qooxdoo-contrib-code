@@ -32,13 +32,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Buffer;
-import org.qooxdoo.sushi.io.ListException;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
+import org.qooxdoo.sushi.io.ListException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
@@ -159,7 +159,7 @@ public class SshNode extends Node {
     }
 
     @Override
-    public void delete() throws DeleteException {
+    public SshNode delete() throws DeleteException {
         String result;
         Throwable cause;
         
@@ -178,6 +178,7 @@ public class SshNode extends Node {
         } catch (JSchException e) {
             throw new DeleteException(this, e);
         }
+        return this;
     }
 
     @Override
