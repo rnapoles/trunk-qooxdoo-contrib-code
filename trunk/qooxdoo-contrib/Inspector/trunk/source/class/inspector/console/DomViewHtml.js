@@ -96,7 +96,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * @param object {Object} The object to inspect.
      */
     setObject: function(object) {
-        this._htmlEmbed.setHtml(this._getHtmlToObject(object, 0));
+      this._htmlEmbed.setHtml(this._getHtmlToObject(object, 0));
     },
     
     
@@ -112,6 +112,18 @@ qx.Class.define("inspector.console.DomViewHtml", {
             if (key) {
                 // select the given value object
                 var newQxObject = this._objectsArray[index][key];
+                
+                // check if the new Object is alread in the history of the selected objects
+                for (var i = 0; i < this._objectsArray.length; i++) {
+                  // if it is in the history
+                  if (this._objectsArray[i] == newQxObject) {
+                    // set the index to the history element
+                    this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, i));
+                    // stop further processing
+                    return;
+                  }
+                }
+                
                 // set the new object with a higher index
                 this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, (index) + 1));
             // if only a index is given (selection wia the back button)
@@ -132,7 +144,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * Clears the whole dom view.
      */
     clear: function() {
-      this._htmlEmbed.setHtml("");      
+      this._htmlEmbed.setHtml("");
     },
     
     /*
@@ -183,8 +195,14 @@ qx.Class.define("inspector.console.DomViewHtml", {
           returnString += "<tr>" + 
                             "<td width='40%' valign='top'><font size='2'><b>" + key + "</b></font>" +  
                             "</td>";
-          // print out the objects value
-          returnString += "<td>" + this._getObject(qxObject[key], index, key) + "</td></tr>";          
+					// if the object holds a reference to itself
+          if (qxObject[key] == qxObject) {
+						// print out a message for a self index
+						returnString += "<td><font color='#AAAAAA'><i>self reference</i></font></td></tr>";
+					} else {
+						// print out the objects value
+            returnString += "<td>" + this._getObject(qxObject[key], index, key) + "</td></tr>";          						
+					}
 
         }
         // end the table 
