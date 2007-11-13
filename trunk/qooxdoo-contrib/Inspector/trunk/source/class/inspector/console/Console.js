@@ -316,7 +316,7 @@ qx.Class.define("inspector.console.Console", {
       // create the tabview   
       this._tabView = new qx.ui.pageview.tabview.TabView();
       // tab view buttons
-      var consoleButton = new qx.ui.pageview.tabview.Button("Concole");
+      var consoleButton = new qx.ui.pageview.tabview.Button("Console");
       this._domButton = new qx.ui.pageview.tabview.Button("DOM");
       consoleButton.setChecked(true);
       this._tabView.getBar().add(consoleButton, this._domButton);      
