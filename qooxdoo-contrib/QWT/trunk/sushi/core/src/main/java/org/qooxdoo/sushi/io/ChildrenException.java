@@ -19,12 +19,8 @@
 
 package org.qooxdoo.sushi.io;
 
-// TODO: RuntimeException vs NodeException
-public class ChildrenException extends RuntimeException {
-    public final Node node;
-    
+public class ChildrenException extends NodeException {
     public ChildrenException(Node node, Throwable cause) {
-        super(node + ": cannot get children: " + cause.getMessage(), cause);
-        this.node = node;
+        super(node, "cannot get child nodes", cause);
     }
 }

@@ -19,9 +19,8 @@
 
 package org.qooxdoo.sushi.io;
 
-/** TODO: Node Exception */
-public class LengthException extends RuntimeException {
-    public LengthException(Throwable cause) {
-        super(cause);
+public class LengthException extends NodeException {
+    public LengthException(Node node, Throwable cause) {
+        super(node, "length failed", cause);
     }
 }

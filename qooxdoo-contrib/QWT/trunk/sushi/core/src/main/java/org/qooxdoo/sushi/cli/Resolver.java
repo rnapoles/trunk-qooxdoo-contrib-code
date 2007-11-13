@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.qooxdoo.sushi.io.ChildrenException;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 
@@ -49,7 +50,7 @@ public class Resolver {
         return this;
     }
 
-    public List<String> files() {
+    public List<String> files() throws ChildrenException {
         List<String> result;
         
         result = new ArrayList<String>();

@@ -19,20 +19,23 @@
 
 package org.qooxdoo.sushi.filter;
 
+import java.io.IOException;
+
+import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.Node;
 
 public interface Predicate {
     Predicate FILE = new Predicate() {
-        public boolean matches(Node node) {
+        public boolean matches(Node node) throws ExistsException {
             return node.isFile();
         }
     };
 
     Predicate DIRECTORY = new Predicate() {
-        public boolean matches(Node node) {
+        public boolean matches(Node node) throws ExistsException {
             return node.isDirectory();
         }
     };
     
-    boolean matches(Node node);
+    boolean matches(Node node) throws IOException;
 }

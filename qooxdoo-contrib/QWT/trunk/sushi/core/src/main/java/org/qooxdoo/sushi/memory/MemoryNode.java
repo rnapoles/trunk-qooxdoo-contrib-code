@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.qooxdoo.sushi.io.DeleteException;
+import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
@@ -113,10 +114,17 @@ public class MemoryNode extends Node {
     
     @Override
     public Node mkdir() throws MkdirException {
+        boolean parentDir;
+        
         if (type != Type.NONE) {
             throw new MkdirException(this);
         }
-        if (!getParent().isDirectory()) {
+        try {
+            parentDir = getParent().isDirectory();
+        } catch (ExistsException e) {
+            throw new IllegalStateException(e);
+        }
+        if (!parentDir) {
             throw new MkdirException(this);
         }
         type = Type.DIRECTORY;

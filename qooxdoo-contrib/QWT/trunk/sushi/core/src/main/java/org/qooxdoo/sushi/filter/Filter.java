@@ -268,7 +268,7 @@ public class Filter {
         }
     }
     
-    private boolean matchPredicates(Node node) {
+    private boolean matchPredicates(Node node) throws IOException {
         for (Predicate p : predicates) {
             if (!p.matches(node)) {
                 return false;

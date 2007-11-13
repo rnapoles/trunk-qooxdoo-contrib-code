@@ -19,9 +19,8 @@
 
 package org.qooxdoo.sushi.io;
 
-/** TODO: NodeException */
-public class LastModifiedException extends RuntimeException {
-    public LastModifiedException(Throwable e) {
-        super(e);
+public class LastModifiedException extends NodeException {
+    public LastModifiedException(Node node, Throwable e) {
+        super(node, "lastModified failed", e);
     }
 }
