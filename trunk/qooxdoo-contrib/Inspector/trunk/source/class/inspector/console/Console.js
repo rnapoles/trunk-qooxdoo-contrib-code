@@ -175,7 +175,7 @@ qx.Class.define("inspector.console.Console", {
     */
    _generateSettingsMap: function() {
       // the first superclass is the class of the selected widget
-      var superclass = this._console.getWidget();
+      var superclass = this.getWidget();
       // create new properties array to store the propertey of a class
       var properties = [];
       // go threw the inheritance of the selected widget
@@ -208,7 +208,7 @@ qx.Class.define("inspector.console.Console", {
         var getterName = "get" + qx.lang.String.toFirstUp(properties[i].name);
         // try to read the value
         try {
-          var value = this._console.getWidget()[getterName].call(this._console.getWidget());
+          var value = this.getWidget()[getterName].call(this.getWidget());
           if (value instanceof Object) {
             continue;
           }
@@ -218,7 +218,7 @@ qx.Class.define("inspector.console.Console", {
         }
         
         // take care of the refined properties
-        var clazz = qx.Class.getByName(this._console.getWidget().classname);
+        var clazz = qx.Class.getByName(this.getWidget().classname);
         if (clazz.prototype["__init$" + properties[i].name] == value) {
           continue;
         }
@@ -231,7 +231,7 @@ qx.Class.define("inspector.console.Console", {
       }
       
       // get the styles given by the theme
-      var styles = qx.theme.manager.Appearance.getInstance().styleFrom(this._console.getWidget().getAppearance(), {}); 
+      var styles = qx.theme.manager.Appearance.getInstance().styleFrom(this.getWidget().getAppearance(), {}); 
       
       // check for the theme properties
       for (var propertyName in props) {

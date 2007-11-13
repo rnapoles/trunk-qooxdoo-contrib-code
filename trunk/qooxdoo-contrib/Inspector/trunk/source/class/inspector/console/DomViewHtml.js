@@ -198,7 +198,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
 					// if the object holds a reference to itself
           if (qxObject[key] == qxObject) {
 						// print out a message for a self index
-						returnString += "<td><font color='#AAAAAA'><i>self reference</i></font></td></tr>";
+						returnString += "<td><font color='#AAAAAA' size='2'><i>self reference</i></font></td></tr>";
 					} else {
 						// print out the objects value
             returnString += "<td>" + this._getObject(qxObject[key], index, key) + "</td></tr>";          						
@@ -275,7 +275,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
                           
       // if it is a function
       if (object instanceof Function) {
-          returnString += "function()";
+          returnString += object.toString().substring(0, object.toString().indexOf(")") + 1);
               
       // if it is an array
       } else if (object instanceof Array) {
