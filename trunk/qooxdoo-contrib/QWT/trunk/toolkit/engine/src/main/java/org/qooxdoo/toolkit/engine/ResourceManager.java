@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
@@ -88,7 +89,7 @@ public class ResourceManager {
         }
     }
 
-    public Resource lookup(String path) {
+    public Resource lookup(String path) throws ExistsException {
         String suffix;
         Node dir;
         Node normal;

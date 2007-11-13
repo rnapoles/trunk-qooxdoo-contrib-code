@@ -58,7 +58,7 @@ public class ResourcesMojo extends FrameworkBase {
         dest.deleteOpt();
         dest.mkdirs();
         icon = null;
-        for (Node srcChild : src.children()) {
+        for (Node srcChild : src.list()) {
             if (srcChild.getName().equals(".svn")) {
                 // ignore
             } else if (srcChild.getName().equals("icon")) {

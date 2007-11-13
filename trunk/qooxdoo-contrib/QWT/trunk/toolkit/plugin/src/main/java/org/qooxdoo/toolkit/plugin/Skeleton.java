@@ -53,7 +53,7 @@ public class Skeleton {
         System.out.println("svn export " + url);
         src = SvnNode.create(IO_OBJ, url);
         src.export(zip.data);
-        for (Node application : zip.data.children()) {
+        for (Node application : zip.data.list()) {
             if (application.isDirectory()) {
                 System.out.println("adding application " + application.getName());
                 fix(application);
