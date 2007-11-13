@@ -19,6 +19,7 @@ class qcl_auth_user extends qcl_auth_common
 
 	var $table			= "users";
 	var $key_namedId	= "username";
+	var $key_name		= "name";
 	var $key_username 	= "username"; 
 	var $key_password 	= "password";
 	var $icon 			= "icon/16/apps/system-users.png";
@@ -218,6 +219,15 @@ class qcl_auth_user extends qcl_auth_common
    {
    		return $_SESSION['qcl_auth_user_activeUser'][$this->key_namedId]; 
    }
+  
+   /**
+    * gets active user full name
+    * @return int
+    */
+   function getActiveUserFullName()
+   {
+   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_name]; 
+   }  
   
    /**
     * checks if active user has the given permission
