@@ -35,7 +35,7 @@ public class ConsoleNode extends Node {
     }
 
     @Override
-    public Node[] children() {
+    public Node[] list() {
         return null;
     }
 

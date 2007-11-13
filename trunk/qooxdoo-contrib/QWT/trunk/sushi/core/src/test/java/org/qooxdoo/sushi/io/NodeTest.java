@@ -54,7 +54,7 @@ public abstract class NodeTest {
         assertTrue(work.exists());
         assertFalse(work.isFile());
         assertTrue(work.isDirectory());
-        children = work.children();
+        children = work.list();
         assertNotNull(children);
         assertEquals(0, children.length);
     }
@@ -165,7 +165,7 @@ public abstract class NodeTest {
         
         file = work.join("foo").writeBytes();
         assertTrue(file.isFile());
-        assertNull(file.children());
+        assertNull(file.list());
     }
 
     //

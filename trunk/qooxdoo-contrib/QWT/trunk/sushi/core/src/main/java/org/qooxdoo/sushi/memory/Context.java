@@ -20,8 +20,8 @@
 package org.qooxdoo.sushi.memory;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
 
 public class Context {
     public final IO io;
@@ -69,7 +68,7 @@ public class Context {
         }
     }
     
-    public Node[] children(String path) throws IOException {
+    public MemoryNode[] list(String path) throws IOException {
         String child;
         int idx;
         List<MemoryNode> result;

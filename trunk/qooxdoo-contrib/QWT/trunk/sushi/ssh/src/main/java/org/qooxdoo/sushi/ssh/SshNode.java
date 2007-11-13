@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.ChildrenException;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
@@ -119,7 +120,7 @@ public class SshNode extends Node {
     //--
     
     @Override
-    public Node[] children() {
+    public SshNode[] list() throws ChildrenException {
         List<Node> lst;
         
         try {
@@ -127,12 +128,12 @@ public class SshNode extends Node {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("TODO", e);
+            throw new ChildrenException(this, e);
         }
         if (lst == null) {
             return null;
         }
-        return lst.toArray(new Node[lst.size()]);
+        return lst.toArray(new SshNode[lst.size()]);
     }
     
     //--
