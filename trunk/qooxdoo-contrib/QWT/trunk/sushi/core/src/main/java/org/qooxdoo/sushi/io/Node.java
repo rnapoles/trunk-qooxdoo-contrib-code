@@ -94,7 +94,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(IO.SEPARATOR_CHAR) + 1);
+        return path.substring(path.lastIndexOf(IO.os.pathSeparatorChar) + 1);
     }
     
     public Node join(List<String> paths) {
@@ -324,16 +324,16 @@ public abstract class Node {
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(IO.SEPARATOR) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(IO.os.pathSeparatorChar) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, IO.SEPARATOR);
+        ups = Strings.count(startfilepath, IO.os.pathSeparator);
         for (i = 0; i < ups; i++) {
-            result.append(".." + IO.SEPARATOR);
+            result.append(".." + IO.os.lineSeparator);
         }
-        result.append(Strings.replace(destpath, IO.SEPARATOR, "" + IO.SEPARATOR));
+        result.append(Strings.replace(destpath, IO.os.lineSeparator, "" + IO.os.lineSeparator));
         return result.toString();
     }
 

@@ -21,9 +21,17 @@ package org.qooxdoo.sushi.io;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.junit.Test;
 
 public class OSTest {
+    @Test
+    public void separator() {
+        assertEquals(File.separator, OS.CURRENT.pathSeparator);
+        assertEquals(File.separatorChar, OS.CURRENT.pathSeparatorChar);
+    }
+    
     @Test
     public void os() {
         assertNotNull(OS.CURRENT);

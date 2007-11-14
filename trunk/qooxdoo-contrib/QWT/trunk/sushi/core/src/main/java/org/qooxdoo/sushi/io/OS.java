@@ -20,8 +20,9 @@
 package org.qooxdoo.sushi.io;
 
 public enum OS {
-    MAC("Mac", "$", "", "\n", "-f", "%Op"), WINDOWS("Windows", "%", "%",
-            "\r\n", "/f", "%a"), LINUX("Linux", "$", "", "\n", "--format", "%a");
+    LINUX("Linux", "$", "", '/', "\n", "--format", "%a"),
+    MAC("Mac", "$", "", '/', "\n", "-f", "%Op"), 
+    WINDOWS("Windows", "%", "%", '\\', "\r\n", "/f", "%a"); 
 
     private static OS detect() {
         String name;
@@ -40,14 +41,18 @@ public enum OS {
     private final String substring;
     private final String variablePrefix;
     private final String variableSuffix;
+    public final char pathSeparatorChar;
+    public final String pathSeparator;
     public final String lineSeparator;
     public final String[] stat;
 
     private OS(String substring, String variablePrefix, String variableSuffix,
-            String lineSeparator, String... stat) {
+            char pathSeparatorChar, String lineSeparator, String... stat) {
         this.substring = substring;
         this.variablePrefix = variablePrefix;
         this.variableSuffix = variableSuffix;
+        this.pathSeparatorChar = pathSeparatorChar;
+        this.pathSeparator = "" + pathSeparatorChar;
         this.lineSeparator = lineSeparator;
         this.stat = stat;
     }
