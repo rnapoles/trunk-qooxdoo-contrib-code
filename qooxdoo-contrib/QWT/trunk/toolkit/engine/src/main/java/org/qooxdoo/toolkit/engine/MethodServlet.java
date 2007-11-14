@@ -29,11 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.Settings;
 
 /** Main class */
 public class MethodServlet extends Servlet {
     @Override
-    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) 
+    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Settings settings, Buffer buffer) 
     throws IOException, ServletException {
         String path;
         Call call;
@@ -46,7 +47,7 @@ public class MethodServlet extends Servlet {
         }
         path = path.substring(1);
         application.log.info("call begin " + path);
-        call = Call.parse(buffer, application, path, request);
+        call = Call.parse(settings, buffer, application, path, request);
         if (call == null) {
             throw new IllegalArgumentException("unkown call: " + path);
         }

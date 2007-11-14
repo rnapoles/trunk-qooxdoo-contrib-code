@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.Settings;
 
 /** Performs application startup and servers resources. */
 public class ResourceServlet extends Servlet {
@@ -66,7 +67,7 @@ public class ResourceServlet extends Servlet {
     }
     
     @Override
-    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) throws IOException, ServletException {
+    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Settings settings, Buffer buffer) throws IOException, ServletException {
         String path;
         String ae;
         boolean gz;
