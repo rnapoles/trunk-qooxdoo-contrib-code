@@ -45,7 +45,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     this.setWidth("100%");
     this.setHeight("100%");
     
-	// initialize the object folder    
+	  // initialize the object folder    
     this._objectFolder = [];
     
     // create the popup for the autocompletion
@@ -133,7 +133,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     _ctrl: false,
     _autoCompletePopup: null,
     
-	// reference arrays used to stor the objects shown on the console view
+    // reference arrays used to stor the objects shown on the console view
     _objectFolder: null,
     _objectFolderIndex: 0,
     
@@ -159,7 +159,7 @@ qx.Class.define("inspector.console.ConsoleView", {
 	 * @return {Object} The object in the console view. 
 	 */
     getObjectById: function(id) {
-        return this._objectFolder[id];
+      return this._objectFolder[id];
     },
     
     
@@ -279,9 +279,9 @@ qx.Class.define("inspector.console.ConsoleView", {
      */
     clear: function() {
       // reset the veiw
-	  this._htmlEmbed.setHtml("");
-	  // reset the storage used for referencing the printed objects
-	  this._objectFolder = [];
+	    this._htmlEmbed.setHtml("");
+	    // reset the storage used for referencing the printed objects
+	    this._objectFolder = [];
       this._objectFolderIndex = 0;
     },
     
@@ -389,9 +389,14 @@ qx.Class.define("inspector.console.ConsoleView", {
           }).call(this._console.getWidget(), text, this._console.getAns()));
 
         // if ans is defined
-        if (this._console.getAns() != undefined) {
+        if (this._console.getAns() != undefined) {			
+
+	        // store the object in the local reference folder
+					this._objectFolder[this._objectFolderIndex] = {name: text, object: this._console.getAns()};	
           // print put the return value
-          this._printReturnValue(this._console.getAns());                      
+          this._printReturnValue(this._console.getAns());
+          // invoke the addition to the index after the objects has been printed to the screen
+	        this._objectFolderIndex++;								
         }
       } catch (e) {
         // print out the exception
@@ -572,10 +577,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // check for qooxdoo objects
       if (returnValue instanceof qx.core.Object) {
         // print out the qooxdoo object
-        this._printQxObject(returnValue);   
-        // store the object in the local reference folder
-        this._objectFolder[this._objectFolderIndex] = returnValue;
-        this._objectFolderIndex++;
+        this._printQxObject(returnValue);  
         
       // check for arrays
       } else if (returnValue instanceof Array) {
@@ -595,9 +597,6 @@ qx.Class.define("inspector.console.ConsoleView", {
                                        "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
                                        "'>" + returnValue + " </u>", "#AAAA00")
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
-        // store the object in the local reference folder
-        this._objectFolder[this._objectFolderIndex] = returnValue;
-        this._objectFolderIndex++;
         
         return;
                      
