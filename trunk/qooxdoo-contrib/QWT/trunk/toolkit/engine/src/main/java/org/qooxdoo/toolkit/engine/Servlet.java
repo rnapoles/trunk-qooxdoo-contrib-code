@@ -32,10 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.Settings;
 
 /** Base class */
 public abstract class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Settings SETTINGS = new Settings(Settings.UTF_8);
 
     protected Application application = null;
     
@@ -45,7 +47,7 @@ public abstract class Servlet extends HttpServlet {
     protected Servlet() {
         this.buffers = new ArrayBlockingQueue<Buffer>(BUFFER_COUNT);
         for (int i = 0; i < BUFFER_COUNT; i++) {
-            buffers.add(new Buffer(Buffer.UTF_8));
+            buffers.add(new Buffer());
         }
     }
     
@@ -105,7 +107,7 @@ public abstract class Servlet extends HttpServlet {
         }
         buffer = allocate();
         try {
-            doProcess(request, response, buffer);
+            doProcess(request, response, SETTINGS, buffer);
         } catch (IOException e) {
             report(e, request);
             throw e;
@@ -138,7 +140,7 @@ public abstract class Servlet extends HttpServlet {
     
     //--
     
-    protected abstract void doProcess(HttpServletRequest request, HttpServletResponse response, Buffer buffer) 
+    protected abstract void doProcess(HttpServletRequest request, HttpServletResponse response, Settings settings, Buffer buffer) 
     throws IOException, ServletException;
     
     private void report(Throwable e, HttpServletRequest request) {
