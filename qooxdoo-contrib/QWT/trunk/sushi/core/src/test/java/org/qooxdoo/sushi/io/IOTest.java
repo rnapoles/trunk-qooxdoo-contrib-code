@@ -90,11 +90,6 @@ public class IOTest {
     //
 
     @Test
-    public void separator() {
-        assertEquals("/", IO.SEPARATOR);
-    }
- 
-    @Test
     public void path() {
         IO io;
         List<FileNode> path;

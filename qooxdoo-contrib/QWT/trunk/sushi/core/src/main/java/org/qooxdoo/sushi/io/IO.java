@@ -44,11 +44,9 @@ import org.qooxdoo.sushi.xml.Xml;
  * And calling it Filesystem suggests a singleton, which is wrong, and it's longer than just IO.</p>
  */
 public class IO {
-    // TODO: always slashes?
-    // TODO: non-static?
-    public static final char SEPARATOR_CHAR = File.separatorChar;
-    public static final String SEPARATOR = File.separator;
-
+    // TODO: none-static
+    public static final OS os = OS.CURRENT;
+    
     private static final TempFiles TEMP_FILES;
     static {
         TEMP_FILES = new TempFiles();
@@ -126,7 +124,7 @@ public class IO {
     public Filter filter() {
         Filter filter;
         
-        filter = new Filter(SEPARATOR);
+        filter = new Filter(os.pathSeparator);
         filter.exclude(defaultExcludes);
         return filter;
     }
@@ -347,7 +345,7 @@ public class IO {
 
     // TODO: move to Node class
     public static String join(String... names) {
-        return Strings.join(SEPARATOR, names);
+        return Strings.join(os.pathSeparator, names);
     }
     
     // TODO: move to Node class
@@ -356,12 +354,12 @@ public class IO {
         
         buffer = new StringBuffer(head);
         for (String path : paths) {
-            if (path.startsWith(IO.SEPARATOR)) {
+            if (path.startsWith(os.pathSeparator)) {
                 throw new IllegalArgumentException(path);
             }
             // TODO: Svn nodes ...
             if (buffer.length() > 0) {
-                buffer.append(IO.SEPARATOR_CHAR);
+                buffer.append(os.pathSeparatorChar);
             }
             buffer.append(path);
         }
@@ -369,6 +367,6 @@ public class IO {
     }
 
     public static List<String> split(String path) {
-        return Strings.split(IO.SEPARATOR, path);
+        return Strings.split(os.pathSeparator, path);
     }
 }

@@ -76,7 +76,7 @@ public class Context {
         result = new ArrayList<MemoryNode>();
         for (MemoryNode node : nodes.values()) {
             child = node.getPath();
-            idx = child.lastIndexOf(IO.SEPARATOR);
+            idx = child.lastIndexOf(IO.os.lineSeparator);
             if (!path.equals(child) && path.equals(idx == -1 ? "" : child.substring(0, idx))) {
                 if (node.exists()) {
                     result.add(node);
