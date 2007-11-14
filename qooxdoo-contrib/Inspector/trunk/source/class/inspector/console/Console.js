@@ -134,10 +134,10 @@ qx.Class.define("inspector.console.Console", {
 	
     /**
      * Sets the given object in the dom view.
-     * @param object {Object} The object to inspect.
+     * @param inputObject {Object} The object to inspect.
      */
-	inspectObject: function(object) {
-	    this._domView.setObject(object);
+	inspectObject: function(inputObject) {
+	  this._domView.setObject(inputObject.object, inputObject.name);
 		this._domButton.setChecked(true);
 	},
 	
@@ -149,7 +149,7 @@ qx.Class.define("inspector.console.Console", {
 	 * @param id {Number} Set the object assosiated with the given id.
 	 */
 	inspectObjectByInternalId: function(id) {
-		// get the object
+		// get the object and the name
 		var o = this._consoleView.getObjectById(id);
 		// inspect the object
 		this.inspectObject(o);

@@ -603,11 +603,11 @@ qx.Class.define("inspector.Inspector", {
 	 * @param id {Number} The given id. 
 	 */
 	inspectObjectByInternalId: function(id) {
-        // if the console existst
+    // if the console existst
 		if (this._console != null) {
-			// tell the consol to do the rest
-            this._console.inspectObjectByInternalId(id);
-        }
+		  // tell the consol to do the rest
+      this._console.inspectObjectByInternalId(id);
+    }
 	},
    
    

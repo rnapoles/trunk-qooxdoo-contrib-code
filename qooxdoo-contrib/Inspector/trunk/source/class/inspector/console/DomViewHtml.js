@@ -46,7 +46,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
     this._htmlEmbed.setHtmlProperty("id", "qx_srcview");
     
     // creaete the array used to  stor the naviagating path
-    this._objectsArray = [];
+    this._breadCrumb = [];
   },
 
 
@@ -67,7 +67,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
     // the main element
     _htmlEmbed: null,
     
-    _objectsArray: null,
+    _breadCrumb: null,
     
     /*
     *********************************
@@ -96,9 +96,10 @@ qx.Class.define("inspector.console.DomViewHtml", {
     /**
      * Set a new object to inspect.
      * @param object {Object} The object to inspect.
+     * @param name {String} The name of the object.
      */
-    setObject: function(object) {
-      this._htmlEmbed.setHtml(this._getHtmlToObject(object, 0));
+    setObject: function(object, name) {
+      this._htmlEmbed.setHtml(this._getHtmlToObject(object, 0, name));
     },
     
     
@@ -113,27 +114,29 @@ qx.Class.define("inspector.console.DomViewHtml", {
             // if a key is given (selection of a object as a value) 
             if (key) {
                 // select the given value object
-                var newQxObject = this._objectsArray[index][key];
+                var newQxObject = this._breadCrumb[index].object[key];
                 
                 // check if the new Object is alread in the history of the selected objects
-                for (var i = 0; i < this._objectsArray.length; i++) {
+                for (var i = 0; i < this._breadCrumb.length; i++) {
                   // if it is in the history
-                  if (this._objectsArray[i] == newQxObject) {
+                  if (this._breadCrumb[i].object == newQxObject) {
                     // set the index to the history element
-                    this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, i));
+                    this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, i, key));
                     // stop further processing
                     return;
                   }
                 }
                 
                 // set the new object with a higher index
-                this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, (index) + 1));
+                this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, (index) + 1, key));
             // if only a index is given (selection wia the back button)
             } else {
                 // select the stored object in the array
-                var newQxObject = this._objectsArray[index];
+                var newQxObject = this._breadCrumb[index].object;
+								// select the stored name
+								var newName = this._breadCrumb[index].name;
                 // show the selected array with the current index
-                this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, index));    
+                this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, index, newName));    
             }
         } catch (e) {
             alert("Can not select this Object: " + e);
@@ -154,18 +157,24 @@ qx.Class.define("inspector.console.DomViewHtml", {
        PROTECTED
     *********************************
     */    
-        /**
+    /**
      * Returns a html String which contains table of the objects porperties and values.
      * @internal
      * @param qxObject {Object} The object to return the html from.
      * @param index {Object} The index of the object path.
+     * @param name {String} The name of the selected object.
      */
-    _getHtmlToObject: function(qxObject, index) {
+    _getHtmlToObject: function(qxObject, index, name) {
       // create an empty string
       var returnString = "";
 
+      // set a default name if none is set
+      if (name == undefined) {
+				var name = "Object";
+			}
+
       // save the object a path array
-      this._objectsArray[index] = qxObject;
+      this._breadCrumb[index] = {object: qxObject, name: name};
       
       returnString += this._getReturnPath(index);
       
@@ -249,15 +258,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
             returnString += " &raquo; <span style='cursor: pointer;' onclick='" + 
                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + i + ")'>";            
         }
-        // do print the functions as function()
-        if (this._objectsArray[i] instanceof Function) {
-            returnString += "function()";    
-        // check for arrays
-        } else if (this._objectsArray[i] instanceof Array) {
-            returnString += "<b>Array</b>";
-        } else {
-            returnString += this._objectsArray[i];
-        }
+        
+				// print out the name
+        returnString += this._breadCrumb[i].name;
         
         returnString += "</span>";
       }
@@ -281,7 +284,11 @@ qx.Class.define("inspector.console.DomViewHtml", {
                           
       // if it is a function
       if (object instanceof Function) {
+				if (object.toString().indexOf(")") != -1 ) {
           returnString += object.toString().substring(0, object.toString().indexOf(")") + 1);
+				} else {
+					returnString += object.toString();
+				}
               
       // if it is an array
       } else if (object instanceof Array) {
