@@ -33,7 +33,6 @@ public class Buffer {
     public static final int DEFAULT_SIZE = 8192;
 
     private final byte[] buffer;
-    private final Settings settings;
 
     /** Create a Buffer with UTF-8 encoding */
     public Buffer() {
@@ -41,16 +40,11 @@ public class Buffer {
     }
 
     public Buffer(int bufferSize) {
-        this(bufferSize, new Settings());
-    }
-
-    public Buffer(int bufferSize, Settings settings) {
-        this.settings = settings;
         this.buffer = new byte[bufferSize];
     }
 
     public Buffer(Buffer orig) {
-        this(orig.buffer.length, orig.settings);
+        this(orig.buffer.length);
     }
 
     //--
@@ -58,12 +52,6 @@ public class Buffer {
     public int size() {
         return buffer.length;
     }
-    
-    public Settings getSettings() {
-        return settings;
-    }
-
-    //--
     
     public int fill(InputStream in) throws IOException {
         int chunk;
@@ -111,7 +99,7 @@ public class Buffer {
         return dest.toByteArray();
     }
 
-    public String readLine(InputStream src) throws IOException {
+    public String readLine(InputStream src, String encoding) throws IOException {
         ByteArrayOutputStream tmp;
         int c;
         
@@ -124,18 +112,18 @@ public class Buffer {
                 }
                 return null;
             } else if (c == '\n') {
-                return tmp.toString(settings.encoding);
+                return tmp.toString(encoding);
             } else {
                 tmp.write(c);
             }
         }
     }
     
-    public String readString(InputStream src) throws IOException {
+    public String readString(InputStream src, String encoding) throws IOException {
         byte[] bytes;
         
         bytes = readBytes(src);
-        return new String(bytes, settings.encoding);
+        return new String(bytes, encoding);
     }
     
     /** 

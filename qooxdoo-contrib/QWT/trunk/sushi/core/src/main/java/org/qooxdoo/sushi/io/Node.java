@@ -126,11 +126,11 @@ public abstract class Node {
     }
 
     public String readString() throws IOException {
-        return io.buffer.getSettings().string(readBytes());
+        return io.settings.string(readBytes());
     }
     
     public List<String> readLines() throws IOException {
-        return Strings.split(io.buffer.getSettings().lineSeparator, readString());
+        return Strings.split(io.settings.lineSeparator, readString());
     }
     
     public Object readObject() throws IOException {
@@ -419,7 +419,7 @@ public abstract class Node {
     }
     
     public Node writeLines(List<String> lines) throws IOException {
-        return writeString(Strings.join(io.buffer.getSettings().lineSeparator, lines));
+        return writeString(Strings.join(io.settings.lineSeparator, lines));
     }
 
     public Node writeObject(Serializable obj) throws IOException {

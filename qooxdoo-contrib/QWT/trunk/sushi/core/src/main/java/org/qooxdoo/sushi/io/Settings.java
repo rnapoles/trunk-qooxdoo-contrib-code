@@ -23,7 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
- * <p>Buffer to access streams. </p>
+ * <p>Immutable. </p>
  */
 public class Settings {
     public static final String UTF_8 = "UTF-8";

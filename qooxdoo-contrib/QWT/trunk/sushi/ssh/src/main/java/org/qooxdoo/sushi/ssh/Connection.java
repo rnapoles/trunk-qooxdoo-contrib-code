@@ -23,13 +23,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.MultiOutputStream;
+import org.qooxdoo.sushi.io.Settings;
+import org.qooxdoo.sushi.util.ExitCode;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-
-import org.qooxdoo.sushi.io.Buffer;
-import org.qooxdoo.sushi.io.MultiOutputStream;
-import org.qooxdoo.sushi.util.ExitCode;
 
 /** a session with a buffer */
 public class Connection {
@@ -39,13 +40,16 @@ public class Connection {
     
     private final Host host;
     private final Session session;
+    private final Settings settings;
     private final Buffer buffer;
+    
     /** null if not probed yet */
     private Boolean mac;
     
-    public Connection(Host host, Session session, Buffer buffer) {
+    public Connection(Host host, Session session, Settings settings, Buffer buffer) {
         this.host = host;
         this.session = session;
+        this.settings = settings;
         this.buffer = buffer;
     }
 
@@ -62,7 +66,7 @@ public class Connection {
     
     public void invoke(Transfer ... commands) throws JSchException, IOException {
         for (Transfer command : commands) {
-            command.invoke(buffer, session);
+            command.invoke(settings, buffer, session);
         }
     }
 
@@ -85,8 +89,8 @@ public class Connection {
         try {
             begin(out, command).end();
         } catch (ExitCode e) {
-            throw new ExitCode(e.call, e.code, buffer.getSettings().string(out));
+            throw new ExitCode(e.call, e.code, settings.string(out));
         }
-        return buffer.getSettings().string(out);
+        return settings.string(out);
     }
 }
