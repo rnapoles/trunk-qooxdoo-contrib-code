@@ -19,6 +19,10 @@
 
 package org.qooxdoo.sushi.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -27,28 +31,7 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class BufferTest {
-    @Test
-    public void invalidEncoding() {
-        try {
-            new Buffer("nosuchencoding");
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
-    }
-    
-    @Test
-    public void encoding() {
-        Buffer buffer;
-        
-        buffer = new Buffer();
-        assertEquals("", buffer.string(buffer.bytes("")));
-        assertEquals("abc", buffer.string(buffer.bytes("abc")));
-    }
-
     @Test
     public void readLine() throws IOException {
         Buffer buffer;
@@ -96,7 +79,7 @@ public class BufferTest {
         int length;
         byte[] found;
         
-        buffer = new Buffer(1, Buffer.UTF_8, "\n");
+        buffer = new Buffer(1);
         src = new ByteArrayInputStream(data);
         dest = new ByteArrayOutputStream();
         length = buffer.copy(src, dest, max);

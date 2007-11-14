@@ -24,7 +24,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
 /**
@@ -32,79 +31,36 @@ import java.security.MessageDigest;
  */
 public class Buffer {
     public static final int DEFAULT_SIZE = 8192;
-    public static final String DEFAULT_LINESEPARATOR = "\n";
-
-    private static final byte[] BYTES = { 65 };
-    
-    public static final String UTF_8 = "UTF-8";
-    public static final String ISO8859_1 = "ISO8859_1";
-
 
     private final byte[] buffer;
-    private final String encoding;
-    private final String lineSeparator;
+    private final Settings settings;
 
     /** Create a Buffer with UTF-8 encoding */
     public Buffer() {
-        this(UTF_8);
+        this(DEFAULT_SIZE);
     }
 
-    public Buffer(String encoding) {
-        this(DEFAULT_SIZE, encoding, DEFAULT_LINESEPARATOR);
+    public Buffer(int bufferSize) {
+        this(bufferSize, new Settings());
+    }
+
+    public Buffer(int bufferSize, Settings settings) {
+        this.settings = settings;
+        this.buffer = new byte[bufferSize];
     }
 
     public Buffer(Buffer orig) {
-        this(orig.buffer.length, orig.encoding, orig.lineSeparator);
+        this(orig.buffer.length, orig.settings);
     }
 
-    public Buffer(int bufferSize, String encoding, String lineSeparator) {
-        try {
-            new String(BYTES, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException(encoding, e);
-        }
-        this.buffer = new byte[bufferSize];
-        this.encoding = encoding;
-        this.lineSeparator = lineSeparator;
-    }
-
+    //--
+    
     public int size() {
         return buffer.length;
     }
     
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public String getLineSeparator() {
-        return lineSeparator;
-    }
-    
-    //--
-    
-    public String string(byte[] bytes) {
-        try {
-            return new String(bytes, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String string(ByteArrayOutputStream bytes) {
-        try {
-            return bytes.toString(encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        
-    }
-
-    public byte[] bytes(String str) {
-        try {
-            return str.getBytes(encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+    public Settings getSettings() {
+        return settings;
     }
 
     //--
@@ -168,7 +124,7 @@ public class Buffer {
                 }
                 return null;
             } else if (c == '\n') {
-                return tmp.toString(encoding);
+                return tmp.toString(settings.encoding);
             } else {
                 tmp.write(c);
             }
@@ -179,7 +135,7 @@ public class Buffer {
         byte[] bytes;
         
         bytes = readBytes(src);
-        return new String(bytes, encoding);
+        return new String(bytes, settings.encoding);
     }
     
     /** 

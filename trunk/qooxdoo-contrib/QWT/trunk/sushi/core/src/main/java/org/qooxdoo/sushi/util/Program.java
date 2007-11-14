@@ -67,7 +67,7 @@ public class Program {
         
         result = new ByteArrayOutputStream();
         exec(result);
-        return new String(result.toByteArray(), io.buffer.getEncoding());
+        return io.buffer.getSettings().string(result.toByteArray());
     }
     
     /** executes a command in this directory, returns the output */
@@ -87,7 +87,7 @@ public class Program {
         }
         if (exit != 0) {
             if (dest instanceof ByteArrayOutputStream) {
-                output = new String(((ByteArrayOutputStream) dest).toByteArray(), io.buffer.getEncoding());
+                output = io.buffer.getSettings().string(((ByteArrayOutputStream) dest));
             } else {
                 output = "";
             }
