@@ -313,7 +313,7 @@ public abstract class NodeTest {
         doc = IO.xml.builder.literal("<a><b/></a>");        
         file = work.join("foo");
         file.writeXml(doc);
-        assertEquals("<a>\n<b/>\n</a>\n", file.readString());
+        assertEquals(IO.settings.join("<a>", "<b/>", "</a>", ""), file.readString());
         doc = file.readXml();
         assertEquals("a", doc.getDocumentElement().getLocalName());
     }
