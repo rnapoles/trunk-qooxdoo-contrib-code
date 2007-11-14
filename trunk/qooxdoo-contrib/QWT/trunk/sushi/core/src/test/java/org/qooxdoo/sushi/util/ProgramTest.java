@@ -45,9 +45,11 @@ public class ProgramTest {
     @Test
     public void variableSubstitution() throws IOException {
     	String var;
+    	String output;
     	
     	var = OS.CURRENT.variable("PATH");
-        assertEquals(OS.CURRENT != OS.WINDOWS, var.equals(p("echo", var).exec()));
+    	output = p("echo", var).exec();
+        assertTrue(output + " vs " + var, OS.CURRENT != OS.WINDOWS == var.equals(output));
     }
 
     @Test
