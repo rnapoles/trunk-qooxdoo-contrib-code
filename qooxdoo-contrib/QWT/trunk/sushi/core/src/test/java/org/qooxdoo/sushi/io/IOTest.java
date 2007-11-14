@@ -136,7 +136,7 @@ public class IOTest {
         check(IOTest.class);
     }
 
-    private void check(Class clazz) {
+    private void check(Class<?> clazz) {
         IO io;
         FileNode home;
         String name;

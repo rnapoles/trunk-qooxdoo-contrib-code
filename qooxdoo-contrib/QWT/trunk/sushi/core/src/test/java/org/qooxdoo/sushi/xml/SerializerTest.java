@@ -22,12 +22,15 @@ package org.qooxdoo.sushi.xml;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.io.OS;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class SerializerTest {
+	private static final String LF = OS.CURRENT.lineSeparator;
+	
     private static final Builder BUILDER = new Builder();
     private static final Selector SELECTOR = new Selector();
     private static final Serializer SERIALIZER = new Serializer();
@@ -54,10 +57,10 @@ public class SerializerTest {
 
     @Test
     public void serialize() throws Exception {
-        checkSerialize("<root/>\n", "<root/>", "/");
-        checkSerialize("<root>\n<a/>\n</root>\n", "<root><a/></root>", "/");
-        checkSerialize("<root/>\n", "<root/>", "/root");
-        checkSerialize("<a/>\n", "<root><a/></root>", "/root/a");
+        checkSerialize("<root/>" + LF, "<root/>", "/");
+        checkSerialize("<root>" + LF + "<a/>" + LF + "</root>" + LF, "<root><a/></root>", "/");
+        checkSerialize("<root/>" + LF, "<root/>", "/root");
+        checkSerialize("<a/>" + LF, "<root><a/></root>", "/root/a");
         checkSerialize("mhm", "<root>mhm</root>", "/root/text()");
     }
 
@@ -65,7 +68,7 @@ public class SerializerTest {
     public void serializeChildren() throws Exception {
         checkSerializeChildren("", "<root/>", "/root");
         checkSerializeChildren("<a/>", "<root><a/></root>", "/root");
-        checkSerializeChildren("<p>1</p>\n<p>2</p>", "<root><a><p>1</p><p>2</p></a></root>", "/root/a");
+        checkSerializeChildren("<p>1</p>" + LF +"<p>2</p>", "<root><a><p>1</p><p>2</p></a></root>", "/root/a");
         checkSerializeChildren("<p>1<inner/>2</p>", "<root><p>1<inner/>2</p></root>", "/root");
         checkSerializeChildren("<p>1<inner>I</inner>2</p>", "<root><p>1<inner>I</inner>2</p></root>", "/root");
     }
