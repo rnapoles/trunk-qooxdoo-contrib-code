@@ -369,7 +369,7 @@ public class SshNode extends Node {
             @Override
             public void doInvoke(Buffer buffer) throws JSchException, IOException {
                 readAck();
-                out.write(buffer.bytes("C0644 " + data.length + " bytearray\n"));
+                out.write(buffer.getSettings().bytes("C0644 " + data.length + " bytearray\n"));
                 out.flush();
                 readAck();
                 out.write(data);

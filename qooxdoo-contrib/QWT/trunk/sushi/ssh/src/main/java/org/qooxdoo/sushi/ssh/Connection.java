@@ -85,8 +85,8 @@ public class Connection {
         try {
             begin(out, command).end();
         } catch (ExitCode e) {
-            throw new ExitCode(e.call, e.code, buffer.string(out));
+            throw new ExitCode(e.call, e.code, buffer.getSettings().string(out));
         }
-        return buffer.string(out);
+        return buffer.getSettings().string(out);
     }
 }

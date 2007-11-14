@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.Settings;
 
 public class Base64 {
     /** true create base64 */
@@ -65,7 +65,7 @@ public class Base64 {
     }
     
     public String run(String str) throws IOException {
-        return run(str, Buffer.UTF_8);
+        return run(str, Settings.UTF_8);
     }
 
     public String run(String str, String encoding) throws IOException {

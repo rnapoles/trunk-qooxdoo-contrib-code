@@ -171,7 +171,7 @@ public class IO {
     public FileNode node(URL url) {
         try {
             return node(URLDecoder.decode(url.getFile(), 
-                    Buffer.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
+                    Settings.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("expected on every platform", e);
         }
