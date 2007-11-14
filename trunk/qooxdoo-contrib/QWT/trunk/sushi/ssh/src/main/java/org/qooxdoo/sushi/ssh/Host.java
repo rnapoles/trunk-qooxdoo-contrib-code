@@ -21,16 +21,19 @@ package org.qooxdoo.sushi.ssh;
 
 import java.io.IOException;
 
+import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.Settings;
+import org.qooxdoo.sushi.util.ExitCode;
+
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import org.qooxdoo.sushi.io.Buffer;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.util.ExitCode;
-
 /** A session factory with convenience methods to invoke command */
 public class Host {
+    private static final Settings SETTINGS = new Settings();
+    
     public static Host createLocal(IO io) throws JSchException, IOException {
         return new Host("localhost", User.withUserKey(io, io.getHome().getName()));
     }
@@ -93,6 +96,6 @@ public class Host {
         jsch = new JSch();
         session = user.login(jsch, machine);
         session.connect(timeout);
-        return new Connection(this, session, buffer);
+        return new Connection(this, session, SETTINGS, buffer);
     }
 }

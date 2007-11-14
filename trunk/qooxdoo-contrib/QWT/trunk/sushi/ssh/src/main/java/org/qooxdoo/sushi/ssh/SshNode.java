@@ -43,6 +43,7 @@ import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
+import org.qooxdoo.sushi.io.Settings;
 import org.qooxdoo.sushi.util.ExitCode;
 import org.qooxdoo.sushi.util.Strings;
 
@@ -295,13 +296,13 @@ public class SshNode extends Node {
     public void get(final FileNode dest) throws JSchException, IOException, InterruptedException {
         connection.invoke(new Transfer("scp -f " + slashPath) { // "from"
             @Override
-            public void doInvoke(Buffer buffer) throws JSchException, IOException {
+            public void doInvoke(Settings settings, Buffer buffer) throws JSchException, IOException {
                 String line;
                 char c;
                 
                 sendAck();
                 while (true) {
-                    line = buffer.readLine(in);
+                    line = buffer.readLine(in, settings.encoding);
                     if (line == null) {
                         break;
                     }
@@ -367,9 +368,9 @@ public class SshNode extends Node {
     public void put(final byte[] data) throws JSchException, IOException, InterruptedException {
         connection.invoke(new Transfer("scp -t " + slashPath) { // "to"
             @Override
-            public void doInvoke(Buffer buffer) throws JSchException, IOException {
+            public void doInvoke(Settings settings, Buffer buffer) throws JSchException, IOException {
                 readAck();
-                out.write(buffer.getSettings().bytes("C0644 " + data.length + " bytearray\n"));
+                out.write(settings.bytes("C0644 " + data.length + " bytearray\n"));
                 out.flush();
                 readAck();
                 out.write(data);

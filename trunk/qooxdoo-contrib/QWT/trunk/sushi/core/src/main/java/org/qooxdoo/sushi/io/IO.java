@@ -62,6 +62,8 @@ public class IO {
     /** never null */
     public final Buffer buffer;
     
+    public final Settings settings;
+    
     /** never null */
     public final Xml xml;
 
@@ -74,10 +76,11 @@ public class IO {
     public final int maxInMemorySize;
     
     public IO() {
-        this(new Buffer(), 32 * 1024, new Xml(), "**/.svn/**/*");
+        this(new Settings(), new Buffer(), 32 * 1024, new Xml(), "**/.svn/**/*");
     }
     
-    public IO(Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {
+    public IO(Settings settings, Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {
+        this.settings = settings;
         this.buffer = buffer;
         this.maxInMemorySize = maxInMemorySize;
 

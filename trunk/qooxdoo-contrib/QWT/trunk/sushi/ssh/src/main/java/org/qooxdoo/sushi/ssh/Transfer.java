@@ -24,11 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.Settings;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-
-import org.qooxdoo.sushi.io.Buffer;
 
 public abstract class Transfer {
     private final String command;
@@ -39,7 +40,7 @@ public abstract class Transfer {
         this.command = command;
     }
 
-    public void invoke(Buffer buffer, Session session) throws JSchException, IOException {
+    public void invoke(Settings settings, Buffer buffer, Session session) throws JSchException, IOException {
         ChannelExec channel;
         
         channel = (ChannelExec) session.openChannel("exec");
@@ -48,13 +49,13 @@ public abstract class Transfer {
         in = channel.getInputStream();
         channel.connect();
         try {
-            doInvoke(buffer);
+            doInvoke(settings, buffer);
         } finally {
             channel.disconnect();
         }
     }
 
-    public abstract void doInvoke(Buffer buffer) throws JSchException, IOException;
+    public abstract void doInvoke(Settings settings, Buffer buffer) throws JSchException, IOException;
 
     public void sendAck() throws IOException {
         out.write(0);
