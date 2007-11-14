@@ -67,7 +67,8 @@ public class ResourceServlet extends Servlet {
     }
     
     @Override
-    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Settings settings, Buffer buffer) throws IOException, ServletException {
+    protected void doProcess(HttpServletRequest request, HttpServletResponse response, Settings settings, Buffer buffer) 
+    throws IOException, ServletException {
         String path;
         String ae;
         boolean gz;
