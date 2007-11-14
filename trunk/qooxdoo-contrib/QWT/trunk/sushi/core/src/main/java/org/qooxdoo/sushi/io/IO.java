@@ -44,8 +44,6 @@ import org.qooxdoo.sushi.xml.Xml;
  * And calling it Filesystem suggests a singleton, which is wrong, and it's longer than just IO.</p>
  */
 public class IO {
-    public static final OS OS_INSTANCE = OS.detect();
-
     // TODO: always slashes?
     // TODO: non-static?
     public static final char SEPARATOR_CHAR = File.separatorChar;

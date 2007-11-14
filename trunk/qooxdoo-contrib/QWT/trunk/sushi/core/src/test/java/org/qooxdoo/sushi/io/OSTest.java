@@ -26,6 +26,6 @@ import org.junit.Test;
 public class OSTest {
     @Test
     public void os() {
-        assertNotNull(OS.detect());
+        assertNotNull(OS.CURRENT);
     }
 }

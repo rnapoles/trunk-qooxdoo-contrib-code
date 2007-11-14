@@ -26,44 +26,64 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.junit.Test;
-
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.OS;
 
 public class ProgramTest {
     private static final IO IO_OBJ = new IO();
 
     @Test
     public void normal() throws IOException {
-        p("ls", "-la").exec();
+  		p("hostname").exec();
     }
 
     @Test
-    public void noVariableSubstitution() throws IOException {
-        assertEquals("$PATH\n", p("echo", "$PATH").exec());
+    public void echo() throws IOException {
+        assertEquals("foo", p("echo", "foo").exec().trim());
+    }
+
+    @Test
+    public void variableSubstitution() throws IOException {
+    	String var;
+    	
+    	var = OS.CURRENT.variable("PATH");
+        assertEquals(OS.CURRENT != OS.WINDOWS, var.equals(p("echo", var).exec()));
     }
 
     @Test
     public void noRedirect() throws IOException {
-        assertEquals("foo >file\n", p("echo", "foo", ">file").exec());
+    	if (OS.CURRENT != OS.WINDOWS) {
+            assertEquals("foo >file\n", p("echo", "foo", ">file").exec());
+    	} else {
+    		// TODO
+    	}
     }
 
     @Test
     public void env() throws IOException {
-        assertTrue(p("env").exec().contains("PATH="));
+        assertTrue(p(environ()).exec().contains("PATH="));
     }
 
     @Test
     public void myEnv() throws IOException {
         Program p;
         
-        p = p("env");
+        p = p(environ());
         p.builder.environment().put("bar", "foo");
         assertTrue(p.exec().contains("bar=foo"));
     }
 
     @Test
     public void output() throws IOException {
-        assertEquals("foo\n", p("echo", "foo").exec());
+        assertEquals("foo", p("echo", "foo").exec().trim());
+    }
+    
+    private String environ() {
+    	if (OS.CURRENT == OS.WINDOWS) {
+    		return "set";
+    	} else {
+    		return "env";
+    	}
     }
     
     public void failure() throws IOException {
@@ -81,13 +101,20 @@ public class ProgramTest {
             p("nosuchcommand").exec();
             fail();
         } catch (ExitCode e) {
-            fail();
+            assertEquals(OS.WINDOWS, OS.CURRENT);
         } catch (IOException e) {
-            // ok
+            assertTrue(OS.WINDOWS != OS.CURRENT);
         }
     }
     
     private Program p(String ... args) {
-        return new Program(IO_OBJ.getHome(), args);        
+    	Program p;
+    	
+    	p = new Program(IO_OBJ.getHome());
+    	if (OS.CURRENT == OS.WINDOWS) {
+    		p.add("cmd", "/C");
+    	}
+    	p.add(args);
+    	return p;
     }
 }

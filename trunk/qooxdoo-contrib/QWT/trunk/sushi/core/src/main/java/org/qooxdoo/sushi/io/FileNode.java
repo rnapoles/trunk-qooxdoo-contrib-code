@@ -327,7 +327,7 @@ public class FileNode extends Node {
         Program stat;
         
         stat = new Program(io.getWorking(), "stat");
-        stat.add(IO.OS_INSTANCE.stat);
+        stat.add(OS.CURRENT.stat);
         stat.add(getAbsolute());
         return Integer.parseInt(stat.exec().trim(), 8) & 0777;
     }

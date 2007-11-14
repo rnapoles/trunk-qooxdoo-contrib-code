@@ -20,25 +20,40 @@
 package org.qooxdoo.sushi.io;
 
 public enum OS {
-    MAC("-f", "%Op"), 
-    LINUX("--format", "%a");
+    MAC("Mac", "$", "", "\n", "-f", "%Op"),
+    WINDOWS("Windows", "%", "%", "\r\n", "/f", "%a"),
+    LINUX("Linux", "$", "", "\n", "--format", "%a");
 
-    public static OS detect() {
+    private static OS detect() {
         String name;
 
         name = System.getProperty("os.name");
-        if (name.contains("Mac")) {
-            return MAC;
-        }
-        if (name.contains("Linux")) {
-            return LINUX;
-        }
-        throw new IllegalArgumentException("unkown ok:" + name);
+        for (OS os : values()) {
+    		if (name.contains(os.substring)) {
+    			return os;
+    		}
+    	}
+        throw new IllegalArgumentException("unkown os:" + name);
     }
 
-    public final String[] stat;
+    public static final OS CURRENT = detect();
 
-    private OS(String... stat) {
+    private final String substring;
+    private final String variablePrefix;
+    private final String variableSuffix;
+    public final String lineSeparator;
+    public final String[] stat;
+    
+    private OS(String substring, String variablePrefix, String variableSuffix, 
+    		String lineSeparator, String... stat) {
+    	this.substring = substring;
+    	this.variablePrefix = variablePrefix;
+    	this.variableSuffix = variableSuffix;
+    	this.lineSeparator = lineSeparator;
         this.stat = stat;
+    }
+    
+    public String variable(String name) {
+    	return variablePrefix + name + variableSuffix;
     }
 }

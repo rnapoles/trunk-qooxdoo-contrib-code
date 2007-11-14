@@ -22,6 +22,8 @@ package org.qooxdoo.sushi.io;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.qooxdoo.sushi.util.Strings;
+
 /**
  * <p>Immutable. </p>
  */
@@ -29,7 +31,7 @@ public class Settings {
     public static final String UTF_8 = "UTF-8";
     public static final String ISO8859_1 = "ISO8859_1";
 
-    public static final String DEFAULT_LINESEPARATOR = "\n";
+    public static final String DEFAULT_LINESEPARATOR = OS.CURRENT.lineSeparator;
 
     private static final byte[] BYTES = { 65 };
     
@@ -55,6 +57,10 @@ public class Settings {
         this.lineSeparator = lineSeparator;
     }
     
+    public String join(String ... lines){
+    	return Strings.join(lineSeparator, lines);
+    }
+
     public String string(byte[] bytes) {
         try {
             return new String(bytes, encoding);

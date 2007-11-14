@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.metadata.model.Car;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.Kind;
@@ -90,6 +91,8 @@ public class SerializeTest extends ModelBase {
                 "</vendor>\n" , run(vendor));
     }
 
+    private final String LF = OS.CURRENT.lineSeparator;
+    
     @Test
     public void carDom() throws IOException {
         org.w3c.dom.Element root;
@@ -97,17 +100,17 @@ public class SerializeTest extends ModelBase {
         root = new Builder().createDocument("root").getDocumentElement();
         METADATA.instance(new Car()).toXml(root);
         assertEquals(
-                "<root>\n" +
-                "<car>\n" +
-                "<name/>\n" +
-                "<kind>normal</kind>\n" +
-                "<seats>0</seats>\n" +
-                "<engine>\n" +
-                "<turbo>false</turbo>\n" +
-                "<ps>0</ps>\n" +
-                "</engine>\n" +
-                "</car>\n" +
-                "</root>\n", 
+                "<root>" + LF +
+                "<car>" + LF +
+                "<name/>" + LF +
+                "<kind>normal</kind>" + LF +
+                "<seats>0</seats>" + LF +
+                "<engine>" + LF +
+                "<turbo>false</turbo>" + LF +
+                "<ps>0</ps>" + LF +
+                "</engine>" + LF +
+                "</car>" + LF +
+                "</root>" + LF, 
                 new org.qooxdoo.sushi.xml.Serializer().serialize(root));        
     }
 
