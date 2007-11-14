@@ -58,7 +58,7 @@ public class Settings {
     }
     
     public String join(String ... lines){
-    	return Strings.join(lineSeparator, lines);
+        return Strings.join(lineSeparator, lines);
     }
 
     public String string(byte[] bytes) {
