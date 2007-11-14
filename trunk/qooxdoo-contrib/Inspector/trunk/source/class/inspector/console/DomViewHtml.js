@@ -179,40 +179,69 @@ qx.Class.define("inspector.console.DomViewHtml", {
       returnString += this._getReturnPath(index);
       
       // flat used to signal if porperties were print out
-      var nothingToShow = true;      
+      var nothingToShow = true;
+			
+      // create a temp array for the sorted values
+			var sortedValues = [];
+			// write the objects values to the new array
+			for (var key in qxObject) {
+				sortedValues.push({key: key, value: qxObject[key]})
+			}			
+			// sort the array
+			sortedValues.sort(function(a, b) {
+        // String compare
+				for (var i = 0; i < Math.max(a.key.length, b.key.length); i++) {
+					// check if one of the keys already ended
+					if (isNaN(a.key.charCodeAt(i))) {
+						return -1;
+					}
+					if (isNaN(b.key.charCodeAt(i))) {
+						return 1;
+					}
+					// compare the chacodes at all positions of the string					
+					if (a.key.charCodeAt(i) < b.key.charCodeAt(i)) {
+						return -1;
+					} else if (a.key.charCodeAt(i) > b.key.charCodeAt(i)) {
+						return 1;
+					}
+				}
+				// if the strings are equal
+				return 0;
+			});
+			
       // go threw all properties of the object
-      for (var key in qxObject) {      
+      for (var i = 0; i < sortedValues.length; i++) {      
         // kar that there has been a property printed out
         nothingToShow = false;
         // start the table
         returnString += "<div style='font-family: Helvetica; margin-bottom: -5px'><table width='100%'>";
 
         // if it is not an object
-        if (!(qxObject[key] instanceof Object)) {
-          returnString += "<tr><td width='40%'><font size='2'>" + key + "</font></td>";
+        if (!(sortedValues[i].value instanceof Object)) {
+          returnString += "<tr><td width='30%'><font size='2'>" + sortedValues[i].key + "</font></td>";
           
           // if the value is null
-          if (qxObject[key] == null) {
-              returnString += "<td><span style='color: white; background-color: #999999; border: 1px #666666 solid;'><font size='2'>" + qxObject[key] + "</font></span></td></tr>";
-          } else if (typeof qxObject[key] == "string"){
-              returnString += "<td><span style='color: red;'><font size='2'>&quot;" + qxObject[key] + "&quot;</font></span></td></tr>";              
+          if (sortedValues[i].value == null) {
+              returnString += "<td><span style='color: white; background-color: #999999; border: 1px #666666 solid;'><font size='2'>" + sortedValues[i].value + "</font></span></td></tr>";
+          } else if (typeof sortedValues[i].value == "string"){
+              returnString += "<td><span style='color: red;'><font size='2'>&quot;" + sortedValues[i].value + "&quot;</font></span></td></tr>";              
           } else {
-                returnString += "<td><span style='color: darkblue;'><font size='2'>"  + qxObject[key] + "</font></span></td></tr>";
+                returnString += "<td><span style='color: darkblue;'><font size='2'>"  + sortedValues[i].value + "</font></span></td></tr>";
           }
 
         // if it is an object          
         } else {
           // print out the objects key          
           returnString += "<tr>" + 
-                            "<td width='40%' valign='top'><font size='2'><b>" + key + "</b></font>" +  
+                            "<td width='30%' valign='top'><font size='2'><b>" + sortedValues[i].key + "</b></font>" +  
                             "</td>";
           // if the object holds a reference to itself
-          if (qxObject[key] == qxObject) {
+          if (sortedValues[i].value == qxObject) {
             // print out a message for a self index
             returnString += "<td><font color='#AAAAAA' size='2'><i>self reference</i></font></td></tr>";
           } else {
             // print out the objects value
-            returnString += "<td>" + this._getObject(qxObject[key], index, key) + "</td></tr>";                      
+            returnString += "<td>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                      
           }
 
         }
@@ -226,7 +255,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
       }
       
       // if the current object is a function
-      if (qxObject instanceof Function) {
+      if (qxObject instanceof Function && !qxObject.hasOwnProperty("toString")) {
         // get the code of the function as a string
         var functionCode = qxObject.toString();
         // let qooxdoo highlight the javascript code
