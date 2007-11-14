@@ -34,7 +34,7 @@ import org.qooxdoo.sushi.xml.Xml;
 import static org.junit.Assert.*;
 
 public abstract class NodeTest {
-    protected static final IO IO = new IO(new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
+    protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
 
     /** creates a new empty directory */
     protected abstract Node createWork() throws IOException;
