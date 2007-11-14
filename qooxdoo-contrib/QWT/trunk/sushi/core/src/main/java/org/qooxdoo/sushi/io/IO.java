@@ -44,9 +44,6 @@ import org.qooxdoo.sushi.xml.Xml;
  * And calling it Filesystem suggests a singleton, which is wrong, and it's longer than just IO.</p>
  */
 public class IO {
-    // TODO: none-static
-    public static final OS os = OS.CURRENT;
-    
     private static final TempFiles TEMP_FILES;
     static {
         TEMP_FILES = new TempFiles();
@@ -54,6 +51,8 @@ public class IO {
     }
     
     //--
+    
+    public final OS os;
     
     /** never null */
     public final Buffer buffer;
@@ -72,10 +71,11 @@ public class IO {
     public final int maxInMemorySize;
     
     public IO() {
-        this(new Settings(), new Buffer(), 32 * 1024, new Xml(), "**/.svn/**/*");
+        this(OS.CURRENT, new Settings(), new Buffer(), 32 * 1024, new Xml(), "**/.svn/**/*");
     }
     
-    public IO(Settings settings, Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {
+    public IO(OS os, Settings settings, Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {
+        this.os = os;
         this.settings = settings;
         this.buffer = buffer;
         this.maxInMemorySize = maxInMemorySize;
@@ -344,12 +344,12 @@ public class IO {
     //-- path handling
 
     // TODO: move to Node class
-    public static String join(String... names) {
+    public String join(String... names) {
         return Strings.join(os.pathSeparator, names);
     }
     
     // TODO: move to Node class
-    public static String join(String head, List<String> paths) {
+    public String join(String head, List<String> paths) {
         StringBuffer buffer;
         
         buffer = new StringBuffer(head);
@@ -366,7 +366,7 @@ public class IO {
         return buffer.toString();
     }
 
-    public static List<String> split(String path) {
+    public List<String> split(String path) {
         return Strings.split(os.pathSeparator, path);
     }
 }
