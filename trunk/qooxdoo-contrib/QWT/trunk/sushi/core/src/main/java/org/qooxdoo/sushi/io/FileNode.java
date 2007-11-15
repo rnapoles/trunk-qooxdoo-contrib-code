@@ -66,7 +66,7 @@ public class FileNode extends Node {
     
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, base, new File("/" + path));
+        return new FileNode(io, base, new File(io.os.root + path));
     }
     
     public URI toURI() {
@@ -79,14 +79,14 @@ public class FileNode extends Node {
     
 
     
-    /** Avoid calling this method, should be used to interact with 'legary' code only */
+    /** Avoid calling this method, should be used to interact with 'legacy' code only */
     public File getFile() {
         return file;
     }
     
     @Override
     public String getPath() {
-        return file.getPath().substring(1);
+        return file.getPath().substring(io.os.root.length());
     }
     
     //--

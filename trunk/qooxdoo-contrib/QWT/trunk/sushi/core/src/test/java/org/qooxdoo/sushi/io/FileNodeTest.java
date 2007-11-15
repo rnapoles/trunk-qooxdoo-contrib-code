@@ -115,6 +115,9 @@ public class FileNodeTest extends NodeTest {
     }
 
     private void checkMode(FileNode node) throws IOException {
+        if (node.io.os == OS.WINDOWS) {
+            return; // TODO
+        }
         checkMode(node, 0644);
         checkMode(node, 0700);
         assertTrue(node.getFile().canRead());
