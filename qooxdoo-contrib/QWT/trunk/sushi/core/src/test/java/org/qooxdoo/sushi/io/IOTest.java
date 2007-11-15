@@ -33,9 +33,9 @@ public class IOTest {
         FileNode node;
         
         io = new IO();
-        node = io.node("/");
+        node = io.node(io.os.root);
         assertEquals("", node.getName());
-        assertEquals("/", node.getAbsolute());
+        assertEquals(io.os.root, node.getAbsolute());
         assertEquals(".", node.getRelative(node));
         assertTrue(node.isDirectory());
     }
@@ -46,14 +46,29 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node("/a");
+        node = io.node(io.os.root + "a");
         assertNull(node.getBase());
         assertEquals("a", node.getName());
         assertEquals("a", node.getPath());
         assertEquals("", node.getParent().getPath());
-        assertEquals("/a", node.toString());
+        assertEquals(io.os.root + "a", node.toString());
     }
 
+    @Test
+    public void nodeAbsoluteSubdir() {
+        IO io;
+        FileNode node;
+
+        io = new IO();
+        node = io.node(io.os.root + "x" + io.os.pathSeparator + "y");
+        assertNull(node.getBase());
+        assertEquals("y", node.getName());
+        assertEquals("x" + io.os.pathSeparator + "y", node.getPath());
+        assertEquals("x", node.getParent().getPath());
+        assertEquals(io.os.root + "x" + io.os.pathSeparator + "y", node.toString());
+    }
+
+    
     @Test
     public void nodeRelative() {
         IO io;
@@ -62,7 +77,7 @@ public class IOTest {
         io = new IO();
         node = io.node("a");
         assertNotNull(node.getBase());
-        assertTrue(node.getPath().endsWith("/a"));
+        assertTrue(node.getPath().endsWith(io.os.pathSeparator + "a"));
         assertEquals(io.getWorking(), node.getParent());
         assertEquals("a", node.toString());
     }
@@ -96,10 +111,10 @@ public class IOTest {
         
         io = new IO();
         assertEquals(0, io.path("").size());
-        path = io.path("foo:/bar");
+        path = io.path("foo" + io.os.todoSeparator + io.os.root + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
-        assertEquals("/bar", path.get(1).toString());
+        assertEquals(io.os.root + "bar", path.get(1).toString());
         try {
             io.classpath("nosuchfile.jar");
             fail();

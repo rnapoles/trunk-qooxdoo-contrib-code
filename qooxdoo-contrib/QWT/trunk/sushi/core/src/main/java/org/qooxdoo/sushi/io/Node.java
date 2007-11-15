@@ -286,7 +286,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf("/");
+        idx = path.lastIndexOf(io.os.pathSeparatorChar);
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -331,7 +331,7 @@ public abstract class Node {
         result = new StringBuilder();
         ups = Strings.count(startfilepath, io.os.pathSeparator);
         for (i = 0; i < ups; i++) {
-            result.append(".." + io.os.lineSeparator);
+            result.append(".." + io.os.pathSeparator);
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();
@@ -563,6 +563,6 @@ public abstract class Node {
     }
     
     public String getAbsolute() {
-        return "/" + getPath();
+        return io.os.root + getPath();  // TODO: this is ok for FileNodes only ...
     }
 }

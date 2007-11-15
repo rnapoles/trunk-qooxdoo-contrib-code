@@ -182,7 +182,7 @@ public class IO {
         List<FileNode> result;
         
         result = new ArrayList<FileNode>();
-        for (String str: Strings.split(":", path)) {
+        for (String str: Strings.split(os.todoSeparator, path)) {
             result.add(node(str));
         }
         return result;

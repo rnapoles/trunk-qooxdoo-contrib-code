@@ -35,7 +35,8 @@ import static org.junit.Assert.*;
 
 public abstract class NodeTest {
     protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
-
+    private static final String SEP = IO.os.pathSeparator;
+    
     /** creates a new empty directory */
     protected abstract Node createWork() throws IOException;
 
@@ -64,7 +65,7 @@ public abstract class NodeTest {
     @Test
     public void joinWithSlash() {
         try {
-            work.join("/a");
+            work.join(work.io.os.pathSeparator, "a");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -96,9 +97,9 @@ public abstract class NodeTest {
         file = parent.join("bar");
         assertEquals(".", file.getRelative(file));
         assertEquals("bar", file.getRelative(parent));
-        assertEquals("foo/bar", file.getRelative(work));
-        assertEquals("../foo/bar", file.getRelative(work.join("baz")));
-        assertEquals("../bar", file.getRelative(work.join("foo/baz")));
+        assertEquals("foo" + SEP + "bar", file.getRelative(work));
+        assertEquals(".." + SEP + "foo" + SEP + "bar", file.getRelative(work.join("baz")));
+        assertEquals(".." + SEP + "bar", file.getRelative(work.join("foo/baz")));
     }
 
     @Test
@@ -111,11 +112,11 @@ public abstract class NodeTest {
         assertEquals("foo", node.getName());
         node = work.join("a/b");
         assertFalse(node.exists());
-        assertTrue(node.getPath().endsWith("a/b"));
+        assertTrue(node.getPath().endsWith("a" + SEP + "b"));
         assertEquals("b", node.getName());
         node = work.join("x/y/z");
         assertFalse(node.exists());
-        assertTrue(node.getPath().endsWith("x/y/z"));
+        assertTrue(node.getPath().endsWith("x" + SEP + "y" + SEP + "z"));
         assertEquals("z", node.getName());
     }
 
@@ -552,6 +553,6 @@ public abstract class NodeTest {
         Node file;
         
         file = work.join("foo");
-        assertEquals(file.toString(), "/" + file.getPath());
+        assertEquals(file.io.os.root + file.getPath(), file.toString());
     }
 }
