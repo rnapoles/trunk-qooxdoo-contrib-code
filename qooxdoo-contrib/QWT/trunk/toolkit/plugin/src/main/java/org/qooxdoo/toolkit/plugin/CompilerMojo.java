@@ -171,7 +171,6 @@ public class CompilerMojo extends Base {
 
     private void link(Repository all) throws IOException {
         Writer dest;
-        String[] rootArray;
         Module[] mains;
         
         if (roots == null || roots.trim().length() == 0) {

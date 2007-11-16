@@ -212,6 +212,14 @@ public abstract class Node {
     
     //--
     
+    public void copy(Node dest) throws IOException {
+        if (isDirectory()) {
+            copyDirectory(dest);
+        } else {
+            copyFile(dest);
+        }
+    }
+
     public List<Node> copyDirectory(Node dest) throws IOException {
         return copyDirectory(io.filter().includeAll(), dest);
     }

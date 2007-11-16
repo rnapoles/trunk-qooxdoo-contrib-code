@@ -24,7 +24,9 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.XmlException;
@@ -93,6 +95,16 @@ public abstract class Base extends AbstractMojo {
 
     public static List<String> split(String str) {
         return Strings.trim(Strings.split(",", str));
+    }
+
+    //--
+    
+    public static void linkOrCopy(FileNode src, FileNode dest) throws IOException {
+        if (OS.CURRENT == OS.WINDOWS) {
+            src.copy(dest);
+        } else {
+            src.link(dest);
+        }
     }
 }
 
