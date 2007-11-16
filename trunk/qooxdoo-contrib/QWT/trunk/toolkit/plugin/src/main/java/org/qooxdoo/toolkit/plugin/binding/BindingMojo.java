@@ -23,18 +23,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.maven.project.MavenProject;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import org.qooxdoo.toolkit.plugin.FrameworkBase;
-import org.qooxdoo.toolkit.plugin.binding.java.Set;
-import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.FrameworkBase;
+import org.qooxdoo.toolkit.plugin.binding.java.Set;
+import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Generates Binding classes, i.e. Java classes that compile to a given JavaScript class.
@@ -115,7 +115,11 @@ public class BindingMojo extends FrameworkBase {
             generator = (FileNode) frameworkDir.join("tool/generator.py");
             generator.checkFile();
             dest = output.createOutputStream();
-            p = new Program((FileNode) frameworkDir, generator.getAbsolute(),
+            p = new Program((FileNode) frameworkDir);
+            if (OS.CURRENT == OS.WINDOWS) {
+                p.add("cmd", "/C");
+            }
+            p.add(generator.getAbsolute(),
                 "--cache-directory", ".cache",
                 "--print-dependencies",
                 "--generate-api", "--add-new-lines", "--class-path=" + CLASS, 
