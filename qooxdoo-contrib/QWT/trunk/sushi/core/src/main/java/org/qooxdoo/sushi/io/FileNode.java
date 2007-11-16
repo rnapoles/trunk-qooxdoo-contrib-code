@@ -239,8 +239,20 @@ public class FileNode extends Node {
 
     /** @return dest */
     public FileNode move(FileNode dest) throws IOException {
+        Program p;
+        String output;
+        
         dest.checkNotExists();
-        new Program((FileNode) dest.getParent(), "mv", getAbsolute(), dest.getName()).execNoOutput();
+        if (io.os == OS.WINDOWS) {
+            p = new Program((FileNode) dest.getParent(), "cmd", "/C", "move");
+        } else {
+            p = new Program((FileNode) dest.getParent(), "mv");
+        }
+        p.add(getAbsolute(), dest.getName());
+        output = p.exec();
+        if (output.length() > 0 && io.os != OS.WINDOWS) {
+            throw new IOException("unexpected output: " + output);
+        }
         return dest;
     }
 
