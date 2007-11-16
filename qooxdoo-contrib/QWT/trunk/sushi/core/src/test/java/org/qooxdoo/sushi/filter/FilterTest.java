@@ -27,13 +27,14 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-
+import org.qooxdoo.sushi.io.Filesystem;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 
 // TODO: generalize, don't use Nodes
 public class FilterTest {
     private static final IO IO_OBJ = new IO();
+    private static final Filesystem FS = IO_OBJ.getTemp().fs;
 
     @Test
     public void empty() throws IOException {
@@ -49,7 +50,7 @@ public class FilterTest {
         List<Node> nodes;
         
         dir = create("a/b");
-        nodes = dir.find("**/*");
+        nodes = dir.find("**" + FS.separator + "*");
         assertEquals(2, nodes.size());
         assertEquals(dir.join("a"), nodes.get(0));
         assertEquals(dir.join("a", "b"), nodes.get(1));
@@ -58,7 +59,7 @@ public class FilterTest {
     @Test
     public void rejectDoubleStarOnly() throws IOException {
         try {
-            IO_OBJ.filter().include("**");
+            IO_OBJ.filter(FS).include("**");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -71,8 +72,8 @@ public class FilterTest {
         List<Node> nodes;
         
         dir = create("a", "b/c", "b/d");
-        nodes = dir.find("*/*");
-        checkSet(nodes, dir, "b/c", "b/d");
+        nodes = dir.find("*" + FS.separator + "*");
+        checkSet(nodes, dir, "b" + FS.separator + "c", "b" + FS.separator + "d");
     }
 
     @Test
@@ -81,7 +82,7 @@ public class FilterTest {
         List<Node> nodes;
         
         dir = create("a", "b/c", "b/d");
-        nodes = dir.find(IO_OBJ.filter().include("**/*").predicate(Predicate.DIRECTORY));
+        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").predicate(Predicate.DIRECTORY));
         assertEquals(1, nodes.size());
         assertEquals(dir.join("b"), nodes.get(0));
     }
@@ -93,15 +94,15 @@ public class FilterTest {
         
         dir = create("a", "b/c", "b/d/e");
         
-        assertEquals(0, dir.find(IO_OBJ.filter().include("**/*").maxDepth(0)).size());
+        assertEquals(0, dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").maxDepth(0)).size());
 
-        nodes = dir.find(IO_OBJ.filter().include("**/*").maxDepth(1));
+        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").maxDepth(1));
         checkSet(nodes, dir, "a", "b");
 
-        nodes = dir.find(IO_OBJ.filter().include("**/*").minDepth(2).maxDepth(2));
+        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").minDepth(2).maxDepth(2));
         checkSet(nodes, dir, "b/c", "b/d");
 
-        nodes = dir.find(IO_OBJ.filter().include("**/*").minDepth(3));
+        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").minDepth(3));
         checkSet(nodes, dir, "b/d/e");
     }
 
@@ -112,6 +113,7 @@ public class FilterTest {
         try {
             root = IO_OBJ.createTempDirectory();
             for (String path : paths) {
+                path = path.replace('/', FS.separatorChar);
                 file = root.join(path);
                 file.getParent().mkdirsOpt();
                 file.writeBytes();
