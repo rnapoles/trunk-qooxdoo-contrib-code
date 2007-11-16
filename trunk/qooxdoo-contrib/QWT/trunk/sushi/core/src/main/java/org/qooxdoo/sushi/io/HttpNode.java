@@ -27,20 +27,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class UrlNode extends Node {
+public class HttpNode extends Node {
     private static final Filesystem FS = new Filesystem("http:/", '/');
     
     // CAUTION: no forResource method, because non-existing resources don't have a url
     
-    public static UrlNode forFile(FileNode file) throws MalformedURLException {
-        return new UrlNode(file.io, file.toURI().toURL());
+    public static HttpNode forFile(FileNode file) throws MalformedURLException {
+        return new HttpNode(file.io, file.toURI().toURL());
     }
 
     //--
     
     private final URL url;
     
-    public UrlNode(IO io, URL url) {
+    public HttpNode(IO io, URL url) {
         super(io, FS);
         this.url = url;
     }
@@ -75,9 +75,9 @@ public class UrlNode extends Node {
     }
     
     @Override
-    public UrlNode newInstance(String path) {
+    public HttpNode newInstance(String path) {
         try {
-            return new UrlNode(io, new URL(url, path));
+            return new HttpNode(io, new URL(url, path));
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -85,7 +85,7 @@ public class UrlNode extends Node {
     
     @Override
     protected boolean equalsNode(Node node) {
-        return url.sameFile(((UrlNode) node).url);
+        return url.sameFile(((HttpNode) node).url);
     }
     
     @Override
@@ -143,7 +143,7 @@ public class UrlNode extends Node {
     }
 
     @Override
-    public UrlNode[] list() {
+    public HttpNode[] list() {
         return null;
     }
 
