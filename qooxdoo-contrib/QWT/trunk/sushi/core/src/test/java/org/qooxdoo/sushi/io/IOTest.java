@@ -33,9 +33,9 @@ public class IOTest {
         FileNode node;
         
         io = new IO();
-        node = io.node(io.os.root);
+        node = io.node(io.os.fs.root);
         assertEquals("", node.getName());
-        assertEquals(io.os.root, node.getAbsolute());
+        assertEquals(io.os.fs.root, node.getAbsolute());
         assertEquals(".", node.getRelative(node));
         assertTrue(node.isDirectory());
     }
@@ -46,12 +46,12 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node(io.os.root + "a");
+        node = io.node(io.os.fs.root + "a");
         assertNull(node.getBase());
         assertEquals("a", node.getName());
         assertEquals("a", node.getPath());
         assertEquals("", node.getParent().getPath());
-        assertEquals(io.os.root + "a", node.toString());
+        assertEquals(io.os.fs.root + "a", node.toString());
     }
 
     @Test
@@ -60,12 +60,12 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node(io.os.root + "x" + io.os.pathSeparator + "y");
+        node = io.node(io.os.fs.root + "x" + io.os.fs.separator + "y");
         assertNull(node.getBase());
         assertEquals("y", node.getName());
-        assertEquals("x" + io.os.pathSeparator + "y", node.getPath());
+        assertEquals("x" + io.os.fs.separator + "y", node.getPath());
         assertEquals("x", node.getParent().getPath());
-        assertEquals(io.os.root + "x" + io.os.pathSeparator + "y", node.toString());
+        assertEquals(io.os.fs.root + "x" + io.os.fs.separator + "y", node.toString());
     }
 
     
@@ -77,7 +77,7 @@ public class IOTest {
         io = new IO();
         node = io.node("a");
         assertNotNull(node.getBase());
-        assertTrue(node.getPath().endsWith(io.os.pathSeparator + "a"));
+        assertTrue(node.getPath().endsWith(io.os.fs.separator + "a"));
         assertEquals(io.getWorking(), node.getParent());
         assertEquals("a", node.toString());
     }
@@ -111,10 +111,10 @@ public class IOTest {
         
         io = new IO();
         assertEquals(0, io.path("").size());
-        path = io.path("foo" + io.os.todoSeparator + io.os.root + "bar");
+        path = io.path("foo" + io.os.todoSeparator + io.os.fs.root + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
-        assertEquals(io.os.root + "bar", path.get(1).toString());
+        assertEquals(io.os.fs.root + "bar", path.get(1).toString());
         try {
             io.classpath("nosuchfile.jar");
             fail();

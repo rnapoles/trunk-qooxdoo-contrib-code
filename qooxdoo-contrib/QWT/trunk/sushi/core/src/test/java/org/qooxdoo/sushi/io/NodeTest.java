@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 
 public abstract class NodeTest {
     protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
-    private static final String SEP = IO.os.pathSeparator;
+    private static final String SEP = IO.os.fs.separator;
     
     /** creates a new empty directory */
     protected abstract Node createWork() throws IOException;
@@ -65,7 +65,7 @@ public abstract class NodeTest {
     @Test
     public void joinWithSlash() {
         try {
-            work.join(work.io.os.pathSeparator, "a");
+            work.join(work.io.os.fs.separator, "a");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -553,6 +553,6 @@ public abstract class NodeTest {
         Node file;
         
         file = work.join("foo");
-        assertEquals(file.io.os.root + file.getPath(), file.toString());
+        assertEquals(file.io.os.fs.root + file.getPath(), file.toString());
     }
 }

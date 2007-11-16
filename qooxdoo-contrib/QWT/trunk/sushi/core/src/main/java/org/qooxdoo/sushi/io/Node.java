@@ -94,7 +94,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(io.os.pathSeparatorChar) + 1);
+        return path.substring(path.lastIndexOf(io.os.fs.separatorChar) + 1);
     }
     
     public Node join(List<String> paths) {
@@ -286,7 +286,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf(io.os.pathSeparatorChar);
+        idx = path.lastIndexOf(io.os.fs.separatorChar);
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -324,14 +324,14 @@ public abstract class Node {
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(io.os.pathSeparatorChar) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(io.os.fs.separatorChar) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, io.os.pathSeparator);
+        ups = Strings.count(startfilepath, io.os.fs.separator);
         for (i = 0; i < ups; i++) {
-            result.append(".." + io.os.pathSeparator);
+            result.append(".." + io.os.fs.separator);
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();
@@ -563,6 +563,6 @@ public abstract class Node {
     }
     
     public String getAbsolute() {
-        return io.os.root + getPath();  // TODO: this is ok for FileNodes only ...
+        return io.os.fs.root + getPath();  // TODO: this is ok for FileNodes only ...
     }
 }

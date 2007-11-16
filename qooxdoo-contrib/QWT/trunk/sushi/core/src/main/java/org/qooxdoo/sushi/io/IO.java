@@ -124,7 +124,7 @@ public class IO {
     public Filter filter() {
         Filter filter;
         
-        filter = new Filter(os.pathSeparator);
+        filter = new Filter(os.fs.separator);
         filter.exclude(defaultExcludes);
         return filter;
     }
@@ -345,7 +345,7 @@ public class IO {
 
     // TODO: move to Node class
     public String join(String... names) {
-        return Strings.join(os.pathSeparator, names);
+        return Strings.join(os.fs.separator, names);
     }
     
     // TODO: move to Node class
@@ -354,12 +354,12 @@ public class IO {
         
         buffer = new StringBuffer(head);
         for (String path : paths) {
-            if (path.startsWith(os.pathSeparator)) {
+            if (path.startsWith(os.fs.separator)) {
                 throw new IllegalArgumentException(path);
             }
             // TODO: Svn nodes ...
             if (buffer.length() > 0) {
-                buffer.append(os.pathSeparatorChar);
+                buffer.append(os.fs.separatorChar);
             }
             buffer.append(path);
         }
@@ -367,6 +367,6 @@ public class IO {
     }
 
     public List<String> split(String path) {
-        return Strings.split(os.pathSeparator, path);
+        return Strings.split(os.fs.separator, path);
     }
 }

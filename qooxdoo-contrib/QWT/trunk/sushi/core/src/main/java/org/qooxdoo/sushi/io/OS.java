@@ -41,26 +41,22 @@ public enum OS {
     private final String substring;
     private final String variablePrefix;
     private final String variableSuffix;
-    public final String root;
     public final char todoSeparatorChar;
     public final String todoSeparator;
-    public final char pathSeparatorChar;
-    public final String pathSeparator;
     public final String lineSeparator;
     public final String[] stat;
-
+    public final Filesystem fs;
+    
     private OS(String substring, String variablePrefix, String variableSuffix,
             String root, char todoSeparatorChar, char pathSeparatorChar, String lineSeparator, String... stat) {
         this.substring = substring;
         this.variablePrefix = variablePrefix;
         this.variableSuffix = variableSuffix;
-        this.root = root;
         this.todoSeparatorChar = todoSeparatorChar;
         this.todoSeparator = "" + todoSeparatorChar;
-        this.pathSeparatorChar = pathSeparatorChar;
-        this.pathSeparator = "" + pathSeparatorChar;
         this.lineSeparator = lineSeparator;
         this.stat = stat;
+        this.fs = new Filesystem(root, pathSeparatorChar);
     }
 
     public String variable(String name) {
