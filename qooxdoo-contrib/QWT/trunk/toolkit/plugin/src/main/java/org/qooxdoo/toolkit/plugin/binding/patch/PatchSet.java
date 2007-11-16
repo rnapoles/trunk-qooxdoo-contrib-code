@@ -29,6 +29,9 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Strings;
 
 public class PatchSet {
+    /** used on every platform */
+    private static final String LF = "\n";
+    
     private static enum Special {
         ADD, MODIFY;
     }
@@ -43,7 +46,7 @@ public class PatchSet {
         normal = new ArrayList<String>();
         current = null;
         patchset = new PatchSet();
-        for (String line : src.readLines()) {
+        for (String line : Strings.split(LF, src.readString())) {
             if (line.startsWith("###")) {
                 save(current, normal, file, patchset);
                 current = null;
