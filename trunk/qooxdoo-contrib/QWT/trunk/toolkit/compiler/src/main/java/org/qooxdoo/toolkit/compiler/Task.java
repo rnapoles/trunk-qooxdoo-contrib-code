@@ -47,7 +47,7 @@ public class Task {
     }
     
     public Task(IO io, Repository repository) {
-        this(io, repository, io.filter(io.getWorking().fs).include("**" + io.getWorking().fs + "*.java"));
+        this(io, repository, io.filter().include("**/*.java"));
     }
     
     public Task(IO io, Repository repository, Filter sourceFilter) {

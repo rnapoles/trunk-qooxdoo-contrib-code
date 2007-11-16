@@ -217,7 +217,7 @@ public abstract class Node {
     //--
     
     public List<Node> copyDirectory(Node dest) throws IOException {
-        return copyDirectory(io.filter(fs).includeAll(), dest);
+        return copyDirectory(io.filter().includeAll(), dest);
     }
 
     /**
@@ -251,7 +251,7 @@ public abstract class Node {
     
     /** uses default excludes */
     public List<Node> find(String... includes) throws IOException {
-        return find(io.filter(fs).include(includes));
+        return find(io.filter().include(includes));
     }
     
     public Node findOne(String include) throws IOException {

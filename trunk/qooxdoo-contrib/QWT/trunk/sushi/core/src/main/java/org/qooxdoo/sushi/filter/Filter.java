@@ -30,7 +30,9 @@ import org.qooxdoo.sushi.util.Strings;
 
 /**
  * <p>Similar to java.io.FileFilter or Ant File/Directory sets. A filter is basically a list of paths to 
- * include or exclude. Predicats can be used to further restrict the collected nodes. 
+ * include or exclude. Predicates can be used to further restrict the collected nodes. Paths always use
+ * slashes (/) - even on Windows - because a) it simplifies writings constants and b) the filter can be
+ * applied to any file system.
  * 
  * <p>Usage. Create a new instance, use the various selections methods (include, exclude, etc.),
  * and pass the instance for dir.find(). Selection methods return <code>this</code> to allow expressions.</p>
@@ -44,9 +46,11 @@ import org.qooxdoo.sushi.util.Strings;
 public class Filter {
     public static final int DEPTH_INFINITE = Integer.MAX_VALUE;
     
+    public static final char SEPARATOR_CHAR = '/';
+    public static final String SEPARATOR = "" + SEPARATOR_CHAR;
+
     //--
 
-    private final String separator;
     
     /** List of compiled paths. */
     private final List<Object[]> includes;
@@ -63,8 +67,7 @@ public class Filter {
     private int minDepth;
     private int maxDepth;
     
-    public Filter(String separator) {
-        this.separator = separator;
+    public Filter() {
         this.includes = new ArrayList<Object[]>();
         this.includesRepr = new ArrayList<String>();
         this.excludes = new ArrayList<Object[]>();
@@ -76,7 +79,6 @@ public class Filter {
     }
     
     public Filter(Filter orig) {
-        this.separator = orig.separator;
         this.includes = new ArrayList<Object[]>(orig.includes);
         this.includesRepr = new ArrayList<String>(orig.includesRepr);
         this.excludes = new ArrayList<Object[]>(orig.excludes);
@@ -87,10 +89,6 @@ public class Filter {
         this.maxDepth = orig.maxDepth;
     }
 
-    public String getSeparator() {
-        return separator;
-    }
-    
     //-- selections methods
     
     /** Does *not* affect previous calles to include/exclude */
@@ -132,7 +130,7 @@ public class Filter {
     
     public Filter includeName(String... names) {
         for (String name : names) {
-            include(Strings.join(separator, "**", name));
+            include(Strings.join(SEPARATOR, "**", name));
         }
         return this;
     }
@@ -151,7 +149,7 @@ public class Filter {
     
     public Filter excludeName(String... names) {
         for (String name : names) {
-            exclude(Strings.join(separator, "**", name));
+            exclude(Strings.join(SEPARATOR, "**", name));
         }
         return this;
     }
@@ -173,7 +171,7 @@ public class Filter {
     private Object[] compile(String path) {
         List<String> lst;
         
-        lst = Strings.split(separator, path);
+        lst = Strings.split(SEPARATOR, path);
         if (lst.size() == 0) {
             throw new IllegalArgumentException("empty path: " + path);
         }
@@ -229,9 +227,6 @@ public class Filter {
      * @throws IOException as thrown by the specified FileTask
      */
     public void invoke(Node root, Action result) throws IOException {
-        if (!separator.equals(root.fs.separator)) {
-            throw new IllegalArgumentException("separator missmatch: " + separator + " vs" + root.fs.separator);
-        }
         doInvoke(0, root, new ArrayList<Object[]>(includes), new ArrayList<Object[]>(excludes), result);
     }
     
