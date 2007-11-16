@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.io;
 
 import org.junit.Test;
 
-public class UrlNodeTest {
+public class HttpNodeTest {
     @Test
     public void todo() {
     }
