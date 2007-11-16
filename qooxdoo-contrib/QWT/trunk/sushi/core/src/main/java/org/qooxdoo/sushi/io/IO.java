@@ -119,17 +119,12 @@ public class IO {
         return this;
     }
     
-    // TODO
-    private Filesystem getFs() {
-        return working.fs;
-    }
-    
     //--
 
     public Filter filter() {
         Filter filter;
         
-        filter = new Filter(getFs().separator);
+        filter = new Filter(working.fs.separator);
         filter.exclude(defaultExcludes);
         return filter;
     }
