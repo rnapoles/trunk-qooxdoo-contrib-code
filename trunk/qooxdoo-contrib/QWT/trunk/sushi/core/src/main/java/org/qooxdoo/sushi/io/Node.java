@@ -132,9 +132,13 @@ public abstract class Node {
     }
     
     public List<String> readLines() throws IOException {
-        return Strings.split(io.settings.lineSeparator, readString());
+        return readLines(io.settings.lineSeparator);
     }
-    
+
+    public List<String> readLines(String separator) throws IOException {
+        return Strings.split(separator, readString());
+    }
+
     public Object readObject() throws IOException {
         ObjectInputStream src;
         Object result;

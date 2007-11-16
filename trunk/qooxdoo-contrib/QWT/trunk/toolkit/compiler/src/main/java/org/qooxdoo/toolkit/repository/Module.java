@@ -22,6 +22,7 @@ package org.qooxdoo.toolkit.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.qooxdoo.sushi.io.Filesystem;
 import org.qooxdoo.toolkit.compiler.Naming;
 
 /**
@@ -86,8 +87,8 @@ public class Module {
 
     // TODO: move naming stuff into Chunk class
 
-    public String getFileName() {
-        return toFileName(getName());
+    public String getFileName(Filesystem fs) {
+        return toFileName(fs, getName());
     }
     public String getSimpleName() {
         String name;
@@ -187,8 +188,8 @@ public class Module {
 
     //--
     
-    public static String toFileName(String name) {
-        return name.replace('.', '/') + SUFFIX;
+    public static String toFileName(Filesystem fs, String name) {
+        return name.replace('.', fs.separatorChar) + SUFFIX;
     }
     
     public Chunk createCinit() {

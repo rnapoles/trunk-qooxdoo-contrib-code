@@ -61,7 +61,7 @@ public class Naming {
 
         result = new Repository();
         try {
-            root = Module.fromString(new ResourceNode(io, Module.toFileName(ROOT)).readString());
+            root = Module.fromString(new ResourceNode(io, Module.toFileName(ResourceNode.FS, ROOT)).readString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
