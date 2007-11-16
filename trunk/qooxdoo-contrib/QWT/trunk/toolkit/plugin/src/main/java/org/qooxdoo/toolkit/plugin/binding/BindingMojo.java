@@ -66,7 +66,7 @@ public class BindingMojo extends FrameworkBase {
      * 
      * @parameter expression="nothing"
      */
-    private Filter undocumented = io.filter();
+    private Filter undocumented = io.filter(io.getWorking().fs);
     
     public void setUndocumented(String undoc) {
         undocumented.include(split(undoc));
