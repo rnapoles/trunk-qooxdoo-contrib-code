@@ -229,6 +229,9 @@ public class Filter {
      * @throws IOException as thrown by the specified FileTask
      */
     public void invoke(Node root, Action result) throws IOException {
+        if (!separator.equals(root.fs.separator)) {
+            throw new IllegalArgumentException("separator missmatch: " + separator + " vs" + root.fs.separator);
+        }
         doInvoke(0, root, new ArrayList<Object[]>(includes), new ArrayList<Object[]>(excludes), result);
     }
     

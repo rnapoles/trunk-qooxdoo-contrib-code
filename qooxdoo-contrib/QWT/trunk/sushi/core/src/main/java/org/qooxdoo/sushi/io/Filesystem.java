@@ -19,6 +19,10 @@
 
 package org.qooxdoo.sushi.io;
 
+import java.util.List;
+
+import org.qooxdoo.sushi.util.Strings;
+
 public class Filesystem {
     public final String root;
     public final char separatorChar;
@@ -37,5 +41,33 @@ public class Filesystem {
     @Override
     public String toString() {
         return root;
+    }
+    
+    //-- path handling
+
+    public String join(String... names) {
+        return Strings.join(separator, names);
+    }
+    
+    // TODO: move to Node class
+    public String join(String head, List<String> paths) {
+        StringBuffer buffer;
+        
+        buffer = new StringBuffer(head);
+        for (String path : paths) {
+            if (path.startsWith(separator)) {
+                throw new IllegalArgumentException(path);
+            }
+            // TODO: Svn nodes ...
+            if (buffer.length() > 0) {
+                buffer.append(separatorChar);
+            }
+            buffer.append(path);
+        }
+        return buffer.toString();
+    }
+
+    public List<String> split(String path) {
+        return Strings.split(separator, path);
     }
 }

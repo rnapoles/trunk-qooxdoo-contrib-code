@@ -345,33 +345,4 @@ public class IO {
         }
         return node(file);
     }
-
-    //-- path handling
-
-    // TODO: move to Node class
-    public String join(String... names) {
-        return Strings.join(getFs().separator, names);
-    }
-    
-    // TODO: move to Node class
-    public String join(String head, List<String> paths) {
-        StringBuffer buffer;
-        
-        buffer = new StringBuffer(head);
-        for (String path : paths) {
-            if (path.startsWith(getFs().separator)) {
-                throw new IllegalArgumentException(path);
-            }
-            // TODO: Svn nodes ...
-            if (buffer.length() > 0) {
-                buffer.append(getFs().separatorChar);
-            }
-            buffer.append(path);
-        }
-        return buffer.toString();
-    }
-
-    public List<String> split(String path) {
-        return Strings.split(getFs().separator, path);
-    }
 }

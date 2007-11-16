@@ -100,7 +100,7 @@ public abstract class Node {
     }
     
     public Node join(List<String> paths) {
-        return newInstance(io.join(getPath(), paths));
+        return newInstance(fs.join(getPath(), paths));
     }
     
     public Node join(String... names) {
