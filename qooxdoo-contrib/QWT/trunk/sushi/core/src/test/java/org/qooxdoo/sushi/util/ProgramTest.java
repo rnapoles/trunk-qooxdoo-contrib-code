@@ -48,7 +48,7 @@ public class ProgramTest {
     	String output;
     	
     	var = OS.CURRENT.variable("PATH");
-    	output = p("echo", var).exec();
+    	output = p("echo", var).exec().trim();
         assertTrue(output + " vs " + var, OS.CURRENT != OS.WINDOWS == var.equals(output));
     }
 
