@@ -28,8 +28,8 @@ import org.junit.Test;
 public class OSTest {
     @Test
     public void separator() {
-        assertEquals(File.separator, OS.CURRENT.pathSeparator);
-        assertEquals(File.separatorChar, OS.CURRENT.pathSeparatorChar);
+        assertEquals(File.separator, OS.CURRENT.fs.separator);
+        assertEquals(File.separatorChar, OS.CURRENT.fs.separatorChar);
     }
     
     @Test
