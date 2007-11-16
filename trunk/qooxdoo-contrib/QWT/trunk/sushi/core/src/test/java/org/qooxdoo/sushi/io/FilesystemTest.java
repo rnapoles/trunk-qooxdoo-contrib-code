@@ -19,23 +19,11 @@
 
 package org.qooxdoo.sushi.io;
 
-public class Filesystem {
-    public final String root;
-    public final char separatorChar;
-    public final String separator;
-    
-    public Filesystem(String root, char separatorChar) {
-        this.root = root;
-        this.separatorChar = separatorChar;
-        this.separator = "" + separatorChar;
-        
-        if (!root.endsWith(separator)) {
-            throw new IllegalArgumentException();
-        }
-    }
+import org.junit.Test;
 
-    @Override
-    public String toString() {
-        return root;
+public class FilesystemTest {
+    @Test(expected=IllegalArgumentException.class)
+    public void constructor() {
+        new Filesystem("foo", '/');
     }
 }

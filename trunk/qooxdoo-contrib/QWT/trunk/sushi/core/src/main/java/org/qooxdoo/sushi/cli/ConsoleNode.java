@@ -24,14 +24,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.qooxdoo.sushi.io.DeleteException;
+import org.qooxdoo.sushi.io.Filesystem;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
 
 public class ConsoleNode extends Node {
+    public static final Filesystem FS = new Filesystem("console:/", '/');
+    
     public ConsoleNode(IO io) {
-        super(io);
+        super(io, FS);
     }
 
     @Override

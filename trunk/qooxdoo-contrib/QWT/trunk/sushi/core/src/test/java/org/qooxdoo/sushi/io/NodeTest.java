@@ -35,16 +35,17 @@ import static org.junit.Assert.*;
 
 public abstract class NodeTest {
     protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
-    private static final String SEP = IO.os.fs.separator;
     
     /** creates a new empty directory */
     protected abstract Node createWork() throws IOException;
 
     protected Node work;
+    protected String sep;
     
     @Before
     public void setUp() throws IOException {
         work = createWork();
+        sep = work.fs.separator;
     }
     
     @Test
@@ -65,7 +66,7 @@ public abstract class NodeTest {
     @Test
     public void joinWithSlash() {
         try {
-            work.join(work.io.os.fs.separator, "a");
+            work.join(sep, "a");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -97,9 +98,9 @@ public abstract class NodeTest {
         file = parent.join("bar");
         assertEquals(".", file.getRelative(file));
         assertEquals("bar", file.getRelative(parent));
-        assertEquals("foo" + SEP + "bar", file.getRelative(work));
-        assertEquals(".." + SEP + "foo" + SEP + "bar", file.getRelative(work.join("baz")));
-        assertEquals(".." + SEP + "bar", file.getRelative(work.join("foo/baz")));
+        assertEquals("foo" + sep + "bar", file.getRelative(work));
+        assertEquals(".." + sep + "foo" + sep + "bar", file.getRelative(work.join("baz")));
+        assertEquals(".." + sep + "bar", file.getRelative(work.join("foo/baz")));
     }
 
     @Test
@@ -112,11 +113,11 @@ public abstract class NodeTest {
         assertEquals("foo", node.getName());
         node = work.join("a/b");
         assertFalse(node.exists());
-        assertTrue(node.getPath().endsWith("a" + SEP + "b"));
+        assertTrue(node.getPath().endsWith("a" + sep + "b"));
         assertEquals("b", node.getName());
         node = work.join("x/y/z");
         assertFalse(node.exists());
-        assertTrue(node.getPath().endsWith("x" + SEP + "y" + SEP + "z"));
+        assertTrue(node.getPath().endsWith("x" + sep + "y" + sep + "z"));
         assertEquals("z", node.getName());
     }
 
@@ -553,6 +554,6 @@ public abstract class NodeTest {
         Node file;
         
         file = work.join("foo");
-        assertEquals(file.io.os.fs.root + file.getPath(), file.toString());
+        assertEquals(file.fs.root + file.getPath(), file.toString());
     }
 }

@@ -34,6 +34,32 @@ import org.qooxdoo.sushi.util.Program;
  * particular: some constructors and getXxxPath/getXxxFile). </p>
  */
 public class FileNode extends Node {
+    private static final Filesystem[] FSS;
+    
+    static {
+        File[] roots;
+        
+        roots = File.listRoots();
+        FSS = new Filesystem[roots.length];
+        for (int i = 0; i < roots.length; i++) {
+            FSS[i] = new Filesystem(roots[i].getAbsolutePath(), File.separatorChar);
+        }
+    }
+    
+    private static final Filesystem findFs(File file) {
+        String str;
+        
+        str = file.getAbsolutePath();
+        for (Filesystem fs : FSS) {
+            if (str.startsWith(fs.root)) {
+                return fs;
+            }
+        }
+        throw new IllegalArgumentException(str);
+    }
+
+    //--
+    
     /** null for absolute files */
     private final FileNode base;
     
@@ -50,7 +76,7 @@ public class FileNode extends Node {
      * a given path.
      */
     public FileNode(IO io, FileNode base, File file) {
-        super(io);
+        super(io, findFs(file));
         
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
@@ -66,7 +92,7 @@ public class FileNode extends Node {
     
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, base, new File(io.os.fs.root + path));
+        return new FileNode(io, base, new File(fs.root + path));
     }
     
     public URI toURI() {
@@ -86,7 +112,7 @@ public class FileNode extends Node {
     
     @Override
     public String getPath() {
-        return file.getPath().substring(io.os.fs.root.length());
+        return file.getPath().substring(fs.root.length());
     }
     
     //--

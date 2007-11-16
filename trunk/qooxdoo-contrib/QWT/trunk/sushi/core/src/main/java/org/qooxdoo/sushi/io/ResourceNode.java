@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class ResourceNode extends Node {
+    private static final Filesystem FS = new Filesystem("resource:/", '/');
+    
     private final ClassLoader loader;
     private final String path;
     
@@ -33,7 +35,7 @@ public class ResourceNode extends Node {
     }
 
     public ResourceNode(IO io, ClassLoader loader, String path) {
-        super(io);
+        super(io, FS);
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }

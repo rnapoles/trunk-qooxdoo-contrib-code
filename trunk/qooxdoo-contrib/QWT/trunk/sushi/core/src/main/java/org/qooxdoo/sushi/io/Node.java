@@ -56,9 +56,11 @@ import org.xml.sax.SAXException;
 public abstract class Node {
     /** never null */
     public final IO io;
+    public final Filesystem fs;
     
-    public Node(IO io) {
+    public Node(IO io, Filesystem fs) {
         this.io = io;
+        this.fs = fs;
     }
     
     public abstract Node newInstance(String path);
@@ -94,7 +96,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(io.os.fs.separatorChar) + 1);
+        return path.substring(path.lastIndexOf(fs.separatorChar) + 1);
     }
     
     public Node join(List<String> paths) {
@@ -286,7 +288,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf(io.os.fs.separatorChar);
+        idx = path.lastIndexOf(fs.separatorChar);
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -324,14 +326,14 @@ public abstract class Node {
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(io.os.fs.separatorChar) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(fs.separatorChar) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, io.os.fs.separator);
+        ups = Strings.count(startfilepath, fs.separator);
         for (i = 0; i < ups; i++) {
-            result.append(".." + io.os.fs.separator);
+            result.append(".." + fs.separator);
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();
@@ -563,6 +565,6 @@ public abstract class Node {
     }
     
     public String getAbsolute() {
-        return io.os.fs.root + getPath();  // TODO: this is ok for FileNodes only ...
+        return fs.root + getPath();  // TODO: this is ok for FileNodes only ...
     }
 }

@@ -210,5 +210,13 @@ public class FileNodeTest extends NodeTest {
         src.checkNotExists();
         dest.checkExists();
     }
+    
+    //--
+    
+    @Test
+    public void filesystem() {
+        assertEquals(File.separator, work.fs.separator);
+        assertEquals(File.separatorChar, work.fs.separatorChar);
+    }
 }
 

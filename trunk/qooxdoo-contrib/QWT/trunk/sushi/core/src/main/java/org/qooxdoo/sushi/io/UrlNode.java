@@ -28,6 +28,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class UrlNode extends Node {
+    private static final Filesystem FS = new Filesystem("http:/", '/');
+    
     // CAUTION: no forResource method, because non-existing resources don't have a url
     
     public static UrlNode forFile(FileNode file) throws MalformedURLException {
@@ -39,7 +41,7 @@ public class UrlNode extends Node {
     private final URL url;
     
     public UrlNode(IO io, URL url) {
-        super(io);
+        super(io, FS);
         this.url = url;
     }
     
