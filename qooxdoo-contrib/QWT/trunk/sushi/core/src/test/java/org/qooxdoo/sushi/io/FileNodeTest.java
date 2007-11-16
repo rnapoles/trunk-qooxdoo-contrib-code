@@ -151,6 +151,9 @@ public class FileNodeTest extends NodeTest {
         FileNode orig;
         FileNode link;
         
+        if (IO.os == OS.WINDOWS) {
+            return;
+        }
         orig = IO.createTempFile();
         link = (FileNode) IO.getTemp().join("foo");
 
