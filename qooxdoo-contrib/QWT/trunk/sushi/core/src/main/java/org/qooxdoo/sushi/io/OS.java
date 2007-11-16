@@ -41,18 +41,18 @@ public enum OS {
     private final String substring;
     private final String variablePrefix;
     private final String variableSuffix;
-    public final char todoSeparatorChar;
-    public final String todoSeparator;
+    public final char listSeparatorChar;
+    public final String listSeparator;
     public final String lineSeparator;
     public final String[] stat;
     
     private OS(String substring, String variablePrefix, String variableSuffix, 
-            char todoSeparatorChar, String lineSeparator, String... stat) {
+            char listSeparatorChar, String lineSeparator, String... stat) {
         this.substring = substring;
         this.variablePrefix = variablePrefix;
         this.variableSuffix = variableSuffix;
-        this.todoSeparatorChar = todoSeparatorChar;
-        this.todoSeparator = "" + todoSeparatorChar;
+        this.listSeparatorChar = listSeparatorChar;
+        this.listSeparator = "" + listSeparatorChar;
         this.lineSeparator = lineSeparator;
         this.stat = stat;
     }
