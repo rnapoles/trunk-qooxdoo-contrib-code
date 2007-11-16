@@ -45,7 +45,7 @@ import org.qooxdoo.toolkit.repository.Repository;
  * @requiresDependencyResolution
  */
 public class CompilerMojo extends Base {
-    private Filter javaFilter = io.filter().include("**/*.java");
+    private Filter javaFilter = io.filter(io.getWorking().fs).include("**" + io.getWorking().fs.separator + "*.java");
     
     /**
      * Internal parameter.
@@ -88,7 +88,7 @@ public class CompilerMojo extends Base {
     
     public void setIncludes(String in) throws IOException {
         // TODO: removes **/*.java default include ...
-        javaFilter = io.filter(); 
+        javaFilter = io.filter(io.getWorking().fs); 
         javaFilter.include(Base.split(in));
     }
 

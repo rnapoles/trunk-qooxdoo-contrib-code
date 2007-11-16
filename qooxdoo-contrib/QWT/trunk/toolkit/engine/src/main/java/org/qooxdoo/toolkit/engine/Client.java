@@ -193,7 +193,7 @@ public class Client implements ClientMBean {
         Qooxdoo qooxdoo;
         
         io = src.io;
-        srcFilter = io.filter();
+        srcFilter = io.filter(src.fs);
         srcFilter.include(includes);
         srcFilter.exclude(excludes);
         task = new Task(io, Naming.createRootRepository(io), srcFilter);
