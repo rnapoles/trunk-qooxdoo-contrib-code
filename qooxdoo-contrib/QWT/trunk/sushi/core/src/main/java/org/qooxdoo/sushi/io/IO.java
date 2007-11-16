@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -315,10 +316,11 @@ public class IO {
                 throw new RuntimeException("! not found: " + filename);
             }
             filename = filename.substring(0, idx);
-            if (!filename.startsWith("file:")) {
-                throw new RuntimeException("file protocol expected: " + filename);
+            try {
+                file = node(new URL(filename));
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(filename, e);
             }
-            file = node(filename.substring(5));
         } else {
             throw new RuntimeException("protocol not supported: " + protocol);
         }
