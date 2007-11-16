@@ -176,7 +176,7 @@ public abstract class WebappBase extends Base {
 
         projectDependencies = project.getRuntimeArtifacts();
         if (images.exists()) {
-            images.link((FileNode) webapp.join(images.getName()));
+            linkOrCopy(images, (FileNode) webapp.join(images.getName()));
         } else {
             info("no images: " + images);
         }
@@ -184,13 +184,13 @@ public abstract class WebappBase extends Base {
         if (!classesDirectory.exists()) {
             throw new MojoExecutionException("missing " + classesDirectory + " - did you compile?");
         }
-        classesDirectory.link((FileNode) webinf.join(classesDirectory.getName()));
-        sourceDirectory.link((FileNode) webinf.join("src"));
+        linkOrCopy(classesDirectory, (FileNode) webinf.join(classesDirectory.getName()));
+        linkOrCopy(sourceDirectory, (FileNode) webinf.join("src"));
         for (Artifact artifact : projectDependencies) {
             name = getLibName(artifact);
             if (name != null) {
                 debug("project link " + artifact.getFile());
-                new FileNode(io, artifact.getFile()).link((FileNode) lib.join(name));
+                linkOrCopy(new FileNode(io, artifact.getFile()), (FileNode) lib.join(name));
             }
         }
         try {
@@ -208,7 +208,7 @@ public abstract class WebappBase extends Base {
                 name = getLibName(artifact);
                 if (name != null) {
                     debug("system link " + artifact.getFile());
-                    new FileNode(io, artifact.getFile()).link((FileNode) lib.join(name));
+                    linkOrCopy(new FileNode(io, artifact.getFile()), (FileNode) lib.join(name));
                 }
             }
         }

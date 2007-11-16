@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
 
 /**
@@ -64,7 +65,7 @@ public class ResourcesMojo extends FrameworkBase {
             } else if (srcChild.getName().equals("icon")) {
                 icon = (FileNode) srcChild;
             } else {
-                ((FileNode) srcChild).link((FileNode) dest.join(srcChild.getName()));
+                linkOrCopy((FileNode) srcChild, (FileNode) dest.join(srcChild.getName()));
             }
         }
         if (icon == null) {
@@ -73,7 +74,7 @@ public class ResourcesMojo extends FrameworkBase {
         
         destNuvola = (FileNode) dest.join(nuvola);
         destNuvola.getParent().mkdirs();
-        ((FileNode) src.join(nuvola)).link(destNuvola);
+        linkOrCopy((FileNode) src.join(nuvola), destNuvola);
     }
 
     private FileNode classes() {
