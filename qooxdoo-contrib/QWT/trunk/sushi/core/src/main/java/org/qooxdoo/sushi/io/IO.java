@@ -119,12 +119,17 @@ public class IO {
         return this;
     }
     
+    // TODO
+    private Filesystem getFs() {
+        return working.fs;
+    }
+    
     //--
 
     public Filter filter() {
         Filter filter;
         
-        filter = new Filter(os.fs.separator);
+        filter = new Filter(getFs().separator);
         filter.exclude(defaultExcludes);
         return filter;
     }
@@ -345,7 +350,7 @@ public class IO {
 
     // TODO: move to Node class
     public String join(String... names) {
-        return Strings.join(os.fs.separator, names);
+        return Strings.join(getFs().separator, names);
     }
     
     // TODO: move to Node class
@@ -354,12 +359,12 @@ public class IO {
         
         buffer = new StringBuffer(head);
         for (String path : paths) {
-            if (path.startsWith(os.fs.separator)) {
+            if (path.startsWith(getFs().separator)) {
                 throw new IllegalArgumentException(path);
             }
             // TODO: Svn nodes ...
             if (buffer.length() > 0) {
-                buffer.append(os.fs.separatorChar);
+                buffer.append(getFs().separatorChar);
             }
             buffer.append(path);
         }
@@ -367,6 +372,6 @@ public class IO {
     }
 
     public List<String> split(String path) {
-        return Strings.split(os.fs.separator, path);
+        return Strings.split(getFs().separator, path);
     }
 }

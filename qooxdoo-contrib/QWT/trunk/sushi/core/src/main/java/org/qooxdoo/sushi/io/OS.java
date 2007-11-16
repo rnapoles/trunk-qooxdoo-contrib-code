@@ -20,9 +20,9 @@
 package org.qooxdoo.sushi.io;
 
 public enum OS {
-    LINUX("Linux", "$", "", "/", ':', '/', "\n", "--format", "%a"),
-    MAC("Mac", "$", "", "/", ':', '/', "\n", "-f", "%Op"), 
-    WINDOWS("Windows", "%", "%", "c:\\", ';', '\\', "\r\n", "/f", "%a"); 
+    LINUX("Linux", "$", "", ':', "\n", "--format", "%a"),
+    MAC("Mac", "$", "", ':', "\n", "-f", "%Op"), 
+    WINDOWS("Windows", "%", "%", ';', "\r\n", "/f", "%a"); 
 
     private static OS detect() {
         String name;
@@ -45,10 +45,9 @@ public enum OS {
     public final String todoSeparator;
     public final String lineSeparator;
     public final String[] stat;
-    public final Filesystem fs;
     
-    private OS(String substring, String variablePrefix, String variableSuffix,
-            String root, char todoSeparatorChar, char pathSeparatorChar, String lineSeparator, String... stat) {
+    private OS(String substring, String variablePrefix, String variableSuffix, 
+            char todoSeparatorChar, String lineSeparator, String... stat) {
         this.substring = substring;
         this.variablePrefix = variablePrefix;
         this.variableSuffix = variableSuffix;
@@ -56,7 +55,6 @@ public enum OS {
         this.todoSeparator = "" + todoSeparatorChar;
         this.lineSeparator = lineSeparator;
         this.stat = stat;
-        this.fs = new Filesystem(root, pathSeparatorChar);
     }
 
     public String variable(String name) {

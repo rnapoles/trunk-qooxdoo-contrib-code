@@ -19,19 +19,11 @@
 
 package org.qooxdoo.sushi.io;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
 public class OSTest {
-    @Test
-    public void separator() {
-        assertEquals(File.separator, OS.CURRENT.fs.separator);
-        assertEquals(File.separatorChar, OS.CURRENT.fs.separatorChar);
-    }
-    
     @Test
     public void os() {
         assertNotNull(OS.CURRENT);

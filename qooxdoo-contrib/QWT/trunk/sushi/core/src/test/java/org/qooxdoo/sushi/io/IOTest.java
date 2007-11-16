@@ -27,15 +27,20 @@ import static org.junit.Assert.*;
 import org.qooxdoo.sushi.util.Reflect;
 
 public class IOTest {
+    // TODO
+    private static Filesystem fs(IO io) {
+        return io.getWorking().fs;
+    }
+    
     @Test
     public void nodeRoot() {
         IO io;
         FileNode node;
         
         io = new IO();
-        node = io.node(io.os.fs.root);
+        node = io.node(fs(io).root);
         assertEquals("", node.getName());
-        assertEquals(io.os.fs.root, node.getAbsolute());
+        assertEquals(fs(io).root, node.getAbsolute());
         assertEquals(".", node.getRelative(node));
         assertTrue(node.isDirectory());
     }
@@ -46,12 +51,12 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node(io.os.fs.root + "a");
+        node = io.node(fs(io).root + "a");
         assertNull(node.getBase());
         assertEquals("a", node.getName());
         assertEquals("a", node.getPath());
         assertEquals("", node.getParent().getPath());
-        assertEquals(io.os.fs.root + "a", node.toString());
+        assertEquals(fs(io).root + "a", node.toString());
     }
 
     @Test
@@ -60,12 +65,12 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node(io.os.fs.root + "x" + io.os.fs.separator + "y");
+        node = io.node(fs(io).root + "x" + fs(io).separator + "y");
         assertNull(node.getBase());
         assertEquals("y", node.getName());
-        assertEquals("x" + io.os.fs.separator + "y", node.getPath());
+        assertEquals("x" + fs(io).separator + "y", node.getPath());
         assertEquals("x", node.getParent().getPath());
-        assertEquals(io.os.fs.root + "x" + io.os.fs.separator + "y", node.toString());
+        assertEquals(fs(io).root + "x" + fs(io).separator + "y", node.toString());
     }
 
     
@@ -77,7 +82,7 @@ public class IOTest {
         io = new IO();
         node = io.node("a");
         assertNotNull(node.getBase());
-        assertTrue(node.getPath().endsWith(io.os.fs.separator + "a"));
+        assertTrue(node.getPath().endsWith(fs(io).separator + "a"));
         assertEquals(io.getWorking(), node.getParent());
         assertEquals("a", node.toString());
     }
@@ -111,10 +116,10 @@ public class IOTest {
         
         io = new IO();
         assertEquals(0, io.path("").size());
-        path = io.path("foo" + io.os.todoSeparator + io.os.fs.root + "bar");
+        path = io.path("foo" + io.os.todoSeparator + fs(io).root + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
-        assertEquals(io.os.fs.root + "bar", path.get(1).toString());
+        assertEquals(io.getWorking().fs.root + "bar", path.get(1).toString());
         try {
             io.classpath("nosuchfile.jar");
             fail();
