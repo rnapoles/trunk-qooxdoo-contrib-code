@@ -50,7 +50,7 @@ public class FilterTest {
         List<Node> nodes;
         
         dir = create("a/b");
-        nodes = dir.find("**" + FS.separator + "*");
+        nodes = dir.find("**/*");
         assertEquals(2, nodes.size());
         assertEquals(dir.join("a"), nodes.get(0));
         assertEquals(dir.join("a", "b"), nodes.get(1));
@@ -72,8 +72,8 @@ public class FilterTest {
         List<Node> nodes;
         
         dir = create("a", "b/c", "b/d");
-        nodes = dir.find("*" + FS.separator + "*");
-        checkSet(nodes, dir, "b" + FS.separator + "c", "b" + FS.separator + "d");
+        nodes = dir.find("*/*");
+        checkSet(nodes, dir, "b/c", "b/d");
     }
 
     @Test
