@@ -17,13 +17,14 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.io;
+package org.qooxdoo.sushi.memory;
 
+import org.qooxdoo.sushi.io.NodeTest;
 import org.qooxdoo.sushi.memory.MemoryNode;
 
 public class MemoryNodeTest extends NodeTest {
     @Override
-    protected Node createWork() {
+    protected MemoryNode createWork() {
         return MemoryNode.createRoot(IO);
     }
 }
