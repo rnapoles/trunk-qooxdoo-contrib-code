@@ -147,7 +147,7 @@ public class Repository implements Iterable<Module> {
         dir.checkDirectory();
         index = new ArrayList<String>();
         for (Module module : this) {
-            file = module.getFileName();
+            file = module.getFileName(dir.fs);
             index.add(file);
             dest = dir.join(file);
             dest.getParent().mkdirsOpt();
@@ -200,9 +200,10 @@ public class Repository implements Iterable<Module> {
         if (!index.exists()) {
             throw new MissingIndexException(this, src);
         }
-        for (String line : index.readLines()) {
+        for (String line : index.readLines("\n")) {
             line = line.trim(); 
             if (line.length() > 0) {
+                line = line.replace('/', src.fs.separatorChar);
                 add(Module.fromString(src.join(line).readString()));
             }
         }

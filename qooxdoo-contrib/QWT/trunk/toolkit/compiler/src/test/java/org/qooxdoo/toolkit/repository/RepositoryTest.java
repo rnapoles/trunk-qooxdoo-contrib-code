@@ -117,7 +117,7 @@ public class RepositoryTest {
         Repository repository;
         Node tmp;
 
-        repository = checkRepo(IO_OBJ.guessProjectHome(getClass()).join("src/test/repository"));
+        repository = checkRepo(IO_OBJ.guessProjectHome(getClass()).join("src", "test", "repository"));
         tmp = IO_OBJ.createTempDirectory();
         repository.save(tmp);
         checkRepo(tmp);
