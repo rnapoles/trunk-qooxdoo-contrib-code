@@ -228,6 +228,9 @@ public class FileNode extends Node {
     public FileNode link(FileNode dest) throws IOException {
         FileNode dir;
         
+        if (OS.CURRENT == OS.WINDOWS) {
+            throw new UnsupportedOperationException("link " + this + " -> " + dest);
+        }
         dir = (FileNode) dest.getParent();
         dir.checkDirectory();
         dest.checkNotExists();
