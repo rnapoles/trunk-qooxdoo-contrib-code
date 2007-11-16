@@ -116,7 +116,7 @@ public class IOTest {
         
         io = new IO();
         assertEquals(0, io.path("").size());
-        path = io.path("foo" + io.os.todoSeparator + fs(io).root + "bar");
+        path = io.path("foo" + io.os.listSeparator + fs(io).root + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
         assertEquals(io.getWorking().fs.root + "bar", path.get(1).toString());
