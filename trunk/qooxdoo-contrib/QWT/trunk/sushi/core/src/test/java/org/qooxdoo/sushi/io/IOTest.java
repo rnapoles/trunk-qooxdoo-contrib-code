@@ -129,20 +129,36 @@ public class IOTest {
     }
 
     //--
-    
+
     @Test
-    public void locate() {
+    public void locate() throws IOException {
         IO io;
         
         io = new IO();
-        assertNotNull(io.locateClasspathItem(IO.class));
-        assertNotNull(io.locateClasspathItem(Reflect.resourceName(IOTest.class)));
+        io.locateClasspathItem(IO.class).checkExists();
+        io.locateClasspathItem(Reflect.resourceName(IOTest.class)).checkExists();
         try {
             assertNull(io.locateClasspathItem("/nosuchresource"));
             fail();
         } catch (RuntimeException e) {
             // ok
         }
+    }
+
+    @Test
+    public void locateRuntime() throws IOException {
+        IO io;
+        
+        io = new IO();
+        io.locateClasspathItem("/java/lang/Object.class").checkExists();
+    }
+
+    @Test
+    public void locateFromJar() throws IOException {
+        IO io;
+        
+        io = new IO();
+        io.locateClasspathItem("/org/junit/Test.class").checkExists();
     }
 
     @Test
