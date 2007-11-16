@@ -112,22 +112,33 @@ public class BindingMojo extends FrameworkBase {
             getLog().info(doctree + " and " + output + " exists, generation skipped.");
         } else {
             frameworkDir.checkDirectory();
-            generator = (FileNode) frameworkDir.join("tool/generator.py");
+            generator = (FileNode) frameworkDir.join("tool", "generator.py");
             generator.checkFile();
             dest = output.createOutputStream();
             p = new Program((FileNode) frameworkDir);
             if (OS.CURRENT == OS.WINDOWS) {
                 p.add("cmd", "/C");
+                p.add("tool\\generator.py");
+            } else {
+                p.add("tool/generator.py");
             }
-            p.add(generator.getAbsolute(),
+            p.add(
                 "--cache-directory", ".cache",
                 "--print-dependencies",
                 "--generate-api", "--add-new-lines", "--class-path=" + CLASS, 
-                "--api-documentation-xml-file=" + doctree.getAbsolute());
+                "--api-documentation-xml-file=" + doctree.getName());
             getLog().info("executing " + p);
             p.exec(dest);
             dest.close();
             getLog().info("doctree written to " + doctree + ", output to " + output);
+        }
+    }
+
+    private static String quote(String str) {
+        if (OS.CURRENT == OS.WINDOWS) {
+            return "\"" + str + "\"";
+        } else {
+            return str;
         }
     }
     
