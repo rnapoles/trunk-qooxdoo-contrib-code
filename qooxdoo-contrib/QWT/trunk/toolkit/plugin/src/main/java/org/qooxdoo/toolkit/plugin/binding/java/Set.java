@@ -45,7 +45,7 @@ public class Set {
         set = loadRaw(src);
         set.addUndocumented(jsroot, undocumented);
         set.addNatives(jsroot);
-        set.addDependencies(output.readString());
+        set.addDependencies(output.io.settings.lineSeparator, output.readString());
         return set;
     }
     
@@ -120,14 +120,14 @@ public class Set {
     //--
     // dependencies
     
-    public void addDependencies(String output) {
+    public void addDependencies(String separator, String output) {
         String file;
         Type type;
         Clazz clazz;
         
         file = null;
         type = null;
-        for (String line : Strings.split("\n", cut(output))) {
+        for (String line : Strings.split(separator, cut(separator, output))) {
             if (line.startsWith(FILE_START)) {
                 file = line.substring(FILE_START.length());
                 type = null;
@@ -165,17 +165,17 @@ public class Set {
     private static final String FILE_START    = "    - ";
     private static final String ITEM_START    = "        - ";
     
-    public static String cut(String all) {
-        return cut(all,
-                " OUTPUT OF DEPENDENCIES:\n" +
-                "-+\n" + 
-                "  \\* These are all included files with their dependencies:\n" +
-                "(.*)\n" +
-                "\n" +
-                "  GENERATION OF API:\n");
+    public String cut(String lf, String all) {
+        return cutPattern(all,
+                " OUTPUT OF DEPENDENCIES:" + lf +
+                "-+" + lf + 
+                "  \\* These are all included files with their dependencies:" + lf +
+                "(.*)" + lf +
+                lf +
+                "  GENERATION OF API:" + lf);
     }
     
-    public static String cut(String all, String pattern) {
+    public static String cutPattern(String all, String pattern) {
         Pattern p;
         Matcher m;
         String result;
@@ -218,7 +218,7 @@ public class Set {
         String fullName;
         
         fullName = file.getRelative(root);
-        fullName = fullName.replace('/', '.');
+        fullName = fullName.replace(file.fs.separatorChar, '.');
         fullName = fullName.substring(0, fullName.length() - 3);
         return fullName;
     }

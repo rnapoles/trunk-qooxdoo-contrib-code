@@ -104,17 +104,17 @@ public class DoctreeTest {
 
     @Test
     public void cut() {
-        assertEquals("bc", Set.cut("abcd", "a(bc)d"));
-        assertEquals("bc", Set.cut("abcd", "(bc)"));
+        assertEquals("bc", Set.cutPattern("abcd", "a(bc)d"));
+        assertEquals("bc", Set.cutPattern("abcd", "(bc)"));
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void cutNotFound() {
-        assertEquals("bc", Set.cut("abc", "a(bc)d"));
+        assertEquals("bc", Set.cutPattern("abc", "a(bc)d"));
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void cutAmbiguou() {
-        assertEquals("bc", Set.cut("123123", "(12)"));
+        assertEquals("bc", Set.cutPattern("123123", "(12)"));
     }
 }
