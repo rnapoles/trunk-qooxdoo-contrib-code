@@ -46,7 +46,7 @@ public class FileNode extends Node {
         }
     }
     
-    private static final Filesystem findFs(File file) {
+    private static Filesystem findFs(File file) {
         String str;
         
         str = file.getAbsolutePath();
