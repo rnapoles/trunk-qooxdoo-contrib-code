@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
 
 /**
