@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.toolkit.compiler.Naming;
 
 /**
@@ -38,6 +39,9 @@ import org.qooxdoo.toolkit.compiler.Naming;
  */
 public class Repository implements Iterable<Module> {
     private static final String INDEX_TXT = "index.txt";
+    
+    /** used for index on *every* platform */ 
+    private static final String LF = "\n";
 
     //--
 
@@ -142,19 +146,17 @@ public class Repository implements Iterable<Module> {
     public void save(Node dir) throws IOException {
         Node dest;
         List<String> index;
-        String file;
         
         dir.checkDirectory();
         index = new ArrayList<String>();
         for (Module module : this) {
-            file = module.getFileName(dir.fs);
-            index.add(file);
-            dest = dir.join(file);
+            index.add(module.getName());
+            dest = dir.join(module.getFileName(dir.fs));
             dest.getParent().mkdirsOpt();
             dest.writeString(module.toString());
         }
         Collections.sort(index);
-        dir.join(INDEX_TXT).writeLines(index);
+        dir.join(INDEX_TXT).writeString(Strings.join(LF, index));
     }
     
     public void loadAll(List<? extends Node> path) throws IOException {
@@ -195,16 +197,17 @@ public class Repository implements Iterable<Module> {
 
     public void doLoad(Node src) throws IOException {
         Node index;
+        Node file;
         
         index = src.join(INDEX_TXT);
         if (!index.exists()) {
             throw new MissingIndexException(this, src);
         }
-        for (String line : index.readLines("\n")) {
+        for (String line : Strings.split(LF, index.readString())) {
             line = line.trim(); 
             if (line.length() > 0) {
-                line = line.replace('/', src.fs.separatorChar);
-                add(Module.fromString(src.join(line).readString()));
+                file = src.join(Module.toFileName(src.fs, line));
+                add(Module.fromString(file.readString()));
             }
         }
     }
