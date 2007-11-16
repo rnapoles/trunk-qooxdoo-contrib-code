@@ -107,7 +107,7 @@ public class NewMojo extends Base {
         String orig;
         String changed;
         
-        filter = io.filter(dest.fs);
+        filter = io.filter();
         filter.include("src/**/*.java", "pom.xml");
         for (Node file : dest.find(filter)) {
             orig = file.readString();

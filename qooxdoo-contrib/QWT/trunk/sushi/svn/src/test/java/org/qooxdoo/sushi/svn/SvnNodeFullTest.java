@@ -110,7 +110,7 @@ public class SvnNodeFullTest extends NodeTest {
         List<Node> lst;
         
         root = SvnNode.create(IO, URL.toString());
-        lst = IO.filter(root.fs).include("*").collect(root);
+        lst = IO.filter().include("*").collect(root);
         assertEquals(1, lst.size());
     }
     

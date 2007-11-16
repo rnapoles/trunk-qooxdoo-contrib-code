@@ -121,10 +121,10 @@ public class IO {
     
     //--
 
-    public Filter filter(Filesystem fs) {
+    public Filter filter() {
         Filter filter;
         
-        filter = new Filter(fs.separator);
+        filter = new Filter();
         filter.exclude(defaultExcludes);
         return filter;
     }

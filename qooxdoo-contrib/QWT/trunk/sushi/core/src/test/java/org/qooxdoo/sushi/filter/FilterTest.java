@@ -59,7 +59,7 @@ public class FilterTest {
     @Test
     public void rejectDoubleStarOnly() throws IOException {
         try {
-            IO_OBJ.filter(FS).include("**");
+            IO_OBJ.filter().include("**");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -82,7 +82,7 @@ public class FilterTest {
         List<Node> nodes;
         
         dir = create("a", "b/c", "b/d");
-        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").predicate(Predicate.DIRECTORY));
+        nodes = dir.find(IO_OBJ.filter().include("**/*").predicate(Predicate.DIRECTORY));
         assertEquals(1, nodes.size());
         assertEquals(dir.join("b"), nodes.get(0));
     }
@@ -94,15 +94,15 @@ public class FilterTest {
         
         dir = create("a", "b/c", "b/d/e");
         
-        assertEquals(0, dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").maxDepth(0)).size());
+        assertEquals(0, dir.find(IO_OBJ.filter().include("**/*").maxDepth(0)).size());
 
-        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").maxDepth(1));
+        nodes = dir.find(IO_OBJ.filter().include("**/*").maxDepth(1));
         checkSet(nodes, dir, "a", "b");
 
-        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").minDepth(2).maxDepth(2));
+        nodes = dir.find(IO_OBJ.filter().include("**/*").minDepth(2).maxDepth(2));
         checkSet(nodes, dir, "b/c", "b/d");
 
-        nodes = dir.find(IO_OBJ.filter(FS).include("**" + FS.separator + "*").minDepth(3));
+        nodes = dir.find(IO_OBJ.filter().include("**/*").minDepth(3));
         checkSet(nodes, dir, "b/d/e");
     }
 
