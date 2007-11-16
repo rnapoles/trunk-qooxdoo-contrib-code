@@ -35,6 +35,7 @@ import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.Filesystem;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
@@ -50,11 +51,13 @@ import org.qooxdoo.sushi.util.Strings;
 import com.jcraft.jsch.JSchException;
 
 public class SshNode extends Node {
+    private static final Filesystem FS = new Filesystem("ssh:/", '/');
+    
     private final Connection connection;
     private final String slashPath;
     
     public SshNode(IO io, Connection connection, String path) {
-        super(io);
+        super(io, FS);
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();

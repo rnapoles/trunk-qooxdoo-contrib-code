@@ -34,6 +34,7 @@ import java.util.Set;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.Filesystem;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
@@ -63,6 +64,8 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnNode extends Node {
+    private static final Filesystem FS = new Filesystem("svn:/", '/');
+    
     static {
         FSRepositoryFactory.setup();
         DAVRepositoryFactory.setup();
@@ -124,7 +127,7 @@ public class SvnNode extends Node {
     private String comment;
     
     public SvnNode(IO io, SVNRepository repository, boolean directory, String path) {
-        super(io);
+        super(io, FS);
         if (path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }
