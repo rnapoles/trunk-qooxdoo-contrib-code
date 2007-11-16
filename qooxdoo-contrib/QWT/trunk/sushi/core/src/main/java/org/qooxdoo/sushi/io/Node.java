@@ -214,6 +214,7 @@ public abstract class Node {
     
     public void copy(Node dest) throws IOException {
         if (isDirectory()) {
+            dest.mkdirOpt(); 
             copyDirectory(dest);
         } else {
             copyFile(dest);
