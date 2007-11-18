@@ -64,29 +64,28 @@ public abstract class Transfer {
 
     public void readAck() throws IOException {
         int b;
+        int c;
+        StringBuilder builder;
         
         b = in.read();
         if (b == -1) {
-            // didn't receive any response
             throw new EOFException("No response from server");
         } else if (b != 0) {
-            StringBuffer sb = new StringBuffer();
-
-            int c = in.read();
+            builder = new StringBuilder();
+            
+            c = in.read();
             while (c > 0 && c != '\n') {
-                sb.append((char) c);
+                builder.append((char) c);
                 c = in.read();
             }
 
             if (b == 1) {
-                throw new IOException("scp error: " + sb.toString());
+                throw new IOException("scp error: " + builder.toString());
             } else if (b == 2) {
-                throw new IOException("fatal scp error: " + sb.toString());
+                throw new IOException("fatal scp error: " + builder.toString());
             } else {
-                throw new IOException("unknown response, code " + b + " message: " + sb.toString());
+                throw new IOException("unknown response, code " + b + " message: " + builder.toString());
             }
         }
     }
-
-    
 }
