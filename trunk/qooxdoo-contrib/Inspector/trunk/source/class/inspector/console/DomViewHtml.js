@@ -121,7 +121,32 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * @param name {String} The name of the object.
      */
     setObject: function(object, name) {
-      this._htmlEmbed.setHtml(this._getHtmlToObject(object, 0, name));
+      // split the name into pieces seperated by a dot
+		  var elements = name.split(".");			
+			
+			// go thrrew all pieces exept the last one
+			for (var i = 0; i < elements.length - 1; i++) {
+			  // create an empty string which holds the objects reference at the end
+				var objectReference = "";
+				// go threw all further elements of the split
+				for (var j = 0; j <= i; j++) {
+					// add the elements to the objects reference
+					objectReference += elements[j];
+					// if it is not the last round
+					if (j != i) {
+						// add a dot between the elements
+						objectReference += ".";
+					}
+				}
+				// create a reference out of the reference string
+				var breadCrumbObject = eval(objectReference);
+				// add the object and the name to the breadcrumbs
+				this._breadCrumb[i] = {object: breadCrumbObject, name: elements[i]};
+			}
+			// get the last name of the given elements
+			name = elements[elements.length - 1];
+			// set the object to display in the dom view
+      this._htmlEmbed.setHtml(this._getHtmlToObject(object, i, name));
     },
     
     
