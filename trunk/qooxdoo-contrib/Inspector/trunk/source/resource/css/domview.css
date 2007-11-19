@@ -1,0 +1,79 @@
+/* RETURN PATH */
+.ins_dom_return_path_main {
+  font: bold 12px Helvetica;
+  border-bottom: 1px #555555 solid;
+  padding: 5px;
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.ins_dom_return_path_selected {
+  color: #666666;
+}
+
+
+/* OBJECTS */
+.ins_dom_object {
+  color: green;
+  cursor: pointer;
+  font: normal 12px Helvetica;
+}
+
+.ins_dom_array_more {
+  font-weight: bold;
+}
+
+.ins_dom_self_ref {
+  color: #AAAAAA;
+  font-size: 11px;
+  font-style: italic;  
+}
+
+
+/* PROPERTIES */ 
+.ins_dom_no_prop {
+  padding: 10px;
+  color: #999999;
+  font-family: Helvetica;
+}
+
+.ins_dom_func {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px #666666 solid;
+}
+
+.ins_dom_key_object {
+  font: bold 12px Helvetica;
+  vertical-align: top;
+  width: 30%;
+}
+
+.ins_dom_key_non_object {
+  font: normal 12px Helvetica;
+  vertical-align: top;
+  width: 30%;
+}
+
+.ins_dom_basic {
+  color: darkblue;  
+  font: normal 12px Helvetica;
+  width: 70%;  
+}
+
+.ins_dom_string {
+  color: red;
+  font: normal 12px Helvetica;  
+  width: 70%;  
+}
+
+.ins_dom_null {
+  color: white;
+  background-color: #999999;
+  border: 1px #666666 solid;
+  font: normal 12px Helvetica;
+}
+
+.ins_dom_null_tr {
+  width: 70%;  
+}
