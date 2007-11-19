@@ -39,6 +39,10 @@ qx.Interface.define("inspector.console.IView", {
 
     clear: function() {
         return true;
-    }
+    },
+		
+		getCaptionMessage: function() {
+			return true;
+		}
   }
 });
