@@ -265,27 +265,26 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
         // if it is not an object
         if (!(sortedValues[i].value instanceof Object)) {
-          returnString += "<tr><td width='30%'><font size='2'>" + sortedValues[i].key + "</font></td>";
+          returnString += "<tr><td class='ins_dom_key_non_object'>" + sortedValues[i].key + "</td>";
           
           // if the value is null
           if (sortedValues[i].value == null) {
-              returnString += "<td><span style='color: white; background-color: #999999; border: 1px #666666 solid;'><font size='2'>" + sortedValues[i].value + "</font></span></td></tr>";
+              returnString += "<td class='ins_dom_null_tr'><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>";
           } else if (typeof sortedValues[i].value == "string"){
-              returnString += "<td><span style='color: red;'><font size='2'>&quot;" + sortedValues[i].value + "&quot;</font></span></td></tr>";              
+              returnString += "<td class='ins_dom_string'>&quot;" + sortedValues[i].value + "&quot;</td></tr>";              
           } else {
-                returnString += "<td><span style='color: darkblue;'><font size='2'>"  + sortedValues[i].value + "</font></span></td></tr>";
+              returnString += "<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>";
           }
 
         // if it is an object          
         } else {
           // print out the objects key          
           returnString += "<tr>" + 
-                            "<td width='30%' valign='top'><font size='2'><b>" + sortedValues[i].key + "</b></font>" +  
-                            "</td>";
+                            "<td class='ins_dom_key_object'>" + sortedValues[i].key + "</td>";
           // if the object holds a reference to itself
           if (sortedValues[i].value == qxObject) {
             // print out a message for a self index
-            returnString += "<td><font color='#AAAAAA' size='2'><i>self reference</i></font></td></tr>";
+            returnString += "<td class='ins_dom_self_ref'>self reference</td></tr>";
           } else {
             // print out the objects value
             returnString += "<td>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                      
@@ -298,7 +297,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
       
       // if there is no property
       if (nothingToShow) {
-          returnString += "<div style='padding: 10px; color: #999999; font-family: Helvetica;'>There are no properties to show for this object.</div>";
+          returnString += "<div class='ins_dom_no_prop'>There are no properties to show for this object.</div>";
       }
       
       // if the current object is a function
@@ -308,7 +307,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
         // let qooxdoo highlight the javascript code
         functionCode = "<pre>" + qx.dev.Tokenizer.javaScriptToHtml(functionCode) + "</pre>";
         // print out the function code
-        returnString += "<div style='margin-top: 10px; padding: 10px;  border-top: 1px #666666 solid;'>" + functionCode + "</div>";
+        returnString += "<div class='ins_dom_func'>" + functionCode + "</div>";
       }
       
       return returnString;
@@ -322,13 +321,13 @@ qx.Class.define("inspector.console.DomViewHtml", {
      */
     _getReturnPath: function(index) {
       // print the path to go back
-      var returnString = "<div style='font: bold 12px Helvetica; border-bottom: 1px #555555 solid; padding: 5px; background-color: #000000; color: #FFFFFF;'>";  
+      var returnString = "<div class='ins_dom_return_path_main'>";  
       
       // go threw the existing path
       for (var i = 0; i <= index; i++) {
         // if it is the current item
           if (i == index) {
-            returnString += " &raquo; <span style='color: #666666;'>"
+            returnString += " &raquo; <span class='ins_dom_return_path_selected'>"
         } else {
               // print out every item of the path
             returnString += " &raquo; <span style='cursor: pointer;' onclick='" + 
@@ -354,9 +353,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * @param index {String} The porperty to select the new object.
      */
     _getObject: function(object, index, key) {
-      var returnString = "<span style='color: green; cursor: pointer;' onclick='" +
+      var returnString = "<span class='ins_dom_object' onclick='" +
                              "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + key + "\")" + 
-                          "'><font size='2'>";
+                          "'>";
                           
       // if it is a function
       if (object instanceof Function) {
@@ -376,7 +375,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
                 returnString += object[j] + ", ";
             }
             // print out a message that there are more
-            returnString += " ... <b>" + (object.length - 2) + " more</b> ]";
+            returnString += " ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]";
         // if it is an empty array                
         } else if (object.length == 0) {
             returnString += " ]";
@@ -397,7 +396,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
       } else {
           returnString += object;
       }      
-      returnString += "</font></span>";
+      returnString += "</span>";
       
       return returnString;
     }
