@@ -100,9 +100,10 @@ qx.Class.define("inspector.console.Console", {
      * @param widget {qx.core.Object} The current selected object.
      */
     setWidget: function(widget) {
-      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + ": " + 
-                      widget.classname + " [" + widget.toHashCode() + "]");
+      // set the widget first!
       this._widget = widget;
+      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                      this._consoleView.getCaptionMessage() + ")");
     },
     
     
@@ -137,8 +138,13 @@ qx.Class.define("inspector.console.Console", {
      * @param inputObject {Object} The object to inspect.
      */
 	inspectObject: function(inputObject) {
+		// pase the object to the dom view
 	  this._domView.setObject(inputObject.object, inputObject.name);
+		// show the dom view
 		this._domButton.setChecked(true);
+		// change the title of the console window
+    this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                    this._domView.getCaptionMessage() + ")");		
 	},
 	
 	
@@ -312,6 +318,9 @@ qx.Class.define("inspector.console.Console", {
     },
     
     
+		/**
+		 * Creates the man tab view an the needed tabs.
+		 */
     _createMainElement: function() {   
       // create the tabview   
       this._tabView = new qx.ui.pageview.tabview.TabView();
@@ -340,6 +349,16 @@ qx.Class.define("inspector.console.Console", {
       this._clearButton.addEventListener("click", this._clearViews, this);    
       // register a handlert to print out the help text on the console
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
+			
+      // click listener for changing the caption bar title of the window
+      consoleButton.addEventListener("click", function() {
+        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                        this._consoleView.getCaptionMessage() + ")");
+      }, this);
+      this._domButton.addEventListener("click", function() {
+        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                        this._domView.getCaptionMessage() + ")");
+      }, this);			
     },
     
     

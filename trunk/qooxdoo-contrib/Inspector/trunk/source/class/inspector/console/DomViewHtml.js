@@ -83,15 +83,37 @@ qx.Class.define("inspector.console.DomViewHtml", {
     },
     
     
+		/**
+		 * @internal
+		 * @param delta {Number} The edlta of the height.
+		 */
     setMainElementDeltaHeight: function(delta) {
       this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
     },
     
     
+		/**
+		 * Doesent do anything because no focus is needed.
+		 */
     focus: function() {
       // do nothing
     },
 
+
+    /**
+     * Returns the string that identifies the current object 
+     * in the dom view.
+     * @return {String} Information string.
+     */
+    getCaptionMessage: function() {
+			// if there is a firest element in the breadcrumbs
+      if (this._breadCrumb[0]) {
+				// return its name
+	      return this._breadCrumb[0].name;				
+			}
+			// otherwise return a message telling that no selection has been made
+			return "nothing selected";
+    },
 
     /**
      * Set a new object to inspect.

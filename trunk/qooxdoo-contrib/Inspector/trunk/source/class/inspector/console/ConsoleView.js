@@ -212,6 +212,21 @@ qx.Class.define("inspector.console.ConsoleView", {
       this._textField.focus();
     },
     
+		
+		/**
+		 * Returns the string which should be shown in the caption 
+		 * if the console view is visible.
+		 * @return {String}Information string.
+		 */
+    getCaptionMessage: function() {
+			// if a widget is selected
+	  	if (this._console.getWidget()) {
+				// return the classname an the Hashcode
+				return this._console.getWidget().classname + " [" + this._console.getWidget().toHashCode() + "]";			
+			}
+			// otherwise return that nothing is selected
+			return "nothing selected";
+		},		
         
     /**
      * Appends the given string to the textfield.
