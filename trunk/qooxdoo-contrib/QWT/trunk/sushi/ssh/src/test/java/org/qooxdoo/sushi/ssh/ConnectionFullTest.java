@@ -39,23 +39,44 @@ public class ConnectionFullTest {
     private static final IO IO_OBJ = new IO();
     
     public static Connection open() throws JSchException, IOException {
-        return Connection.create(ConnectionFullTest.hostname(), User.withUserKey(IO_OBJ));
+        String hostname;
+        String username;
+        User user;
+        
+        hostname = prop("sushi.ssh.test.host");
+        if (hostname == null) {
+            try {
+                InetAddress addr = InetAddress.getLocalHost();
+                hostname = addr.getHostName();
+            } catch (UnknownHostException e) {
+                hostname = "localhost";
+            }        
+        }
+        username = prop("sushi.ssh.test.user");
+        if (username != null) {
+            user = User.withUserKey(IO_OBJ, username);
+        } else {
+            user = User.withUserKey(IO_OBJ);
+        }
+        return Connection.create(hostname, user);
     }
     
-    private static String hostname() {
-        try {
-            InetAddress addr = InetAddress.getLocalHost();
-            return addr.getHostName();
-        } catch (UnknownHostException e) {
-            return "localhost";
-        }        
+    private static String prop(String key) {
+        String value;
+        
+        value = System.getProperty(key);
+        if (value != null && value.startsWith("$")) {
+            return null;
+        } else {
+            return value;
+        }
     }
     
     private Connection connection;
 
     @Before
     public void setUp() throws Exception {
-        connection = Connection.create(hostname(), User.withUserKey(IO_OBJ));
+        connection = open();
     }
     
     @After
