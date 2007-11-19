@@ -9,10 +9,15 @@
 
 .ins_dom_return_path_selected {
   color: #666666;
+  font: bold 12px Helvetica;  
+}
+
+.ins_dom_return_path_link {
+  cursor: pointer;
 }
 
 
-/* OBJECTS */
+/* VALUES */
 .ins_dom_object {
   color: green;
   cursor: pointer;
@@ -20,21 +25,37 @@
 }
 
 .ins_dom_array_more {
-  font-weight: bold;
+  font: bold 12px Helvetica;
 }
 
 .ins_dom_self_ref {
   color: #AAAAAA;
-  font-size: 11px;
-  font-style: italic;  
+  font: italic 12px Helvetica;
+}
+
+.ins_dom_basic {
+  color: darkblue;  
+  font: normal 12px Helvetica;
+}
+
+.ins_dom_string {
+  color: red;
+  font: normal 12px Helvetica;  
+}
+
+.ins_dom_null {
+  color: white;
+  background-color: #999999;
+  border: 1px #666666 solid;
+  font: normal 12px Helvetica;
 }
 
 
-/* PROPERTIES */ 
+/* KEYS */ 
 .ins_dom_no_prop {
   padding: 10px;
   color: #999999;
-  font-family: Helvetica;
+  font: normal 12px Helvetica;
 }
 
 .ins_dom_func {
@@ -47,33 +68,14 @@
   font: bold 12px Helvetica;
   vertical-align: top;
   width: 30%;
+  float: left;
+  margin-left: 5px;
 }
 
 .ins_dom_key_non_object {
   font: normal 12px Helvetica;
   vertical-align: top;
   width: 30%;
-}
-
-.ins_dom_basic {
-  color: darkblue;  
-  font: normal 12px Helvetica;
-  width: 70%;  
-}
-
-.ins_dom_string {
-  color: red;
-  font: normal 12px Helvetica;  
-  width: 70%;  
-}
-
-.ins_dom_null {
-  color: white;
-  background-color: #999999;
-  border: 1px #666666 solid;
-  font: normal 12px Helvetica;
-}
-
-.ins_dom_null_tr {
-  width: 70%;  
+  float: left;  
+  margin-left: 5px;
 }
