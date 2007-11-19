@@ -260,39 +260,37 @@ qx.Class.define("inspector.console.DomViewHtml", {
       for (var i = 0; i < sortedValues.length; i++) {      
         // kar that there has been a property printed out
         nothingToShow = false;
-        // start the table
-        returnString += "<div style='font-family: Helvetica; margin-bottom: -5px'><table width='100%'>";
+        // start the return divs
+        returnString += "";
 
         // if it is not an object
         if (!(sortedValues[i].value instanceof Object)) {
-          returnString += "<tr><td class='ins_dom_key_non_object'>" + sortedValues[i].key + "</td>";
+          returnString += "<div class='ins_dom_key_non_object'>" + sortedValues[i].key + "</div>";
           
           // if the value is null
           if (sortedValues[i].value == null) {
-              returnString += "<td class='ins_dom_null_tr'><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>";
+              returnString += "<div><span class='ins_dom_null'>" + sortedValues[i].value + "</span></div>";
           } else if (typeof sortedValues[i].value == "string"){
-              returnString += "<td class='ins_dom_string'>&quot;" + sortedValues[i].value + "&quot;</td></tr>";              
+              returnString += "<div class='ins_dom_string'>&quot;" + sortedValues[i].value + "&quot;</div>";              
           } else {
-              returnString += "<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>";
+              returnString += "<div class='ins_dom_basic'>"  + sortedValues[i].value + "</div>";
           }
 
         // if it is an object          
         } else {
           // print out the objects key          
-          returnString += "<tr>" + 
-                            "<td class='ins_dom_key_object'>" + sortedValues[i].key + "</td>";
+          returnString += "<div class='ins_dom_key_object'>" + sortedValues[i].key + "</div>";
+					
           // if the object holds a reference to itself
           if (sortedValues[i].value == qxObject) {
             // print out a message for a self index
-            returnString += "<td class='ins_dom_self_ref'>self reference</td></tr>";
+            returnString += "<div class='ins_dom_self_ref'>self reference</div>";
           } else {
             // print out the objects value
-            returnString += "<td>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                      
+            returnString += "<div>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</div>";                      
           }
 
         }
-        // end the table 
-        returnString += "</table></div>";
       }
       
       // if there is no property
@@ -330,7 +328,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
             returnString += " &raquo; <span class='ins_dom_return_path_selected'>"
         } else {
               // print out every item of the path
-            returnString += " &raquo; <span style='cursor: pointer;' onclick='" + 
+            returnString += " &raquo; <span class='ins_dom_return_path_link' onclick='" + 
                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + i + ")'>";            
         }
         
