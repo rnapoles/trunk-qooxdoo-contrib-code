@@ -107,7 +107,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     getComponents: function() {
       return [this, this._table, this._reloadToolTip, 
               this._autoReloadToolTip, this._popup, 
-              this._objectSummaryToolTip];
+              this._objectSummaryToolTip, this._pollutionToolTip];
     },
     
     
