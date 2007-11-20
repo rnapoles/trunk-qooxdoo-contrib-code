@@ -21,6 +21,7 @@ package org.qooxdoo.sushi.ssh;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +40,6 @@ import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
-import org.qooxdoo.sushi.util.ExitCode;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
@@ -95,43 +95,56 @@ public class SshNode extends Node {
     
     @Override
     public SshNode[] list() throws ListException {
-        List<Node> lst;
+        List<Node> nodes;
+        ChannelSftp.LsEntry entry;
+        String name;
+        boolean dir;
         
         try {
-            lst = ls();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+            nodes = new ArrayList<Node>();
+            dir = false;
+            for (Object obj : channel.ls(slashPath)) {
+                try {
+                    entry = (ChannelSftp.LsEntry) obj;
+                    name = entry.getFilename();
+                    if (".".equals(name) || "..".equals(name)) {
+                        dir = true;
+                    } else {
+                        nodes.add(join(name));
+                    }
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("illegal name: " + obj, e);
+                }
+            }
+            if (!dir && nodes.size() == 1) {
+                return null;
+            } else {
+                return nodes.toArray(new SshNode[nodes.size()]);
+            }
+        } catch (SftpException e) {
             throw new ListException(this, e);
         }
-        if (lst == null) {
-            return null;
-        }
-        return lst.toArray(new SshNode[lst.size()]);
     }
     
     //--
 
-    /** @return null when invoked on a file */
-    private List<Node> ls() throws SftpException, ExitCode, IOException, InterruptedException {
-        List<Node> nodes;
-        
-        nodes = new ArrayList<Node>();
-        for (Object obj : channel.ls(slashPath)) {
-            try {
-                nodes.add(join((String) obj));
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("illegal name: " + obj, e);
-            }
-        }
-        return nodes;
-    }
-
     @Override
     public SshNode delete() throws DeleteException {
         try {
-            channel.rm(slashPath);
+            if (channel.stat(slashPath).isDir()) {
+                for (Node child : list()) {
+                    child.delete();
+                }
+                channel.rmdir(slashPath);
+            } else {
+                channel.rm(slashPath);
+            }
         } catch (SftpException e) {
+            if (e.id == 2 || e.id == 4) {
+                throw new DeleteException(this, new FileNotFoundException());
+            }
+            throw new DeleteException(this, e);
+        } catch (ListException e) {
             throw new DeleteException(this, e);
         }
         return this;
@@ -202,7 +215,10 @@ public class SshNode extends Node {
         try {
             get(tmp);
         } catch (SftpException e) {
-            throw Misc.exception("ssh get interrupted", e);
+            if (e.id == 2 || e.id == 4) {
+                throw new FileNotFoundException(slashPath);
+            }
+            throw Misc.exception("ssh: get failed", e);
         }
         return tmp.createInputStream();
     }
