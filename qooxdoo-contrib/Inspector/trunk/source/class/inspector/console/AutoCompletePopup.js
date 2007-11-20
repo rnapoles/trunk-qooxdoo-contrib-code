@@ -180,7 +180,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       var object = (function(text, ans){return eval(text)}).call(this._controller.getWidget(), objectRef, this._controller.getAns());        
       
       // check if it has returned an qooxdoo object
-      if (!(object instanceof qx.core.Object)) {
+      if (!(object instanceof qx.core.Object) ) {
         // hide the popup
         this.hide();
         // stop forther processing

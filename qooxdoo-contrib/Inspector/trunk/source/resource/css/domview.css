@@ -21,7 +21,11 @@
 .ins_dom_object {
   color: green;
   cursor: pointer;
-  font: normal 12px Helvetica;
+  font: bold 12px Helvetica;
+}
+
+.ins_dom_object a:hover {
+  text-decoration: underline;
 }
 
 .ins_dom_array_more {
@@ -35,12 +39,12 @@
 
 .ins_dom_basic {
   color: darkblue;  
-  font: normal 12px Helvetica;
+  font: normal 12px "Courier New", Courier, monospace;
 }
 
 .ins_dom_string {
   color: red;
-  font: normal 12px Helvetica;  
+  font: normal 12px "Courier New", Courier, monospace;  
 }
 
 .ins_dom_null {
@@ -72,10 +76,21 @@
   margin-left: 5px;
 }
 
+.ins_dom_key_object a:hover {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .ins_dom_key_non_object {
-  font: normal 12px Helvetica;
+  font: bold 12px Helvetica;
   vertical-align: top;
   width: 30%;
   float: left;  
   margin-left: 5px;
+}
+
+.ins_dom_front_image {
+  width: 16;
+  height: 12;
 }
