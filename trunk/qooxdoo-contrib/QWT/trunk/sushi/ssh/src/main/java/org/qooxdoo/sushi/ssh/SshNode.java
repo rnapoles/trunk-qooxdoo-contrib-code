@@ -19,19 +19,14 @@
 
 package org.qooxdoo.sushi.ssh;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
@@ -44,19 +39,19 @@ import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
-import org.qooxdoo.sushi.io.Settings;
 import org.qooxdoo.sushi.util.ExitCode;
-import org.qooxdoo.sushi.util.Strings;
 
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
     private static final Filesystem FS = new Filesystem("ssh:/", '/');
     
-    private final Connection connection;
+    private final ChannelSftp channel;
     private final String slashPath;
     
-    public SshNode(IO io, Connection connection, String path) {
+    public SshNode(IO io, ChannelSftp channel, String path) {
         super(io, FS);
         
         if (path.startsWith("/")) {
@@ -65,41 +60,17 @@ public class SshNode extends Node {
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-        this.connection = connection;
+        this.channel = channel;
         this.slashPath = "/" + path;
     }
 
     @Override
     public long length() throws LengthException {
-        String result;
-        
         try {
-            if (connection.isMac()) {
-                result = connection.exec("stat", "-f%z", slashPath);
-                result = result.trim();
-            } else {
-                result = connection.exec("du", "-b", slashPath);
-                result = first(result);
-            }
-        } catch (ExitCode e) {
-            throw new LengthException(this, e);
-        } catch (JSchException e) {
+            return channel.stat(slashPath).getSize();
+        } catch (SftpException e) {
             throw new LengthException(this, e);
         }
-        return Long.parseLong(first(result));
-    }
-
-    private static String first(String str) {
-        int i;
-        int max;
-        
-        max = str.length();
-        for (i = 0; i < max; i++) {
-            if (Character.isWhitespace(str.charAt(i))) {
-                break;
-            }
-        }
-        return str.substring(0, i);
     }
 
     @Override
@@ -109,7 +80,7 @@ public class SshNode extends Node {
     
     @Override
     public SshNode newInstance(String path) {
-        return new SshNode(io, connection, path);
+        return new SshNode(io, channel, path);
     }
 
     @Override
@@ -117,10 +88,6 @@ public class SshNode extends Node {
         return slashPath.substring(1);
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-    
     //--
     
     @Override
@@ -143,20 +110,15 @@ public class SshNode extends Node {
     //--
 
     /** @return null when invoked on a file */
-    private List<Node> ls() throws JSchException, ExitCode, IOException, InterruptedException {
-        String result;
+    private List<Node> ls() throws SftpException, ExitCode, IOException, InterruptedException {
         List<Node> nodes;
         
-        result = connection.exec("ls", slashPath).trim();
-        if (slashPath.equals(result)) {
-            return null;
-        }
         nodes = new ArrayList<Node>();
-        for (String name : Strings.split("\n", result)) {
+        for (Object obj : channel.ls(slashPath)) {
             try {
-                nodes.add(join(name));
+                nodes.add(join((String) obj));
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("illegal name: " + name, e);
+                throw new IllegalArgumentException("illegal name: " + obj, e);
             }
         }
         return nodes;
@@ -164,22 +126,9 @@ public class SshNode extends Node {
 
     @Override
     public SshNode delete() throws DeleteException {
-        String result;
-        Throwable cause;
-        
         try {
-            result = connection.exec("rm", "-r", slashPath);
-            if (result.length() != 0) {
-                throw new JSchException("unexpected output: " + result);
-            }
-        } catch (ExitCode e) {
-            if (e.output.contains("No such file or directory")) {
-                cause = new FileNotFoundException();
-            } else {
-                cause = e;
-            }
-            throw new DeleteException(this, cause);
-        } catch (JSchException e) {
+            channel.rm(slashPath);
+        } catch (SftpException e) {
             throw new DeleteException(this, e);
         }
         return this;
@@ -187,82 +136,60 @@ public class SshNode extends Node {
 
     @Override
     public Node mkdir() throws MkdirException {
-        String result;
-
         try {
-            result = connection.exec("mkdir", slashPath);
-            if (result.length() != 0) {
-                throw new JSchException("unexpected output: " + result);
-            }
+            channel.mkdir(slashPath);
             return this;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (SftpException e) {
             throw new MkdirException(this, e);
         }
     }
 
     @Override
     public boolean exists() throws ExistsException {
-        return test("-a");
+        try {
+            channel.stat(slashPath);
+            return true;
+        } catch (SftpException e) {
+            return false;
+        }
     }
     
     @Override
     public boolean isFile() throws ExistsException {
-        return test("-f");
+        try {
+            return !channel.stat(slashPath).isDir();
+        } catch (SftpException e) {
+            return false;
+        }
     }
 
     @Override
     public boolean isDirectory() throws ExistsException {
-        return test("-d");
+        try {
+            return channel.stat(slashPath).isDir();
+        } catch (SftpException e) {
+            return false;
+        }
     }
-
-    private static final SimpleDateFormat TOUCH_FORMAT = new SimpleDateFormat("yyMMddHHmm.ss");
 
     @Override
     public long lastModified() throws LastModifiedException {
-        String result;
-        
         try {
-            if (connection.isMac()) {
-                result = connection.exec("stat", "-f%m", slashPath).trim();
-            } else {
-                result = connection.exec("stat", "--format=%Y", slashPath).trim();
-            }
-        } catch (ExitCode e) {
-            throw new LastModifiedException(this, e);
-        } catch (JSchException e) {
+            return 1000l * channel.stat(slashPath).getMTime();
+        } catch (SftpException e) {
             throw new LastModifiedException(this, e);
         }
-        return Long.parseLong(result) * 1000;
     }
 
     
     @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
-        String stamp;
-        
-        stamp = TOUCH_FORMAT.format(new Date(millis));
         try {
-            connection.exec("touch", "-t", stamp, slashPath);
-        } catch (ExitCode e) {
-            throw new SetLastModifiedException(this, e);
-        } catch (JSchException e) {
+            channel.setMtime(slashPath, (int) (millis / 1000));
+        } catch (SftpException e) {
             throw new SetLastModifiedException(this, e);
         }
     }
-    
-    private boolean test(String flag) throws ExistsException {
-        try {
-            connection.exec("test", flag, slashPath);
-            return true;
-        } catch (ExitCode e) {
-            return false;
-        } catch (JSchException e) {
-            throw new ExistsException(this, e);
-        }
-    }
-
     
     @Override
     public InputStream createInputStream() throws IOException {
@@ -271,9 +198,7 @@ public class SshNode extends Node {
         tmp = io.createTempFile();
         try {
             get(tmp);
-        } catch (JSchException e) {
-            throw Misc.exception("ssh get failure", e);
-        } catch (InterruptedException e) {
+        } catch (SftpException e) {
             throw Misc.exception("ssh get interrupted", e);
         }
         return tmp.createInputStream();
@@ -289,104 +214,27 @@ public class SshNode extends Node {
                     put(toByteArray());
                 } catch (JSchException e) {
                     throw Misc.exception("ssh write failed", e);
-                } catch (InterruptedException e) {
-                    throw Misc.exception("ssh write interrupted", e);
+                } catch (SftpException e) {
+                    throw Misc.exception("ssh write failed", e);
                 }
             }
         };
     }
 
-    public void get(final FileNode dest) throws JSchException, IOException, InterruptedException {
-        connection.invoke(new Transfer("scp -f " + slashPath) { // "from"
-            @Override
-            public void doInvoke(Settings settings, Buffer buffer) throws JSchException, IOException {
-                String line;
-                char c;
+    public void get(Node dest) throws IOException, SftpException {
+        OutputStream out;
                 
-                sendAck();
-                while (true) {
-                    line = buffer.readLine(in, settings.encoding);
-                    if (line == null) {
-                        break;
-                    }
-                    if (line.length() == 0) {
-                        throw new EOFException();
-                    }
-                    c = line.charAt(0);
-                    if (c == 'C') {
-                        parseAndFetchFile(buffer, line, dest);
-                    } else if (c == 1 || c == 2) {
-                        throw exception(line.substring(1));
-                    } else {
-                        throw new IOException("unknown server response: " + line);
-                    }
-                }
-            }
-            
-            private void parseAndFetchFile(Buffer buffer, String header, FileNode dest) throws IOException {
-                int start;
-                int end;
-                int size;
-                
-                end = header.indexOf(" ", 1);
-                start = end + 1;
-                end = header.indexOf(" ", start + 1);
-                size = Integer.parseInt(header.substring(start, end));
-                fetchFile(buffer, dest, size);
-                readAck();
-                sendAck();
-            }
-
-            private void fetchFile(Buffer buffer, FileNode dest, int filesize) throws IOException {
-                FileOutputStream fos;
-                int length;
-
-                sendAck();
-                fos = dest.createOutputStream();
-                try {
-                    length = buffer.copy(in, fos, filesize);
-                    if (length != filesize) {
-                        throw new EOFException("file truncated");
-                    }
-                } finally {
-                    fos.flush();
-                    fos.close();
-                }
-            }
-        });
+        out = dest.createOutputStream();
+        channel.get(slashPath, out);
+        out.close();
     }
 
-    private static IOException exception(String message) {
-        if (message.contains("Not a directory")) {
-            return new FileNotFoundException();
-        } else if (message.contains("not a regular file")) {
-            return new FileNotFoundException();
-        } else if (message.contains("No such file or directory")) {
-            return new FileNotFoundException();
-        } else {
-            return new IOException(message);
-        }
-    }
-    
-    public void put(final byte[] data) throws JSchException, IOException, InterruptedException {
-        connection.invoke(new Transfer("scp -t " + slashPath) { // "to"
-            @Override
-            public void doInvoke(Settings settings, Buffer buffer) throws JSchException, IOException {
-                readAck();
-                out.write(settings.bytes("C0644 " + data.length + " bytearray\n"));
-                out.flush();
-                readAck();
-                out.write(data);
-                out.write(0);
-                out.flush();
-                readAck();
-                out.close();
-            }
-        });
+    public void put(final byte[] data) throws JSchException, IOException, SftpException {
+        channel.put(new ByteArrayInputStream(data), slashPath);
     }
     
     @Override
     protected boolean equalsNode(Node node) {
-        return connection == ((SshNode) node).connection;
+        return channel == ((SshNode) node).channel;
     }
 }

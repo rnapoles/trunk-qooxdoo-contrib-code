@@ -21,7 +21,6 @@ package org.qooxdoo.sushi.ssh;
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Settings;
 import org.qooxdoo.sushi.util.ExitCode;
@@ -41,8 +40,6 @@ public class Host {
     private final String machine;
     private final User user;
     private final int timeout;
-    // TODO: dump
-    private final Buffer buffer;
 
     public Host(String machine, User user) throws JSchException {
         this(machine, user, 0);
@@ -52,7 +49,6 @@ public class Host {
         this.machine = machine;
         this.user = user;
         this.timeout = timeout;
-        this.buffer = new Buffer();
     }
 
     public String getMachine() {
@@ -76,18 +72,6 @@ public class Host {
             con.close();
         }
     }
-    
-    /** connect, executes command, disconnect */
-    public void invoke(Transfer ... commands) throws JSchException, IOException {
-        Connection connection;
-
-        connection = connect();
-        try {
-            connection.invoke(commands);
-        } finally {
-            connection.close();
-        }
-    }
 
     public Connection connect() throws JSchException {
         JSch jsch;
@@ -96,6 +80,6 @@ public class Host {
         jsch = new JSch();
         session = user.login(jsch, machine);
         session.connect(timeout);
-        return new Connection(this, session, SETTINGS, buffer);
+        return new Connection(this, session, SETTINGS);
     }
 }
