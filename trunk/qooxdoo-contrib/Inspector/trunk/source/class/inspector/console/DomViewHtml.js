@@ -278,6 +278,18 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
         // if it is an object          
         } else {
+
+          // check if it is a faunction
+					if (sortedValues[i].value instanceof Function) {
+						// get the code of the function via the toString function
+						var code = sortedValues[i].value.toString();
+						// if the code contains the string "[native code]"
+						if (code.search(/[native code]/) != -1) {
+							// ignore the function and go to the next
+							continue;
+						}
+					}
+					
           // print out the objects key          
           returnString += "<div class='ins_dom_key_object'>" + sortedValues[i].key + "</div>";
 					
