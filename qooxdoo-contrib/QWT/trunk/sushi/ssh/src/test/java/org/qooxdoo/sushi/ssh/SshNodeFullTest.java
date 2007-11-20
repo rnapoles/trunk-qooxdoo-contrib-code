@@ -24,31 +24,48 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.NodeTest;
 
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 
 public class SshNodeFullTest extends NodeTest {
     private static Connection connection;
+    private ChannelSftp channel;
     
     @BeforeClass
-    public static void start() throws Exception {
+    public static void beforeClass() throws Exception {
         connection = ConnectionFullTest.open();
     }
 
+    @Before
+    public void before() throws Exception {
+        channel = connection.open();
+        channel.connect();
+    }
+    
+    @After
+    public void after() throws Exception {
+        if (channel != null) {
+            channel.disconnect();
+        }
+    }
+    
     @AfterClass
-    public static void stop() throws Exception {
+    public static void afterClass() throws Exception {
         if (connection != null) {
             connection.close();
         }
     }
     
     private SshNode create(String path) throws IOException, JSchException {
-        return new SshNode(IO, connection, path);
+        return new SshNode(IO, channel, path);
     }
 
     @Override
