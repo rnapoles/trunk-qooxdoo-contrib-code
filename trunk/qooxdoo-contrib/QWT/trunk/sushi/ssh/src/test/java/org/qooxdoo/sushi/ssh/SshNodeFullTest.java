@@ -44,10 +44,11 @@ public class SshNodeFullTest extends NodeTest {
         connection = ConnectionFullTest.open();
     }
 
-    @Before
-    public void before() throws Exception {
+    @Before @Override
+    public void setUp() throws Exception {
         channel = connection.open();
         channel.connect();
+        super.setUp();
     }
     
     @After

@@ -60,6 +60,9 @@ public class SshNode extends Node {
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
+        if (channel == null) {
+            throw new IllegalArgumentException();
+        }
         this.channel = channel;
         this.slashPath = "/" + path;
     }
