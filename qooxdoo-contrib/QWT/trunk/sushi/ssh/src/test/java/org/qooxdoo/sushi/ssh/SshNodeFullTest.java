@@ -47,7 +47,6 @@ public class SshNodeFullTest extends NodeTest {
     @Before @Override
     public void setUp() throws Exception {
         channel = connection.open();
-        channel.connect();
         super.setUp();
     }
     

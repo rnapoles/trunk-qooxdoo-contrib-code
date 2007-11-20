@@ -55,8 +55,13 @@ public class Connection {
         session.disconnect();
     }
 
+    /** @return a connected channel; automatically closed when the connection is closed */
     public ChannelSftp open() throws JSchException {
-        return (ChannelSftp) session.openChannel("sftp");
+        ChannelSftp channel;
+        
+        channel = (ChannelSftp) session.openChannel("sftp");
+        channel.connect();
+        return channel;
     }
 
     public Exec begin(String ... command) throws JSchException {
