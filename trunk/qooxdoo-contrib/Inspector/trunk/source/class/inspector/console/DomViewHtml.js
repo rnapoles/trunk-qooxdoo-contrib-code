@@ -169,6 +169,8 @@ qx.Class.define("inspector.console.DomViewHtml", {
                   if (this._breadCrumb[i].object == newQxObject) {
                     // set the index to the history element
                     this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, i, key));
+										// scroll to the top of the view
+										this._htmlEmbed.setScrollTop(0);
                     // stop further processing
                     return;
                   }
@@ -176,6 +178,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
                 
                 // set the new object with a higher index
                 this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, (index) + 1, key));
+                // scroll to the top of the view    
+							  this._htmlEmbed.setScrollTop(0);
+								
             // if only a index is given (selection wia the back button)
             } else {
                 // select the stored object in the array
@@ -183,7 +188,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
 								// select the stored name
 								var newName = this._breadCrumb[index].name;
                 // show the selected array with the current index
-                this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, index, newName));    
+                this._htmlEmbed.setHtml(this._getHtmlToObject(newQxObject, index, newName));
+                // scroll to the top of the view
+								this._htmlEmbed.setScrollTop(0);    
             }
         } catch (e) {
             alert("Can not select this Object: " + e);
@@ -265,7 +272,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
         // if it is not an object
         if (!(sortedValues[i].value instanceof Object)) {
-          returnString += "<div class='ins_dom_key_non_object'>" + sortedValues[i].key + "</div>";
+          returnString += "<div class='ins_dom_key_non_object'><img class='ins_dom_front_image' src='" + 
+					                qx.io.Alias.getInstance().resolve("inspector/image/spacer.gif") + 
+					                "'>" + sortedValues[i].key + "</div>";
           
           // if the value is null
           if (sortedValues[i].value == null) {
@@ -284,14 +293,18 @@ qx.Class.define("inspector.console.DomViewHtml", {
 						// get the code of the function via the toString function
 						var code = sortedValues[i].value.toString();
 						// if the code contains the string "[native code]"
-						if (code.search(/[native code]/) != -1) {
+						if (code.search(/native code/) != -1) {
 							// ignore the function and go to the next
 							continue;
 						}
 					}
 					
           // print out the objects key          
-          returnString += "<div class='ins_dom_key_object'>" + sortedValues[i].key + "</div>";
+          returnString += "<div class='ins_dom_key_object'><img class='ins_dom_front_image' src='" + 
+                          qx.io.Alias.getInstance().resolve("inspector/image/open.gif") + 
+                          "'><a onclick='" +
+                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
+                          "'>" + sortedValues[i].key + "</a></div>";
 					
           // if the object holds a reference to itself
           if (sortedValues[i].value == qxObject) {
@@ -363,7 +376,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * @param index {String} The porperty to select the new object.
      */
     _getObject: function(object, index, key) {
-      var returnString = "<span class='ins_dom_object' onclick='" +
+      var returnString = "<span class='ins_dom_object'><a onclick='" +
                              "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + key + "\")" + 
                           "'>";
                           
@@ -406,7 +419,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
       } else {
           returnString += object;
       }      
-      returnString += "</span>";
+      returnString += "</a></span>";
       
       return returnString;
     }
