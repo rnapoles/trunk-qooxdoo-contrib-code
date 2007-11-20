@@ -43,7 +43,7 @@ public abstract class NodeTest {
     protected String sep;
     
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         work = createWork();
         sep = work.fs.separator;
     }
