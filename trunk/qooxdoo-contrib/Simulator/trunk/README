@@ -1,0 +1,16 @@
+
+The 'source' part of the project contains a simple Skeleton-like application
+that includes a widget ("SeleniumShell.js") to send remote commands to itself
+(via the Selenium RC server). In order to make use of this, the application has
+to run under Selenium RC control (http://www.openqa.org/selenium-rc).
+
+The 'tool' part of the project contains various pieces that add qooxdoo support
+to Selenium:
+
+  - a user extension for Selenium Core (adding qooxdoo-specific commands and
+    locators; the complete package is available from the Selenium web site,
+    http://wiki.openqa.org/display/SEL/qooxdooExtension )
+  - language bindings that add support for these commands to the standard
+    language bindings that come with Selenium RC (via derived classes)
+  - complete test scripts that utilize the Selenium RC API to test existing
+    qooxdoo applications

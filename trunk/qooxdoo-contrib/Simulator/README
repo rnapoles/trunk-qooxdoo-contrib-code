@@ -1,0 +1,12 @@
+INFORMATION
+
+This module provides various pieces to utilize Selenium
+(http://www.openqa.org/selenium) to automate qooxdoo applications.
+
+One part of the project contains a simple Skeleton-like application
+that includes a widget ("SeleniumShell.js") to send remote commands to itself
+(via the Selenium RC server). In order to make use of this, the application has
+to run under Selenium RC control (http://www.openqa.org/selenium-rc).
+
+Another part of the project contains various pieces that add qooxdoo support
+to Selenium.
