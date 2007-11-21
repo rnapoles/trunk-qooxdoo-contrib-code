@@ -67,14 +67,15 @@ qx.Class.define("inspector.console.Console", {
     // main elements
     _consoleView: null,
     _domView: null,
-  _tabView: null,
+    _tabView: null,
   
 
     // buttons
     _clearButton: null,
     _helpButton: null,
-  // tabview buttons
-  _domButton: null,
+    // tabview buttons
+    _domButton: null,
+		_consoleButton: null,
     
     // the current widget
     _widget: null,
@@ -102,8 +103,12 @@ qx.Class.define("inspector.console.Console", {
     setWidget: function(widget) {
       // set the widget first!
       this._widget = widget;
-      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                      this._consoleView.getCaptionMessage() + ")");
+      // if the console-view is on the screen
+      if (this._consoleButton.getChecked()) {
+        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                        this._consoleView.getCaptionMessage() + ")");
+
+      }
     },
     
     
@@ -329,12 +334,12 @@ qx.Class.define("inspector.console.Console", {
       // create the tabview   
       this._tabView = new qx.ui.pageview.tabview.TabView();
       // tab view buttons
-      var consoleButton = new qx.ui.pageview.tabview.Button("Console");
+      this._consoleButton = new qx.ui.pageview.tabview.Button("Console");
       this._domButton = new qx.ui.pageview.tabview.Button("DOM");
-      consoleButton.setChecked(true);
-      this._tabView.getBar().add(consoleButton, this._domButton);      
+      this._consoleButton.setChecked(true);
+      this._tabView.getBar().add(this._consoleButton, this._domButton);      
       // tabview pages
-      var consolePage = new qx.ui.pageview.tabview.Page(consoleButton);
+      var consolePage = new qx.ui.pageview.tabview.Page(this._consoleButton);
       var domPage = new qx.ui.pageview.tabview.Page(this._domButton);
       // content of the pages    
       this._consoleView = new inspector.console.ConsoleView(this);
@@ -355,7 +360,7 @@ qx.Class.define("inspector.console.Console", {
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
       
       // click listener for changing the caption bar title of the window
-      consoleButton.addEventListener("click", function() {
+      this._consoleButton.addEventListener("click", function() {
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._consoleView.getCaptionMessage() + ")");
       }, this);

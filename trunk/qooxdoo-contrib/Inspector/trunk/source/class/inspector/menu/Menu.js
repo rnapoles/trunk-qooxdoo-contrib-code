@@ -793,8 +793,11 @@ qx.Class.define("inspector.menu.Menu", {
       // if there is no settings window
       if (this._settingsWindow == null) {
         // create one
-        this._settingsWindow = new inspector.menu.SettingsWindow(this);
+        this._settingsWindow = new inspector.menu.SettingsWindow(this._inspector, 
+				                        this, inspector.Inspector.SETTINGS_CAPTION_TITLE);
         this._settingsWindow.addToDocument();
+				// registers the settings Window as a window of the inspector
+				this._inspector.registerWindow(this._settingsWindow);
       }
       // open the settings window
       this._settingsWindow.open();
