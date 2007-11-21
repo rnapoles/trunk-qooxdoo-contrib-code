@@ -67,14 +67,14 @@ qx.Class.define("inspector.console.Console", {
     // main elements
     _consoleView: null,
     _domView: null,
-	_tabView: null,
-	
+  _tabView: null,
+  
 
     // buttons
     _clearButton: null,
     _helpButton: null,
-	// tabview buttons
-	_domButton: null,
+  // tabview buttons
+  _domButton: null,
     
     // the current widget
     _widget: null,
@@ -131,47 +131,51 @@ qx.Class.define("inspector.console.Console", {
     setAns: function(ans) {
       this._ans = ans;
     },
-	
-	
+  
+  
     /**
      * Sets the given object in the dom view.
      * @param inputObject {Object} The object to inspect.
      */
-	inspectObject: function(inputObject) {
-		// pase the object to the dom view
-	  this._domView.setObject(inputObject.object, inputObject.name);
-		// show the dom view
-		this._domButton.setChecked(true);
-		// change the title of the console window
+  inspectObject: function(inputObject) {
+    // pase the object to the dom view
+    this._domView.setObject(inputObject.object, inputObject.name);
+    // show the dom view
+    this._domButton.setChecked(true);
+    // change the title of the console window
     this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                    this._domView.getCaptionMessage() + ")");		
-	},
-	
-	
-	/**
-	 * Fetches the object from the console view and tells the dom view to show 
-	 * the objects properties.
-	 * @internal
-	 * @param id {Number} Set the object assosiated with the given id.
-	 */
-	inspectObjectByInternalId: function(id) {
-		// get the object and the name
-		var o = this._consoleView.getObjectById(id);
-		// inspect the object
-		this.inspectObject(o);
-	},
-	
-	
-	/**
-	 * Sets a object in the dom view represented in the value (key) of the object
-	 * stored in an internal array on the index position.
-	 * @internal
-	 * @param index {Number} The internal index of the object. 
-	 * @param key {String} The name of the value to select.
-	 */
-	inspectObjectByDomSelecet: function(index, key) {
-        this._domView.setObjectByIndex(index, key);		
-	},
+                    this._domView.getCaptionMessage() + ")");    
+  },
+  
+  
+  /**
+   * Fetches the object from the console view and tells the dom view to show 
+   * the objects properties.
+   * @internal
+   * @param id {Number} Set the object assosiated with the given id.
+   */
+  inspectObjectByInternalId: function(id) {
+    // get the object and the name
+    var o = this._consoleView.getObjectById(id);
+    // inspect the object
+    this.inspectObject(o);
+  },
+  
+  
+  /**
+   * Sets a object in the dom view represented in the value (key) of the object
+   * stored in an internal array on the index position.
+   * @internal
+   * @param index {Number} The internal index of the object. 
+   * @param key {String} The name of the value to select.
+   */
+  inspectObjectByDomSelecet: function(index, key) {
+        // update the object in the domview
+        this._domView.setObjectByIndex(index, key);
+        // update the caption bar title
+        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                        this._domView.getCaptionMessage() + ")");        
+  },
 
     
     /*
@@ -273,7 +277,7 @@ qx.Class.define("inspector.console.Console", {
     */
    _clearViews: function() {
        this._consoleView.clear();
-	   this._domView.clear();
+     this._domView.clear();
    },
     
    
@@ -300,27 +304,27 @@ qx.Class.define("inspector.console.Console", {
       this._consoleView.setWidth(this._consoleView.getWidth() + delta);
       this._domView.setWidth(this._domView.getWidth() + delta);
     },
-		    
+        
     
     /**
      * Sets the start position of the window.
      */
     _setApearancePosition: function() {
       // if the width is not set properly
-			if (this.getWidth() == "auto") {
-				// set the width to the full display width minus the width of the property editor
-				this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);				
-			}
+      if (this.getWidth() == "auto") {
+        // set the width to the full display width minus the width of the property editor
+        this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 325);        
+      }
       // set the top position only if no other top position is set
-			if (this.getTop() == null) {
-        this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());				
-			}
+      if (this.getTop() == null) {
+        this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - this.getInnerHeight());        
+      }
     },
     
     
-		/**
-		 * Creates the man tab view an the needed tabs.
-		 */
+    /**
+     * Creates the man tab view an the needed tabs.
+     */
     _createMainElement: function() {   
       // create the tabview   
       this._tabView = new qx.ui.pageview.tabview.TabView();
@@ -349,7 +353,7 @@ qx.Class.define("inspector.console.Console", {
       this._clearButton.addEventListener("click", this._clearViews, this);    
       // register a handlert to print out the help text on the console
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
-			
+      
       // click listener for changing the caption bar title of the window
       consoleButton.addEventListener("click", function() {
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
@@ -358,7 +362,7 @@ qx.Class.define("inspector.console.Console", {
       this._domButton.addEventListener("click", function() {
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._domView.getCaptionMessage() + ")");
-      }, this);			
+      }, this);
     },
     
     
