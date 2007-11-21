@@ -32,7 +32,6 @@ qx.Class.define("inspector.AbstractWindow", {
 
     // save the reference to the inspector class
     this._inspector = main;
-    
     // initialize window
     this.setCaption(name);
     this.setShowMinimize(false);

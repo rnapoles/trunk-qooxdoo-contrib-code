@@ -18,34 +18,18 @@
 ************************************************************************ */
 qx.Class.define("inspector.menu.SettingsWindow", {
   
-  extend : qx.ui.window.Window,
+  extend : inspector.AbstractWindow,
 
   /*
   *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function(menu) {    
-    this.base(arguments);
-    // store the reference to the menu
+  construct : function(main, menu, name) {
+    // store the reference to the menu (first!)
     this._menu = menu;
-    // set the zIndex to a higher one than the index of the find mode layer
-    this.setZIndex(1e5 + 3)
-    
-    // initialize the window
-    this.setCaption(inspector.Inspector.SETTINGS_CAPTION_TITLE);
-    this.setWidth(400);
-    this.setHeight("auto");
-    this.setShowMinimize(false);
-    this.setShowMaximize(false);
-    
-    var layout = new qx.ui.layout.VerticalBoxLayout();
-    layout.setWidth("100%");
-    this.add(layout);
-    
-    // add the groupboxes
-    layout.add(this.__createApiGroupbox());
-    layout.add(this.__createKeyGroupbox());
+    // call the constructor of the superclass (inspector.AbstractWindow)
+    this.base(arguments, main, name);
   }, 
   
   
@@ -64,9 +48,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     
     _apiGroup: null,
     _keyGroup: null,
-    
-    
-    
+
 
     /*
     *********************************
@@ -234,7 +216,59 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       // add the components to the layout
       layout.add(findLabel, findTextField);      
       return layout;  
-    }
+    },
 
+
+    /*
+    *********************************
+       OVERWRITTEN PROTTECTED FUNCTIONS
+    *********************************
+    */   
+    /**
+     * Sets the height of the main element of the window.
+     * @param delta {Number} The change value of the height.
+     */
+    _setMainElementHeight: function(delta) {
+      // dont do anyting (automatic resizing)
+    },
+    
+    
+    /**
+     * Sets the width of the main element of the window.
+     * @param delta {Number} The change value of the width.
+     */
+    _setMainElementWidth: function(delta) {
+      // dont do anyting (automatic resizing)
+    },
+    
+    
+    /**
+     * Sets the start position of the window.
+     */
+    _setApearancePosition: function() {
+      // dont do anyting (Start position in the left upper corner)
+    },
+    
+    
+    /**
+     * Creates the main element of the window which cann be
+     * added to the main layout and apears between the toolbar
+     * and the statusbar.
+     */
+    _createMainElement: function() {
+      // initialize the window
+      this.setWidth(400);
+      this.setHeight("auto");
+      this.setShowMinimize(false);
+      this.setShowMaximize(false);
+      
+      var layout = new qx.ui.layout.VerticalBoxLayout();
+      layout.setWidth("100%");
+      this.add(layout);
+      
+      // add the groupboxes
+      layout.add(this.__createApiGroupbox());
+      layout.add(this.__createKeyGroupbox());
+    }
   }
 });
