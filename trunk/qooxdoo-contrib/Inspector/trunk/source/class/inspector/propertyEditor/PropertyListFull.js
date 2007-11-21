@@ -78,7 +78,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * Invokes a relaod of the view.
      */
     build: function() {
-      if (this._controller.getWidget() != null) {
+			if (this._controller.getWidget() != null) {
         this._reloadPropertyListFull();
       }
     },
@@ -183,13 +183,12 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * At the end of the creating process the function invokes the reloading
      * of the values of all properties.
      */
-    _reloadPropertyListFull: function() {      
+    _reloadPropertyListFull: function() {		     
       // variable to signal if the rest of the list should be replaced
-      var replace = false;
-      
+      var replace = false;      
       // variable to signal if the not needed list items are deleted
       var oldremoved = true;
-
+			
       // get the data
       var data = this._getData(this._controller.getWidget());
       // store the data in variables

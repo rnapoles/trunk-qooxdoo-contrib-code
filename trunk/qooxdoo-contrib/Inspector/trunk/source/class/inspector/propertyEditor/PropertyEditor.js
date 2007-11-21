@@ -32,7 +32,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // call the constructor of the superclass
     this.base(arguments, main, name);
     // create the Filter for sorting 
-    this._filter = new inspector.propertyEditor.Filter();		
+    this._filter = new inspector.propertyEditor.Filter();    
   },
 
 
@@ -82,9 +82,9 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
 
     // timer for the reload interval
     _reloadTimer: null,
-		
-		// filter to sort the properties into groups
-		_filter: null,
+    
+    // filter to sort the properties into groups
+    _filter: null,
 
 
     /*
@@ -149,7 +149,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
         }            
         // reset the loading message in the title bar
         self.setCaption(inspector.Inspector.PROPERTY_CAPTION_TITLE + " (" + 
-				                self._qxObject.classname + " [" + self._qxObject.toHashCode() + "])");
+                        self._qxObject.classname + " [" + self._qxObject.toHashCode() + "])");
       }, 0);
     },
     
@@ -204,14 +204,14 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     gotoSelectedWidget: function() {
       this._gotoSelectedPropertyButtonEventListener();
     },
-		
-		
-		/**
-		 * Returns the Filter used for grouping the properties. 
-		 */
-		getFilter: function() {
-			return this._filter;
-		},
+    
+    
+    /**
+     * Returns the Filter used for grouping the properties. 
+     */
+    getFilter: function() {
+      return this._filter;
+    },
     
     
     /**
@@ -491,22 +491,22 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      */
     _setApearancePosition: function() {
       // if left is not set
-			if (this.getLeft() == null) {
-				// set the window an the right border of the document
+      if (this.getLeft() == null) {
+        // set the window an the right border of the document
         this.setLeft(this.getParent().getOffsetWidth() - this._windowWidth);      
-			}
-			// if the top is not set
+      }
+      // if the top is not set
       if (this.getTop() == null) {
-				// set the window beginning at the half of the document
-				this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
-			}
-			// if the height is not set propertly
+        // set the window beginning at the half of the document
+        this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+      }
+      // if the height is not set propertly
       if (this.getHeight() == "auto") {
-				// set the height to the half of the documents height
-				this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
-			}
+        // set the height to the half of the documents height
+        this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
+      }
     },
-	
+  
     
     /**
      * Creates the two views for the editor and adds the full view as default view.
@@ -514,8 +514,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     _createMainElement: function() {
       // create the inner layouts to hold the property lists
       this._propertyListFull = new inspector.propertyEditor.PropertyListFull(this);
-      this._propertyListHtmlTable = new inspector.propertyEditor.PropertyListHtmlTable(this);
-    
+      this._propertyListHtmlTable = new inspector.propertyEditor.PropertyListHtmlTable(this);    
       this._propertyList = this._propertyListFull;
       // add the list to the layout
       this._mainLayout.add(this._propertyList);  
@@ -553,25 +552,25 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._inheritedButton.addEventListener("execute", this._switchInheritedStatus, this);
       
       // seperator
-      this._menu.add(new qx.ui.menu.Separator());			
-			
-			// non group radio button
-			var nonGroupButton = new qx.ui.menu.RadioButton("Group by inheritance", null, true);
-			nonGroupButton.addEventListener("execute", function(e) {
+      this._menu.add(new qx.ui.menu.Separator());      
+      
+      // non group radio button
+      var nonGroupButton = new qx.ui.menu.RadioButton("Group by inheritance", null, true);
+      nonGroupButton.addEventListener("execute", function(e) {
         if (this._qxObject != null) {
           // reload the view          
           this._propertyList.build();
         }
         // enable the inheritance button
         this._inheritedButton.setEnabled(true); 
-			}, this);
-			this._menu.add(nonGroupButton);
+      }, this);
+      this._menu.add(nonGroupButton);
       // group radiobutton
       this._groupButton = new qx.ui.menu.RadioButton("Group by category");
       this._groupButton.addEventListener("execute", function(e) {
         if (this._qxObject != null) {
           // reload the view          
-					this._propertyList.build();
+          this._propertyList.build();
         }
         // disable the inheritance button
         this._inheritedButton.setEnabled(false);
@@ -591,15 +590,16 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // switch the property lists
           this._mainLayout.removeAt(1);
           this._propertyList = this._propertyListFull;
+          // add the new list to the property editor (bevore reloading! (PREVENTS RENDERING BUG))
+          this._mainLayout.addAt(this._propertyList, 1);          
+          
           // invoke a reload of the list if a widget is selected
           if (this._qxObject != null) {
-	          // reload the view          
-	          this._propertyList.build();
+            // reload the view          
+            this._propertyList.build();
           }
           // set the rigth inhrerited status
           this._propertyList.switchInheritedStatus();
-          // add the new created list to the property editor
-          this._mainLayout.addAt(this._propertyList, 1);          
         // if the button is released
         } else {   
           // enable the second view     
@@ -618,8 +618,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           this._propertyList = this._propertyListHtmlTable;
           // invoke a reload of the list if a widget is selected
           if (this._qxObject != null) {
-	          // reload the view          
-	          this._propertyList.build();
+            // reload the view          
+            this._propertyList.build();
           }
           // add the new created list to the property editor
           this._mainLayout.addAt(this._propertyList, 1);
@@ -646,12 +646,12 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       var menuButton = new qx.ui.toolbar.MenuButton("View", this._menu, qx.io.Alias.getInstance().resolve("inspector/image/menuarrow.png"));
       menuButton.setIconPosition("right");
       this._toolbar.add(menuButton);
-	  
-	  // add a click listener so that the menu is always on front of the property editor window
-	  menuButton.addEventListener("click", function() {
-	  	// move the menu in front
-	  	this._menu.setZIndex(this.getZIndex() + 1);
-	  }, this);
+    
+    // add a click listener so that the menu is always on front of the property editor window
+    menuButton.addEventListener("click", function() {
+      // move the menu in front
+      this._menu.setZIndex(this.getZIndex() + 1);
+    }, this);
       
       // add a seperator
       this._toolbar.add(new qx.ui.toolbar.Separator());
@@ -723,8 +723,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   *****************************************************************************
   */
   destruct : function() {
-		// reset the buttons
+    // reset the buttons
     this._inheritedButton = null;
-		this._groupButton = null;
+    this._groupButton = null;
   }  
 });
