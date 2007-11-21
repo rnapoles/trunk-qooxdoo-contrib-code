@@ -35,8 +35,8 @@ qx.Class.define("inspector.AbstractWindow", {
     // initialize window
     this.setCaption(name);
     this.setShowMinimize(false);
-    this.setShowMaximize(false);    
-    this.setAllowMaximize(false);
+    this.setShowMaximize(true);    
+    this.setAllowMaximize(true);
     this.setWidth("auto");
     this.setHeight("auto");
     this.setMinHeight(130);
@@ -91,19 +91,25 @@ qx.Class.define("inspector.AbstractWindow", {
     
     // flatg to signal if the zIndx will be currently changed
     _inChange: false,
+    
+    // maximization stuff
+    _oldTop: null,
+    _oldLeft: null,
+    _oldWidth: null,
+    _oldHeight: null,
 
     /*
     *********************************
        PUBLIC
     *********************************
     */
-		/**
-		 * Return wether the window is on the creen or not.
-		 * @return {Boolean} true, if the window is on the screen
-		 */
-		isOpen: function() {
-			return this.getVisibility() && this.getDisplay();
-		},
+    /**
+     * Return wether the window is on the creen or not.
+     * @return {Boolean} true, if the window is on the screen
+     */
+    isOpen: function() {
+      return this.getVisibility() && this.getDisplay();
+    },
     
     
     /**
@@ -115,7 +121,7 @@ qx.Class.define("inspector.AbstractWindow", {
       this._inChange = value;
     },
 
-	 
+   
     /*
     *********************************
        CONSTRUCTOR HELPERS
@@ -138,52 +144,52 @@ qx.Class.define("inspector.AbstractWindow", {
      * and the resize behavior of the window.
      */
     _registerResizeHandler: function() {
-			
-			// register the height handler
+      
+      // register the height handler
       this.addEventListener("changeHeight", function(e) {
         // get the change of the height
-				var delta = e.getValue() - this._windowHeight;
-				// save the new height local
+        var delta = e.getValue() - this._windowHeight;
+        // save the new height local
         this._windowHeight = e.getValue();
-				// save the height in a cookie
+        // save the height in a cookie
         qx.io.local.CookieApi.set(this.classname + "#Height", this._windowHeight);
         // set the new height as delta
         this._setMainElementHeight(delta, true);
       }, this);
-			
-			// register the width handler
+      
+      // register the width handler
       this.addEventListener("changeWidth", function(e) {
-				// get the change of the width
+        // get the change of the width
         var delta = e.getValue() - this._windowWidth;
-				// save the new width local
+        // save the new width local
         this._windowWidth = e.getValue();
-				// save the width in a cookie
+        // save the width in a cookie
         qx.io.local.CookieApi.set(this.classname + "#Width", this._windowWidth);
-				// set the new width
+        // set the new width
         this._setMainElementWidth(delta);
       }, this);
-			
-			// register the appera handler
+      
+      // register the appera handler
       this.addEventListener("appear", function(e) {
-				// store the diemensions of the window
+        // store the diemensions of the window
         this._windowWidth = this.getOffsetWidth();
         this._windowHeight = this.getOffsetHeight();
 
         // check for the top coordinate set in a cookie
         if (qx.io.local.CookieApi.get(this.classname + "#Top")) {
-					// set the stored top coordinate
+          // set the stored top coordinate
           this.setTop(parseInt(qx.io.local.CookieApi.get(this.classname + "#Top")));
-					// mark that top has been set
-					var setTop = true;
+          // mark that top has been set
+          var setTop = true;
         }
         // check for the left coordinate set in a cookie
         if (qx.io.local.CookieApi.get(this.classname + "#Left")) {
-					// set the left coordinate
+          // set the left coordinate
           this.setLeft(parseInt(qx.io.local.CookieApi.get(this.classname + "#Left")));
-					// mark that left has been set
+          // mark that left has been set
           var setLeft = true;
         }
-				// check for the height set in a cookie
+        // check for the height set in a cookie
         if (qx.io.local.CookieApi.get(this.classname + "#Height")) {
           // set the left coordinate
          this.setHeight(parseInt(qx.io.local.CookieApi.get(this.classname + "#Height")));
@@ -197,21 +203,21 @@ qx.Class.define("inspector.AbstractWindow", {
           // mark that left has been set
           var setWidth = true;
         }
-				// if left, top, height or width has not been set
-				if (!setTop || !setLeft || !setHeight || !setWidth) {
-					// tell the application to choose the appereance position
-					this._setApearancePosition();					
-				}
+        // if left, top, height or width has not been set
+        if (!setTop || !setLeft || !setHeight || !setWidth) {
+          // tell the application to choose the appereance position
+          this._setApearancePosition();          
+        }
       }, this);
-		
-		  // register the left position handler
-	    this.addEventListener("changeLeft", function(e) {
-	      qx.io.local.CookieApi.set(this.classname + "#Left", e.getValue());
-	    }, this);
-	    // register the top position handler
-	    this.addEventListener("changeTop", function(e) {
-	      qx.io.local.CookieApi.set(this.classname + "#Top", e.getValue());
-	    }, this);			
+    
+      // register the left position handler
+      this.addEventListener("changeLeft", function(e) {
+        qx.io.local.CookieApi.set(this.classname + "#Left", e.getValue());
+      }, this);
+      // register the top position handler
+      this.addEventListener("changeTop", function(e) {
+        qx.io.local.CookieApi.set(this.classname + "#Top", e.getValue());
+      }, this);      
     },
     
     
@@ -229,11 +235,67 @@ qx.Class.define("inspector.AbstractWindow", {
       }, this); 
     },
     
+    
     /*
     *********************************
        OVERRIDDEN
     *********************************
     */
+    /**
+     * Maximizes the window to the screen.
+     */
+    maximize: function() {
+      // enable the resizing of the maximized window
+      this._disableResize = true;
+      // change the maximize button to a restore button
+      var maxButtonIndex = this._captionBar.indexOf(this._maximizeButton);
+      this._captionBar.remove(this._maximizeButton);
+      this._captionBar.addAt(this._restoreButton, maxButtonIndex);                
+      // sets the focus to the window
+      this.setActive(true);
+
+      // save the position for restoring
+      this._oldTop = this.getTop();
+      this._oldLeft = this.getLeft();
+      // save the dimensions for restoring 
+      this._oldWidth = this.getWidth();
+      this._oldHeight = this.getHeight();
+      
+      // move the window to the upper left corner
+      this.setTop(0);
+      this.setLeft(0);
+      // maximise the dimensions of the window
+      this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth());
+      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight());    
+      
+      // save the old data in the cookie (so that on a reload the old values can be restored)
+      qx.io.local.CookieApi.set(this.classname + "#Height", this._oldHeight);
+      qx.io.local.CookieApi.set(this.classname + "#Width", this._oldWidth);
+      qx.io.local.CookieApi.set(this.classname + "#Left", this._oldLeft);
+      qx.io.local.CookieApi.set(this.classname + "#Top", this._oldTop);      
+    },
+    
+    
+    /**
+     * Restores the window to its former position.
+     */    
+    restore: function() {
+      // disable the resizing of the maximized window
+      this._disableResize = false;
+      // change the restore button to a maximize button
+      var restoreButtonIndex = this._captionBar.indexOf(this._restoreButton);
+      this._captionBar.remove(this._restoreButton);
+      this._captionBar.addAt(this._maximizeButton, restoreButtonIndex);                  
+                
+      // move the window to the former position
+      this.setTop(this._oldTop);
+      this.setLeft(this._oldLeft);
+      // set the former dimensions
+      this.setWidth(this._oldWidth);
+      this.setHeight(this._oldHeight);  
+    },
+    
+    
     /**
      * Hides the window and tells the inspector hat the window 
      * has been closed so that the buttons of the menu can stay
@@ -243,7 +305,7 @@ qx.Class.define("inspector.AbstractWindow", {
       this.setVisibility(false);
       this._inspector.componentClosed(this);
       // save that the finder is closed
-      qx.io.local.CookieApi.set(this.classname + "#Open", false);			
+      qx.io.local.CookieApi.set(this.classname + "#Open", false);
     },
     
     /*
