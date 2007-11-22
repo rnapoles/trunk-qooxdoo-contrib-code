@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
@@ -149,7 +150,7 @@ public class MemoryNode extends Node {
     }
 
     @Override
-    public MemoryNode[] list() {
+    public List<MemoryNode> list() {
         if (type != Type.DIRECTORY) {
             return null;
         }

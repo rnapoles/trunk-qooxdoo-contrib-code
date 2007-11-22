@@ -19,19 +19,25 @@
 
 package org.qooxdoo.sushi.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.qooxdoo.sushi.xml.Xml;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import org.qooxdoo.sushi.xml.Xml;
-
-import static org.junit.Assert.*;
 
 public abstract class NodeTest {
     protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
@@ -50,7 +56,7 @@ public abstract class NodeTest {
     
     @Test
     public void work() throws IOException {
-        Object[] children;
+        List<?> children;
         
         assertNull(work.getBase());
         assertTrue(work.exists());
@@ -58,7 +64,7 @@ public abstract class NodeTest {
         assertTrue(work.isDirectory());
         children = work.list();
         assertNotNull(children);
-        assertEquals(0, children.length);
+        assertEquals(0, children.size());
     }
     
     //--
@@ -123,12 +129,12 @@ public abstract class NodeTest {
     
     @Test
     public void hidden() throws IOException {
-        Node[] files;
+        List<? extends Node> files;
         
         work.join(".dotfile").writeString("foo");
         files = work.list();
-        assertEquals(1, files.length);
-        assertEquals(".dotfile", files[0].getName());
+        assertEquals(1, files.size());
+        assertEquals(".dotfile", files.get(0).getName());
     }
 
     //-- status methods: exists, isFile, isDirectory

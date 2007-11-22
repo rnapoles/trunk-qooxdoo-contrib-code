@@ -89,6 +89,6 @@ public class SshNodeFullTest extends NodeTest {
         root = create("");
         assertEquals("", root.getPath());
         assertEquals("", root.getName());
-        assertTrue(root.list().length > 0);
+        assertTrue(root.list().size() > 0);
     }
 }
