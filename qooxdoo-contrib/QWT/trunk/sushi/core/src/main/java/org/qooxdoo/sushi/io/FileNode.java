@@ -25,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.qooxdoo.sushi.util.Program;
 
@@ -176,17 +178,17 @@ public class FileNode extends Node {
     
     /** @return null when called for a file; non-null otherwise */
     @Override
-    public FileNode[] list() {
+    public List<FileNode> list() {
         File[] children;
-        FileNode[] result;
+        List<FileNode> result;
         
         children = file.listFiles();
         if (children == null) {
             return null;
         }
-        result = new FileNode[children.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = new FileNode(io, base, children[i]);
+        result = new ArrayList<FileNode>(children.length);
+        for (int i = 0; i < children.length; i++) {
+            result.add(new FileNode(io, base, children[i]));
         }
         return result;
     }

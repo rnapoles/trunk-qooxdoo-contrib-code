@@ -71,7 +71,7 @@ public abstract class Node {
     public abstract InputStream createInputStream() throws IOException;
     public abstract OutputStream createOutputStream() throws IOException;
 
-    public abstract Node[] list() throws ListException;
+    public abstract List<? extends Node> list() throws ListException;
 
     /** @return this */ 
     public abstract Node mkdir() throws MkdirException;

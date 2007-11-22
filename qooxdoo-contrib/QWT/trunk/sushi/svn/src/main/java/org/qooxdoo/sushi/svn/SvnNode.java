@@ -169,9 +169,9 @@ public class SvnNode extends Node {
     }
     
     @Override
-    public SvnNode[] list() throws ListException {
+    public List<SvnNode> list() throws ListException {
         List<SVNDirEntry> lst;
-        SvnNode[] result;
+        List<SvnNode> result;
         SVNDirEntry entry;
         
         try {
@@ -180,10 +180,10 @@ public class SvnNode extends Node {
             }
             lst = new ArrayList<SVNDirEntry>();
             repository.getDir(path, -1, false, lst);
-            result = new SvnNode[lst.size()];
-            for (int i = 0; i < result.length; i++) {
+            result = new ArrayList<SvnNode>(lst.size());
+            for (int i = 0; i < lst.size(); i++) {
                 entry = lst.get(i);
-                result[i] = new SvnNode(io, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath()));
+                result.add(new SvnNode(io, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
             }
             return result;
         } catch (SVNException e) {

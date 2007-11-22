@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 public class HttpNode extends Node {
     private static final Filesystem FS = new Filesystem("http:/", '/');
@@ -143,7 +144,7 @@ public class HttpNode extends Node {
     }
 
     @Override
-    public HttpNode[] list() {
+    public List<HttpNode> list() {
         return null;
     }
 

@@ -94,14 +94,14 @@ public class SshNode extends Node {
     //--
     
     @Override
-    public SshNode[] list() throws ListException {
-        List<Node> nodes;
+    public List<SshNode> list() throws ListException {
+        List<SshNode> nodes;
         ChannelSftp.LsEntry entry;
         String name;
         boolean dir;
         
         try {
-            nodes = new ArrayList<Node>();
+            nodes = new ArrayList<SshNode>();
             dir = false;
             for (Object obj : channel.ls(slashPath)) {
                 try {
@@ -110,7 +110,7 @@ public class SshNode extends Node {
                     if (".".equals(name) || "..".equals(name)) {
                         dir = true;
                     } else {
-                        nodes.add(join(name));
+                        nodes.add((SshNode) join(name));
                     }
                 } catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("illegal name: " + obj, e);
@@ -119,7 +119,7 @@ public class SshNode extends Node {
             if (!dir && nodes.size() == 1) {
                 return null;
             } else {
-                return nodes.toArray(new SshNode[nodes.size()]);
+                return nodes;
             }
         } catch (SftpException e) {
             throw new ListException(this, e);

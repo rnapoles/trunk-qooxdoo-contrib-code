@@ -232,7 +232,7 @@ public class Filter {
     
     private void doInvoke(int currentDepth, Node node, List<Object[]> includes, List<Object[]> excludes, Action result)
     throws IOException {
-        Object[] children;
+        List<? extends Node> children;
         int i;
         List<Object[]> remainingIncludes;
         List<Object[]> remainingExcludes;
@@ -260,8 +260,8 @@ public class Filter {
         if (children == null) {
             // ignore file
         } else {
-            for (i = 0; i < children.length; i++) {
-                doInvoke(currentDepth + 1, (Node) children[i], remainingIncludes, remainingExcludes, result);
+            for (i = 0; i < children.size(); i++) {
+                doInvoke(currentDepth + 1, (Node) children.get(i), remainingIncludes, remainingExcludes, result);
             }
         }
     }

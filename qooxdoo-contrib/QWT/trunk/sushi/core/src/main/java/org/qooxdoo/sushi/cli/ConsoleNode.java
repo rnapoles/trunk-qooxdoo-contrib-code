@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.cli;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.Filesystem;
@@ -38,7 +39,7 @@ public class ConsoleNode extends Node {
     }
 
     @Override
-    public Node[] list() {
+    public List<ConsoleNode> list() {
         return null;
     }
 

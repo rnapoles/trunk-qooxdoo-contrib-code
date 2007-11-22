@@ -68,7 +68,7 @@ public class Context {
         }
     }
     
-    public MemoryNode[] list(String path) throws IOException {
+    public List<MemoryNode> list(String path) throws IOException {
         String child;
         int idx;
         List<MemoryNode> result;
@@ -83,7 +83,7 @@ public class Context {
                 }
             }
         }     
-        return result.toArray(new MemoryNode[result.size()]);
+        return result;
     }
     
     //--
