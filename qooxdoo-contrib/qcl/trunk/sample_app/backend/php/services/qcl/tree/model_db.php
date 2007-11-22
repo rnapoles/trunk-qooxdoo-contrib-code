@@ -123,30 +123,26 @@ class qcl_tree_model_db extends qcl_db_model
 	}	
 
    /**
-    * change parent folder and position 
+    * change parent folder
     * @param int 	$folderId	folder id
     * @param int	$parentId 	parent folder id 
    	*/
-	function changeParent ( $folderId, $parentId )
+	function changeParent( $folderId, $parentFolderId )
 	{
-		$parentId = (int) $parentId;
-		$this->db->execute("
-			UPDATE {$this->table}
-			SET `{$this->key_parentId}` = $parentId
-			WHERE `{$this->key_id}` = $folderId
-		");
-		return true;		
-	}	
-	
+		$this->setFieldValue("parentId",$parentFolderId,$folderId);
+	}
+		
 	/**
 	 * set parent folder id of current record
 	 * @param int		$parentId
 	 * @param boolean	$forceUpdate 	whether to update the database (default:false)
+	 * @return void
 	 */
-	function setParentId($parentId,$forceUpdate=false)
+	function setParentId($parentId)
 	{
 		$parentId = (int) $parentId;
-		$this->setField("parentId",$parentId,$forceUpdate);
+		$this->setFieldValue("parentId",$parentId);
+		$this->update();
 	}
 }
 

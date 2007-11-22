@@ -146,56 +146,74 @@ class qcl_db_model extends qcl_jsonrpc_model
    }
 
 	/**
-	 * translates field names to column names and returns value of field in current record
+	 * gets the value of a column in a record without field->column translation 
+	 * @param string	$column 	
+	 * @param int		$recordId	if omitted, use current record
+	 * @todo: synchronize field/column getters and setters
 	 */
-	function getField ( $field )
+	function getColumnValue($column,$recordId= null)
+	{
+		$row = $recordId ? $this->getById($recordId) : $this->currentRecord;
+		return $row[$column];
+	}
+
+	/**
+	 * sets the value of a column in a record without field->column translation 
+	 * @param string	$column
+	 * @param mixed		$value
+	 * @param int		$recordId 	if omitted, modify current record cache without updating the database 
+	 */
+	function setColumnValue($column,$value,$recordId=null)
+	{
+		if( $recordId )
+		{
+			$data = array();
+			$data[$this->key_id]=$recordId;
+			$data[$column] = $value;
+			$this->update($data);	
+		}
+		else
+		{
+			$this->currentRecord[$column]=$value;		
+		}
+	}
+ 
+	/**
+	 * translates field names to column names and returns value of field in current record
+	 * @param string 	$field 		field name	
+	 * @param int		$recordId 	if omitted, use current record 
+	 */
+	function getFieldValue ( $field, $recordId=null )
 	{
 		$varName 	= "key_$field";
 		$columnName	= $this->$varName;
-		if ( ! $columnName )
-		{
-			$columnName = $field;
-		}
 		
 		if ( ! $columnName )
 		{
-			$this->raiseError ( "qcl_db_model::getField : Invalid field '$field'");
+			$this->raiseError ( "qcl_db_model::getFieldValue : Invalid field '$field'");
 		}		
 		
-		return $this->currentRecord[$columnName];
+		return $this->getColumnValue($columnName,$recordId);
 	}
 
 	/**
 	 * translates field names to column names and sets value of field in current record
 	 * @param string	$field			field name to translate
 	 * @param mixed		$value	
-	 * @param boolean	$forceUpdate	whether to update the database immediately (default:false)
+	 * @param int		$recordId 		if omitted, modify current record cache without updating the database 
 	 * @return void
 	 */
-	function setField ( $field, $value, $forceUpdate=false )
+	function setFieldValue ( $field, $value, $recordId=null )
 	{
 		$varName 	= "key_$field";
 		$columnName	= $this->$varName;
 		
 		if ( ! $columnName )
 		{
-			$columnName = $field;
+			$this->raiseError ( "qcl_db_model::setFieldValue : Invalid field '$field'");
 		}
 		
-		if ( ! $columnName )
-		{
-			$this->raiseError ( "qcl_db_model::setField : Invalid field '$field'");
-		}
-		
-		$this->currentRecord[$columnName]=$value;
-		
-		if ( $forceUpdate )
-		{
-			$data = array();
-			$data[$columnName] = $value;
-			$data[$this->key_id] = $this->currentRecord[$this->key_id];
-			$this->update($data);
-		}
+		$this->setColumnValue($columnName,$value,$recordId);
 	}
 
 	/**
@@ -229,7 +247,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function update ( $data=null, $id=null )   	
 	{
-		if ($data == null)
+		if ($data === null)
 		{
 			$data = $this->currentRecord;
 		}
