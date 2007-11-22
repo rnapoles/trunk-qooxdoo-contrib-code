@@ -394,7 +394,7 @@ qx.Class.define("inspector.console.ConsoleView", {
      */
     _process: function(text) {
       // add the text to the embedded
-      this._printText(text);      
+      this._printText(this._console.escapeHtml(text));      
       // try to run the code
       try {
         // run it and store the result in the global ans value
