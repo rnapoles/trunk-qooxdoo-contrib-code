@@ -391,10 +391,12 @@ qx.Class.define("inspector.console.Console", {
       this._consoleButton.addEventListener("click", function() {
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._consoleView.getCaptionMessage() + ")");
+				this._consoleView.focus();
       }, this);
       this._domButton.addEventListener("click", function() {
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._domView.getCaptionMessage() + ")");
+				this._domView.focus();
       }, this);
     },
     
