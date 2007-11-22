@@ -120,6 +120,16 @@ public abstract class NodeTest {
         assertTrue(node.getPath().endsWith("x" + sep + "y" + sep + "z"));
         assertEquals("z", node.getName());
     }
+    
+    @Test
+    public void hidden() throws IOException {
+        Node[] files;
+        
+        work.join(".dotfile").writeString("foo");
+        files = work.list();
+        assertEquals(1, files.length);
+        assertEquals(".dotfile", files[0].getName());
+    }
 
     //-- status methods: exists, isFile, isDirectory
     
