@@ -408,38 +408,52 @@ qx.Class.define("inspector.console.DomViewHtml", {
                           
       // if it is a function
       if (object instanceof Function) {
+				// if the toString contains a )
         if (object.toString().indexOf(")") != -1 ) {
+					// take the first characters to the )
           returnString += object.toString().substring(0, object.toString().indexOf(")") + 1);
         } else {
+					// take the whole toString
           returnString += object.toString();
         }
 
       // if it is an array
       } else if (object instanceof Array) {
         returnString += "[ ";
-          // if it has more than two elements
-          if (object.length > 2) {
-              // print out the first tow elements
-            for (var j = 0; j < 2; j++) {
-                returnString += object[j] + ", ";
-            }
-            // print out a message that there are more
-            returnString += ", ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]";
-        // if it is an empty array                
-        } else if (object.length == 0) {
-            returnString += " ]";
-        // if there are one or two elements
-        } else {
-            // print out all containing elements
-            for (var j = 0; j < 2 && j < object.length; j++) {
-                returnString += object[j];
-                // print out the comma only if it is not the last element
-                if (j != 1 && j != object.length - 1) {
-                    returnString +=  ", ";
-                }
-            }
-            returnString += " ]";            
+        // print out the first elements if existatnt
+        for (var j = 0; j < 2 && j < object.length; j++) {
+					// if the element is a function
+					if (object[j] instanceof Function) {
+            // print out that it is a function int the function style
+						returnString += "<span class='ins_dom_func_object'>function()</span>";               
+					// if it is a string
+					} else if (typeof object[j] == "string") {
+						// print out the string in the string style
+            returnString += "<span class='ins_dom_string'>&quot;" + object[j] + "&quot;</span>";               								
+					// if it is a object
+					} else if (object[j] instanceof Object) {
+						// print out the objects toSring in the object style
+            returnString += "<span class='ins_dom_object'>" + object[j] + "</span>";								
+					// in all other cases it is a primitive type
+					} else {
+						// print out the value in basic style
+            returnString += "<span class='ins_dom_basic'>" + object[j] + "</span>";								
+					}            
+					
+          // print out the comma only if it is not the last element
+          if (j != 1 && j != object.length - 1) {
+              returnString +=  ", ";
+          }							
         }
+				// if there are more elements
+				if (object.length > 2) {
+          // print out a message that there are more
+          returnString += ", ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]";							
+				} else {
+					// close the array
+          returnString += " ]";
+				}
+        
         
       // if it is a regular object
       } else {
