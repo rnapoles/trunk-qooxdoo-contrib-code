@@ -19,11 +19,42 @@
 
 package org.qooxdoo.sushi.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.net.URL;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class HttpNodeTest {
+    private IO io = new IO();
+    
     @Test
-    public void todo() {
+    public void jarUrl() {
+        URL url;
+        HttpNode node;
+        
+        url = getClass().getResource("/java/lang/Object.class");
+        System.out.println("url " + url);
+        assertEquals("jar", url.getProtocol());
+        node = new HttpNode(io, url);
+        assertTrue(node.exists());
+        assertTrue(node.isFile());
+        assertTrue(node.getParent().getPath().endsWith("/java/lang"));
+        node = (HttpNode) node.getParent().join("Object.class");
+        // TODO assertTrue(node.exists());
+    }
+    
+    @Ignore
+    public void todo() throws IOException {
+        URL url;
+        
+        url = new URL("jar:file:/usr/home/mhm/Projects/pfixentertainment/projects/servletconf/tomcat/shared/lib/de.schlund.pfixschlund.order-modules+stageassistent+1.0.6.jar!/script/main.js");
+        assertTrue(new HttpNode(io, url).exists()); 
+        url = new URL("jar:file:/usr/home/mhm/Projects/pfixentertainment/projects/servletconf/tomcat/shared/lib/de.schlund.pfixschlund.order-modules+stageassistent+1.0.6.jar!/");
+        System.out.println(new HttpNode(io, url).join("script/main.js").readString()); 
     }
 }
 
