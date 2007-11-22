@@ -596,13 +596,29 @@ qx.Class.define("inspector.console.ConsoleView", {
         
       // check for arrays
       } else if (returnValue instanceof Array) {
-        // if yes, print out that it is one
-        var label = this._getLabel("", "---- Array ----", "#00008B")
+				// initiate a string to represent the array
+	      var arrayRepresentation = "";
+				// if the array is a huge one (mor than 2 elements)
+        if (returnValue.length > 2) {
+					// take the first tow elements and show how much are unshown
+					arrayRepresentation = returnValue[0] + ", " + returnValue[1] + ", ..." +
+																		(returnValue.length - 2) + " more";
+				// if the length is exactly 2
+				} else if (returnValue.length == 2) {
+					// print out those two elements
+					arrayRepresentation = returnValue[0] + ", " + returnValue[1];
+				// if the array hase only the length of one
+				} else if (returnValue.length == 1) {
+					// show only this one element
+					arrayRepresentation = returnValue[0]; 
+				}
+				
+				// if yes, print out that it is one
+        var label = this._getLabel("", "<u style='cursor: pointer;' onclick='" + 
+                                       "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                       "'>[" + arrayRepresentation + "]</u>", "#AAAA00");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
-        // go threw all elements and print them out
-        for (var i = 0; i < returnValue.length; i++) {
-          this._printReturnValue(returnValue[i]);
-        }
+
         return;
 
       // check for objects
@@ -610,7 +626,7 @@ qx.Class.define("inspector.console.ConsoleView", {
         // if yes, print out that it is one
         var label = this._getLabel("", "<u style='cursor: pointer;' onclick='" + 
                                        "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
-                                       "'>" + returnValue + " </u>", "#AAAA00")
+                                       "'>" + returnValue + " </u>", "#AAAA00");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
         
         return;

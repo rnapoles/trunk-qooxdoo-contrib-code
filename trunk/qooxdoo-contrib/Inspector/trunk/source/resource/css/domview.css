@@ -92,6 +92,15 @@
   white-space: nowrap;  
 }
 
+.ins_dom_key_number {
+  font: bold 12px Helvetica;
+  vertical-align: top;
+  margin-left: 5px;
+  width: 30%;
+  white-space: nowrap;
+  color: #6A5ACD;
+}
+
 .ins_dom_key a:hover {
   color: blue;
   text-decoration: underline;
