@@ -240,33 +240,39 @@ qx.Class.define("inspector.console.DomViewHtml", {
       var nothingToShow = true;
       
       // create a temp array for the sorted values
-      var sortedValues = [];
-      // write the objects values to the new array
-      for (var key in qxObject) {
-        sortedValues.push({key: key, value: qxObject[key]})
-      }      
-      // sort the array
-      sortedValues.sort(function(a, b) {
+			var sortedValues = [];
+			// write the objects values to the new array
+			for (var key in qxObject) {
+				sortedValues.push({key: key, value: qxObject[key]})
+			}			
+			// sort the array
+			sortedValues.sort(function(a, b) {
+			  if( isNaN(a.key) || isNaN(b.key) ) {
+			    return ((a.key < b.key) ? -1 : ((a.key > b.key) ? 1 : 0));
+			  } else {
+			    return a.key - b.key;
+			  }
+			});/*
         // String compare
-        for (var i = 0; i < Math.max(a.key.length, b.key.length); i++) {
-          // check if one of the keys already ended
-          if (isNaN(a.key.charCodeAt(i))) {
-            return -1;
-          }
-          if (isNaN(b.key.charCodeAt(i))) {
-            return 1;
-          }
-          // compare the chacodes at all positions of the string          
-          if (a.key.charCodeAt(i) < b.key.charCodeAt(i)) {
-            return -1;
-          } else if (a.key.charCodeAt(i) > b.key.charCodeAt(i)) {
-            return 1;
-          }
-        }
-        // if the strings are equal
-        return 0;
-      });
-      
+				for (var i = 0; i < Math.max(a.key.length, b.key.length); i++) {
+					// check if one of the keys already ended
+					if (isNaN(a.key.charCodeAt(i))) {
+						return -1;
+					}
+					if (isNaN(b.key.charCodeAt(i))) {
+						return 1;
+					}
+					// compare the chacodes at all positions of the string					
+					if (a.key.charCodeAt(i) < b.key.charCodeAt(i)) {
+						return -1;
+					} else if (a.key.charCodeAt(i) > b.key.charCodeAt(i)) {
+						return 1;
+					}
+				}
+				// if the strings are equal
+				return 0;
+			});*/
+
 			// start the table which holds all attributes
 			returnString += "<table class='ins_dom_table'>";
       // go threw all properties of the object
