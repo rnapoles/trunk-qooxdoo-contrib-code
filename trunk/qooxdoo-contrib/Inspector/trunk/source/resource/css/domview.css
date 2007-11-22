@@ -92,6 +92,12 @@
   white-space: nowrap;  
 }
 
+.ins_dom_key a:hover {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .ins_dom_key_number {
   font: bold 12px Helvetica;
   vertical-align: top;
@@ -101,7 +107,7 @@
   color: #6A5ACD;
 }
 
-.ins_dom_key a:hover {
+.ins_dom_key_number a:hover {
   color: blue;
   text-decoration: underline;
   cursor: pointer;
