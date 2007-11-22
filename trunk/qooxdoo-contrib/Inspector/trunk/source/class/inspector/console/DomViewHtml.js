@@ -326,8 +326,15 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
           // if it is a function          
           } else if (sortedValues[i].value instanceof Function) {
-            // print out the objects value
-            returnString += "<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";            
+						
+						// if it is a qooxdoo class
+						if (sortedValues[i].value.toString().substr(0, 7) == "[Class ") {
+              // print out the objects value as a object
+              returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";							
+						} else {
+	            // print out the objects value as a function
+	            returnString += "<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";            							
+						}
             
           } else {
             // print out the objects value
