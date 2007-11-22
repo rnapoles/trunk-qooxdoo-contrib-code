@@ -43,6 +43,14 @@ public class Strings {
         }
     }
     
+    public static String removeSuffix(String str, String suffix) {
+        if (str.endsWith(suffix)) {
+            return str.substring(0, str.length() - suffix.length());
+        } else {
+            throw new IllegalArgumentException(str + "does not end with " + suffix);
+        }
+    }        
+    
     public static String stripExtension(String f) {
         int dotP;
         
