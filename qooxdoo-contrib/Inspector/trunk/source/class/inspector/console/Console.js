@@ -75,7 +75,7 @@ qx.Class.define("inspector.console.Console", {
     _helpButton: null,
     // tabview buttons
     _domButton: null,
-		_consoleButton: null,
+    _consoleButton: null,
     
     // the current widget
     _widget: null,
@@ -142,45 +142,73 @@ qx.Class.define("inspector.console.Console", {
      * Sets the given object in the dom view.
      * @param inputObject {Object} The object to inspect.
      */
-  inspectObject: function(inputObject) {
-    // pase the object to the dom view
-    this._domView.setObject(inputObject.object, inputObject.name);
-    // show the dom view
-    this._domButton.setChecked(true);
-    // change the title of the console window
-    this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                    this._domView.getCaptionMessage() + ")");    
-  },
+    inspectObject: function(inputObject) {
+      // pase the object to the dom view
+      this._domView.setObject(inputObject.object, inputObject.name);
+      // show the dom view
+      this._domButton.setChecked(true);
+      // change the title of the console window
+      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                      this._domView.getCaptionMessage() + ")");    
+    },
   
   
-  /**
-   * Fetches the object from the console view and tells the dom view to show 
-   * the objects properties.
-   * @internal
-   * @param id {Number} Set the object assosiated with the given id.
-   */
-  inspectObjectByInternalId: function(id) {
-    // get the object and the name
-    var o = this._consoleView.getObjectById(id);
-    // inspect the object
-    this.inspectObject(o);
-  },
+    /**
+     * Fetches the object from the console view and tells the dom view to show 
+     * the objects properties.
+     * @internal
+     * @param id {Number} Set the object assosiated with the given id.
+     */
+    inspectObjectByInternalId: function(id) {
+      // get the object and the name
+      var o = this._consoleView.getObjectById(id);
+      // inspect the object
+      this.inspectObject(o);
+    },
   
   
-  /**
-   * Sets a object in the dom view represented in the value (key) of the object
-   * stored in an internal array on the index position.
-   * @internal
-   * @param index {Number} The internal index of the object. 
-   * @param key {String} The name of the value to select.
-   */
-  inspectObjectByDomSelecet: function(index, key) {
-        // update the object in the domview
-        this._domView.setObjectByIndex(index, key);
-        // update the caption bar title
-        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                        this._domView.getCaptionMessage() + ")");        
-  },
+    /**
+     * Sets a object in the dom view represented in the value (key) of the object
+     * stored in an internal array on the index position.
+     * @internal
+     * @param index {Number} The internal index of the object. 
+     * @param key {String} The name of the value to select.
+     */
+    inspectObjectByDomSelecet: function(index, key) {
+          // update the object in the domview
+          this._domView.setObjectByIndex(index, key);
+          // update the caption bar title
+          this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                          this._domView.getCaptionMessage() + ")");        
+    },
+  
+    
+    /**
+     * Escape the html special character.
+     * @param value {String} The text containing the html characters.
+     */
+    escapeHtml: function(value) {
+      function replaceChars(ch) {
+        switch(ch) {
+          case "<":
+            return "&lt;";
+
+          case ">":
+            return "&gt;";
+
+          case "&":
+            return "&amp;";
+
+          case "'":
+            return "&#39;";
+
+          case '"':
+            return "&quot;";
+        }
+        return "?";
+      }
+      return String(value).replace(/[<>&"']/g, replaceChars);
+    },    
 
     
     /*
@@ -284,8 +312,8 @@ qx.Class.define("inspector.console.Console", {
        this._consoleView.clear();
      this._domView.clear();
    },
-    
-   
+
+
     /*
     *********************************
        OVERWRITTEN PROTTECTED FUNCTIONS

@@ -240,41 +240,24 @@ qx.Class.define("inspector.console.DomViewHtml", {
       var nothingToShow = true;
       
       // create a temp array for the sorted values
-			var sortedValues = [];
-			// write the objects values to the new array
-			for (var key in qxObject) {
-				sortedValues.push({key: key, value: qxObject[key]})
-			}			
-			// sort the array
-			sortedValues.sort(function(a, b) {
-			  if( isNaN(a.key) || isNaN(b.key) ) {
-			    return ((a.key < b.key) ? -1 : ((a.key > b.key) ? 1 : 0));
-			  } else {
-			    return a.key - b.key;
-			  }
-			});/*
-        // String compare
-				for (var i = 0; i < Math.max(a.key.length, b.key.length); i++) {
-					// check if one of the keys already ended
-					if (isNaN(a.key.charCodeAt(i))) {
-						return -1;
-					}
-					if (isNaN(b.key.charCodeAt(i))) {
-						return 1;
-					}
-					// compare the chacodes at all positions of the string					
-					if (a.key.charCodeAt(i) < b.key.charCodeAt(i)) {
-						return -1;
-					} else if (a.key.charCodeAt(i) > b.key.charCodeAt(i)) {
-						return 1;
-					}
-				}
-				// if the strings are equal
-				return 0;
-			});*/
+      var sortedValues = [];
+      // write the objects values to the new array
+      for (var key in qxObject) {
+        sortedValues.push({key: key, value: qxObject[key]})
+      }
+      
+      // sort the array
+      sortedValues.sort(function(a, b) {
+        // both parameters a no numbers
+        if( isNaN(a.key) || isNaN(b.key) ) {
+          return ((a.key < b.key) ? -1 : ((a.key > b.key) ? 1 : 0));
+        } else {
+          return a.key - b.key;
+        }
+      });
 
-			// start the table which holds all attributes
-			returnString += "<table class='ins_dom_table'>";
+      // start the table which holds all attributes
+      returnString += "<table class='ins_dom_table'>";
       // go threw all properties of the object
       for (var i = 0; i < sortedValues.length; i++) {      
         // kar that there has been a property printed out
@@ -286,13 +269,13 @@ qx.Class.define("inspector.console.DomViewHtml", {
         if (!(sortedValues[i].value instanceof Object)) {
           returnString += "<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
                           qx.io.Alias.getInstance().resolve("inspector/image/spacer.gif") + 
-                          "'>" + sortedValues[i].key + "</td>";
+                          "'>" + this._console.escapeHtml(sortedValues[i].key) + "</td>";
           
           // if the value is null
           if (sortedValues[i].value == null) {
               returnString += "<td><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>";
           } else if (typeof sortedValues[i].value == "string"){
-              returnString += "<td class='ins_dom_string'>&quot;" + sortedValues[i].value + "&quot;</td></tr>";              
+              returnString += "<td class='ins_dom_string'>&quot;" + this._console.escapeHtml(sortedValues[i].value) + "&quot;</td></tr>";              
           } else {
               returnString += "<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>";
           }
@@ -318,7 +301,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
                             "'><img class='ins_dom_front_image' src='" + 
                             qx.io.Alias.getInstance().resolve("inspector/image/open.gif") + 
-                            "'>" + sortedValues[i].key + "</a></td>";
+                            "'>" + this._console.escapeHtml(sortedValues[i].key) + "</a></td>";
           }
             
           // if the object holds a reference to itself
@@ -332,15 +315,15 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
           // if it is a function          
           } else if (sortedValues[i].value instanceof Function) {
-						
-						// if it is a qooxdoo class
-						if (sortedValues[i].value.toString().substr(0, 7) == "[Class ") {
+            
+            // if it is a qooxdoo class
+            if (sortedValues[i].value.toString().substr(0, 7) == "[Class ") {
               // print out the objects value as a object
-              returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";							
-						} else {
-	            // print out the objects value as a function
-	            returnString += "<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";            							
-						}
+              returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";              
+            } else {
+              // print out the objects value as a function
+              returnString += "<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                          
+            }
             
           } else {
             // print out the objects value
@@ -349,9 +332,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
         }
       }
-			// end the table
-			returnString += "</table>";
-			
+      // end the table
+      returnString += "</table>";
+      
       // if there is no property
       if (nothingToShow) {
           returnString += "<div class='ins_dom_no_prop'>There are no properties to show for this object.</div>";
@@ -457,6 +440,5 @@ qx.Class.define("inspector.console.DomViewHtml", {
       
       return returnString;
     }
-
   }     
 });
