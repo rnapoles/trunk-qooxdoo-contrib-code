@@ -1,3 +1,9 @@
+/* TABLE */
+.ins_dom_table {
+  width: 100%;
+}
+
+
 /* RETURN PATH */
 .ins_dom_return_path_main {
   font: bold 12px Helvetica;
@@ -81,9 +87,9 @@
 .ins_dom_key {
   font: bold 12px Helvetica;
   vertical-align: top;
-  width: 30%;
-  float: left;
   margin-left: 5px;
+  width: 30%;
+  white-space: nowrap;  
 }
 
 .ins_dom_key a:hover {

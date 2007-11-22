@@ -38,7 +38,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
     this._htmlEmbed = new qx.ui.embed.HtmlEmbed();
     this._htmlEmbed.setBackgroundColor("white");
     this._htmlEmbed.setBorder("inset");
-    this._htmlEmbed.setOverflow("scrollY");
+    this._htmlEmbed.setOverflow("auto");
     this._htmlEmbed.setWidth("100%");
     this._htmlEmbed.setHeight(174);
     this.add(this._htmlEmbed);
@@ -267,6 +267,8 @@ qx.Class.define("inspector.console.DomViewHtml", {
         return 0;
       });
       
+			// start the table which holds all attributes
+			returnString += "<table class='ins_dom_table'>";
       // go threw all properties of the object
       for (var i = 0; i < sortedValues.length; i++) {      
         // kar that there has been a property printed out
@@ -276,17 +278,17 @@ qx.Class.define("inspector.console.DomViewHtml", {
 
         // if it is not an object
         if (!(sortedValues[i].value instanceof Object)) {
-          returnString += "<div class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
+          returnString += "<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
                           qx.io.Alias.getInstance().resolve("inspector/image/spacer.gif") + 
-                          "'>" + sortedValues[i].key + "</div>";
+                          "'>" + sortedValues[i].key + "</td>";
           
           // if the value is null
           if (sortedValues[i].value == null) {
-              returnString += "<div><span class='ins_dom_null'>" + sortedValues[i].value + "</span></div>";
+              returnString += "<td><span class='ins_dom_null'>" + sortedValues[i].value + "</span></td></tr>";
           } else if (typeof sortedValues[i].value == "string"){
-              returnString += "<div class='ins_dom_string'>&quot;" + sortedValues[i].value + "&quot;</div>";              
+              returnString += "<td class='ins_dom_string'>&quot;" + sortedValues[i].value + "&quot;</td></tr>";              
           } else {
-              returnString += "<div class='ins_dom_basic'>"  + sortedValues[i].value + "</div>";
+              returnString += "<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>";
           }
 
         // if it is an object          
@@ -306,35 +308,37 @@ qx.Class.define("inspector.console.DomViewHtml", {
           // if it is not the selected object (self reference)
           if (sortedValues[i].value != qxObject) {
             // print out the objects key incl. the link to select it         
-            returnString += "<div class='ins_dom_key'><a onclick='" +
+            returnString += "<tr><td class='ins_dom_key'><a onclick='" +
                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
                             "'><img class='ins_dom_front_image' src='" + 
                             qx.io.Alias.getInstance().resolve("inspector/image/open.gif") + 
-                            "'>" + sortedValues[i].key + "</a></div>";
+                            "'>" + sortedValues[i].key + "</a></td>";
           }
             
           // if the object holds a reference to itself
           if (sortedValues[i].value == qxObject) {
             // print out the objects key without the link to select it        
-            returnString += "<div class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
+            returnString += "<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
                             qx.io.Alias.getInstance().resolve("inspector/image/spacer.gif") + 
-                            "'>" + sortedValues[i].key + "</div>";            
+                            "'>" + sortedValues[i].key + "</td>";            
             // print out a message for a self index
-            returnString += "<div class='ins_dom_self_ref'>self reference</div>";
+            returnString += "<td class='ins_dom_self_ref'>self reference</td></tr>";
 
           // if it is a function          
           } else if (sortedValues[i].value instanceof Function) {
             // print out the objects value
-            returnString += "<div class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</div>";            
+            returnString += "<td class='ins_dom_func_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";            
             
           } else {
             // print out the objects value
-            returnString += "<div class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</div>";                      
+            returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                      
           }
 
         }
       }
-      
+			// end the table
+			returnString += "</table>";
+			
       // if there is no property
       if (nothingToShow) {
           returnString += "<div class='ins_dom_no_prop'>There are no properties to show for this object.</div>";
