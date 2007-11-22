@@ -180,15 +180,21 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       var object = (function(text, ans){return eval(text)}).call(this._controller.getWidget(), objectRef, this._controller.getAns());        
       
       // check if it has returned an qooxdoo object
-      if (!(object instanceof qx.core.Object) ) {
+      if (!(object instanceof Object) ) {
         // hide the popup
         this.hide();
         // stop forther processing
         return;
-      } else {
+      } 
+			
+			// if it is a qooxdoo object
+			if (object instanceof qx.core.Object) {
         // write the classname to the header cell
         this._tableModel.setColumnNamesByIndex(["", object.classname]);        
-      }
+      } else {
+				// write the reference to the object to the header cell
+		 	  this._tableModel.setColumnNamesByIndex(["", objectRef]);
+		  }
       
       // generate the search object
       var regExp = new RegExp("^" + searchTerm);
