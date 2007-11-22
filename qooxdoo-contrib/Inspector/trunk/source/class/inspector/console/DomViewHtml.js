@@ -254,7 +254,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
         } else {
           return a.key - b.key;
         }
-      });
+      });			
 
       // start the table which holds all attributes
       returnString += "<table class='ins_dom_table'>";
@@ -264,10 +264,19 @@ qx.Class.define("inspector.console.DomViewHtml", {
         nothingToShow = false;
         // start the return divs
         returnString += "";
+				
+				// if the key is a number
+				if (!isNaN(sortedValues[i].key)) {
+					// set the style for key as numbers
+					var keyStyle = "ins_dom_key_number";
+				} else {
+					// set the style for string keys
+					var keyStyle = "ins_dom_key";
+				}
 
         // if it is not an object
         if (!(sortedValues[i].value instanceof Object)) {
-          returnString += "<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
+          returnString += "<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
                           qx.io.Alias.getInstance().resolve("inspector/image/spacer.gif") + 
                           "'>" + this._console.escapeHtml(sortedValues[i].key) + "</td>";
           
@@ -297,7 +306,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
           // if it is not the selected object (self reference)
           if (sortedValues[i].value != qxObject) {
             // print out the objects key incl. the link to select it         
-            returnString += "<tr><td class='ins_dom_key'><a onclick='" +
+            returnString += "<tr><td class='" + keyStyle + "'><a onclick='" +
                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
                             "'><img class='ins_dom_front_image' src='" + 
                             qx.io.Alias.getInstance().resolve("inspector/image/open.gif") + 
@@ -415,7 +424,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
                 returnString += object[j] + ", ";
             }
             // print out a message that there are more
-            returnString += " ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]";
+            returnString += ", ... <span class='ins_dom_array_more'>" + (object.length - 2) + " more</span> ]";
         // if it is an empty array                
         } else if (object.length == 0) {
             returnString += " ]";
