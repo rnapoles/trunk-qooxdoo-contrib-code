@@ -73,6 +73,7 @@ qx.Class.define("inspector.console.Console", {
     // buttons
     _clearButton: null,
     _helpButton: null,
+		_setButton: null,
     // tabview buttons
     _domButton: null,
     _consoleButton: null,
@@ -103,12 +104,11 @@ qx.Class.define("inspector.console.Console", {
     setWidget: function(widget) {
       // set the widget first!
       this._widget = widget;
-      // if the console-view is on the screen
-      if (this._consoleButton.getChecked()) {
-        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                        this._consoleView.getCaptionMessage() + ")");
-
-      }
+      // show the console view
+			this._consoleButton.setChecked(true)
+      // set the name of the selected widget in the caption bar
+			this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                      this._consoleView.getCaptionMessage() + ")");      
     },
     
     
@@ -306,11 +306,18 @@ qx.Class.define("inspector.console.Console", {
    
    
    /**
-    * Clears the views of the console.
+    * Clears the current view of the console.
     */
-   _clearViews: function() {
-       this._consoleView.clear();
-     this._domView.clear();
+   _clearView: function() {
+	 	 // if the console view is on the screen
+     if (this._consoleButton.getChecked()) {
+		 	 // clear the console view screen
+			 this._consoleView.clear();
+     // if the dom view is on the screen			 
+		 } else if (this._domButton.getChecked()) {
+		 	 // clear the dom view screen
+	     this._domView.clear();
+		 }		 
    },
 
 
@@ -383,20 +390,30 @@ qx.Class.define("inspector.console.Console", {
       this._mainLayout.add(this._tabView);
   
       // register the clear event listener
-      this._clearButton.addEventListener("click", this._clearViews, this);    
+      this._clearButton.addEventListener("click", this._clearView, this);    
       // register a handlert to print out the help text on the console
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
       
       // click listener for changing the caption bar title of the window
       this._consoleButton.addEventListener("click", function() {
-        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+        // set the title of the caption bar
+				this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._consoleView.getCaptionMessage() + ")");
+				// set the focus to the right element in the view
 				this._consoleView.focus();
+				// enable the buttons
+				this._setButton.setEnabled(true);
+				this._helpButton.setEnabled(true);
       }, this);
       this._domButton.addEventListener("click", function() {
+        // set the title of the caption bar
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._domView.getCaptionMessage() + ")");
+				// set the focus to the right element in the view
 				this._domView.focus();
+        // enable the buttons
+        this._setButton.setEnabled(false);			
+				this._helpButton.setEnabled(false);	
       }, this);
     },
     
@@ -432,9 +449,9 @@ qx.Class.define("inspector.console.Console", {
       }, this);
 */      
 
-      var setButton = new qx.ui.toolbar.Button("Settings-Map");
-      this._toolbar.add(setButton);
-      setButton.addEventListener("execute", function() {
+      this._setButton = new qx.ui.toolbar.Button("Settings-Map");
+      this._toolbar.add(this._setButton);
+      this._setButton.addEventListener("execute", function() {
         this._consoleView.printCode(this._generateSettingsMap());
       }, this);
         
