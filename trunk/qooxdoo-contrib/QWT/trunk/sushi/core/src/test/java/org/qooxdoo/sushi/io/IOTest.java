@@ -135,8 +135,10 @@ public class IOTest {
         IO io;
         
         io = new IO();
-        io.locateClasspathItem(IO.class).checkExists();
-        io.locateClasspathItem(Reflect.resourceName(IOTest.class)).checkExists();
+        io.locateClasspathItem(IO.class).checkDirectory();
+        io.locateClasspathItem(Reflect.resourceName(IOTest.class)).checkDirectory();
+        io.locateClasspathItem(Object.class).checkFile();
+        io.locateClasspathItem("/java/lang/Object.class").checkFile();
         try {
             assertNull(io.locateClasspathItem("/nosuchresource"));
             fail();
