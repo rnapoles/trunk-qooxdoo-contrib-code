@@ -67,7 +67,7 @@ qx.Class.define("custom.Application",
       // Attach a tooltip
       button1.setToolTip(new qx.ui.popup.ToolTip("A nice tooltip", "icon/32/status/dialog-information.png"));
 
-      button1.setHtmlProperty("id","hugo");
+      button1.setHtmlProperty("id","button");
       button1.setUserData("thefatbutton", "this is for selenium");
 
       // textfield
@@ -100,6 +100,13 @@ qx.Class.define("custom.Application",
       b2.setHtmlProperty("id","Second");
       var p2 = new qx.ui.pageview.tabview.Page(b2);
       tv.getPane().add(p2);
+
+      // create some arbitrary object nestings
+      this.c1={};
+      this.c1.c2 = {};
+      this.c1.c2.c3={};
+      this.c1.c2.c3.First=b1;
+      this.c1.c2.Second=b2;
 
 
       //this.tracker = new custom.MouseTracker();
