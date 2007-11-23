@@ -362,11 +362,11 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
      * locator syntax: qxp=oneId/childId1/childId2//xpath
      *
      * TODO: Test this addition
-     * credits: Sebastian Dauß
+     * credits: Sebastian Dauï¿½
      *
      */
     LOG.info("Locate Element by qooxdoo-UserData-XPath-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
- 
+    
     var locatorParts = qxLocator.split('//');
     if (locatorParts.length !== 2){
         throw new SeleniumError("Error: wrong QXP locator syntax. need: qx1/qx2/.../qxn//xpath");
@@ -390,6 +390,72 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
     var resultElement = this._findElementUsingFullXPath('descendant::'+xpathPart, qxElement, inWindow);
     return resultElement;
 };
+
+PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow) {
+    /**
+     * Finds an element identified by qooxdoo object hierarchy, down from the Application object
+     *
+     * locator syntax: qxh=firstLevelChild/secondLevelChild/thirdLevelChild
+     *
+     *    where on each level the child can be identified by:
+     *    - an identifier (which will be taken as a literal object member of the parent)
+     *    - a special identifier starting with "qx." (this will be taken as a qooxdoo class signifying the child, e.g. "qx.ui.form.Button") [TODO]
+     *    - "child[n]" (where n signifies the nth child of the current parent) [TODO]
+     *    - [@attrib=value] (matches on children that have an attribute/property where value holds) [TODO]
+     *      - [@label=string] a special case (pseudo attribute label will look for the widget label)
+     *
+     */
+    LOG.info("Locate Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
+ 
+    var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
+    
+    if (qxObject) {
+      return qxObject.getElement();        
+    } else {
+      return null;
+    }
+};
+
+PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow) {
+     if (!inWindow) {
+        throw new Error("No AUT window. Internal Error.");
+    }
+    var qxResultObject = null;
+    // the AUT window must contain the qx-Object
+    var qxRoot;
+    if (inWindow.qx) {
+        LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
+        qxRoot = inWindow.qx.core.Init.getInstance().getApplication();
+        //qxRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
+    } else {
+        LOG.error("qx-Locator: qx-Object not defined. inWindow=" + inWindow + ", inWindow.qx=" + inWindow.qx);
+        // do not throw here, as if the locator fails in the first place selenium will call this
+        // again with all frames (and windows?) which won't result in "element not found" but in
+        // qooxdoo not beeing availabel.
+        return null;
+    }
+    LOG.debug("qxLocator All basic checks passed.");
+
+    var qxhParts = qxLocator.split('/');
+ 
+    try
+    {
+      qxResultObject = this._searchQxObjectByQxHierarchy(qxRoot,qxhParts);
+    } catch (e)
+    {
+      if (e instanceof Array)
+      { // re-package as SeleniumError
+        //throw new SeleniumError("Qooxdoo-Element " + e.join('/') + " not found");
+        return null; // for now just return null
+      } else 
+      {  // re-raise
+        throw e;
+      }
+    }
+
+    return qxResultObject;
+};
+
 
 PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow) {
     if (!inWindow) {
@@ -454,4 +520,205 @@ PageBot.prototype._searchQxObjectByQxUserData = function(obj, userDataSearchStri
         }
     }
     return null;
+};
+
+
+PageBot.prototype._searchQxObjectByQxHierarchy = function (root, path)
+{
+  // recursive traverse the path
+  // currently, we only return single elements, not sets of matching elements
+  
+  // some regexps
+  var IDENTIFIER = new RegExp('^[a-z$][a-z0-9_\.$]*$','i');
+  var NTHCHILD   = /^child\[\d+\]$/i;
+  var ATTRIB     = /^\[.*\]$/;
+
+  if (path.length == 0)
+  {
+    return null;
+  }
+
+  if (root == null) 
+  {
+    throw new SeleniumError("QxhPath: Cannot determine descendant from null root for: "+path);
+  }
+
+  var el = null;  // the yet to find current element
+  var step = path[0]; // the current part of the QPath expression
+
+  // get a suitable element from the current step, dispatching on step type
+  if (step.match(IDENTIFIER))
+  {
+    if (step.indexOf('qx.')!=0)  // process object member
+    {
+      //el = this._getQxElementFromStep1(root,step);  // i seem to be loosing 'this' in the recursion?!
+      el = PageBot.prototype._getQxElementFromStep1(root,step);
+    } else { // process 'qx....' class references
+      el = PageBot.prototype._getQxElementFromStep2(root,step);
+    }
+  } else if (step.match(NTHCHILD)) // 'child[n]' format
+  {
+    el = getQxElementFromStep3(root, step);
+  } else if (step.match(ATTRIB))  // '[@..=...]' format
+  {
+    el = getQxElementFromStep4(root, step);
+  } else // unknown step format
+  {
+    throw new SeleniumError("QPath: Illegal step: " + step);
+  }
+
+  // check result
+  if (el == null)
+  {
+    throw [step];
+  }
+
+  // recurse
+  var npath = path.slice(1);
+  if (npath.length == 0) {
+    return el;
+  } else {
+    // basically we tail recurse, but catch exceptions
+    try 
+    {
+      var res = arguments.callee(el, npath);
+    } catch (pathFromHere)
+    {
+      if (pathFromHere instanceof Array)
+      {
+        // prepend the current step
+        throw pathFromHere.unshift(step);
+      } else { // re-raise
+        throw pathFromHere;
+      }
+    }
+    return res;
+  }
+
+}; // _searchQxObjectByQxHierarchy()
+
+
+// 'button1' (from 'w.button1')
+PageBot.prototype._getQxElementFromStep1 = function (root, step)
+{
+  // find an object member of root with name 'step'
+  var member;
+  for (member in root)
+  {
+    if (member == step)
+    {
+      return root[member];
+    }
+  }
+  return null;
+};
+
+
+// 'qx.ui.form.Button'
+PageBot.prototype._getQxElementFromStep2 = function (root, qxclass)
+{
+  // find a child of root with qooxdoo type 'qxclass'
+  var childs;
+  var curr;
+
+  childs = root.getChildren();
+  for (var i=0; i<childs.length; i++)
+  {
+    curr = childs[i];
+    if (curr instanceof qxclass)
+    {
+      return curr;
+    }
+  }
+  return null;
+
+};
+
+
+// 'child[3]'
+PageBot.prototype._getQxElementFromStep3 = function (root, childspec)
+{
+  // find a child of root by index
+  var childs;
+  var idx;
+  var m;
+
+  // extract child index
+  m = /child\[(\d+)\]/i.exec(childspec);
+  if ((m instanceof Array) && m.length>1)
+  {
+    idx = m[1];
+  } else 
+  {
+    return null;
+  }
+
+  childs = root.getChildren();
+  if (idx < 0 || idx >= childs.length)
+  {
+    return null;
+  } else 
+  {
+    return childs[idx];
+  }
+
+};
+
+
+// '[@label="hugo"]'
+PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
+{
+  // find a child of root by attribute
+  var childs;
+  var attrib;
+  var attval;
+  var curr;
+  var m;
+  var iWindow = this.getCurrentWindow(); // need to get to qx.Class
+
+  if ((! iWindow) || (! iWindow.qx) 
+  {
+    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
+  } else 
+  {
+    var qx = iWindow.qx;
+  }
+
+  // extract attribute and value
+  m = /\[@([^=]+)=(.+)\]$/.exec(attribspec);
+  if ((m instanceof Array) && m.length>2)
+  {
+    attrib = m[1];
+    attval = m[2];
+  } else 
+  {
+    return null;
+  }
+
+  childs = root.getChildren();
+  for (var i=0; i<childs.length; i++)
+  {
+    curr = childs[i];
+    // check properties first
+    //var qxclass = qx.Class.getByName(curr.classname);
+    if (qx.Class.hasProperty(curr.constructor,attrib) // see qx.Class API
+    {
+      if (curr.getProperty(attrib) == attval)
+      {
+        return curr;
+      }
+    }
+    // then, check normal JS attribs
+    else if ((attrib in curr) && (curr[attrib]==attval))
+    { 
+      return curr;
+    }
+    // last, if it is a @label attrib, try check the label of the widget
+    else if ()
+    {
+      
+    }
+  }
+  return null;
+
 };
