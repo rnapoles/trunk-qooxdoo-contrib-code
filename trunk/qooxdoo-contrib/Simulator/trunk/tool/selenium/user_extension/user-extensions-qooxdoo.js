@@ -549,19 +549,19 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function (root, path)
   // get a suitable element from the current step, dispatching on step type
   if (step.match(IDENTIFIER))
   {
-    if (step.indexOf('qx.')!=0)  // process object member
+    if (step.indexOf('qx.')!=0)    // 'foo' format
     {
       //el = this._getQxElementFromStep1(root,step);  // i seem to be loosing 'this' in the recursion?!
       el = PageBot.prototype._getQxElementFromStep1(root,step);
-    } else { // process 'qx....' class references
+    } else {                       // 'qx....' format
       el = PageBot.prototype._getQxElementFromStep2(root,step);
     }
   } else if (step.match(NTHCHILD)) // 'child[n]' format
   {
-    el = getQxElementFromStep3(root, step);
-  } else if (step.match(ATTRIB))  // '[@..=...]' format
+    el = PageBot.prototype._getQxElementFromStep3(root, step);
+  } else if (step.match(ATTRIB))   // '[@..=...]' format
   {
-    el = getQxElementFromStep4(root, step);
+    el = PageBot.prototype._getQxElementFromStep4(root, step);
   } else // unknown step format
   {
     throw new SeleniumError("QPath: Illegal step: " + step);
@@ -674,14 +674,35 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
   var attval;
   var curr;
   var m;
-  var iWindow = this.getCurrentWindow(); // need to get to qx.Class
+  //var iWindow = this.getCurrentWindow(); // need to get to qx.Class
+  //var iWindow = Window;
 
-  if ((! iWindow) || (! iWindow.qx) 
+  function getQx(obj)
+  {
+    if (!obj)
+    {
+      return null;
+    }
+    if (!obj.superclass)
+    {
+      return obj; // qx hopefully
+    } else 
+    {
+      arguments.callee(obj.superclass);
+    }
+    
+  };
+
+  var globalQxObject = getQx(root);
+
+  //if ((! iWindow) || (! iWindow.qx))
+  if (! globalQxObject)
   {
     throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
   } else 
   {
-    var qx = iWindow.qx;
+    //var qx = iWindow.qx;
+    var qx = globalQxObject;
   }
 
   // extract attribute and value
@@ -695,15 +716,21 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
     return null;
   }
 
-  childs = root.getChildren();
+  if (!root.getChildren)
+  {
+    throw new SeleniumError("QxhPath: Not traversing a widget hierarchy (built with add())");
+  } else
+  {
+    childs = root.getChildren();
+  }
   for (var i=0; i<childs.length; i++)
   {
     curr = childs[i];
     // check properties first
     //var qxclass = qx.Class.getByName(curr.classname);
-    if (qx.Class.hasProperty(curr.constructor,attrib) // see qx.Class API
+    if (qx.Class.hasProperty(curr.constructor,attrib)) // see qx.Class API
     {
-      if (curr.getProperty(attrib) == attval)
+      if (curr.get(attrib) == attval)
       {
         return curr;
       }
@@ -714,9 +741,18 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
       return curr;
     }
     // last, if it is a @label attrib, try check the label of the widget
-    else if ()
+    else if (/^label$/i.exec(attrib))
     {
-      
+      // try getLabel() method
+      if (curr.getLabel)
+      {
+        // it's nice to match against regexp's
+        var rval = new RegExp(attval);
+        if ((curr.getLabel()).match(rval))
+        {
+          return curr;
+        }
+      }
     }
   }
   return null;
