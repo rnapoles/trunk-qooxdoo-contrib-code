@@ -184,7 +184,6 @@ class qcl_db_pear extends qcl_db
 	{
 		$id		 = $data[$idColumn];
 		unset($data[$idColumn]);
-		
 		$pairs   = array();
 		
 		foreach ( $data as $key => $value )
