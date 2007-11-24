@@ -269,7 +269,7 @@ class qcl_object extends patched_object {
 		if ( QCL_LOG_LEVEL and QCL_LOG_LEVEL <= $logLevel)
 		{
 			$message = date("y-m-j H:i:s");
-			if ( $logLevel = QCL_LOG_DEBUG )
+			if ( QCL_LOG_SHOW_CLASS_NAME )
 			{
 				$message .= " [" . get_class($this) ."]";
 			}
