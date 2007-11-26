@@ -138,7 +138,6 @@ class qcl_auth_user extends qcl_auth_common
 		}
 		
 		$myRoles = $this->getRoles($userRef,$getNamedIds);
-		
 		$result = array();
 		foreach ( $myRoles as $roleRef )
 		{
@@ -216,6 +215,15 @@ class qcl_auth_user extends qcl_auth_common
     * @return int
     */
    function getActiveUserName()
+   {
+   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_namedId]; 
+   }
+
+   /**
+    * gets active user named id
+    * @return int
+    */
+   function getActiveUserNamedId()
    {
    		return $_SESSION['qcl_auth_user_activeUser'][$this->key_namedId]; 
    }
