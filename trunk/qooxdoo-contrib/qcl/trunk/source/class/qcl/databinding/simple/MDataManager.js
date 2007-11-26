@@ -527,17 +527,26 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           /* qcl.config */
           case "configMap":
 						this.setConfigMap(data.configMap);
-						break;	 
+						break;	
+            
+          /* userdata */
+          case "userData":
+            for (var key in data.userData)
+            {
+              this.setUserData(key,data.userData[key]);  
+            }
+						break;	             
                   
           /* default: set property */    
           default:
-            try
+            var setter = "set" + key.charAt(0).toUpperCase() + key.substr(1);
+            if (typeof this[setter] == "function" )
+            { 
+              this[setter](data[key]);  
+            }
+            else
             {
-              this.set( key, data[key] );
-            }          
-            catch(e)
-            {
-              this.warn( e );
+              this.warn( "Cannot set property" + key + ": " + this + " has no method " + setter + "()" );
             }
         }
       }
@@ -765,6 +774,11 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               data[prop].push(this.getWidgetData());
             });
             break;
+
+          // get data from user data "content"
+          case "userData":
+            data[prop]= this.getUserData("content");
+            break;
           
           // get data from selection
           case "selected":
@@ -853,6 +867,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             return "text";
           case "qx.ui.embed.HtmlEmbed":
             return "html";
+          case "qx.ui.embed.Iframe":
+            return "userData";
         	default:
         	 return null;
       }
@@ -908,7 +924,24 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             }
          } 
        }
+    },
+    
+    /**
+     * enables widget
+     */
+    enable : function()
+    {
+      this.setEnabled(true);
+    },
+    
+    /**
+     * disables widget
+     */
+    disable : function()
+    {
+      this.setEnabled(false);
     }
+    
   }
 
 });
