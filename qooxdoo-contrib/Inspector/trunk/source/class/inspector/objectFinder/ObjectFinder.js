@@ -398,9 +398,12 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._tableModel.setColumns(["Hash", "Classname"]);
       this._tableModel.sortByColumn(0, true);
       // initialize table
-      this._table = new qx.ui.table.Table(this._tableModel);
+      this._table = new inspector.Table(this._tableModel);
       this._table.setHeight("1*");
       
+			this._table.setRowContentName("object");
+			this._table.setRowsContentName("objects");
+			
       this._table.setWidth(320);
       this._table.setShowCellFocusIndicator(false);
       this._table.setColumnVisibilityButtonVisible(false);            
