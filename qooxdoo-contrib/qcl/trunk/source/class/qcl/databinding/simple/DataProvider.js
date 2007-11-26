@@ -284,8 +284,36 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
         if (!eval(this.getOnReset())) return false;
       }
       this.clear();
-    }          
+    },
     
+
+    /**
+     * enables a form 
+     * @type member
+     * @return {void}
+     */    
+    enableBoundWidgets : function()
+    {
+      var boundWidgets = this.getBoundWidgets();
+      for ( var key in boundWidgets )
+      {
+        boundWidgets[key].enable();
+      }      
+    },
+    
+    /**
+     * disables a form 
+     * @type member
+     * @return {void}
+     */    
+    disableBoundWidgets : function()
+    {
+      var boundWidgets = this.getBoundWidgets();
+      for ( var key in boundWidgets )
+      {
+        boundWidgets[key].disable();
+      }      
+    }    
   },
 
   /*
