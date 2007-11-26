@@ -190,7 +190,7 @@ class qcl_config_db extends qcl_config
 		{
 			// no user reference given, assume active user
 			$activeUser 	= $this->user->getActiveUser(); 
-			$activeUserId 	= $this->user->getActiveUserId();
+			$activeUserId 	= (int) $this->user->getActiveUserId();
 	
 			// get all rows containing key name
 			$rows = $this->db->getAllRows("
