@@ -20,6 +20,18 @@
 qx.Class.define("inspector.console.Console", {
   
   extend : inspector.AbstractWindow,  
+
+
+  /*
+  *****************************************************************************
+     STATICS
+  *****************************************************************************
+  */  
+  statics: {
+    // the therm which is in the search textfield by default
+    SEARCH_TERM: "Search..."
+  },
+
     
   /*
   *****************************************************************************
@@ -73,7 +85,8 @@ qx.Class.define("inspector.console.Console", {
     // buttons
     _clearButton: null,
     _helpButton: null,
-		_setButton: null,
+    _setButton: null,
+    _findField: null,
     // tabview buttons
     _domButton: null,
     _consoleButton: null,
@@ -82,6 +95,8 @@ qx.Class.define("inspector.console.Console", {
     _widget: null,
     _ans: null,
     
+    // timers    
+    _searchTimer: null,
     
     /*
     *********************************
@@ -105,9 +120,11 @@ qx.Class.define("inspector.console.Console", {
       // set the widget first!
       this._widget = widget;
       // show the console view
-			this._consoleButton.setChecked(true)
+      this._consoleButton.setChecked(true);
+      // enabled / disable the buttons
+      this._enableButtons("console");
       // set the name of the selected widget in the caption bar
-			this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                       this._consoleView.getCaptionMessage() + ")");      
     },
     
@@ -147,6 +164,8 @@ qx.Class.define("inspector.console.Console", {
       this._domView.setObject(inputObject.object, inputObject.name);
       // show the dom view
       this._domButton.setChecked(true);
+      // enabled / disable the buttons
+      this._enableButtons("dom");      
       // change the title of the console window
       this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                       this._domView.getCaptionMessage() + ")");    
@@ -175,8 +194,11 @@ qx.Class.define("inspector.console.Console", {
      * @param key {String} The name of the value to select.
      */
     inspectObjectByDomSelecet: function(index, key) {
+          // reset the filter
+          this._findField.setValue(inspector.console.Console.SEARCH_TERM);
           // update the object in the domview
           this._domView.setObjectByIndex(index, key);
+          
           // update the caption bar title
           this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                           this._domView.getCaptionMessage() + ")");        
@@ -309,17 +331,38 @@ qx.Class.define("inspector.console.Console", {
     * Clears the current view of the console.
     */
    _clearView: function() {
-	 	 // if the console view is on the screen
+      // if the console view is on the screen
      if (this._consoleButton.getChecked()) {
-		 	 // clear the console view screen
-			 this._consoleView.clear();
-     // if the dom view is on the screen			 
-		 } else if (this._domButton.getChecked()) {
-		 	 // clear the dom view screen
-	     this._domView.clear();
-		 }		 
+        // clear the console view screen
+       this._consoleView.clear();
+     // if the dom view is on the screen       
+     } else if (this._domButton.getChecked()) {
+        // clear the dom view screen
+       this._domView.clear();
+     }     
    },
 
+
+    /**
+     * Enabled / disabled the buttons needed by the specified view. 
+     * @param view {String} The name of the view (dom or console)
+     */
+    _enableButtons: function(view) {
+      switch (view) {
+        case "console":
+          this._clearButton.setEnabled(true);
+          this._setButton.setEnabled(true);
+          this._helpButton.setEnabled(true);
+          this._findField.setEnabled(false);      
+          break;
+        case "dom":
+          this._clearButton.setEnabled(true);
+          this._setButton.setEnabled(false);
+          this._helpButton.setEnabled(false);
+          this._findField.setEnabled(true);
+          break;
+      }
+    },
 
     /*
     *********************************
@@ -388,7 +431,9 @@ qx.Class.define("inspector.console.Console", {
       this._tabView.getPane().add(consolePage, domPage);
       // add the tabview to the window      
       this._mainLayout.add(this._tabView);
-  
+      // set the buttons to the default value
+      this._enableButtons("console");
+
       // register the clear event listener
       this._clearButton.addEventListener("click", this._clearView, this);    
       // register a handlert to print out the help text on the console
@@ -397,23 +442,21 @@ qx.Class.define("inspector.console.Console", {
       // click listener for changing the caption bar title of the window
       this._consoleButton.addEventListener("click", function() {
         // set the title of the caption bar
-				this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+        this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._consoleView.getCaptionMessage() + ")");
-				// set the focus to the right element in the view
-				this._consoleView.focus();
-				// enable the buttons
-				this._setButton.setEnabled(true);
-				this._helpButton.setEnabled(true);
+        // set the focus to the right element in the view
+        this._consoleView.focus();
+        // enable the buttons
+        this._enableButtons("console");
       }, this);
       this._domButton.addEventListener("click", function() {
         // set the title of the caption bar
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._domView.getCaptionMessage() + ")");
-				// set the focus to the right element in the view
-				this._domView.focus();
+        // set the focus to the right element in the view
+        this._domView.focus();
         // enable the buttons
-        this._setButton.setEnabled(false);			
-				this._helpButton.setEnabled(false);	
+        this._enableButtons("dom");
       }, this);
     },
     
@@ -456,11 +499,49 @@ qx.Class.define("inspector.console.Console", {
       }, this);
         
       // add a spacer to keep the help button rigth
-      this._toolbar.add(new qx.ui.basic.HorizontalSpacer());      
-
+      this._toolbar.add(new qx.ui.basic.HorizontalSpacer()); 
+      
       // create and add a help button
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
+
+      // create and add a find textfield
+      this._findField = new qx.ui.form.TextField(inspector.console.Console.SEARCH_TERM);
+      this._toolbar.add(this._findField);
+      // add a click event listener for removing the search text and selecting the containing text
+      this._findField.addEventListener("click", function (e) {
+        // select the whole text
+        e.getTarget().setSelectionStart(0);
+        e.getTarget().setSelectionLength(e.getTarget().getComputedValue().length);
+        // remove the search term
+        if (e.getTarget().getComputedValue() == inspector.objectFinder.ObjectFinder.SEARCH_TERM) {
+          e.getTarget().setValue("");
+        }
+      });
+      
+      // add a listener which adds the search test if the focus is lost and the textfield ist empty
+      this._findField.addEventListener("focusout", function (e) {
+        // if the textfield is empty, add the search term
+        if (this.getComputedValue() == "") {
+          this.setValue(inspector.console.Console.SEARCH_TERM);
+        }
+      }, this._findField);
+      
+      // add the filter function to the search field
+      this._findField.addEventListener("input", function(e) {
+        // if a search timer is set
+        if (this._searchTimer) {
+          // remove the old search timer
+          window.clearTimeout(this._searchTimer);
+        }
+        // get the value of the textfield
+        var filterText = e.getData();
+        // store the this reference for the timeout        
+        var self = this;        
+        this._searchTimer = window.setTimeout(function() {          
+          self._domView.filter(filterText);
+        }, 300);
+      }, this);
     }
        
    }
