@@ -46,9 +46,11 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     this._tableModel.setColumns(["", "function"]);
     
     // initialize table
-    this._table = new qx.ui.table.Table(this._tableModel);
+    this._table = new inspector.Table(this._tableModel);
     this._table.setWidth(298);
     this._table.setHeight(138);
+		this._table.setRowContentName("completion");
+		this._table.setRowsContentName("completions");
     this._table.setShowCellFocusIndicator(false);
     this._table.setColumnVisibilityButtonVisible(false);
     this._table.setStatusBarVisible(true);
