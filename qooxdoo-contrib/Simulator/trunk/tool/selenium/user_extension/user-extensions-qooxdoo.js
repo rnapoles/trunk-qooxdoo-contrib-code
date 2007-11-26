@@ -422,11 +422,12 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow) {
     }
     var qxResultObject = null;
     // the AUT window must contain the qx-Object
-    var qxRoot;
+    var qxAppRoot;
     if (inWindow.qx) {
         LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
-        qxRoot = inWindow.qx.core.Init.getInstance().getApplication();
-        //qxRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
+        qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
+        this._globalQxObject = inWindow.qx;
+        //qxAppRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
     } else {
         LOG.error("qx-Locator: qx-Object not defined. inWindow=" + inWindow + ", inWindow.qx=" + inWindow.qx);
         // do not throw here, as if the locator fails in the first place selenium will call this
@@ -440,13 +441,15 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow) {
  
     try
     {
-      qxResultObject = this._searchQxObjectByQxHierarchy(qxRoot,qxhParts);
+      qxResultObject = this._searchQxObjectByQxHierarchy(qxAppRoot,qxhParts);
     } catch (e)
     {
-      if (e instanceof Array)
-      { // re-package as SeleniumError
+      if (e.a instanceof Array)
+      { 
         //throw new SeleniumError("Qooxdoo-Element " + e.join('/') + " not found");
-        return null; // for now just return null
+        LOG.debug("Qxh Locator: Could not resolve last element of: "+e.a.join('/'));
+        //return null; // for now just return null
+        throw e;
       } else 
       {  // re-raise
         throw e;
@@ -546,22 +549,27 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function (root, path)
   var el = null;  // the yet to find current element
   var step = path[0]; // the current part of the QPath expression
 
+  LOG.debug("Qxh Locator: Inspecting current step: " + step);
+
   // get a suitable element from the current step, dispatching on step type
   if (step.match(IDENTIFIER))
   {
     if (step.indexOf('qx.')!=0)    // 'foo' format
     {
-      //el = this._getQxElementFromStep1(root,step);  // i seem to be loosing 'this' in the recursion?!
-      el = PageBot.prototype._getQxElementFromStep1(root,step);
+      el = this._getQxElementFromStep1(root,step);  // i seem to be loosing 'this' in the recursion?!
+      //el = PageBot.prototype._getQxElementFromStep1(root,step);
     } else {                       // 'qx....' format
-      el = PageBot.prototype._getQxElementFromStep2(root,step);
+      el = this._getQxElementFromStep2(root,step);
+      //el = PageBot.prototype._getQxElementFromStep2(root,step);
     }
   } else if (step.match(NTHCHILD)) // 'child[n]' format
   {
-    el = PageBot.prototype._getQxElementFromStep3(root, step);
+    el = this._getQxElementFromStep3(root, step);
+    //el = PageBot.prototype._getQxElementFromStep3(root, step);
   } else if (step.match(ATTRIB))   // '[@..=...]' format
   {
-    el = PageBot.prototype._getQxElementFromStep4(root, step);
+    el = this._getQxElementFromStep4(root, step);
+    //el = PageBot.prototype._getQxElementFromStep4(root, step);
   } else // unknown step format
   {
     throw new SeleniumError("QPath: Illegal step: " + step);
@@ -570,7 +578,9 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function (root, path)
   // check result
   if (el == null)
   {
-    throw [step];
+    var e = new SeleniumError("Qxh Locator: Error resolving qxh path");
+    e.a   = [step];
+    throw e;
   }
 
   // recurse
@@ -581,15 +591,16 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function (root, path)
     // basically we tail recurse, but catch exceptions
     try 
     {
-      var res = arguments.callee(el, npath);
-    } catch (pathFromHere)
+      var res = this._searchQxObjectByQxHierarchy(el, npath);
+    } catch (e)
     {
-      if (pathFromHere instanceof Array)
+      if (e.a instanceof Array)
       {
         // prepend the current step
-        throw pathFromHere.unshift(step);
+        e.a.unshift(step);
+        throw e;
       } else { // re-raise
-        throw pathFromHere;
+        throw e;
       }
     }
     return res;
@@ -602,6 +613,7 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function (root, path)
 PageBot.prototype._getQxElementFromStep1 = function (root, step)
 {
   // find an object member of root with name 'step'
+  LOG.debug("Qxh Locator: in _getQxElementFromStep1");
   var member;
   for (member in root)
   {
@@ -618,10 +630,11 @@ PageBot.prototype._getQxElementFromStep1 = function (root, step)
 PageBot.prototype._getQxElementFromStep2 = function (root, qxclass)
 {
   // find a child of root with qooxdoo type 'qxclass'
+  LOG.debug("Qxh Locator: in _getQxElementFromStep2");
   var childs;
   var curr;
 
-  childs = root.getChildren();
+  childs = this._getQxNodeDescendants(root);
   for (var i=0; i<childs.length; i++)
   {
     curr = childs[i];
@@ -639,6 +652,7 @@ PageBot.prototype._getQxElementFromStep2 = function (root, qxclass)
 PageBot.prototype._getQxElementFromStep3 = function (root, childspec)
 {
   // find a child of root by index
+  LOG.debug("Qxh Locator: in _getQxElementFromStep3");
   var childs;
   var idx;
   var m;
@@ -653,7 +667,7 @@ PageBot.prototype._getQxElementFromStep3 = function (root, childspec)
     return null;
   }
 
-  childs = root.getChildren();
+  childs = this._getQxNodeDescendants(root);
   if (idx < 0 || idx >= childs.length)
   {
     return null;
@@ -669,6 +683,7 @@ PageBot.prototype._getQxElementFromStep3 = function (root, childspec)
 PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
 {
   // find a child of root by attribute
+  LOG.debug("Qxh Locator: in _getQxElementFromStep4");
   var childs;
   var attrib;
   var attval;
@@ -693,7 +708,8 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
     
   };
 
-  var globalQxObject = getQx(root);
+  /*
+  var globalQxObject = getQx(root.constructor); // have to use constructor to get superclass
 
   //if ((! iWindow) || (! iWindow.qx))
   if (! globalQxObject)
@@ -703,6 +719,14 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
   {
     //var qx = iWindow.qx;
     var qx = globalQxObject;
+  }
+  */
+  if (this._globalQxObject)
+  {
+    var qx = this._globalQxObject;
+  } else 
+  {
+    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
   }
 
   // extract attribute and value
@@ -716,6 +740,7 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
     return null;
   }
 
+  /*
   if (!root.getChildren)
   {
     throw new SeleniumError("QxhPath: Not traversing a widget hierarchy (built with add())");
@@ -723,14 +748,18 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
   {
     childs = root.getChildren();
   }
+  */
+  childs = this._getQxNodeDescendants(root);
   for (var i=0; i<childs.length; i++)
   {
     curr = childs[i];
     // check properties first
     //var qxclass = qx.Class.getByName(curr.classname);
-    if (qx.Class.hasProperty(curr.constructor,attrib)) // see qx.Class API
+    var hasProp = qx.Class.hasProperty(curr.constructor,attrib); // see qx.Class API
+    if (hasProp)
     {
-      if (curr.get(attrib) == attval)
+      var currval = curr.get(attrib);
+      if (currval == attval)
       {
         return curr;
       }
@@ -744,6 +773,7 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
     else if (/^label$/i.exec(attrib))
     {
       // try getLabel() method
+      LOG.debug("Curr object: "+curr);
       if (curr.getLabel)
       {
         // it's nice to match against regexp's
@@ -758,3 +788,28 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
   return null;
 
 };
+
+
+// using different approaches to locate a node's direct descendants (children of some kind)
+PageBot.prototype._getQxNodeDescendants = function (node)
+{
+  var descArr = [];
+
+  // check TreeFolder items
+  if (node.getItems)
+  {
+    descArr.concat(node.getItems());
+  // check widget children (built with w.add())
+  } else if (node.getChildren)
+  {
+    descArr.concat(node.getChildren());
+  // use JS object members
+  } else
+  {
+    for (var m in node)
+    {
+      descArr.push(node[m]);
+    }
+  }
+  return descArr;
+}; // _getQxNodeDescendants()
