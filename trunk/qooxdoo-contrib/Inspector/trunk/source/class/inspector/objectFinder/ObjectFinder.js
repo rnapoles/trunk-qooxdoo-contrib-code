@@ -212,7 +212,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       if (filter != null) {
         // create a new temporary array to store the filterd data
         var newData = [];
-        // try to search with a RegExp objectt
+        // try to search with a RegExp object
         try {
           // create a RegExp object to perform the search
           var regExp = new RegExp(filter);
