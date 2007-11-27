@@ -19,7 +19,7 @@
 
 qx.Class.define("inspector.console.Console", {
   
-  extend : inspector.AbstractWindow,  
+  extend : inspector.components.AbstractWindow,  
 
     
   /*
@@ -498,7 +498,7 @@ qx.Class.define("inspector.console.Console", {
       this._toolbar.add(this._helpButton);
 
       // create and add a find textfield
-      this._findField = new inspector.SearchTextField();
+      this._findField = new inspector.components.SearchTextField();
       // set the reference which is the this reference in the executed function
       this._findField.setThisReference(this);
       // set the function, which should be executed on a input change

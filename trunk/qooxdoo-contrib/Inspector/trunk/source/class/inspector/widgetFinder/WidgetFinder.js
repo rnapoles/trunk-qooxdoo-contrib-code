@@ -19,7 +19,7 @@
 
 qx.Class.define("inspector.widgetFinder.WidgetFinder", {
   
-  extend : inspector.AbstractWindow,  
+  extend : inspector.components.AbstractWindow,  
     
   /*
   *****************************************************************************

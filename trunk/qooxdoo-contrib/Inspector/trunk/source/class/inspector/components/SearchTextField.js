@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.SearchTextField", {
+qx.Class.define("inspector.components.SearchTextField", {
   
   extend : qx.ui.form.TextField,
     
@@ -66,7 +66,7 @@ qx.Class.define("inspector.SearchTextField", {
     
     defaultValue: {
       init: "Search..."
-    },
+    }
     
   },  
 

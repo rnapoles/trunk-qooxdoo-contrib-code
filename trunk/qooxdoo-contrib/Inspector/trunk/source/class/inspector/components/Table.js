@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.Table", {
+qx.Class.define("inspector.components.Table", {
   
   extend : qx.ui.table.Table,  
     

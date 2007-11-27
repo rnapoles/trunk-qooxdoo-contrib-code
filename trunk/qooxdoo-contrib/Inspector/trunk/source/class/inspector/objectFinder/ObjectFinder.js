@@ -18,17 +18,8 @@
 ************************************************************************ */
 qx.Class.define("inspector.objectFinder.ObjectFinder", {
   
-  extend: inspector.AbstractWindow,  
-
-  /*
-  *****************************************************************************
-     STATICS
-  *****************************************************************************
-  */  
-  statics: {
-    // the therm which is in the search textfield by default
-    SEARCH_TERM: "Search..."
-  },
+  extend: inspector.components.AbstractWindow,  
+	
     
   /*
   *****************************************************************************
@@ -165,7 +156,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      */
     reload: function() {
       // check if the search term is in the textfield
-      if (this._findField.getComputedValue() != inspector.objectFinder.ObjectFinder.SEARCH_TERM) {        
+      if (this._findField.getComputedValue() != this._findField.getDefaultValue()) {        
         // if not get the filterd data
         var data = this._getData(this._findField.getComputedValue());
       } else {
@@ -398,7 +389,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._tableModel.setColumns(["Hash", "Classname"]);
       this._tableModel.sortByColumn(0, true);
       // initialize table
-      this._table = new inspector.Table(this._tableModel);
+      this._table = new inspector.components.Table(this._tableModel);
       this._table.setHeight("1*");
       
       this._table.setRowContentName("object");
@@ -466,7 +457,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._toolbar.add(autoReloadButton);
       // add the change event listener
       autoReloadButton.addEventListener("changeChecked", function (e) {
-        if (e.getData()) {
+        if (e.getValue()) {
           this._enableAutoReload();
         } else {
           this._disableAutoReload();
@@ -562,7 +553,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());
       
       // create and add a find textfield
-      this._findField = new inspector.SearchTextField();
+      this._findField = new inspector.components.SearchTextField();
       this._toolbar.add(this._findField);
       // set the reference which is the this reference in the executed function
       this._findField.setThisReference(this);

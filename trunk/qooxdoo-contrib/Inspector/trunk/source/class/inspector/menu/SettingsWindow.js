@@ -18,7 +18,7 @@
 ************************************************************************ */
 qx.Class.define("inspector.menu.SettingsWindow", {
   
-  extend : inspector.AbstractWindow,
+  extend : inspector.components.AbstractWindow,
 
   /*
   *****************************************************************************
