@@ -234,6 +234,23 @@ qx.Class.define("inspector.console.DomViewHtml", {
       this._htmlEmbed.setHtml("");
     },
     
+    
+    /**
+     * Returns the string used to filter or if no string is set the defaul message.
+     * @return {String} The string used to filter
+     */
+    getFilter: function() {
+      // if there is no filter set
+      if (this._filter == "") {
+        // return the default search string
+        return inspector.console.Console.SEARCH_TERM;
+      } else {
+        // otherwise, return the filter string
+        return this._filter;
+      }
+    },    
+    
+    
     /*
     *********************************
        PROTECTED
@@ -270,7 +287,8 @@ qx.Class.define("inspector.console.DomViewHtml", {
           // create the needed regexp object
           var regExp = new RegExp(this._filter);
         } catch (e) {
-          // if it does not work, ignor the filtering
+          // if that doesnt work, tell the user why
+          alert("Unable to filter: " + e);
         }
       }
       // create a temp array for the sorted and filtered values
