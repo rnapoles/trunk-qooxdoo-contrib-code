@@ -125,6 +125,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * @param name {String} The name of the object.
      */
     setObject: function(object, name) {
+      // empty the breadcrumbs
+      this._breadCrumb = [];
+      
       // split the name into pieces seperated by a dot
       var elements = name.split(".");      
       
