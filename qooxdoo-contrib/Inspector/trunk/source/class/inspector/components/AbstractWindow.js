@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.AbstractWindow", {
+qx.Class.define("inspector.components.AbstractWindow", {
   
   extend : qx.ui.window.Window,
   type : "abstract",   

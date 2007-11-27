@@ -46,7 +46,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     this._tableModel.setColumns(["", "function"]);
     
     // initialize table
-    this._table = new inspector.Table(this._tableModel);
+    this._table = new inspector.components.Table(this._tableModel);
     this._table.setWidth(298);
     this._table.setHeight(138);
 		this._table.setRowContentName("completion");
