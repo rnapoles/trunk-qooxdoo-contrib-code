@@ -401,9 +401,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._table = new inspector.Table(this._tableModel);
       this._table.setHeight("1*");
       
-			this._table.setRowContentName("object");
-			this._table.setRowsContentName("objects");
-			
+      this._table.setRowContentName("object");
+      this._table.setRowsContentName("objects");
+      
       this._table.setWidth(320);
       this._table.setShowCellFocusIndicator(false);
       this._table.setColumnVisibilityButtonVisible(false);            
@@ -524,10 +524,10 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         
         // create the message
         var message = "";
-				// if no polution is detected
-				if (data.length == 0) {
-					message += "<i>No polution detected!</i>";
-				}
+        // if no polution is detected
+        if (data.length == 0) {
+          message += "<i>No polution detected!</i>";
+        }
         for (var i = 0; i < data.length; i++) {
           // print out the name of the object
           message += "<tr><td>" + data[i]["key"] + ": </td>";
@@ -555,52 +555,24 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         this._popup.setLeft(e.getPageX() + 3);
         // show the popup
         this._popup.show();
-				       
+
       }, this);
                   
       // add a spacer
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer());
       
       // create and add a find textfield
-      this._findField = new qx.ui.form.TextField(inspector.objectFinder.ObjectFinder.SEARCH_TERM);
+      this._findField = new inspector.SearchTextField();
       this._toolbar.add(this._findField);
-      // add a click event listener for removing the search text and selecting the containing text
-      this._findField.addEventListener("click", function (e) {
-        // select the whole text
-        e.getTarget().setSelectionStart(0);
-        e.getTarget().setSelectionLength(e.getTarget().getComputedValue().length);
-        // remove the search term
-        if (e.getTarget().getComputedValue() == inspector.objectFinder.ObjectFinder.SEARCH_TERM) {
-          e.getTarget().setValue("");
-        }
+      // set the reference which is the this reference in the executed function
+      this._findField.setThisReference(this);
+      // set the function, which should be executed on a input change
+      this._findField.setExecutionFunction(function() {          
+        // fetch the objecty data
+        var newData = this._getData(this._findField.getComputedValue());
+        // set the new data
+        this._setData(newData);
       });
-      
-      // add a listener which adds the search test if the focus is lost and the textfield ist empty
-      this._findField.addEventListener("focusout", function (e) {
-        // if the textfield is empty, add the search term
-        if (this.getComputedValue() == "") {
-          this.setValue(inspector.objectFinder.ObjectFinder.SEARCH_TERM);
-        }
-      }, this._findField);
-      
-      // add the filter function to the search field
-      this._findField.addEventListener("input", function(e) {
-        // if a search timer is set
-        if (this._searchTimer) {
-          // remove the old search timer
-          window.clearTimeout(this._searchTimer);
-        }
-        // get the value of the textfield
-        var filterText = e.getData();
-        // store the this reference for the timeout        
-        var self = this;        
-        this._searchTimer = window.setTimeout(function() {          
-          // fetch the objecty data
-          var newData = self._getData(filterText);
-          // set the new data
-          self._setData(newData);
-        }, 300);
-      }, this);
     }       
-   }
+  }
 });

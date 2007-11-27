@@ -21,17 +21,6 @@ qx.Class.define("inspector.console.Console", {
   
   extend : inspector.AbstractWindow,  
 
-
-  /*
-  *****************************************************************************
-     STATICS
-  *****************************************************************************
-  */  
-  statics: {
-    // the therm which is in the search textfield by default
-    SEARCH_TERM: "Search..."
-  },
-
     
   /*
   *****************************************************************************
@@ -95,8 +84,6 @@ qx.Class.define("inspector.console.Console", {
     _widget: null,
     _ans: null,
     
-    // timers    
-    _searchTimer: null,
     
     /*
     *********************************
@@ -511,49 +498,22 @@ qx.Class.define("inspector.console.Console", {
       this._toolbar.add(this._helpButton);
 
       // create and add a find textfield
-      this._findField = new qx.ui.form.TextField(inspector.console.Console.SEARCH_TERM);
-      this._toolbar.add(this._findField);
-      // add a click event listener for removing the search text and selecting the containing text
-      this._findField.addEventListener("click", function (e) {
-        // select the whole text
-        e.getTarget().setSelectionStart(0);
-        e.getTarget().setSelectionLength(e.getTarget().getComputedValue().length);
-        // remove the search term
-        if (e.getTarget().getComputedValue() == inspector.objectFinder.ObjectFinder.SEARCH_TERM) {
-          e.getTarget().setValue("");
-        }
+      this._findField = new inspector.SearchTextField();
+      // set the reference which is the this reference in the executed function
+      this._findField.setThisReference(this);
+      // set the function, which should be executed on a input change
+      this._findField.setExecutionFunction(function() {
+        // if the console view is on the screen
+        if (this._consoleButton.getChecked()) {
+          this._consoleView.filter(this._findField.getComputedValue());
+        // if the dom view is on the screen       
+        } else if (this._domButton.getChecked()) {
+          this._domView.filter(this._findField.getComputedValue());
+        }       
       });
-      
-      // add a listener which adds the search test if the focus is lost and the textfield ist empty
-      this._findField.addEventListener("focusout", function (e) {
-        // if the textfield is empty, add the search term
-        if (this.getComputedValue() == "") {
-          this.setValue(inspector.console.Console.SEARCH_TERM);
-        }
-      }, this._findField);
-      
-      // add the filter function to the search field
-      this._findField.addEventListener("input", function(e) {
-        // if a search timer is set
-        if (this._searchTimer) {
-          // remove the old search timer
-          window.clearTimeout(this._searchTimer);
-        }
-        // get the value of the textfield
-        var filterText = e.getData();
-        // store the this reference for the timeout        
-        var self = this;        
-        this._searchTimer = window.setTimeout(function() {          
-          // if the console view is on the screen
-          if (self._consoleButton.getChecked()) {
-            self._consoleView.filter(filterText);
-          // if the dom view is on the screen       
-          } else if (self._domButton.getChecked()) {
-            self._domView.filter(filterText);
-          }
-        }, 300);
-      }, this);
+      // add the findfield to the toolbar
+      this._toolbar.add(this._findField);
     }
-       
+
    }
 });
