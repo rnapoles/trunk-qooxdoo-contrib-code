@@ -40,7 +40,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     // add a listener which adds the search test if the focus is lost and the textfield ist empty
     this.addEventListener("focusout", this._focusOutListener, this);  
     // add the filter function to the search field
-    this.addEventListener("input", this._inputListener, this);
+    this.addEventListener("input", this._inputListener, this);		
   },
 
 

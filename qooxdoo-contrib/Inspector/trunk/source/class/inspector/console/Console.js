@@ -24,6 +24,16 @@ qx.Class.define("inspector.console.Console", {
     
   /*
   *****************************************************************************
+     STATICS
+  *****************************************************************************
+  */
+  statics: {    
+    SEARCH_TERM: "Search..."    
+  },
+  
+      
+  /*
+  *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
@@ -37,20 +47,6 @@ qx.Class.define("inspector.console.Console", {
     // qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
     // add the console appender
     // qx.log.Logger.ROOT_LOGGER.addAppender(appender);
-    
-    // add a event listener if the console cahnged active
-    this.addEventListener("changeActive", function(e) {
-      // if the console is selected
-      if (e.getValue()) {
-        // set a timeout to focus the textfield after everything is done
-        var consoleView = this._consoleView;
-        window.setTimeout(function() {
-          // TODO if visible
-          // set the focus to the textfield
-          consoleView.focus();      
-        }, 0);
-      }
-    }, this);
   },
 
 
@@ -69,7 +65,7 @@ qx.Class.define("inspector.console.Console", {
     _consoleView: null,
     _domView: null,
     _tabView: null,
-  
+    _currentView: null,
 
     // buttons
     _clearButton: null,
@@ -108,11 +104,9 @@ qx.Class.define("inspector.console.Console", {
       this._widget = widget;
       // show the console view
       this._consoleButton.setChecked(true);
-      // enabled / disable the buttons
-      this._enableButtons("console");
-      // set the name of the selected widget in the caption bar
+      // set the title of the caption bar
       this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                      this._consoleView.getCaptionMessage() + ")");      
+                        this._consoleView.getCaptionMessage() + ")");
     },
     
     
@@ -151,11 +145,9 @@ qx.Class.define("inspector.console.Console", {
       this._domView.setObject(inputObject.object, inputObject.name);
       // show the dom view
       this._domButton.setChecked(true);
-      // enabled / disable the buttons
-      this._enableButtons("dom");      
       // change the title of the console window
       this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                      this._domView.getCaptionMessage() + ")");    
+                      this._domView.getCaptionMessage() + ")");
     },
   
   
@@ -181,14 +173,13 @@ qx.Class.define("inspector.console.Console", {
      * @param key {String} The name of the value to select.
      */
     inspectObjectByDomSelecet: function(index, key) {
-          // reset the filter
-          this._findField.setValue(inspector.console.Console.SEARCH_TERM);
-          // update the object in the domview
-          this._domView.setObjectByIndex(index, key);
-          
-          // update the caption bar title
-          this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                          this._domView.getCaptionMessage() + ")");        
+      // update the object in the domview
+      this._domView.setObjectByIndex(index, key);
+      // reset the search field
+      this._findField.setValue(this._findField.getDefaultValue());
+      // change the title of the console window
+      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
+                      this._domView.getCaptionMessage() + ")");    
     },
   
     
@@ -318,15 +309,8 @@ qx.Class.define("inspector.console.Console", {
     * Clears the current view of the console.
     */
    _clearView: function() {
-      // if the console view is on the screen
-     if (this._consoleButton.getChecked()) {
-        // clear the console view screen
-       this._consoleView.clear();
-     // if the dom view is on the screen       
-     } else if (this._domButton.getChecked()) {
-        // clear the dom view screen
-       this._domView.clear();
-     }     
+     // clear the current view
+     this._currentView.clear();     
    },
 
 
@@ -425,9 +409,10 @@ qx.Class.define("inspector.console.Console", {
       this._clearButton.addEventListener("click", this._clearView, this);    
       // register a handlert to print out the help text on the console
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
-      
-      // click listener for changing the caption bar title of the window
-      this._consoleButton.addEventListener("click", function() {
+      // register a appear listener for the console view
+      consolePage.addEventListener("appear", function() {
+        // store that the console view is the current view
+        this._currentView = this._consoleView;
         // set the title of the caption bar
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._consoleView.getCaptionMessage() + ")");
@@ -436,10 +421,12 @@ qx.Class.define("inspector.console.Console", {
         // enable the buttons
         this._enableButtons("console");
         // reset the value of the find textfield
-        this._findField.setValue(this._consoleView.getFilter());
+        this._findField.setValue(this._consoleView.getFilter());        
       }, this);
-      
-      this._domButton.addEventListener("click", function() {
+      // register a appear listener for the dom view
+      domPage.addEventListener("appear", function() {
+        // store that the domview is the current view
+        this._currentView = this._domView;
         // set the title of the caption bar
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
                         this._domView.getCaptionMessage() + ")");
@@ -448,7 +435,7 @@ qx.Class.define("inspector.console.Console", {
         // enable the buttons
         this._enableButtons("dom");
         // reset the value of the find textfield
-        this._findField.setValue(this._domView.getFilter());
+        this._findField.setValue(this._domView.getFilter());        
       }, this);
     },
     
@@ -501,15 +488,11 @@ qx.Class.define("inspector.console.Console", {
       this._findField = new inspector.components.SearchTextField();
       // set the reference which is the this reference in the executed function
       this._findField.setThisReference(this);
+      // set the default value for the search textfield
+      this._findField.setDefaultValue(inspector.console.Console.SEARCH_TERM);
       // set the function, which should be executed on a input change
       this._findField.setExecutionFunction(function() {
-        // if the console view is on the screen
-        if (this._consoleButton.getChecked()) {
-          this._consoleView.filter(this._findField.getComputedValue());
-        // if the dom view is on the screen       
-        } else if (this._domButton.getChecked()) {
-          this._domView.filter(this._findField.getComputedValue());
-        }       
+        this._currentView.filter(this._findField.getComputedValue());       
       });
       // add the findfield to the toolbar
       this._toolbar.add(this._findField);
