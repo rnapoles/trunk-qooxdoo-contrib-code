@@ -687,6 +687,7 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
   var childs;
   var attrib;
   var attval;
+  var rattval; 
   var curr;
   var m;
   //var iWindow = this.getCurrentWindow(); // need to get to qx.Class
@@ -735,6 +736,13 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
   {
     attrib = m[1];
     attval = m[2];
+    // strip possible quotes from attval
+    if (attval.match(/^['"].*['"]$/))
+    {
+      attval = attval.slice(1,attval.length-1);
+    }
+    // it's nice to match against regexp's
+    rattval = new RegExp(attval);
   } else 
   {
     return null;
@@ -759,30 +767,34 @@ PageBot.prototype._getQxElementFromStep4 = function (root, attribspec)
     if (hasProp)
     {
       var currval = curr.get(attrib);
-      if (currval == attval)
+      LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('"+attrib+"' is: "+currval+")");
+      if (currval.match(rattval))
       {
         return curr;
       }
     }
     // then, check normal JS attribs
-    else if ((attrib in curr) && (curr[attrib]==attval))
+    else if ((attrib in curr) && ((curr[attrib]).match(rattval)))
     { 
+      LOG.debug("Qxh Locator: Attribute Step: Checking for JS object property");
       return curr;
     }
     // last, if it is a @label attrib, try check the label of the widget
     else if (/^label$/i.exec(attrib))
     {
+      LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo widget label");
       // try getLabel() method
-      LOG.debug("Curr object: "+curr);
       if (curr.getLabel)
       {
-        // it's nice to match against regexp's
-        var rval = new RegExp(attval);
-        if ((curr.getLabel()).match(rval))
+        if ((curr.getLabel()).match(rattval))
         {
           return curr;
         }
       }
+    }
+    else 
+    {
+      LOG.debug("Qxh Locator: Attribute Step: No match for current child");
     }
   }
   return null;
