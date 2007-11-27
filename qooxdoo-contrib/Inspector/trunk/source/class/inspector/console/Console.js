@@ -350,16 +350,16 @@ qx.Class.define("inspector.console.Console", {
     _enableButtons: function(view) {
       switch (view) {
         case "console":
-          this._clearButton.setEnabled(true);
+          // this._clearButton.setEnabled(true);
           this._setButton.setEnabled(true);
           this._helpButton.setEnabled(true);
-          this._findField.setEnabled(false);      
+          // this._findField.setEnabled(true);      
           break;
         case "dom":
-          this._clearButton.setEnabled(true);
+          // this._clearButton.setEnabled(true);
           this._setButton.setEnabled(false);
           this._helpButton.setEnabled(false);
-          this._findField.setEnabled(true);
+          // this._findField.setEnabled(true);
           break;
       }
     },
@@ -448,7 +448,10 @@ qx.Class.define("inspector.console.Console", {
         this._consoleView.focus();
         // enable the buttons
         this._enableButtons("console");
+        // reset the value of the find textfield
+        this._findField.setValue(this._consoleView.getFilter());
       }, this);
+      
       this._domButton.addEventListener("click", function() {
         // set the title of the caption bar
         this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
@@ -457,6 +460,8 @@ qx.Class.define("inspector.console.Console", {
         this._domView.focus();
         // enable the buttons
         this._enableButtons("dom");
+        // reset the value of the find textfield
+        this._findField.setValue(this._domView.getFilter());
       }, this);
     },
     
@@ -539,7 +544,13 @@ qx.Class.define("inspector.console.Console", {
         // store the this reference for the timeout        
         var self = this;        
         this._searchTimer = window.setTimeout(function() {          
-          self._domView.filter(filterText);
+          // if the console view is on the screen
+          if (self._consoleButton.getChecked()) {
+            self._consoleView.filter(filterText);
+          // if the dom view is on the screen       
+          } else if (self._domButton.getChecked()) {
+            self._domView.filter(filterText);
+          }
         }, 300);
       }, this);
     }

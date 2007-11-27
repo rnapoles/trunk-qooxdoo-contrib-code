@@ -57,6 +57,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     this._htmlEmbed.setOverflow("scrollY");
     this._htmlEmbed.setWidth("100%");
     this._htmlEmbed.setHeight(155);
+    this._htmlEmbed.setHtmlProperty("id", "consoleViewHtmlEmbed");
     this.add(this._htmlEmbed);
     
     // create and add the textfield
@@ -137,6 +138,8 @@ qx.Class.define("inspector.console.ConsoleView", {
     _objectFolder: null,
     _objectFolderIndex: 0,
     
+    _filter: "",
+
     
     /*
     *********************************
@@ -381,6 +384,79 @@ qx.Class.define("inspector.console.ConsoleView", {
     },    
     
     
+    /**
+     * Filters the current content of the console view. All elements 
+     * which do not match the filter string will be hidden.
+     * @param filter {String} A string used to filter the content.
+     */
+    filter: function(filter) {
+      // store the new filter
+      this._filter = filter;
+      
+      // check for the browser variants
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
+        // gett all childrin in a gecko browser
+        var children = document.getElementById("consoleViewHtmlEmbed").childNodes;
+      } else if (qx.core.Variant.isSet("qx.client", "opera|webkit|mshtml")) {
+        // get all children in opera, ie and safari
+        var children = document.getElementById("consoleViewHtmlEmbed").childNodes[0].childNodes;
+      } else {
+        // dont do anything because the browser is not known
+        return;
+      }
+      
+      // try to filter
+      try {
+        // create a regexp object for filtering
+        var regExp = new RegExp(this._filter);  
+        // go threw all children      
+        for (var i = 0; i < children.length; i++) {
+          // if the browser is a ie
+          if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+            // take the innerText as content
+            var content = children[i].innerText;
+          }  else {
+            // for all others, take the textContent as content
+            var content = children[i].textContent;
+          }  
+          
+          // test if the current content fits the filter
+          if (regExp.test(content)) {
+            // if there is a style attribute
+            if (children[i].style != undefined) {
+              // set the current child visible
+              children[i].style.display = "";
+            }
+          } else {
+            // if the child has a style attribute
+            if (children[i].style != undefined) {
+              // hide the current child
+              children[i].style.display = "none";
+            }
+          }
+        }  
+      } catch (e) {
+        // if that doesnt work, tell the user why
+        alert("Unable to filter: " + e);
+      }      
+    },
+    
+    
+    /**
+     * Returns the string used to filter or if no string is set the defaul message.
+     * @return {String} The string used to filter
+     */
+    getFilter: function() {
+      // if no filter is set
+      if (this._filter == "") {
+        // return the default search string
+        return inspector.console.Console.SEARCH_TERM;
+      } else {
+        // otherwise, return the filter string
+        return this._filter;
+      }
+    },
+    
     /*
     *********************************
        PROTECTED
@@ -596,24 +672,24 @@ qx.Class.define("inspector.console.ConsoleView", {
         
       // check for arrays
       } else if (returnValue instanceof Array) {
-				// initiate a string to represent the array
-	      var arrayRepresentation = "";
-				// if the array is a huge one (mor than 2 elements)
+        // initiate a string to represent the array
+        var arrayRepresentation = "";
+        // if the array is a huge one (mor than 2 elements)
         if (returnValue.length > 2) {
-					// take the first tow elements and show how much are unshown
-					arrayRepresentation = returnValue[0] + ", " + returnValue[1] + ", ..." +
-																		(returnValue.length - 2) + " more";
-				// if the length is exactly 2
-				} else if (returnValue.length == 2) {
-					// print out those two elements
-					arrayRepresentation = returnValue[0] + ", " + returnValue[1];
-				// if the array hase only the length of one
-				} else if (returnValue.length == 1) {
-					// show only this one element
-					arrayRepresentation = returnValue[0]; 
-				}
-				
-				// if yes, print out that it is one
+          // take the first tow elements and show how much are unshown
+          arrayRepresentation = returnValue[0] + ", " + returnValue[1] + ", ..." +
+                                    (returnValue.length - 2) + " more";
+        // if the length is exactly 2
+        } else if (returnValue.length == 2) {
+          // print out those two elements
+          arrayRepresentation = returnValue[0] + ", " + returnValue[1];
+        // if the array hase only the length of one
+        } else if (returnValue.length == 1) {
+          // show only this one element
+          arrayRepresentation = returnValue[0]; 
+        }
+        
+        // if yes, print out that it is one
         var label = this._getLabel("", "<u style='cursor: pointer;' onclick='" + 
                                        "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
                                        "'>[" + arrayRepresentation + "]</u>", "#AAAA00");

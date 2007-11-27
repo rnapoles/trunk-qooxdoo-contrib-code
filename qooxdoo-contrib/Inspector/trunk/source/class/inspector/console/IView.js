@@ -40,9 +40,17 @@ qx.Interface.define("inspector.console.IView", {
     clear: function() {
         return true;
     },
-		
-		getCaptionMessage: function() {
-			return true;
-		}
+    
+    getCaptionMessage: function() {
+      return true;
+    },
+    
+    filter: function(filter) {
+      return true;
+    },
+    
+    getFilter: function() {
+      return true;
+    }
   }
 });
