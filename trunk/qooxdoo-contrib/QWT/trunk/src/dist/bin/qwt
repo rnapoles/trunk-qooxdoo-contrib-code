@@ -1,0 +1,22 @@
+#!/bin/sh
+
+ME="$0"
+while [ -h "$ME" ] ; do
+  ls=`ls -ld "$ME"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    ME="$link"
+  else
+    ME="`dirname "$ME"`/$link"
+  fi
+done
+
+QWT_HOME=`dirname "$ME"`/..
+current=`pwd`
+cd "$QWT_HOME"
+QWT_HOME=`pwd`
+cd "$current"
+
+export QWT_OPTS=-Dmaven.repo.local=$QWT_HOME/repository
+export MAVEN_OPTS="$MAVEN_OPTS $QWT_OPTS"
+$QWT_HOME/maven-2.0.7/bin/mvn -s $QWT_HOME/bin/settings.xml "$@"
