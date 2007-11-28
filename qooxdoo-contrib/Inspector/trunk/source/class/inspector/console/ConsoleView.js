@@ -274,7 +274,6 @@ qx.Class.define("inspector.console.ConsoleView", {
             if (!this._console.isOpen()) {
                 this._console.open();
             }
-      // TODO check if it is visible
       var label = this._getLabel("", message, "red", "error", "#FFFFE0");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -291,7 +290,6 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (!this._console.isOpen()) {
         this._console.open();
       }            
-      // TODO check if it is visible
       var label = this._getLabel("", message, "black", "warning", "#00FFFF");           
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -308,7 +306,6 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (!this._console.isOpen()) {
         this._console.open();
       }            
-      // TODO check if it is visible
       var label = this._getLabel("", message, "black", "info");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -325,7 +322,6 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (!this._console.isOpen()) {
         this._console.open();
       }            
-      // TODO check if it is visible
       var label = this._getLabel("", message, "grey");        
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
