@@ -37,10 +37,12 @@
 QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.2-sdk
 
 # Path to your Selenium RC installation
-SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
+#SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
+SELENIUM_RC_PATH = ../../../packages/selenium-remote-control-0.9.2
 
 # Path to your Mozilla Rhino installation 
-MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
+#MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
+MOZILLA_RHINO_PATH = ../../../../prog/javascript/rhino1_6R7
 
 #
 # Namespace of your application e.g. custom
@@ -83,33 +85,32 @@ error:
 # SELENIUM STUFF
 ################################################################################
 QOOXDOO_SELENIUM_USER_EXTENSION = ./tool/selenium/user_extension/user-extensions-qooxdoo.js
-QOOXDOO_SELENIUM_JAVA_CLIENT = ./tool/selenium/language_binding/QxSelenium.java
+QOOXDOO_SELENIUM_JAVA_CLIENTP = ./tool/selenium/language_binding
 SELENIUM_BUILD_DIR = ./tool/script
 JAR = jar
 
 selenium: selenium-build-dirs selenium-server-ext selenium-java-client-ext 
 
 selenium-build-dirs:
-	mkdir -p $(SELENIUM_BUILD_DIR)/jar
+	mkdir -p $(SELENIUM_BUILD_DIR)/selenium_server
 	mkdir -p $(SELENIUM_BUILD_DIR)/java_client
 
 selenium-java-client-ext:
 	(cd $(SELENIUM_BUILD_DIR); \
-	cd java-client; \
-	$(JAR) xf $(SELENIUM_RC_PATH)/selenium-java-client-driver-*/selenium-java-client-driver.jar; \
+	cd java_client; \
+	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-java-client-driver-*/selenium-java-client-driver.jar); \
 	cd ..; \
-	javac -cp java_client $(QOOXDOO_SELENIUM_JAVA_CLIENT); \
-	cp QxSelenium.class java_client/com/thoughtworks/selenium; \
+	javac -cp java_client -d java_client ../../$(QOOXDOO_SELENIUM_JAVA_CLIENTP)/QxSelenium.java; \
 	$(JAR) cf selenium-java-client-driver.jar -C java_client . \
 	)
 
 selenium-server-ext:
 	(cd $(SELENIUM_BUILD_DIR); \
-	cd jar; \
-	$(JAR) xf $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar; \
+	cd selenium_server; \
+	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar); \
 	cd ..; \
-	cat (QOOXDOO_SELENIUM_USER_EXTENSION) >> jar/core/scripts/user-extensions.js
-	$(JAR) cf selenium-server.jar -C jar . \
+	cat ../../$(QOOXDOO_SELENIUM_USER_EXTENSION) >> selenium_server/core/scripts/user-extensions.js; \
+	$(JAR) cf selenium-server.jar -C selenium_server . \
 	)
 
 selenium-rc-start:
