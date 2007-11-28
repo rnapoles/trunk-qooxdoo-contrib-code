@@ -245,8 +245,9 @@ qx.Class.define("inspector.components.AbstractWindow", {
      * Maximizes the window to the screen.
      */
     maximize: function() {
-      // enable the resizing of the maximized window
+      // enable the resizing and moving of the maximized window
       this._disableResize = true;
+      this.setMoveable(false);
       // change the maximize button to a restore button
       var maxButtonIndex = this._captionBar.indexOf(this._maximizeButton);
       this._captionBar.remove(this._maximizeButton);
@@ -280,8 +281,9 @@ qx.Class.define("inspector.components.AbstractWindow", {
      * Restores the window to its former position.
      */    
     restore: function() {
-      // disable the resizing of the maximized window
+      // disable the resizing and moving of the maximized window
       this._disableResize = false;
+      this.setMoveable(true);
       // change the restore button to a maximize button
       var restoreButtonIndex = this._captionBar.indexOf(this._restoreButton);
       this._captionBar.remove(this._restoreButton);
@@ -293,6 +295,26 @@ qx.Class.define("inspector.components.AbstractWindow", {
       // set the former dimensions
       this.setWidth(this._oldWidth);
       this.setHeight(this._oldHeight);  
+    },
+    
+    
+    /**
+     * Maximizes the window or restores it if it is already
+     * maximized.
+     * @param e {qx.event.type.MouseEvent} double click event
+     */
+    _oncaptiondblblick : function(e)
+    {
+      if (!this._maximizeButton.getEnabled()) {
+        return;
+      }
+      
+      if (this._restoreButton.getParent() != null) {
+        this.restore();
+      } else {
+        this.maximize();
+      }
+      
     },
     
     
