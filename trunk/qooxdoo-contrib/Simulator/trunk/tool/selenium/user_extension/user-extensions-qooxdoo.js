@@ -760,29 +760,24 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
   {
     if (step.indexOf('qx.') != 0)  // 'foo' format
     {
-      el = this._getQxElementFromStep1(root, step);  // i seem to be loosing 'this' in the recursion?!
+      el = this._getQxElementFromStep1(root, step);
     }
-
-    // el = PageBot.prototype._getQxElementFromStep1(root,step);
     else
     {  // 'qx....' format
       el = this._getQxElementFromStep2(root, step);
     }
   }
 
-  // el = PageBot.prototype._getQxElementFromStep2(root,step);
   else if (step.match(NTHCHILD))  // 'child[n]' format
   {
     el = this._getQxElementFromStep3(root, step);
   }
 
-  // el = PageBot.prototype._getQxElementFromStep3(root, step);
   else if (step.match(ATTRIB))  // '[@..=...]' format
   {
     el = this._getQxElementFromStep4(root, step);
   }
 
-  // el = PageBot.prototype._getQxElementFromStep4(root, step);
   else  // unknown step format
   {
     throw new SeleniumError("QPath: Illegal step: " + step);
@@ -826,9 +821,9 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
   }
 };  // _searchQxObjectByQxHierarchy()
 
-// 'button1' (from 'w.button1')
+
 /**
- * TODOC
+ * 'button1' (from 'w.button1') - step specifier
  *
  * @type member
  * @param root {var} TODOC
@@ -851,9 +846,9 @@ PageBot.prototype._getQxElementFromStep1 = function(root, step)
   return null;
 };
 
-// 'qx.ui.form.Button'
+
 /**
- * TODOC
+ * 'qx.ui.form.Button' - step specifier
  *
  * @type member
  * @param root {var} TODOC
@@ -881,9 +876,9 @@ PageBot.prototype._getQxElementFromStep2 = function(root, qxclass)
   return null;
 };
 
-// 'child[3]'
+
 /**
- * TODOC
+ * 'child[3]' - step specifier
  *
  * @type member
  * @param root {var} TODOC
@@ -916,9 +911,9 @@ PageBot.prototype._getQxElementFromStep3 = function(root, childspec)
   }
 };
 
-// '[@label="hugo"]'
+
 /**
- * TODOC
+ * '[@label="hugo"]' - step specifier
  *
  * @type member
  * @param root {var} TODOC
@@ -937,34 +932,8 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
   var curr;
   var m;
 
-  // var iWindow = this.getCurrentWindow(); // need to get to qx.Class
-  // var iWindow = Window;
-  function getQx(obj)
-  {
-    if (!obj) {
-      return null;
-    }
 
-    if (!obj.superclass) {
-      return obj;  // qx hopefully
-    } else {
-      arguments.callee(obj.superclass);
-    }
-  }
-
-  /*
-  var globalQxObject = getQx(root.constructor); // have to use constructor to get superclass
-   //if ((! iWindow) || (! iWindow.qx))
-  if (! globalQxObject)
-  {
-    throw new SeleniumError("Qxh Locator: Need global qx object to search by attribute");
-  } else 
-  {
-    //var qx = iWindow.qx;
-    var qx = globalQxObject;
-  }
-  */
-
+  // need to get to the global 'qx' object
   if (this._globalQxObject) {
     var qx = this._globalQxObject;
   } else {
@@ -992,20 +961,12 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
     return null;
   }
 
-  /*
-  if (!root.getChildren)
-  {
-    throw new SeleniumError("QxhPath: Not traversing a widget hierarchy (built with add())");
-  } else
-  {
-    childs = root.getChildren();
-  }
-  */
-
   childs = this._getQxNodeDescendants(root);
 
   for (var i=0; i<childs.length; i++)
   {
+    // For every child, we check various ways where it might match with the step
+    // specifier (generally using regexp match to compare strings)
     curr = childs[i];
 
     // check properties first
@@ -1030,6 +991,8 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
     }
 
     // last, if it is a @label attrib, try check the label of the widget
+    // [this might be superfluous, since it seems that 'getLabel()' is covered
+    // by 'get("label")' in the property section above]
     else if (/^label$/i.exec(attrib))
     {
       LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo widget label");
@@ -1051,9 +1014,10 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
   return null;
 };  // _getQxElementFromStep4()
 
-// using different approaches to locate a node's direct descendants (children of some kind)
+
 /**
- * TODOC
+ * using different approaches to locate a node's direct descendants (children of
+ * some kind)
  *
  * @type member
  * @param node {Node} TODOC
