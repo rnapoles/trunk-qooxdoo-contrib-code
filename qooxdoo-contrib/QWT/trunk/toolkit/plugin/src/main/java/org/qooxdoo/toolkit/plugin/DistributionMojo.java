@@ -117,7 +117,11 @@ public class DistributionMojo extends Base {
         
         qwt = dest.join("qwt").mkdir();
         info("creating " + qwt);
-        filter = io.filter().include("**/*").exclude("**/target/**/*", "**/.classpath", "**/.project", "**/src/framework/**/*");
+        filter = io.filter().include("**/*").exclude(
+                "**/target/**/*", 
+                "**/src/framework/**/*", 
+                "**/.classpath", "**/.project", "**/.settings/**/*", "**/.settings", 
+                "**/nbproject/**/*", "**/nbproject");
         lst = basedir.copyDirectory(filter, qwt);
         info("done, " + lst.size() + " files and directories");
     }
@@ -159,13 +163,18 @@ public class DistributionMojo extends Base {
         }
     }
 
+    private static final String[] SCRIPTS = { "**/bin/qwt*", "**/bin/mvn*" };
+    
     private void pack() throws IOException {
         FileNode zip;
         
         zip = (FileNode) dest.getParent().join(dest.getName() + ".zip");
         info("create " + zip);
         try {
-            zipArchiver.addDirectory(dest.getFile());
+            zipArchiver.addDirectory(dest.getFile(), dest.getName() + "/", new String[] { "**/*" }, SCRIPTS);
+            for (Node script : dest.find(io.filter().include(SCRIPTS))) {
+                zipArchiver.addFile(((FileNode) script).getFile(), dest.getName() + "/" + script.getRelative(dest), 0755);
+            }
             zipArchiver.setDestFile(zip.getFile());
             zipArchiver.createArchive();
         } catch (ArchiverException e) {
