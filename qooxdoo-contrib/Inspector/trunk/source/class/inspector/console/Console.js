@@ -69,8 +69,9 @@ qx.Class.define("inspector.console.Console", {
 
     // buttons
     _clearButton: null,
-    _helpButton: null,
+    _apiButton: null,
     _setButton: null,
+    _helpButton: null,
     _findField: null,
     // tabview buttons
     _domButton: null,
@@ -447,6 +448,20 @@ qx.Class.define("inspector.console.Console", {
       // create and add a button to clear the view
       this._clearButton = new qx.ui.toolbar.Button("Clear");
       this._toolbar.add(this._clearButton);
+      
+      // create and add a button to clear the view
+      this._apiButton = new qx.ui.toolbar.Button("API");
+      this._toolbar.add(this._apiButton);
+      // register the open listener
+      this._apiButton.addEventListener("execute", function() {
+        // get the current selected classname
+        var classname = this._currentView.getCurrentSelectedClassname();
+        // open the api window
+        this._inspector.openApiWindow(classname);          
+      }, this);
+            
+      // seperator
+      this._toolbar.add(new qx.ui.toolbar.Separator());
 
 /*      
       var detailsButton = new qx.ui.toolbar.Button("Property Details");

@@ -309,6 +309,22 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     },
     
     
+    _openApiWindow: function() {
+      
+      if (this._qxObject != null) {        
+        if (this._currentlySelectedProperty != null) {
+          var classname = this._currentlySelectedProperty.getUserData("classname");
+          var propertyname = this._currentlySelectedProperty.getUserData("key"); 
+          this._inspector.openApiWindow(classname, propertyname);
+        } else {
+          this._inspector.openApiWindow(this._qxObject.classname);  
+        }
+      } else {
+        this._inspector.openApiWindow();
+      }
+      
+    },
+    
     /*
     *********************************
        AUTORELOAD STUFF
@@ -675,7 +691,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       // create the API button      
       var apiButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/api.png"));
       this._toolbar.add(apiButton);
-      apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
+      apiButton.addEventListener("execute", this._openApiWindow, this);
       this._apiButtonToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.SHOW_API_BUTTON_TOOLTIP_TEXT, null);
       apiButton.setToolTip(this._apiButtonToolTip);
 

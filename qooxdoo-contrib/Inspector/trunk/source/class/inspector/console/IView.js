@@ -51,6 +51,10 @@ qx.Interface.define("inspector.console.IView", {
     
     getFilter: function() {
       return true;
+    },
+    
+    getCurrentSelectedClassname: function() {
+      return true;
     }
   }
 });

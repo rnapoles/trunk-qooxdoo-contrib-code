@@ -145,35 +145,17 @@ qx.Class.define("inspector.console.ConsoleView", {
     *********************************
        PUBLIC
     *********************************
-    */  
+    */
     /**
-     * @internal
-     * @return The components of the console.
+     * Returns the object with the given index.
+     * @internal 
+     * @param {Number} The index of the object.
+     * @return {Object} The object in the console view. 
      */
-    getComponents: function() {
-      return [this].concat(this._autoCompletePopup.getComponents());
-    },    
-    
-    
-  /**
-   * Returns the object with the given index.
-   * @internal 
-   * @param {Number} The index of the object.
-   * @return {Object} The object in the console view. 
-   */
     getObjectById: function(id) {
       return this._objectFolder[id];
     },
     
-    
-    /**
-     * Sets the height of the htmlEmbedded element showing the messages.
-     * @internal
-     * @param height {Number} The new height.
-     */
-    setMainElementDeltaHeight: function(delta) {
-      this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
-    },
     
     /**
      * Returns the current set Widget
@@ -204,32 +186,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     getZIndexOfWindow: function() {
       return this._console.getZIndex();
     },
-    
-    
-    /**
-     * Focuses the textfield. It is used by the console when activating 
-     * the console window.
-     * @internal
-     */
-    focus: function() {
-      this._textField.focus();
-    },
-    
-    
-    /**
-     * Returns the string which should be shown in the caption 
-     * if the console view is visible.
-     * @return {String}Information string.
-     */
-    getCaptionMessage: function() {
-      // if a widget is selected
-      if (this._console.getWidget()) {
-        // return the classname an the Hashcode
-        return this._console.getWidget().classname + " [" + this._console.getWidget().toHashCode() + "]";      
-      }
-      // otherwise return that nothing is selected
-      return "nothing selected";
-    },    
+   
         
     /**
      * Appends the given string to the textfield.
@@ -289,21 +246,25 @@ qx.Class.define("inspector.console.ConsoleView", {
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
-    },
+    },    
     
     
     /**
-     * Clears the whole console view.
+     * Prints out a code snippet in withe with black background to the console.
+     * @param code {String} The code to print out.
      */
-    clear: function() {
-      // reset the veiw
-      this._htmlEmbed.setHtml("");
-      // reset the storage used for referencing the printed objects
-      this._objectFolder = [];
-      this._objectFolderIndex = 0;
-    },
+    printCode: function(code) {
+      var label = this._getLabel("", code, "white", null, "black");
+      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
+    },     
     
-    
+    /*
+    *********************************
+       APPENDER IMPLEMENTATIONS
+    *********************************
+    */        
     /**
      * Prints out an error to the console.
      * @param message {String} The error message.
@@ -369,19 +330,69 @@ qx.Class.define("inspector.console.ConsoleView", {
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
-    },
+    },   
+    
+    
+    /*
+    *********************************
+       IVIEW IMPLEMENTATIONS
+    *********************************
+    */   
+    /**
+     * @internal
+     * @return The components of the console.
+     */
+    getComponents: function() {
+      return [this].concat(this._autoCompletePopup.getComponents());
+    },  
     
     
     /**
-     * Prints out a code snippet in withe with black background to the console.
-     * @param code {String} The code to print out.
+     * Sets the height of the htmlEmbedded element showing the messages.
+     * @internal
+     * @param height {Number} The new height.
      */
-    printCode: function(code) {
-      var label = this._getLabel("", code, "white", null, "black");
-      this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
-      // scroll to the end of the console 
-      this._scrollToLastLine();
-    },    
+    setMainElementDeltaHeight: function(delta) {
+      this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
+    },
+                
+    
+    /**
+     * Focuses the textfield. It is used by the console when activating 
+     * the console window.
+     * @internal
+     */
+    focus: function() {
+      this._textField.focus();
+    },
+    
+
+    /**
+     * Clears the whole console view.
+     */
+    clear: function() {
+      // reset the veiw
+      this._htmlEmbed.setHtml("");
+      // reset the storage used for referencing the printed objects
+      this._objectFolder = [];
+      this._objectFolderIndex = 0;
+    },      
+    
+    
+    /**
+     * Returns the string which should be shown in the caption 
+     * if the console view is visible.
+     * @return {String}Information string.
+     */
+    getCaptionMessage: function() {
+      // if a widget is selected
+      if (this._console.getWidget()) {
+        // return the classname an the Hashcode
+        return this._console.getWidget().classname + " [" + this._console.getWidget().toHashCode() + "]";      
+      }
+      // otherwise return that nothing is selected
+      return "nothing selected";
+    },     
     
     
     /**
@@ -456,6 +467,23 @@ qx.Class.define("inspector.console.ConsoleView", {
         return this._filter;
       }
     },
+    
+    
+    /**
+     * Returns the classname of the current this reference in the 
+     * console view.
+     * @return {String | null} The name of the class.
+     */
+    getCurrentSelectedClassname: function() {
+      // if there is a object set
+      if (this._console.getWidget() != null) {
+        // return the classname
+        return this._console.getWidget().classname;
+      }
+      // otherwise, return null
+      return null;
+    },
+    
     
     /*
     *********************************

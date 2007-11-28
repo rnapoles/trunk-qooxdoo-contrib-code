@@ -64,10 +64,10 @@ qx.Class.define("inspector.Inspector", {
     // Define alias for inspector resource path
     qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
     // include the CSS file used for the source view
-	  qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/sourceview.css"));
+    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/sourceview.css"));
     // include the css used for the dom view
     qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/domview.css"));
-		
+    
     // Create the queue for the inspector windows
     this._windowQueue = [];
     
@@ -235,10 +235,10 @@ qx.Class.define("inspector.Inspector", {
     resetPerspective: function() {
       // reset the console, if existant
       if (this._console) {
-  			this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
+        this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._console.setHeight(180);
         this._console.setLeft(0);
-  			this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - 180);       
+        this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - 180);       
       }
       // reset the object finder, if existant
       if (this._objectFinder) {
@@ -247,21 +247,21 @@ qx.Class.define("inspector.Inspector", {
         this._objectFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._objectFinder.setTop(0);
       }
-			// reset the widget finder, if existant
+      // reset the widget finder, if existant
       if (this._widgetFinder) {
         this._widgetFinder.setWidth(350);
         this._widgetFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
         this._widgetFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._widgetFinder.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
       }
-			// reset the propery editor, if existant
+      // reset the propery editor, if existant
       if (this._propertyEditor) {
         this._propertyEditor.setWidth(350);
         this._propertyEditor.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
         this._propertyEditor.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._propertyEditor.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
       }    
-		},
+    },
     
    /*
     *********************************
@@ -269,13 +269,14 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */    
     /**
-     * Opens an native window showing the API documentation.
-     * If a widget is currently selected, the API viewer will
-     * open the documentataion of that class. Is in addition
-     * a property is selected, the viewer automaticly jumps to 
-     * the selected property.
+     * Opens an native window showing the API documentation. If a classname is
+     * given, the API documentation to the given class will be shown. If 
+     * additionally a property name is given, the API to that property
+     * will be shown.
+     * @param classname {String} The classname of the class.
+     * @param propertyname {String} The name of the property.  
      */
-    openApiWindow: function() {
+    openApiWindow: function(classname, propertyname) {
         // if the API window is not created
         if (this._apiWindow == null) {
           // initialize the api window
@@ -297,20 +298,14 @@ qx.Class.define("inspector.Inspector", {
           urlString = inspector.Inspector.API_VIEWER_URI;
         }
 
-        // if there is a property editor
-        if (this._propertyEditor != null) {
-          // check if a property is selected
-          if (this._propertyEditor.getSelectedProperty() != null) {
-            // if yes, take the classname and the property name from the property
-            urlString = urlString + "#" + this._propertyEditor.getSelectedProperty().getUserData("classname");
-            urlString = urlString + "~" + this._propertyEditor.getSelectedProperty().getUserData("key");
-          
-          // if no property is selected but a object
-          } else if (this._propertyEditor.getWidget() != null) {
-            // only take the objects classname
-            urlString = urlString + "#" + this._propertyEditor.getWidget().classname;
+        // if a classname is given
+        if (classname != null) {
+          urlString = urlString + "#" + classname;
+          // if a property name is given
+          if (propertyname != null) {
+            urlString = urlString + "~" + propertyname;            
           }          
-        }                  
+        }
       
         // set the uri in the window
         this._apiWindow.setUrl(urlString);
@@ -597,20 +592,20 @@ qx.Class.define("inspector.Inspector", {
       // set the widget
       this.setWidget(qx.core.Object.getDb()[dbKey], ref);
     },
-	
-	
-	/**
-	 * Tells the console to show the object assosiated with the id in the dom view.
-	 * @internal
-	 * @param id {Number} The given id. 
-	 */
-	inspectObjectByInternalId: function(id) {
+  
+  
+  /**
+   * Tells the console to show the object assosiated with the id in the dom view.
+   * @internal
+   * @param id {Number} The given id. 
+   */
+  inspectObjectByInternalId: function(id) {
     // if the console existst
-		if (this._console != null) {
-		  // tell the consol to do the rest
+    if (this._console != null) {
+      // tell the consol to do the rest
       this._console.inspectObjectByInternalId(id);
     }
-	},
+  },
    
    
     /**
@@ -620,11 +615,11 @@ qx.Class.define("inspector.Inspector", {
      * @param index {Number} The index in the internal array structure.
      * @param key {String} The name of the value so select the object.
      */
-	inspectObjectByDomSelecet: function(index, key) {
-		if (this._console != null) {
-		    this._console.inspectObjectByDomSelecet(index, key);
-		}
-	},   
+  inspectObjectByDomSelecet: function(index, key) {
+    if (this._console != null) {
+        this._console.inspectObjectByDomSelecet(index, key);
+    }
+  },   
       
     /*
     *********************************

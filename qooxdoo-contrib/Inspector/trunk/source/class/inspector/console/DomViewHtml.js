@@ -77,48 +77,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
     *********************************
        PUBLIC
     *********************************
-    */  
-    /**
-     * @internal
-     * @return The components of the console.
-     */
-    getComponents: function() {
-      return [this, this._htmlEmbed];
-    },
-    
-    
-    /**
-     * @internal
-     * @param delta {Number} The edlta of the height.
-     */
-    setMainElementDeltaHeight: function(delta) {
-      this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
-    },
-    
-    
-    /**
-     * Doesent do anything because no focus is needed.
-     */
-    focus: function() {
-      // do nothing
-    },
-
-
-    /**
-     * Returns the string that identifies the current object 
-     * in the dom view.
-     * @return {String} Information string.
-     */
-    getCaptionMessage: function() {
-      // if there is a firest element in the breadcrumbs
-      if (this._breadCrumb.length > 0) {
-        // return its name
-        return this._breadCrumb[this._breadCrumb.length - 1].name;        
-      }
-      // otherwise return a message telling that no selection has been made
-      return "nothing selected";
-    },
-
+    */
     /**
      * Set a new object to inspect.
      * @param object {Object} The object to inspect.
@@ -211,6 +170,61 @@ qx.Class.define("inspector.console.DomViewHtml", {
     },
     
     
+    /*
+    *********************************
+       IVIEW IMPLEMENTATIONS
+    *********************************
+    */  
+    /**
+     * @internal
+     * @return The components of the console.
+     */
+    getComponents: function() {
+      return [this, this._htmlEmbed];
+    },
+    
+    
+    /**
+     * @internal
+     * @param delta {Number} The edlta of the height.
+     */
+    setMainElementDeltaHeight: function(delta) {
+      this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
+    },
+    
+    
+    /**
+     * Doesent do anything because no focus is needed.
+     */
+    focus: function() {
+      // do nothing
+    },
+
+
+    /**
+     * Clears the whole dom view.
+     */
+    clear: function() {
+      this._htmlEmbed.setHtml("");
+    },
+		
+
+    /**
+     * Returns the string that identifies the current object 
+     * in the dom view.
+     * @return {String} Information string.
+     */
+    getCaptionMessage: function() {
+      // if there is a firest element in the breadcrumbs
+      if (this._breadCrumb.length > 0) {
+        // return its name
+        return this._breadCrumb[this._breadCrumb.length - 1].name;        
+      }
+      // otherwise return a message telling that no selection has been made
+      return "nothing selected";
+    },
+		
+		
     /**
      * Filters the current view objects properties with the given filter.
      * @param filter {String} String to specify the regexp object.
@@ -231,14 +245,6 @@ qx.Class.define("inspector.console.DomViewHtml", {
     
     
     /**
-     * Clears the whole dom view.
-     */
-    clear: function() {
-      this._htmlEmbed.setHtml("");
-    },
-    
-    
-    /**
      * Returns the string used to filter or if no string is set the defaul message.
      * @return {String} The string used to filter
      */
@@ -251,7 +257,24 @@ qx.Class.define("inspector.console.DomViewHtml", {
         // otherwise, return the filter string
         return this._filter;
       }
-    },    
+    },  
+    
+    
+    /**
+     * Returns the classname of the current selected object, if it is a qooxdoo object.
+     * Otherwise, null will be returned.
+     * @return {String | null} The name of the current selected class.
+     */
+    getCurrentSelectedClassname: function() {
+      // if a object is selected
+      if (this._breadCrumb.length > 0) {
+        // if the current object is a qooxdoo object
+        if (this._breadCrumb[this._breadCrumb.length - 1].object instanceof qx.core.Object) {
+          return this._breadCrumb[this._breadCrumb.length - 1].object.classname;
+        }
+      }
+      return null;
+    },
     
     
     /*
