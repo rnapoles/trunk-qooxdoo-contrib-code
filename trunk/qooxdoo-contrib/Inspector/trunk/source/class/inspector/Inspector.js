@@ -47,6 +47,11 @@ qx.Class.define("inspector.Inspector", {
     FIND_BUTTON_TOOLTIP_TEXT: "Select a widget with your mouse.",
     HIGHLIGHT_BUTTON_TOOLTIP_TEXT: "Keep the selected widget surrounded with a red boarder.",
     OPEN_ALL_BUTTON_TOOLTIP_TEXT: "Open all four inspector windows.",
+    CLEAR_BUTTON_TOOLTIP_TEXT: "Clear the current view.",
+    API_BUTTON_TOOLTIP_TEXT: "Show the API of the corresponding object if possible.",
+    SET_BUTTON_TOOLTIP_TEXT: "<b style='color:red;'>BETA!</b> Generate a settings map for the current selected object.",
+    APPENDER_BUTTON_TOOLTIP_TEXT: "Show all log messages in the console.",
+    HELP_BUTTON_TOOLTIP_TEXT: "Prints out a help message to the console.",
     
     CONSOLE_CAPTION_TITLE: "Console",
     OBJECT_CAPTION_TITLE: "Objects",
