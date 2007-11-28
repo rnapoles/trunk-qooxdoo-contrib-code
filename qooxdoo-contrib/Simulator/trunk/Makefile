@@ -36,6 +36,12 @@
 #
 QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.2-sdk
 
+# Path to your Selenium RC installation
+SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
+
+# Path to your Mozilla Rhino installation 
+MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
+
 #
 # Namespace of your application e.g. custom
 # Even complexer stuff is possible like: net.sf.custom
@@ -72,3 +78,47 @@ endif
 
 error:
 	@echo "  * Please configure QOOXDOO_PATH"
+
+################################################################################
+# SELENIUM STUFF
+################################################################################
+QOOXDOO_SELENIUM_USER_EXTENSION = ./tool/selenium/user_extension/user-extensions-qooxdoo.js
+QOOXDOO_SELENIUM_JAVA_CLIENT = ./tool/selenium/language_binding/QxSelenium.java
+SELENIUM_BUILD_DIR = ./tool/script
+JAR = jar
+
+selenium: selenium-build-dirs selenium-server-ext selenium-java-client-ext 
+
+selenium-build-dirs:
+	mkdir -p $(SELENIUM_BUILD_DIR)/jar
+	mkdir -p $(SELENIUM_BUILD_DIR)/java_client
+
+selenium-java-client-ext:
+	(cd $(SELENIUM_BUILD_DIR); \
+	cd java-client; \
+	$(JAR) xf $(SELENIUM_RC_PATH)/selenium-java-client-driver-*/selenium-java-client-driver.jar; \
+	cd ..; \
+	javac -cp java_client $(QOOXDOO_SELENIUM_JAVA_CLIENT); \
+	cp QxSelenium.class java_client/com/thoughtworks/selenium; \
+	$(JAR) cf selenium-java-client-driver.jar -C java_client . \
+	)
+
+selenium-server-ext:
+	(cd $(SELENIUM_BUILD_DIR); \
+	cd jar; \
+	$(JAR) xf $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar; \
+	cd ..; \
+	cat (QOOXDOO_SELENIUM_USER_EXTENSION) >> jar/core/scripts/user-extensions.js
+	$(JAR) cf selenium-server.jar -C jar . \
+	)
+
+selenium-rc-start:
+	(cd $(SELENIUM_BUILD_DIR); java -jar selenium-server.jar &)
+
+mozilla-rhino-jar:
+	(cd $(SELENIUM_BUILD_DIR); cp $(MOZILLA_RHINO_PATH)/js.jar .)
+
+selenium-rhino-shell: mozilla-rhino-jar
+	(export CLASSPATH=$(SELENIUM_BUILD_DIR)/selenium-java-client.jar:$(SELENIUM_BUILD_DIR)/js.jar; \
+	java org.mozilla.javascript.tools.shell.Main \
+	)
