@@ -207,7 +207,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
     clear: function() {
       this._htmlEmbed.setHtml("");
     },
-		
+    
 
     /**
      * Returns the string that identifies the current object 
@@ -223,8 +223,8 @@ qx.Class.define("inspector.console.DomViewHtml", {
       // otherwise return a message telling that no selection has been made
       return "nothing selected";
     },
-		
-		
+    
+    
     /**
      * Filters the current view objects properties with the given filter.
      * @param filter {String} String to specify the regexp object.
@@ -268,9 +268,13 @@ qx.Class.define("inspector.console.DomViewHtml", {
     getCurrentSelectedClassname: function() {
       // if a object is selected
       if (this._breadCrumb.length > 0) {
-        // if the current object is a qooxdoo object
-        if (this._breadCrumb[this._breadCrumb.length - 1].object instanceof qx.core.Object) {
-          return this._breadCrumb[this._breadCrumb.length - 1].object.classname;
+        // get the object shown in the dom view
+        var object = this._breadCrumb[this._breadCrumb.length - 1].object;
+        
+        // if the object has a classname attribut
+        if (object.classname != undefined) {
+          // ceturn that classname
+          return object.classname;
         }
       }
       return null;
