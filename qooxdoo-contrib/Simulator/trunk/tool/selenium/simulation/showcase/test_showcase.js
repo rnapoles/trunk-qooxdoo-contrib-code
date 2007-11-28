@@ -1,11 +1,58 @@
-# java -cp  'selenium-java-client-driver.jar:js.jar' org.mozilla.javascript.tools.shell.Main
+/* ************************************************************************
+
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
+   Copyright:
+     2004-2007 1&1 Internet AG, Germany, http://www.1and1.org
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Thomas Herchenroeder (thron7)
+
+************************************************************************ */
+
+/**
+ * NAME
+ *  test_showcase.js -- test qooxdoo's Showcase application with Selenium RC
+ *
+ * SYNTAX
+ *  java -cp  'selenium-java-client-driver.jar:js.jar' \
+ *            org.mozilla.javascript.tools.shell.Main test_showcase.js
+ *
+ * PREREQUISITES
+ *  - the qooxdoo user-extensions for Selenium have to be available in the
+ *    Selenium RC server
+ *  - the Selenium RC server has to be up and running (default on 'localhost'
+ *    but see the "Config Section")
+ *  - the extended qooxdoo language bindings (QxSelenium.class) have to be 
+ *    available in the Selenium Java client driver
+ *    (selenium-java-client-driver.jar)
+ *
+ * DESCRIPTION
+ *  This script runs a simulation (aka test) against the qooxdoo "Showcase" demo
+ *  application on the qooxdoo demo web site. To do so, it connects to a
+ *  Selenium RC server, requests a new browser session, loads the Showcase
+ *  application and simulates user interactions on it. The simulation is
+ *  slow-paced, but the speed can be adjusted in the config section. It runs
+ *  through all tabs of the application and exercises most of the widgets
+ *  featured on each tab.
+ */
 
 importClass(Packages.com.thoughtworks.selenium.QxSelenium);
-var sel = new QxSelenium("localhost",4444,"*firefox","http://localhost");
+
+// - Config Section ------------------------------------------------------------
+var sel = new QxSelenium("localhost",4444,"*firefox","http://demo.qooxdoo.org");
 var useRunningSession = false;
 var closeBrowser = false;
 var cycleTests = false;
-var stepSpeed  = "1000"; // millisecs after command
+var stepSpeed  = "1000"; // millisecs after each command
+// - Config End ----------------------------------------------------------------
 
 
 function Form (sel)
@@ -328,12 +375,15 @@ function Themes (sel)
   
 } // Themes()
 
+// - Main --------------------------------------------------------------------
+
 // not possible to re-use existing sessionId, therefor
 //if (arguments.length < 1) 
 if (true)
 {
   sel.start();
-  sel.open("http://localhost/~thron7/qooxdoo.div/themen/selenium/showcase/build/");
+  //sel.open("http://localhost/~thron7/qooxdoo.div/themen/selenium/showcase/build/");
+  sel.open("http://demo.qooxdoo.org/0.7/showcase/index.html");
 } else 
 {
   // not possible with Java bindings (sessionId private to sel.CommandProcessor(is 
@@ -341,8 +391,6 @@ if (true)
   sel.sessionId = arguments[0]
   useRunningSession = true;
 }
-
-// - Main --------------------------------------------------------------------
 
 Packages.java.lang.Thread.sleep(2000);
 var doTests = true;
