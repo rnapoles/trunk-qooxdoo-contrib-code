@@ -84,6 +84,12 @@
  *
  * dom-events reference: http://www.howtocreate.co.uk/tutorials/javascript/domevents
  *
+ * EXTERNAL INTERFACES
+ *  Each user extension for Selenium uses interfaces from the Selenium runtime
+ *  environment, like the 'Selenium', 'PageBot', 'SeleniumError' and 'LOG' objects, or
+ *  the 'triggerEvent' and 'getClientXY' functions. For more information, see
+ *  the file 'user-extensions.js.sample' in the Selenium Core distribution.
+ *
  * changed to work with selenium 0.8.3
  *
  * TODO:
