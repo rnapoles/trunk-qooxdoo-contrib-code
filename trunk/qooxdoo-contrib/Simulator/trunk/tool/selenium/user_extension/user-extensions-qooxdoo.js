@@ -93,6 +93,9 @@
  * Version: 0.3
  * 
  */
+
+Selenium.prototype.qx = {};
+
 // ***************************************************
 // Handling of MouseEventParameters
 // ***************************************************
@@ -102,7 +105,7 @@
 * @param customParameters string with name1=value1, name2=value2 whitespace will be ignored/stripped
 * @param isIEevent boolean if true treat buttons IE-like, false treat it like all other user-agents do
 */
-function MouseEventParameters(customParameters)
+Selenium.prototype.qx.MouseEventParameters = function (customParameters)
 {
   this.customParameters = {};
 
@@ -123,14 +126,14 @@ function MouseEventParameters(customParameters)
   }
 }
 
-MouseEventParameters.MOUSE_BUTTON_MAPPING_IE =
+Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_IE =
 {
   "left"   : 1,
   "right"  : 2,
   "middle" : 4
 };
 
-MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER =
+Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER =
 {
   "left"   : 0,
   "right"  : 2,
@@ -145,17 +148,17 @@ MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER =
  * @param buttonName {var} TODOC
  * @return {var} TODOC
  */
-MouseEventParameters.prototype.getButtonValue = function(buttonName)
+Selenium.prototype.qx.MouseEventParameters.prototype.getButtonValue = function(buttonName)
 {
   if (document.createEventObject)
   {
     LOG.debug("MouseEventParameters.prototype.getButtonValue - using IE Button-Mapping");
-    return MouseEventParameters.MOUSE_BUTTON_MAPPING_IE[buttonName];
+    return Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_IE[buttonName];
   }
   else
   {
     LOG.debug("MouseEventParameters.prototype.getButtonValue - using OTHER Button-Mapping");
-    return MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER[buttonName];
+    return Selenium.prototype.qx.MouseEventParameters.MOUSE_BUTTON_MAPPING_OTHER[buttonName];
   }
 };
 
@@ -173,7 +176,7 @@ MouseEventParameters.prototype.getButtonValue = function(buttonName)
  *            the type is important, see documentation above for details
  * @return {var} TODOC
  */
-MouseEventParameters.prototype.getParamValue = function(paramName, defaultValue)
+Selenium.prototype.qx.MouseEventParameters.prototype.getParamValue = function(paramName, defaultValue)
 {
   if (this.customParameters[paramName])
   {
@@ -224,7 +227,14 @@ MouseEventParameters.prototype.getParamValue = function(paramName, defaultValue)
 // ***************************************************
 // END: Handling of MouseEventParameters
 // ***************************************************
-function triggerMouseEventQx(eventType, element, eventParamObject)
+/**
+ * TODOC
+ *
+ * @type member
+ * @param buttonName {var} TODOC
+ * @return {var} TODOC
+ */
+Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventParamObject)
 {
   if (!eventParamObject)
   {
@@ -305,7 +315,7 @@ function triggerMouseEventQx(eventType, element, eventParamObject)
  * mousedown, mouseup will be fired instead of only click (which is named execute in qooxdoo)
  * 
  * eventParams example: button=left|right|middle, clientX=300, shiftKey=true
- *             for a full list of properties see "function triggerMouseEventQx"
+ *             for a full list of properties see "function Selenium.prototype.qx.triggerMouseEventQx"
  *
  * @type member
  * @param locator {var} an element locator
@@ -327,7 +337,7 @@ Selenium.prototype.doQxClick = function(locator, eventParams)
  * TODO: implement it like doFooAt, where additional coordinates will be added to the element-coords
  * 
  * eventParams example: button=left|right|middle, clientX=300, shiftKey=true
- *             for a full list of properties see "function triggerMouseEventQx"
+ *             for a full list of properties see "function Selenium.prototype.qx.triggerMouseEventQx"
  *
  * @type member
  * @param locator {var} an element locator
@@ -358,13 +368,13 @@ Selenium.prototype.doQxClickAt = function(locator, eventParams)
  */
 Selenium.prototype.clickElementQx = function(element, eventParamString)
 {
-  var additionalParamsForClick = new MouseEventParameters(eventParamString);
+  var additionalParamsForClick = new Selenium.prototype.qx.MouseEventParameters(eventParamString);
 
   triggerEvent(element, 'focus', false);
-  triggerMouseEventQx('mouseover', element, additionalParamsForClick);
-  triggerMouseEventQx('mousedown', element, additionalParamsForClick);
-  triggerMouseEventQx('mouseup', element, additionalParamsForClick);
-  triggerMouseEventQx('click', element, additionalParamsForClick);
+  Selenium.prototype.qx.triggerMouseEventQx('mouseover', element, additionalParamsForClick);
+  Selenium.prototype.qx.triggerMouseEventQx('mousedown', element, additionalParamsForClick);
+  Selenium.prototype.qx.triggerMouseEventQx('mouseup', element, additionalParamsForClick);
+  Selenium.prototype.qx.triggerMouseEventQx('click', element, additionalParamsForClick);
   // do not blur or mouseout as additional events won't be fired correctly
 // FIXME: include original "click" functionality
 };
