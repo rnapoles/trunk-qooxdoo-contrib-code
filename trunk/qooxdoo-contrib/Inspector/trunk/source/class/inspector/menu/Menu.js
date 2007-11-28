@@ -176,7 +176,7 @@ qx.Class.define("inspector.menu.Menu", {
      */
     resetFindButton: function() {
       this._findButton.setChecked(false);
-			
+      
     },
     
     
@@ -512,7 +512,9 @@ qx.Class.define("inspector.menu.Menu", {
       
       // api button
       var apiButton = new qx.ui.menu.Button("Show API Viewer");
-      apiButton.addEventListener("execute", this._inspector.openApiWindow, this._inspector);
+      apiButton.addEventListener("execute", function() {
+        this.openApiWindow();
+      }, this._inspector);
       this._inspectorMenu.add(apiButton);
       
       // seperator
@@ -523,8 +525,8 @@ qx.Class.define("inspector.menu.Menu", {
       this._inspectorMenu.add(this._hideEverythingButton);
       // reset perspective button
       var resetPerspectiveButton = new qx.ui.menu.Button("Reset");
-			resetPerspectiveButton.addEventListener("execute", this._inspector.resetPerspective, this._inspector);      
-      this._inspectorMenu.add(resetPerspectiveButton);			
+      resetPerspectiveButton.addEventListener("execute", this._inspector.resetPerspective, this._inspector);      
+      this._inspectorMenu.add(resetPerspectiveButton);      
       
       // listener which holds the bemubar down while the menu is shown
       this._inspectorMenu.addEventListener("mousemove", function() {
@@ -564,27 +566,27 @@ qx.Class.define("inspector.menu.Menu", {
 
       // add a seperator            
       this._menubar.add(new qx.ui.toolbar.Separator());      
-			
-			// add the find button
-			this._findButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/menu_select.png"));
-			this._findButton.addEventListener("changeChecked", function(e) {
+      
+      // add the find button
+      this._findButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/menu_select.png"));
+      this._findButton.addEventListener("changeChecked", function(e) {
         // check the status of the find checkbox
         if (!this._findButton.getChecked()) {
           this._inspector.exitFindMode();          
         } else {
           this._inspector.startFindMode();
         }   
-			}, this);
-			this._menubar.add(this._findButton);
-			      
+      }, this);
+      this._menubar.add(this._findButton);
+            
       // highlight button
       this._highlightButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/menu_highlight.png"));
       this._highlightButton.addEventListener("changeChecked", function(e) {
-        this._inspector.highlightCurrentWidget(this._highlightButton.getChecked());				
-			}, this);
-      this._menubar.add(this._highlightButton);			
-			
-			// add a seperator            
+        this._inspector.highlightCurrentWidget(this._highlightButton.getChecked());        
+      }, this);
+      this._menubar.add(this._highlightButton);      
+      
+      // add a seperator            
       this._menubar.add(new qx.ui.toolbar.Separator());  
       
       // add the open all button
@@ -794,10 +796,10 @@ qx.Class.define("inspector.menu.Menu", {
       if (this._settingsWindow == null) {
         // create one
         this._settingsWindow = new inspector.menu.SettingsWindow(this._inspector, 
-				                        this, inspector.Inspector.SETTINGS_CAPTION_TITLE);
+                                this, inspector.Inspector.SETTINGS_CAPTION_TITLE);
         this._settingsWindow.addToDocument();
-				// registers the settings Window as a window of the inspector
-				this._inspector.registerWindow(this._settingsWindow);
+        // registers the settings Window as a window of the inspector
+        this._inspector.registerWindow(this._settingsWindow);
       }
       // open the settings window
       this._settingsWindow.open();
