@@ -41,11 +41,16 @@ qx.Class.define("inspector.console.Console", {
     // call the constructor of the superclass
     this.base(arguments, main, name);
 
-    // if there is a cookie stored that the appender need to be reset
-    if (qx.io.local.CookieApi.get("consoleAppender") == "true") {
-      // check the appender button
-      this._appenderButton.setChecked(true);
-    }
+    // add the appender if everything is done
+    var self = this;
+    window.setTimeout(function() {
+      // if there is a cookie stored that the appender need to be reset
+      if (qx.io.local.CookieApi.get("consoleAppender") == "true") {
+        // check the appender button
+        self._appenderButton.setChecked(true);
+      }
+    }, 0);
+    
   },
 
 

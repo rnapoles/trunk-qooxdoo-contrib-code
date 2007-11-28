@@ -28,7 +28,7 @@ qx.Class.define("inspector.menu.Menu", {
   construct : function(inspector) {    
     this.base(arguments);
     // set the zIndex to a higher one than the index of the find mode layer
-    this.setZIndex(1e6 + 3);
+    this.setZIndex(1e6 + 50);
     // save the reference to the inspector
     this._inspector = inspector;
     
@@ -499,6 +499,9 @@ qx.Class.define("inspector.menu.Menu", {
       // create the menu
       this._inspectorMenu = new qx.ui.menu.Menu();
       this._inspectorMenu.addToDocument();
+      this._inspectorMenu.bringToFront = function() {
+        this.setZIndex(1e6 + 50);
+      }
       
       // the settings button
       var settingsButton = new qx.ui.menu.Button("Settings...");
