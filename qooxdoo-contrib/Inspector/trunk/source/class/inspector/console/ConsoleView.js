@@ -754,7 +754,7 @@ qx.Class.define("inspector.console.ConsoleView", {
                                  ";> ", object.classname + " [" + object.toHashCode() + "]</u> " + 
                                  "<u style='cursor: pointer; color: #AAAA00;' onclick='" + 
                                        "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
-                                       "'>" + object + " </u>"                                 
+                                       "'><b>inspect Object</b></u>"                                 
                                  , "#006400")
       // append the label string
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);      
