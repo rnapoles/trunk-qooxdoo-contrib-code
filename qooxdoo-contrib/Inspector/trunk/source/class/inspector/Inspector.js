@@ -44,6 +44,9 @@ qx.Class.define("inspector.Inspector", {
     GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT: "Go to the currently selected property.",
     OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT: "Show a summary of all objects.",
     POLLUTION_BUTTON_TOOLTIP_TEXT: "Show the pollution of the global window object.",
+    FIND_BUTTON_TOOLTIP_TEXT: "Select a widget with your mouse.",
+    HIGHLIGHT_BUTTON_TOOLTIP_TEXT: "Keep the selected widget surrounded with a red boarder.",
+    OPEN_ALL_BUTTON_TOOLTIP_TEXT: "Open all four inspector windows.",
     
     CONSOLE_CAPTION_TITLE: "Console",
     OBJECT_CAPTION_TITLE: "Objects",

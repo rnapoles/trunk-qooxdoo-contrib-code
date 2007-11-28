@@ -59,8 +59,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     
     // toolbar buttons
     _reloadButton: null,
+    
     // tooltips
- 
     _reloadToolTip: null,
     _autoReloadToolTip: null, 
     
@@ -389,26 +389,26 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      * @param widget {qx.core.Object} The object which should be selected.
      */
     _selectWidgetInTheTree: function (widget) {
-			// check for null references
-			if (!(widget instanceof qx.ui.core.Widget)) {
-				return;
-			}
-			
-			// create a array of parents
-			var parents = [];
-			// save the parrents in that array
-			var w = widget;
-			while(w.getParent() != null) {
-				parents.push(w);
-				w = w.getParent();
-			}
-			// Go backwards threw all parents
-			for (var i = parents.length - 1; i > 0; i--) {
-				// open the folder of that parent
-				this._openFolder(parents[i]);
-			}
-					
-		  
+      // check for null references
+      if (!(widget instanceof qx.ui.core.Widget)) {
+        return;
+      }
+      
+      // create a array of parents
+      var parents = [];
+      // save the parrents in that array
+      var w = widget;
+      while(w.getParent() != null) {
+        parents.push(w);
+        w = w.getParent();
+      }
+      // Go backwards threw all parents
+      for (var i = parents.length - 1; i > 0; i--) {
+        // open the folder of that parent
+        this._openFolder(parents[i]);
+      }
+          
+      
       var id = widget.toHashCode();
       // get all items of the tree
       var items = this._tree.getItems(true, true);
@@ -442,15 +442,15 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         this._tree.getManager().setAnchorItem(null);
         // tell the inspector class that the widget has changed
         this._inspector.setWidget(widget, this);
-      }	
+      }  
     },
-		
-		
-		/**
-		 * Opens the Folder that contains the widget. 
-		 * @param widget {qx.ui.core.Widget} The widget to open the corresponding folder.
-		 */
-		_openFolder: function(widget) {
+    
+    
+    /**
+     * Opens the Folder that contains the widget. 
+     * @param widget {qx.ui.core.Widget} The widget to open the corresponding folder.
+     */
+    _openFolder: function(widget) {
       var id = widget.toHashCode();
       // get all items of the tree
       var items = this._tree.getItems(true, true);
@@ -471,8 +471,8 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
           // stop searching for the element
           break;
         }
-      }            		
-		},
+      }                
+    },
     
     
     /*
@@ -552,7 +552,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
       }
     },
-      		
+    
     
     /**
      * Creates the tree and register the handler for the clicks on the tree
