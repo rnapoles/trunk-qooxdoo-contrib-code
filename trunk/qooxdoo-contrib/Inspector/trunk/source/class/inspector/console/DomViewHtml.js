@@ -273,8 +273,14 @@ qx.Class.define("inspector.console.DomViewHtml", {
         
         // if the object has a classname attribut
         if (object.classname != undefined) {
-          // ceturn that classname
-          return object.classname;
+          // it is a class, interface, mixin or theme
+          if (qx.Class.isDefined(object.classname) || 
+              qx.Interface.isDefined(object.classname) || 
+              qx.Mixin.isDefined(object.classname) || 
+              qx.Theme.isDefined(object.classname)) {
+            // return that classname
+            return object.classname;        
+          }
         }
       }
       return null;
