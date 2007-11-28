@@ -1,11 +1,28 @@
+/* ************************************************************************
+
+   qooxdoo - the new era of web development
+
+   http://qooxdoo.org
+
+   Copyright:
+     2004-2007 1&1 Internet AG, Germany, http://www.1and1.org
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Robert Zimmermann    (rz)
+     * Thomas Herchenroeder (thron7)
+
+************************************************************************ */
+
 /**
- * Selenium Extension for testing Applications build with Qooxdoo
+ * Selenium Extension for testing Applications build with qooxdoo
  *   see http://qooxdoo.org
  *
- * License:
- *  public domain
- *
- * This extension covers the following commands to test applications build with Qooxdoo:
+ * This extension covers the following commands to test applications build with qooxdoo:
  *  1.) special click commands: "qxClick" and "qxClickAt"
  *  2.) special qooxdoo element-locator "qx=" and "qxp="
  *
@@ -14,9 +31,10 @@
  *  - Internet Explorer
  *
  * qxClick and qxClickAt:
- *  Both commands fire "mousedown" followed by "mouseup", as qooxdoo mostly does not listen for "click".
- *  Additionally these commands provide the possibility to customize mouse-events, to do eg. a
- *  right-click or click-with-shift-key-pressed, see below for details.
+ *  Both commands fire "mousedown" followed by "mouseup", as qooxdoo mostly does
+ *  not listen for "click".  Additionally these commands provide the possibility
+ *  to customize mouse-events, to do eg. a right-click or
+ *  click-with-shift-key-pressed, see below for details.
  * Example:
  * +----------+-----------------+------------------------------+
  * |qxClick   | <any locator>   | button=right, shiftKey=true  |
@@ -36,46 +54,44 @@
  *   - default value  : false
  *
  *
- * Special Qooxdoo Locator:
- *  As Qooxdoo HTML consists mainly of div-elements, it is mostly difficult to locate an distinct
- *  element with xpath (sometimes impossible).
- *  If You have access to the source of the AUT build with Qooxdoo You can supply UserData
+ * Special qooxdoo Locator:
+ *  As qooxdoo HTML consists mainly of div-elements, it is mostly difficult to
+ *  locate an distinct element with xpath (sometimes impossible).  If You have
+ *  access to the source of the AUT build with qooxdoo You can supply UserData
  *  for the elements to interact with.
  *  "qxp=": Additional, combined Locator like qxp=myDialog/buttonOK//XPATH-descendant
  *
  * Example:
  *  customButton = new qx.ui.menu.MenuButton("Click Me", ...);
  *  customButton.setUserData("customButton", "place here anything You want, e.g. selenium");
- * Now this Qooxdoo-button can be located (and clicked) like this:
+ * Now this qooxdoo-button can be located (and clicked) like this:
  * +----------+-----------------+--+
  * |qxClick   | qx=customButton |  |
  * +----------+-----------------+--+
- * Note: The Qooxdoo locator can be used with any selenium command, like
+ * Note: The qooxdoo locator can be used with any selenium command, like
  * +----------+-----------------+--+
  * |mouseOver | qx=customButton |  |
  * +----------+-----------------+--+
  *
  * The locator can also be used hierarchically.
- * This is comfortable, if Qooxdoo elements are reused in different locations.
+ * This is comfortable, if qooxdoo elements are reused in different locations.
  * Example:
- *  A OK-button is placed in a dialog box (and other dialog-boxes). And You don't want
- *  to give the same button different UserData as it is still an OK-button.
- *  So apply an UserData for the dialog-box, e.g. "myDialog" and name the button "buttonOK"
- *  Now this button can be located with: qx=myDialog/buttonOK or e.g. qx=scndDialog/buttonOK
- *
- * @author Robert Zimmermann
+ *  A OK-button is placed in a dialog box (and other dialog-boxes). And You
+ *  don't want to give the same button different UserData as it is still an
+ *  OK-button.  So apply an UserData for the dialog-box, e.g. "myDialog" and
+ *  name the button "buttonOK" Now this button can be located with:
+ *  qx=myDialog/buttonOK or e.g. qx=scndDialog/buttonOK
  *
  * dom-events reference: http://www.howtocreate.co.uk/tutorials/javascript/domevents
  *
  * changed to work with selenium 0.8.3
  *
  * TODO:
- *  - Ask Qooxdoo developers to provide Qooxdoo UserData's on core Qooxdoo widgets.
- *   - Widgets: Window, TreeView
+ *  - Ask qooxdoo developers to provide qooxdoo UserData's on core qooxdoo widgets.
+ *    - Widgets: Window, TreeView
  *
  * Version: 0.3
  * 
- * $Id: qooxdooExtension.js 172401 2007-11-14 14:40:02Z rz $
  */
 
 
@@ -232,7 +248,7 @@ function triggerMouseEventQx(eventType, element, eventParamObject) {
 Selenium.prototype.doQxClick = function(locator, eventParams) {
    /**
    * Clicks on a qooxdoo-element.
-   * mousedown, mouseup will be fired instead of only click (which is named execute in Qooxdoo)
+   * mousedown, mouseup will be fired instead of only click (which is named execute in qooxdoo)
    *
    * eventParams example: button=left|right|middle, clientX=300, shiftKey=true
    *             for a full list of properties see "function triggerMouseEventQx"
@@ -285,7 +301,7 @@ Selenium.prototype.clickElementQx = function(element, eventParamString) {
 
 Selenium.prototype.isQxEnabled = function(locator) {
     /**
-    * Check wheather an Qooxdoo Element is enabled or not
+    * Check wheather an qooxdoo Element is enabled or not
     *
     * @param locator an element locator
     *
@@ -298,7 +314,7 @@ Selenium.prototype.isQxEnabled = function(locator) {
         } else if (locator.substr(0, 4) === "qxp=") {
             throw new SeleniumError("NotImplemented: isQxEnabled for qxp Locator not yet implemented.");
         } else {
-            throw new SeleniumError("Error: Bad Qooxdoo-Locator-Syntax for locator: " + locator);
+            throw new SeleniumError("Error: Bad qooxdoo-Locator-Syntax for locator: " + locator);
         }
 
         LOG.debug("isQxEnabled: qxxLocator=" + qxxLocator);
@@ -306,7 +322,7 @@ Selenium.prototype.isQxEnabled = function(locator) {
 
         return qxObject.getEnabled();
     } else {
-          throw new SeleniumError("Error: No Qooxdoo-Locator given. This command only runs with Qooxdoo-Locators");
+          throw new SeleniumError("Error: No qooxdoo-Locator given. This command only runs with qooxdoo-Locators");
     }
 };
 
@@ -316,7 +332,7 @@ Selenium.prototype.isQxEnabled = function(locator) {
 
 PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow) {
     /**
-     * Finds an Qooxdoo-Object (!) identified by qooxdoo userData attribute
+     * Finds an qooxdoo-Object (!) identified by qooxdoo userData attribute
      *  Note: Here the Selenium locator abstraction is used to get an js-object _not_ an DOM-element
      *
      * locator syntax: qxx=oneId/childId1/childId2
@@ -326,7 +342,7 @@ PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
      * also surplus "/" are ignored (like qx=el1//el2)
      *
      */
-    LOG.info("Locate Qooxdoo-Object by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
+    LOG.info("Locate qooxdoo-Object by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
 
     var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
 
@@ -362,7 +378,7 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
      * locator syntax: qxp=oneId/childId1/childId2//xpath
      *
      * TODO: Test this addition
-     * credits: Sebastian Dau�
+     * credits: Sebastian Dauss
      *
      */
     LOG.info("Locate Element by qooxdoo-UserData-XPath-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
@@ -446,7 +462,7 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow) {
     {
       if (e.a instanceof Array)
       { 
-        //throw new SeleniumError("Qooxdoo-Element " + e.join('/') + " not found");
+        //throw new SeleniumError("qooxdoo-Element " + e.join('/') + " not found");
         LOG.debug("Qxh Locator: Could not resolve last element of: "+e.a.join('/'));
         //return null; // for now just return null
         throw e;
@@ -498,7 +514,7 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow) {
         LOG.error("qx-locator: element not found for locator: qx-locator=" + qxLocator);
         // have to throw this error, as otherwise Selenium will loop through all frames an cause an
         // unexpected error trying to access qx
-        throw new SeleniumError("Qooxdoo-Element " + qxLocator + " not found");
+        throw new SeleniumError("qooxdoo-Element " + qxLocator + " not found");
     }
 };
 
