@@ -120,6 +120,11 @@ qx.Class.define("inspector.menu.Menu", {
     _highlightButton: null,
     _hideEverythingButton: null,
     
+    // tooltips
+    _findTooltip: null,
+    _highlightTooltip: null,
+    _openAllTooltip: null,
+    
     // open buttons
     _openConsoleButton: null,
     _openObjectFinderButton: null,
@@ -581,6 +586,9 @@ qx.Class.define("inspector.menu.Menu", {
         }   
       }, this);
       this._menubar.add(this._findButton);
+      // add a tooltip to the find buttom
+      this._findTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.FIND_BUTTON_TOOLTIP_TEXT, null);
+      this._findButton.setToolTip(this._findTooltip);      
             
       // highlight button
       this._highlightButton = new qx.ui.toolbar.CheckBox(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/menu_highlight.png"));
@@ -589,6 +597,10 @@ qx.Class.define("inspector.menu.Menu", {
       }, this);
       this._menubar.add(this._highlightButton);      
       
+      // add a tooltip to the highlight buttom
+      this._highlightTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.HIGHLIGHT_BUTTON_TOOLTIP_TEXT, null);
+      this._highlightButton.setToolTip(this._highlightTooltip);      
+      
       // add a seperator            
       this._menubar.add(new qx.ui.toolbar.Separator());  
       
@@ -596,6 +608,10 @@ qx.Class.define("inspector.menu.Menu", {
       var openAllButton = new qx.ui.toolbar.Button("All");
       openAllButton.setCommand(this._openAllCommand);
       this._menubar.add(openAllButton);
+      
+      // add a tooltip to the open all buttom
+      this._openAllTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.OPEN_ALL_BUTTON_TOOLTIP_TEXT, null);
+      openAllButton.setToolTip(this._openAllTooltip);       
       
       // add a seperator
       this._menubar.add(new qx.ui.toolbar.Separator());
