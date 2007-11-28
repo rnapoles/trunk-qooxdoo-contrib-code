@@ -83,8 +83,9 @@ public class DistributionMojo extends Base {
         dest();
         qwt();
         mvn();
-        copyRepo();
         xFlags();
+        buildRepo();
+        // copyRepo();
         // newSample();
         // buildSample();
         pack();
@@ -119,7 +120,7 @@ public class DistributionMojo extends Base {
         info("creating " + qwt);
         filter = io.filter().include("**/*").exclude(
                 "**/target/**/*", 
-                "**/src/framework/**/*", 
+                "**/src/framework/**/*", "**/src/framework",
                 "**/.classpath", "**/.project", "**/.settings/**/*", "**/.settings", 
                 "**/nbproject/**/*", "**/nbproject");
         lst = basedir.copyDirectory(filter, qwt);
@@ -136,6 +137,16 @@ public class DistributionMojo extends Base {
         filter = io.filter().include("org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*");
         lst = io.getHome().join(".m2", "repository").copyDirectory(filter, repository);
         info("done, " + lst.size() + " files and directories");
+    }
+
+    private void buildRepo() throws IOException {
+        Program p;
+        
+        p = new Program((FileNode) dest.join("qwt"));
+        p.add(dest.join("bin", "qwt").getAbsolute());
+        p.add("clean", "install");
+        p.exec(System.out);
+        
     }
 
     private void newSample() throws IOException {
@@ -163,7 +174,7 @@ public class DistributionMojo extends Base {
         }
     }
 
-    private static final String[] SCRIPTS = { "**/bin/qwt*", "**/bin/mvn*" };
+    private static final String[] SCRIPTS = { "**/bin/qwt", "**/bin/mvn" };
     
     private void pack() throws IOException {
         FileNode zip;
