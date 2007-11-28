@@ -41,12 +41,11 @@ qx.Class.define("inspector.console.Console", {
     // call the constructor of the superclass
     this.base(arguments, main, name);
 
-    // create a appende
-    var appender = new inspector.console.Appender(this._consoleView);
-    // remove all appenders
-    // qx.log.Logger.ROOT_LOGGER.removeAllAppenders();
-    // add the console appender
-    // qx.log.Logger.ROOT_LOGGER.addAppender(appender);
+    // if there is a cookie stored that the appender need to be reset
+    if (qx.io.local.CookieApi.get("consoleAppender") == "true") {
+      // check the appender button
+      this._appenderButton.setChecked(true);
+    }
   },
 
 
@@ -71,8 +70,10 @@ qx.Class.define("inspector.console.Console", {
     _clearButton: null,
     _apiButton: null,
     _setButton: null,
+    _appenderButton: null,
     _helpButton: null,
     _findField: null,
+    
     // tabview buttons
     _domButton: null,
     _consoleButton: null,
@@ -80,6 +81,9 @@ qx.Class.define("inspector.console.Console", {
     // the current widget
     _widget: null,
     _ans: null,
+    
+    // appender
+    _appender: null,
     
     
     /*
@@ -490,6 +494,31 @@ qx.Class.define("inspector.console.Console", {
       this._toolbar.add(this._setButton);
       this._setButton.addEventListener("execute", function() {
         this._consoleView.printCode(this._generateSettingsMap());
+      }, this);
+      
+      // seperator
+      this._toolbar.add(new qx.ui.toolbar.Separator());
+      
+      // create and add a button to clear the view
+      this._appenderButton = new qx.ui.toolbar.CheckBox("Logger");
+      this._toolbar.add(this._appenderButton);
+      // register the open listener
+      this._appenderButton.addEventListener("changeChecked", function(e) {
+        // if there is no logger for the console
+        if (this._appender == null) {
+          // create one
+          this._appender = new inspector.console.Appender(this._consoleView);
+        }
+        // save the status of the appender in a cookie
+        qx.io.local.CookieApi.set("consoleAppender", e.getValue());
+        // if the button is pressed in
+        if (e.getValue()) {
+          // add the appender
+          qx.log.Logger.ROOT_LOGGER.addAppender(this._appender);
+        } else {
+          // otherwise, remove the appender
+          qx.log.Logger.ROOT_LOGGER.removeAppender(this._appender);
+        }
       }, this);
         
       // add a spacer to keep the help button rigth
