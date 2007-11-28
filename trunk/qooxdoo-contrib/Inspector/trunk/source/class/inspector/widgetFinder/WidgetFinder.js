@@ -390,7 +390,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
      */
     _selectWidgetInTheTree: function (widget) {
 			// check for null references
-			if (widget == null) {
+			if (!(widget instanceof qx.ui.core.Widget)) {
 				return;
 			}
 			
