@@ -165,7 +165,9 @@ qx.Class.define("inspector.menu.Menu", {
      * @return the components of the menu.
      */
     getComponents: function() {
-      return [this._inspectorMenu, this._hideAllPopup, this._welcomePopup, this._settingsWindow, this];
+      return [this._inspectorMenu, this._hideAllPopup, this._welcomePopup, 
+              this._settingsWindow, this, this._findTooltip, this._highlightTooltip, 
+              this._openAllTooltip];
     },
     
     

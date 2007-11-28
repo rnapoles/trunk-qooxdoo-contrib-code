@@ -79,6 +79,13 @@ qx.Class.define("inspector.console.Console", {
     _helpButton: null,
     _findField: null,
     
+    // tooltips
+    _clearTooltip: null,
+    _apiTooltip: null,
+    _setTooltip: null,
+    _appenderTooltip: null,
+    _helpTooltip: null,
+    
     // tabview buttons
     _domButton: null,
     _consoleButton: null,
@@ -101,7 +108,8 @@ qx.Class.define("inspector.console.Console", {
      * @return The components of the console.
      */
     getComponents: function() {
-      return [this].concat(this._consoleView.getComponents());
+      return [this, this._clearTooltip, this._apiTooltip, this._setTooltip, this._appenderTooltip, 
+              this._helpTooltip].concat(this._consoleView.getComponents());
     },    
    
     
@@ -456,7 +464,10 @@ qx.Class.define("inspector.console.Console", {
     _addToolbarButtons: function() {
       // create and add a button to clear the view
       this._clearButton = new qx.ui.toolbar.Button("Clear");
-      this._toolbar.add(this._clearButton);
+      this._toolbar.add(this._clearButton);      
+      // add a tooltip to the clear buttom
+      this._clearTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.CLEAR_BUTTON_TOOLTIP_TEXT, null);
+      this._clearButton.setToolTip(this._clearTooltip);  
       
       // create and add a button to clear the view
       this._apiButton = new qx.ui.toolbar.Button("API");
@@ -468,6 +479,9 @@ qx.Class.define("inspector.console.Console", {
         // open the api window
         this._inspector.openApiWindow(classname);          
       }, this);
+      // add a tooltip to the api buttom
+      this._apiTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.API_BUTTON_TOOLTIP_TEXT, null);
+      this._apiButton.setToolTip(this._apiTooltip);        
             
       // seperator
       this._toolbar.add(new qx.ui.toolbar.Separator());
@@ -494,17 +508,21 @@ qx.Class.define("inspector.console.Console", {
         this._printLine();
       }, this);
 */      
-
+      
+      // create a button for the settings map
       this._setButton = new qx.ui.toolbar.Button("Settings-Map");
       this._toolbar.add(this._setButton);
       this._setButton.addEventListener("execute", function() {
         this._consoleView.printCode(this._generateSettingsMap());
       }, this);
+      // add a tooltip to the clear buttom
+      this._setTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.SET_BUTTON_TOOLTIP_TEXT, null);
+      this._setButton.setToolTip(this._setTooltip);        
       
       // seperator
       this._toolbar.add(new qx.ui.toolbar.Separator());
       
-      // create and add a button to clear the view
+      // create and add a button to make the consola a appender
       this._appenderButton = new qx.ui.toolbar.CheckBox("Logger");
       this._toolbar.add(this._appenderButton);
       // register the open listener
@@ -520,11 +538,18 @@ qx.Class.define("inspector.console.Console", {
         if (e.getValue()) {
           // add the appender
           qx.log.Logger.ROOT_LOGGER.addAppender(this._appender);
+          // signal that the console is a appender now
+          this.debug("Console registered.");
         } else {
+          // signal that the console is unregistered
+          this.debug("Console unregistered.");          
           // otherwise, remove the appender
           qx.log.Logger.ROOT_LOGGER.removeAppender(this._appender);
         }
       }, this);
+      // add a tooltip to the appender button
+      this._appenderTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.APPENDER_BUTTON_TOOLTIP_TEXT, null);
+      this._appenderButton.setToolTip(this._appenderTooltip);          
         
       // add a spacer to keep the help button rigth
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer()); 
@@ -532,6 +557,9 @@ qx.Class.define("inspector.console.Console", {
       // create and add a help button
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
+      // add a tooltip to the help buttom
+      this._helpTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.HELP_BUTTON_TOOLTIP_TEXT, null);
+      this._helpButton.setToolTip(this._helpTooltip);
 
       // create and add a find textfield
       this._findField = new inspector.components.SearchTextField();

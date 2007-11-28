@@ -496,7 +496,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // add the text to the embedded
       this._printText(this._console.escapeHtml(text));      
       // try to run the code
-      try {
+      try {				
         // run it and store the result in the global ans value
         this._console.setAns(
           (function(text, ans) {
