@@ -21,6 +21,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>1.0-alpha-7</version><!-- alpha-9 causes IncompatibleClassChange exceptions -->
+    </dependency>
+    <dependency>
       <groupId>org.qooxdoo.sushi</groupId>
       <artifactId>svn</artifactId>
     </dependency>

@@ -72,7 +72,7 @@ public class IO {
     public final int maxInMemorySize;
     
     public IO() {
-        this(OS.CURRENT, new Settings(), new Buffer(), 32 * 1024, new Xml(), "**/.svn/**/*");
+        this(OS.CURRENT, new Settings(), new Buffer(), 32 * 1024, new Xml(), "**/.svn", "**/.svn/**/*");
     }
     
     public IO(OS os, Settings settings, Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {

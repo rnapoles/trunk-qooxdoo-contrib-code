@@ -19,11 +19,14 @@
 
 package org.qooxdoo.toolkit.plugin;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
@@ -37,10 +40,15 @@ import org.qooxdoo.sushi.util.Program;
  * @goal dist
  */
 public class DistributionMojo extends Base {
+    /*
+     * @required
+     */
+    private String version;
+    
     /**
      * WAR file to be generated.
      *
-     * @parameter expression="${project.build.directory}/qwt-${toolkit.version}"
+     * @parameter expression="${project.build.directory}/qwt-${version}"
      * @required
      */
     private FileNode dest;
@@ -56,6 +64,12 @@ public class DistributionMojo extends Base {
      * @required
      */
     private FileNode basedir;
+
+    /**
+     * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
+     */
+    private ZipArchiver zipArchiver;
+
     
     public void setBasedir(String path) {
         basedir = io.node(path);
@@ -69,8 +83,11 @@ public class DistributionMojo extends Base {
         dest();
         qwt();
         mvn();
-        repo();
-        sample();
+        copyRepo();
+        xFlags();
+        // newSample();
+        // buildSample();
+        pack();
     }
 
     private void dest() throws IOException {
@@ -84,20 +101,13 @@ public class DistributionMojo extends Base {
                 "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n" +
                 "  </pluginGroups>\n" +
                 "</settings>\n");
-        for (Node node : dest.find("**/bin/*")) {
-            xFlag((FileNode) node);
-        }
     }
 
     private void mvn() throws IOException {
-        final String MAVEN = "maven-2.0.7"; 
         HttpNode download;
-        FileNode mvn;
         
-        download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/" + MAVEN + "-bin.zip"));
+        download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
         Archive.loadZip(download).data.copy(dest);
-        mvn = (FileNode) dest.join(MAVEN, "bin", "mvn");
-        xFlag(mvn);
     }
 
     private void qwt() throws IOException {
@@ -112,26 +122,30 @@ public class DistributionMojo extends Base {
         info("done, " + lst.size() + " files and directories");
     }
 
-    private void repo() throws IOException {
+    private void copyRepo() throws IOException {
         Node repository;
         Filter filter;
         List<Node> lst;
         
         repository = dest.join("repository").mkdir();
         info("creating " + repository);
-        filter = io.filter().include("org/qooxdoo/**/*", "org/eclipse/base/**/*");
+        filter = io.filter().include("org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*");
         lst = io.getHome().join(".m2", "repository").copyDirectory(filter, repository);
         info("done, " + lst.size() + " files and directories");
     }
 
-    private void sample() throws IOException {
+    private void newSample() throws IOException {
         Program p;
         
         p = new Program((FileNode) dest.getParent());
         p.add(dest.join("bin", "qwt").getAbsolute());
         p.add("qx:help", "qx:new");
         p.exec(System.out);
+    }
 
+    private void buildSample() throws IOException {
+        Program p;
+        
         p = new Program((FileNode) dest.getParent().join("sample"));
         p.add(dest.join("bin", "qwt").getAbsolute());
         p.add("clean", "package");
@@ -139,7 +153,23 @@ public class DistributionMojo extends Base {
     }
     //--
     
-    private void xFlag(FileNode node) throws IOException {
-        node.setMode(0755);
+    private void xFlags() throws IOException {
+        for (Node node : dest.find("**/bin/*")) {
+            ((FileNode) node).setMode(0755);
+        }
+    }
+
+    private void pack() throws IOException {
+        FileNode zip;
+        
+        zip = (FileNode) dest.getParent().join(dest.getName() + ".zip");
+        info("create " + zip);
+        try {
+            zipArchiver.addDirectory(dest.getFile());
+            zipArchiver.setDestFile(zip.getFile());
+            zipArchiver.createArchive();
+        } catch (ArchiverException e) {
+            throw new RuntimeException("cannot create zip", e);
+        }
     }
 }
