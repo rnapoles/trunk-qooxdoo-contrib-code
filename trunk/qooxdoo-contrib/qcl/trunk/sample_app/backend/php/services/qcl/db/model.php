@@ -165,7 +165,6 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function setColumnValue($column,$value,$recordId=null)
 	{
-		
 		if( $recordId )
 		{
 			$data = array();

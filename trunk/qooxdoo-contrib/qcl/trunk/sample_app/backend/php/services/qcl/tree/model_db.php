@@ -95,6 +95,14 @@ class qcl_tree_model_db extends qcl_db_model
 		return true;
 	}
 	
+	/**
+	 * whether tree model supports positioning
+	 */	
+	function supportsPositioning()
+	{
+		return ( $this->key_position != null);
+	}
+	
    /**
     * change position within folder siblings
     * @param int 	$folderId	folder id
@@ -103,12 +111,19 @@ class qcl_tree_model_db extends qcl_db_model
    	*/
 	function changePosition ( $folderId, $parentId, $position )
 	{
+		if ( ! $this->supportsPositioning() )
+		{
+			$this->raiseError ("Setting a position is not supported");
+		}
 		$parentId = (int) $parentId;
 		$children = $this->getChildren ( $parentId );
 		$index = 0;
-		foreach ( $children as $data )
+		foreach ( $children as $child )
 		{
-			if ( $data[$this->key_id] == $folderId )
+			$data = array();
+			$data[$this->key_id] = $child[$this->key_id];
+			
+			if ( $child[$this->key_id] == $folderId )
 			{
 				$data[$this->key_position] = $position;
 			}
@@ -117,6 +132,7 @@ class qcl_tree_model_db extends qcl_db_model
 				if ( $index == $position ) $index++; // skip over target position
 				$data[$this->key_position] = $index++;
 			}
+			
 			$this->update($data);
 		}
 		return true;		
