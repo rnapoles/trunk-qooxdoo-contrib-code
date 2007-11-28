@@ -554,7 +554,8 @@ qx.Class.define("inspector.console.DomViewHtml", {
         
       // if it is a qooxdoo object  
       } else if (object instanceof qx.core.Object) {
-          returnString += object + "</a> <a style='color: #000000;' onclick=\"inspector.Inspector.getInstance().setWidgetByDbKey(" + object.getDbKey() + ", 'console');\">this</u>";
+          returnString += object + "</a> <a style='color: #000000;' onclick=\"inspector.Inspector.getInstance().setWidgetByDbKey(" + 
+					                          object.getDbKey() + ", 'console');\">select Object</u>";
 
       // if it is a regular object
       } else {
