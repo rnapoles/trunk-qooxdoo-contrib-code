@@ -17,7 +17,7 @@
 
   <properties>
     <!-- This is the place to adjust the QWT version you're using: -->
-    <toolkit.version>0.8.0-SNAPSHOT</toolkit.version>
+    <toolkit.version>0.7.3-SNAPSHOT</toolkit.version>
   </properties>
 
   <dependencies>
