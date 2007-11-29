@@ -418,8 +418,12 @@ public class SvnNode extends Node {
         return left + SEPARATOR + right;
     }
 
-    public void export(Node dest) throws IOException, SVNException {
-        export(dest, getLatestRevision());
+    public long export(Node dest) throws IOException, SVNException {
+        long latest;
+        
+        latest = getLatestRevision();
+        export(dest, latest);
+        return latest;
     }
 
     public void export(Node dest, long revision) throws IOException, SVNException {
