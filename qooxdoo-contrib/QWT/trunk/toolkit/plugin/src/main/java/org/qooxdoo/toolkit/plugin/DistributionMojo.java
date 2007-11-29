@@ -62,46 +62,34 @@ public class DistributionMojo extends Base {
     }
 
     /**
-     * Basedir.
-     *
-     * @parameter expression="${basedir}"
-     * @required
-     */
-    private FileNode basedir;
-
-    /**
      * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
      */
     private ZipArchiver zipArchiver;
 
-
-    public void setBasedir(String path) {
-        basedir = io.node(path);
-    }
-
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
-        dest();
-        qwt();
+        distribution.deleteOpt();
+        distribution.mkdirsOpt();
+
         mvn();
+        qwt();
+        bin();
         xFlags();
         build();
         pack();
     }
 
-    private void dest() throws IOException {
-        info("creating distribution: " + distribution);
-        distribution.deleteOpt();
-        distribution.mkdirsOpt();
-        basedir.join("src", "dist").copyDirectory(distribution);
+    private void bin() throws IOException {
+        distribution.join("qwt", "src", "dist").copyDirectory(distribution);
         distribution.join("bin", "settings.xml").writeString(
                 "<settings>\n" +  
                 "  <pluginGroups>\n" + 
                 "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n" +
                 "  </pluginGroups>\n" +
                 "</settings>\n");
+        
     }
-
+    
     private void mvn() throws IOException {
         HttpNode download;
         
