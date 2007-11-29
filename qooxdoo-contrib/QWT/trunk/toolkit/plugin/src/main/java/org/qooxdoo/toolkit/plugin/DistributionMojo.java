@@ -21,13 +21,11 @@ package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.qooxdoo.sushi.archive.Archive;
-import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.HttpNode;
 import org.qooxdoo.sushi.io.Node;
@@ -49,15 +47,15 @@ public class DistributionMojo extends Base {
     private String version;
     
     /**
-     * WAR file to be generated.
+     * Distribution directory.
      *
-     * @parameter expression="${project.build.directory}/qwt-${version}"
+     * @parameter expression="${project.build.directory}/distribution"
      * @required
      */
-    private FileNode dest;
+    private FileNode distribution;
     
-    public void setDest(String path) {
-        dest = io.node(path);
+    public void setDistribution(String path) {
+        distribution = io.node(path);
     }
 
     /**
@@ -87,19 +85,16 @@ public class DistributionMojo extends Base {
         qwt();
         mvn();
         xFlags();
-        buildRepo();
-        // copyRepo();
-        // newSample();
-        // buildSample();
+        build();
         pack();
     }
 
     private void dest() throws IOException {
-        info("creating distribution: " + dest);
-        dest.deleteOpt();
-        dest.mkdirsOpt();
-        basedir.join("src", "dist").copyDirectory(dest);
-        dest.join("bin", "settings.xml").writeString(
+        info("creating distribution: " + distribution);
+        distribution.deleteOpt();
+        distribution.mkdirsOpt();
+        basedir.join("src", "dist").copyDirectory(distribution);
+        distribution.join("bin", "settings.xml").writeString(
                 "<settings>\n" +  
                 "  <pluginGroups>\n" + 
                 "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n" +
@@ -111,7 +106,7 @@ public class DistributionMojo extends Base {
         HttpNode download;
         
         download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
-        Archive.loadZip(download).data.copy(dest);
+        Archive.loadZip(download).data.copy(distribution);
     }
 
     // Fetch qwt source code. Get from svn, don't copy source:
@@ -123,7 +118,7 @@ public class DistributionMojo extends Base {
         SvnNode src;
         Node qwt;
         
-        qwt = dest.join("qwt").mkdir();
+        qwt = distribution.join("qwt").mkdir();
         info("creating " + qwt);
         try {
             src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk");
@@ -133,27 +128,14 @@ public class DistributionMojo extends Base {
         }
     }
 
-    // might include previous jars
-    private void copyRepo() throws IOException {
-        Node repository;
-        Filter filter;
-        List<Node> lst;
-        
-        repository = dest.join("repository").mkdir();
-        info("creating " + repository);
-        filter = io.filter().include("org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*");
-        lst = io.getHome().join(".m2", "repository").copyDirectory(filter, repository);
-        info("done, " + lst.size() + " files and directories");
-    }
-
-    private void buildRepo() throws IOException {
-        mvn((FileNode) dest.join("qwt"), "clean", "install");
+    private void build() throws IOException {
+        mvn((FileNode) distribution.join("qwt"), "clean", "install");
     }
 
     //--
     
     private void xFlags() throws IOException {
-        for (Node node : dest.find("**/bin/*")) {
+        for (Node node : distribution.find("**/bin/*")) {
             ((FileNode) node).setMode(0755);
         }
     }
@@ -161,27 +143,34 @@ public class DistributionMojo extends Base {
     private static final String[] SCRIPTS = { "**/bin/mvn" };
     private static final String[] FRAMEWORK = { 
         "qwt/toolkit/qooxdoo/src/framework", "qwt/toolkit/qooxdoo/src/framework/**/*" };
+    private static final String[] REPOSITORY_ALL = { 
+        "qwt/repository", "qwt/repository/**/*" };
+    private static final String[] REPOSITORY_DIST = { 
+        "org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*" };
     private static final String[] GENERATED = {
         "**/target/**/*" 
     };
 
     private void pack() throws IOException {
         FileNode zip;
-        String[] excludes;
+        String name;
         
-        zip = (FileNode) dest.getParent().join(dest.getName() + ".zip");
+        name = "qwt-" + version;
+        zip = (FileNode) distribution.getParent().join(name + ".zip");
         info("create " + zip);
-        excludes = Strings.append(SCRIPTS, FRAMEWORK, GENERATED);
         try {
-            zipArchiver.addDirectory(dest.getFile(), dest.getName() + "/", new String[] { "**/*" }, excludes);
-            for (Node script : dest.find(io.filter().include(SCRIPTS))) {
-                zipArchiver.addFile(((FileNode) script).getFile(), dest.getName() + "/" + script.getRelative(dest), 0755);
+            zipArchiver.addDirectory(distribution.getFile(), name + "/", new String[] { "**/*" }, 
+                    Strings.append(SCRIPTS, FRAMEWORK, GENERATED, REPOSITORY_ALL));
+            zipArchiver.addDirectory(distribution.getFile(), name + "/", REPOSITORY_DIST, new String[] {});
+            for (Node script : distribution.find(io.filter().include(SCRIPTS))) {
+                zipArchiver.addFile(((FileNode) script).getFile(), name + "/" + script.getRelative(distribution), 0755);
             }
             zipArchiver.setDestFile(zip.getFile());
             zipArchiver.createArchive();
         } catch (ArchiverException e) {
             throw new RuntimeException("cannot create zip", e);
         }
+        info("done: " + zip + ", " + zip.length() + " bytes");
     }
 
     //--
@@ -190,7 +179,7 @@ public class DistributionMojo extends Base {
         Program p;
         
         p = new Program(dir);
-        p.add(dest.join("bin", "mvn").getAbsolute());
+        p.add(distribution.join("bin", "mvn").getAbsolute());
         p.add(args);
         info(p.toString());
         p.exec(System.out);
