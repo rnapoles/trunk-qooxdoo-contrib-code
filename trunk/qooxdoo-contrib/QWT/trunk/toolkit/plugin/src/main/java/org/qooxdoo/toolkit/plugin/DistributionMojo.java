@@ -44,7 +44,7 @@ import org.tmatesoft.svn.core.SVNException;
  */
 public class DistributionMojo extends Base {
     /*
-     * @parameter default-value="0.7.3-alpha1"
+     * @parameter expression="" default-value="0.7.3-alpha1"
      * @required
      */
     private String version;
@@ -81,9 +81,6 @@ public class DistributionMojo extends Base {
 
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
-        if (!basedir.getName().contains("qwt")) {
-            throw new MojoExecutionException("call this from plugin module!");
-        }
         dest();
         qwt();
         mvn();
@@ -118,14 +115,20 @@ public class DistributionMojo extends Base {
     // - no uncommitted dists
     // - slow
     private void qwt() throws IOException, MojoExecutionException {
+        String url;
         SvnNode src;
         Node qwt;
+        long revision;
         
+        url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
         qwt = distribution.join("qwt").mkdir();
         info("creating " + qwt);
         try {
-            src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk");
-            src.export(qwt);
+            src = SvnNode.create(io, url);
+            revision = src.export(qwt);
+            qwt.join("svninfo").writeLines(
+                    "url=" + url,
+                    "revision=" + revision);
         } catch (SVNException e) {
             throw new MojoExecutionException("svn failure", e);
         }
@@ -149,9 +152,6 @@ public class DistributionMojo extends Base {
     private static final String[] REPOSITORY_ALL = { 
         "repository", "repository/**/*" };
 
-// TODO
-//    private static final String[] REPOSITORY_DIST = { 
-//        "org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*" };
     private static final String[] GENERATED = {
         "**/target/**/*" 
     };
