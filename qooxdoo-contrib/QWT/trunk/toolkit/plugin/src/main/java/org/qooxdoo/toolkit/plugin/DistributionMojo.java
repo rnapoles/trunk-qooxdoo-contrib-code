@@ -21,6 +21,8 @@ package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiverException;
@@ -37,11 +39,12 @@ import org.tmatesoft.svn.core.SVNException;
 /**
  * Creates a distribution.
  * 
+ * @aggregator
  * @goal dist
  */
 public class DistributionMojo extends Base {
     /*
-     * @parameter expression="0.7.3-alpha1"
+     * @parameter default-value="0.7.3-alpha1"
      * @required
      */
     private String version;
@@ -144,9 +147,11 @@ public class DistributionMojo extends Base {
     private static final String[] FRAMEWORK = { 
         "qwt/toolkit/qooxdoo/src/framework", "qwt/toolkit/qooxdoo/src/framework/**/*" };
     private static final String[] REPOSITORY_ALL = { 
-        "qwt/repository", "qwt/repository/**/*" };
-    private static final String[] REPOSITORY_DIST = { 
-        "org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*" };
+        "repository", "repository/**/*" };
+
+// TODO
+//    private static final String[] REPOSITORY_DIST = { 
+//        "org/qooxdoo/sushi/**/*", "org/qooxdoo/qooxdoo/**/*", "org/qooxdoo/toolkit/**/*", "org/eclipse/base/**/*" };
     private static final String[] GENERATED = {
         "**/target/**/*" 
     };
@@ -161,7 +166,8 @@ public class DistributionMojo extends Base {
         try {
             zipArchiver.addDirectory(distribution.getFile(), name + "/", new String[] { "**/*" }, 
                     Strings.append(SCRIPTS, FRAMEWORK, GENERATED, REPOSITORY_ALL));
-            zipArchiver.addDirectory(distribution.getFile(), name + "/", REPOSITORY_DIST, new String[] {});
+            zipArchiver.addDirectory(distribution.getFile(), name + "/", REPOSITORY_ALL,
+                    repositoryExcludes());
             for (Node script : distribution.find(io.filter().include(SCRIPTS))) {
                 zipArchiver.addFile(((FileNode) script).getFile(), name + "/" + script.getRelative(distribution), 0755);
             }
@@ -171,6 +177,21 @@ public class DistributionMojo extends Base {
             throw new RuntimeException("cannot create zip", e);
         }
         info("done: " + zip + ", " + zip.length() + " bytes");
+    }
+
+    //--
+    
+    private String[] repositoryExcludes() throws IOException {
+        List<String> excludes;
+        String prefix;
+        
+        excludes = new ArrayList<String>();
+        for (Node dir : distribution.join("qwt/application").find("*")) {
+            prefix = "repository/org/qooxdoo/" + dir.getName();
+            excludes.add(prefix);
+            excludes.add(prefix + "/**/*");
+        }
+        return Strings.toArray(excludes);
     }
 
     //--
