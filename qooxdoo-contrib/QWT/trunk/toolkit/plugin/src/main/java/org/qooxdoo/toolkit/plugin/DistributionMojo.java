@@ -21,7 +21,9 @@ package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -43,12 +45,6 @@ import org.tmatesoft.svn.core.SVNException;
  * @goal dist
  */
 public class DistributionMojo extends Base {
-    /*
-     * @parameter expression="" default-value="0.7.3-alpha1"
-     * @required
-     */
-    private String version;
-    
     /**
      * Distribution directory.
      *
@@ -128,6 +124,10 @@ public class DistributionMojo extends Base {
         }
     }
 
+    /** 
+     * The main purpose it to build the repository. I don't want to copy an existing 
+     * repository because it might contain old qwt versions.
+     */ 
     private void build() throws IOException {
         mvn((FileNode) distribution.join("qwt"), "clean", "install");
     }
@@ -151,9 +151,14 @@ public class DistributionMojo extends Base {
     };
 
     private void pack() throws IOException {
+        String version;
         FileNode zip;
         String name;
         
+        version = this.getVersion();
+        if (version.endsWith("-SNAPSHOT")) {
+            version = version.substring(0, 9) + new SimpleDateFormat("yMMdd").format(new Date());
+        }
         name = "qwt-" + version;
         zip = (FileNode) distribution.getParent().join(name + ".zip");
         info("create " + zip);
