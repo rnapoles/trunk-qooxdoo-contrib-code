@@ -582,7 +582,8 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
   if (inWindow.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
-    qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
+    //qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
+    qxAppRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
     this._globalQxObject = inWindow.qx;
   }
 
@@ -1035,7 +1036,7 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
   var attrib;
   var attval;
   var rattval;
-  var curr;
+  var actobj;
   var m;
 
 
@@ -1073,27 +1074,39 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
   {
     // For every child, we check various ways where it might match with the step
     // specifier (generally using regexp match to compare strings)
-    curr = childs[i];
+    actobj = childs[i];
 
     // check properties first
-    // var qxclass = qx.Class.getByName(curr.classname);
-    var hasProp = qx.Class.hasProperty(curr.constructor, attrib);  // see qx.Class API
-
-    if (hasProp)
+    // var qxclass = qx.Class.getByName(actobj.classname);
+    LOG.debug("actobj : "+actobj);
+    try
     {
-      var currval = curr.get(attrib);
-      LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
+      var hascon = 'constructor' in actobj;
+    }
+    catch (e)
+    {
+      LOG.debug("this is shit: "+actobj); 
+    }
+    if (actobj.constructor)
+    {
+      var hasProp = qx.Class.hasProperty(actobj.constructor, attrib);  // see qx.Class API
 
-      if (currval.match(rattval)) {
-        return curr;
+      if (hasProp)
+      {
+        var currval = actobj.get(attrib);
+        LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
+
+        if (currval.match(rattval)) {
+          return actobj;
+        }
       }
     }
 
     // then, check normal JS attribs
-    else if ((attrib in curr) && ((curr[attrib]).match(rattval)))
+    else if ((attrib in actobj) && ((actobj[attrib]).match(rattval)))
     {
       LOG.debug("Qxh Locator: Attribute Step: Checking for JS object property");
-      return curr;
+      return actobj;
     }
 
     // last, if it is a @label attrib, try check the label of the widget
@@ -1104,10 +1117,10 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
       LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo widget label");
 
       // try getLabel() method
-      if (curr.getLabel)
+      if (actobj.getLabel)
       {
-        if ((curr.getLabel()).match(rattval)) {
-          return curr;
+        if ((actobj.getLabel()).match(rattval)) {
+          return actobj;
         }
       }
     }
@@ -1157,7 +1170,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   for (var i=0; i<descArr.length; i++)
   {
     var curr = descArr[i];
-    if ((typeof(curr) == "object") && (curr != node))
+    if ((typeof(curr) == "object") && (curr != node) && (curr != null))
     {
       descArr1.push(descArr[i]);
     }
