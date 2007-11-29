@@ -18,5 +18,4 @@ QWT_HOME=`pwd`
 cd "$current"
 
 export QWT_OPTS=-Dmaven.repo.local=$QWT_HOME/repository
-export MAVEN_OPTS="$MAVEN_OPTS $QWT_OPTS"
-$QWT_HOME/apache-maven-2.0.8/bin/mvn -s $QWT_HOME/bin/settings.xml "$@"
+$QWT_HOME/apache-maven-2.0.8/bin/mvn $QWT_OPTS -s $QWT_HOME/bin/settings.xml "$@"

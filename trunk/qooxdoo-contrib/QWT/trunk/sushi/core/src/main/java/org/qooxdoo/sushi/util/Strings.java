@@ -336,12 +336,21 @@ public class Strings {
         return result;
     }
 
-    public static String[] append(String[] left, String[] right) {
+    public static String[] append(String[] ...args) {
         String[] result;
-
-        result = new String[left.length + right.length];
-        System.arraycopy(left, 0, result, 0, left.length);
-        System.arraycopy(right, 0, result, left.length, right.length);
+        int length;
+        int ofs;
+        
+        length = 0;
+        for (String[] current : args) {
+            length += current.length;
+        }
+        result = new String[length];
+        ofs = 0;
+        for (String[] current : args) {
+            System.arraycopy(current, 0, result, ofs, current.length);
+            ofs += current.length;
+        }
         return result;
     }
     

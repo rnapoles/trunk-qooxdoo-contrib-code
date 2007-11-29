@@ -19,7 +19,6 @@
 
 package org.qooxdoo.toolkit.plugin;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -32,7 +31,10 @@ import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.HttpNode;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.svn.SvnNode;
 import org.qooxdoo.sushi.util.Program;
+import org.qooxdoo.sushi.util.Strings;
+import org.tmatesoft.svn.core.SVNException;
 
 /**
  * Creates a distribution.
@@ -41,6 +43,7 @@ import org.qooxdoo.sushi.util.Program;
  */
 public class DistributionMojo extends Base {
     /*
+     * @parameter expression="0.7.3-alpha1"
      * @required
      */
     private String version;
@@ -70,7 +73,7 @@ public class DistributionMojo extends Base {
      */
     private ZipArchiver zipArchiver;
 
-    
+
     public void setBasedir(String path) {
         basedir = io.node(path);
     }
@@ -111,22 +114,26 @@ public class DistributionMojo extends Base {
         Archive.loadZip(download).data.copy(dest);
     }
 
-    private void qwt() throws IOException {
+    // Fetch qwt source code. Get from svn, don't copy source:
+    // + well-defined
+    // + no ide files to take care of
+    // - no uncommitted dists
+    // - slow
+    private void qwt() throws IOException, MojoExecutionException {
+        SvnNode src;
         Node qwt;
-        Filter filter;
-        List<Node> lst;
         
         qwt = dest.join("qwt").mkdir();
         info("creating " + qwt);
-        filter = io.filter().include("**/*").exclude(
-                "**/target/**/*", 
-                "**/src/framework/**/*", "**/src/framework",
-                "**/.classpath", "**/.project", "**/.settings/**/*", "**/.settings", 
-                "**/nbproject/**/*", "**/nbproject");
-        lst = basedir.copyDirectory(filter, qwt);
-        info("done, " + lst.size() + " files and directories");
+        try {
+            src = SvnNode.create(io, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk");
+            src.export(qwt);
+        } catch (SVNException e) {
+            throw new MojoExecutionException("svn failure", e);
+        }
     }
 
+    // might include previous jars
     private void copyRepo() throws IOException {
         Node repository;
         Filter filter;
@@ -140,32 +147,9 @@ public class DistributionMojo extends Base {
     }
 
     private void buildRepo() throws IOException {
-        Program p;
-        
-        p = new Program((FileNode) dest.join("qwt"));
-        p.add(dest.join("bin", "qwt").getAbsolute());
-        p.add("clean", "install");
-        p.exec(System.out);
-        
+        mvn((FileNode) dest.join("qwt"), "clean", "install");
     }
 
-    private void newSample() throws IOException {
-        Program p;
-        
-        p = new Program((FileNode) dest.getParent());
-        p.add(dest.join("bin", "qwt").getAbsolute());
-        p.add("qx:help", "qx:new");
-        p.exec(System.out);
-    }
-
-    private void buildSample() throws IOException {
-        Program p;
-        
-        p = new Program((FileNode) dest.getParent().join("sample"));
-        p.add(dest.join("bin", "qwt").getAbsolute());
-        p.add("clean", "package");
-        p.exec(System.out);
-    }
     //--
     
     private void xFlags() throws IOException {
@@ -174,15 +158,22 @@ public class DistributionMojo extends Base {
         }
     }
 
-    private static final String[] SCRIPTS = { "**/bin/qwt", "**/bin/mvn" };
-    
+    private static final String[] SCRIPTS = { "**/bin/mvn" };
+    private static final String[] FRAMEWORK = { 
+        "qwt/toolkit/qooxdoo/src/framework", "qwt/toolkit/qooxdoo/src/framework/**/*" };
+    private static final String[] GENERATED = {
+        "**/target/**/*" 
+    };
+
     private void pack() throws IOException {
         FileNode zip;
+        String[] excludes;
         
         zip = (FileNode) dest.getParent().join(dest.getName() + ".zip");
         info("create " + zip);
+        excludes = Strings.append(SCRIPTS, FRAMEWORK, GENERATED);
         try {
-            zipArchiver.addDirectory(dest.getFile(), dest.getName() + "/", new String[] { "**/*" }, SCRIPTS);
+            zipArchiver.addDirectory(dest.getFile(), dest.getName() + "/", new String[] { "**/*" }, excludes);
             for (Node script : dest.find(io.filter().include(SCRIPTS))) {
                 zipArchiver.addFile(((FileNode) script).getFile(), dest.getName() + "/" + script.getRelative(dest), 0755);
             }
@@ -192,4 +183,17 @@ public class DistributionMojo extends Base {
             throw new RuntimeException("cannot create zip", e);
         }
     }
+
+    //--
+    
+    private void mvn(FileNode dir, String ... args) throws IOException {
+        Program p;
+        
+        p = new Program(dir);
+        p.add(dest.join("bin", "mvn").getAbsolute());
+        p.add(args);
+        info(p.toString());
+        p.exec(System.out);
+    }
+
 }
