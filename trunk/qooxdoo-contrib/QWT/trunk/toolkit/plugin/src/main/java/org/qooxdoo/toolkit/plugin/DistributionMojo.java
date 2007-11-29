@@ -157,7 +157,8 @@ public class DistributionMojo extends Base {
         
         version = this.getVersion();
         if (version.endsWith("-SNAPSHOT")) {
-            version = version.substring(0, 9) + new SimpleDateFormat("yMMdd").format(new Date());
+            version = version.substring(0, version.length() - 8)
+                + new SimpleDateFormat("yyMMdd").format(new Date());
         }
         name = "qwt-" + version;
         zip = (FileNode) distribution.getParent().join(name + ".zip");
