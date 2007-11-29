@@ -7,7 +7,7 @@ if "%OS%"=="Windows_NT" SET QWT_HOME=%~dp0..
 if not "%QWT_HOME%"=="" goto start
 
 echo.
-echo Cannot locate QWT_HOMEm, please set a QWT_HOME environment variable.
+echo Cannot locate QWT_HOME, please set a QWT_HOME environment variable.
 echo.
 goto end
 
