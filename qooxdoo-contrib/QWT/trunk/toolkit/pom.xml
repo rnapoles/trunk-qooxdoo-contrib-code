@@ -15,6 +15,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <properties>
     <toolkit.version>0.7.3-SNAPSHOT</toolkit.version>
+    <sushi.version>1.2.0-SNAPSHOT</sushi.version>
+    <tomcat.version>6.0.14</tomcat.version>
   </properties>
 
   <modules>
@@ -24,19 +26,4 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>qooxdoo</module>
     <module>engine</module>
   </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.qooxdoo.sushi</groupId>
-        <artifactId>core</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.qooxdoo.sushi</groupId>
-        <artifactId>svn</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 </project>

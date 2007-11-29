@@ -19,6 +19,7 @@
     <dependency>
       <groupId>org.qooxdoo.sushi</groupId>
       <artifactId>core</artifactId>
+      <version>${sushi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jdt</groupId>

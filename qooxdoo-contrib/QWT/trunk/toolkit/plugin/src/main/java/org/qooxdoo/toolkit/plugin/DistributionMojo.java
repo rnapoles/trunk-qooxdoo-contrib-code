@@ -68,6 +68,10 @@ public class DistributionMojo extends Base {
 
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
+        long started;
+        
+        started = System.currentTimeMillis();
+        
         distribution.deleteOpt();
         distribution.mkdirsOpt();
 
@@ -77,6 +81,8 @@ public class DistributionMojo extends Base {
         xFlags();
         build();
         pack();
+        
+        info("ms=" + (System.currentTimeMillis() - started));
     }
 
     private void bin() throws IOException {
