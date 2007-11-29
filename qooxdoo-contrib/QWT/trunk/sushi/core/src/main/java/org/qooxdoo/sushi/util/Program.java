@@ -32,10 +32,12 @@ import org.qooxdoo.sushi.io.IO;
  */
 public class Program {
     public final IO io;
+    private final FileNode dir;
     public final ProcessBuilder builder;
-        
+    
     public Program(FileNode dir, String ... args) {
         this.io = dir.io;
+        this.dir = dir;
         this.builder = new ProcessBuilder();
         this.builder.directory(dir.getFile());
         add(args);
@@ -97,6 +99,6 @@ public class Program {
 
     @Override
     public String toString() {
-        return builder.command().toString();
+        return "[" + dir + "] " + Strings.join(" ", builder.command());
     }
 }

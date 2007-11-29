@@ -11,6 +11,7 @@ echo.
 goto end
 
 :start
-%QWT_HOME\apache-maven-2.0.8\bin\mvn %*
+QWT_OPTS=-Dmaven.repo.local=$QWT_HOME/repository
+%QWT_HOME\apache-maven-2.0.8\bin\mvn %QWT_OPTS% %*
 
 :end
