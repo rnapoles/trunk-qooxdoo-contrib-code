@@ -740,6 +740,14 @@ PageBot.prototype._searchQxObjectByQxUserData = function(obj, userDataSearchStri
 };
 
 
+PageBot.prototype.qx = {};  // create qx name space
+// some regexps, to safe stack space
+PageBot.prototype.qx.IDENTIFIER = new RegExp('^[a-z$][a-z0-9_\.$]*$', 'i');
+PageBot.prototype.qx.NTHCHILD = /^child\[\d+\]$/i;
+PageBot.prototype.qx.ATTRIB = /^\[.*\]$/;
+
+
+
 /**
  * TODOC
  *
@@ -753,44 +761,125 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
 {
   // recursive traverse the path
   // currently, we only return single elements, not sets of matching elements
-  // some regexps
-  var IDENTIFIER = new RegExp('^[a-z$][a-z0-9_\.$]*$', 'i');
-  var NTHCHILD = /^child\[\d+\]$/i;
-  var ATTRIB = /^\[.*\]$/;
-
   if (path.length == 0) {
     return null;
   }
-
+  if (typeof(root) != "object") { // can only traverse (qooxdoo) objects
+    return null;
+  }
   if (root == null) {
     throw new SeleniumError("QxhPath: Cannot determine descendant from null root for: " + path);
   }
 
   var el = null;  // the yet to find current element
   var step = path[0];  // the current part of the QPath expression
+  var npath = path.slice(1); // new path - rest of path
 
   LOG.debug("Qxh Locator: Inspecting current step: " + step);
 
   // get a suitable element from the current step, dispatching on step type
-  if (step.match(IDENTIFIER))
+  if (step == '*')                 // this is like '//' in XPath
+  {
+    // this means we have to recursively look for rest of path among descendants
+    LOG.debug("Qxh Locator: ... identified as wildcard (*) step");
+    var res = null;
+
+    // first check if current element matches already
+    if (npath == 0)
+    {
+      // no more location specifier, * matches all, so return current element
+      return root;
+    }
+    else
+    {
+      // there is something to match against
+      try
+      {
+        LOG.debug("Qxh Locator: recursing with root: "+root+", path: "+npath.join('/'));
+        res = this._searchQxObjectByQxHierarchy(root, npath);
+      }
+      catch (e)
+      {
+        if (e.a instanceof Array)
+        {
+          // it's an exception thrown by myself - just continue search
+          ;
+        }
+        else 
+        {
+          throw e;
+        }
+      }
+    }
+    // check what we've got - can't be null
+    if (res != null)
+    {
+      return res;
+    }
+
+    // then recurse with children, using original path
+    var childs = this._getQxNodeDescendants(root);
+    
+    for (var i=0; i<childs.length; i++)
+    {
+      try
+      {
+        LOG.debug("Qxh Locator: recursing with root: "+childs[i]+", path: "+path.join('/'));
+        res = this._searchQxObjectByQxHierarchy(childs[i], path);
+      }
+      catch (e)
+      {
+        if (e.a instanceof Array)
+        {
+          // it's an exception thrown by a descendant - just continue search
+          continue;
+        }
+        else 
+        {
+          throw e;
+        }
+      }
+      // when we reach this we have a hit
+      return res;
+    }
+
+    // let's see how we came out of the loop
+    // all recursion is already done, so we can terminate here
+    if (res == null)
+    {
+      var e = new SeleniumError("Qxh Locator: Error resolving qxh path");
+      e.a = [ step ]; // since we lost the e from deeper recursions just report current
+      throw e;
+    }
+    else 
+    {
+      return res; // this should be superfluous
+    }
+  }
+
+  else if (step.match(this.qx.IDENTIFIER))
   {
     if (step.indexOf('qx.') != 0)  // 'foo' format
     {
+      LOG.debug("Qxh Locator: ... identified as general identifier");
       el = this._getQxElementFromStep1(root, step);
     }
     else
     {  // 'qx....' format
+      LOG.debug("Qxh Locator: ... identified as qooxdoo class name");
       el = this._getQxElementFromStep2(root, step);
     }
   }
 
-  else if (step.match(NTHCHILD))  // 'child[n]' format
+  else if (step.match(this.qx.NTHCHILD))  // 'child[n]' format
   {
+    LOG.debug("Qxh Locator: ... identified as indexed child");
     el = this._getQxElementFromStep3(root, step);
   }
 
-  else if (step.match(ATTRIB))  // '[@..=...]' format
+  else if (step.match(this.qx.ATTRIB))  // '[@..=...]' format
   {
+    LOG.debug("Qxh Locator: ... identified as attribute specifier");
     el = this._getQxElementFromStep4(root, step);
   }
 
@@ -808,15 +897,15 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
   }
 
   // recurse
-  var npath = path.slice(1);
-
   if (npath.length == 0) {
+    LOG.debug("Qxh Locator: Terminating search, found match; last step :"+step+", element: "+el);
     return el;
   }
   else
   {
     // basically we tail recurse, but catch exceptions
     try {
+      LOG.debug("Qxh Locator: tail-recursing with root: "+el+"(fixed step: '"+step+"'), path: "+npath.join('/'));
       var res = this._searchQxObjectByQxHierarchy(el, npath);
     }
     catch(e)
@@ -825,6 +914,7 @@ PageBot.prototype._searchQxObjectByQxHierarchy = function(root, path)
       {
         // prepend the current step
         e.a.unshift(step);
+        LOG.debug("Qxh Locator: ... nothing found in this branch; going up");
         throw e;
       }
       else
@@ -1061,5 +1151,18 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     }
   }
 
-  return descArr;
+  // only select useful subnodes (only objects, no circular refs, etc.)
+  // TODO: circular refs which are *not* immediate!
+  var descArr1 = [];
+  for (var i=0; i<descArr.length; i++)
+  {
+    var curr = descArr[i];
+    if ((typeof(curr) == "object") && (curr != node))
+    {
+      descArr1.push(descArr[i]);
+    }
+  }
+
+  LOG.debug("getQxNodeDescendants: returning for node : "+node+" immediate children: "+descArr1);
+  return descArr1;
 };  // _getQxNodeDescendants()
