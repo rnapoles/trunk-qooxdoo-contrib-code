@@ -1055,24 +1055,41 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
   }
 
   // extract attribute and value
-  m = /\[@([^=]+)=(.+)\]$/.exec(attribspec);
+  m = /\[@([^=]+)(?:=(.+))?\]$/.exec(attribspec);
 
-  if ((m instanceof Array) && m.length > 2)
+  if ((m instanceof Array) && m.length > 1)
   {
+    LOG.debug("Qxh Locator: _getQxElementFromStep4: parsed spec into: "+m);
     attrib = m[1];
-    attval = m[2];
+    if (m.length > 2 && m[2]!=null)
+    {
+      attval = m[2];
 
-    // strip possible quotes from attval
-    if (attval.match(/^['"].*['"]$/)) {
-      attval = attval.slice(1, attval.length - 1);
+      // strip possible quotes from attval
+      if (attval.match(/^['"].*['"]$/)) {
+        attval = attval.slice(1, attval.length - 1);
+      }
+
+      // it's nice to match against regexp's
+      rattval = new RegExp(attval);
+        
     }
-
-    // it's nice to match against regexp's
-    rattval = new RegExp(attval);
   }
   else
   {
     return null;
+  }
+
+  if (attval == null) // no compare value -> attrib on root must contain obj ref
+  {
+    actobj = this.qx._getGeneralProperty(root, attrib, qx);
+    if (typeof(actobj) == "object")
+    {
+      return actobj; // only return an obj ref
+    } else 
+    {
+      return null;
+    }
   }
 
   childs = this._getQxNodeDescendants(root);
@@ -1101,7 +1118,7 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
     }
 
     // then, check normal JS attribs
-    if ((attrib in actobj) && ((actobj[attrib]).match(rattval)))
+    if ((attrib in actobj) && ((String(actobj[attrib])).match(rattval)))
     {
       LOG.debug("Qxh Locator: Attribute Step: Checking for JS object property");
       return actobj;
@@ -1185,3 +1202,47 @@ PageBot.prototype._getQxNodeDescendants = function(node)
   LOG.debug("getQxNodeDescendants: returning for node : "+node+" immediate children: "+descArr1);
   return descArr1;
 };  // _getQxNodeDescendants()
+
+
+PageBot.prototype.qx._getGeneralProperty = function(actobj, attrib, qx)
+{
+  // check properties first
+  // var qxclass = qx.Class.getByName(actobj.classname);
+  if (actobj.constructor)
+  {
+    var hasProp = qx.Class.hasProperty(actobj.constructor, attrib);  // see qx.Class API
+
+    if (hasProp)
+    {
+      //LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
+      var currval = actobj.get(attrib);
+      return currval;
+    }
+  }
+
+  // then, check normal JS attribs
+  if (attrib in actobj)
+  {
+    //LOG.debug("Qxh Locator: Attribute Step: Checking for JS object property");
+    return actobj[attrib];
+  }
+
+  /*
+  // last, if it is a @label attrib, try check the label of the widget
+  // [this might be superfluous, since it seems that 'getLabel()' is covered
+  // by 'get("label")' in the property section above]
+  if (/^label$/i.exec(attrib))
+  {
+    LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo widget label");
+
+    // try getLabel() method
+    if (actobj.getLabel)
+    {
+      if ((actobj.getLabel()).match(rattval)) {
+        return actobj;
+      }
+    }
+  }
+  */
+  return null;
+};
