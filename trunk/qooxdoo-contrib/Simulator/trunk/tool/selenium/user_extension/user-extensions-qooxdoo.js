@@ -582,12 +582,17 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
   if (inWindow.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
-    //qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
-    qxAppRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
+    // check for object space spec
+    if (qxLocator.match('^app:')) 
+    {
+      qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
+    } else 
+    {
+      qxAppRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
+    }
     this._globalQxObject = inWindow.qx;
   }
 
-  // qxAppRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
   else
   {
     LOG.error("qx-Locator: qx-Object not defined. inWindow=" + inWindow + ", inWindow.qx=" + inWindow.qx);
@@ -600,6 +605,8 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
 
   LOG.debug("qxLocator All basic checks passed.");
 
+  // treat qxLocator
+  qxLocator = qxLocator.replace(/^[a-z]+:/i,"");  // remove optional object space spec (settled above)
   var qxhParts = qxLocator.split('/');
 
   try {
@@ -1078,15 +1085,6 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
 
     // check properties first
     // var qxclass = qx.Class.getByName(actobj.classname);
-    LOG.debug("actobj : "+actobj);
-    try
-    {
-      var hascon = 'constructor' in actobj;
-    }
-    catch (e)
-    {
-      LOG.debug("this is shit: "+actobj); 
-    }
     if (actobj.constructor)
     {
       var hasProp = qx.Class.hasProperty(actobj.constructor, attrib);  // see qx.Class API
@@ -1096,23 +1094,24 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
         var currval = actobj.get(attrib);
         LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo property ('" + attrib + "' is: " + currval + ")");
 
-        if (currval.match(rattval)) {
+        if (currval && currval.match(rattval)) {
           return actobj;
         }
       }
     }
 
     // then, check normal JS attribs
-    else if ((attrib in actobj) && ((actobj[attrib]).match(rattval)))
+    if ((attrib in actobj) && ((actobj[attrib]).match(rattval)))
     {
       LOG.debug("Qxh Locator: Attribute Step: Checking for JS object property");
       return actobj;
     }
 
+    /*
     // last, if it is a @label attrib, try check the label of the widget
     // [this might be superfluous, since it seems that 'getLabel()' is covered
     // by 'get("label")' in the property section above]
-    else if (/^label$/i.exec(attrib))
+    if (/^label$/i.exec(attrib))
     {
       LOG.debug("Qxh Locator: Attribute Step: Checking for qooxdoo widget label");
 
@@ -1124,6 +1123,7 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
         }
       }
     }
+    */
     else
     {
       LOG.debug("Qxh Locator: Attribute Step: No match for current child");
@@ -1145,20 +1145,26 @@ PageBot.prototype._getQxElementFromStep4 = function(root, attribspec)
 PageBot.prototype._getQxNodeDescendants = function(node)
 {
   var descArr = [];
+  var c;
 
   // check TreeFolder items
   if (node.getItems) {
-    descArr.concat(node.getItems());
+    LOG.debug("getQxNodeDescendants: using getItems() to retrieve descendants");
+    descArr = descArr.concat(node.getItems());
   }
 
   // check widget children (built with w.add())
   else if (node.getChildren) {
-    descArr.concat(node.getChildren());
+    c = node.getChildren();
+    LOG.debug("getQxNodeDescendants: using getChildren() to retrieve descendants");
+        // +" (got: "+ (c.length? c.length: 0)+")");
+    descArr = descArr.concat(c);
   }
 
   // use JS object members
   else
   {
+    LOG.debug("getQxNodeDescendants: using JS properties to retrieve descendants");
     for (var m in node) {
       descArr.push(node[m]);
     }
