@@ -226,40 +226,29 @@ qx.Class.define("qcl.auth.permission.Permission",
 		 */
 		setGranted : function( granted )
 		{
-			var oldGranted 	= this.__granted;
-			var oldState		= this.__state;
-			
-			if ( oldGranted != granted )
-			{
-				this.__granted = granted;
-				this.createDispatchDataEvent("changeGranted", granted );
+			this.__granted = granted;
+			this.createDispatchDataEvent("changeGranted", granted );
 
-				// if this is a wildcard permission, set all dependent permissions
-				var myName = this.getNamedId(); 
-				var pos = myName.indexOf("*");
-				if ( pos > -1 )
-				{
-					this._manager.getNamedIds().forEach(function(name)
-					{
-						if (pos == 0 || myName.substr(0, pos) == name.substr(0, pos))
-						{
-							if (name.indexOf("*") < 0) // other wildcard permissions do not need to be updated
-							{
-								this._manager.getByName(name).setGranted(granted);
-							}
-						}	
-					},this);
-				}
-			}
-			
-			var state = this.getState(); 
-			this.__state = state;
-			if ( state != oldState )
+			// if this is a wildcard permission, set all dependent permissions
+			var myName = this.getNamedId(); 
+			var pos = myName.indexOf("*");
+			if ( pos > -1 )
 			{
-				this.createDispatchDataEvent( "changeState", state );
-				return true;
+				this._manager.getNamedIds().forEach(function(name)
+				{
+					if (pos == 0 || myName.substr(0, pos) == name.substr(0, pos))
+					{
+						if (name.indexOf("*") < 0) // other wildcard permissions do not need to be updated
+						{
+							this._manager.getByName(name).setGranted(granted);
+						}
+					}	
+				},this);
 			}
-			return false;
+
+			var state = this.getState(); 
+			this.createDispatchDataEvent( "changeState", state );
+			return state;
 		},
 
 		/**
@@ -275,7 +264,9 @@ qx.Class.define("qcl.auth.permission.Permission",
 		 */
 		update : function()
 		{
-			this.setGranted(this.getGranted()); 
+      var state = this.getState();
+      //console.log("Updating "+ this.getNamedId() + ": " + state);
+      this.createDispatchDataEvent( "changeState", state );
 		}		
 		
   },
