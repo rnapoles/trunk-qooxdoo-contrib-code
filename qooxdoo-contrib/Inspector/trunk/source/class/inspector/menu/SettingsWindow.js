@@ -270,5 +270,15 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       layout.add(this.__createApiGroupbox());
       layout.add(this.__createKeyGroupbox());
     }
+  },
+
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_menu", "_apiGroup", "_keyGroup");
   }
 });

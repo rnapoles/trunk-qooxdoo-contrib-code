@@ -209,5 +209,14 @@ qx.Class.define("inspector.propertyEditor.Filter", {
       this._tests.push(["child", "Child dependent"]);
     }
     
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_tests", "_categories", "_properties", "_classnames");
   }
 });

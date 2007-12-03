@@ -28,7 +28,7 @@ qx.Class.define("inspector.components.Table", {
   */
   construct : function(tableModel, custom) {
     // just call the superclass constructor
-		this.base(arguments, tableModel, custom);
+    this.base(arguments, tableModel, custom);
   },
 
 
@@ -45,16 +45,16 @@ qx.Class.define("inspector.components.Table", {
     rowContentName: {
       init: "row"
     },
-		
-		/**
-		 * Holds the valuie which shold be shown in the statusbar
-		 * behind the ammount of rows in non-singular.
-		 */
-		rowsContentName: {
-			init: "rows"
-		} 
-		
-	},
+    
+    /**
+     * Holds the valuie which shold be shown in the statusbar
+     * behind the ammount of rows in non-singular.
+     */
+    rowsContentName: {
+      init: "rows"
+    } 
+    
+  },
 
   /*
   *****************************************************************************
@@ -81,6 +81,6 @@ qx.Class.define("inspector.components.Table", {
 
         this._statusBar.setText(text);
       }
-    }		
+    }
   }
 });

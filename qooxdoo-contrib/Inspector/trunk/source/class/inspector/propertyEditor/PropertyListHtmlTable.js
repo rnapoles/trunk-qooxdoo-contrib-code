@@ -174,5 +174,14 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       // beginn the table for the properties
       this._htmlTable.setText("<table border='0' width='100%' cellspacing='1' cellpadding='4' style='background-color:#C0C0C0'>" + this._htmlTable.getText());        
     }
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_htmlTable");
   }
 });

@@ -565,5 +565,15 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         this._setData(newData);
       });
     }       
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_reloadButton", "_reloadToolTip", "_autoReloadToolTip", "_objectSummaryToolTip", 
+                        "_pollutionToolTip", "_findField", "_tableModel", "_table", "_popup"); 
   }
 });

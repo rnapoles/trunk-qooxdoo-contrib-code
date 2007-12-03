@@ -739,8 +739,11 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   *****************************************************************************
   */
   destruct : function() {
-    // reset the buttons
-    this._inheritedButton = null;
-    this._groupButton = null;
+    this._disposeFields("_menu", "_reloadButton", "_reloadToolTip", "_apiButtonToolTip", 
+                        "_setNullButton", "_setNullTooltip", "_setPropertyToDefaultButton", 
+                        "_setPropertyToDefaultTooltip", "_highlightCurrentPropertyButton", 
+                        "_highlightCurrentPropertyTooltip", "_gotoSelectedPropertyButton",
+                        "_gotoSelectedPropertyTooltip", "_propertyListFull", "_propertyListHtmlTable", 
+                        "_propertyList", "_filter", "_qxObject", "_inheritedButton", "_groupButton");
   }  
 });

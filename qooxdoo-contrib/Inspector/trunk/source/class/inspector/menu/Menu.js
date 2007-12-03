@@ -140,6 +140,8 @@ qx.Class.define("inspector.menu.Menu", {
     _upTimer: null,
     _downTimer : null,
     _moveInterval: null,
+    _hideStartupPopupTimer: null,
+    _hideAllPopupTimer: null,
     
     // the settings window
     _settingsWindow: null,
@@ -526,7 +528,23 @@ qx.Class.define("inspector.menu.Menu", {
         this.openApiWindow();
       }, this._inspector);
       this._inspectorMenu.add(apiButton);
-      
+
+      // seperator
+      this._inspectorMenu.add(new qx.ui.menu.Separator());
+      // add a dispose button
+      var disposeButton = new qx.ui.menu.Button("Dispose Application");
+      disposeButton.addEventListener("execute", function() {
+        if (confirm(inspector.Inspector.DISPOSE_QUESTION)) {
+          if (qx.core.Setting.get("qx.disposerDebugLevel") < 1) {
+            // set the diposer level to a least 1 (HACK!!)
+            qx.core.Setting.__settings["qx.disposerDebugLevel"].defaultValue = 1;
+            // dispose the application
+            qx.core.Object.dispose();
+          }
+        }
+      }, this) 
+      this._inspectorMenu.add(disposeButton);
+
       // seperator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       // hide everything button
@@ -703,7 +721,7 @@ qx.Class.define("inspector.menu.Menu", {
       label.setLeft(10);
       // start a timer to hide the popup in 4 seconds
       var self = this;
-      window.setTimeout(function() {
+      this._hideStartupPopupTimer = window.setTimeout(function() {
         self._welcomePopup.hide();
       }, 4000);
     },
@@ -745,7 +763,7 @@ qx.Class.define("inspector.menu.Menu", {
       this._hideAllPopup.show();
       // start a timer to hide the popup in 4 seconds
       var self = this;
-      window.setTimeout(function() {
+      this._hideAllPopupTimer = window.setTimeout(function() {
         self._hideAllPopup.hide();
       }, 4000);         
     },
@@ -834,5 +852,25 @@ qx.Class.define("inspector.menu.Menu", {
       }
     }
 
+  },
+
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    
+    window.clearInterval(this._hideStartupPopupTimer);
+    window.clearInterval(this._hideAllPopupTimer);
+
+    this._disposeFields("_inspector", "_openAllCommand", "_openConsoleCommand", "_openObjectFinderCommand",
+                        "_openWidgetFinderCommand", "_openPropertyEditorCommand", "_findCommand",
+                        "_highlightCommand", "_hideEverythingCommand", "_inspectorMenu", 
+                        "_hideEverythingButton", "_menubar", "_findButton", "_findTooltip",
+                        "_highlightButton", "_highlightTooltip", "_openAllTooltip", "_openConsoleButton",
+                        "_openObjectFinderButton", "_openWidgetFinderButton", "_openPropertyEditorButton",
+                        "_hideAllPopup", "_hideAllLabel", "_welcomePopup", "_settingsWindow");
   }
 });

@@ -49,8 +49,8 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     this._table = new inspector.components.Table(this._tableModel);
     this._table.setWidth(298);
     this._table.setHeight(138);
-		this._table.setRowContentName("completion");
-		this._table.setRowsContentName("completions");
+    this._table.setRowContentName("completion");
+    this._table.setRowsContentName("completions");
     this._table.setShowCellFocusIndicator(false);
     this._table.setColumnVisibilityButtonVisible(false);
     this._table.setStatusBarVisible(true);
@@ -188,15 +188,15 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
         // stop forther processing
         return;
       } 
-			
-			// if it is a qooxdoo object
-			if (object instanceof qx.core.Object) {
+      
+      // if it is a qooxdoo object
+      if (object instanceof qx.core.Object) {
         // write the classname to the header cell
         this._tableModel.setColumnNamesByIndex(["", object.classname]);        
       } else {
-				// write the reference to the object to the header cell
-		 	  this._tableModel.setColumnNamesByIndex(["", objectRef]);
-		  }
+        // write the reference to the object to the header cell
+         this._tableModel.setColumnNamesByIndex(["", objectRef]);
+      }
       
       // generate the search object
       var regExp = new RegExp("^" + searchTerm);
@@ -301,6 +301,6 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
   *****************************************************************************
   */
   destruct : function() {
-    this._controller = null;
+    this._disposeFields("_controller", "_tableModel", "_table");
   }  
 });

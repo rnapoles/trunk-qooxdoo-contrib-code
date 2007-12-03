@@ -393,5 +393,14 @@ qx.Class.define("inspector.components.AbstractWindow", {
     _addToolbarButtons: function() {
       // do not add a button at all
     }
-   }
+   },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_inspector", "_mainLayout", "_toolbar", "_statusbar");
+  }
 });
