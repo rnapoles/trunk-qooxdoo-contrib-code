@@ -134,8 +134,7 @@ function Menu_and_Toolbar (sel)
   //sel.setSpeed(ospeed);  // dysfunct - getSpeed() returns undef
   sel.setSpeed(stepSpeed);
 
-  sel.mouseDown('//div[text()="Check"]')
-  sel.mouseUp('//div[text()="Check"]')
+  sel.mouseUp('//img[@src="./resource/qx/icon/Nuvola/22/actions/edit-add.png"]');
   sel.qxClick('//div[text()="Radio1"]')
   sel.qxClick('//div[text()="Radio2"]')
   sel.qxClick('//div[text()="Radio3"]')
@@ -161,7 +160,8 @@ function Tab (sel)
   // left pane
   sel.qxClick('//div[text()="Find"]')
   sel.qxClick('//div[text()="Backup"]')
-  sel.qxClick('//div[text()="Edit"]')
+  //sel.qxClick('//div[text()="Edit"]');  // this finds the 'Edit' menu from Menu_and_Toolbar :-)
+  sel.qxClick('qxh=*/[@label="Tab"]/[@page]/*/[@label="Edit"]');
 
   sel.qxClick('//div[text()="Place bar on top"]')
   sel.qxClick('//div[text()="Align tabs to left"]')
@@ -383,7 +383,7 @@ if (true)
 {
   sel.start();
   //sel.open("http://localhost/~thron7/qooxdoo.div/themen/selenium/showcase/build/");
-  sel.open("http://demo.qooxdoo.org/0.7/showcase/index.html");
+  sel.open("http://demo.qooxdoo.org/0.7.2/showcase/index.html");
 } else 
 {
   // not possible with Java bindings (sessionId private to sel.CommandProcessor(is 
@@ -401,11 +401,12 @@ while (doTests)
 {
   // go throught the Showcase tabs and test
   /*
-  */
   Form(sel);
   Tooltip(sel);
   Menu_and_Toolbar(sel);
+  */
   Tab(sel);
+  /*
   Tree(sel);
   List(sel);
   ListView(sel);
@@ -415,7 +416,6 @@ while (doTests)
   Native_Window(sel);
   Internal_Window(sel);
   Themes(sel);
-  /*
   */
   Packages.java.lang.Thread.sleep(3000);
 
