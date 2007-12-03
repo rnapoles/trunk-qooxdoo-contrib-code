@@ -861,10 +861,12 @@ qx.Class.define("inspector.menu.Menu", {
   *****************************************************************************
   */
   destruct : function() {
-    
+    // remove the console from the screen
+    this.hide();
+    // stop all timers
     window.clearInterval(this._hideStartupPopupTimer);
     window.clearInterval(this._hideAllPopupTimer);
-
+    // dispos all fields
     this._disposeFields("_inspector", "_openAllCommand", "_openConsoleCommand", "_openObjectFinderCommand",
                         "_openWidgetFinderCommand", "_openPropertyEditorCommand", "_findCommand",
                         "_highlightCommand", "_hideEverythingCommand", "_inspectorMenu", 

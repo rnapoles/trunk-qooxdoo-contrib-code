@@ -401,6 +401,13 @@ qx.Class.define("inspector.components.AbstractWindow", {
   *****************************************************************************
   */
   destruct : function() {
+    // save the current visibility
+    var formerVisisbility = this.getVisibility();
+    // remove the console from the screen
+    this.hide();
+    // save that the widnow was hidden by the inspector, if it was opened
+    qx.io.local.CookieApi.set(this.classname + "#Open", formerVisisbility);
+    // dipose the fields
     this._disposeFields("_inspector", "_mainLayout", "_toolbar", "_statusbar");
   }
 });
