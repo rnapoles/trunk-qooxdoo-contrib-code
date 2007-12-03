@@ -584,6 +584,7 @@ qx.Class.define("inspector.console.Console", {
   *****************************************************************************
   */
   destruct : function() {
+    // dispos all fields
     this._disposeFields("_clearButton", "_clearTooltip", "_apiButton", "_apiTooltip",
                         "_setButton", "_setTooltip", "_appenderButton", "_appenderTooltip", 
                         "_helpButton", "_helpTooltip", "_findField", "_tabView", 
