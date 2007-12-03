@@ -35,10 +35,10 @@ qx.Class.define("inspector.console.Appender",
   *****************************************************************************
   */
   construct : function(console) {    
-		this.base(arguments);
-		this._console = console;
+    this.base(arguments);
+    this._console = console;
   },
-	
+  
 
   /*
   *****************************************************************************
@@ -46,17 +46,17 @@ qx.Class.define("inspector.console.Appender",
   *****************************************************************************
   */
   members : {
-		
-		_console: null,
+    
+    _console: null,
 
     // overridden
-    appendLogEvent : function(evt) {			 
-			
+    appendLogEvent : function(evt) {       
+      
         var log = qx.log.Logger;
         var msg = this.formatLogEvent(evt);
 
         switch(evt.level) {
-					
+          
           case log.LEVEL_DEBUG:
             this._console.debug(msg);
             break;
@@ -74,5 +74,14 @@ qx.Class.define("inspector.console.Appender",
             break;
         }      
     }
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_console");
   }
 });

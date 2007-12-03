@@ -549,8 +549,8 @@ qx.Class.define("inspector.console.Console", {
       }, this);
       // add a tooltip to the appender button
       this._appenderTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.APPENDER_BUTTON_TOOLTIP_TEXT, null);
-      this._appenderButton.setToolTip(this._appenderTooltip);          
-        
+      this._appenderButton.setToolTip(this._appenderTooltip);
+
       // add a spacer to keep the help button rigth
       this._toolbar.add(new qx.ui.basic.HorizontalSpacer()); 
       
@@ -575,5 +575,19 @@ qx.Class.define("inspector.console.Console", {
       this._toolbar.add(this._findField);
     }
 
-   }
+   },
+
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_clearButton", "_clearTooltip", "_apiButton", "_apiTooltip",
+                        "_setButton", "_setTooltip", "_appenderButton", "_appenderTooltip", 
+                        "_helpButton", "_helpTooltip", "_findField", "_tabView", 
+                        "_consoleButton", "_domButton", "_consoleView", "_domView",
+                        "_widget", "_currentView", "_ans", "_appender");
+  } 
 });

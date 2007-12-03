@@ -496,7 +496,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // add the text to the embedded
       this._printText(this._console.escapeHtml(text));      
       // try to run the code
-      try {				
+      try {        
         // run it and store the result in the global ans value
         this._console.setAns(
           (function(text, ans) {
@@ -811,5 +811,14 @@ qx.Class.define("inspector.console.ConsoleView", {
       line.setBackgroundColor("#CCCCCC");
       return line;      
     }      
-   }
+   },
+   
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_console", "_objectFolder", "_autoCompletePopup", "_htmlEmbed", "_textField");
+  }     
 });

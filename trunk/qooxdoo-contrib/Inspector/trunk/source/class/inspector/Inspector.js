@@ -59,7 +59,9 @@ qx.Class.define("inspector.Inspector", {
     PROPERTY_CAPTION_TITLE: "Properties",
     SETTINGS_CAPTION_TITLE: "Settings",
     
-    API_VIEWER_URI: "http://demo.qooxdoo.org/current/apiviewer/"    
+    API_VIEWER_URI: "http://demo.qooxdoo.org/current/apiviewer/",
+    
+    DISPOSE_QUESTION: "Do you realy want to dispose the application?"
   },
 
 
@@ -1204,6 +1206,9 @@ qx.Class.define("inspector.Inspector", {
   destruct : function() {
     // clear the timer if it is still running
     window.clearInterval(this.__startupTimer);
+    this._disposeFields("_windowQueue", "_catchClickLayer", "_highlightBorder", "_highlightOverlay",
+                        "_widget", "_menu", "_console", "_widgetFinder", "_objectFinder", 
+                        "_propertyEditor", "_apiWindow");
   }  
   
 });

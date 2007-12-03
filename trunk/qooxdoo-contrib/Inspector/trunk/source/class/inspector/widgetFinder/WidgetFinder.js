@@ -611,5 +611,14 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       this._reloadButton.setToolTip(this._reloadToolTip);
       autoReloadButton.setToolTip(this._autoReloadToolTip);
     }
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_reloadButton", "_reloadToolTip", "_autoReloadToolTip", "_tree");
   }
 });

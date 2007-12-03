@@ -91,11 +91,11 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
       // throw an exception if the method is caled on the abstract class
       throw new Error("Abstract method call (switchInheritedStatus) in 'PropertyList'!");  
     },
-		
-		recalculateLayout: function() {
+    
+    recalculateLayout: function() {
       // throw an exception if the method is caled on the abstract class
-      throw new Error("Abstract method call (recalculateLayout) in 'PropertyList'!");			
-		},
+      throw new Error("Abstract method call (recalculateLayout) in 'PropertyList'!");      
+    },
     
     
     /*
@@ -159,8 +159,8 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
       // get all properties
       var data = this._getDataInherited(qxObject);
       var allProperties = data.props;
-			// get the filter
-			var filter = this._controller.getFilter();
+      // get the filter
+      var filter = this._controller.getFilter();
       // empty the filter
       filter.empty();
       // og threw all properties an insert them into the filter
@@ -189,5 +189,14 @@ qx.Class.define("inspector.propertyEditor.PropertyList", {
         return this._getDataInherited(qxObject);
       }
     } 
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_controller", "_filter");
   }
 });

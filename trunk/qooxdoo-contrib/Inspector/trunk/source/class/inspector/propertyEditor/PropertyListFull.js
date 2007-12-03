@@ -959,5 +959,15 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
         }
       }, this);
     }
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this._disposeFields("_propertyColumns", "_comboBoxPopups", "_colorPopup", 
+                        "_colorFields", "_oldPropertyListPool");
   }
 });

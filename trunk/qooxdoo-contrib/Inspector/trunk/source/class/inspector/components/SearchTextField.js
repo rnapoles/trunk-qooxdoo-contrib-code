@@ -120,5 +120,14 @@ qx.Class.define("inspector.components.SearchTextField", {
       }, this.getRefreshTime());
     }
 
+  },
+  
+  /*
+  *****************************************************************************
+     DESTRUCTOR
+  *****************************************************************************
+  */
+  destruct : function() {
+    this.setThisReference("");
   }
 });
