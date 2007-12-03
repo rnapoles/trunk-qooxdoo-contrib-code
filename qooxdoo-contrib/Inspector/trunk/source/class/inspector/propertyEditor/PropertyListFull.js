@@ -254,7 +254,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           if (oldremoved) {
             this._removeOld(deleteTo);       
             // mark the classes as deleted
-            oldreoved = false;            
+            oldremoved = false;            
           }
           
           // create the atom for the group and add it
@@ -496,7 +496,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       // read value
       var getterName = "get" + qx.lang.String.toFirstUp(key);
       try {
-        value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
+        var value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
       } catch (e) {
         return new qx.ui.basic.Label("Error");
       }

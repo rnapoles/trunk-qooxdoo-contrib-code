@@ -617,9 +617,6 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // set the rigth inhrerited status
           this._propertyList.switchInheritedStatus();
         // if the button is released
-        } else {   
-          // enable the second view     
-          viewTableButton.setChecked(true);
         }
       }, this);      
       this._menu.add(editViewButton);
@@ -640,15 +637,12 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // add the new created list to the property editor
           this._mainLayout.addAt(this._propertyList, 1);
         // if the button is released
-        } else {   
-          // enable the second view    
-          viewFullButton.setChecked(true);
-        }      
+        }
       }, this);
       this._menu.add(tableViewButton); 
       
       // radio manager for the view buttons      
-      var viewRadioManager = new qx.ui.selection.RadioManager(null, [editViewButton, tableViewButton]);     
+      new qx.ui.selection.RadioManager(null, [editViewButton, tableViewButton]);
     },
     
     
