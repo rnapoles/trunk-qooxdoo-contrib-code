@@ -6,7 +6,7 @@
 
 /* RETURN PATH */
 .ins_dom_return_path_main {
-  font: bold 12px Helvetica;
+  font: bold 11px Helvetica;
   border-bottom: 1px #555555 solid;
   padding: 5px;
   background-color: #000000;
@@ -15,7 +15,7 @@
 
 .ins_dom_return_path_selected {
   color: #666666;
-  font: bold 12px Helvetica;  
+  font: bold 11px Helvetica;  
 }
 
 .ins_dom_return_path_link {
@@ -27,7 +27,7 @@
 .ins_dom_object {
   color: green;
   cursor: pointer;
-  font: bold 12px Helvetica;
+  font: bold 11px Helvetica;
 }
 
 .ins_dom_object a:hover {
@@ -35,35 +35,35 @@
 }
 
 .ins_dom_array_more {
-  font: bold 12px Helvetica;
+  font: bold 11px Helvetica;
 }
 
 .ins_dom_self_ref {
   color: #AAAAAA;
-  font: italic 12px Helvetica;
+  font: italic 11px Helvetica;
 }
 
 .ins_dom_basic {
   color: darkblue;  
-  font: normal 12px "Courier New", Courier, monospace;
+  font: normal 11px "Courier New", Courier, monospace;
 }
 
 .ins_dom_string {
   color: red;
-  font: normal 12px "Courier New", Courier, monospace;  
+  font: normal 11px "Courier New", Courier, monospace;  
 }
 
 .ins_dom_null {
   color: white;
   background-color: #999999;
   border: 1px #666666 solid;
-  font: normal 12px Helvetica;
+  font: normal 11px Helvetica;
 }
 
 .ins_dom_func_object {
   color: green;
   cursor: pointer;
-  font: normal 12px "Courier New", Courier, monospace;
+  font: normal 11px "Courier New", Courier, monospace;
 }
 
 .ins_dom_func_object a:hover{
@@ -75,7 +75,7 @@
 .ins_dom_no_prop {
   padding: 10px;
   color: #999999;
-  font: normal 12px Helvetica;
+  font: normal 11px Helvetica;
 }
 
 .ins_dom_func {
@@ -85,7 +85,7 @@
 }
 
 .ins_dom_key {
-  font: bold 12px Helvetica;
+  font: bold 11px Helvetica;
   vertical-align: top;
   margin-left: 5px;
   width: 30%;
@@ -99,7 +99,7 @@
 }
 
 .ins_dom_key_number {
-  font: bold 12px Helvetica;
+  font: bold 11px Helvetica;
   vertical-align: top;
   margin-left: 5px;
   width: 30%;
@@ -115,6 +115,6 @@
 
 .ins_dom_front_image {
   width: 16;
-  height: 12;
+  height: 11;
   padding-right: 3px;
 }
