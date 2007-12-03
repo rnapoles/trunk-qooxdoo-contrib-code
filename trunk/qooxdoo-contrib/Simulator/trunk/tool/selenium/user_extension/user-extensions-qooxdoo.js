@@ -336,6 +336,19 @@ Selenium.prototype.doQxClick = function(locator, eventParams)
 };
 
 
+Selenium.prototype.doQxExecute = function(locator, eventParams)
+{
+  var element = this.page().findElementOrNull(locator);
+  if (element.qx_Widget && element.qx_Widget.execute)
+  {
+    element.qx_Widget.execute();
+  } else
+  {
+    LOG.debug("qxExecute: Cannot invoke execute() on element: "+element);
+  }
+};
+
+
 /**
  * Clicks on a qooxdoo-element.
  * mousedown, mouseup will be fired instead of only click
