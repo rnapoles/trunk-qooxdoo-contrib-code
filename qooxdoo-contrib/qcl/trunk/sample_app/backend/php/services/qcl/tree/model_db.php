@@ -11,9 +11,9 @@ require_once ("qcl/locale/manager.php");
 class qcl_tree_model_db extends qcl_db_model
 {
 
-   //-------------------------------------------------------------
-   // class variables 
-   //-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // class variables 
+  //-------------------------------------------------------------
 
 	var $table;
 	var $key_id;
@@ -24,20 +24,20 @@ class qcl_tree_model_db extends qcl_db_model
 	var $foreignKey;
 
 	//-------------------------------------------------------------
-    // internal methods
-    //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
 
    /**
     * constructor 
     * @param object reference $controller
     */
 	function __construct($controller)
-   	{
+  {
 		parent::__construct(&$controller);
 	}   
 	
 	//-------------------------------------------------------------
-   	// public non-rpc methods 
+  // public non-rpc methods 
 	//-------------------------------------------------------------   
    
 	/**
@@ -140,12 +140,15 @@ class qcl_tree_model_db extends qcl_db_model
 
    /**
     * change parent folder
-    * @param int 	$folderId	folder id
-    * @param int	$parentId 	parent folder id 
+    * @param int 	$folderId	  folder id
+    * @param int	$parentId 	new parent folder id 
+    * @return int             old parent id
    	*/
 	function changeParent( $folderId, $parentFolderId )
 	{
-		$this->setFieldValue("parentId",$parentFolderId,$folderId);
+		$oldParentId  = $this->getFieldValue("parentId",$folderId);
+    $this->setFieldValue("parentId",$parentFolderId,$folderId);
+    return $oldParentId;
 	}
 		
 	/**
