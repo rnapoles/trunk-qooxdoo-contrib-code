@@ -105,14 +105,14 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       // rebuild the view
       this.build();
     },    
-		
-		
-		/**
-		 * Because its a simpe html view, the function doesnt do anything.
-		 */
-		recalculateLayout: function() {
-			// just do nothing
-		},
+    
+    
+    /**
+     * Because its a simpe html view, the function doesnt do anything.
+     */
+    recalculateLayout: function() {
+      // just do nothing
+    },
     
     
     /*
@@ -145,7 +145,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       // end the table
       this._htmlTable.setText("</table>" + this._htmlTable.getText());
       // create a variable to store the bacground color for the properties
-      var bgColor;
+      var clazz;
       // go backwords threw the properties array
       for(var i = properties.length - 1; i > 0 ; i--) {        
         // go threw all properties in the current class
@@ -157,22 +157,26 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
             try {
               var value = qxObject[getterName].call(qxObject);              
             } catch (e) {
-              var value = "<font color='red'>" + e + "</font>";
+              var value = "<span class='ins_property_editor_html_error'>" + e + "</span>";
             }
-            if (bgColor == "#EBEBE0") {
-              bgColor = "#FFFFE0";
+            if (clazz == "ins_property_editor_html_tr_even") {
+              clazz = "ins_property_editor_html_tr_odd";
             } else {
-              bgColor = "#EBEBE0";
+              clazz = "ins_property_editor_html_tr_even";
             }
             // write the key and value to the view
-            this._htmlTable.setText("<tr style='font: 12px Verdana; background-color:" + bgColor + ";'><td valign='top'>" + key + ": </td><td>" + value + "</td></tr>" + this._htmlTable.getText());
+            this._htmlTable.setText("<tr class='" + clazz + "'>" + 
+                       "<td class='ins_property_editor_html_td'>" + key + ": </td>" + 
+                       "<td class='ins_property_editor_html_td'>" + value + "</td></tr>" + this._htmlTable.getText());
           }                
         }        
         // add the classname to the view
-        this._htmlTable.setText("<tr style='font: 14px Verdana; background-color:#D7D7A7;'><td colspan='2'><b>" + groupNames[i] + "</b></td></tr>" + this._htmlTable.getText()); 
+        this._htmlTable.setText("<tr class='ins_property_editor_html_tr_classname'>" + 
+                      "<td colspan='2' class='ins_property_editor_html_td_classname'>" + groupNames[i] + "</td>" + 
+                      "</tr>" + this._htmlTable.getText()); 
       }     
       // beginn the table for the properties
-      this._htmlTable.setText("<table border='0' width='100%' cellspacing='1' cellpadding='4' style='background-color:#C0C0C0'>" + this._htmlTable.getText());        
+      this._htmlTable.setText("<table class='ins_property_editor_html_table'>" + this._htmlTable.getText());        
     }
   },
   
