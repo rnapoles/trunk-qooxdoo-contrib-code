@@ -12,24 +12,25 @@ require_once ("qcl/db/db.php");
 class qcl_db_model extends qcl_jsonrpc_model
 {
 	//-------------------------------------------------------------
-    // instance variables
-    //-------------------------------------------------------------
+  // instance variables
+  //-------------------------------------------------------------
     
-	var $db; 				// the database object
-    var $currentRecord;		// the current record
+	var $db; 				         // the database object
+	var $currentRecord;		   // the current record
+	var $file;               // the file holding table structure information
          	
 	//-------------------------------------------------------------
-    // internal methods
-    //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
 
-   /**
-    * constructor 
-    * @param object reference 	$controller
-    * @param boolean			$initialize 	if true(default), initialize attached database object
-    */
+ /**
+  * constructor 
+  * @param object reference 	$controller
+  * @param boolean			$initialize 	if true(default), initialize attached database object
+  */
 	function __construct($controller,$initialize=true)
-   	{
-		parent::__construct(&$controller);
+  {
+    parent::__construct(&$controller);
 		if ( $initialize ) 
 		{
 			$this->init();
@@ -42,12 +43,20 @@ class qcl_db_model extends qcl_jsonrpc_model
 
 
 	/**
-	 * initializes the internal database handler
+	 * initializes the internal database handler 
 	 * @param string 			$dsn
 	 */
 	function init($dsn=null)
 	{
-		$this->db = &qcl_db::getSubclass(&$this->controller,$dsn);
+    $this->db = &qcl_db::getSubclass(&$this->controller,$dsn);
+    $this->db->model = &$this;
+    
+    // check structure update once per call
+    if ( ! $this->_update )
+    {
+      $this->updateTableStructure();
+      $this->_update = true;
+    }
 	}
 	
  	/**
@@ -278,7 +287,47 @@ class qcl_db_model extends qcl_jsonrpc_model
 	{
 		$this->db->deleteWhere ( $this->table, $where );
 	} 
+  /**
+   * gets the structure of the database table which holds the model data
+   * @return array
+   */
+  function getTableStructure()
+  {
+    return $this->db->getColumnMetaData($this->table);
+  }
 	
-}	
+  /**
+   * dumps table structures into a special folder where it can be manipulated
+   */
+  function dumpTableStructure($file)
+  {
+    $content = "<?php return " . var_export ( $this->getTableStructure(), true ) . "; ?>";
+    file_put_contents($file, $content );
+  }
+  
+  /**
+   * loads table structure from file
+   */
+  function loadTableStructure($file)
+  {
+    $structure = include ($file);
+    return $structure;
+  }
+  
+  /**
+   * updates or creates table in database if it doesn't exist yet
+   * @return 
+   */
+  function updateTableStructure()
+  {
+     $file = SERVICE_PATH . "bibliograph/sql/" . $this->table . ".php";
+     if ( ! file_exists ( $file ) and is_writeable ( dirname ( $file ) ) )
+     {
+       $this->dumpTableStructure($file);
+     }
+  }
+  
+  
 
+}	
 ?>

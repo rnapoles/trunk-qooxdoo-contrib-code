@@ -22,8 +22,15 @@ class qcl_db extends qcl_object
 	/**
 	 * @var controller object
 	 */
-	var $controller;
+	var $controller = null;
 	
+  
+  /**
+   * contains a reference to a model if called from a model
+   * @var model   
+   */
+  var $model = null;
+  
 	/**
 	 * constructor, reads database configuration
 	 * @param object reference 	$controller	
