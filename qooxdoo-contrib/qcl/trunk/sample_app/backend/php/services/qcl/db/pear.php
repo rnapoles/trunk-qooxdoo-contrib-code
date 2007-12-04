@@ -11,8 +11,8 @@ class qcl_db_pear extends qcl_db
 {
 
 	//-------------------------------------------------------------
-    // internal methods
-    //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
 
 	/**
 	 * constructor
@@ -25,8 +25,8 @@ class qcl_db_pear extends qcl_db
 	}
 
 	//-------------------------------------------------------------
-    // public non-rpc methods
-    //-------------------------------------------------------------
+  // public non-rpc methods
+  //-------------------------------------------------------------
 	
 	/**
 	 * connects to database 
@@ -90,7 +90,7 @@ class qcl_db_pear extends qcl_db
 
 	/**
 	 * get first row of result set
-	 * @param string 	$sql 				sql query
+	 * @param string 	  $sql 				      sql query
 	 * @param boolean  	$withColumnNames	if true (default), map values to column names 
 	 */
 	function &getRow ( $sql, $withColumnNames=true )
@@ -250,6 +250,26 @@ class qcl_db_pear extends qcl_db
 	{
 		$this->db->disconnect();
 	}
+  
+  /**
+   * retrieves information on the structure of a given table
+   * @param string $table
+   * @return array
+   */
+  function getColumnMetaData($table)
+  {
+    $schema = substr($this->dsn,strrpos($this->dsn,"/")+1);
+    return $this->getAllRows("
+      SELECT 
+        COLUMN_NAME as name, 
+        COLUMN_DEFAULT as `default`, 
+        IS_NULLABLE as nullable, 
+        COLUMN_TYPE as `type`, 
+        COLUMN_KEY as `key`
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE TABLE_SCHEMA = '$schema' AND TABLE_NAME = '$table'
+    ");
+  }
 }
 
 ?>
