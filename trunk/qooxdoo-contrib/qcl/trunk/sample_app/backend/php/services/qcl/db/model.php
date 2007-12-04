@@ -297,12 +297,32 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 	
   /**
+   * gets table structure as sql create statement
+   * @todo: this must use the db object for cross-DBMS!
+   * @return 
+   */
+  function getTableCreateSql()
+  {
+    $row = $this->db->getRow("SHOW CREATE TABLE {$this->table}");
+    return $row['Create Table'];
+  }
+  
+  /**
    * dumps table structures into a special folder where it can be manipulated
    */
   function dumpTableStructure($file)
   {
     $content = "<?php return " . var_export ( $this->getTableStructure(), true ) . "; ?>";
     file_put_contents($file, $content );
+  }
+
+  /**
+   * dumps table structures into a special folder where it can be manipulated
+   */
+  function dumpTableStructureSql($file)
+  {
+    $sql = $this->getTableCreateSql($file);
+    file_put_contents($file, $sql );
   }
   
   /**
@@ -320,10 +340,13 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function updateTableStructure()
   {
-     $file = SERVICE_PATH . "bibliograph/sql/" . $this->table . ".php";
-     if ( ! file_exists ( $file ) and is_writeable ( dirname ( $file ) ) )
+     if ( $this->table )
      {
-       $this->dumpTableStructure($file);
+       $file = SERVICE_PATH . "bibliograph/sql/" . $this->table . ".sql";
+       if ( ! file_exists ( $file ) and is_writeable ( dirname ( $file ) ) )
+       {
+         $this->dumpTableStructureSql($file);
+       }       
      }
   }
   
