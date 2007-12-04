@@ -649,6 +649,58 @@ qx.Class.define("inspector.Inspector", {
         this._console.inspectObjectByDomSelecet(index, key);
     }
   },   
+  
+  
+  /**
+   * @internal
+   * @param key {String} The name of the property in the current selected widget. 
+   * @param value {String} the value to set the property.
+   * @param type {String} The type of the value.
+   */
+  updateWidgetProperty: function(key, value, type) {
+    // if there is a widget
+    if (this._widget != null) {
+      // try to set the given value
+      try {
+        // get the name of the setter
+        var setterName = "set" + qx.lang.String.toFirstUp(key);
+        // stor the converted value in here        
+        var trueValue;
+        // if it is a number of something
+        if (type == "Integer" || type == "Float" || type == "Double" || type == "Number") {
+          // parse the value
+          trueValue = parseFloat(value);
+        // if it is someting which can be handled as a string
+        } else if (type == "String" || type == "NonEmptyString" || type == "Label" || type == "Color" || type instanceof Array) {
+          // just take the value
+          trueValue = value;
+        // if it is a boolean
+        } else if (type == "Boolean") {
+          // check for true
+          if (value == "true") {
+            trueValue = true;
+          // check for false
+          } else if (value == "false") {
+            trueValue = false;
+          // oterwise, its not a boolean
+          } else {
+            alert("Value is not a boolean.");
+            return false;
+          }
+        } else {
+          alert("Unknown type to change.");
+          return false;
+        }
+        // set the new value
+        this._widget[setterName].call(this._widget, trueValue);        
+        return true;
+      } catch (e) {
+        alert(e);
+        return false;
+      }
+    }
+  },
+  
       
     /*
     *********************************
