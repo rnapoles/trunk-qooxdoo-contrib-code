@@ -79,6 +79,8 @@ qx.Class.define("inspector.Inspector", {
     qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/domview.css"));
     // include the css used for the console view
     qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/consoleview.css"));
+    // include the css used for the html table of the property editor
+    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/propertylisthtml.css"));
     
     // Create the queue for the inspector windows
     this._windowQueue = [];
