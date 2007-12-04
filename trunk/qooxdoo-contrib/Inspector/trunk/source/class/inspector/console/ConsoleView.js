@@ -242,7 +242,7 @@ qx.Class.define("inspector.console.ConsoleView", {
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
                        "Press the CTRL and space key together (or tab) to get an auto complete"; 
-        var label = this._getLabel("", helpText, "#666666");
+        var label = this._getLabel(helpText, "ins_console_help");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -254,7 +254,7 @@ qx.Class.define("inspector.console.ConsoleView", {
      * @param code {String} The code to print out.
      */
     printCode: function(code) {
-      var label = this._getLabel("", code, "white", null, "black");
+      var label = this._getLabel(code, "ins_console_return_code");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -274,7 +274,7 @@ qx.Class.define("inspector.console.ConsoleView", {
             if (!this._console.isOpen()) {
                 this._console.open();
             }
-      var label = this._getLabel("", message, "red", "error", "#FFFFE0");
+      var label = this._getLabel(message, "ins_console_error", "error");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();         
@@ -290,7 +290,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (!this._console.isOpen()) {
         this._console.open();
       }            
-      var label = this._getLabel("", message, "black", "warning", "#00FFFF");           
+      var label = this._getLabel(message, "ins_console_warn", "warning");           
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -306,7 +306,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (!this._console.isOpen()) {
         this._console.open();
       }            
-      var label = this._getLabel("", message, "black", "info");
+      var label = this._getLabel(message, "ins_console_info", "info");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -322,7 +322,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       if (!this._console.isOpen()) {
         this._console.open();
       }            
-      var label = this._getLabel("", message, "grey");        
+      var label = this._getLabel(message, "ins_console_debug");        
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -714,9 +714,9 @@ qx.Class.define("inspector.console.ConsoleView", {
         }
         
         // if yes, print out that it is one
-        var label = this._getLabel("", "<u style='cursor: pointer;' onclick='" + 
-                                       "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
-                                       "'>[" + arrayRepresentation + "]</u>", "#AAAA00");
+        var label = this._getLabel("<span class='ins_console_link' onclick='" + 
+                                   "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                   "'>[" + arrayRepresentation + "]</span>", "ins_console_return_array");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
 
         return;
@@ -724,9 +724,9 @@ qx.Class.define("inspector.console.ConsoleView", {
       // check for objects
       } else if (returnValue instanceof Object) {        
         // if yes, print out that it is one
-        var label = this._getLabel("", "<u style='cursor: pointer;' onclick='" + 
-                                       "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
-                                       "'>" + returnValue + " </u>", "#AAAA00");
+        var label = this._getLabel("<span class='ins_console_link' onclick='" + 
+                                   "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                   "'>" + returnValue + " </span>", "ins_console_return_object");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
         
         return;
@@ -734,7 +734,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // everything else
       } else {
         // print out the return value
-        var label = this._getLabel("", returnValue, "#00008B");
+        var label = this._getLabel(returnValue, "ins_console_return_primitive");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       }
       // scroll to the end of the console 
@@ -749,13 +749,13 @@ qx.Class.define("inspector.console.ConsoleView", {
      */
     _printQxObject: function(object) {
       // build the label string
-      var label = this._getLabel("<u style='cursor: pointer;' " + 
+      var label = this._getLabel("<span class='ins_console_link' " + 
                                  "onclick=\"inspector.Inspector.getInstance().setWidgetByDbKey(" + object.getDbKey() + ", 'console');\"" + 
-                                 ";> ", object.classname + " [" + object.toHashCode() + "]</u> " + 
-                                 "<u style='cursor: pointer; color: #AAAA00;' onclick='" + 
+                                 ";> " + object.classname + " [" + object.toHashCode() + "]</span> " + 
+                                 "<span class='ins_console_dom_link' onclick='" + 
                                        "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
-                                       "'><b>inspect Object</b></u>"                                 
-                                 , "#006400")
+                                       "'>inspect Object</span>"                                 
+                                 , "ins_console_return_qxobject")
       // append the label string
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);      
       // scroll to the end of the console 
@@ -767,7 +767,7 @@ qx.Class.define("inspector.console.ConsoleView", {
      * @param text {String} The text to print out.
      */
     _printText: function(text) {
-      var label = this._getLabel(">>>&nbsp;", text, "blue");
+      var label = this._getLabel(">>>&nbsp;" + text, "ins_console_text");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
       this._scrollToLastLine();
@@ -779,38 +779,21 @@ qx.Class.define("inspector.console.ConsoleView", {
        CREATE FUNCTIONS
     *********************************
     */
-    _getLabel: function(prefix, text, color, icon, bgcolor) {
+    _getLabel: function(text, clazz, icon) {
       // create the text of the label
-      var text = "<font style='font-family: Courier New; font-size:11px; color:" + color + ";'>" + prefix + text + "</font>";      
+      var text = text;      
       // handle the icon uri      
       if (icon == "info" || icon == "error" || icon == "warning") {
-        var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + icon + "Icon.png") + "' style='vertical-align: middle;'>";
+        var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + 
+                       icon + "Icon.png") + "' class='ins_console_icon'>";
         text = iconHtml + "&nbsp;" + text;
       }
       // create the sourrounding div
-      text = "<div width='100%' style='padding: 3px; border-bottom: 1px #CCCCCC solid; background-color:" + bgcolor + ";'>" + text + "</div>";
-      
+      text = "<div class='ins_console_common'><div class='" + clazz + "'>" + text + "</div></div>";
       // return the text String
       return text;      
-    },
-    
-    
-    /**
-     * The function creates a Treminator as a line in the console.
-     * @return {qx.ui.basic.Terminator} The created terminator.  
-     */
-    _getLine: function() {
-      // start the exclusion so that the new element will not be in the list of objects
-      this._inspector.beginExclusion();
-      // create the new element
-      var line = new qx.ui.basic.Terminator();
-      // end the exclusion 
-      this._inspector.endExclusion();    
-      // set height and color of the label  
-      line.setHeight(1);
-      line.setBackgroundColor("#CCCCCC");
-      return line;      
-    }      
+    }
+        
    },
    
   /*

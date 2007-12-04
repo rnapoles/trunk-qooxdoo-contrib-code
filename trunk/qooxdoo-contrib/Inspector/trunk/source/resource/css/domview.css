@@ -4,6 +4,7 @@
 }
 
 
+
 /* RETURN PATH */
 .ins_dom_return_path_main {
   font: bold 11px Helvetica;
@@ -21,6 +22,7 @@
 .ins_dom_return_path_link {
   cursor: pointer;
 }
+
 
 
 /* VALUES */
@@ -69,6 +71,7 @@
 .ins_dom_func_object a:hover{
   text-decoration: underline;
 }
+
 
 
 /* KEYS */ 
