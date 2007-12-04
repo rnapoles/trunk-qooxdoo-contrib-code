@@ -157,17 +157,81 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
             try {
               var value = qxObject[getterName].call(qxObject);              
             } catch (e) {
+              var error = true;
               var value = "<span class='ins_property_editor_html_error'>" + e + "</span>";
             }
+            // set the classes for the alternating background color
             if (clazz == "ins_property_editor_html_tr_even") {
               clazz = "ins_property_editor_html_tr_odd";
             } else {
               clazz = "ins_property_editor_html_tr_even";
             }
-            // write the key and value to the view
-            this._htmlTable.setText("<tr class='" + clazz + "'>" + 
-                       "<td class='ins_property_editor_html_td'>" + key + ": </td>" + 
-                       "<td class='ins_property_editor_html_td'>" + value + "</td></tr>" + this._htmlTable.getText());
+            
+            // get the setter name
+            var setterName = "set" + qx.lang.String.toFirstUp(key);
+            // if the property can be changed with a simple textfield                   
+            if (properties[i][key].check == "Integer" || 
+                properties[i][key].check == "String" ||
+                properties[i][key].check == "NonEmptyString" ||
+                properties[i][key].check == "Label" ||
+                properties[i][key].check == "Float" ||
+                properties[i][key].check == "Double" || 
+                properties[i][key].check == "Number" ||
+                properties[i][key].check == "Boolean" ||
+                properties[i][key].check == "Color" && qxObject[setterName] != undefined) {
+              
+              // write the key and value to the view
+              this._htmlTable.setText("<tr class='" + clazz + "'>" + 
+                         "<td class='ins_property_editor_html_td'>" + key + ": </td>" + 
+                         "<td class='ins_property_editor_html_td_link' onclick='" + 
+                           
+                           // save the current value                         
+                           "var oldValue = this.innerHTML;" +
+                           // create a new textbox and set the attributes 
+                           "var box = document.createElement(\"input\");" +
+                           "box.setAttribute(\"type\", \"text\");" + 
+                           "box.setAttribute(\"value\", oldValue);" +
+                           "box.setAttribute(\"class\", \"ins_property_editor_html_edit_field\");" +
+                           // swich the current content to the textbox
+                           "this.innerHTML = \"\";" +
+                           "this.appendChild(box);" +
+                           // remove the onlick listener
+                           "var formerOnclick = this.onclick;" + 
+                           "this.onclick = \"\";" +
+                           // select the text in the textbox
+                           "box.select();" + 
+                           "box.focus();" +
+                           // store the this reference
+                           "var self = this;" +
+                           "box.onkeypress = function(e) {" +
+                              // get the pressed key
+                           "  if (window.event) {" +
+                           "    var key = window.event.keyCode;" +
+                           "  } else {" +
+                           "    var key = e.which" +
+                           "  }" +
+                              // if enter has been pressed
+                           "  if (key == 13) {" +
+                                // update the widget 
+                           "    var success = inspector.Inspector.getInstance().updateWidgetProperty(\"" + key + "\", box.value, \"" + properties[i][key].check + "\");" +
+                                // restor the onld onclick function
+                           "    self.onclick = formerOnclick;" + 
+                                // set the new content into the page
+                           "    if (success) {" +
+                           "      self.innerHTML = box.value;" +
+                           "    } else {" + 
+                           "      self.innerHTML = oldValue;" +
+                           "    }" +  
+                           "  }" +   
+                           "}" + 
+                            
+                         "'>" + value + "</td></tr>" + this._htmlTable.getText());
+            } else {
+              // write the key and value to the view
+              this._htmlTable.setText("<tr class='" + clazz + "'>" + 
+                         "<td class='ins_property_editor_html_td'>" + key + ": </td>" + 
+                         "<td class='ins_property_editor_html_td'>" + value + "</td></tr>" + this._htmlTable.getText());              
+            }
           }                
         }        
         // add the classname to the view
