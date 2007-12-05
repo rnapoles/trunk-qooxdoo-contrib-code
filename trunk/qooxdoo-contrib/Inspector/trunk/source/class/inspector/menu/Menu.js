@@ -35,12 +35,11 @@ qx.Class.define("inspector.menu.Menu", {
     // initialize the layout
     this.setWidth("auto");
     this.setHeight("auto");
-    this.setTop(-26);    
     
     // register the handler to move the menu out of the screen    
     this.__registerMoveListener();    
     
-    // register an event listener to set the staart position
+    // register an event listener to set the start position
     this.addEventListener("appear", function() {      
       var middle = qx.ui.core.ClientDocument.getInstance().getInnerWidth() / 2;  
       // set the position of the menu
@@ -58,6 +57,9 @@ qx.Class.define("inspector.menu.Menu", {
         // mark that this was the first run
         this._firstRun = false;              
       }
+      this._menuTop = -this.getChildren()[0].getOuterHeight();
+      this.setTop(this._menuTop);
+//      console.log("_menuTop: " + this._menuTop)
     }, this);    
         
     // create the commands
@@ -72,7 +74,8 @@ qx.Class.define("inspector.menu.Menu", {
     this.__createStartPopup();
     
     // create a atom to show the down arrows
-    var downAtom = new qx.ui.basic.Atom(null, qx.io.Alias.getInstance().resolve("inspector/image/down.png"));
+    var downAtom = new qx.ui.basic.Atom(null, 
+        qx.io.Alias.getInstance().resolve("inspector/image/down.png"), 20, 5);
     downAtom.setWidth("100%");
     this.add(downAtom);
     
@@ -114,6 +117,7 @@ qx.Class.define("inspector.menu.Menu", {
     // menus
     _menubar: null,
     _inspectorMenu: null,
+    _menuTop: 0,
     
     // inspector menu buttons
     _findButton: null,
@@ -570,7 +574,7 @@ qx.Class.define("inspector.menu.Menu", {
         // if the menu is clicked away
         if (!e.getValue()) {
           // hide the menu
-          this.setTop(-24);        
+          this.setTop(this._menuTop);        
         }
       }, this);
     },
@@ -813,7 +817,7 @@ qx.Class.define("inspector.menu.Menu", {
         // set a timer to enable the reset to the starting position 
         this._upTimer = window.setTimeout(function() {
           // set to the start position
-          self.setTop(-26);
+          self.setTop(self._menuTop);
           // if there is still a movement
           if (self._moveInterval != null) {
             // clear the move interval        
