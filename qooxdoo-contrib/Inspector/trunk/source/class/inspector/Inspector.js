@@ -61,7 +61,7 @@ qx.Class.define("inspector.Inspector", {
     
     API_VIEWER_URI: "http://demo.qooxdoo.org/current/apiviewer/",
     
-    DISPOSE_QUESTION: "Do you realy want to dispose the application?"
+    DISPOSE_QUESTION: "Do you really want to dispose the application?"
   },
 
 
@@ -122,7 +122,7 @@ qx.Class.define("inspector.Inspector", {
     //////////////////////////
     // PATCH FOR 0.7.1
     if (qx.core.Object.prototype.getDbKey == undefined) {
-      this.debug("qx.core.Object patcht");
+      this.debug("Patch of qx.core.Object: add getDbKey()");
       qx.core.Object.prototype.getDbKey = function() {
         return this.__dbKey;
       }      
