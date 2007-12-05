@@ -131,7 +131,7 @@ qx.Class.define("inspector.Inspector", {
     
     //////////////////////////
     // PATCH FOR A QOOXDOO BUG IN THE LOGGER    
-    this.debug("qx.log.Logger.removeAppender patcht");
+    this.debug("qx.log.Logger.removeAppender patched");
     qx.log.Logger.prototype.removeAppender = function(appender) {
       if (this._appenderArr != null) {
         for(var i = 0; i < this._appenderArr.length; i++){
@@ -1250,7 +1250,7 @@ qx.Class.define("inspector.Inspector", {
         statics.getInstance().debug("loaded");
         window.clearInterval(members._startupTimer);
       }      
-    }, 500);    
+    }, 2000);    
   },  
   
   
