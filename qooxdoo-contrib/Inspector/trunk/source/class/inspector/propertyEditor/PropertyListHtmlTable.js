@@ -157,7 +157,6 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
             try {
               var value = qxObject[getterName].call(qxObject);              
             } catch (e) {
-              var error = true;
               var value = "<span class='ins_property_editor_html_error'>" + e + "</span>";
             }
             // set the classes for the alternating background color
