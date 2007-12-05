@@ -15,9 +15,15 @@ class qcl_db_model extends qcl_jsonrpc_model
   // instance variables
   //-------------------------------------------------------------
     
-	var $db; 				         // the database object
-	var $currentRecord;		   // the current record
-	var $file;               // the file holding table structure information
+	var $db; 				                // the database object
+	var $currentRecord;		          // the current record
+
+  /**
+   * set this to an array of table names which are going to be updated from
+   * 
+   * @var
+   */
+	var $updateTables = null;       
          	
 	//-------------------------------------------------------------
   // internal methods
@@ -33,7 +39,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     parent::__construct(&$controller);
 		if ( $initialize ) 
 		{
-			$this->init();
+      $this->init();
 		}
 	}   	
 
@@ -44,19 +50,12 @@ class qcl_db_model extends qcl_jsonrpc_model
 
 	/**
 	 * initializes the internal database handler 
-	 * @param string 			$dsn
+	 * @param string 	$dsn 
 	 */
 	function init($dsn=null)
 	{
     $this->db = &qcl_db::getSubclass(&$this->controller,$dsn);
     $this->db->model = &$this;
-    
-    // check structure update once per call
-    if ( ! $this->_update )
-    {
-      $this->updateTableStructure();
-      $this->_update = true;
-    }
 	}
 	
  	/**
@@ -287,70 +286,86 @@ class qcl_db_model extends qcl_jsonrpc_model
 	{
 		$this->db->deleteWhere ( $this->table, $where );
 	} 
-  /**
-   * gets the structure of the database table which holds the model data
-   * @return array
-   */
-  function getTableStructure()
-  {
-    return $this->db->getColumnMetaData($this->table);
-  }
 	
   /**
    * gets table structure as sql create statement
-   * @todo: this must use the db object for cross-DBMS!
    * @return 
    */
-  function getTableCreateSql()
+  function getTableCreateSql($table)
   {
-    $row = $this->db->getRow("SHOW CREATE TABLE {$this->table}");
-    return $row['Create Table'];
+    return $this->db->getTableCreateSql($table);
   }
   
   /**
-   * dumps table structures into a special folder where it can be manipulated
+   * saves the sql commands necessary to create the table into a file and returns it
+   * @return boolen success
    */
-  function dumpTableStructure($file)
+  function saveTableCreateSql($table,$file)
   {
-    $content = "<?php return " . var_export ( $this->getTableStructure(), true ) . "; ?>";
-    file_put_contents($file, $content );
+      if ( is_writeable ( dirname ( $file ) ) )
+      {
+        if ( ! file_exists( $file ) or is_writeable ( $file ) )
+        {
+          $sql = $this->getTableCreateSql($table);
+          file_put_contents($file, $sql );        
+          $this->info("Stored sql for {$table}");
+          return true;
+        }
+        else
+        {
+          $this->warn ( "Problem saving $table in file $file.");
+          return false;
+        }
+      }
+      else
+      {
+        $this->warn ( dirname ( $file ) . " is not writable. Cannot store sql.");
+        return false;
+      }
   }
 
-  /**
-   * dumps table structures into a special folder where it can be manipulated
-   */
-  function dumpTableStructureSql($file)
-  {
-    $sql = $this->getTableCreateSql($file);
-    file_put_contents($file, $sql );
-  }
-  
-  /**
-   * loads table structure from file
-   */
-  function loadTableStructure($file)
-  {
-    $structure = include ($file);
-    return $structure;
-  }
   
   /**
    * updates or creates table in database if it doesn't exist yet
+   * @param mixed $table can be array
    * @return 
    */
-  function updateTableStructure()
+  function updateTableStructure($table)
   {
-     if ( $this->table )
-     {
-       $file = SERVICE_PATH . "bibliograph/sql/" . $this->table . ".sql";
-       if ( ! file_exists ( $file ) and is_writeable ( dirname ( $file ) ) )
-       {
-         $this->dumpTableStructureSql($file);
-       }       
-     }
+    if ( is_array($table) )
+    {
+      foreach ( $table as $t )
+      {    
+        $this->updateTableStructure($t);
+      }
+      return;
+    }
+    
+    $this->info ( "Checking for an update for table $table...");
+    
+    $application = substr(get_class($this),0,strpos(get_class($this),"_"));
+    $file = SERVICE_PATH . "{$application}/sql/{$table}.sql";
+    
+    // store sql to create this table
+    if ( ! file_exists ( $file ) )
+    {
+      return $this->saveTableCreateSql($table,$file);
+    }
+    
+    // compare table structure with structure and update table if there is a change
+    $currentSql   = $this->getTableCreateSql($table);
+    $normativeSql = file_get_contents($file); // strip comments
+    if ( $currentSql != $normativeSql )
+    {
+      $this->db->updateTableStructure( $table, $normativeSql );
+      $this->saveTableCreateSql($file);
+      $this->info ("Updated table {$table}.");
+    }
+    else
+    {
+      $this->info ( "$table is up to date.");
+    }
   }
   
-  
-
 }	
 ?>

@@ -264,11 +264,16 @@ class qcl_object extends patched_object {
 	/**
 	 * log to file on server
 	 */
-	function log($string,$logLevel=QCL_LOG_DEBUG)
+	function log( $msg, $logLevel=QCL_LOG_DEBUG )
 	{
 		if ( QCL_LOG_LEVEL and QCL_LOG_LEVEL <= $logLevel)
 		{
-			$message = date("y-m-j H:i:s");
+			if ( is_array($msg) or is_object($msg) )
+      {
+        $msg = var_export ( $msg, true );  
+      }
+      
+      $message = date("y-m-j H:i:s");
 			if ( QCL_LOG_SHOW_CLASS_NAME )
 			{
 				$message .= " [" . get_class($this) ."]";
@@ -277,11 +282,31 @@ class qcl_object extends patched_object {
 			{
 				$message .= "(" . $this->user->getActiveUserName() . ")";
 			}
-			$message .= ": " . $string . "\n";
+			$message .= ": " . $msg . "\n";
 			@error_log($message,3,QCL_LOG_FILE);			
 		}			
 	}
-		
+	
+  /**
+   * logs a message with of level "info"
+   * @return void
+   * @param $msg string
+   */
+  function info ( $msg )	
+  {
+    $this->log ( $msg, QCL_LOG_INFO );
+  }
+
+  /**
+   * logs a message with of level "warn"
+   * @return void
+   * @param $msg string
+   */
+  function warn ( $msg )	
+  {
+    $this->log ( $msg, QCL_LOG_WARN );
+  }
+  
 	/**
 	 * raises a server error and exits
 	 */
@@ -293,7 +318,7 @@ class qcl_object extends patched_object {
 		{
 			$message .= " in $file, line $line.";
 		}
-		$this->log($message);
+		$this->log($message, QCL_LOG_ERROR);
 		$error->setError( $number, stripslashes( $message ) );
  		$error->SendAndExit();
 	}

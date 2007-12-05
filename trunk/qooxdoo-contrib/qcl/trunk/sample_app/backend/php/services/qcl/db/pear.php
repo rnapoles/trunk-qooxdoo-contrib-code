@@ -270,6 +270,90 @@ class qcl_db_pear extends qcl_db
       WHERE TABLE_SCHEMA = '$schema' AND TABLE_NAME = '$table'
     ");
   }
+  
+  /**
+   * gets table structure as sql create statement
+   * @param string $table table name
+   * @return string
+   */
+  function getTableCreateSql($table)
+  {
+    $row = $this->db->getRow("SHOW CREATE TABLE $table");
+    return $row['Create Table'];
+  }
+  
+  /**
+   * extracts column data from a sql create table statemnet
+   * @return array
+   * @param $sql string sql create table statement
+   */
+  function extractColumnData($sql)
+  {
+    $start     = strpos($sql,"(")+1;
+    $end       = strrpos($sql,")")-1;
+    $columnSql = trim(substr($sql,$start,$end-$start));
+    $lines     = explode( ",", $columnSql );
+    $columns   = array();
+    
+    for($i=0;$i<count($lines);$i++)
+    {
+     $line = explode(" ",trim($lines[$i]));
+     $columns[$line[0]] = implode(" ",array_slice($line,1));
+    }
+    return $columns;
+  }
+  
+  /**
+   * updates table structure to conform with sql create table statement passed
+   * @return void
+   * @param string $table table name
+   * @param string $sql   sql create table statement
+   */
+  function updateTableStructure($table,$sql)
+  {
+    $currentColumns   = $this->extractColumnData($this->getTableCreateSql($table));
+    $normativeColumns = $this->extractColumnData($sql);
+    $after = "FIRST";
+    
+    foreach($normativeColumns as $columnName => $columnDef )
+    {
+      $currentDef = $currentColumns[$columnName];
+      if ( $currentDef )
+      {
+        if ( $currentDef != $columnDef )
+        {
+          $this->execute ("
+            ALTER TABLE $table MODIFY COLUMN $columnName $columnDef
+          ");
+          $this->info("Modified $table.$column to $columnDef.");
+        }
+      }
+      else
+      {
+        // was column renamed?
+        preg_match("/\/\*was:[\s]*([^\*\/\s]+)[\s]*\*\//", $columnDef,$match);
+        $oldColumnName = $match[1];
+        if ( $oldColumnName )
+        {
+
+          $this->execute ("
+            ALTER TABLE $table CHANGE COLUMN $oldColumnName $columnName $columnDef $after 
+          ");    
+          $this->info("Renamed $table.$oldColumnName to $table.$columnName.");
+        }
+        else
+        {
+          $this->execute ("
+            ALTER TABLE $table ADD COLUMN $columnName $columnDef $after 
+          ");
+          $this->info("Added $table.$columnName."); 
+        }     
+      }
+      $after = "AFTER $columnName"; 
+    }   
+     
+  }
+  
 }
 
 ?>
