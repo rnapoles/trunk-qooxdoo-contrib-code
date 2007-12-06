@@ -657,11 +657,11 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       menuButton.setIconPosition("right");
       this._toolbar.add(menuButton);
     
-    // add a click listener so that the menu is always on front of the property editor window
-    menuButton.addEventListener("click", function() {
-      // move the menu in front
-      this._menu.setZIndex(this.getZIndex() + 1);
-    }, this);
+      // add a click listener so that the menu is always on front of the property editor window
+      menuButton.addEventListener("click", function() {
+        // move the menu in front
+        this._menu.setZIndex(this.getZIndex() + 1);
+      }, this);
       
       // add a seperator
       this._toolbar.add(new qx.ui.toolbar.Separator());
