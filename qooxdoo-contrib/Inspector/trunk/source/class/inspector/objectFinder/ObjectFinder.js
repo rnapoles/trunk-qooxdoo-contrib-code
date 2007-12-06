@@ -83,6 +83,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _reloadTimer: null,    
     _searchTimer: null,
     
+		// data models
+		_currentModel: null,
+		_models: null,
     
     /*
     *********************************
@@ -172,58 +175,39 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     *********************************
        PROTECTED
     *********************************
-    */    
+    */
     /**
-     * Fetches the data from the objects db, removes the objects from the
-     * inspector application and filters it if a filter is given.
-     * @param filter {String | RegExp} The term to search for in the data.
-     * @return {Array} A filterd and cleaned list objects containing
-     *      0     - the hashode of the object
-     *      1     - the classname of the object
-     *      dbKey - the key in the objects db
+     * Sets the selection of the table to the current selection mode of
+     * the data model.
      */
+    _setTableSelectionEnabled: function() {
+      // get the selection model
+      var selectionModel = this._table.getSelectionModel();
+      // if the selection in the current data model is on
+      if (this._currentModel.getSelectable()) {
+        // enable the selection
+        selectionModel.setSelectionMode(qx.ui.table.selection.Model.SINGLE_SELECTION);
+      } else {
+        // otherwise, disable the selection
+        selectionModel.setSelectionMode(qx.ui.table.selection.Model.NO_SELECTION);
+      }
+    },
+    
+    
+    /**
+     * Set the header of the table to the values from the current data model. 
+     */
+    _setTableHeader: function() {
+      this._tableModel.setColumns(this._currentModel.getColumnNames());
+    },
+    
+    
+    /**
+     * Uses the current set model to get the data to display.
+     * @param filter {String | RegExp} 
+     */    
     _getData: function(filter) {
-      // create a data array
-      var data = [];
-      // get all objects form the object db
-      var objectsAndKeys = this._getClearObjects();      
-      var objects = objectsAndKeys.object;
-      var dbKeys = objectsAndKeys.dbKey;
-      
-      //  go threw all objects
-      for (var key in objects) {
-        // IE Bug: only take the qooxdoo objects and not the added functions
-        if (objects[key] instanceof qx.core.Object) {
-          // add the object to the data array
-          data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});                    
-        }
-      }
-            
-      // apply a filfer if needed
-      if (filter != null) {
-        // create a new temporary array to store the filterd data
-        var newData = [];
-        // try to search with a RegExp object
-        try {
-          // create a RegExp object to perform the search
-          var regExp = new RegExp(filter);
-          // go threw all objects
-          for (var i = 0; i < data.length; i++) {
-            // if the search text is part of the classname or hash value
-            if (regExp.test(data[i][1]) || regExp.test(data[i][0])) {
-              // add the object to the filterd data
-              newData.push(data[i]);
-            }          
-          } 
-        } catch (e) {
-          // alert the user it the search string was incorrect
-          alert(e);
-        }
-        // set the filterd data
-        data = newData;
-      }
-      // return the data
-      return data;
+        return this._currentModel.dressUpData(this._getClearObjects(), filter);
     },
     
     
@@ -253,12 +237,12 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         objects.splice(excludes[i].begin, length);
         dbKeys.splice(excludes[i].begin, length);
       }
-      
+            
       // return the two arrays in an object
       return {object:objects, dbKey:dbKeys};
     },
-    
-    
+
+
     /**
      * Sets the given data in the table model and reordes 
      * it like the data was orderd.
@@ -333,6 +317,20 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       return data;
     },
        
+       
+    /**
+     * Creates all data models and sets the default model.
+     */
+    _createDataModels: function() {
+      // create the models array
+      this._models = [];
+      // add the models
+      this._models.push(new inspector.objectFinder.models.AllObjectsByHashModel());      
+      
+      // set the default model
+      this._currentModel = this._models[0];
+    },
+   
    
     /*
     *********************************
@@ -384,16 +382,22 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * handler which handles the cahnge of the selection of the tabel.
      */
     _createMainElement: function() {
+      // create data models
+      this._createDataModels();
+      
       // initialize the table model
       this._tableModel = new qx.ui.table.model.Simple();
-      this._tableModel.setColumns(["Hash", "Classname"]);
+      this._setTableHeader();
       this._tableModel.sortByColumn(0, true);
       // initialize table
       this._table = new inspector.components.Table(this._tableModel);
       this._table.setHeight("1*");
       
+      // set the selection
+      this._setTableSelectionEnabled();
+      // set the names which should appear in the statusbar
       this._table.setRowContentName("object");
-      this._table.setRowsContentName("objects");
+      this._table.setRowsContentName("objects");      
       
       this._table.setWidth(320);
       this._table.setShowCellFocusIndicator(false);
