@@ -36,14 +36,6 @@
 #
 QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.2-sdk
 
-# Path to your Selenium RC installation
-#SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
-SELENIUM_RC_PATH = ../../../packages/selenium-remote-control-0.9.2
-
-# Path to your Mozilla Rhino installation 
-#MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
-MOZILLA_RHINO_PATH = ../../../../prog/javascript/rhino1_6R7
-
 #
 # Namespace of your application e.g. custom
 # Even complexer stuff is possible like: net.sf.custom
@@ -56,7 +48,7 @@ APPLICATION_NAMESPACE = custom
 #
 APPLICATION_FILES = index.html
 
-APPLICATION_INCLUDES = contrib://Inspector/trunk
+APPLICATION_INCLUDES = ../../Inspector/trunk
 
 APPLICATION_COMPLETE_SOURCE = true
 APPLICATION_RESOURCE_FILTER = true
@@ -67,6 +59,14 @@ APPLICATION_RESOURCE_FILTER = true
 # $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
 # Add any of those variables for your custom configuration here:
 #-------------------------------------------------------------------------------
+
+# Path to your Selenium RC installation
+#SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
+SELENIUM_RC_PATH = ../../../../../Programme/selenium-remote-control-0.9.2
+
+# Path to your Mozilla Rhino installation 
+#MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
+MOZILLA_RHINO_PATH = ../../../../../Programme/rhino1_6R7
 
 
 ################################################################################
@@ -89,37 +89,45 @@ QOOXDOO_SELENIUM_JAVA_CLIENTP = ./tool/selenium/language_binding
 SELENIUM_BUILD_DIR = ./tool/script
 JAR = jar
 
-selenium: selenium-build-dirs selenium-server-ext selenium-java-client-ext 
+simulator: selenium-build-dirs selenium-server-ext selenium-java-client-ext 
 
 selenium-build-dirs:
-	mkdir -p $(SELENIUM_BUILD_DIR)/selenium_server
-	mkdir -p $(SELENIUM_BUILD_DIR)/java_client
+	mkdir -p $(SELENIUM_BUILD_DIR)/selenium-server
+	mkdir -p $(SELENIUM_BUILD_DIR)/java-client-driver
 
 selenium-java-client-ext:
 	(cd $(SELENIUM_BUILD_DIR); \
-	cd java_client; \
+  rm -rf java-client-driver; \
+  mkdir java-client-driver; \
+	cd java-client-driver; \
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-java-client-driver-*/selenium-java-client-driver.jar); \
 	cd ..; \
-	javac -cp java_client -d java_client ../../$(QOOXDOO_SELENIUM_JAVA_CLIENTP)/QxSelenium.java; \
-	$(JAR) cf selenium-java-client-driver.jar -C java_client . \
+	javac -cp java-client-driver -d java-client-driver ../../$(QOOXDOO_SELENIUM_JAVA_CLIENTP)/QxSelenium.java; \
+	$(JAR) cf selenium-java-client-driver.jar -C java-client-driver . \
 	)
 
 selenium-server-ext:
 	(cd $(SELENIUM_BUILD_DIR); \
-	cd selenium_server; \
+  rm -rf selenium-server; \
+  mkdir selenium-server; \
+	cd selenium-server; \
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar); \
 	cd ..; \
-	cat ../../$(QOOXDOO_SELENIUM_USER_EXTENSION) >> selenium_server/core/scripts/user-extensions.js; \
-	$(JAR) cf selenium-server.jar -C selenium_server . \
+	cat ../../$(QOOXDOO_SELENIUM_USER_EXTENSION) >> selenium-server/core/scripts/user-extensions.js; \
+	$(JAR) cmf selenium-server/META-INF/MANIFEST.MF selenium-server.jar -C selenium-server . \
 	)
 
 selenium-rc-start:
 	(cd $(SELENIUM_BUILD_DIR); java -jar selenium-server.jar &)
 
-mozilla-rhino-jar:
-	(cd $(SELENIUM_BUILD_DIR); cp $(MOZILLA_RHINO_PATH)/js.jar .)
-
-selenium-rhino-shell: mozilla-rhino-jar
-	(export CLASSPATH=$(SELENIUM_BUILD_DIR)/selenium-java-client.jar:$(SELENIUM_BUILD_DIR)/js.jar; \
+selenium-rhino-shell:
+	(export CLASSPATH=$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar:$(MOZILLA_RHINO_PATH)/js.jar; \
 	java org.mozilla.javascript.tools.shell.Main \
 	)
+
+simulator-javascript:
+	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar;$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
+	java org.mozilla.javascript.tools.shell.Main \
+	)
+
+	

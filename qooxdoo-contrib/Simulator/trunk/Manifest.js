@@ -5,7 +5,7 @@
   "description" : "This module provides various pieces to utilize Selenium (http://www.openqa.org/selenium) to automate qooxdoo applications.",
   
   "keywords" : ["selenium", "test", "simulation", "automation"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://qooxdoo.org/documentation/contrib/simulator",
 
   "license" : "LGPL/EPL",
   "authors" : [
@@ -17,6 +17,6 @@
 
   "namespace" : "custom",
   
-  "version" : "0.1",
+  "version" : "trunk",
   "qooxdoo-versions": ["0.7.2"]
 }

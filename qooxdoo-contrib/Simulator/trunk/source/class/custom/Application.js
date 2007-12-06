@@ -68,7 +68,7 @@ qx.Class.define("custom.Application",
       button1.setToolTip(new qx.ui.popup.ToolTip("A nice tooltip", "icon/32/status/dialog-information.png"));
 
       button1.setHtmlProperty("id","button");
-      button1.setUserData("thefatbutton", "this is for selenium");
+      button1.setUserData("thefatbutton", "this is for the simulator");
 
       // textfield
       var tf = new qx.ui.form.TextField();
@@ -77,7 +77,7 @@ qx.Class.define("custom.Application",
 
       // Add an event listener
       button1.addEventListener("execute", function(e) {
-        tf.setValue("I was pressed!"+e);
+        tf.setValue("I was pressed!" + e);
       });
 
 
@@ -112,7 +112,7 @@ qx.Class.define("custom.Application",
       //this.tracker = new custom.MouseTracker();
       //this.tracker.window.open();
 
-      this.selsh = new custom.SeleniumShell();
+      this.selsh = new simulator.Shell();
       this.selsh.window.open();
 
     }, //construct
