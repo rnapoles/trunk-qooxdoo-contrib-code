@@ -496,43 +496,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
 
       // add a seperator
       this._toolbar.add(new qx.ui.toolbar.Separator());
-/*
-      // add the objects summary button
-      var objectsButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/objectsummary.png"));
-      this._toolbar.add(objectsButton);
-      // add the tooltip to the objects summary button
-      this._objectSummaryToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.OBJECT_SUMMARY_BUTTON_TOOLTIP_TEXT, null);
-      objectsButton.setToolTip(this._objectSummaryToolTip);
-      // add the event listener for the summary button to show the popup
-      objectsButton.addEventListener("click", function(e) {
-        // fetch the data
-        var data = this._getObjectsCountArray();
-        // variable to save the summ of all objects
-        var sum = 0; 
-        // create the message
-        var message = "";
-        for (var key = 0; key < data.length; key++) {
-          message += "<tr><td>" + data[key][0] + ": </td><td>" + data[key][1] + "</td></tr>";
-          sum += data[key][1];
-        }
-        message = "<table><tbody style='font-size:12px'>" + 
-                  "<tr><td><font size='4'>Objects Summary</font></b></td><td>" + sum + "&nbsp;(Total)</td></tr>" + 
-                  message + "</tbody></table>";
-                
-        // set the text to the lable in the popup
-        this._popup.getChildren()[0].setText(message);
-        // set the position of the poopup
-        this._popup.setTop(e.getPageY() + 3);
-        this._popup.setLeft(e.getPageX() + 3);
-        // show the popup
-        this._popup.show();
-        this._popup.bringToFront();        
-      }, this);
-      
-			*/
-			
-			
-			
+
       // pollution button
       var pollutionButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/pollution.png"));
       this._toolbar.add(pollutionButton);
