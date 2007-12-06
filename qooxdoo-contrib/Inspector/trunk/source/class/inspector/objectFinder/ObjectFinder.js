@@ -19,7 +19,7 @@
 qx.Class.define("inspector.objectFinder.ObjectFinder", {
   
   extend: inspector.components.AbstractWindow,  
-	
+  
     
   /*
   *****************************************************************************
@@ -27,6 +27,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
   *****************************************************************************
   */
   construct : function(main, name) {
+    // create data models
+    this._createDataModels();
     // call the constructor of the superclass
     this.base(arguments, main, name);
 
@@ -72,6 +74,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _popup: null,
     
     // buttons and tooltips
+    _menu: null,
     _reloadButton: null,
     _reloadToolTip: null,
     _findField: null,
@@ -83,9 +86,9 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     _reloadTimer: null,    
     _searchTimer: null,
     
-		// data models
-		_currentModel: null,
-		_models: null,
+    // data models
+    _currentModel: null,
+    _models: null,
     
     /*
     *********************************
@@ -99,7 +102,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      *    ommited in the tree view of the developers application.
      */
     getComponents: function() {
-      return [this, this._table, this._reloadToolTip, 
+      return [this, this._table, this._reloadToolTip, this._menu,
               this._autoReloadToolTip, this._popup, 
               this._objectSummaryToolTip, this._pollutionToolTip];
     },
@@ -325,7 +328,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       // create the models array
       this._models = [];
       // add the models
-      this._models.push(new inspector.objectFinder.models.AllObjectsByHashModel());      
+      this._models.push(new inspector.objectFinder.models.AllObjectsByHashModel());
+      this._models.push(new inspector.objectFinder.models.AllObjectsByDbKeyModel());      
       
       // set the default model
       this._currentModel = this._models[0];
@@ -381,10 +385,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * Creates the table including the table model. Also register the 
      * handler which handles the cahnge of the selection of the tabel.
      */
-    _createMainElement: function() {
-      // create data models
-      this._createDataModels();
-      
+    _createMainElement: function() {      
       // initialize the table model
       this._tableModel = new qx.ui.table.model.Simple();
       this._setTableHeader();
@@ -441,10 +442,65 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * Adds the buttons and the search textfield to the toolbar.
      * Also register the handlers for the search field and the buttons.
      */
-    _addToolbarButtons: function() {
+    _addToolbarButtons: function() {      
       // tell the toolbar to senter ist children
       this._toolbar.setVerticalChildrenAlign("middle");
-            
+      
+      // create the menu
+      this._menu = new qx.ui.menu.Menu();
+      this._menu.addToDocument(); 
+      
+      // create an array for all view buttons
+      var viewButtons = [];      
+      // go threw all data models      
+      for (var i = 0; i < this._models.length; i++) {
+        // create a temp button for the current model
+        var viewButton = new qx.ui.menu.RadioButton(this._models[i].getMenuName());
+        // add it to the buttons array
+        viewButtons.push(viewButton);  
+        // save the current model for further processing 
+        viewButton.setUserData("model", this._models[i]);
+        
+        // add an event listener 
+        viewButton.addEventListener("execute", function (e) {
+          // if the radiobutton has been checked
+          if (e.getCurrentTarget().getChecked()) {            
+            // save the new model as curent model
+            this._currentModel = e.getCurrentTarget().getUserData("model");
+            // change the selection and model and header of the table
+            this._setTableSelectionEnabled();
+            this._setTableHeader();       
+            // reload the table
+            this.reload();
+          }
+        }, this);
+        
+        // add the button to the menu
+        this._menu.add(viewButton);    
+        
+        // check the first button
+        if (i == 0) {
+          viewButton.setChecked(true);
+        }    
+      }
+      
+      // radio manager for the view buttons      
+      new qx.ui.selection.RadioManager(null, viewButtons);
+      
+      // add the menu button
+      var menuButton = new qx.ui.toolbar.MenuButton("View", this._menu, qx.io.Alias.getInstance().resolve("inspector/image/menuarrow.png"));
+      menuButton.setIconPosition("right");
+      this._toolbar.add(menuButton);
+    
+      // add a seperator
+      this._toolbar.add(new qx.ui.toolbar.Separator());    
+    
+      // add a click listener so that the menu is always on front of the property editor window
+      menuButton.addEventListener("click", function() {
+        // move the menu in front
+        this._menu.setZIndex(this.getZIndex() + 1);
+      }, this);
+      
       // create and add the reload button
       this._reloadButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/reload.png"));
       this._toolbar.add(this._reloadButton);
