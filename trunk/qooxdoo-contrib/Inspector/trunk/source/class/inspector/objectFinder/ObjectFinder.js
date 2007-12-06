@@ -249,7 +249,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
     /**
      * Sets the given data in the table model and reordes 
      * it like the data was orderd.
-     * @param data {Array} A list of objects created by {@link inspector.objectFinder.ObjectFinder#_getData}
+     * @param data {Array} A list of objects
      */
     _setData: function(data) {
       // set the data in the model
@@ -286,40 +286,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       window.clearTimeout(this._reloadTimer);
     },
        
-    
-    /**
-     * This function creates the data for the objects summary. 
-     * @return {Array} A list containing key, data pairs as array.
-     *    0 - classname of the object
-     *    1 - the count of the objects int the document
-     */
-    _getObjectsCountArray: function() {
-      // create a temp data objects
-      var tempData = {};
-      // get all objects form the object db
-      var objects = this._getData();
-      // go threw all objects, count them and put the count into a hash 
-      for (var key in objects) {
-        // if the class has not been seen jet
-        if (tempData[objects[key][1]] == undefined) {
-          // create a entry for the class
-          tempData[objects[key][1]] = 0;
-        }
-        // add one ocurance for the class
-        tempData[objects[key][1]] = tempData[objects[key][1]] + 1;                                        
-      }
-      // create the data array
-      var data = [];
-      // go threw all values of the hash and put them into the array
-      for (var key in tempData) {
-        data.push([key, tempData[key]]);
-      }
-      // sort the data that the object with the hights count is on top
-      data.sort(function(a, b) {return b[1] - a[1]});        
-      // return the data
-      return data;
-    },
-       
        
     /**
      * Creates all data models and sets the default model.
@@ -329,7 +295,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._models = [];
       // add the models
       this._models.push(new inspector.objectFinder.models.AllObjectsByHashModel());
-      this._models.push(new inspector.objectFinder.models.AllObjectsByDbKeyModel());      
+      this._models.push(new inspector.objectFinder.models.AllObjectsByDbKeyModel());
+      this._models.push(new inspector.objectFinder.models.ObjectsByCountModel());
       
       // set the default model
       this._currentModel = this._models[0];
@@ -529,7 +496,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
 
       // add a seperator
       this._toolbar.add(new qx.ui.toolbar.Separator());
-
+/*
       // add the objects summary button
       var objectsButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/objectsummary.png"));
       this._toolbar.add(objectsButton);
@@ -562,6 +529,10 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
         this._popup.bringToFront();        
       }, this);
       
+			*/
+			
+			
+			
       // pollution button
       var pollutionButton = new qx.ui.toolbar.Button(null, qx.io.Alias.getInstance().resolve("inspector/image/icons/pollution.png"));
       this._toolbar.add(pollutionButton);
