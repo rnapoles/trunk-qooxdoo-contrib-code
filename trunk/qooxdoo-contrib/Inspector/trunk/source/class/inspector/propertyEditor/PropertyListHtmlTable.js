@@ -30,7 +30,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     // call the constructor of the superclass
     this.base(arguments, controller);
     // create and add a new label
-    this._htmlTable = new qx.ui.basic.Label(); 
+    this._htmlTable = new qx.ui.embed.HtmlEmbed(); 
     this.add(this._htmlTable);
     
     // override the padding
@@ -140,10 +140,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       }
       
       // clear the former text
-      this._htmlTable.setText("");
+      this._htmlTable.setHtml("");
       
       // end the table
-      this._htmlTable.setText("</table>" + this._htmlTable.getText());
+      this._htmlTable.setHtml("</table>" + this._htmlTable.getHtml());
       // create a variable to store the bacground color for the properties
       var clazz;
       // go backwords threw the properties array
@@ -180,7 +180,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
                 properties[i][key].check == "Color" && qxObject[setterName] != undefined) {
               
               // write the key and value to the view
-              this._htmlTable.setText("<tr class='" + clazz + "'>" + 
+              this._htmlTable.setHtml("<tr class='" + clazz + "'>" + 
                          "<td class='ins_property_editor_html_td'>" + key + ": </td>" + 
                          "<td class='ins_property_editor_html_td_link' onclick='" + 
                            
@@ -198,8 +198,8 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
                            "var formerOnclick = this.onclick;" + 
                            "this.onclick = \"\";" +
                            // select the text in the textbox
-                           "box.select();" + 
                            "box.focus();" +
+                           "box.select();" + 
                            // store the this reference
                            "var self = this;" +
                            "box.onkeypress = function(e) {" +
@@ -224,22 +224,22 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
                            "  }" +   
                            "}" + 
                             
-                         "'>" + value + "</td></tr>" + this._htmlTable.getText());
+                         "'>" + value + "</td></tr>" + this._htmlTable.getHtml());
             } else {
               // write the key and value to the view
-              this._htmlTable.setText("<tr class='" + clazz + "'>" + 
+              this._htmlTable.setHtml("<tr class='" + clazz + "'>" + 
                          "<td class='ins_property_editor_html_td'>" + key + ": </td>" + 
-                         "<td class='ins_property_editor_html_td'>" + value + "</td></tr>" + this._htmlTable.getText());              
+                         "<td class='ins_property_editor_html_td'>" + value + "</td></tr>" + this._htmlTable.getHtml());              
             }
           }                
         }        
         // add the classname to the view
-        this._htmlTable.setText("<tr class='ins_property_editor_html_tr_classname'>" + 
+        this._htmlTable.setHtml("<tr class='ins_property_editor_html_tr_classname'>" + 
                       "<td colspan='2' class='ins_property_editor_html_td_classname'>" + groupNames[i] + "</td>" + 
-                      "</tr>" + this._htmlTable.getText()); 
+                      "</tr>" + this._htmlTable.getHtml()); 
       }     
       // beginn the table for the properties
-      this._htmlTable.setText("<table class='ins_property_editor_html_table'>" + this._htmlTable.getText());        
+      this._htmlTable.setHtml("<table class='ins_property_editor_html_table'>" + this._htmlTable.getHtml());        
     }
   },
   
