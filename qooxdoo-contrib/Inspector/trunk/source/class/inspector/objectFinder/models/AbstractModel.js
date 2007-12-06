@@ -17,9 +17,10 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
+qx.Class.define("inspector.objectFinder.models.AbstractModel", {
   
-  extend: inspector.objectFinder.models.AbstractModel,
+  extend : qx.core.Object,  
+  implement : inspector.objectFinder.IModel, 
     
   /*
   *****************************************************************************
@@ -48,32 +49,13 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      *                          dbKey : A list of the corresponding dbKeys
      * @param filter {String | RegExp} The term to search for in the data.
      * @return {Array} A filterd and cleaned list objects containing
-     *      0     - the hashode of the object
+     *      0     - the amount of the object
      *      1     - the classname of the object
      *      dbKey - the key in the objects db
      */
     dressUpData: function(clearData, filter) {
-      // create a data array
-      var data = [];
-      // get all objects form the object db
-      var objects = clearData.object;
-      var dbKeys = clearData.dbKey;
-      
-      //  go threw all objects
-      for (var key in objects) {
-        // IE Bug: only take the qooxdoo objects and not the added functions
-        if (objects[key] instanceof qx.core.Object) {
-          // add the object to the data array
-          data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});                    
-        }
-      }
-            
-      // apply a filfer if needed
-      if (filter != null) {
-        return this._filter(data, filter);
-      }
-      // return the data
-      return data;
+      // throw an exception if the method is called on the abstract class
+      throw new Error("Abstract method call (getColumnNames) in 'AbstracModel'!");
     },
     
     
@@ -82,7 +64,8 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      * @return {Array} An Array containing Strings as names.
      */
     getColumnNames: function() {
-      return ["Hash", "Classname"];
+      // throw an exception if the method is called on the abstract class
+      throw new Error("Abstract method call (getColumnNames) in 'AbstracModel'!");
     },
     
     
@@ -92,7 +75,8 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      * @return {boolean} true, if the selection should be on
      */
     getSelectable: function() {
-      return true;
+      // throw an exception if the method is called on the abstract class
+      throw new Error("Abstract method call (getSelectable) in 'AbstracModel'!");
     },
     
     
@@ -102,7 +86,42 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      * @return {String} The name of the data model.
      */
     getMenuName: function() {
-      return "by Hash";
+      // throw an exception if the method is called on the abstract class
+      throw new Error("Abstract method call (getMenuName) in 'AbstracModel'!");
+    },
+    
+    
+    /*
+    *********************************
+       PROTECTED
+    *********************************
+    */
+    /**
+     * Common method used to filter the data.
+     * @param data {Object} the data to filter.
+     * @param filter {String | RegExp} Filter pattern.
+     */
+    _filter: function(data, filter) {
+      // create a new temporary array to store the filterd data
+      var newData = [];
+      // try to search with a RegExp object
+      try {
+        // create a RegExp object to perform the search
+        var regExp = new RegExp(filter);
+        // go threw all objects
+        for (var i = 0; i < data.length; i++) {
+          // if the search text is part of the classname or hash value
+          if (regExp.test(data[i][1]) || regExp.test(data[i][0])) {
+            // add the object to the filterd data
+            newData.push(data[i]);
+          }          
+        } 
+      } catch (e) {
+        // alert the user it the search string was incorrect
+        alert(e);
+      }
+      // return the filterd data
+      return newData;
     }
   }
 });

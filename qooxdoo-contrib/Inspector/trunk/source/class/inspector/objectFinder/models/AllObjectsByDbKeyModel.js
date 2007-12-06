@@ -19,8 +19,7 @@
 
 qx.Class.define("inspector.objectFinder.models.AllObjectsByDbKeyModel", {
   
-  extend : qx.core.Object,  
-  implement : inspector.objectFinder.IModel, 
+  extend: inspector.objectFinder.models.AbstractModel,  
     
   /*
   *****************************************************************************
@@ -37,15 +36,13 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByDbKeyModel", {
      MEMBERS
   *****************************************************************************
   */
-  members : {		
+  members : {    
     /*
     *********************************
        IMODEL IMPLEMENTATIONS
     *********************************
     */  
     /**
-     * Dresses up the given data which should be an extract of the objects db
-     * without the objects containing to the inspector. 
      * @param clearData {object} A Object containing two elements
      *                          object: A list of Objects
      *                          dbKey : A list of the corresponding dbKeys
@@ -73,26 +70,7 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByDbKeyModel", {
             
       // apply a filfer if needed
       if (filter != null) {
-        // create a new temporary array to store the filterd data
-        var newData = [];
-        // try to search with a RegExp object
-        try {
-          // create a RegExp object to perform the search
-          var regExp = new RegExp(filter);
-          // go threw all objects
-          for (var i = 0; i < data.length; i++) {
-            // if the search text is part of the classname or hash value
-            if (regExp.test(data[i][1]) || regExp.test(data[i][0])) {
-              // add the object to the filterd data
-              newData.push(data[i]);
-            }          
-          } 
-        } catch (e) {
-          // alert the user it the search string was incorrect
-          alert(e);
-        }
-        // set the filterd data
-        data = newData;
+        return this._filter(data, filter);
       }
       // return the data
       return data;
@@ -108,11 +86,11 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByDbKeyModel", {
     },
     
     
-		/**
-		 * Tells the ObjectFinder if the columns of the table match exactly one object
-		 * so that they can be selected.
-		 * @return {boolean} true, if the selection should be on
-		 */
+    /**
+     * Tells the ObjectFinder if the columns of the table match exactly one object
+     * so that they can be selected.
+     * @return {boolean} true, if the selection should be on
+     */
     getSelectable: function() {
       return true;
     },

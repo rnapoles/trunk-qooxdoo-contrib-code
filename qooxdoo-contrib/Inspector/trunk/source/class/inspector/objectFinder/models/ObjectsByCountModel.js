@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
+qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
   
   extend: inspector.objectFinder.models.AbstractModel,
     
@@ -48,26 +48,33 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      *                          dbKey : A list of the corresponding dbKeys
      * @param filter {String | RegExp} The term to search for in the data.
      * @return {Array} A filterd and cleaned list objects containing
-     *      0     - the hashode of the object
+     *      0     - the amount of the object
      *      1     - the classname of the object
      *      dbKey - the key in the objects db
      */
     dressUpData: function(clearData, filter) {
-      // create a data array
-      var data = [];
-      // get all objects form the object db
+      // create a temp data objects
+      var tempData = {};
+      // get the objects out of the data
       var objects = clearData.object;
-      var dbKeys = clearData.dbKey;
-      
-      //  go threw all objects
+
+      // go threw all objects, count them and put the count into a hash 
       for (var key in objects) {
-        // IE Bug: only take the qooxdoo objects and not the added functions
-        if (objects[key] instanceof qx.core.Object) {
-          // add the object to the data array
-          data.push({0:objects[key].toHashCode(), 1:objects[key].classname, dbKey:dbKeys[key]});                    
+        // if the class has not been seen jet
+        if (tempData[objects[key].classname] == undefined) {
+          // create a entry for the class
+          tempData[objects[key].classname] = 0;
         }
+        // add one ocurance for the class
+        tempData[objects[key].classname] = tempData[objects[key].classname] + 1;                                        
       }
-            
+      // create the data array
+      var data = [];
+      // go threw all values of the hash and put them into the array
+      for (var key in tempData) {
+        data.push([tempData[key], key]);
+      }
+     
       // apply a filfer if needed
       if (filter != null) {
         return this._filter(data, filter);
@@ -82,7 +89,7 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      * @return {Array} An Array containing Strings as names.
      */
     getColumnNames: function() {
-      return ["Hash", "Classname"];
+      return ["Count", "Classname"];
     },
     
     
@@ -92,7 +99,7 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      * @return {boolean} true, if the selection should be on
      */
     getSelectable: function() {
-      return true;
+      return false;
     },
     
     
@@ -102,7 +109,7 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
      * @return {String} The name of the data model.
      */
     getMenuName: function() {
-      return "by Hash";
+      return "by count";
     }
   }
 });
