@@ -23,18 +23,8 @@
 # SETTINGS
 ################################################################################
 
-#
-# Path to the folder of your qooxdoo distribution.
-# Can either be
-# a) a relative path to the location of this Makefile (preferred) or
-# b) an absolute path starting at the root of your file system
-# Example: If you put the skeleton folder next to the qooxdoo SDK folder,
-# you can use the following relative path:
-# QOOXDOO_PATH = ../../qooxdoo-0.7-sdk
-# Please note that Windows users should always use relative paths.
-# It should end with the last directory. Please omit a trailing slash.
-#
-QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.2-sdk
+include Makefile.local
+
 
 #
 # Namespace of your application e.g. custom
@@ -48,8 +38,6 @@ APPLICATION_NAMESPACE = custom
 #
 APPLICATION_FILES = index.html
 
-APPLICATION_INCLUDES = ../../Inspector/trunk
-
 APPLICATION_COMPLETE_SOURCE = true
 APPLICATION_RESOURCE_FILTER = true
 
@@ -59,15 +47,6 @@ APPLICATION_RESOURCE_FILTER = true
 # $(QOOXDOO_PATH)/frontend/framework/tool/make/application.mk
 # Add any of those variables for your custom configuration here:
 #-------------------------------------------------------------------------------
-
-# Path to your Selenium RC installation
-#SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
-SELENIUM_RC_PATH = ../../../../../Programme/selenium-remote-control-0.9.2
-
-# Path to your Mozilla Rhino installation 
-#MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
-MOZILLA_RHINO_PATH = ../../../../../Programme/rhino1_6R7
-
 
 ################################################################################
 # INTERNALS (PLEASE DO NOT CHANGE)
