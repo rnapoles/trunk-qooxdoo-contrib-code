@@ -24,7 +24,7 @@
 ************************************************************************ */
 
 qx.Class.define("inspector.Inspector", {
-  
+
   type : "singleton",
   extend: qx.core.Object,
 
@@ -33,7 +33,12 @@ qx.Class.define("inspector.Inspector", {
      STATICS
   *****************************************************************************
   */
-  statics: {
+  statics:
+  {
+    init : function() {
+      inspector.Inspector.getInstance();
+    },
+
     // Tooltip texts
     RELOAD_BUTTON_TOOLTIP_TEXT: "Reload the window.",
     AUTO_RELOAD_BUTTON_TOOLTIP_TEXT: "Update the window automaticly.",
@@ -52,15 +57,15 @@ qx.Class.define("inspector.Inspector", {
     SET_BUTTON_TOOLTIP_TEXT: "<b style='color:red;'>BETA!</b> Generate a settings map for the current selected object.",
     APPENDER_BUTTON_TOOLTIP_TEXT: "Show all log messages in the console.",
     HELP_BUTTON_TOOLTIP_TEXT: "Prints out a help message to the console.",
-    
+
     CONSOLE_CAPTION_TITLE: "Console",
     OBJECT_CAPTION_TITLE: "Objects",
     WIDGET_CAPTION_TITLE: "Widgets",
     PROPERTY_CAPTION_TITLE: "Properties",
     SETTINGS_CAPTION_TITLE: "Settings",
-    
+
     API_VIEWER_URI: "http://demo.qooxdoo.org/current/apiviewer/",
-    
+
     DISPOSE_QUESTION: "Do you really want to dispose the application?"
   },
 
@@ -73,18 +78,10 @@ qx.Class.define("inspector.Inspector", {
   construct : function() {
     // Define alias for inspector resource path
     qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
-    // include the CSS file used for the source view
-    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/sourceview.css"));
-    // include the css used for the dom view
-    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/domview.css"));
-    // include the css used for the console view
-    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/consoleview.css"));
-    // include the css used for the html table of the property editor
-    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/propertylisthtml.css"));
-    
+
     // Create the queue for the inspector windows
     this._windowQueue = [];
-    
+
     // start the exclusion stategie
     this.beginExclusion();
     // create the inspector object
@@ -96,11 +93,11 @@ qx.Class.define("inspector.Inspector", {
     // create the opener toolbar
     this._createOpenerToolBar();
     // end the exclusion startegie
-    this.endExclusion();     
-    
+    this.endExclusion();
+
     // initialize the this reference to the selected widget
     this.setWidget(qx.ui.core.ClientDocument.getInstance());
-    
+
     // react on the theme change
     qx.theme.manager.Meta.getInstance().addEventListener("changeTheme", function() {
       // if a property editor exists
@@ -108,29 +105,29 @@ qx.Class.define("inspector.Inspector", {
         // tell the property editor to recalculate if everything else is done
         var self = this;
         window.setTimeout(function() {
-          self._propertyEditor.recalculateLayout();          
+          self._propertyEditor.recalculateLayout();
         }, 0);
-      }      
+      }
     }, this);
-    
+
     // initialize the cookies
     this.__initializeCookies();
-    
+
     // reopen the windows if they were former opened
     this.__reopenWindows();
-    
+
     //////////////////////////
     // PATCH FOR 0.7.1
     if (qx.core.Object.prototype.getDbKey == undefined) {
       this.debug("Patch of qx.core.Object: add getDbKey()");
       qx.core.Object.prototype.getDbKey = function() {
         return this.__dbKey;
-      }      
+      }
     }
     //////////////////////////
-    
+
     //////////////////////////
-    // PATCH FOR A QOOXDOO BUG IN THE LOGGER    
+    // PATCH FOR A QOOXDOO BUG IN THE LOGGER
     this.debug("qx.log.Logger.removeAppender patched");
     qx.log.Logger.prototype.removeAppender = function(appender) {
       if (this._appenderArr != null) {
@@ -138,13 +135,13 @@ qx.Class.define("inspector.Inspector", {
           if(appender == this._appenderArr[i]) {
             this._appenderArr.splice(i, 1);
           }
-        }   
+        }
       }
     }
     //////////////////////////
-    
+
   },
-  
+
 
   /*
   *****************************************************************************
@@ -162,41 +159,41 @@ qx.Class.define("inspector.Inspector", {
     _objectFinder: null,
     _propertyEditor: null,
     _console: null,
-    _menu: null, 
-    
+    _menu: null,
+
     // excludes
     _excludes: [],
     _excludeBeginIndex: -1,
-    
+
     // startup timer reference
     _startupTimer: null,
-    
+
     // objects used to frame the selected widget
     _highlightBorder: null,
     _highlightOverlay: null,
     _highlightTimer: null,
     _highlightEnabled: false,
-    
+
     // overlay used to select a widget
     _catchClickLayer: null,
-    
+
     // the current widget
     _widget: null,
 
     // the native window for the api viewer
     _apiWindow: null,
-   
+
     // the qeueue of the inspector windows
     _windowQueue: null,
-     
- 
+
+
    /*
     *********************************
         FOCUS HANDLING FOR THE INSPECTOR WINDOWS
     *********************************
-    */     
+    */
    /**
-    * Registers the given windows as a inspector window. This 
+    * Registers the given windows as a inspector window. This
     * will put the given window always at a higher zIndex than 1e6.
     * @param window {qx.ui.window.Window} The window to add.
     * @internal
@@ -209,22 +206,22 @@ qx.Class.define("inspector.Inspector", {
        // tell the manager to that a new window is selected
        this._inspector.windowSelected(this);
      }, window);
-     // add a changeZIndex listener to kepp the windows up to date even if a non inspector window is selected 
+     // add a changeZIndex listener to kepp the windows up to date even if a non inspector window is selected
      window.addEventListener("changeZIndex", function(e) {
        // prevent recursive calls
        if (!this._inChange) {
          // set the zIndex to the inspector classes
-         this._inspector.windowSelected();        
+         this._inspector.windowSelected();
        }
-     }, window);     
-   },  
-   
-   
+     }, window);
+   },
+
+
    /**
     * Set the zIndex in all registered Windows corresponding to ther last selections.
     * The given window will get the highest zIndex.
     * @param window {qx.ui.window.Window} The window with the highest zIndex.
-    * @internal 
+    * @internal
     */
    windowSelected: function(window) {
      // go threw all registered windows
@@ -235,13 +232,13 @@ qx.Class.define("inspector.Inspector", {
          this._windowQueue.splice(i, 1);
        }
      }
-     // if a window is given  
+     // if a window is given
      if (window != null) {
        // push the window to the first place
        this._windowQueue.unshift(window);
      }
-     
-     // go threw all windows again         
+
+     // go threw all windows again
      for (var i = 0; i < this._windowQueue.length; i++) {
        // mark that the zIndex will be changed
        this._windowQueue[i].setInChange(true);
@@ -251,8 +248,8 @@ qx.Class.define("inspector.Inspector", {
        this._windowQueue[i].setInChange(false);
      }
    },
-     
-     
+
+
    /*
     *********************************
         RESET PERSPECTIVE
@@ -267,7 +264,7 @@ qx.Class.define("inspector.Inspector", {
         this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._console.setHeight(180);
         this._console.setLeft(0);
-        this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - 180);       
+        this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - 180);
       }
       // reset the object finder, if existant
       if (this._objectFinder) {
@@ -279,9 +276,9 @@ qx.Class.define("inspector.Inspector", {
       // reset the widget finder, if existant
       if (this._widgetFinder) {
         this._widgetFinder.setWidth(350);
-        this._widgetFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
+        this._widgetFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
         this._widgetFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
-        this._widgetFinder.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
+        this._widgetFinder.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
       }
       // reset the propery editor, if existant
       if (this._propertyEditor) {
@@ -289,28 +286,28 @@ qx.Class.define("inspector.Inspector", {
         this._propertyEditor.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
         this._propertyEditor.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._propertyEditor.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
-      }    
+      }
     },
-    
+
    /*
     *********************************
         API STUFF
     *********************************
-    */    
+    */
     /**
      * Opens an native window showing the API documentation. If a classname is
-     * given, the API documentation to the given class will be shown. If 
+     * given, the API documentation to the given class will be shown. If
      * additionally a property name is given, the API to that property
      * will be shown.
      * @param classname {String} The classname of the class.
-     * @param propertyname {String} The name of the property.  
+     * @param propertyname {String} The name of the property.
      */
     openApiWindow: function(classname, propertyname) {
         // if the API window is not created
         if (this._apiWindow == null) {
           // initialize the api window
           this._apiWindow = new qx.client.NativeWindow("", "qooxdoo API viewer");
-        }        
+        }
         // try to get the dimensions of the window
         try {
           // set the dimension of the window from the cookie
@@ -332,24 +329,24 @@ qx.Class.define("inspector.Inspector", {
           urlString = urlString + "#" + classname;
           // if a property name is given
           if (propertyname != null) {
-            urlString = urlString + "~" + propertyname;            
-          }          
+            urlString = urlString + "~" + propertyname;
+          }
         }
-      
+
         // set the uri in the window
         this._apiWindow.setUrl(urlString);
-        
+
         // if the window is not open
         if (!this._apiWindow.isOpen()) {
           // open the window
-          this._apiWindow.open(); 
+          this._apiWindow.open();
         } else {
           // otherwise just focus it
-          this._apiWindow.focus();          
-        }      
+          this._apiWindow.focus();
+        }
     },
-    
-    
+
+
    /*
     *********************************
         HIGHLIGHT STUFF
@@ -359,23 +356,23 @@ qx.Class.define("inspector.Inspector", {
      * Enabled or diabled the highlight function.
      * @param on {Boolean} The bool value wether the highlight function should be on or of.
      */
-    highlightCurrentWidget: function(on) { 
+    highlightCurrentWidget: function(on) {
       // save the current state of the checkbox button
-      this._highlightEnabled = on;       
+      this._highlightEnabled = on;
       // if highlight is on
       if (this._highlightEnabled) {
-        // if something is selected                 
-        if (this._widget != null) {          
-          // highlight the current selected      
-          this._highlight(this._widget.getElement());    
-        }        
+        // if something is selected
+        if (this._widget != null) {
+          // highlight the current selected
+          this._highlight(this._widget.getElement());
+        }
       } else {
         // start the timer that removes the highligt border
-        this._clearHighlight(0);        
+        this._clearHighlight(0);
       }
-    },    
-    
-    
+    },
+
+
     /**
      * Highlight the given widget for a second.
      * @param widget {qx.ui.core.Widget} The widget to highlight.
@@ -385,36 +382,36 @@ qx.Class.define("inspector.Inspector", {
       this._highlight(widget.getElement());
       // set the timer to clear the highlight border after 1 sec
       this._clearHighlight(1000);
-    },    
-    
-    
+    },
+
+
     /**
      * Draws a red border aroud the given html element.
      * @param element {Element} The element to highlight.
      */
-    _highlight: function(element) {       
+    _highlight: function(element) {
       // do not highlight if the element is not shown on the screen
       if (element == null) {
         this._highlightOverlay.hide();
         return;
       }
-          
+
       // get the coordinates
       var coordinates = this._getCoordinates(element);
       var left = coordinates.left - 2;
       var right = coordinates.right + 2;
       var top = coordinates.top - 2;
       var bottom = coordinates.bottom + 2;
-      
+
       // set the values to the selected object
       this._highlightOverlay.setLeft(left);
       this._highlightOverlay.setTop(top);
       this._highlightOverlay.setWidth(right - left);
       this._highlightOverlay.setHeight(bottom - top);
       this._highlightOverlay.show();
-    },     
-    
-    
+    },
+
+
     /**
      * Starts a timer with the given time that removes the highlight border.
      * If no time is given, the border will be removed immediately.
@@ -424,30 +421,30 @@ qx.Class.define("inspector.Inspector", {
       // check that the parameter is a integer
       if (time < 0) {
         time = 0;
-      }      
+      }
       // clear the timeout if a timeout has already been started
       if (this._highlightTimer != null) {
         window.clearTimeout(this._highlightTimer);
       }
-      
+
       // start the timeout which hides the highlight border
       var self = this;
       this._highlightTimer = window.setTimeout(function() {
         self._highlightTimer = null;
         // if the highlight button is enabled
         if (self._highlightEnabled) {
-          // if something is selected                 
+          // if something is selected
           if (self._widget != null) {
-            // highlight the current selected      
-            self._highlight(self._widget.getElement());       
+            // highlight the current selected
+            self._highlight(self._widget.getElement());
           }
         } else {
           self._highlightOverlay.hide();
-        }        
-      }, time);        
+        }
+      }, time);
     },
 
-    
+
     /**
      * Returns the coordinates of the given element as a map.
      * @param element {Element} The element of which the coordinates are needed.
@@ -464,20 +461,20 @@ qx.Class.define("inspector.Inspector", {
       returnObject.top = qx.html.Location.getPageBoxTop(element);
       returnObject.bottom = qx.html.Location.getPageBoxBottom(element);
       return returnObject;
-    },    
-      
-    
+    },
+
+
    /*
     *********************************
         FIND MODE STUFF
     *********************************
-    */          
+    */
     /**
      * Function that enabled the 'find mode'.
      */
-    startFindMode: function() {      
+    startFindMode: function() {
       // show the catchClickLayer
-      this._catchClickLayer.show();      
+      this._catchClickLayer.show();
     },
 
 
@@ -488,20 +485,20 @@ qx.Class.define("inspector.Inspector", {
       // hide the catchClickLayer and the highlightAtom
       this._catchClickLayer.hide();
       this._highlightOverlay.hide();
-      
+
       // highlight the currentlys selected widget again
       if (this._highlightEnabled) {
-        // if something is selected                 
+        // if something is selected
         if (this._widget != null) {
-          // highlight the current selected      
-          this._highlight(this._widget.getElement());    
+          // highlight the current selected
+          this._highlight(this._widget.getElement());
         }
       }
     },
 
-    
+
     /**
-     * This function returns the deepest matching child widget of the given 
+     * This function returns the deepest matching child widget of the given
      * widget at the point x and y.
      * @param widget {qx.ui.core.Widget} The widget to search in for matching child widgets.
      * @param x {Number} The x position to search a widget.
@@ -509,17 +506,17 @@ qx.Class.define("inspector.Inspector", {
      * @return {qx.ui.core.Widget} The found widget.
      */
     _searchWidget: function(widget, x, y) {
-      var returnWidget = widget;      
-      // visit all children     
+      var returnWidget = widget;
+      // visit all children
       for (var i = 0; i < widget.getChildrenLength(); i++) {
         // get the current child
-        var childWidget = widget.getChildren()[i];         
+        var childWidget = widget.getChildren()[i];
         // ignore the catchClickLayer and highlightOverlay atom
         if (childWidget == this._catchClickLayer || childWidget == this._highlightOverlay) {
           continue;
-        }     
+        }
         // get the coordinates of the current widget
-        var coordinates = this._getCoordinates(childWidget.getElement());        
+        var coordinates = this._getCoordinates(childWidget.getElement());
         // if the element is visible
         if (coordinates != null) {
           // if the element is under the mouse position
@@ -527,12 +524,12 @@ qx.Class.define("inspector.Inspector", {
               coordinates.bottom >= y && coordinates.top <= y) {
             returnWidget = this._searchWidget(childWidget, x, y);
           }
-        }                
-      }  
-      return returnWidget;    
-    },    
-    
-    
+        }
+      }
+      return returnWidget;
+    },
+
+
    /*
     *********************************
         WIDGET STUFF
@@ -545,15 +542,15 @@ qx.Class.define("inspector.Inspector", {
     getWidget: function() {
       return this._widget;
     },
- 
-    
+
+
     /**
      * Set the given widget in all components of the inspector.
-     * @param widget {qx.core.Object} Any qooxdoo object 
-     * @param ref {inspector.AbstractWindow} A reference to the component which sets the widget. 
+     * @param widget {qx.core.Object} Any qooxdoo object
+     * @param ref {inspector.AbstractWindow} A reference to the component which sets the widget.
      * If the widget is not set from a component of the inspector, the value can be null.
      */
-    setWidget: function(widget, ref) {    
+    setWidget: function(widget, ref) {
       // set the widget in the inspector
       this._widget = widget;
 
@@ -565,7 +562,7 @@ qx.Class.define("inspector.Inspector", {
       if (this._objectFinder != null) {
         if (ref != this._objectFinder) {
           if (widget.toHashCode() != this._objectFinder.getSelectedWidgetHash()) {
-            this._objectFinder.selectObject(widget);                        
+            this._objectFinder.selectObject(widget);
           }
         }
       }
@@ -581,24 +578,24 @@ qx.Class.define("inspector.Inspector", {
       if (this._propertyEditor != null) {
         // tell the property editor that a new widget has been selected
         if (this._propertyEditor.getDisplay() && this._propertyEditor.getVisibility()) {
-          this._propertyEditor.setWidget(widget);        
+          this._propertyEditor.setWidget(widget);
         }
-      } 
+      }
       // if it is realy a widget and not another qx object
       if (widget instanceof qx.ui.core.Widget) {
         // highlight the selected widget
         this._highlight(widget.getElement());
-        this._clearHighlight(1000);              
+        this._clearHighlight(1000);
       }
-    },   
-    
-    
+    },
+
+
     /**
      * Sets the current widget by the reference in the objects db.
      * @internal
      * @param dbKey {Integer} The key in the objects db.
-     * @param refName {String} The Name of the reference class either 
-     *    "console", "objectFinder", "widgetFinder", "propertyEditor"  
+     * @param refName {String} The Name of the reference class either
+     *    "console", "objectFinder", "widgetFinder", "propertyEditor"
      */
     setWidgetByDbKey: function(dbKey, refName) {
       // get the real reference
@@ -621,12 +618,12 @@ qx.Class.define("inspector.Inspector", {
       // set the widget
       this.setWidget(qx.core.Object.getDb()[dbKey], ref);
     },
-  
-  
+
+
   /**
    * Tells the console to show the object assosiated with the id in the dom view.
    * @internal
-   * @param id {Number} The given id. 
+   * @param id {Number} The given id.
    */
   inspectObjectByInternalId: function(id) {
     // if the console existst
@@ -635,10 +632,10 @@ qx.Class.define("inspector.Inspector", {
       this._console.inspectObjectByInternalId(id);
     }
   },
-   
-   
+
+
     /**
-     * Selects the object represented by the internal index an the value of 
+     * Selects the object represented by the internal index an the value of
      * this objects named key.
      * @internal
      * @param index {Number} The index in the internal array structure.
@@ -648,12 +645,12 @@ qx.Class.define("inspector.Inspector", {
     if (this._console != null) {
         this._console.inspectObjectByDomSelecet(index, key);
     }
-  },   
-  
-  
+  },
+
+
   /**
    * @internal
-   * @param key {String} The name of the property in the current selected widget. 
+   * @param key {String} The name of the property in the current selected widget.
    * @param value {String} the value to set the property.
    * @param type {String} The type of the value.
    */
@@ -664,7 +661,7 @@ qx.Class.define("inspector.Inspector", {
       try {
         // get the name of the setter
         var setterName = "set" + qx.lang.String.toFirstUp(key);
-        // stor the converted value in here        
+        // stor the converted value in here
         var trueValue;
         // if it is a number of something
         if (type == "Integer" || type == "Float" || type == "Double" || type == "Number") {
@@ -692,7 +689,7 @@ qx.Class.define("inspector.Inspector", {
           return false;
         }
         // set the new value
-        this._widget[setterName].call(this._widget, trueValue);        
+        this._widget[setterName].call(this._widget, trueValue);
         return true;
       } catch (e) {
         alert(e);
@@ -700,13 +697,13 @@ qx.Class.define("inspector.Inspector", {
       }
     }
   },
-  
-      
+
+
     /*
     *********************************
        COMPONENTS STUFF
     *********************************
-    */      
+    */
     /**
      * Return the components of the application.
      * @internal
@@ -721,7 +718,7 @@ qx.Class.define("inspector.Inspector", {
       // try to fill these arrays
       try {
         if (this._propertyEditor != null) {
-          propertyEditorComponents = this._propertyEditor.getComponents();          
+          propertyEditorComponents = this._propertyEditor.getComponents();
         }
         if (this._widgetFinder != null) {
           widgetFinderComponents = this._widgetFinder.getComponents();
@@ -737,19 +734,19 @@ qx.Class.define("inspector.Inspector", {
         // get the menu components
         var menuComponents = this._menu.getComponents();
         // merge the arrays
-        return propertyEditorComponents.concat(consoleComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects).concat(menuComponents);         
+        return propertyEditorComponents.concat(consoleComponents).concat(widgetFinderComponents).concat(objectFinderComponents).concat(ownObjects).concat(menuComponents);
       } catch (e) {
         // if that doesnt work, return a blank array
         return [];
       }
-    },    
-    
-    
+    },
+
+
     /*
     *********************************
        EXCLUDES
     *********************************
-    */    
+    */
     /**
      * Beginns the exclusions strategy with storing the current index
      * of the object db in an member.
@@ -758,14 +755,14 @@ qx.Class.define("inspector.Inspector", {
     beginExclusion: function() {
       // get the current index of the db and store it
       this._excludeBeginIndex = qx.core.Object.getDb().length;
-    }, 
-    
-    
+    },
+
+
     /**
-     * Ends the exclusion strategy with saving the begin and end 
+     * Ends the exclusion strategy with saving the begin and end
      * index of the object db in an exclusion array. All indices
-     * the created classes between beginn and end are in the 
-     * range of the exclusion.  
+     * the created classes between beginn and end are in the
+     * range of the exclusion.
      * @internal
      */
     endExclusion: function() {
@@ -780,18 +777,18 @@ qx.Class.define("inspector.Inspector", {
       // reset the beginn index
       this._excludeBeginIndex = -1;
     },
-    
-    
+
+
     /**
      * Returns the exclusion array.
-     * 
-     * Structure: The array is an array of objects which contain 
+     *
+     * Structure: The array is an array of objects which contain
      * two values, begin and end.
-     * 
+     *
      * Example: a.getExcludes()[0].end
-     * 
+     *
      * @internal
-     * 
+     *
      * @return {Array} A list of objects containing two values
      *      begin - the beginn of the exclusion index
      *      end   - the end of the exclusion index
@@ -800,12 +797,12 @@ qx.Class.define("inspector.Inspector", {
       return this._excludes;
     },
 
-    
+
     /*
     *********************************
        OPENER
     *********************************
-    */    
+    */
     /**
      * Opens and if necessary creates the widget finder window.
      */
@@ -818,8 +815,8 @@ qx.Class.define("inspector.Inspector", {
       // save that the finder is open
       qx.io.local.CookieApi.set(this._widgetFinder.classname + "#Open", true);
     },
-    
-    
+
+
     /**
      * Opens and if necessary creates the object finder window.
      */
@@ -830,10 +827,10 @@ qx.Class.define("inspector.Inspector", {
       }
       this._objectFinder.open();
       // save that the finder is open
-      qx.io.local.CookieApi.set(this._objectFinder.classname + "#Open", true);      
+      qx.io.local.CookieApi.set(this._objectFinder.classname + "#Open", true);
     },
-  
-  
+
+
     /**
      * Opens and if necessary creates the property editor window.
      */
@@ -841,25 +838,25 @@ qx.Class.define("inspector.Inspector", {
       // create the property editor if not already created
       if (this._propertyEditor == null) {
         this._createPropertyEditor();
-      }     
+      }
       this._propertyEditor.open();
       // set the current widget if the editor is opend
       if (this._widget != null) {
         this._propertyEditor.setWidget(this._widget);
       }
       // save that the editor is open
-      qx.io.local.CookieApi.set(this._propertyEditor.classname + "#Open", true);        
+      qx.io.local.CookieApi.set(this._propertyEditor.classname + "#Open", true);
     },
-    
-    
+
+
     /**
      * Opens and if necessary creates the console window.
      */
     openConsole: function() {
       // create the console if it is not already created
-      if (this._console == null) {        
+      if (this._console == null) {
         this._createConsole();
-      }     
+      }
       // if already a widget is selected
       if (this._widget != null) {
         // also select it in the console
@@ -867,10 +864,10 @@ qx.Class.define("inspector.Inspector", {
       }
       this._console.open();
       // save that the console is open
-      qx.io.local.CookieApi.set(this._console.classname + "#Open", true);        
+      qx.io.local.CookieApi.set(this._console.classname + "#Open", true);
     },
-    
-    
+
+
     /**
      * Returns the state of the console window.
      * @return {Boolean} true, if the console is open.
@@ -893,20 +890,20 @@ qx.Class.define("inspector.Inspector", {
       }
       return false;
     },
-    
-    
+
+
     /**
      * Returns the state of the widget finder window.
      * @return {Boolean} true, if the widget finder is open.
-     */    
+     */
     isWidgetFinderOpen: function() {
       if (this._widgetFinder) {
         return this._widgetFinder.isOpen();
       }
       return false;
     },
-    
-    
+
+
     /**
      * Returns the state of the property editor window.
      * @return {Boolean} true, if the property editor is open.
@@ -917,13 +914,13 @@ qx.Class.define("inspector.Inspector", {
       }
       return false;
     },
-    
-    
+
+
     /*
     *********************************
        HIDER
     *********************************
-    */    
+    */
     /**
      * Hides the widget finder window.
      */
@@ -933,8 +930,8 @@ qx.Class.define("inspector.Inspector", {
         this._widgetFinder.hide();
       }
     },
-    
-    
+
+
     /**
      * Hides the object finder window.
      */
@@ -944,34 +941,34 @@ qx.Class.define("inspector.Inspector", {
         this._objectFinder.hide();
       }
     },
-  
-  
+
+
     /**
      * Hides the property editor window.
      */
     hidePropertyEditor: function() {
       // create the property editor if not already created
-      if (this._propertyEditor != null) {      
+      if (this._propertyEditor != null) {
         this._propertyEditor.hide();
-      }     
+      }
     },
-    
-    
+
+
     /**
      * Hides the console window.
      */
     hideConsole: function() {
       // create the console if it is not already created
-      if (this._console != null) {        
+      if (this._console != null) {
         this._console.hide();
-      }     
+      }
     },
-    
-    
+
+
     /**
      * Signals the menu that one of the components hast been closed.
      * @internal
-     * @param component {inspector.AbstractWindow} The componente which has benn closed 
+     * @param component {inspector.AbstractWindow} The componente which has benn closed
      */
     componentClosed: function(component) {
       if (component == this._console) {
@@ -984,58 +981,58 @@ qx.Class.define("inspector.Inspector", {
         this._menu.resetPropertyButton();
       }
     },
-        
-    
+
+
     /*
     *********************************
        CREATE COMPONENTS FUNCTIONS
     *********************************
-    */    
+    */
     /**
-     * Creates the console component. This includes adding the created 
-     * object ids to the excludes array and setting the default values.  
+     * Creates the console component. This includes adding the created
+     * object ids to the excludes array and setting the default values.
      */
     _createConsole: function() {
       // start the exclusion stategie
-      this.beginExclusion();    
+      this.beginExclusion();
       // create the console
       this._console = new inspector.console.Console(this, inspector.Inspector.CONSOLE_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
-      
+
       // set the windows enabled to avoid disabling by the client document
-      this._console.setEnabled(true);     
+      this._console.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
-      this._console.setTextColor("black");      
+      this._console.setTextColor("black");
     },
-    
-    
+
+
     /**
-     * Creates the object finder component. This includes adding the created 
-     * object ids to the excludes array and setting the default values.  
-     */    
+     * Creates the object finder component. This includes adding the created
+     * object ids to the excludes array and setting the default values.
+     */
     _createObjectFinder: function() {
       // start the exclusion stategie
-      this.beginExclusion();    
+      this.beginExclusion();
       // create the property editor window
       this._objectFinder = new inspector.objectFinder.ObjectFinder(this, inspector.Inspector.OBJECT_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
-  
+
       // set the windows enabled to avoid disabling by the client document
       this._objectFinder.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
       this._objectFinder.setTextColor("black");
     },
-    
-    
+
+
     /**
-     * Creates the widget finder component. This includes adding the created 
-     * object ids to the excludes array and setting the default values.  
-     */    
+     * Creates the widget finder component. This includes adding the created
+     * object ids to the excludes array and setting the default values.
+     */
     _createWidgetFinder: function() {
       // start the exclusion stategie
-      this.beginExclusion();    
+      this.beginExclusion();
       // create the widget finder window
       this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, inspector.Inspector.WIDGET_CAPTION_TITLE);
       // end the exclusion startegie
@@ -1046,27 +1043,27 @@ qx.Class.define("inspector.Inspector", {
       // set the text color to black in case that the text color of the client document will be changed
       this._widgetFinder.setTextColor("black");
     },
-    
-    
+
+
     /**
-     * Creates the property editor component. This includes adding the created 
-     * object ids to the excludes array and setting the default values.  
-     */    
+     * Creates the property editor component. This includes adding the created
+     * object ids to the excludes array and setting the default values.
+     */
     _createPropertyEditor: function() {
       // start the exclusion stategie
-      this.beginExclusion();    
+      this.beginExclusion();
       // create the property editor window
       this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, inspector.Inspector.PROPERTY_CAPTION_TITLE);
       // end the exclusion startegie
       this.endExclusion();
-  
+
       // set the windows enabled to avoid disabling by the client document
       this._propertyEditor.setEnabled(true);
       // set the text color to black in case that the text color of the client document will be changed
       this._propertyEditor.setTextColor("black");
     },
-    
-    
+
+
     /**
      * Creates the toolbar which will hold the inspector menu and
      * the buttons to open the components.
@@ -1074,18 +1071,18 @@ qx.Class.define("inspector.Inspector", {
     _createOpenerToolBar: function() {
       // create and add the menu
       this._menu = new inspector.menu.Menu(this);
-      this._menu.addToDocument();           
+      this._menu.addToDocument();
     },
-    
-    
+
+
     /*
     *********************************
        CREATE FIND MODE AND HIGHLIGHT FUNCTIONS
     *********************************
-    */      
+    */
     /**
      * Create the atom which will be layed over the application to catch
-     * the selections during the find mode. Also register the handlers which 
+     * the selections during the find mode. Also register the handlers which
      * are responsible for handling the mousemoce and click events.
      */
     _createCatchClickLayer: function() {
@@ -1100,7 +1097,7 @@ qx.Class.define("inspector.Inspector", {
       this._catchClickLayer.setZIndex(1e6 - 1);
       this._catchClickLayer.hide();
       this._catchClickLayer.addToDocument();
-      
+
       // register the handler to catch the clicks and select the clicked widget
       this._catchClickLayer.addEventListener("click", function(e) {
         // hide the layer that chatches the click
@@ -1113,9 +1110,9 @@ qx.Class.define("inspector.Inspector", {
         // search the widget at the current position
         var clickedElement = this._searchWidget(qx.ui.core.ClientDocument.getInstance(), xPosition, yPosition);
         // select the widget with the given id in the tree
-        this.setWidget(clickedElement, this);        
+        this.setWidget(clickedElement, this);
       }, this);
-      
+
       // register the mousemove handler
       this._catchClickLayer.addEventListener("mousemove", function(e) {
         // get the curent mouse position
@@ -1124,33 +1121,33 @@ qx.Class.define("inspector.Inspector", {
         // search the widget at the current position
         var element = this._searchWidget(qx.ui.core.ClientDocument.getInstance(), xPosition, yPosition, "");
         // highlight the widget unter the mouse
-        this._highlight(element.getElement());        
-      }, this);      
+        this._highlight(element.getElement());
+      }, this);
     },
-    
-    
+
+
     /**
-     * Create the border and atom needed to draw a red border around 
+     * Create the border and atom needed to draw a red border around
      * the current selected widget.
      */
     _createHighlightStuff: function() {
       // create the border used to highlight the widgets
       this._highlightBorder = new qx.ui.core.Border(2, "solid", "red");
-      
+
       // create a new overlay atom object
       this._highlightOverlay = new qx.ui.basic.Atom();
       this._highlightOverlay.setBorder(this._highlightBorder);
       this._highlightOverlay.setZIndex(1e6 - 2);
       this._highlightOverlay.hide();
-      this._highlightOverlay.addToDocument();     
+      this._highlightOverlay.addToDocument();
     },
-    
-    
+
+
     /*
     *********************************
        INIT COOKIES
     *********************************
-    */    
+    */
     /**
      * Initializes the cookies. In the case a cookie setting is not set,
      * this function sets the cookie to the default value.
@@ -1168,7 +1165,7 @@ qx.Class.define("inspector.Inspector", {
       if (!qx.io.local.CookieApi.get("ApiViewerHeight")) {
         qx.io.local.CookieApi.set("ApiViewerHeight", 600);
       }
-      
+
       // set the default shortcuts if they are not set
       if (!qx.io.local.CookieApi.get("FindShortcut")) {
         qx.io.local.CookieApi.set("FindShortcut", "CTRL+SHIFT+F");
@@ -1178,7 +1175,7 @@ qx.Class.define("inspector.Inspector", {
       }
       if (!qx.io.local.CookieApi.get("HideAllShortcut")) {
         qx.io.local.CookieApi.set("HideAllShortcut", "CTRL+SHIFT+H");
-      }        
+      }
       if (!qx.io.local.CookieApi.get("OpenAllShortcut")) {
         qx.io.local.CookieApi.set("OpenAllShortcut", "CTRL+SHIFT+F11");
       }
@@ -1187,16 +1184,16 @@ qx.Class.define("inspector.Inspector", {
       }
       if (!qx.io.local.CookieApi.get("OpenObjectShortcut")) {
         qx.io.local.CookieApi.set("OpenObjectShortcut", "CTRL+SHIFT+F2");
-      }   
+      }
       if (!qx.io.local.CookieApi.get("OpenWidgetShortcut")) {
         qx.io.local.CookieApi.set("OpenWidgetShortcut", "CTRL+SHIFT+F3");
-      }   
+      }
       if (!qx.io.local.CookieApi.get("OpenPropertyShortcut")) {
         qx.io.local.CookieApi.set("OpenPropertyShortcut", "CTRL+SHIFT+F4");
-      }   
+      }
     },
-    
-    
+
+
     /**
      * Checks for the cookies which store the state of the opened or closed windows.
      * If a window was opened on relaod, the function opens that window.
@@ -1217,54 +1214,56 @@ qx.Class.define("inspector.Inspector", {
       // check if there is a cookie stored that the widget finder was opened
       if (qx.io.local.CookieApi.get("inspector.widgetFinder.WidgetFinder#Open") == "true") {
         this.openWidgetFinder();
-      }      
+      }
     }
-        
+
   },
-  
-  
+
+
   /*
   *****************************************************************************
      SETTINGS
   *****************************************************************************
   */
-  settings : { "inspector.resourceUri" : "./resource" },
-  
-  
+
+  settings : {
+    "inspector.resourceUri" : "./resource"
+  },
+
+
+
+
   /*
   *****************************************************************************
-     DEFER
+    DEFER
   *****************************************************************************
-  */  
-  /**
-   * Function which is calld during creating the class. The creates a 
-   * instance of the inspector when the application and the ui are ready.
-   * @param {Object} statics
-   * @param {Object} members
-   */
-  defer : function(statics, members) {    
-    // start an interval that creates an instance if the app and the ui are ready
-    members._startupTimer = window.setInterval(function() {
-      if (qx.core.Init.getInstance().getApplication() &&
-          qx.core.Init.getInstance().getApplication().getUiReady()) {
-        statics.getInstance().debug("loaded");
-        window.clearInterval(members._startupTimer);
-      }      
-    }, 2000);    
-  },  
-  
-  
+  */
+
+  defer : function(statics)
+  {
+    // include the CSS file used for the source view
+    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/sourceview.css"));
+    // include the css used for the dom view
+    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/domview.css"));
+    // include the css used for the console view
+    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/consoleview.css"));
+    // include the css used for the html table of the property editor
+    qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/propertylisthtml.css"));
+  },
+
+
+
   /*
   *****************************************************************************
-     DESTRUCTOR
+    DESTRUCTOR
   *****************************************************************************
   */
   destruct : function() {
     // clear the timer if it is still running
     window.clearInterval(this.__startupTimer);
     this._disposeFields("_windowQueue", "_catchClickLayer", "_highlightBorder", "_highlightOverlay",
-                        "_widget", "_menu", "_console", "_widgetFinder", "_objectFinder", 
+                        "_widget", "_menu", "_console", "_widgetFinder", "_objectFinder",
                         "_propertyEditor", "_apiWindow");
-  }  
-  
+  }
+
 });
