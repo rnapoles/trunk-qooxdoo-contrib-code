@@ -379,6 +379,23 @@ class qcl_db_pear extends qcl_db
         TABLE_NAME='$table'
     ");
   }
+  
+  /**
+   * checks if a function or stored procedure of this name exists in the database
+   * @return 
+   * @param $routine 
+   */
+  function routineExists($routine)
+  {
+    return $this->getValue("
+      SELECT 
+        count(*) 
+      FROM 
+        INFORMATION_SCHEMA.ROUTINES
+      WHERE 
+        ROUTINE_NAME='$routine'
+    ");
+  }
 }
 
 ?>
