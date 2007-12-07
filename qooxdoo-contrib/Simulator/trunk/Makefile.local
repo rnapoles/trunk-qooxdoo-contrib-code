@@ -44,4 +44,8 @@ SELENIUM_RC_PATH = ../../../packages/selenium-remote-control-0.9.2
 #MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT 
 MOZILLA_RHINO_PATH = ../../../../prog/javascript/rhino1_6R7
 
-
+# Java changed the separator for the CLASSPATH variable between 1.5 and 1.6 (I think)
+# Java 1.6
+#JAVA_CP_SEP= ;
+# Java 1.5
+JAVA_CP_SEP= :
