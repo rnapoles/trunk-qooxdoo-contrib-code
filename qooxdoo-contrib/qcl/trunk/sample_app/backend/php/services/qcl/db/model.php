@@ -327,20 +327,11 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * updates or creates table in database if it doesn't exist yet
-   * @param mixed $table can be array
+   * @param string $table 
    * @return 
    */
   function updateTableStructure($table)
   {
-    if ( is_array($table) )
-    {
-      foreach ( $table as $t )
-      {    
-        $this->updateTableStructure($t);
-      }
-      return;
-    }
-    
     $this->info ( "Checking for an update for table $table...");
     
     $application = substr(get_class($this),0,strpos(get_class($this),"_"));
@@ -366,6 +357,61 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->info ( "$table is up to date.");
     }
   }
+  
+  /**
+   * initializes tables, i.e. either creates them if they do not exist or
+   * update them if their definition has changed. this should only be done
+   * once per session
+   * @return void
+   * @param mixed $tables (array of) table name(s)
+   */
+  function initializeTables($tables)
+  {
+    // ensure this is executed only once per session
+    if ( $this->getSessionVar("tablesInitialized") )
+    {
+      return;
+    }
+    $this->setSessionVar("tablesInitialized",true);
+    
+    
+    $tables = (array) $tables;
+    
+    // check & create / upgrade tables
+    foreach ( $tables as $table )
+    {    
+      $this->checkCreateTable($table);
+      $this->updateTableStructure($table);
+    }
+  }
+  
+  
+  /**
+   * check table and create it if necessary
+   */
+  function checkCreateTable($table)
+  {
+     $this->info("Checking if table $table exists ...");
+     if ( ! $this->db->tableExists($table ) )
+     {
+       $this->createTable($table);
+     }
+  }
+  
+  /**
+   * create a table. override if necessary
+   */
+  function createTable($table)
+  {
+     $createSql   = $this->getTableCreateSql($table);
+     $this->execute($sql);
+     if ( $this->getInsertInitialValuesSql() )
+     {
+       
+     }
+  }
+  
+ 
   
 }	
 ?>

@@ -102,6 +102,12 @@ class qcl_db extends qcl_object
 	{
 		return $this->dsn;		
 	}
+  
+  function getDatabase()
+  {
+    $dsn = $this->getDsn();
+    return substr($dsn,strrpos($dsn,"/")+1);
+  }
 
 	//-------------------------------------------------------------
 	// abstract methods to be implemented
