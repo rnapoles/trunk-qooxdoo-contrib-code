@@ -14,8 +14,11 @@
 
    Authors:
      * Thomas Herchenroeder (thron7)
+     * Andreas Ecker (ecker)
 
 ************************************************************************ */
+
+importClass(Packages.com.thoughtworks.selenium.QxSelenium);
 
 var config =
 {
@@ -31,13 +34,11 @@ var config =
 function simulation()
 {
   sel.qxClick('button');
-//  sel.stop();
+  sel.stop();
 }
 
 function init()
 {
-  importClass(Packages.com.thoughtworks.selenium.QxSelenium);
-  
   sel = new QxSelenium(config.serverHost, config.serverPort, 
       config.browserStartCommand, config.browserUrl);
   
