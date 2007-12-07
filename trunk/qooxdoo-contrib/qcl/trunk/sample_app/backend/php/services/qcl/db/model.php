@@ -297,23 +297,24 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function initializeTables($tables)
   {   
-    
     $tables = (array) $tables;
     
     foreach ( $tables as $table )
     {    
+      // $this->addFunctions($table);
       // ensure this is executed only once per session
       $sessionFlagName = "table_" . $table . "_initialized";
-  
       if ( $this->getSessionVar( $sessionFlagName ) )
       {
         return;
       }
-      $this->setSessionVar($sessionFlagName,true);
-
+     
       // do checks and updates
       $this->checkCreateTable($table);
       $this->updateTableStructure($table);
+      
+      // success
+      $this->setSessionVar($sessionFlagName,true);
     }
   }
   
@@ -342,8 +343,9 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->raiseError ("Cannot create table $table - sql file '$file' does not exist.");
     }
     $this->db->execute($createSql);
-    $this->addTriggers();
-    $this->addInitialValues();
+    $this->addTriggers($table);
+    $this->addFunctions($table);
+    $this->addInitialValues($table);
   }
   
   /**
@@ -355,12 +357,43 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 
   /**
-   * adds table-related triggers. Empty stub to be overridden.
+   * adds table-related triggers.
    */
-  function addTriggers()
+  function addTriggers($table)
   {
-    // do nothing.
+    $file = $this->getSqlFileName($table . ".triggers" );
+    if ( file_exists ( $file ) )
+    {
+      $database  = $this->db->getDatabase();
+      $sql       = str_replace('$table', $table, 
+                    str_replace('$database',$database, file_get_contents ( $file ) ) ) ;
+      foreach ( explode(";",$sql) as $part )
+      {
+        $this->db->execute( $part );
+      }
+    }
   } 
+
+  /**
+   * adds table-related functions.
+   */
+  function addFunctions($table)
+  {
+    $file = $this->getSqlFileName($table . ".functions" );
+
+    if ( file_exists ( $file ) )
+    {
+      $database  = $this->db->getDatabase();
+      $content   = file_get_contents ( $file );
+      eval("\$sql = \"$content\";"); 
+      foreach ( explode("###",$sql) as $part )
+      {
+        $this->db->execute( $part );
+      }
+    }
+  } 
+
+
 
   /**
    * gets table structure as sql create statement
@@ -442,7 +475,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     // store sql to create this table
     if ( ! $this->loadTableCreateSql($table) )
     {
-      return $this->saveTableCreateSql($table);
+      $this->saveTableCreateSql($table);
+      return;
     }
     
     // compare table structure with structure and update table if there is a change
