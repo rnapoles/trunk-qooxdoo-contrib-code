@@ -354,6 +354,23 @@ class qcl_db_pear extends qcl_db
      
   }
   
+  
+  /**
+   * checks if table exists
+   * @return boolean
+   * @param $table string
+   */
+  function tableExists($table)
+  {
+    return $this->getValue("
+      SELECT 
+        count(*) 
+      FROM 
+        INFORMATION_SCHEMA.TABLES
+      WHERE 
+        TABLE_NAME='$table'
+    ");
+  }
 }
 
 ?>
