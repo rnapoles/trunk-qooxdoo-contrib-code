@@ -150,7 +150,15 @@ class qcl_db_pear extends qcl_db
 	 */
 	function insert ( $table, $data ) 
 	{
-		$columns = implode("`,`", array_keys($data) );
+		if ( is_array($data[0]) )
+    {
+      foreach($data as $row)
+      {
+        $this->insert($table,$row);
+      }
+      return;
+    }
+    $columns = implode("`,`", array_keys($data) );
 		$values	 = array();
 		
 		foreach ( array_values($data) as $value )
