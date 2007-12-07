@@ -18,6 +18,16 @@ class qcl_db extends qcl_object
 	 * @var string $dsn database dsn, gets read from configuration file
 	 */
 	var $dsn;
+
+	/**
+	 * @var string $type type of database system (mysql, postgres, ...) read from dsn
+	 */
+	var $type;
+
+	/**
+	 * @var string $database name of database, read from dsn
+	 */
+	var $database;
 	
 	/**
 	 * @var controller object
@@ -90,7 +100,9 @@ class qcl_db extends qcl_object
 		
 		if ( $this->dsn )
 		{
-			$this->db 	= $this->connect();	
+      $this->type      = substr($this->dsn,0,strpos($this->dsn,":"));
+      $this->database  = substr($this->dsn,strrpos($this->dsn,"/")+1);
+ 			$this->db        = $this->connect();	
 		}
 	}
 
@@ -102,11 +114,23 @@ class qcl_db extends qcl_object
 	{
 		return $this->dsn;		
 	}
-  
+
+	/**
+	 * getter for database type
+	 * return string
+	 */
+	function getType()
+	{
+		return $this->type;		
+	}
+
+  /**
+   * getter for database name
+   * @return string
+   */
   function getDatabase()
   {
-    $dsn = $this->getDsn();
-    return substr($dsn,strrpos($dsn,"/")+1);
+    return $this->database;
   }
 
 	//-------------------------------------------------------------

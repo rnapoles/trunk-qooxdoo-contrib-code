@@ -242,9 +242,9 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @param array $data associative array with the column names as keys and the column data as values
 	 * @return int the id of the inserted row 
 	 */
-	function insert( $row )
+	function insert( $data )
    	{
-   		return $this->db->insert($this->table,$row);
+   		return $this->db->insert( $this->table,$data );
    	}
 
 	/**
@@ -287,6 +287,81 @@ class qcl_db_model extends qcl_jsonrpc_model
 		$this->db->deleteWhere ( $this->table, $where );
 	} 
 	
+
+  /**
+   * initializes tables, i.e. either creates them if they do not exist or
+   * update them if their definition has changed. this should only be done
+   * once per session
+   * @return void
+   * @param mixed $tables (array of) table name(s)
+   */
+  function initializeTables($tables)
+  {   
+    
+    $tables = (array) $tables;
+    
+    foreach ( $tables as $table )
+    {    
+      // ensure this is executed only once per session
+      $sessionFlagName = "table_" . $table . "_initialized";
+  
+      if ( $this->getSessionVar( $sessionFlagName ) )
+      {
+        return;
+      }
+      $this->setSessionVar($sessionFlagName,true);
+
+      // do checks and updates
+      $this->checkCreateTable($table);
+      $this->updateTableStructure($table);
+    }
+  }
+  
+  /**
+   * check table and create it if necessary
+   */
+  function checkCreateTable($table)
+  {
+     $this->info("Checking if table $table exists ...");
+     if ( ! $this->db->tableExists( $table ) )
+     {
+       $this->info("No, creating it...");
+       $this->createTable($table);
+     }
+  }
+  
+  /**
+   * create a table. override if necessary
+   */
+  function createTable($table)
+  {
+    $createSql  = $this->loadTableCreateSql($table);
+    if ( !$createSql )
+    {
+      $file = $this->getSqlFileName($table);
+      $this->raiseError ("Cannot create table $table - sql file '$file' does not exist.");
+    }
+    $this->db->execute($createSql);
+    $this->addTriggers();
+    $this->addInitialValues();
+  }
+  
+  /**
+   * adds initial values. Empty stub to be overridden.
+   */
+  function addInitialValues()
+  {
+    // do nothing.
+  }
+
+  /**
+   * adds table-related triggers. Empty stub to be overridden.
+   */
+  function addTriggers()
+  {
+    // do nothing.
+  } 
+
   /**
    * gets table structure as sql create statement
    * @return 
@@ -297,11 +372,42 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
   
   /**
+   * gets name of file where table create sql is stored for a table
+   * @return string
+   * @param $table string
+   */
+  function getSqlFileName($table)
+  {
+    $application = substr(get_class($this),0,strpos(get_class($this),"_"));
+    $type = $this->db->getType();
+    return SERVICE_PATH . "{$application}/sql/{$table}.$type.sql";
+  }
+
+  /**
+   * returns sql statement to create a table loaded from the filesystem
+   * @return string
+   * @param $table string Table
+   */
+  function loadTableCreateSql($table)
+  {
+    $file = $this->getSqlFileName($table);
+    if ( file_exists ($file) )
+    {
+      return file_get_contents($file);
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  /**
    * saves the sql commands necessary to create the table into a file and returns it
    * @return boolen success
    */
-  function saveTableCreateSql($table,$file)
+  function saveTableCreateSql($table)
   {
+      $file = $this->getSqlFileName($table);
       if ( is_writeable ( dirname ( $file ) ) )
       {
         if ( ! file_exists( $file ) or is_writeable ( $file ) )
@@ -324,7 +430,6 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
   }
 
-  
   /**
    * updates or creates table in database if it doesn't exist yet
    * @param string $table 
@@ -333,23 +438,20 @@ class qcl_db_model extends qcl_jsonrpc_model
   function updateTableStructure($table)
   {
     $this->info ( "Checking for an update for table $table...");
-    
-    $application = substr(get_class($this),0,strpos(get_class($this),"_"));
-    $file = SERVICE_PATH . "{$application}/sql/{$table}.sql";
-    
+   
     // store sql to create this table
-    if ( ! file_exists ( $file ) )
+    if ( ! $this->loadTableCreateSql($table) )
     {
-      return $this->saveTableCreateSql($table,$file);
+      return $this->saveTableCreateSql($table);
     }
     
     // compare table structure with structure and update table if there is a change
-    $currentSql   = $this->getTableCreateSql($table);
-    $normativeSql = file_get_contents($file); // strip comments
+    $currentSql   = $this->getTableCreateSql($table); // from database
+    $normativeSql = $this->loadTableCreateSql($table); // from file
     if ( $currentSql != $normativeSql )
     {
       $this->db->updateTableStructure( $table, $normativeSql );
-      $this->saveTableCreateSql($file);
+      $this->saveTableCreateSql($table);
       $this->info ("Updated table {$table}.");
     }
     else
@@ -357,61 +459,6 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->info ( "$table is up to date.");
     }
   }
-  
-  /**
-   * initializes tables, i.e. either creates them if they do not exist or
-   * update them if their definition has changed. this should only be done
-   * once per session
-   * @return void
-   * @param mixed $tables (array of) table name(s)
-   */
-  function initializeTables($tables)
-  {
-    // ensure this is executed only once per session
-    if ( $this->getSessionVar("tablesInitialized") )
-    {
-      return;
-    }
-    $this->setSessionVar("tablesInitialized",true);
-    
-    
-    $tables = (array) $tables;
-    
-    // check & create / upgrade tables
-    foreach ( $tables as $table )
-    {    
-      $this->checkCreateTable($table);
-      $this->updateTableStructure($table);
-    }
-  }
-  
-  
-  /**
-   * check table and create it if necessary
-   */
-  function checkCreateTable($table)
-  {
-     $this->info("Checking if table $table exists ...");
-     if ( ! $this->db->tableExists($table ) )
-     {
-       $this->createTable($table);
-     }
-  }
-  
-  /**
-   * create a table. override if necessary
-   */
-  function createTable($table)
-  {
-     $createSql   = $this->getTableCreateSql($table);
-     $this->execute($sql);
-     if ( $this->getInsertInitialValuesSql() )
-     {
-       
-     }
-  }
-  
- 
   
 }	
 ?>
