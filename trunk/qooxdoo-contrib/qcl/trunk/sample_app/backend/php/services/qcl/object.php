@@ -82,6 +82,55 @@ class qcl_object extends patched_object {
 		parent::__construct();
 	}
 
+  /**
+   * get include path for a class name
+   * @return 
+   * @param $classname
+   */
+  function getClassPath($classname)
+  {
+    // delete JsonRpcClassPrefix
+    if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
+    {
+	    $pathname = substr($classname,strlen(JsonRpcClassPrefix));        	
+    }
+    else
+    {
+    	$pathname = $classname;
+    }
+        
+    // determine path name
+    return SERVICE_PATH . implode( "/", explode("_",$pathname ) ) . ".php";
+  }
+  
+  /**
+   * load file for class
+   * @return 
+   * @param $classname Object
+   */
+  function includeClassfile ( $classname )
+  {
+    $path = $this->getClassPath($classname);
+    if ( ! file_exists ( $path ) )
+    {
+  		$this->raiseError ( "Class '$classname' cannot be loaded: file '" . addslashes($path) .  "' does not exist." );    	
+    }
+      
+    // load class file
+    require_once ( $path );    
+  }
+  
+  /**
+   * mixing in methods of another class
+   * @return void
+   * @param $classname class name
+   */
+  function mixin ($classname)
+  {
+    $this->includeClassfile($classname);
+    aggregate( $this, $classname);
+  }
+  
 	/**
 	 * set (non-persistent) singleton instance of a class
 	 * @param object $instance reference to be set as singleton
@@ -137,31 +186,13 @@ class qcl_object extends patched_object {
         // check for class existence
         if ( ! class_exists ( $classname ) ) 
         {
-            // delete JsonRpcClassPrefix
-	        if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
-	        {
-				$pathname = substr($classname,strlen(JsonRpcClassPrefix));        	
-	        }
-	        else
-	        {
-	        	$pathname = $classname;
-	        }
-	        
-	        // determine path name
-            $path = SERVICE_PATH . implode( "/", explode("_",$pathname ) ) . ".php";
-            if ( ! file_exists ( $path ) )
-            {
-        		$this->raiseError ( get_class($this) . "::getSingleton : Cannot instantiate class '$classname - file '" . addslashes($path) .  "' does not exist." );    	
-            }
-            
-            // load class file
-            require_once ( $path );
-            
-            // check class
-            if ( ! class_exists ( $classname) )
-            {
+          $this->includeClassFile($classname);
+          
+          // check class
+          if ( ! class_exists ( $classname) )
+          {
         		$this->raiseError ( get_class($this) . "::getSingleton : Cannot instantiate class '$classname - file '" . addslashes($path) .  "' does not contain class definition." );    	
-            }
+          }
         }
         
         // instantiate object
