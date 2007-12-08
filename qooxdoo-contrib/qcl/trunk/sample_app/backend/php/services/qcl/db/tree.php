@@ -2,13 +2,12 @@
 
 // dependencies
 require_once ("qcl/db/model.php");
-require_once ("qcl/locale/manager.php");
 
 /**
  * class implementing a basic tree structure based on an sql database table
  */
 
-class qcl_tree_model_db extends qcl_db_model
+class qcl_db_tree extends qcl_db_model
 {
 
   //-------------------------------------------------------------

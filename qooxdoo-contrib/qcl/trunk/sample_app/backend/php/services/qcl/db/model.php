@@ -310,6 +310,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
      
       // do checks and updates
+      $this->info("*** Initializing tables ***");
       $this->checkCreateTable($table);
       $this->updateTableStructure($table);
       
@@ -323,11 +324,14 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function checkCreateTable($table)
   {
-     $this->info("Checking if table $table exists ...");
-     if ( ! $this->db->tableExists( $table ) )
+     if ( $this->db->tableExists( $table ) )
      {
-       $this->info("No, creating it...");
-       $this->createTable($table);
+       $this->info("Checking if table $table exists ... Yes");
+     }
+     else
+     {
+       $this->info("Checking if table $table exists ... No, creating it.");
+       $this->createTable($table);       
      }
   }
   
@@ -337,14 +341,14 @@ class qcl_db_model extends qcl_jsonrpc_model
   function createTable($table)
   {
     $createSql  = $this->loadTableCreateSql($table);
-    if ( !$createSql )
+    if ( ! $createSql )
     {
       $file = $this->getSqlFileName($table);
       $this->raiseError ("Cannot create table $table - sql file '$file' does not exist.");
     }
     $this->db->execute($createSql);
-    $this->addTriggers($table);
-    $this->addFunctions($table);
+    $this->createTriggers($table);
+    $this->createFunctions($table);
     $this->addInitialValues($table);
   }
   
@@ -358,18 +362,23 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * adds table-related triggers.
+   * @todo: alert user that db user needs "SUPER" priviledges
    */
-  function addTriggers($table)
+  function createTriggers($table)
   {
     $file = $this->getSqlFileName($table . ".triggers" );
     if ( file_exists ( $file ) )
     {
+      $this->info("Creating triggers...");
       $database  = $this->db->getDatabase();
       $sql       = str_replace('$table', $table, 
                     str_replace('$database',$database, file_get_contents ( $file ) ) ) ;
       foreach ( explode(";",$sql) as $part )
       {
-        $this->db->execute( $part );
+        if ( trim ( $part ) )
+        {
+          $this->db->execute( $part );  
+        }
       }
     }
   } 
@@ -377,26 +386,24 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * adds table-related functions.
    */
-  function addFunctions($table)
+  function createFunctions($table)
   {
+    $this->info("Creating functions...");
     $file = $this->getSqlFileName($table . ".functions" );
-
     if ( file_exists ( $file ) )
     {
       $database  = $this->db->getDatabase();
       $content   = file_get_contents ( $file );
-      eval("\$sql = \"$content\";"); 
+      eval('$sql = "' . str_replace('"',"'",$content) . '";'); 
       foreach ( explode("###",$sql) as $part )
       {
         $this->db->execute( $part );
       }
     }
-  } 
-
-
+  }
 
   /**
-   * gets table structure as sql create statement
+   * gets table structure as sql create statement from database
    * @return 
    */
   function getTableCreateSql($table)
@@ -426,10 +433,12 @@ class qcl_db_model extends qcl_jsonrpc_model
     $file = $this->getSqlFileName($table);
     if ( file_exists ($file) )
     {
-      return file_get_contents($file);
+      //$this->info("Checking for file '$file' ... Exists.");
+      return  file_get_contents($file);
     }
     else
     {
+      $this->info("Checking for file '$file' ... Does not exist.");
       return null;
     }
   }
@@ -473,7 +482,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->info ( "Checking for an update for table $table...");
    
     // store sql to create this table
-    if ( ! $this->loadTableCreateSql($table) )
+    if ( ! file_exists ( $this->getSqlFileName($table) ) )
     {
       $this->saveTableCreateSql($table);
       return;
