@@ -76,9 +76,6 @@ qx.Class.define("inspector.Inspector", {
   *****************************************************************************
   */
   construct : function() {
-    // Define alias for inspector resource path
-    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
-
     // Create the queue for the inspector windows
     this._windowQueue = [];
 
@@ -1241,6 +1238,9 @@ qx.Class.define("inspector.Inspector", {
 
   defer : function(statics)
   {
+    // Define alias for inspector resource path
+    qx.io.Alias.getInstance().add("inspector", qx.core.Setting.get("inspector.resourceUri"));
+
     // include the CSS file used for the source view
     qx.html.StyleSheet.includeFile(qx.io.Alias.getInstance().resolve("inspector/css/sourceview.css"));
     // include the css used for the dom view
