@@ -149,7 +149,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     /**
      * Returns the object with the given index.
      * @internal 
-     * @param {Number} The index of the object.
+     * @param id {Number} The id of the object.
      * @return {Object} The object in the console view. 
      */
     getObjectById: function(id) {
