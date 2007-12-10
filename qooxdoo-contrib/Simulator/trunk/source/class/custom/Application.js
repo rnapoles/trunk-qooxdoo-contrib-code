@@ -115,6 +115,9 @@ qx.Class.define("custom.Application",
       this.selsh = new simulator.Shell();
       this.selsh.window.open();
 
+      // activate Inspector
+      inspector.Inspector.init();
+
     }, //construct
 
 
