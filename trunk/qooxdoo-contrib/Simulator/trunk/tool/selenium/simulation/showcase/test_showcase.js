@@ -401,12 +401,11 @@ while (doTests)
 {
   // go throught the Showcase tabs and test
   /*
+  */
   Form(sel);
   Tooltip(sel);
   Menu_and_Toolbar(sel);
-  */
   Tab(sel);
-  /*
   Tree(sel);
   List(sel);
   ListView(sel);
@@ -416,6 +415,7 @@ while (doTests)
   Native_Window(sel);
   Internal_Window(sel);
   Themes(sel);
+  /*
   */
   Packages.java.lang.Thread.sleep(3000);
 
