@@ -161,14 +161,8 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      * Reads the data of the document and updates the tablemodel.
      */
     reload: function() {
-      // check if the search term is in the textfield
-      if (this._findField.getComputedValue() != this._findField.getDefaultValue()) {        
-        // if not get the filterd data
-        var data = this._getData(this._findField.getComputedValue());
-      } else {
-        // if no filter is applied get the whole data
-        var data = this._getData();
-      }    
+      // get the filtered data
+      var data = this._getData(this._findField.getComputedValue());
       // set the new data in the model
       this._setData(data);        
     },
@@ -570,6 +564,6 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
   destruct : function() {
     this._disposeFields("_reloadButton", "_reloadToolTip", "_autoReloadToolTip", "_objectSummaryToolTip", 
                         "_pollutionToolTip", "_findField", "_tableModel", "_table", "_popup", "_models",
-												"_menu", "_currentModel");
+                        "_menu", "_currentModel");
   }
 });

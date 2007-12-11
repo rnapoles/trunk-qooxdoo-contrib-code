@@ -562,17 +562,17 @@ qx.Class.define("inspector.console.Console", {
       this._helpButton.setToolTip(this._helpTooltip);
 
       // create and add a find textfield
-      this._findField = new inspector.components.SearchTextField();
+      this._findField = new inspector.components.SearchTextField();			
       // set the reference which is the this reference in the executed function
       this._findField.setThisReference(this);
       // set the default value for the search textfield
       this._findField.setDefaultValue(inspector.console.Console.SEARCH_TERM);
       // set the function, which should be executed on a input change
       this._findField.setExecutionFunction(function() {
-        this._currentView.filter(this._findField.getComputedValue());       
+        this._currentView.filter(this._findField.getComputedValue());
       });
       // add the findfield to the toolbar
-      this._toolbar.add(this._findField);
+      this._toolbar.add(this._findField);			
     }
 
    },
