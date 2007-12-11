@@ -158,14 +158,6 @@
 			});
 			]]>
 		</qxt:script>
-
-		<qxt:script>
-			// cell editor for userId column
-			var configEditorUserIdCellRenderer = new qx.ui.table.cellrenderer.Replace;
-			configEditorUserIdCellRenderer.setReplaceMap({
-				0 : "Default"
-			});
-		</qxt:script>
 		
 		<qx:table  
 			id="configEditorTable"
@@ -181,14 +173,13 @@
 			<qx:tableColumn key="name"  label="Name"  width="4*" />
 			<qx:tableColumn key="type"  label="Type"  width="70" 
 				editable="true" celleditor="configEditorTypeCellEditor" />
-			<qx:tableColumn key="value" label="Value" width="2*"
+			<qx:tableColumn key="value" label="Value" width="3*"
 				editable="true" celleditor="configEditorValueCellEditor" />
 			<qx:tableColumn key="permissionRead" label="Read Perm."  width="1*"
 				editable="true" />
 			<qx:tableColumn key="permissionWrite" label="Write Perm." width="1*"
 				editable="true" />
-			<qx:tableColumn key="userId" label="User/Status"  width="1*" 
-				cellrenderer="configEditorUserIdCellRenderer"/>
+			<qx:tableColumn key="userId" label="User/Status"  width="1*" editable="true"/>
 			
 			<!-- (re)load  -->
 			
@@ -213,7 +204,7 @@
 					'value': "", 
 					'permissionRead' : null,
 					'permissionWrite' : null,
-					'userId' : null
+					'userId' : 0
 				};
 				this.updateServer( this.getUserData("servicePrefix") + 'configuration.create', this.__newConfigKey );
 			</qx:messageSubscriber>
