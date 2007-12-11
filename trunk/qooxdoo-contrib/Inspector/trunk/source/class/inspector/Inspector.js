@@ -35,6 +35,9 @@ qx.Class.define("inspector.Inspector", {
   */
   statics:
   {
+    /**
+     * Creates a instance of the inspector.
+     */
     init : function() {
       inspector.Inspector.getInstance();
     },
