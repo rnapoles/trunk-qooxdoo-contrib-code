@@ -116,7 +116,7 @@ run-simulation-showcase:
 
 run-simulation-custom:
 	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
-	java org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/custom/simulation-keepbrowser.js \
+	java org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/custom/simulation.js -keepBrowser \
 	)
 
 	
