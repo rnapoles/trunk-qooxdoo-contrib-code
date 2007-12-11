@@ -2,7 +2,7 @@
 
 // dependencies
 require_once ("qcl/jsonrpc/object.php");
-
+require_once ("qcl/locale/manager.php");
 
 // constants
 define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");

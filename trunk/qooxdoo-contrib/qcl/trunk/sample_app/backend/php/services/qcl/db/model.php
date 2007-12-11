@@ -64,6 +64,16 @@ class qcl_db_model extends qcl_jsonrpc_model
  		} 
  	}
  	
+  /**
+   * gets all database records optionally sorted by field
+   * @param string|null 		$orderBy 	(optional) order by field
+   * @return Array Array of db record sets
+   */
+ 	function getAllRows($orderBy=null)
+  {
+    return $this->getRowsWhere(null,$orderBy);
+  }  
+  
  	/**
    * gets all database records or those that match a where condition
    * @param string 			$where   	where condition to match, if null, get all
