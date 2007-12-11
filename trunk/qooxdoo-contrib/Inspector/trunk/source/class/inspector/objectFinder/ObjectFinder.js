@@ -569,6 +569,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
   */
   destruct : function() {
     this._disposeFields("_reloadButton", "_reloadToolTip", "_autoReloadToolTip", "_objectSummaryToolTip", 
-                        "_pollutionToolTip", "_findField", "_tableModel", "_table", "_popup"); 
+                        "_pollutionToolTip", "_findField", "_tableModel", "_table", "_popup", "_models",
+												"_menu", "_currentModel");
   }
 });

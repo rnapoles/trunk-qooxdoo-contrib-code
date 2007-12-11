@@ -50,12 +50,12 @@ qx.Class.define("inspector.menu.Menu", {
       // set the position of the hide popup
       this._hideAllPopup.setLeft(parseInt(middle - (this.getBoxWidth() / 2)) + 145);
       this._hideAllPopup.setTop(3);      
-      if (this._firstRun) {
+      if (qx.io.local.CookieApi.get("FirstRun") != "false") {
         // show the popup
         this._welcomePopup.bringToFront();
         this._welcomePopup.show();
         // mark that this was the first run
-        this._firstRun = false;              
+        this._firstRun = qx.io.local.CookieApi.set("FirstRun", "false");
       }
       this._menuTop = -this.getChildren()[0].getOuterHeight();
       this.setTop(this._menuTop);
@@ -156,9 +156,6 @@ qx.Class.define("inspector.menu.Menu", {
     _objectOpened: false,
     _widgetOpened: false,
     _propertyOpened: false,
-    
-    // marker for the opening popup
-    _firstRun: true,
         
 
     /*
