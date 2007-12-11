@@ -25,10 +25,12 @@ var config =
     serverHost : "localhost",
     serverPort : 4444,
     browserStartCommand : "*firefox",
-    browserUrl : "http://localhost:8080",
-    appUrl : "/Simulator/trunk/source/index.html",
-    speed : "1000",
-    sleep : 2000
+    // aut*: how to reach the sample app over a local web server
+    autHost    : "localhost",
+    autPort    : 80,
+    autPath    : "/Simulator/trunk/source/index.html",
+    speed      : "1000",
+    sleep      : 2000
 };
 
 function simulation(keepBrowser)
@@ -49,6 +51,9 @@ function simulation(keepBrowser)
 
 function init()
 {
+  var browserUrl = "http://" + config.autHost + ":" + config.autPort + 
+                    config.autPath;
+
   // create Selenium object
   sel = new QxSelenium(config.serverHost, config.serverPort, 
       config.browserStartCommand, config.browserUrl);
@@ -56,7 +61,7 @@ function init()
   sel.setSpeed(config.speed);
   
   sel.start(); // this launches the browser
-  sel.open(config.browserUrl + config.appUrl);  // this opens the AUT
+  sel.open(browserUrl);  // this opens the AUT
   
   Packages.java.lang.Thread.sleep(config.sleep); // pausing is often helpful
 }
