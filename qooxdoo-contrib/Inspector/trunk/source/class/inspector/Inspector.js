@@ -41,7 +41,7 @@ qx.Class.define("inspector.Inspector", {
 
     // Tooltip texts
     RELOAD_BUTTON_TOOLTIP_TEXT: "Reload the window.",
-    AUTO_RELOAD_BUTTON_TOOLTIP_TEXT: "Update the window automaticly.",
+    AUTO_RELOAD_BUTTON_TOOLTIP_TEXT: "Update the window automatically.",
     SHOW_API_BUTTON_TOOLTIP_TEXT: "Show the API of the selected object or property.",
     SET_NULL_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to null.",
     SET_DEFAULT_BUTTON_TOOLTIP_TEXT: "Set the currently selected property to its initial value.",
@@ -79,7 +79,7 @@ qx.Class.define("inspector.Inspector", {
     // Create the queue for the inspector windows
     this._windowQueue = [];
 
-    // start the exclusion stategie
+    // start the exclusion stategy
     this.beginExclusion();
     // create the inspector object
     qx.core.Object.call(this);
@@ -89,7 +89,7 @@ qx.Class.define("inspector.Inspector", {
     this._createHighlightStuff();
     // create the opener toolbar
     this._createOpenerToolBar();
-    // end the exclusion startegie
+    // end the exclusion startegy
     this.endExclusion();
 
     // initialize the this reference to the selected widget
@@ -180,7 +180,7 @@ qx.Class.define("inspector.Inspector", {
     // the native window for the api viewer
     _apiWindow: null,
 
-    // the qeueue of the inspector windows
+    // the queue of the inspector windows
     _windowQueue: null,
 
 
@@ -203,7 +203,7 @@ qx.Class.define("inspector.Inspector", {
        // tell the manager to that a new window is selected
        this._inspector.windowSelected(this);
      }, window);
-     // add a changeZIndex listener to kepp the windows up to date even if a non inspector window is selected
+     // add a changeZIndex listener to keep the windows up to date even if a non inspector window is selected
      window.addEventListener("changeZIndex", function(e) {
        // prevent recursive calls
        if (!this._inChange) {
@@ -215,7 +215,7 @@ qx.Class.define("inspector.Inspector", {
 
 
    /**
-    * Set the zIndex in all registered Windows corresponding to ther last selections.
+    * Set the zIndex in all registered Windows corresponding to their last selections.
     * The given window will get the highest zIndex.
     * @param window {qx.ui.window.Window} The window with the highest zIndex.
     * @internal
@@ -256,28 +256,28 @@ qx.Class.define("inspector.Inspector", {
      * Sets the dimensions and the position of all windows to a predefined value.
      */
     resetPerspective: function() {
-      // reset the console, if existant
+      // reset the console, if existent
       if (this._console) {
         this._console.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._console.setHeight(180);
         this._console.setLeft(0);
         this._console.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() - 180);
       }
-      // reset the object finder, if existant
+      // reset the object finder, if existent
       if (this._objectFinder) {
         this._objectFinder.setWidth(350);
         this._objectFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
         this._objectFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._objectFinder.setTop(0);
       }
-      // reset the widget finder, if existant
+      // reset the widget finder, if existent
       if (this._widgetFinder) {
         this._widgetFinder.setWidth(350);
         this._widgetFinder.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
         this._widgetFinder.setLeft(qx.ui.core.ClientDocument.getInstance().getInnerWidth() - 350);
         this._widgetFinder.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);
       }
-      // reset the propery editor, if existant
+      // reset the property editor, if existent
       if (this._propertyEditor) {
         this._propertyEditor.setWidth(350);
         this._propertyEditor.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
@@ -350,8 +350,8 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */
     /**
-     * Enabled or diabled the highlight function.
-     * @param on {Boolean} The bool value wether the highlight function should be on or of.
+     * Enable or disable the highlight function.
+     * @param on {Boolean} The bool value whether the highlight function should be on or of.
      */
     highlightCurrentWidget: function(on) {
       // save the current state of the checkbox button
@@ -364,7 +364,7 @@ qx.Class.define("inspector.Inspector", {
           this._highlight(this._widget.getElement());
         }
       } else {
-        // start the timer that removes the highligt border
+        // start the timer that removes the highlight border
         this._clearHighlight(0);
       }
     },
@@ -383,7 +383,7 @@ qx.Class.define("inspector.Inspector", {
 
 
     /**
-     * Draws a red border aroud the given html element.
+     * Draws a red border around the given html element.
      * @param element {Element} The element to highlight.
      */
     _highlight: function(element) {
@@ -448,7 +448,7 @@ qx.Class.define("inspector.Inspector", {
      * @return {Map} Map containing the coordinates e.g. "right"
      */
     _getCoordinates: function(element) {
-      // retunrn null if no element is given
+      // return null if no element is given
       if (element == null) {
         return null;
       }
@@ -461,7 +461,7 @@ qx.Class.define("inspector.Inspector", {
     },
 
 
-   /*
+    /*
     *********************************
         FIND MODE STUFF
     *********************************
@@ -483,7 +483,7 @@ qx.Class.define("inspector.Inspector", {
       this._catchClickLayer.hide();
       this._highlightOverlay.hide();
 
-      // highlight the currentlys selected widget again
+      // highlight the currently selected widget again
       if (this._highlightEnabled) {
         // if something is selected
         if (this._widget != null) {
@@ -527,7 +527,7 @@ qx.Class.define("inspector.Inspector", {
     },
 
 
-   /*
+    /*
     *********************************
         WIDGET STUFF
     *********************************
@@ -578,7 +578,7 @@ qx.Class.define("inspector.Inspector", {
           this._propertyEditor.setWidget(widget);
         }
       }
-      // if it is realy a widget and not another qx object
+      // if it is really a widget and not another qx object
       if (widget instanceof qx.ui.core.Widget) {
         // highlight the selected widget
         this._highlight(widget.getElement());
@@ -617,18 +617,18 @@ qx.Class.define("inspector.Inspector", {
     },
 
 
-  /**
-   * Tells the console to show the object assosiated with the id in the dom view.
-   * @internal
-   * @param id {Number} The given id.
-   */
-  inspectObjectByInternalId: function(id) {
-    // if the console existst
-    if (this._console != null) {
-      // tell the consol to do the rest
-      this._console.inspectObjectByInternalId(id);
-    }
-  },
+    /**
+     * Tells the console to show the object associated with the id in the dom view.
+     * @internal
+     * @param id {Number} The given id.
+     */
+    inspectObjectByInternalId: function(id) {
+      // if the console exists
+      if (this._console != null) {
+        // tell the consol to do the rest
+        this._console.inspectObjectByInternalId(id);
+      }
+    },
 
 
     /**
@@ -638,62 +638,62 @@ qx.Class.define("inspector.Inspector", {
      * @param index {Number} The index in the internal array structure.
      * @param key {String} The name of the value so select the object.
      */
-  inspectObjectByDomSelecet: function(index, key) {
-    if (this._console != null) {
-        this._console.inspectObjectByDomSelecet(index, key);
-    }
-  },
+    inspectObjectByDomSelecet: function(index, key) {
+      if (this._console != null) {
+          this._console.inspectObjectByDomSelecet(index, key);
+      }
+    },
 
 
-  /**
-   * @internal
-   * @param key {String} The name of the property in the current selected widget.
-   * @param value {String} the value to set the property.
-   * @param type {String} The type of the value.
-   */
-  updateWidgetProperty: function(key, value, type) {
-    // if there is a widget
-    if (this._widget != null) {
-      // try to set the given value
-      try {
-        // get the name of the setter
-        var setterName = "set" + qx.lang.String.toFirstUp(key);
-        // stor the converted value in here
-        var trueValue;
-        // if it is a number of something
-        if (type == "Integer" || type == "Float" || type == "Double" || type == "Number") {
-          // parse the value
-          trueValue = parseFloat(value);
-        // if it is someting which can be handled as a string
-        } else if (type == "String" || type == "NonEmptyString" || type == "Label" || type == "Color" || type instanceof Array) {
-          // just take the value
-          trueValue = value;
-        // if it is a boolean
-        } else if (type == "Boolean") {
-          // check for true
-          if (value == "true") {
-            trueValue = true;
-          // check for false
-          } else if (value == "false") {
-            trueValue = false;
-          // oterwise, its not a boolean
+    /**
+     * @internal
+     * @param key {String} The name of the property in the current selected widget.
+     * @param value {String} the value to set the property.
+     * @param type {String} The type of the value.
+     */
+    updateWidgetProperty: function(key, value, type) {
+      // if there is a widget
+      if (this._widget != null) {
+        // try to set the given value
+        try {
+          // get the name of the setter
+          var setterName = "set" + qx.lang.String.toFirstUp(key);
+          // store the converted value in here
+          var trueValue;
+          // if it is a number of something
+          if (type == "Integer" || type == "Float" || type == "Double" || type == "Number") {
+            // parse the value
+            trueValue = parseFloat(value);
+          // if it is something which can be handled as a string
+          } else if (type == "String" || type == "NonEmptyString" || type == "Label" || type == "Color" || type instanceof Array) {
+            // just take the value
+            trueValue = value;
+          // if it is a boolean
+          } else if (type == "Boolean") {
+            // check for true
+            if (value == "true") {
+              trueValue = true;
+            // check for false
+            } else if (value == "false") {
+              trueValue = false;
+            // otherwise, its not a boolean
+            } else {
+              alert("Value is not a boolean.");
+              return false;
+            }
           } else {
-            alert("Value is not a boolean.");
+            alert("Unknown type to change.");
             return false;
           }
-        } else {
-          alert("Unknown type to change.");
+          // set the new value
+          this._widget[setterName].call(this._widget, trueValue);
+          return true;
+        } catch (e) {
+          alert(e);
           return false;
         }
-        // set the new value
-        this._widget[setterName].call(this._widget, trueValue);
-        return true;
-      } catch (e) {
-        alert(e);
-        return false;
       }
-    }
-  },
+    },
 
 
     /*
@@ -745,7 +745,7 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */
     /**
-     * Beginns the exclusions strategy with storing the current index
+     * Begins the exclusions strategy with storing the current index
      * of the object db in an member.
      * @internal
      */
@@ -758,7 +758,7 @@ qx.Class.define("inspector.Inspector", {
     /**
      * Ends the exclusion strategy with saving the begin and end
      * index of the object db in an exclusion array. All indices
-     * the created classes between beginn and end are in the
+     * the created classes between begin and end are in the
      * range of the exclusion.
      * @internal
      */
@@ -767,11 +767,11 @@ qx.Class.define("inspector.Inspector", {
       qx.ui.core.Widget.flushGlobalQueues();
       // get the end index of the db
       var excludeEndIndex = qx.core.Object.getDb().length - 1;
-      // do only if new elements were added and the beginnIndex is set
+      // do only if new elements were added and the beginIndex is set
       if (this._excludeBeginIndex <= excludeEndIndex && this._excludeBeginIndex >= 0) {
         this._excludes.push({begin:this._excludeBeginIndex, end:excludeEndIndex});
       }
-      // reset the beginn index
+      // reset the begin index
       this._excludeBeginIndex = -1;
     },
 
@@ -787,7 +787,7 @@ qx.Class.define("inspector.Inspector", {
      * @internal
      *
      * @return {Array} A list of objects containing two values
-     *      begin - the beginn of the exclusion index
+     *      begin - the begin of the exclusion index
      *      end   - the end of the exclusion index
      */
     getExcludes: function() {
@@ -837,7 +837,7 @@ qx.Class.define("inspector.Inspector", {
         this._createPropertyEditor();
       }
       this._propertyEditor.open();
-      // set the current widget if the editor is opend
+      // set the current widget if the editor is opened
       if (this._widget != null) {
         this._propertyEditor.setWidget(this._widget);
       }
@@ -990,7 +990,7 @@ qx.Class.define("inspector.Inspector", {
      * object ids to the excludes array and setting the default values.
      */
     _createConsole: function() {
-      // start the exclusion stategie
+      // start the exclusion stategy
       this.beginExclusion();
       // create the console
       this._console = new inspector.console.Console(this, inspector.Inspector.CONSOLE_CAPTION_TITLE);
@@ -1009,7 +1009,7 @@ qx.Class.define("inspector.Inspector", {
      * object ids to the excludes array and setting the default values.
      */
     _createObjectFinder: function() {
-      // start the exclusion stategie
+      // start the exclusion stategy
       this.beginExclusion();
       // create the property editor window
       this._objectFinder = new inspector.objectFinder.ObjectFinder(this, inspector.Inspector.OBJECT_CAPTION_TITLE);
@@ -1028,7 +1028,7 @@ qx.Class.define("inspector.Inspector", {
      * object ids to the excludes array and setting the default values.
      */
     _createWidgetFinder: function() {
-      // start the exclusion stategie
+      // start the exclusion stategy
       this.beginExclusion();
       // create the widget finder window
       this._widgetFinder = new inspector.widgetFinder.WidgetFinder(this, inspector.Inspector.WIDGET_CAPTION_TITLE);
@@ -1047,7 +1047,7 @@ qx.Class.define("inspector.Inspector", {
      * object ids to the excludes array and setting the default values.
      */
     _createPropertyEditor: function() {
-      // start the exclusion stategie
+      // start the exclusion stategy
       this.beginExclusion();
       // create the property editor window
       this._propertyEditor = new inspector.propertyEditor.PropertyEditor(this, inspector.Inspector.PROPERTY_CAPTION_TITLE);
@@ -1078,9 +1078,9 @@ qx.Class.define("inspector.Inspector", {
     *********************************
     */
     /**
-     * Create the atom which will be layed over the application to catch
+     * Create the atom which will be placed above the application to catch
      * the selections during the find mode. Also register the handlers which
-     * are responsible for handling the mousemoce and click events.
+     * are responsible for handling the mousemove and click events.
      */
     _createCatchClickLayer: function() {
       // initialize the layer to catch the clicks
@@ -1097,11 +1097,11 @@ qx.Class.define("inspector.Inspector", {
 
       // register the handler to catch the clicks and select the clicked widget
       this._catchClickLayer.addEventListener("click", function(e) {
-        // hide the layer that chatches the click
+        // hide the layer that catches the click
         this._catchClickLayer.hide();
         // disable the find button in the menu
         this._menu.resetFindButton();
-        // get the curent mouse position
+        // get the current mouse position
         var xPosition = e.getClientX();
         var yPosition = e.getClientY();
         // search the widget at the current position
@@ -1112,12 +1112,12 @@ qx.Class.define("inspector.Inspector", {
 
       // register the mousemove handler
       this._catchClickLayer.addEventListener("mousemove", function(e) {
-        // get the curent mouse position
+        // get the current mouse position
         var xPosition = e.getClientX();
         var yPosition = e.getClientY();
         // search the widget at the current position
         var element = this._searchWidget(qx.ui.core.ClientDocument.getInstance(), xPosition, yPosition, "");
-        // highlight the widget unter the mouse
+        // highlight the widget under the mouse pointer
         this._highlight(element.getElement());
       }, this);
     },
@@ -1193,7 +1193,7 @@ qx.Class.define("inspector.Inspector", {
 
     /**
      * Checks for the cookies which store the state of the opened or closed windows.
-     * If a window was opened on relaod, the function opens that window.
+     * If a window was opened on reload, the function opens that window.
      */
     __reopenWindows: function() {
       // check if there is a cookie stored that the console was opened
