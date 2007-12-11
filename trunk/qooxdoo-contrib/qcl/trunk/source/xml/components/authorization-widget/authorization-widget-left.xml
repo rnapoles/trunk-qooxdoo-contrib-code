@@ -4,12 +4,14 @@
 	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
 					
 	<!-- tree -->
+	<qx:verticalBoxLayout width="100%" height="100%">
 	<qx:virtualTree
 		id="authConfigLeftTree" 
-		left="0" top="0" width="100%" height="100%"
+		left="0" top="0" width="100%" height="1*"
 		backgroundColor="white" border="inset"
 		selectionMode="multipleInterval"
 		showCellFocusIndicator="false"
+		statusBarVisible="false"
 		alwaysShowOpenCloseSymbol="true"
 		contextMenu="contextMenuAuthConfig"
 
@@ -18,7 +20,7 @@
 		sortAfterDrop="true"
 		allowDragOut="false"
 		enableDragDrop="true"
-		
+		serviceName="application.security"
 		dataBinding="true"
 		serviceMethodUpdateClient="getUsersAndRoles">
    				
@@ -32,9 +34,12 @@
 			<qx:permission name="qcl.auth.permissions.manage" />
 			
 			<!-- permission to create new item -->
-			<qx:permission name="qcl.auth.permissions.user.create"
-				updateOnMessage="qcl.auth.messages.changeItem">
+			<qx:permission name="qcl.auth.permissions.user.create">
+				<qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition><![CDATA[
+					console.log("qcl.auth.permissions.user.create");
+					console.log(authConfigWindow.getUserData("currentNodeType"));
+					console.log(authConfigWindow.getUserData("currentTree") == this);
 					return (
 						authConfigWindow.getUserData("currentNodeType") == "qcl.auth.types.Role"
 						&& authConfigWindow.getUserData("currentTree") == this
@@ -48,7 +53,7 @@
 			<!-- permission to remove item from role -->
 			<qx:permission 
 				name="qcl.auth.permissions.item.remove"
-				updateOnMessage="qcl.auth.messages.changeItem">
+				><qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition>
 					<![CDATA[
 					// only allow delete if node is a user (left) or permission (right)
@@ -81,7 +86,7 @@
 			<!-- permission to delete item -->
 			<qx:permission 
 				name="qcl.auth.permissions.item.delete"
-				updateOnMessage="qcl.auth.messages.changeItem">
+				><qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition>
 					<![CDATA[
 					// only allow delete if node is a user (left) or in the right tree (additional condition is added there)
@@ -112,7 +117,7 @@
 			<!-- permission to edit item -->
 			<qx:permission 
 				name="qcl.auth.permissions.item.edit"
-				updateOnMessage="qcl.auth.messages.changeItem">
+				><qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition>
 					<![CDATA[
 					return (
@@ -129,17 +134,14 @@
 		<!-- EVENTS & MESSAGES -->	
 
 		<!-- messages triggering a (re)load -->
-		<qx:messageSubscriber filter="qcl.auth.messages.reload">
-			// set service name from application name
-			// todo: rewrite this
-			
-			var appClassName = qx.core.Init.getInstance().getApplication().classname;
-			var appName	= appClassName.substring(0,appClassName.indexOf("."));
-			this.setUserData( "servicePrefix", appName + ".");
-			this.setServiceName( appName + ".auth.user");
-			
+		<qx:messageSubscriber filter="qcl.auth.messages.reload">			
+			<![CDATA[
+			// set service method
+			this.setServiceName(authConfigWindow.getUserData("serviceName"));
+
 			// (re)load tree
 			this.getDataModel().clearData(); this.updateClient();
+			]]>
 		</qx:messageSubscriber>
 		
 		<!-- focus -->
@@ -169,29 +171,11 @@
 			var node = event.getData()[0];
 			if ( ! node ) return;
 			
-			// determine and save node type
+			// save current node and notify subscribers
 			var nodeType = this.getNodeType(node);  
-			authConfigWindow.setUserData("currentNodeType",nodeType);
-
-			// get service name from application name
-			var appClassName = qx.core.Init.getInstance().getApplication().classname;
-			var appName	= appClassName.substring(0,appClassName.indexOf("."));
-						
-			var item = null;
-			switch (nodeType)
-			{
-				case "qcl.auth.types.User":
-					item = {
-						service : appName + ".auth.user",
-						id			: node.data.id
-					};
-					break;			
-			}
-			
-			authConfigWindow.setUserData("currentItem",item);
-			authConfigWindow.setUserData("currentNode",node);
 			node.data.sourceTree = this;
-			qx.event.message.Bus.dispatch( "qcl.auth.messages.changeItem",item );
+			authConfigWindow.setUserData("currentNodeType",nodeType);
+			authConfigWindow.setUserData("currentNode",node);
 			qx.event.message.Bus.dispatch( "qcl.auth.messages.changeSelection",node );
 			
 		</qx:eventListener>
@@ -208,6 +192,7 @@
 		<!-- drag & drop -->
 		
 		<qxt:script>
+			<![CDATA[
 			// additional supportsDrop check (hooks into MDragAndDropSupport)
 			// to prevent to drop on parents that already contain a reference/copy of itself
 			
@@ -236,6 +221,7 @@
 				}
 				return true;
 			}
+			]]>
 		</qxt:script>
 		
 		<qx:eventListener type="dragdrop">
@@ -254,9 +240,9 @@
 				var sourceNodeRoleId  = this.nodeGet(sourceNode.parentNodeId).data.id;
 				if ( action == "move" )
 				{
-					this.updateServer( this.getUserData( "servicePrefix") + "auth.user.removeFromRole", userId, sourceNodeRoleId );
+					this.updateServer( this.getServiceName() + ".removeUserFromRole", userId, sourceNodeRoleId );
 				}
-				this.updateServer( this.getUserData( "servicePrefix") + "auth.user.addToRole", 			userId, targetNodeRoleId );
+				this.updateServer( this.getServiceName() + ".addUserToRole", userId, targetNodeRoleId );
 			}, this);
 			
 			this.setUserData("dropData",dropData);
@@ -280,6 +266,7 @@
 		<!-- create a new user -->
 		
 		<qx:messageSubscriber filter="qcl.auth.commands.user.create">
+			<![CDATA[
 			var newName = prompt(this.tr("Please enter login name of new user"));
 			if ( ! newName ) return;
 			roleNode = authConfigWindow.getUserData("currentNode");
@@ -288,14 +275,12 @@
 				qx.event.message.Bus.dispatch("error-client", "Cannot create user - invalid parent node.");
 				return;
 			}
-			this.updateServer( this.getUserData( "servicePrefix") + "auth.user.create", newName, roleNode.data.id );
+			this.updateServer( this.getServiceName() + ".createItem", "user", newName, roleNode.data.id );
+			]]>
 		</qx:messageSubscriber>
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.user.created">
-			var id   = message.getData();
-			var parentNodeId = authConfigWindow.getUserData("currentNode").data.id;
-			var item = { id	: id, service : this.getUserData( "servicePrefix") + "auth.user"	};
-			qx.event.message.Bus.dispatch( "qcl.auth.messages.changeItem",item );				
+			// todo: create only subnode			
 			this.getDataModel().clearData(); this.updateClient();
 		</qx:messageSubscriber>
 				
@@ -308,15 +293,13 @@
 					namedId			= node.data.namedId,
 					name 				= node.data.name,
 					nodeType 		= this.getNodeType(node),
-					shortType		= nodeType.substr(nodeType.lastIndexOf(".")+1),
 					parentNode	= this.nodeGet(node.parentNodeId),
 					parentId		= parentNode.data ? parentNode.data.id : null,
-					service			= this.getUserData( "servicePrefix") + "auth." + shortType.toLowerCase() +  ".delete",
-					displayName	= shortType + " '" + ( name ? name : namedId )+ "'";
+					displayName	= " '" + ( name ? name : namedId )+ "'";
 					
 			if ( ! confirm ( "Do you really want to delete " + displayName + "?" ) ) return;
 			
-			this.updateServer( service, id, parentId )
+			this.updateServer( this.getServiceName() + ".deleteItem", type, id, parentId )
 			
 			]]>
 		</qx:messageSubscriber>
@@ -328,29 +311,27 @@
 		<!-- remove an item from a role -->
 		
 		<qx:messageSubscriber filter="qcl.auth.commands.item.remove">
+			<![CDATA[
 			var node 				= authConfigWindow.getUserData("currentNode"),
 					id					= node.data.id,
 					nodeType 		= this.getNodeType(node),
 					shortType		= nodeType.substr(nodeType.lastIndexOf(".")+1),
 					parentNode	= this.nodeGet(node.parentNodeId),
-					roleId			= parentNode.data.id,
-					service			= this.getUserData( "servicePrefix") + "auth." + shortType.toLowerCase() +  ".removeFromRole";
-					
-			this.updateServer(service, id, roleId );
+					roleId			= parentNode.data.id ;	
+				
+			this.updateServer( this.getServiceName() + ".remove" + shortType +  "FromRole" , id, roleId );
+			]]>
 		</qx:messageSubscriber>
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.user.roleRemoved">
 			// listen to message only if this is not a drag and drop session
 			if ( ! this.getUserData("dropData") )
 			{
-				console.log("user removed");
 				this.getDataModel().prune(authConfigWindow.getUserData("currentNode"),true);
 				this.getDataModel().setData();
 			}
 		</qx:messageSubscriber>
-		
-
-		
+				
 	</qx:virtualTree>	
-	
+	</qx:verticalBoxLayout>
 </qxt:include-definition>
