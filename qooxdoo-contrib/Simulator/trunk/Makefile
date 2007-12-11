@@ -110,7 +110,7 @@ simulator-javascript:
 	)
 
 run-simulation-showcase:
-	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar;$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
+	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
 	java org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/showcase/test_showcase.js \
 	)
 
