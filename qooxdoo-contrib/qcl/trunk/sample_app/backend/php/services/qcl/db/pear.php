@@ -16,8 +16,8 @@ class qcl_db_pear extends qcl_db
 
 	/**
 	 * constructor
-	 * @param object reference	$master 	The instantiating object, either a model or a controller
-	 * @param string			$dsn			(optional) dsn parameter. If omitted, the default database is used
+	 * @param object 	$controller 	The controller object
+	 * @param string	$dsn			    (optional) dsn parameter. If omitted, the default database is used
 	 */
 	function __construct($controller, $dsn=null)
 	{
@@ -59,7 +59,7 @@ class qcl_db_pear extends qcl_db
 		$db->query("SET NAMES $encoding");
 		$db->query("SET CHARACTER_SET $encoding");
 		
-		$this->db = &$db;
+		$this->db =& $db;
 		
  		return $db;
 	}
@@ -131,7 +131,7 @@ class qcl_db_pear extends qcl_db
 	 * @param string 	$sql 				sql query
 	 * @param boolean  	$withColumnNames	if true (default), map values to column names
 	 */
-	function &getAllRows ( $sql, $withColumnNames=true )
+	function getAllRows ( $sql, $withColumnNames=true )
 	{
 		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
@@ -256,7 +256,14 @@ class qcl_db_pear extends qcl_db
 	 */
 	function disconnect()
 	{
-		$this->db->disconnect();
+		if ( $this->db )
+    {
+      $this->db->disconnect();
+    }
+    else
+    {
+      $this->warn("Trying to close a database handler that is not open.");
+    }
 	}
   
   /**

@@ -15,25 +15,17 @@ class qcl_db_model extends qcl_jsonrpc_model
   // instance variables
   //-------------------------------------------------------------
     
-	var $db; 				                // the database object
 	var $currentRecord;		          // the current record
 
-  /**
-   * set this to an array of table names which are going to be updated from
-   * 
-   * @var
-   */
-	var $updateTables = null;       
-         	
 	//-------------------------------------------------------------
   // internal methods
   //-------------------------------------------------------------
 
- /**
-  * constructor 
-  * @param object reference 	$controller
-  * @param boolean			$initialize 	if true(default), initialize attached database object
-  */
+  /**
+   * constructor 
+   * @param object reference 	$controller
+   * @param boolean			$initialize 	if true(default), initialize attached database object
+   */
 	function __construct($controller,$initialize=true)
   {
     parent::__construct(&$controller);
@@ -47,39 +39,40 @@ class qcl_db_model extends qcl_jsonrpc_model
    	// public non-rpc methods 
 	//-------------------------------------------------------------   
 
-
 	/**
 	 * initializes the internal database handler 
 	 * @param string 	$dsn 
 	 */
 	function init($dsn=null)
 	{
-    $this->db = &qcl_db::getSubclass(&$this->controller,$dsn);
-    $this->db->model = &$this;
+    $this->db =& qcl_db::getSubclass(&$this->controller,$dsn);
+    $this->db->model =& $this;
 	}
 	
  	/**
  	 * sets controller of this model and passes it to linked database object
+ 	 * overrrides qcl_jsonrpc_model method
+ 	 * @override
  	 * @param object $controller
  	 */
  	function setController ( $controller )
  	{
- 		$this->controller = &$controller;
+ 		parent::setController(&$controller);
  		if ( $this->db )
  		{
  			$this->db->setController(&$controller);	
  		} 
  	}
  	
-   	/**
-     * gets all database records or those that match a where condition
-     * @param string 			$where   	where condition to match, if null, get all
-     * @param string|null 		$orderBy 	(optional) order by field
-     * @param array|null		$fields		(optional) Array of fields to retrieve 
-     * @return Array Array of db record sets
-     */
-   	function getAll($where=null,$orderBy=null,$fields=null)
-   	{
+ 	/**
+   * gets all database records or those that match a where condition
+   * @param string 			$where   	where condition to match, if null, get all
+   * @param string|null 		$orderBy 	(optional) order by field
+   * @param array|null		$fields		(optional) Array of fields to retrieve 
+   * @return Array Array of db record sets
+   */
+ 	function getRowsWhere($where=null,$orderBy=null,$fields=null)
+ 	{
 		if ( $fields )
 		{
 			$fields = "`" . implode("`,`", $fields) . "`";
@@ -99,18 +92,18 @@ class qcl_db_model extends qcl_jsonrpc_model
 		{
 			$sql .= "ORDER BY `$orderBy`"; 
 		}
-        return $this->db->getAllRows($sql);   	
-   	}
+      return $this->db->getAllRows($sql);   	
+ 	}
 
-   	/**
-     * gets values of database columns that match a where condition
-     * @param string			$column		name of column 
-     * @param string 			$where   	where condition to match, if null, get all
-     * @param string|null 		$orderBy 	(optional) order by field
-     * @return array Array of values
-     */
-   	function getValues($column,$where,$orderBy=null)
-   	{	
+ 	/**
+   * gets values of database columns that match a where condition
+   * @param string			$column		name of column 
+   * @param string 			$where   	where condition to match, if null, get all
+   * @param string|null 		$orderBy 	(optional) order by field
+   * @return array Array of values
+   */
+ 	function getValues($column,$where,$orderBy=null)
+ 	{	
 		$sql = "SELECT `$column` FROM {$this->table} \n";
 		
 		if ($where)
@@ -121,16 +114,16 @@ class qcl_db_model extends qcl_jsonrpc_model
 		{
 			$sql .= "ORDER BY `$orderBy`"; 
 		}
-        return $this->db->getValues($sql);   	
-   	}
+    return $this->db->getValues($sql);   	
+ 	}
    
-   /**
-    * get and cache record by id 
-    * @param mixed $id
-    * @return Array Db record set
-    */
-   	function getById( $id = null )
-   	{
+  /**
+   * get and cache record by id 
+   * @param mixed $id
+   * @return Array Db record set
+   */
+ 	function getById( $id = null )
+ 	{
 		if ( $id !== null )
 		{
 			if ( ! is_numeric($id) )
@@ -138,10 +131,10 @@ class qcl_db_model extends qcl_jsonrpc_model
 				$id = "'$id'";
 			}
 			$this->currentRecord = $this->db->getRow("
-	            SELECT * 
+	      SELECT * 
 				FROM `{$this->table}` 
 				WHERE `{$this->key_id}` = $id;
-	        ");   				
+	    ");   				
 		}
 		else
 		{
@@ -150,8 +143,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 				$this->raiseError("qcl_db_model::getById : no id given, but no record cached!");
 			}
 		}
-        return $this->currentRecord;
-   }
+    return $this->currentRecord;
+  }
 
 	/**
 	 * gets the value of a column in a record without field->column translation 
@@ -243,9 +236,9 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @return int the id of the inserted row 
 	 */
 	function insert( $data )
-   	{
-   		return $this->db->insert( $this->table,$data );
-   	}
+ 	{
+ 		return $this->db->insert( $this->table,$data );
+ 	}
 
 	/**
 	 * updates a record in a table identified by id
@@ -287,7 +280,6 @@ class qcl_db_model extends qcl_jsonrpc_model
 		$this->db->deleteWhere ( $this->table, $where );
 	} 
 	
-
   /**
    * initializes tables, i.e. either creates them if they do not exist or
    * update them if their definition has changed. this should only be done
@@ -362,7 +354,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * adds table-related triggers.
-   * @todo: alert user that db user needs "SUPER" priviledges
+   * db user needs "SUPER" (mysql < 5.1) or "TRIGGER" (mysql >= 5.1) priviledges
    */
   function createTriggers($table)
   {
@@ -404,7 +396,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * gets table structure as sql create statement from database
-   * @return 
+   * @return string
    */
   function getTableCreateSql($table)
   {
@@ -479,7 +471,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function updateTableStructure($table)
   {
-    $this->info ( "Checking for an update for table $table...");
+    $this->info ( "Checking for an update for table '$table'...");
    
     // store sql to create this table
     if ( ! file_exists ( $this->getSqlFileName($table) ) )
@@ -495,11 +487,11 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       $this->db->updateTableStructure( $table, $normativeSql );
       $this->saveTableCreateSql($table);
-      $this->info ("Updated table {$table}.");
+      $this->info ("Updated table '$table'.");
     }
     else
     {
-      $this->info ( "$table is up to date.");
+      $this->info ( "Table '$table' is up to date.");
     }
   }
   

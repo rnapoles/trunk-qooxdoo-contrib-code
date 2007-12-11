@@ -19,7 +19,7 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	 **/
     function __construct( &$controller )
     {
-        $this->controller 	= &$controller;
+        $this->controller 	=& $controller;
     }
 
 	/**

@@ -1,4 +1,5 @@
 <?php
+require_once ("qcl/auth/common.php");
 
 /**
  * class providing data on roles
@@ -10,46 +11,45 @@
 
 class qcl_auth_role extends qcl_auth_common
 {    
+  //-------------------------------------------------------------
+  // class variables, override if necessary
+  //-------------------------------------------------------------
 
-   //-------------------------------------------------------------
-   // class variables, override if necessary
-   //-------------------------------------------------------------
-
-	var $table				= "roles";
-	var $icon 				= "icon/16/apps/system-users.png";
-	var $nodeType			= "qcl.auth.types.Role";
+	var $table				  = "roles";
+	var $icon 				  = "icon/16/apps/system-users.png";
+	var $nodeType			  = "qcl.auth.types.Role";
 	var $shortName			= "role";
 	var $foreignKey			= "roleId";
 	
-   //-------------------------------------------------------------
-   // internal methods 
-   //-------------------------------------------------------------
+  //-------------------------------------------------------------
+  // internal methods 
+  //-------------------------------------------------------------
    
-   /**
-    * constructor calls parent constructor for database intiatization
-    */
-   function __construct()
-   {
-		parent::__construct();
-   }   
+  /**
+   * constructor 
+   */
+  function __construct($controller)
+  {
+		parent::__construct(&$controller);
+  }   
    
-   //-------------------------------------------------------------
-   // public non rpc methods 
-   //-------------------------------------------------------------
-   
-   /**
-    * get list of permission (ids) that belong to a role
-    * @param mixed $roleRef role name or id
-    * @param boolean $getNamedIds 
-    * 	If true (default), get the names of the permissions,
-    * 	if null, return all the whole rows ,
-    * 	otherwise just ids
-    * @return array Array of string names or numeric ids 
-    */
-   function getPermissions($roleRef,$getNamedIds=true)
-   {
-		// hack- this should not be necessary
-		$this->permission 	= $this->getSingleton("class_bibliograph_auth_permission");
+  //-------------------------------------------------------------
+  // public non rpc methods 
+  //-------------------------------------------------------------
+  
+  /**
+   * get list of permission (ids) that belong to a role
+   * @param mixed $roleRef role name or id
+   * @param boolean $getNamedIds 
+   * 	If true (default), get the names of the permissions,
+   * 	if null, return all the whole rows ,
+   * 	otherwise just ids
+   * @return array Array of string names or numeric ids 
+   */
+  function getPermissions($roleRef,$getNamedIds=true)
+  {
+    $controller =& $this->getController();		
+    $permModel  =& $controller->getModel("permission");
 		
 		$roleId = $this->getIdFromRef($roleRef);
 		if ( ! $roleId )
@@ -63,23 +63,23 @@ class qcl_auth_role extends qcl_auth_common
 				SELECT
 					p.*
 				FROM 
-					`{$this->permission->table}` as p,
+					`{$permModel->table}` as p,
 					`{$this->table_link_roles_permissions}` as l
 				WHERE
-					p.`{$this->permission->key_id}` = l.`{$this->permission->foreignKey}`
+					p.`{$permModel->key_id}` = l.`{$permissionModel->foreignKey}`
 					AND l.`{$this->foreignKey}` = $roleId
 			"); 
 
 		}
 		$rows = $this->db->getAllRows("
 			SELECT
-				p.`{$this->permission->key_id}` as id,
-				p.`{$this->permission->key_namedId}` as namedId
+				p.`{$permModel->key_id}` as id,
+				p.`{$permModel->key_namedId}` as namedId
 			FROM 
-				`{$this->permission->table}` as p,
+				`{$permModel->table}` as p,
 				`{$this->table_link_roles_permissions}` as l
 			WHERE
-				p.`{$this->permission->key_id}` = l.`{$this->permission->foreignKey}`
+				p.`{$permModel->key_id}` = l.`{$permModel->foreignKey}`
 				AND l.`{$this->foreignKey}` = $roleId
 		");
 		
@@ -89,22 +89,24 @@ class qcl_auth_role extends qcl_auth_common
 			$result[] = $getNamedIds ? $row['namedId'] : (int) $row['id'];
 		}
 		return $result;
-   }   
+  }   
 
-   /**
-    * get a list of roles for one or all user
-    * @param mixed $userId null for all, array for a list of and integer for a single user id
-    * @return array An array, key: userId, values: array of roleIds
-    */
-   function getByUserId($userId = null)
-   {
-		
-		$result = array();
+  /**
+   * get a list of roles for one or all user
+   * @param mixed $userId null for all, array for a list of and integer for a single user id
+   * @return array An array, key: userId, values: array of roleIds
+   */
+  function getByUserId($userId = null)
+  {
+		$controller =&  $this->getController();
+    $userModel  =&  $controller->getModel("user");
+    
+    $result = array();
 		$sql = "SELECT * FROM {$this->table_link_user_roles} ";
 		if ( ! is_null ( $userId ) )
 		{
 			$userIdList = implode (",", (array) $userId );
-			$sql .= "WHERE `{$this->user->foreignKey}` IN ($userIdList)";
+			$sql .= "WHERE `{$userModel->foreignKey}` IN ($userIdList)";
 		}
 		$rows = $this->db->getAllRows($sql);
 		foreach ( $rows as $row )
@@ -113,17 +115,7 @@ class qcl_auth_role extends qcl_auth_common
 			$roleId = $row[$this->foreignKey];
 			$result[$userId][] = $roleId; 
 		}
-		
 		return $result;
-   } 
-
-     
-   //-------------------------------------------------------------
-   // public rpc methods 
-   //-------------------------------------------------------------
-
-
+  } 
 }
-
-
 ?>

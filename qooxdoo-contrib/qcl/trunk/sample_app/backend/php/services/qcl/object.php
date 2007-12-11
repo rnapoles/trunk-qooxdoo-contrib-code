@@ -105,7 +105,7 @@ class qcl_object extends patched_object {
   
   /**
    * load file for class
-   * @return 
+   * @return string file path
    * @param $classname Object
    */
   function includeClassfile ( $classname )
@@ -117,11 +117,15 @@ class qcl_object extends patched_object {
     }
       
     // load class file
-    require_once ( $path );    
+    require_once ( $path ); 
+    
+    return $path;
+   
   }
   
   /**
    * mixing in methods of another class
+   * @todo: adapt for PHP5
    * @return void
    * @param $classname class name
    */
@@ -137,17 +141,17 @@ class qcl_object extends patched_object {
 	 */
 	function &setSingleton( $instance ) 
 	{
-        $classname = get_class ( $instance );
-        $GLOBALS['qcl_jsonrpc_singletons'][$classname] = &$instance;
-        return $instance;
-    }
+    $classname = get_class ( $instance );
+    $GLOBALS['qcl_jsonrpc_singletons'][$classname] =& $instance;
+    return $instance;
+  }
 	
 	/**
 	 * gets singleton instance when dealing with object copy
 	 */
 	function &getInstance()
 	{
-        return $this->getSingleton(get_class(&$this));
+    return $this->getSingleton(get_class(&$this));
 	}
 	
 	/**
@@ -164,13 +168,13 @@ class qcl_object extends patched_object {
 	 */
 	function &getSingleton( $classname, $controller = null ) 
 	{
-        $instance = &$GLOBALS['qcl_jsonrpc_singletons'][$classname];
-        if ( ! $instance )  
-        {
-            $instance = $this->getNewInstance( $classname, &$controller );
-        }
-        return $instance;
+    $instance =& $GLOBALS['qcl_jsonrpc_singletons'][$classname];
+    if ( ! $instance )  
+    {
+      $instance = $this->getNewInstance( $classname, &$controller );
     }
+    return $instance;
+  }
 	
 	/**
 	 * gets new instance of classname
@@ -183,53 +187,53 @@ class qcl_object extends patched_object {
 	 */
 	function &getNewInstance( $classname, $controller = null ) 
 	{       
-        // check for class existence
-        if ( ! class_exists ( $classname ) ) 
-        {
-          $this->includeClassFile($classname);
-          
-          // check class
-          if ( ! class_exists ( $classname) )
-          {
-        		$this->raiseError ( get_class($this) . "::getSingleton : Cannot instantiate class '$classname - file '" . addslashes($path) .  "' does not contain class definition." );    	
-          }
-        }
-        
-        // instantiate object
-        if ( is_a ( $this, "qcl_jsonrpc_controller" ) )
-        {
-        	$controller = &$this;
-        }
-        $instance = &new $classname(&$controller);
-        return $instance;
+    // check for class existence
+    if ( ! class_exists ( $classname ) ) 
+    {
+      $path = $this->includeClassFile($classname);
+      
+      // check class
+      if ( ! class_exists ( $classname) )
+      {
+    		$this->raiseError ( get_class($this) . "::getNewInstance : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );    	
+      }
     }
     
+    // instantiate object
+    if ( ! $controller and is_a ( $this, "qcl_jsonrpc_controller" ) )
+    {
+    	$controller =& $this;
+    }
+    $instance =& new $classname(&$controller);
+    return $instance;
+  }
     
-   	/**
-   	 * save a variable in the session 
-   	 * the variables will be available on a class basis, the namespace of the 
-   	 * variables is the class name.
-   	 * @param string	$name	name of the variable
-   	 * @param mixed		$data	data to be saved
-   	 */
-   	function setSessionVar ( $name, $data )
-   	{
-   		$varName = get_class($this);
-   		$_SESSION[$varName][$name] = &$data;
-   	}
-   	
-   	/**
-   	 * get a variable from the session 
-   	 * the variables are available on a class basis, the namespace of the 
-   	 * variables is the class name.
-   	 * @param string	$name	name of the variable
-   	 * @return reference a  reference to the session variable
-   	 */
-   	function &getSessionVar ( $name )
-   	{
-   		$varName = get_class($this);
-   		return $_SESSION[$varName][$name];
-   	}
+    
+ 	/**
+ 	 * save a variable in the session 
+ 	 * the variables will be available on a class basis, the namespace of the 
+ 	 * variables is the class name.
+ 	 * @param string	$name	name of the variable
+ 	 * @param mixed		$data	data to be saved
+ 	 */
+ 	function setSessionVar ( $name, $data )
+ 	{
+ 		$varName = get_class($this);
+ 		$_SESSION[$varName][$name] =& $data;
+ 	}
+ 	
+ 	/**
+ 	 * get a variable from the session 
+ 	 * the variables are available on a class basis, the namespace of the 
+ 	 * variables is the class name.
+ 	 * @param string	$name	name of the variable
+ 	 * @return reference a  reference to the session variable
+ 	 */
+ 	function &getSessionVar ( $name )
+ 	{
+ 		$varName = get_class($this);
+ 		return $_SESSION[$varName][$name];
+ 	}
 
 	/**
 	 * stores the object or arbitrary data in the filesystem.
