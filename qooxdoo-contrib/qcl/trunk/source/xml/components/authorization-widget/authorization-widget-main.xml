@@ -19,8 +19,23 @@
 		width="500" height="400" 
 		caption="Configure Application Access / Authorizations"
 		showMinimize="false" showClose="true" 
-		modal="false" onAppear="this.centerToBrowser()">
+		modal="false">
+
+		<qxt:script>
+			<![CDATA[
+			// hack: configure service path with application name. this is very ugly!
+			// todo: find a more elegant way of solving this, i.e. by subclassing the 
+			// application class
+			var appClassName = qx.core.Init.getInstance().getApplication().classname;
+			var appName	= appClassName.substring(0,appClassName.indexOf("."));
+			authConfigWindow.setUserData("serviceName",appName + ".security" );
+			]]>
+		</qxt:script>
 		
+		<qx:eventListener type="appear">
+			this.centerToBrowser();
+		</qx:eventListener>
+
 		<qx:messageSubscriber filter="qcl.auth.commands.access.manage">
 			this.show();
 			qx.event.message.Bus.dispatch("qcl.auth.messages.reload");
