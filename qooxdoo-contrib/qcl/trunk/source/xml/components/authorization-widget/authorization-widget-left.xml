@@ -37,9 +37,6 @@
 			<qx:permission name="qcl.auth.permissions.user.create">
 				<qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition><![CDATA[
-					console.log("qcl.auth.permissions.user.create");
-					console.log(authConfigWindow.getUserData("currentNodeType"));
-					console.log(authConfigWindow.getUserData("currentTree") == this);
 					return (
 						authConfigWindow.getUserData("currentNodeType") == "qcl.auth.types.Role"
 						&& authConfigWindow.getUserData("currentTree") == this
