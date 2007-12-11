@@ -433,8 +433,8 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
 		$result 		= array();
         
     // get ordered lists of roles and permissions 
-		$roles 				    = $roleModel->getRowsWhere(null,$roleModel->key_descriptiveName);
-		$permissions		  = $permModel->getRowsWhere(null,$permModel->key_namedId);
+		$roles 				    = $roleModel->getAllRows($roleModel->key_descriptiveName);
+		$permissions		  = $permModel->getAllRows($roleModel->key_descriptiveName . "`,`" . $permModel->key_namedId );
 		$permissionRoles	= $permModel->getByRoleId();
 		$parentNodeIds		= array();
 		
