@@ -37,7 +37,7 @@
 				</qx:condition>
 			</qx:permission>
 
-			<qx:permission name="qcl.auth.permissions.permission.create"
+			<qx:permission name="qcl.auth.permissions.create"
 				><qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition>
 					<![CDATA[
