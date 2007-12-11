@@ -1,39 +1,36 @@
 <?php
 
 // dependencies
-require_once ("qcl/object.php");
+require_once ("qcl/jsonrpc/object.php");
 
 /**
  * simple controller-model architecture for jsonrpc
  * common base class for models
  */
 
-class qcl_jsonrpc_model extends qcl_object
+class qcl_jsonrpc_model extends qcl_jsonrpc_object
 {
 	//-------------------------------------------------------------
-    // instance variables
-    //-------------------------------------------------------------
+  // instance variables
+  //-------------------------------------------------------------
     
 	var $controller; // the controller object 
 	
 	//-------------------------------------------------------------
-    // internal methods
-    //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
 
-   /**
-    * constructor 
-    */
+ /**
+  * constructor 
+  */
 	function __construct($controller=null)
-   	{
+  {
 		parent::__construct();
-		if ( is_object($controller) )
-		{
-			$this->setController(&$controller);	
-		}
+    $this->setController(&$controller);	
 	}   	
 
 	//-------------------------------------------------------------
-   	// public non-rpc methods 
+  // public methods 
 	//-------------------------------------------------------------   
 
  	/**
@@ -43,7 +40,14 @@ class qcl_jsonrpc_model extends qcl_object
  	 */
  	function setController ( $controller )
  	{
- 		$this->controller = &$controller; 
+		if ( is_a( $controller,"qcl_jsonrpc_controller" ) )
+		{
+			$this->controller =& $controller;
+		}
+    else
+    {
+			$this->raiseError ("cql_jsonrpc_model : No controller object provided for " . get_class($this) . ". Received a " . get_class($controller) . " object." );
+    }
  	}
  	
  	/**
@@ -52,7 +56,7 @@ class qcl_jsonrpc_model extends qcl_object
  	 */
  	function &getController()
  	{
- 		$controllerSingleton = &$this->controller->getInstance();
+ 		$controllerSingleton =& $this->controller->getInstance();
  		if ( is_object($controllerSingleton) )
  		{
  			return $controllerSingleton;

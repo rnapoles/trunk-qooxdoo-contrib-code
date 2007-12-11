@@ -1,14 +1,18 @@
 <?php
 
 // dependencies
-require_once ("qcl/object.php");
+require_once ("qcl/jsonrpc/object.php");
+
+
+// constants
+define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");
 
 /**
  * simple controller-model architecture for jsonrpc
  * common base class for controllers
  */
 
-class qcl_jsonrpc_controller extends qcl_object
+class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 {
 
    //-------------------------------------------------------------
@@ -27,17 +31,22 @@ class qcl_jsonrpc_controller extends qcl_object
 	 * result value which will be serialized and returned to server
 	 */
 	var $result = array();
-		
 	
+  
+  /**
+   * models attached to this controller
+   */	
+	var $_models = array();
+  
 	//-------------------------------------------------------------
-    // internal methods
-    //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
 
-   /**
-    * constructor , configures the service
-    */
+  /**
+   * constructor , configures the service
+   */
 	function __construct()
-   	{
+  {
 		parent::__construct();
 		$this->configureService();		
 	}   	
@@ -61,14 +70,29 @@ class qcl_jsonrpc_controller extends qcl_object
 			 $currPath .= $serviceComponents[$i] . "/";
 			 
 			 // if config file exists, parse it and add/override config directives
-			 if ( file_exists ($currPath . "/service.ini.php") )
+			 if ( file_exists ($currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
 			 {
-			 	$config = parse_ini_file ( $currPath . "/service.ini.php", true);
+			 	$config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true);
 			 	$this->ini = array_merge ( $this->ini, $config );
 			 }
-		} 
+		}
+    
+    if ( ! is_array( $this->ini ) )
+    {
+      $this->warn("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
+    }
 	}
 
+	/**
+	* get service directory url
+	*/
+	function getServiceDirUrl($append="")
+	{
+		global $serviceComponents;
+		$serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
+		return $serverDirUrl . $serviceComponents[0] . "/" . $append;
+	}
+  
 	/**
 	 * gets a configuration value of the pattern "foo.bar.baz"
 	 * This retrieves the values set in the service.ini.php file, but 
@@ -89,7 +113,28 @@ class qcl_jsonrpc_controller extends qcl_object
 		}
 		return $value;
 	}
-	
+
+  /**
+   * gets a model
+   * @return object
+   * @param string $name 
+   */
+  function &getModel($name)
+  {
+    return $this->_models[$name];
+  }	
+  
+  /**
+   * saves a model
+   * @return void
+   * @param string $name 
+   * @param object $object 
+   */
+  function setModel($name,$object)
+  {
+    $this->_models[$name] =& $object;
+  }
+    
 	
 	/**
 	 * assemble a result array for the json response
@@ -107,7 +152,7 @@ class qcl_jsonrpc_controller extends qcl_object
 		}
 		else
 		{
-			$this->result[$first] = &$value;
+			$this->result[$first] =& $value;
 		}
 	}
 	
@@ -158,8 +203,8 @@ class qcl_jsonrpc_controller extends qcl_object
 	}
 
 	//-------------------------------------------------------------
-    // message polling - put this into a separate class
-    //-------------------------------------------------------------
+  // message polling - put this into a separate class
+  //-------------------------------------------------------------
 	
 	/**
 	 * server messages
@@ -172,7 +217,7 @@ class qcl_jsonrpc_controller extends qcl_object
 		$sessionId 	= session_id();
 		
 		// get messages from database and delete them
-		$db = $this->getSingleton("qcl_db_pear");
+		$db =& $this->getSingleton("qcl_db_pear");
 		if ( $requestId )
 		{
 			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className' AND `request_id` = '$requestId'";
@@ -225,21 +270,10 @@ class qcl_jsonrpc_controller extends qcl_object
 		);
 		
 		// insert messages into database
-		$db = $this->getSingleton("qcl_db_pear");
+		$db =& $this->getSingleton("qcl_db_pear");
 		$db->insert("messages",$row);
 		
 		return;
-	}
-
-	
-	/**
-	* get service directory url
-	*/
-	function getServiceDirUrl($append="")
-	{
-		global $serviceComponents;
-		$serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
-		return $serverDirUrl . $serviceComponents[0] . "/" . $append;
 	}
 
 	 

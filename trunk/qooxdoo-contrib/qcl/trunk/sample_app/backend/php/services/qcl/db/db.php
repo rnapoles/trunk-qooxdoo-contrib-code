@@ -42,16 +42,16 @@ class qcl_db extends qcl_object
   var $model = null;
   
 	/**
-	 * constructor, reads database configuration
-	 * @param object reference 	$controller	
-	 * @param string			$dsn			(optional) dsn parameter. If omitted, the default database is used		
+	 * constructor
+	 * @param object 	$controller 	(optional) A controller object, if called from a model
+	 * @param string	$dsn			    (optional) dsn parameter. If omitted, the default database is used
 	 */
-	function __construct($controller,$dsn=null)
+	function __construct($controller=null,$dsn=null)
 	{
 		parent::__construct();
 		if ( is_a( $controller, "qcl_jsonrpc_controller" ) )
 		{
-			$this->controller = &$controller;
+			$this->controller =& $controller;
 		}
 		$this->init($dsn);	
 	}
@@ -62,19 +62,19 @@ class qcl_db extends qcl_object
 	
 	/**
 	 * static method which returns a database object based on the configuration file
-	 * @param object reference $controller
-	 * @param string			$dsn			(optional) dsn parameter. If omitted, the default database is used.	
+	 * @param object 	$controller 	The controller object
+	 * @param string	$dsn			    (optional) dsn parameter. If omitted, the default database is used
 	 * @return always returns a PEAR object at the moment
 	 */
-	function &getSubclass($controller,$dsn=null)
+	function &getSubclass($controller=null,$dsn=null)
 	{
 		if ( ! is_a($controller,"qcl_jsonrpc_controller" ) )
 		{
-			$this->raiseError ("Cannot instantiate " . get_class($this) . " object: No controller object provided.");
+			$this->raiseError ("cql_db : Cannot instantiate " . get_class($this) . " object: No controller object provided. Received a " . get_class($controller) . " object.");
 		}
 
 		require_once ("qcl/db/pear.php");
-		$db = &new qcl_db_pear(&$controller,$dsn);
+		$db =& new qcl_db_pear(&$controller,$dsn);
 
 		return $db;
 	}		
@@ -89,21 +89,31 @@ class qcl_db extends qcl_object
 	 */
 	function init( $dsn = null )
 	{
-		if ( $dsn )
+    if ( $dsn )
 		{
 			$this->dsn 	= $dsn;
 		}
-		elseif ( $this->controller )
+		elseif ( is_a($this->controller,"qcl_jsonrpc_controller" ) )
 		{
 			$this->dsn 	= $this->controller->getConfigValue("database.dsn");	
 		}
-		
+    else
+    {
+  		$this->raiseError ("cql_db : Cannot initialize database object " . 
+        get_class($this) . ". No controller found.");    
+    }
+    
+    // if we have a valid dsn, initialize the database
 		if ( $this->dsn )
 		{
       $this->type      = substr($this->dsn,0,strpos($this->dsn,":"));
       $this->database  = substr($this->dsn,strrpos($this->dsn,"/")+1);
  			$this->db        = $this->connect();	
 		}
+    
+    // todo: we cannot throw an error here because sometime the database gets
+    // initialized later. but this leads to errors which are difficult to trace
+    // if we are supposed to initialize here, but the dsn is missing.
 	}
 
 	/**
@@ -211,13 +221,6 @@ class qcl_db extends qcl_object
 	 */
 	function disconnect() {}
 	
-	/**
-	 * destructor, disconnects from database
-	 */
-	function __destruct()
-	{
-		$this->disconnect();
-	}
 }
 
 

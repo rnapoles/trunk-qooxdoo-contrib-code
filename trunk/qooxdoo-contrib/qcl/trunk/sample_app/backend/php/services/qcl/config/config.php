@@ -24,22 +24,21 @@ require_once ("qcl/jsonrpc/model.php");
 class qcl_config extends qcl_jsonrpc_model
 {    
 	//-------------------------------------------------------------
-   	// class variables, can be overridden
+  // class variables, can be overridden
 	//------------------------------------------------------------- 
 
 	var $types = array("string","number","boolean");
 
 	//-------------------------------------------------------------
-   	// internal methods
+  // internal methods
 	//------------------------------------------------------------- 
    
-   	/**
-   	 * constructor calls parent constructor
-     */
-   	function __construct($controller)
-   	{
+ 	/**
+ 	 * constructor calls parent constructor
+   */
+ 	function __construct($controller)
+ 	{
 		parent::__construct(&$controller);
-		$this->user = &$controller->user;
 	}
 
 	//-------------------------------------------------------------
@@ -53,7 +52,7 @@ class qcl_config extends qcl_jsonrpc_model
 	function &getSubclass($controller)
 	{
 		require_once ("qcl/config/db.php");
-		$config = &new qcl_config_db(&$controller);
+		$config =& new qcl_config_db(&$controller);
 		return $config;
 	}
 

@@ -3,64 +3,68 @@
 // dependencies
 require_once ("qcl/jsonrpc/controller.php");
 require_once ("qcl/config/config.php");
-require_once ("qcl/locale/manager.php");
 
 /**
  * Service class providing data to the config manager on the client
  */
 
-class qcl_config_manager extends qcl_jsonrpc_controller
+class qcl_config_controller extends qcl_jsonrpc_controller
 {
 
 	//-------------------------------------------------------------
-   	// internal methods
+  // internal methods
 	//------------------------------------------------------------- 
    
-   	/**
-   	 * constructor 
-     */
-   	function __construct()
-   	{
-		parent::__construct();
-		$this->config = &qcl_config::getSubclass(&$this);
+ 	/**
+ 	 * constructor 
+   */
+ 	function __construct()
+ 	{
+  	// extending class MUST set a user model!
+    parent::__construct();
+    $configModel =& qcl_config::getSubclass(&$this);
+		$this->setModel("config", &$configModel);
 	}
 	
 	//-------------------------------------------------------------
-   	// public rpc methods 
-   	//-------------------------------------------------------------   
+ 	// public rpc methods 
+ 	//-------------------------------------------------------------   
    
-   	/**
-   	 * default update client method: retrieves all accessible config keys
-   	 * @param string $params[0] retrieve only subset starting with $params[0]
-   	 */
-   	function method_updateClient($params)
-   	{
-   		$mask 	= $params[0];
-   		$rows 	= $this->config->getAll( $mask );
-   		$result	= array();
-   		foreach ( $rows as $row )
-   		{
-   			unset($row[$this->config->key_id]);
-   			$result[$row[$this->config->key_name]] = $row;
-   		}
-   		$this->set( "configMap", $result );
-   		return $this->getResult(); 
-   	}
-   	
-   	/**
-   	 * default update server method: updates selected config keys
-   	 * @param object $params[1] map of configuration key values to update 
-   	 */
-   	function method_updateServer($params)
-   	{
-		$map = $params[1];
-		foreach( get_object_vars( $map ) as $key => $value )
+ 	/**
+ 	 * default update client method: retrieves all accessible config keys
+ 	 * @param string $params[0] retrieve only subset starting with $params[0]
+ 	 */
+ 	function method_updateClient($params)
+ 	{
+ 		$mask 	      = $params[0];
+    $configModel  = $this->getModel("config");
+ 		$rows 	      = $configModel->getAll( $mask );
+ 		$result	      = array();
+    
+ 		foreach ( $rows as $row )
+ 		{
+ 			unset($row[$configModel->key_id]);
+ 			$result[$row[$configModel->key_name]] = $row;
+ 		}
+ 		$this->set( "configMap", $result );
+ 		return $this->getResult(); 
+ 	}
+ 	
+ 	/**
+ 	 * default update server method: updates selected config keys
+ 	 * @param object $params[1] map of configuration key values to update 
+ 	 */
+ 	function method_updateServer($params)
+ 	{
+		$map          = (array) $params[1];
+    $configModel  = $this->getModel("config");
+    
+		foreach( $map as $key => $value )
 		{
-			$this->config->set( $key, $value );
+			$configModel->set( $key, $value );
 		}   		
-   		return $this->getResult(); 
-   	}
-
+ 		return $this->getResult(); 
+ 	}
    	
 	/**
 	 * creates a config property, overwriting any previous entry
@@ -78,7 +82,9 @@ class qcl_config_manager extends qcl_jsonrpc_controller
 	 */
 	function method_create($params)
 	{
-		$id = $this->config->create(
+		$configModel  = $this->getModel("config");
+    
+    $id = $configModel->create(
 			$params[1]->name, 
 			$params[1]->type, 
 			$params[1]->permissionRead, 
@@ -100,18 +106,19 @@ class qcl_config_manager extends qcl_jsonrpc_controller
 	 */
 	function method_update( $params )
 	{
-		$id 	= $params[1];
-		$key	= $params[2];
-		$value	= $params[3];
-		
-		$this->config->update($id,$key,$value);
+		$id 	        =  $params[1];
+		$key	        =  $params[2];
+		$value	      =  $params[3];
+		$configModel  =& $this->getModel("config");
+    
+		$configModel->update($id,$key,$value);
 		$this->addMessage( "qcl.config.messages.key.updated", $id );
 		
 		if ( $key == "value" )
 		{
-			$row = $this->config->getRowById($id);
+			$row = $configModel->getRowById($id);
 			$data = array();
-			$data[$row[$this->config->key_name]] = $row[$this->config->key_value]; 
+			$data[$row[$configModel->key_name]] = $row[$configModel->key_value]; 
 			$this->addMessage( "qcl.config.messages.server.changeConfigKey", $data );	
 		}
 		return $this->getResult();
@@ -127,7 +134,8 @@ class qcl_config_manager extends qcl_jsonrpc_controller
 	 */
 	function method_delete( $params )
 	{ 
-		$this->config->delete($params[1]);
+		$configModel =& $this->getModel("config");
+    $configModel->delete($params[1]);
 		return $this->getResult();
 	} 
  
@@ -142,7 +150,8 @@ class qcl_config_manager extends qcl_jsonrpc_controller
 	 */
 	function method_set( $params )
 	{
-		$this->config->set( $params[0], $params[1], $params[2] );
+		$configModel =& $this->getModel("config");
+    $configModel->set( $params[0], $params[1], $params[2] );
 		$data = array();
 		$data[$params[0]] = $params[1];
 		$this->addMessage( "qcl.config.messages.server.changeConfigKey", $data );
@@ -156,16 +165,19 @@ class qcl_config_manager extends qcl_jsonrpc_controller
 	 */
 	function method_getAll( $params )
 	{
-		$rows = $this->config->getAll( $params[0] );
+		$userModel    =& $this->getModel("user");
+    $configModel  =& $this->getModel("config"); 
+    $rows         =  $configModel->getAll( $params[0] );
+    
 		$table = array();
 		
 		foreach( $rows as $row )
 		{
-			$userId  	= $row[$this->config->key_userId];
-			$user		= $userId ? $this->user->getById($userId) : null;
-			$userName  	= $user ? $user[$this->user->key_namedId] : $userId ;
-			$row[$this->config->key_userId] = $userName;
-			$table[] = array_values($row);
+			$userId  	= $row[$configModel->key_userId];
+			$user		  = $userId ? $this->user->getById($userId) : null;
+			$userName = $user ? $user[$this->user->key_namedId] : $userId ;
+			$row[$configModel->key_userId] = $userName;
+			$table[]  = array_values($row);
 		}
 		$this->set( "tabledatamodel", $table );
 		return $this->getResult();
