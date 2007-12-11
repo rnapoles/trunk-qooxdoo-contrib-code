@@ -125,7 +125,7 @@ class qcl_auth_common extends qcl_db_model
     */
    function getAllNames()
    {
-		$rows = $this->getAll();
+		$rows = $this->getAllRows();
         $result = array();
         foreach ( $rows as $row )
         {

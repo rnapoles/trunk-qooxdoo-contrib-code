@@ -40,7 +40,7 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
   {
     if ( strstr($type,".") )
     {
-      return strtolower(substr($type,strpos($type,".")+1));
+      return strtolower(substr($type,strrpos($type,".")+1));
     }
     return $type;
   }
@@ -113,21 +113,22 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
    */
   function method_getItemData($params)
   {
-    $type     = (string)   $this->extractType($params[0]); 
+    $type     = (string)   $params[0]; 
     $itemId 	= (int)      $params[1];
     
     $result   = array();		
 
 		// get model record
-    $model = $this->getModel($type);
-		$itemData = $model->getById($itemId);
+    $type      =  $this->extractType($type);
+    $model     =& $this->getModel($type);
+		$itemData  =  $model->getById($itemId);
 
 		// convert to table data model
 		$data = array();
 		
 		foreach($itemData as $key => $value )
 		{
-			$meta = $this->meta[$key];
+			$meta = $model->meta[$key];
 			if ( ! is_array( $meta ) ) continue;
 			$data[]		= array($key,__($key),$value,$meta);
 		}

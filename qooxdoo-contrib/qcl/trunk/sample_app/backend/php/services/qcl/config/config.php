@@ -23,11 +23,7 @@ require_once ("qcl/jsonrpc/model.php");
 
 class qcl_config extends qcl_jsonrpc_model
 {    
-	//-------------------------------------------------------------
-  // class variables, can be overridden
-	//------------------------------------------------------------- 
 
-	var $types = array("string","number","boolean");
 
 	//-------------------------------------------------------------
   // internal methods

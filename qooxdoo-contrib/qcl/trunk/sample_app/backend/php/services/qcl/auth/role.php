@@ -111,7 +111,7 @@ class qcl_auth_role extends qcl_auth_common
 		$rows = $this->db->getAllRows($sql);
 		foreach ( $rows as $row )
 		{
-			$userId = $row[$this->user->foreignKey];
+			$userId = $row[$userModel->foreignKey];
 			$roleId = $row[$this->foreignKey];
 			$result[$userId][] = $roleId; 
 		}

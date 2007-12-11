@@ -45,18 +45,21 @@ class qcl_auth_permission extends qcl_auth_common
    */
  	function getByRoleId($roleId = null)
  	{
-		$result = array();
+		$controller =& $this->getController();
+    $roleModel  =& $controller->getModel("role");
+    
+    $result = array();
 		$sql = "SELECT * FROM {$this->table_link_roles_permissions} ";
 		if ( ! is_null ( $roleId ) )
 		{
 			$roleIdList = implode (",", (array) $roleId );
-			$sql .= "WHERE `{$this->role->foreignKey}` IN ($roleIdList)";
+			$sql .= "WHERE `{$roleModel->foreignKey}` IN ($roleIdList)";
 		}
 		$rows = $this->db->getAllRows($sql);
 		foreach ( $rows as $row )
 		{
 			$permissionId = $row[$this->foreignKey];
-			$roleId = $row[$this->role->foreignKey];
+			$roleId = $row[$roleModel->foreignKey];
 			$result[$permissionId][] = $roleId; 
 		}
 		return $result;
@@ -69,9 +72,11 @@ class qcl_auth_permission extends qcl_auth_common
    */
   function addToRole( $permissionRefs, $roleRefs )
   {
-  	$permissionRefs = (array) $permissionRefs;
+  	$controller =& $this->getController();
+    $roleModel  =& $controller->getModel("role");
+   	$permissionRefs = (array) $permissionRefs;
   	$roleRefs 		= (array) $roleRefs;
-  	
+    
   	foreach ($permissionRefs as $permissionRef)
   	{
     	$permissionId = $this->getIdFromRef($permissionRef);
@@ -82,13 +87,13 @@ class qcl_auth_permission extends qcl_auth_common
 
     	foreach ( $roleRefs as $roleRef )
     	{
-    		$roleId = $this->role->getIdFromRef($roleRef);
+    		$roleId = $roleModel->getIdFromRef($roleRef);
     		if ( !$roleId )
     		{
     			$this->raiseError("qcl_auth_permission::addToRole : Invalid role reference: $roleRef");
     		} 
     		$row = array();
-    		$row[$this->role->foreignKey] = $roleId;
+    		$row[$roleModel->foreignKey] = $roleId;
     		$row[$this->foreignKey] = $permissionId; 
     		$this->db->insert($this->table_link_roles_permissions,$row);
     	}
@@ -103,6 +108,8 @@ class qcl_auth_permission extends qcl_auth_common
    */
   function removeFromRole( $permissionRefs, $roleRefs )
   {
+  	$controller =& $this->getController();
+    $roleModel  =& $controller->getModel("role");
   	$permissionRefs = (array) $permissionRefs;
   	$roleRefs 	= (array) $roleRefs;
   	
@@ -117,7 +124,7 @@ class qcl_auth_permission extends qcl_auth_common
     	
     	foreach ( $roleRefs as $roleRef )
     	{
-    		$roleId = $this->role->getIdFromRef($roleRef);
+    		$roleId = $roleModel->getIdFromRef($roleRef);
     		if ( !$roleId )
     		{
     			$this->raiseError("qcl_auth_permission::removeFromRole : Invalid role reference: $roleRef");
@@ -125,7 +132,7 @@ class qcl_auth_permission extends qcl_auth_common
 				$this->db->execute("
 					DELETE FROM `{$this->table_link_roles_permissions}`
 					WHERE 	`{$this->foreignKey}` = $permissionId
-					AND 	`{$this->role->foreignKey}` = $roleId
+					AND 	`{$roleModel->foreignKey}` = $roleId
 				");
     	}
   	}
