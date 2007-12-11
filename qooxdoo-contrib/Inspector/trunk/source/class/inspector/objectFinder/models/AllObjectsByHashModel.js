@@ -69,7 +69,7 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
       }
             
       // apply a filfer if needed
-      if (filter != null) {
+      if (filter != null || filter != "") {
         return this._filter(data, filter);
       }
       // return the data
