@@ -40,7 +40,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     // add a listener which adds the search test if the focus is lost and the textfield ist empty
     this.addEventListener("focusout", this._focusOutListener, this);  
     // add the filter function to the search field
-    this.addEventListener("input", this._inputListener, this);		
+    this.addEventListener("input", this._inputListener, this);    
   },
 
 
@@ -51,19 +51,35 @@ qx.Class.define("inspector.components.SearchTextField", {
   */
   properties: {
 
+    /**
+     * The time in ms between a change of the value in the 
+     * textfield and the execution of the executionFunction.
+     */
     refreshTime: {
       init: 300,
       nullable: false
     },
     
+    /**
+     * This is the this reference in which will be used the executionFunction.
+     */
     thisReference: {
       nullable: false
     },
     
+    
+    /**
+     * The function executed on a change of the value in the textfield with a delay.
+     */
     executionFunction: {
       nullable: false
     },
     
+    
+    /**
+     * The defaut value which pill be added to the textfield if it is empty and 
+     * removed if a user ants to enter a new search term.
+     */
     defaultValue: {
       init: "Search..."
     }
@@ -82,14 +98,18 @@ qx.Class.define("inspector.components.SearchTextField", {
        ATTRIBUTES
     *********************************
     */        
-
     _searchTimer: null,
-    
+ 
+   
     /*
     *********************************
        PROTECTED
     *********************************
     */
+		/**
+		 * The listener which removes the default search value form the textfield.
+		 * @param e {Event} ClickEvent
+		 */
     _clickListener: function(e) {
       // select the whole text
       e.getTarget().setSelectionStart(0);
@@ -100,6 +120,11 @@ qx.Class.define("inspector.components.SearchTextField", {
       }
     },  
     
+		
+		/**
+		 * Adds the default search value to the textfield if the valus is not set by the user. 
+		 * @param e {Event}
+		 */
     _focusOutListener: function(e) {
       // if the textfield is empty, add the search term
       if (this.getComputedValue() == "") {
@@ -107,6 +132,12 @@ qx.Class.define("inspector.components.SearchTextField", {
       }
     }, 
     
+		
+		/**
+		 * Executes the given function with the given this reference after 
+		 * the input of the textfield has changed an thi given time is over.
+		 * @param e {Event}
+		 */
     _inputListener: function(e) {      
       // if a search timer is set
       if (this._searchTimer) {
