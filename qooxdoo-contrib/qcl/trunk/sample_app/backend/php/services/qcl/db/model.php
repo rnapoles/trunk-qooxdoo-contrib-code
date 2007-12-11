@@ -457,6 +457,7 @@ class qcl_db_model extends qcl_jsonrpc_model
         if ( ! file_exists( $file ) or is_writeable ( $file ) )
         {
           $sql = $this->getTableCreateSql($table);
+          //$valuesSql = $this->dumpTableValues($table);
           file_put_contents($file, $sql );        
           $this->info("Stored sql for {$table}");
           return true;
