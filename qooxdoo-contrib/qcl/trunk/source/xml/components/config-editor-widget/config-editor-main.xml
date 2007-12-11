@@ -143,7 +143,7 @@
 						break;				
 						
 					default:
-						if ( value.length > 10 )
+						if ( value.length > 20 )
 						{
 							// todo: insert window/textarea cell editor
 							cellEditor = new qx.ui.table.celleditor.TextField;
@@ -178,16 +178,17 @@
 			dataBinding="true">
 				
 			<qx:tableColumn key="id"    label="ID"    display="false"/>
-			<qx:tableColumn key="name"  label="Name"  width="100" />
-			<qx:tableColumn key="type"  label="Type"  width="100" 
+			<qx:tableColumn key="name"  label="Name"  width="4*" />
+			<qx:tableColumn key="type"  label="Type"  width="70" 
 				editable="true" celleditor="configEditorTypeCellEditor" />
-			<qx:tableColumn key="value" label="Value" width="100"
+			<qx:tableColumn key="value" label="Value" width="2*"
 				editable="true" celleditor="configEditorValueCellEditor" />
-			<qx:tableColumn key="permissionRead" label="Read Perm."  width="100"
+			<qx:tableColumn key="permissionRead" label="Read Perm."  width="1*"
 				editable="true" />
-			<qx:tableColumn key="permissionWrite" label="Write Perm." width="100"
+			<qx:tableColumn key="permissionWrite" label="Write Perm." width="1*"
 				editable="true" />
-			<qx:tableColumn key="userId" label="User/Status"  width="100" cellrenderer="configEditorUserIdCellRenderer"/>
+			<qx:tableColumn key="userId" label="User/Status"  width="1*" 
+				cellrenderer="configEditorUserIdCellRenderer"/>
 			
 			<!-- (re)load  -->
 			
@@ -198,7 +199,7 @@
 				this.setUserData("servicePrefix",appName + ".");
 			
 				// (re)load data
-				this.updateClient( appName + '.config.configManager.getAll', message.getData() || configEditorFilter.getValue() || "" );
+				this.updateClient( appName + '.configuration.getAll', message.getData() || configEditorFilter.getValue() || "" );
 			</qx:messageSubscriber>
 			
 			<!-- create new -->
@@ -214,7 +215,7 @@
 					'permissionWrite' : null,
 					'userId' : null
 				};
-				this.updateServer( this.getUserData("servicePrefix") + 'config.configManager.create', this.__newConfigKey );
+				this.updateServer( this.getUserData("servicePrefix") + 'configuration.create', this.__newConfigKey );
 			</qx:messageSubscriber>
 			
 			<qx:messageSubscriber filter="qcl.config.messages.key.created">
@@ -232,7 +233,7 @@
 				this.getSelectionModel().iterateSelection(function(index){
 					var model = this.getTableModel();
 					var name = model.getValue( model.getColumnIndexById( "name" ), index );
-					this.updateServer( this.getUserData("servicePrefix") +  'config.configManager.delete', name );
+					this.updateServer( this.getUserData("servicePrefix") +  'configuration.delete', name );
 					model.removeRows( index, 1 );
 				},this);
 			</qx:messageSubscriber>
@@ -258,7 +259,7 @@
 				var value 	= model.getValue(changedData.firstColumn,changedData.firstRow);
 				  
 			  // send change to server							  
-			  this.updateServer( this.getUserData("servicePrefix") + "config.configManager.update", id, key, value );
+			  this.updateServer( this.getUserData("servicePrefix") + "configuration.update", id, key, value );
 				]]>
 			</qx:eventListener>
 			
