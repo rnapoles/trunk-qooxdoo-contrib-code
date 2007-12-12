@@ -25,7 +25,7 @@ qx.Class.define("inspector.menu.Menu", {
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function(inspector) {    
+  construct : function(inspector) {
     this.base(arguments);
     // set the zIndex to a higher one than the index of the find mode layer
     this.setZIndex(1e6 + 50);
@@ -59,8 +59,7 @@ qx.Class.define("inspector.menu.Menu", {
       }
       this._menuTop = -this.getChildren()[0].getOuterHeight();
       this.setTop(this._menuTop);
-//      console.log("_menuTop: " + this._menuTop)
-    }, this);    
+    }, this);
         
     // create the commands
     this.__createCommands();
@@ -164,8 +163,10 @@ qx.Class.define("inspector.menu.Menu", {
     *********************************
     */
     /**
+     * Return the components of the menu which should not appear in 
+     * the widget finder tree.
      * @internal
-     * @return the components of the menu.
+     * @return {Array} The components of the menu.
      */
     getComponents: function() {
       return [this._inspectorMenu, this._hideAllPopup, this._welcomePopup, 
@@ -229,7 +230,7 @@ qx.Class.define("inspector.menu.Menu", {
       this._openPropertyEditorButton.setChecked(false);
     },
     
-
+    
     /*
     *********************************
        CHANGE COMMAND SHORTCUTS
@@ -242,9 +243,6 @@ qx.Class.define("inspector.menu.Menu", {
     changeFindShortcut: function(shortcut) {
       // set the new shortcut
       this._findCommand.setShortcut(shortcut);
-      // reset the command and set it again (invokes redrawing of the shortcut in the menu)      
-      this._findButton.setCommand(null);
-      this._findButton.setCommand(this._findCommand);
     },
     
     
@@ -255,9 +253,6 @@ qx.Class.define("inspector.menu.Menu", {
     changeHighlightShortcut: function(shortcut) {
       // set the new shortcut
       this._highlightCommand.setShortcut(shortcut);
-      // reset the command and set it again (invokes redrawing of the shortcut in the menu)
-      this._highlightButton.setCommand(null);
-      this._highlightButton.setCommand(this._highlightCommand);
     },
     
     
@@ -369,7 +364,7 @@ qx.Class.define("inspector.menu.Menu", {
       if (qx.io.local.CookieApi.get("OpenWidgetShortcut")) {
         shortcut = qx.io.local.CookieApi.get("OpenWidgetShortcut");
       }           
-      // create the opne widget finder command
+      // create the open widget finder command
       this._openWidgetFinderCommand = new qx.client.Command(shortcut);
       this._openWidgetFinderCommand.addEventListener("execute", function(e) {
         this._openWidgetFinderButton.toggleChecked();
@@ -391,7 +386,7 @@ qx.Class.define("inspector.menu.Menu", {
       if (qx.io.local.CookieApi.get("FindShortcut")) {
         shortcut = qx.io.local.CookieApi.get("FindShortcut");
       }
-      // create the find command      
+      // create the find command 
       this._findCommand = new qx.client.Command(shortcut);
       this._findCommand.addEventListener("execute", function(e) {
         this._findButton.toggleChecked(); 
@@ -461,7 +456,7 @@ qx.Class.define("inspector.menu.Menu", {
           // hide the menubar
           this.setDisplay(false);
         
-        // unhide
+        // show
         } else {
           // show the menu
           this.setDisplay(true);
@@ -477,13 +472,13 @@ qx.Class.define("inspector.menu.Menu", {
             this._openConsoleButton.setChecked(true);
             this._consoleOpended = false;
           }
-          // if the object window was pened
+          // if the object window was opened
           if (this._objectOpened) {
             // reopen it
             this._openObjectFinderButton.setChecked(true);
             this._objectOpened = false;
           }
-          // if the property window was open
+          // if the property window was opened
           if (this._propertyOpened) {
             // reopen it
             this._openPropertyEditorButton.setChecked(true);
@@ -520,7 +515,7 @@ qx.Class.define("inspector.menu.Menu", {
       }, this);
       this._inspectorMenu.add(settingsButton);
 
-      // seperator
+      // separator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       
       // api button
@@ -530,14 +525,14 @@ qx.Class.define("inspector.menu.Menu", {
       }, this._inspector);
       this._inspectorMenu.add(apiButton);
 
-      // seperator
+      // separator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       // add a dispose button
       var disposeButton = new qx.ui.menu.Button("Dispose Application");
       disposeButton.addEventListener("execute", function() {
         if (confirm(inspector.Inspector.DISPOSE_QUESTION)) {
           if (qx.core.Setting.get("qx.disposerDebugLevel") < 1) {
-            // set the diposer level to a least 1 (HACK!!)
+            // set the disposer level to a least 1 (HACK!!)
             qx.core.Setting.__settings["qx.disposerDebugLevel"].defaultValue = 1;
             // dispose the application
             qx.core.Object.dispose();
@@ -546,7 +541,7 @@ qx.Class.define("inspector.menu.Menu", {
       }, this) 
       this._inspectorMenu.add(disposeButton);
 
-      // seperator
+      // separator
       this._inspectorMenu.add(new qx.ui.menu.Separator());
       // hide everything button
       this._hideEverythingButton = new qx.ui.menu.Button("Hide Everything");
@@ -557,7 +552,7 @@ qx.Class.define("inspector.menu.Menu", {
       resetPerspectiveButton.addEventListener("execute", this._inspector.resetPerspective, this._inspector);      
       this._inspectorMenu.add(resetPerspectiveButton);      
       
-      // listener which holds the bemubar down while the menu is shown
+      // listener which holds the menubar down while the menu is shown
       this._inspectorMenu.addEventListener("mousemove", function() {
         // if a uptimer is set
         if (this._upTimer != null) {
@@ -565,7 +560,7 @@ qx.Class.define("inspector.menu.Menu", {
           window.clearTimeout(this._upTimer);
           this._upTimer = null;
         }
-      }, this);      
+      }, this);
       // listener which moves the menubar away if the menu is closed
       this._inspectorMenu.addEventListener("changeVisibility", function(e) {
         // if the menu is clicked away
@@ -593,7 +588,7 @@ qx.Class.define("inspector.menu.Menu", {
       inspectorButton.setIconPosition("right");
       this._menubar.add(inspectorButton);
 
-      // add a seperator            
+      // add a separator
       this._menubar.add(new qx.ui.toolbar.Separator());      
       
       // add the find button
@@ -607,7 +602,7 @@ qx.Class.define("inspector.menu.Menu", {
         }   
       }, this);
       this._menubar.add(this._findButton);
-      // add a tooltip to the find buttom
+      // add a tooltip to the find button
       this._findTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.FIND_BUTTON_TOOLTIP_TEXT, null);
       this._findButton.setToolTip(this._findTooltip);      
             
@@ -618,11 +613,11 @@ qx.Class.define("inspector.menu.Menu", {
       }, this);
       this._menubar.add(this._highlightButton);      
       
-      // add a tooltip to the highlight buttom
+      // add a tooltip to the highlight button
       this._highlightTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.HIGHLIGHT_BUTTON_TOOLTIP_TEXT, null);
       this._highlightButton.setToolTip(this._highlightTooltip);      
       
-      // add a seperator            
+      // add a separator            
       this._menubar.add(new qx.ui.toolbar.Separator());  
       
       // add the open all button
@@ -630,11 +625,11 @@ qx.Class.define("inspector.menu.Menu", {
       openAllButton.setCommand(this._openAllCommand);
       this._menubar.add(openAllButton);
       
-      // add a tooltip to the open all buttom
+      // add a tooltip to the open all button
       this._openAllTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.OPEN_ALL_BUTTON_TOOLTIP_TEXT, null);
       openAllButton.setToolTip(this._openAllTooltip);       
       
-      // add a seperator
+      // add a separator
       this._menubar.add(new qx.ui.toolbar.Separator());
 
       // add the open console button
@@ -655,9 +650,9 @@ qx.Class.define("inspector.menu.Menu", {
       // add the open object finder button      
       this._openObjectFinderButton = new qx.ui.toolbar.CheckBox("Objects");
       this._menubar.add(this._openObjectFinderButton);
-      // register the event listeren to open the object finder
+      // register the event listener to open the object finder
       this._openObjectFinderButton.addEventListener("changeChecked", function(e) {
-        // if the buttonis checked 
+        // if the button is checked 
         if (e.getCurrentTarget().getChecked()) {
           // open the object finder
           this._inspector.openObjectFinder();
@@ -670,7 +665,7 @@ qx.Class.define("inspector.menu.Menu", {
       // add a button to open the widget finder      
       this._openWidgetFinderButton = new qx.ui.toolbar.CheckBox("Widgets");
       this._menubar.add(this._openWidgetFinderButton);
-      // register the event listenerto open the widget finder 
+      // register the event listener to open the widget finder 
       this._openWidgetFinderButton.addEventListener("changeChecked", function(e) {
         // if the button is checked
         if (e.getCurrentTarget().getChecked()) {
@@ -685,14 +680,14 @@ qx.Class.define("inspector.menu.Menu", {
       // add a button to open the property editor       
       this._openPropertyEditorButton = new qx.ui.toolbar.CheckBox("Properties");
       this._menubar.add(this._openPropertyEditorButton);
-      // reigster the event listener to open the property editor
+      // register the event listener to open the property editor
       this._openPropertyEditorButton.addEventListener("changeChecked", function(e) {
         // if the button is checked
         if (e.getCurrentTarget().getChecked()) {
-          // execute the commmand which opens the property editor
+          // execute the command which opens the property editor
           this._inspector.openPropertyEditor();
         } else {
-          // otherwise, cloase the property editor 
+          // otherwise, close the property editor 
           this._inspector.hidePropertyEditor();
        }
       }, this);
@@ -708,7 +703,7 @@ qx.Class.define("inspector.menu.Menu", {
       this._welcomePopup = new qx.ui.popup.Popup();
       // add the popup to the document
       this._welcomePopup.addToDocument();
-      // set the opsition of the popup
+      // set the position of the popup
       this._welcomePopup.setWidth(255);
       this._welcomePopup.setHeight(84);
       // create and add the image for the background
@@ -737,7 +732,7 @@ qx.Class.define("inspector.menu.Menu", {
       this._hideAllPopup = new qx.ui.popup.Popup();
       // add the popup to the document
       this._hideAllPopup.addToDocument();
-      // set the opsition of the popup
+      // set the position of the popup
       this._hideAllPopup.setWidth(255);
       this._hideAllPopup.setHeight(84);
       // create and add the image for the background
@@ -751,6 +746,10 @@ qx.Class.define("inspector.menu.Menu", {
     },
     
     
+    /**
+     * Shows a popup which holds the keystroke to get the inspector
+     * back on the screen.
+     */
     __showHideAllPopup: function() {
       // create the text for the popup
       var shortcut = qx.io.local.CookieApi.get("HideAllShortcut");
@@ -771,10 +770,9 @@ qx.Class.define("inspector.menu.Menu", {
     
     /**
      * Registers a mouseover and mouseout listener. These two listeners take 
-     * care of moving the meno out of the screen. 
+     * care of moving the menu out of the screen. 
      */
     __registerMoveListener: function() {
-      
       // register the mouseover listener
       this.addEventListener("mouseover", function() {
         var self = this;
@@ -790,7 +788,7 @@ qx.Class.define("inspector.menu.Menu", {
           if (self._moveInterval == null && self.getTop() < 0) {
             // start an interval to move the menu down
             self._moveInterval = window.setInterval(function() {
-              // stor the current top position
+              // store the current top position
               var currentTop = self.getTop();
               // add one to the position
               currentTop = currentTop + 1;
@@ -798,7 +796,7 @@ qx.Class.define("inspector.menu.Menu", {
               self.setTop(currentTop);
               // if the end position is reached
               if (self.getTop() >= 0) {
-                // clear the interavl
+                // clear the interval
                 window.clearInterval(self._moveInterval);
                 // mark that the interval has been reseted
                 self._moveInterval = null;
@@ -828,7 +826,7 @@ qx.Class.define("inspector.menu.Menu", {
     
     
     /**
-     * Opens the settings window. If no window hase benn created jet,
+     * Opens the settings window. If no window has been created jet,
      * the function creates a window and opens the new object.
      */
     __openSettingsWindow: function() {
@@ -844,7 +842,7 @@ qx.Class.define("inspector.menu.Menu", {
       // open the settings window
       this._settingsWindow.open();
       
-      // check if cookies are alowed
+      // check if cookies are allowed
       if (!qx.io.local.CookieApi.get("ApiViewerUri")) {
         this._settingsWindow.enableSettings(false);
         alert("Enable cookies to access the settings.");
@@ -867,7 +865,7 @@ qx.Class.define("inspector.menu.Menu", {
     // stop all timers
     window.clearInterval(this._hideStartupPopupTimer);
     window.clearInterval(this._hideAllPopupTimer);
-    // dispos all fields
+    // dispose all fields
     this._disposeFields("_inspector", "_openAllCommand", "_openConsoleCommand", "_openObjectFinderCommand",
                         "_openWidgetFinderCommand", "_openPropertyEditorCommand", "_findCommand",
                         "_highlightCommand", "_hideEverythingCommand", "_inspectorMenu", 

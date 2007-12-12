@@ -56,8 +56,10 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     *********************************
     */
     /**
+     * Returns the components of the settings window which should 
+     * not appear in the widget finder tree.
      * @internal
-     * @return the components of the menu.
+     * @return {Array} The components of the menu.
      */
     getComponents: function() {
       return [this];
@@ -66,7 +68,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     
     /**
      * Enables the settings dialogs of the window. This should 
-     * be used to disable the settings e.g. wehn no cookies can 
+     * be used to disable the settings e.g. when no cookies can 
      * be found to edit. 
      * @param enabled {boolean} Enabled or disables the settings.
      */
@@ -81,6 +83,10 @@ qx.Class.define("inspector.menu.SettingsWindow", {
        PRIVATE
     *********************************
     */
+    /**
+     * Creates a groupbox holding all settings for the api viewer.
+     * The created groupbox will be added the the windows layout.
+     */
     __createApiGroupbox: function() {
       // create a group box
       this._apiGroup = new qx.ui.groupbox.GroupBox("API");
@@ -145,7 +151,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       heightTextField.addEventListener("changeValue", function(e) {
         qx.io.local.CookieApi.set("ApiViewerHeight", this.getComputedValue());
       }, heightTextField);    
-      // add the dimesion components together
+      // add the dimension components together
       dimensionLayout.add(widthLabel, widthTextField, heightLabel, heightTextField);      
       mainLayout.add(dimensionLayout);
       
@@ -153,7 +159,11 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     },
     
 
-
+    /**
+     * Creates a groubox holding all elements needed to configure
+     * the key combinations used by the inspector. The created groupbox
+     * will be added to the windows layout.
+     */
     __createKeyGroupbox: function() {
       // create a group box
       this._keyGroup = new qx.ui.groupbox.GroupBox("Shortcuts");
@@ -171,7 +181,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       // add the main layout to the groupbox
       this._keyGroup.add(mainLayout);
       
-      // create the laouts which hold the cammand shortcut settings      
+      // create the layouts which hold the command shortcut settings
       mainLayout.add(this.__getShortcutLayout("Find: ", "Find", this._menu.changeFindShortcut));
       mainLayout.add(this.__getShortcutLayout("Highlight: ", "Highlight", this._menu.changeHighlightShortcut));      
       mainLayout.add(this.__getShortcutLayout("Hide All: ", "HideAll", this._menu.changeHideAllShortcut));
@@ -184,8 +194,16 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       return this._keyGroup;      
     },
     
+    
+    /**
+     * Generates a layout which holds a row consisting of label and textfield 
+     * for changing the key combination saved in the cookies.
+     * @param label {String} the label in front of the textfield.
+     * @param cookiePrefix {String} The prefix of the cookie.
+     * @param changeFunction {function} The function used to change the setting.
+     */
     __getShortcutLayout: function(label, cookiePrefix, changeFunction) {
-      // create the layout for the find commmand settings
+      // create the layout for the find command settings
       var layout = new qx.ui.layout.HorizontalBoxLayout();      
       layout.setWidth("100%");
       layout.setHeight("auto");
@@ -193,7 +211,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       var findLabel = new qx.ui.basic.Label(label);
       findLabel.setPadding(5);
       findLabel.setWidth(90);
-      // create the textfield for the find shortcur
+      // create the textfield for the find shortcut
       var findTextField = new qx.ui.form.TextField(qx.io.local.CookieApi.get(cookiePrefix + "Shortcut"));
       findTextField.setWidth("1*");
       
@@ -225,25 +243,29 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     *********************************
     */   
     /**
-     * Sets the height of the main element of the window.
+     * The layout in this window is on auto values. Therefore this method 
+     * doesnt do anything.
      * @param delta {Number} The change value of the height.
      */
     _setMainElementHeight: function(delta) {
-      // dont do anyting (automatic resizing)
+      // dont do anything (automatic resizing)
     },
     
     
     /**
-     * Sets the width of the main element of the window.
+     * The layout in this window is on auto values. Therefore this method 
+     * doesnt do anything.
      * @param delta {Number} The change value of the width.
      */
     _setMainElementWidth: function(delta) {
-      // dont do anyting (automatic resizing)
+      // dont do anything (automatic resizing)
     },
     
     
     /**
-     * Sets the start position of the window.
+     * The settings window always appears in the left upper corner.
+     * In this case, this method doesnt do anything because thats
+     * the default behavior.
      */
     _setApearancePosition: function() {
       // dont do anyting (Start position in the left upper corner)
@@ -251,8 +273,8 @@ qx.Class.define("inspector.menu.SettingsWindow", {
     
     
     /**
-     * Creates the main element of the window which cann be
-     * added to the main layout and apears between the toolbar
+     * Creates the main element of the window which can be
+     * added to the main layout and appears between the toolbar
      * and the statusbar.
      */
     _createMainElement: function() {
@@ -261,11 +283,10 @@ qx.Class.define("inspector.menu.SettingsWindow", {
       this.setHeight("auto");
       this.setShowMinimize(false);
       this.setShowMaximize(false);
-      
+      // initialize the main layout
       var layout = new qx.ui.layout.VerticalBoxLayout();
       layout.setWidth("100%");
       this.add(layout);
-      
       // add the groupboxes
       layout.add(this.__createApiGroupbox());
       layout.add(this.__createKeyGroupbox());
