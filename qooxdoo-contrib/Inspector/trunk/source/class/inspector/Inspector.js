@@ -556,7 +556,7 @@ qx.Class.define("inspector.Inspector", {
 
       // set the widget in the console
       if (this._console != null) {
-        this._console.setWidget(widget);
+        this._console.setQxObject(widget);
       }
       // set the widget in the object finder
       if (this._objectFinder != null) {
@@ -860,7 +860,7 @@ qx.Class.define("inspector.Inspector", {
       // if already a widget is selected
       if (this._widget != null) {
         // also select it in the console
-        this._console.setWidget(this._widget);
+        this._console.setQxObject(this._widget);
       }
       this._console.open();
       // save that the console is open

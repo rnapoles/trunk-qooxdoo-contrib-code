@@ -32,6 +32,7 @@ qx.Class.define("inspector.components.AbstractWindow", {
 
     // save the reference to the inspector class
     this._inspector = main;
+    
     // initialize window
     this.setCaption(name);
     this.setShowMinimize(false);
@@ -89,7 +90,7 @@ qx.Class.define("inspector.components.AbstractWindow", {
     // creating inspector reference
     _inspector: null,
     
-    // flatg to signal if the zIndx will be currently changed
+    // flag to signal if the zIndx will be currently changed
     _inChange: false,
     
     // maximization stuff
@@ -104,8 +105,8 @@ qx.Class.define("inspector.components.AbstractWindow", {
     *********************************
     */
     /**
-     * Return wether the window is on the creen or not.
-     * @return {Boolean} true, if the window is on the screen
+     * Return whether the window is on the screen or not.
+     * @return {Boolean} True, if the window is on the screen
      */
     isOpen: function() {
       return this.getVisibility() && this.getDisplay();
@@ -114,7 +115,7 @@ qx.Class.define("inspector.components.AbstractWindow", {
     
     /**
      * Sets the flag for signaling that the zIndex is currently changed. 
-     * @param value {Boolean} true, if the changeevenet of the zIndex sould not be executed
+     * @param value {Boolean} True, if the change evenet of the zIndex should not be executed.
      * @internal
      */
     setInChange: function(value) {
@@ -134,7 +135,7 @@ qx.Class.define("inspector.components.AbstractWindow", {
       this._toolbar = new qx.ui.toolbar.ToolBar();
       this._toolbar.setWidth("100%");
       this._mainLayout.add(this._toolbar);
-      // call a abstract function which sholuld add some toolbar buttons
+      // call a abstract function which should add some toolbar buttons
       this._addToolbarButtons();
     }, 
     
@@ -169,9 +170,9 @@ qx.Class.define("inspector.components.AbstractWindow", {
         this._setMainElementWidth(delta);
       }, this);
       
-      // register the appera handler
+      // register the appear handler
       this.addEventListener("appear", function(e) {
-        // store the diemensions of the window
+        // store the dimensions of the window
         this._windowWidth = this.getOffsetWidth();
         this._windowHeight = this.getOffsetHeight();
 
@@ -265,9 +266,9 @@ qx.Class.define("inspector.components.AbstractWindow", {
       // move the window to the upper left corner
       this.setTop(0);
       this.setLeft(0);
-      // maximise the dimensions of the window
+      // maximize the dimensions of the window
       this.setWidth(qx.ui.core.ClientDocument.getInstance().getInnerWidth());
-      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight());    
+      this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight());
       
       // save the old data in the cookie (so that on a reload the old values can be restored)
       qx.io.local.CookieApi.set(this.classname + "#Height", this._oldHeight);
@@ -287,7 +288,7 @@ qx.Class.define("inspector.components.AbstractWindow", {
       // change the restore button to a maximize button
       var restoreButtonIndex = this._captionBar.indexOf(this._restoreButton);
       this._captionBar.remove(this._restoreButton);
-      this._captionBar.addAt(this._maximizeButton, restoreButtonIndex);                  
+      this._captionBar.addAt(this._maximizeButton, restoreButtonIndex);
                 
       // move the window to the former position
       this.setTop(this._oldTop);
@@ -301,20 +302,19 @@ qx.Class.define("inspector.components.AbstractWindow", {
     /**
      * Maximizes the window or restores it if it is already
      * maximized.
-     * @param e {qx.event.type.MouseEvent} double click event
+     * @param e {qx.event.type.MouseEvent} Double click event.
      */
-    _oncaptiondblblick : function(e)
-    {
+    _oncaptiondblblick : function(e) {
+      // if the maximize is not allowed
       if (!this._maximizeButton.getEnabled()) {
         return;
       }
-      
+      // check if the window is maximized
       if (this._restoreButton.getParent() != null) {
         this.restore();
       } else {
         this.maximize();
       }
-      
     },
     
     
@@ -324,11 +324,14 @@ qx.Class.define("inspector.components.AbstractWindow", {
      * in sync with the open/close status of the components.
      */
     hide: function() {
+      // hide the window
       this.setVisibility(false);
+      // inform the inspector
       this._inspector.componentClosed(this);
-      // save that the finder is closed
+      // save that the window is closed
       qx.io.local.CookieApi.set(this.classname + "#Open", false);
     },
+    
     
     /*
     *********************************
@@ -337,7 +340,7 @@ qx.Class.define("inspector.components.AbstractWindow", {
     */   
     /**
      * Returns the components of the window which should not 
-     * be in the widget hierarchy. 
+     * be in the widget finders hierarchy. 
      * @internal
      */       
     getComponents: function() {
@@ -376,8 +379,8 @@ qx.Class.define("inspector.components.AbstractWindow", {
     
     
     /**
-     * Creates the main element of the window which cann be
-     * added to the main layout and apears between the toolbar
+     * Creates the main element of the window which can be
+     * added to the main layout and appears between the toolbar
      * and the statusbar.
      */
     _createMainElement: function() {
@@ -405,9 +408,9 @@ qx.Class.define("inspector.components.AbstractWindow", {
     var formerVisisbility = this.getVisibility();
     // remove the console from the screen
     this.hide();
-    // save that the widnow was hidden by the inspector, if it was opened
+    // save that the window was hidden by the inspector, if it was opened
     qx.io.local.CookieApi.set(this.classname + "#Open", formerVisisbility);
-    // dipose the fields
+    // dispose the fields
     this._disposeFields("_inspector", "_mainLayout", "_toolbar", "_statusbar");
   }
 });

@@ -21,31 +21,31 @@ qx.Class.define("inspector.console.DomViewHtml", {
   
   extend : qx.ui.layout.VerticalBoxLayout,  
   implement : inspector.console.IView, 
-    
+  
+  
   /*
   *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function(console) {    
+  construct : function(console) {
     this.base(arguments);
-    // sorte the reference to the console window
+    // store the reference to the console window
     this._console = console;
     // set the Layout to 100% width
     this.setWidth("100%");
     
-    // create the HTML embed
+    // initialize the HTML embed
     this._htmlEmbed = new qx.ui.embed.HtmlEmbed();
     this._htmlEmbed.setBackgroundColor("white");
     this._htmlEmbed.setBorder("inset");
     this._htmlEmbed.setOverflow("auto");
     this._htmlEmbed.setWidth("100%");
     this._htmlEmbed.setHeight(174);
+    this._htmlEmbed.setHtmlProperty("id", "qx_srcview");
     this.add(this._htmlEmbed);
     
-    this._htmlEmbed.setHtmlProperty("id", "qx_srcview");
-    
-    // creaete the array used to  stor the naviagating path
+    // create the array used to store the navigation path
     this._breadCrumb = [];
   },
 
@@ -67,11 +67,12 @@ qx.Class.define("inspector.console.DomViewHtml", {
     // the main element
     _htmlEmbed: null,
     
-    // trace of breadcrums
+    // trace of breadcrumbs
     _breadCrumb: null,
     
     // the current filter string
     _filter: "",
+    
     
     /*
     *********************************
@@ -79,18 +80,20 @@ qx.Class.define("inspector.console.DomViewHtml", {
     *********************************
     */
     /**
-     * Set a new object to inspect.
+     * Set a new object to inspect. The name of the object will be
+     * used as a reference name in the breadcrumbs. If the name consists
+     * of more than one object separated by dots, the objects will be also
+     * listed in the breadcrumbs history.
      * @param object {Object} The object to inspect.
      * @param name {String} The name of the object.
      */
     setObject: function(object, name) {
       // empty the breadcrumbs
       this._breadCrumb = [];
+      // split the name into pieces separated by a dot
+      var elements = name.split(".");
       
-      // split the name into pieces seperated by a dot
-      var elements = name.split(".");      
-      
-      // go thrrew all pieces exept the last one
+      // go threw all pieces except the last one
       for (var i = 0; i < elements.length - 1; i++) {
         // create an empty string which holds the objects reference at the end
         var objectReference = "";
@@ -131,7 +134,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
               // select the given value object
               var newQxObject = this._breadCrumb[index].object[key];
               
-              // check if the new Object is alread in the history of the selected objects
+              // check if the new Object is already in the history of the selected objects
               for (var i = 0; i < this._breadCrumb.length; i++) {
                 // if it is in the history
                 if (this._breadCrumb[i].object == newQxObject) {
@@ -149,7 +152,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
               // scroll to the top of the view    
               this._htmlEmbed.setScrollTop(0);
               
-          // if only a index is given (selection wia the back button)
+          // if only a index is given (selection via the back button)
           } else {
               // select the stored object in the array
               var newQxObject = this._breadCrumb[index].object;
@@ -161,8 +164,6 @@ qx.Class.define("inspector.console.DomViewHtml", {
               this._htmlEmbed.setScrollTop(0);
               // delete the old elements of the breadcrumb
                this._breadCrumb.splice(index + 1, this._breadCrumb.length - index + 1);
-              
-                  
           }
       } catch (e) {
           alert("Can not select this Object: " + e);
@@ -176,8 +177,10 @@ qx.Class.define("inspector.console.DomViewHtml", {
     *********************************
     */  
     /**
+     * Returns the components of the DomViewHtml which should not
+     * appear in the widget finder tree.
      * @internal
-     * @return The components of the console.
+     * @return {Array} The components of the DomViewHtml.
      */
     getComponents: function() {
       return [this, this._htmlEmbed];
@@ -185,8 +188,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
     
     
     /**
+     * Sets the height of the htmlEmbed used to show the dom data.
      * @internal
-     * @param delta {Number} The edlta of the height.
+     * @param delta {Number} The delta of the height.
      */
     setMainElementDeltaHeight: function(delta) {
       this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
@@ -215,10 +219,10 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * @return {String} Information string.
      */
     getCaptionMessage: function() {
-      // if there is a firest element in the breadcrumbs
+      // if there is a element in the breadcrumbs
       if (this._breadCrumb.length > 0) {
-        // return its name
-        return this._breadCrumb[this._breadCrumb.length - 1].name;        
+        // return the name of the top element
+        return this._breadCrumb[this._breadCrumb.length - 1].name;
       }
       // otherwise return a message telling that no selection has been made
       return "nothing selected";
@@ -245,7 +249,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
     
     
     /**
-     * Returns the string used to filter or if no string is set the defaul message.
+     * Returns the string used to filter or if no string is set the default message.
      * @return {String} The string used to filter
      */
     getFilter: function() {
@@ -271,7 +275,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
         // get the object shown in the dom view
         var object = this._breadCrumb[this._breadCrumb.length - 1].object;
         
-        // if the object has a classname attribut
+        // if the object has a classname attribute
         if (object.classname != undefined) {
           // it is a class, interface, mixin or theme
           if (qx.Class.isDefined(object.classname) || 
@@ -293,72 +297,36 @@ qx.Class.define("inspector.console.DomViewHtml", {
     *********************************
     */    
     /**
-     * Returns a html String which contains table of the objects porperties and values.
+     * Returns a html String which contains table of the objects properties and values.
      * @internal
-     * @param qxObject {Object} The object to return the html from.
+     * @param o {Object} The object to return the html from.
      * @param index {Object} The index of the object path.
      * @param name {String} The name of the selected object.
      */
-    _getHtmlToObject: function(qxObject, index, name) {
+    _getHtmlToObject: function(o, index, name) {
       // create an empty string
       var returnString = "";
-
       // set a default name if none is set
       if (name == undefined) {
         var name = "Object";
       }
-
-      // save the object a path array
-      this._breadCrumb[index] = {object: qxObject, name: name};
       
+      // save the object in the path array
+      this._breadCrumb[index] = {object: o, name: name};
+      // add the breadcrums to the output
       returnString += this._getReturnPath(index);
       
-      // flat used to signal if porperties were print out
+      // flag used to signal if properties were print out
       var nothingToShow = true;
       
-      // if a filter is given
-      if (this._filter != "") {
-        // try to create a filter regexp
-        try {
-          // create the needed regexp object
-          var regExp = new RegExp(this._filter);
-        } catch (e) {
-          // if that doesnt work, tell the user why
-          alert("Unable to filter: " + e);
-        }
-      }
-      // create a temp array for the sorted and filtered values
-      var sortedValues = [];
-      // write the objects values to the new array
-      for (var key in qxObject) {
-        // if a filter is given
-        if (regExp != null) {
-          // test if the key matches the filter
-          if (regExp.test(key)) {
-            // add the kexy value pair to the sorted sert
-            sortedValues.push({key: key, value: qxObject[key]})
-          }
-        } else {
-          // add all key value pairs to the sorted set
-          sortedValues.push({key: key, value: qxObject[key]})
-        }
-      }
+      // get the sorted and filtered properties
+      var sortedValues = this._sortAndFilterProperties(o);
       
-      // sort the array
-      sortedValues.sort(function(a, b) {
-        // both parameters a no numbers
-        if( isNaN(a.key) || isNaN(b.key) ) {
-          return ((a.key < b.key) ? -1 : ((a.key > b.key) ? 1 : 0));
-        } else {
-          return a.key - b.key;
-        }
-      });      
-
       // start the table which holds all attributes
       returnString += "<table class='ins_dom_table'>";
       // go threw all properties of the object
-      for (var i = 0; i < sortedValues.length; i++) {      
-        // kar that there has been a property printed out
+      for (var i = 0; i < sortedValues.length; i++) {
+        // mark that there has been a property printed out
         nothingToShow = false;
         // start the return divs
         returnString += "";
@@ -371,7 +339,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
           // set the style for string keys
           var keyStyle = "ins_dom_key";
         }
-
+        
         // if it is not an object
         if (!(sortedValues[i].value instanceof Object)) {
           returnString += "<tr><td class='" + keyStyle + "'><img class='ins_dom_front_image' src='" + 
@@ -386,11 +354,10 @@ qx.Class.define("inspector.console.DomViewHtml", {
           } else {
               returnString += "<td class='ins_dom_basic'>"  + sortedValues[i].value + "</td></tr>";
           }
-
-        // if it is an object          
+          
+        // if it is an object
         } else {
-
-          // check if it is a faunction
+          // check if it is a function
           if (sortedValues[i].value instanceof Function) {
             // get the code of the function via the toString function
             var code = sortedValues[i].value.toString();
@@ -402,7 +369,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
           }
           
           // if it is not the selected object (self reference)
-          if (sortedValues[i].value != qxObject) {
+          if (sortedValues[i].value != o) {
             // print out the objects key incl. the link to select it         
             returnString += "<tr><td class='" + keyStyle + "'><a onclick='" +
                             "inspector.Inspector.getInstance().inspectObjectByDomSelecet(" + index + ", \"" + sortedValues[i].key + "\")" + 
@@ -410,9 +377,9 @@ qx.Class.define("inspector.console.DomViewHtml", {
                             qx.io.Alias.getInstance().resolve("inspector/image/open.gif") + 
                             "'>" + this._console.escapeHtml(sortedValues[i].key) + "</a></td>";
           }
-            
+          
           // if the object holds a reference to itself
-          if (sortedValues[i].value == qxObject) {
+          if (sortedValues[i].value == o) {
             // print out the objects key without the link to select it        
             returnString += "<tr><td class='ins_dom_key'><img class='ins_dom_front_image' src='" + 
                             qx.io.Alias.getInstance().resolve("inspector/image/spacer.gif") + 
@@ -420,7 +387,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
             // print out a message for a self index
             returnString += "<td class='ins_dom_self_ref'>self reference</td></tr>";
 
-          // if it is a function          
+          // if it is a function
           } else if (sortedValues[i].value instanceof Function) {
             
             // if it is a qooxdoo class
@@ -436,7 +403,6 @@ qx.Class.define("inspector.console.DomViewHtml", {
             // print out the objects value
             returnString += "<td class='ins_dom_object'>" + this._getObject(sortedValues[i].value, index, sortedValues[i].key) + "</td></tr>";                      
           }
-
         }
       }
       // end the table
@@ -447,20 +413,80 @@ qx.Class.define("inspector.console.DomViewHtml", {
           returnString += "<div class='ins_dom_no_prop'>There are no properties to show for this object.</div>";
       }
       
-      // if the current object is a function
-      if (qxObject instanceof Function && !qxObject.hasOwnProperty("toString")) {
-        // get the code of the function as a string
-        var functionCode = qxObject.toString();
-        // let qooxdoo highlight the javascript code
-        functionCode = "<pre>" + qx.dev.Tokenizer.javaScriptToHtml(functionCode) + "</pre>";
-        // print out the function code
-        returnString += "<div class='ins_dom_func'>" + functionCode + "</div>";
-      }
-      
+      // print out the code, if it is a function
+      returnString += this._getFunctionCode(o);
       return returnString;
     },
-       
-   
+
+    
+    /**
+     * Checks if the given object is a function. If that is the case, 
+     * a string containing its source code will be returned. Otherwise, 
+     * an empty string will be returned.
+     * @param o {Object} The object to check.
+     */
+    _getFunctionCode: function(o) {
+      // if the current object is a function
+      if (o instanceof Function && !o.hasOwnProperty("toString")) {
+        // get the code of the function as a string
+        var functionCode = o.toString();
+        // let qooxdoo highlight the javascript code
+        functionCode = "<pre>" + qx.dev.Tokenizer.javaScriptToHtml(functionCode) + "</pre>";
+        // return the function code
+        return "<div class='ins_dom_func'>" + functionCode + "</div>";
+      } else {
+        return "";
+      }
+    },
+    
+    
+    /**
+     * Returns an array of properties from the given object.
+     * The properties will be filtered and sorted.
+     * @param o {Object} The object to get the properties.
+     */
+    _sortAndFilterProperties: function(o) {
+      // if a filter is given
+      if (this._filter != "") {
+        // try to create a filter regexp
+        try {
+          // create the needed regexp object
+          var regExp = new RegExp(this._filter);
+        } catch (e) {
+          // if that doesnt work, tell the user why
+          alert("Unable to filter: " + e);
+        }
+      }
+      // create a temp array for the sorted and filtered values
+      var sortedValues = [];
+      // write the objects values to the new array
+      for (var key in o) {
+        // if a filter is given
+        if (regExp != null) {
+          // test if the key matches the filter
+          if (regExp.test(key)) {
+            // add the key value pair to the sorted set
+            sortedValues.push({key: key, value: o[key]})
+          }
+        } else {
+          // add all key value pairs to the sorted set
+          sortedValues.push({key: key, value: o[key]})
+        }
+      }
+      
+      // sort the array
+      sortedValues.sort(function(a, b) {
+        // both parameters a no numbers
+        if( isNaN(a.key) || isNaN(b.key) ) {
+          return ((a.key < b.key) ? -1 : ((a.key > b.key) ? 1 : 0));
+        } else {
+          return a.key - b.key;
+        }
+      });
+      return sortedValues;
+    },
+    
+    
     /**
      * Creates a html div as a string. This html shows a
      * path back threw the selected objects.
@@ -486,7 +512,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
         
         returnString += "</span>";
       }
-      // end tht leading div
+      // end the leading div
       returnString += "</div>";
       
       return returnString;
@@ -494,10 +520,10 @@ qx.Class.define("inspector.console.DomViewHtml", {
     
     
     /**
-     * Returns a html stringcontaining a link to select the given object.
+     * Returns a html string containing a link to select the given object.
      * @param object {Object} The object to select.
-     * @param index {Number} The index in the path to the selectd object.
-     * @param index {String} The porperty to select the new object.
+     * @param index {Number} The index in the path to the selected object.
+     * @param index {String} The property to select the new object.
      */
     _getObject: function(object, index, key) {
       var returnString = "<a onclick='" +
@@ -518,7 +544,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
       // if it is an array
       } else if (object instanceof Array) {
         returnString += "[ ";
-        // print out the first elements if existatnt
+        // print out the first elements if existent
         for (var j = 0; j < 2 && j < object.length; j++) {
           // if the element is a function
           if (object[j] instanceof Function) {

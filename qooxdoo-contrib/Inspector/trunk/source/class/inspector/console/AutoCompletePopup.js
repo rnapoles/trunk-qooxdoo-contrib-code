@@ -82,7 +82,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
        ATTRIBUTES
     *********************************
     */
-    // the main element ot the autcomplete popup
+    // the main element of the autocomplete popup
     _table: null,
     _tableModel: null,
     
@@ -93,8 +93,10 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     *********************************
     */  
     /**
+     * Returns the components of the AutoCompletePopup which should not
+     * appear in the widget finder window. 
      * @internal
-     * @return the components of the console
+     * @return {Array} The components of the AutoCompletePopup.
      */
     getComponents: function() {
       return [this, this._table, this._tableModel];
@@ -105,10 +107,9 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
      * Moves manually the selection in the table up. If the selection 
      * is at the upper end, a wraparound will be performed and the 
      * selection is at the last position.
-     * @see AutoCompletePopup#selectionDown
      */
     selectionUp: function() {
-      // get the current selectend row
+      // get the current selected row
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
       // if the selection is not 0
       if (selectedIndex > 0) {
@@ -125,22 +126,21 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     
     
     /**
-     * Moves manually the selection down  in the table. If the selection
+     * Moves manually the selection down in the table. If the selection
      * is at the lower end, a wraparound will be performed and the
      * selection is at the first position.
-     * @see AutoCompletePopup#selectionUp
      */
     selectionDown: function() {
       // get the current selected row
       var selectedIndex = this._table.getSelectionModel().getLeadSelectionIndex();
-      // get the last row id      
+      // get the last row id
       var maxIndex = this._tableModel.getData().length - 1;
       // if the selection is not the last row      
       if (selectedIndex != maxIndex) {
         // go up in the selection count
         selectedIndex++;
       } else {
-        // strat from the beginning
+        // start from the beginning
         selectedIndex = 0;
       }
       // select and focus the row
@@ -148,30 +148,30 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       this._table.setFocusedCell(0, selectedIndex, true);
     },
     
-        
+    
     /**
-     * Opens the autocomplete popup and shows the content concerning the 
+     * Opens the AutoCompletePopup and shows the content concerning the 
      * given attributes. 
-     * This incudes evaluating the objectRef and fetching the arrtibutes 
-     * during runntime of the given object. The information will be 
-     * transformed into an array and set in the tabel.   
-     * @param objectRef {String} The code currently in the consoles textfield
-     * @param left {Number} The left position to open the popup. 
-     * @param top {Number} The top position to topen the popup.
+     * This includes evaluating the objectRef and fetching the attributes 
+     * during runtime of the given object. The information will be 
+     * transformed into an array and set in the table.
+     * @param objectRef {String} The code currently in the consoles textfield.
+     * @param left {Number} The left position to open the popup.
+     * @param top {Number} The top position to open the popup.
      */
     open: function(objectRef, left, top) {     
       // select the first entry
       this._table.getSelectionModel().setSelectionInterval(0, 0);
       this._table.setFocusedCell(0, 0, true);
       
-      // try to get the part after the last dot          
+      // try to get the part after the last dot
       var searchTerm = objectRef.substring(objectRef.lastIndexOf(".") + 1);
       
       // if there is no dot in the textfield
       if (objectRef == searchTerm) {
         // hide the popup
         this.hide();
-        // stop forther processing
+        // stop further processing
         return;
       } else {
         // cut of the stuff after the last dot
@@ -179,35 +179,34 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       }
 
       // get the object reference
-      var object = (function(text, ans){return eval(text)}).call(this._controller.getWidget(), objectRef, this._controller.getAns());        
+      var object = (function(text, ans){return eval(text)}).call(this._controller.getQxObject(), objectRef, this._controller.getAns());
       
-      // check if it has returned an qooxdoo object
+      // check if it has returned an object
       if (!(object instanceof Object) ) {
         // hide the popup
         this.hide();
-        // stop forther processing
+        // stop further processing
         return;
       } 
       
       // if it is a qooxdoo object
       if (object instanceof qx.core.Object) {
         // write the classname to the header cell
-        this._tableModel.setColumnNamesByIndex(["", object.classname]);        
+        this._tableModel.setColumnNamesByIndex(["", object.classname]);
       } else {
         // write the reference to the object to the header cell
-         this._tableModel.setColumnNamesByIndex(["", objectRef]);
+        this._tableModel.setColumnNamesByIndex(["", objectRef]);
       }
       
       // generate the search object
       var regExp = new RegExp("^" + searchTerm);
-      // create an array to stor the fitting functions
+      // create an array to store the fitting functions
       var data = [];
       
-      // go threw everytring in the object
+      // go threw everything in the object
       for (var name in object) {
         // apply the search term
         if (regExp.test(name)) {
-          
           // check for the scope of the property / method
           if (name.substring(0,2) ==  "__") {
               var scope = "private";
@@ -221,14 +220,15 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
           if (object[name] instanceof Function) {
             // add the opening bracket for the function arguments
             var functionString = name + "(";
+            // go threw all expected arguments
             for (var j = 0; j < object[name].arity; j++) {
               // if it is the last argument
               if (j == object[name].arity - 1) {
                 // add a character beginning by a,b,c,d,...
-                functionString += unescape("%" + (61 + j));                               
+                functionString += unescape("%" + (61 + j));
               } else {
-                // add a character beginning by a,b,c,d,... and a training comma
-                functionString += unescape("%" + (61 + j) + ", " );                
+                // add a character beginning by a,b,c,d,... and a trailing comma
+                functionString += unescape("%" + (61 + j) + ", ");
               }
             }
             // add the ending bracket for the function arguments
@@ -245,14 +245,14 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
             var image = qx.io.Alias.getInstance().resolve("inspector/image/autocomplete/property_" + scope + "18.gif")            
             // add the name of the attribute to the data
             data.push([image, name]);
-          }        
+          }
         } 
       }
       
        // load the data
       this._tableModel.setData(data);
       // sort the data by name
-      this._tableModel.sortByColumn(1, true);            
+      this._tableModel.sortByColumn(1, true);
       // set the popup to the current position
       this.setLeft(left);
       this.setTop(top);
@@ -260,11 +260,11 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
       this.show();
       // bring the popup in front of the console  
       this.setZIndex(this._controller.getZIndexOfWindow() + 1);
-    },    
-
+    },
+    
     
     /**
-     * Hides the autcomplete popup.
+     * Hides the AutoCompletePopup.
      */
     hide: function() {
       this.setVisibility(false);
@@ -272,7 +272,8 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     
     
     /**
-     * @return true if the autocomplete popus is visible and displayed.
+     * Returns whether the popup is on the screen.
+     * @return True, if the AutoCompletePopup is visible and displayed.
      */
     isOnScreen: function() {
       return this.getDisplay() && this.getVisibility();
@@ -281,6 +282,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
     
     /**
      * Takes the current selected element of the table and returns it to the user.
+     * If nothing is selected, null will be returned.
      * @return {String} The current selected string.
      */
     getCurrentSelection: function() {
@@ -302,5 +304,5 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
   */
   destruct : function() {
     this._disposeFields("_controller", "_tableModel", "_table");
-  }  
+  }
 });
