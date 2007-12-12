@@ -54,7 +54,7 @@ qx.Class.define("inspector.components.SearchTextField", {
       // set the default value to the search textfield
       this.__textField.setValue(this.getDefaultValue());
       // show all stuff
-      this.getExecutionFunction().call(this.getThisReference());
+      this.getExecutionFunction().call(this.getContext());
     }, this);
     
     // if there is no value given
@@ -91,9 +91,9 @@ qx.Class.define("inspector.components.SearchTextField", {
     },
     
     /**
-     * This is the this reference in which will be used the executionFunction.
+     * This is the context which will be used by the executionFunction.
      */
-    thisReference: {
+    context: {
       nullable: false
     },
     
@@ -114,7 +114,7 @@ qx.Class.define("inspector.components.SearchTextField", {
       init: "Search..."
     }
     
-  },  
+  },
 
 
   /*
@@ -217,7 +217,7 @@ qx.Class.define("inspector.components.SearchTextField", {
       // store the this reference for the timeout        
       var self = this;
       this._searchTimer = window.setTimeout(function() {          
-        self.getExecutionFunction().call(self.getThisReference());
+        self.getExecutionFunction().call(self.getContext());
       }, this.getRefreshTime());
     }
 
@@ -229,7 +229,7 @@ qx.Class.define("inspector.components.SearchTextField", {
   *****************************************************************************
   */
   destruct : function() {
-    this.setThisReference("");
+    this.setContext("");
     this._disposeFields("__textField", "__image");
   }
 });
