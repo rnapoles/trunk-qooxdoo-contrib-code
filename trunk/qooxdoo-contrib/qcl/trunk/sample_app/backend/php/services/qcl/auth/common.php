@@ -16,7 +16,7 @@ class qcl_auth_common extends qcl_db_model
 
 	var $table;
 	var $key_id							          = "id";
-	var $key_namedId					        = "namedId";
+  var $key_namedId                  = "namedId";
 	var $key_descriptiveName			    = "name";
 	var $table_link_user_roles			  = "link_user_roles";
 	var $table_link_roles_permissions	= "link_roles_permissions";
@@ -40,74 +40,6 @@ class qcl_auth_common extends qcl_db_model
 	// public non-rpc methods 
 	//-------------------------------------------------------------   
    
-  /**
-   * gets the record id from a reference which can be the id itself or an 
-   * identifiying (dot-separated) name
-   * @param mixed $ref numeric id or string name
-   * @return integer id
-   */
-  function getIdFromRef($ref)
-  {   	
-   	if ( $ref === null or is_numeric ($ref) ) 
-   	{
-   		return $ref;
-   	}
-   	
-   	if ( ! is_string ( $ref ) ) 
-   	{
-   		$this->raiseError("qcl_auth_common::getIdFromRef : integer or string expected, got '$ref'");	
-   	}
-   	$row = $this->db->getRow("
-			SELECT `{$this->key_id}` 
-			FROM `{$this->table}` 
-			WHERE `{$this->key_namedId}` = '$ref'  
-		");
-		$result=$row[$this->key_id];
-		return $result;
-   }
-   
-  /**
-   * get record by its (dot-separated) identifying name
-   * @deprecated 12.10.2007  
-   * @return Array Db record set
-   */
-	function getByName($name)
-	{
-		return $this->getByNamedId($name);
-	}
-
-   /**
-    * get record by its (dot-separated) identifying name  
-    * @return Array Db record set
-    */
-	function getByNamedId($namedId)
-	{
-		return $this->db->getRow("
-      SELECT * 
-  		FROM `{$this->table}` 
-  		WHERE `{$this->key_namedId}` = '$namedId'
-    ");   	
-	}
-	
- 	/**
-   * get record by reference
-   * @param mixed $ref numeric id or string name
-   */
- 	function getByRef($ref)
- 	{
- 		if ( is_numeric ($ref) )
- 		{
- 			return $this->getById($ref); 
- 		}
- 		elseif ( is_string ($ref) )
- 		{
- 			return $this->getByName($ref);
- 		}
- 		else
- 		{
- 			$this->raiseError("qcl_auth_common::getByRef : integer or string expected, got '$ref'");
- 		}
- 	}
 
    /**
     * get descriptive name of role
