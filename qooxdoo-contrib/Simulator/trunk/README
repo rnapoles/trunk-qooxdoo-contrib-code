@@ -16,11 +16,11 @@ to Selenium:
     qooxdoo applications
 
 PREREQUISITES
-  - a local Selenim RC installation; get it from
+  - a local Selenim RC installation (0.9.2 or higher); get it from
     http://www.openqa.org/selenium-rc [mandatory]
-  - for building: Java Development Kit (JDK); (for .jar handling and compilation
-    of the extended client class); make sure to set the CLASSPATH separator in
-    Makefile.local [recommended]
+  - for building: Java Development Kit (JDK 1.5 or higher); (for .jar handling
+    and compilation of the extended client class); make sure to set the
+    CLASSPATH separator in Makefile.local [recommended]
     - if you do not plan to use the Java/JavaScript API to Selenium RC, but
       rather the Python bindings, you can actually get away without a JDK, but
       you still have to achieve what the 'selenium-server-ext' target of the
