@@ -49,3 +49,7 @@ MOZILLA_RHINO_PATH = ../../../../prog/javascript/rhino1_6R7
 #JAVA_CP_SEP = ;
 # Java 1.5
 JAVA_CP_SEP = :
+
+# JDK Paths
+JAR   = jar
+JAVAC = javac
