@@ -40,7 +40,7 @@ class qcl_config_db extends qcl_db_model
 	}
 	
 	//-------------------------------------------------------------
-  // public non-rpc methods 
+  // public methods 
 	//-------------------------------------------------------------    
  
 	/**
@@ -110,11 +110,11 @@ class qcl_config_db extends qcl_db_model
 		$userModel->requirePermission("qcl.config.permissions.manage");
 
 		$row = array();
-		$row[$this->key_id] = $id;
 		$row[$key] = $value;
-		$this->db->update($this->table,$row);
+		$this->update($row,$id);
 		return true;
 	} 
+  
 	/**
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
@@ -155,7 +155,6 @@ class qcl_config_db extends qcl_db_model
 		$row = $this->getRow($name);
 		return $row[$this->key_value];	
 	} 
-
 	
 	/**
 	 * gets config data by id
@@ -174,6 +173,7 @@ class qcl_config_db extends qcl_db_model
 				WHERE `{$this->key_id}` = $id
 			");
 			
+      // if a read permission is set, require permission
 			if ( $row[$this->key_permissionRead] )
 			{
 				$userModel->requirePermission($row[$this->key_permissionRead]);
@@ -183,7 +183,7 @@ class qcl_config_db extends qcl_db_model
 		{
 			$this->raiseError("Expected numeric value, got '$id'.");
 		}		 
-
+    // requesting user has access to config key
 		return $row;	
 	} 	 	
 
@@ -201,7 +201,8 @@ class qcl_config_db extends qcl_db_model
 		{
 			// user reference given, this is usually only the
 			// case if a manager edits the configuration
-			$user = $userModel->getIdFromRef($userRef);
+			$user = $userModel->getNamedIdFromRef($userRef);
+			
 			$row = $this->db->getRow("
 				SELECT * 
 				FROM {$this->table}

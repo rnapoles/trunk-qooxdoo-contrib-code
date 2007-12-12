@@ -12,10 +12,17 @@ require_once ("qcl/db/db.php");
 class qcl_db_model extends qcl_jsonrpc_model
 {
 	//-------------------------------------------------------------
+  // class variables
+  //-------------------------------------------------------------
+  
+  var $key_id         = "id";   // column with unique numeric id 
+  var $key_namedId    = null;   // unique string id, optional  
+  
+  //-------------------------------------------------------------
   // instance variables
   //-------------------------------------------------------------
-    
-	var $currentRecord;		          // the current record
+  
+	var $currentRecord; // the current record
 
 	//-------------------------------------------------------------
   // internal methods
@@ -155,6 +162,79 @@ class qcl_db_model extends qcl_jsonrpc_model
 		}
     return $this->currentRecord;
   }
+
+  /**
+   * get record by its unique string id
+   * @deprecated 12.10.2007  
+   * @return Array Db record set
+   */
+	function getByName($name)
+	{
+		return $this->getByNamedId($name);
+	}
+
+   /**
+    * get record by its unique string id
+    * @return Array Db record set
+    */
+	function getByNamedId($namedId)
+	{
+		if ( $this->namedId)
+    return $this->db->getRow("
+      SELECT * 
+  		FROM `{$this->table}` 
+  		WHERE `{$this->key_namedId}` = '$namedId'
+    ");   	
+	}
+
+  /**
+   * gets the record id from a reference which can be the id itself or an 
+   * identifiying (dot-separated) name
+   * @param mixed $ref numeric id or string name
+   * @return integer id
+   */
+  function getIdFromRef($ref)
+  {   	
+   	if ( $ref === null or is_numeric ($ref) ) 
+   	{
+   		return $ref;
+   	}
+   	
+   	if ( ! is_string ( $ref ) ) 
+   	{
+   		$this->raiseError("qcl_auth_common::getIdFromRef : integer or string expected, got '$ref'");	
+   	}
+   	$row = $this->db->getRow("
+			SELECT `{$this->key_id}` 
+			FROM `{$this->table}` 
+			WHERE `{$this->key_namedId}` = '$ref'  
+		");
+		$result=$row[$this->key_id];
+		return $result;
+   }
+   
+
+	
+ 	/**
+   * get record by reference
+   * @param mixed $ref numeric id or string name
+   */
+ 	function getByRef($ref)
+ 	{
+ 		if ( is_numeric ($ref) )
+ 		{
+ 			return $this->getById($ref); 
+ 		}
+ 		elseif ( is_string ($ref) )
+ 		{
+ 			return $this->getByName($ref);
+ 		}
+ 		else
+ 		{
+ 			$this->raiseError("qcl_auth_common::getByRef : integer or string expected, got '$ref'");
+ 		}
+ 	}
+
 
 	/**
 	 * gets the value of a column in a record without field->column translation 
