@@ -66,11 +66,10 @@ error:
 QOOXDOO_SELENIUM_USER_EXTENSION = ./tool/selenium/user_extension/user-extensions-qooxdoo.js
 QOOXDOO_SELENIUM_JAVA_CLIENTP = ./tool/selenium/language_binding
 SELENIUM_BUILD_DIR = ./tool/script
-JAR = jar
 
-simulator: selenium-build-dirs selenium-server-ext selenium-java-client-ext 
+simulator: simulator-build-dirs selenium-server-ext selenium-java-client-ext 
 
-selenium-build-dirs:
+simulator-build-dirs:
 	mkdir -p $(SELENIUM_BUILD_DIR)/selenium-server
 	mkdir -p $(SELENIUM_BUILD_DIR)/java-client-driver
 
@@ -81,7 +80,7 @@ selenium-java-client-ext:
 	cd java-client-driver; \
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-java-client-driver-*/selenium-java-client-driver.jar); \
 	cd ..; \
-	javac -cp java-client-driver -d java-client-driver ../../$(QOOXDOO_SELENIUM_JAVA_CLIENTP)/QxSelenium.java; \
+	$(JAVAC) -cp java-client-driver -d java-client-driver ../../$(QOOXDOO_SELENIUM_JAVA_CLIENTP)/QxSelenium.java; \
 	$(JAR) cf selenium-java-client-driver.jar -C java-client-driver . \
 	)
 
@@ -100,12 +99,7 @@ selenium-rc-start:
 	(cd $(SELENIUM_BUILD_DIR); java -jar selenium-server.jar &)
 
 selenium-rhino-shell:
-	(export CLASSPATH=$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar:$(MOZILLA_RHINO_PATH)/js.jar; \
-	java org.mozilla.javascript.tools.shell.Main \
-	)
-
-simulator-javascript:
-	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar;$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
+	(export CLASSPATH=$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar; \
 	java org.mozilla.javascript.tools.shell.Main \
 	)
 
