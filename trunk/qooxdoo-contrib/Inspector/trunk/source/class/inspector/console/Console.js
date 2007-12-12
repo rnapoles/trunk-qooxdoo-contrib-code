@@ -564,7 +564,7 @@ qx.Class.define("inspector.console.Console", {
       // create and add a find textfield
       this._findField = new inspector.components.SearchTextField();			
       // set the reference which is the this reference in the executed function
-      this._findField.setThisReference(this);
+      this._findField.setContext(this);
       // set the default value for the search textfield
       this._findField.setDefaultValue(inspector.console.Console.SEARCH_TERM);
       // set the function, which should be executed on a input change

@@ -545,7 +545,7 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
       this._findField = new inspector.components.SearchTextField();
       this._toolbar.add(this._findField);
       // set the reference which is the this reference in the executed function
-      this._findField.setThisReference(this);
+      this._findField.setContext(this);
       // set the function, which should be executed on a input change
       this._findField.setExecutionFunction(function() {          
         // fetch the objecty data
