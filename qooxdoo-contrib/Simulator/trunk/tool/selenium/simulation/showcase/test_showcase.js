@@ -48,6 +48,7 @@ importClass(Packages.com.thoughtworks.selenium.QxSelenium);
 
 // - Config Section ------------------------------------------------------------
 var sel = new QxSelenium("localhost",4444,"*firefox","http://demo.qooxdoo.org");
+//var sel = new QxSelenium("localhost",4444,"*iexplore","http://demo.qooxdoo.org");
 var useRunningSession = false;
 var closeBrowser = false;
 var cycleTests = false;
@@ -63,13 +64,13 @@ function Form (sel)
   sel.type('//input[@type="text"]', "Rampano Zampano")
 
   // increase spinner
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/arrows/up_small.gif"]')
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/arrows/up_small.gif"]')
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/arrows/up_small.gif"]')
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/arrows/up_small.gif"]')
+  sel.qxClick('//img[contains(@src,"up_small.gif")]')
+  sel.qxClick('//img[contains(@src,"up_small.gif")]')
+  sel.qxClick('//img[contains(@src,"up_small.gif")]')
+  sel.qxClick('//img[contains(@src,"up_small.gif")]')
 
   // select 'Network' from combo
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/arrows/down.gif"]')
+  sel.qxClick('//img[contains(@src,"down.gif")]')
   sel.qxClick('//div[text()="Network"]')
 
   // fill 'E-Mail' (problem: no disting. feature regarding 'Name')
@@ -99,9 +100,9 @@ function Tooltip (sel)
   sel.qxClick('//div[text()="Tooltip"]')
 
   // doesn't work !?
-  sel.mouseOver('//img[@src="./resource/qx/icon/Nuvola/32/actions/system-run.png"]');
-  sel.mouseOver('//img[@src="./resource/qx/icon/Nuvola/32/apps/accessories-archiver.png"]');
-  sel.mouseOver('//img[@src="./resource/qx/icon/Nuvola/32/apps/accessories-disk-usage.png"]');
+  sel.mouseOver('//img[contains(@src,"system-run.png")]');
+  sel.mouseOver('//img[contains(@src,"accessories-archiver.png")]');
+  sel.mouseOver('//img[contains(@src,"accessories-disk-usage.png")]');
 } // Tooltip()
 
 function Menu_and_Toolbar (sel)
@@ -134,7 +135,7 @@ function Menu_and_Toolbar (sel)
   //sel.setSpeed(ospeed);  // dysfunct - getSpeed() returns undef
   sel.setSpeed(stepSpeed);
 
-  sel.mouseUp('//img[@src="./resource/qx/icon/Nuvola/22/actions/edit-add.png"]');
+  sel.mouseUp('//img[contains(@src,"edit-add.png")]');
   sel.qxClick('//div[text()="Radio1"]')
   sel.qxClick('//div[text()="Radio2"]')
   sel.qxClick('//div[text()="Radio3"]')
@@ -192,8 +193,8 @@ function Tree (sel)
   sel.qxClick('//div[text()="Workspace"]')
   sel.qxClick('//div[text()="Inbox"]')
   */
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/tree/cross_plus.gif"]')
-  sel.qxClick('//img[@src="./resource/qx/widget/Windows/tree/cross_plus.gif"]')
+  sel.qxClick('//img[contains(@src,"cross_plus.gif")]')
+  sel.qxClick('//img[contains(@src,"cross_plus.gif")]')
   //sel.qxClick('//img[@src="./resource/qx/widget/Windows/tree/cross_plus.gif"]'); // not working because of context node?!
 
   sel.qxClick('//div[text()="Use tree lines?"]')
@@ -256,8 +257,8 @@ function SplitPane (sel)
   //sel.waitForPageToLoad(20000);
   Packages.java.lang.Thread.sleep(2000);
 
-  sel.dragdrop('//img[@src="./resource/qx/widget/Windows/splitpane/knob-horizontal.png"]',"+100,+0");
-  sel.dragdrop('//img[@src="./resource/qx/widget/Windows/splitpane/knob-horizontal.png"]',"-150,+0");
+  sel.dragAndDrop('//img[contains(@src,"knob-horizontal.png")]',"+100,+0");
+  sel.dragAndDrop('//img[contains(@src,"knob-horizontal.png")]',"-150,+0");
 
   
 } // SplitPane()
@@ -268,7 +269,7 @@ function Localization (sel)
   sel.qxClick('//div[text()="Localization"]')
   
   // Localized ComboBox
-  sel.qxClick('//div[text()="Localized ComboBox:"]/following-sibling::div/descendant::img[@src="./resource/qx/widget/Windows/arrows/down.gif"]');
+  sel.qxClick('//div[text()="Localized ComboBox:"]/following-sibling::div/descendant::img[contains(@src,"down.gif")]');
   //sel.qxClick('//div[text()="Localized ComboBox:"]/following-sibling::div/descendant::div[text()="Copy"]');
   sel.qxClick('//div[text()="Paste"]');
 
@@ -276,12 +277,12 @@ function Localization (sel)
   sel.qxClick('//div[starts-with(text(),"Command Menu")]');
 
   // Date chooser
-  sel.qxClick('//img[@src="./resource/qx/icon/Nuvola/16/apps/accessories-date.png"]');
+  sel.qxClick('//img[contains(@src,"accessories-date.png")]');
   sel.qxClick('//div[text()="Choose a date"]/../following-sibling::div/descendant::div[text()="15"]');
   sel.doubleClick('//div[text()="Choose a date"]/../following-sibling::div/descendant::div[text()="15"]');
 
   // Choose a locale
-  sel.qxClick('//div[starts-with(text(),"Choose")]/following-sibling::div/descendant::img[@src="./resource/qx/widget/Windows/arrows/down.gif"]');
+  sel.qxClick('//div[starts-with(text(),"Choose")]/following-sibling::div/descendant::img[contains(@src,"down.gif")]');
   sel.qxClick('//div[text()="de"]');
 
   // Re-open Command Menu
@@ -358,8 +359,8 @@ function Internal_Window (sel)
   // Third window
   sel.qxClick('//div[text()="Third Window"]');
   //sel.qxClick('//div[text()="Open Modal Dialog 1"]'); // doesn't work
-  sel.qxClick('//div[text()="Open Modal Dialog 1"]/preceding-sibling::div/img[@src="./resource/qx/icon/Nuvola/16/actions/edit-find.png"]'); // trick: look for the button text, but then click the image
-  sel.qxClick('//div[text()="First Modal Dialog"]/following-sibling::div/descendant::img[@src="./resource/qx/widget/Windows/window/close.gif"]');
+  sel.qxClick('//div[text()="Open Modal Dialog 1"]/preceding-sibling::div/img[contains(@src,"edit-find.png")]'); // trick: look for the button text, but then click the image
+  sel.qxClick('//div[text()="First Modal Dialog"]/following-sibling::div/descendant::img[contains(@src,"close.gif")]');
 
 } // Internal_Window()
 
@@ -369,8 +370,8 @@ function Themes (sel)
   sel.qxClick('//div[text()="Themes"]');
 
   // Theming Window
-  sel.qxClick('//div[text()="Open theming window"]/preceding-sibling::div/img[@src="./resource/qx/icon/Nuvola/16/actions/edit-find.png"]'); // clicking text() alone is not working
-  sel.qxClick('//div[text()="Theme: Ext"]/preceding-sibling::div/img[@src="./resource/qx/icon/Nuvola/16/actions/dialog-ok.png"]');
+  sel.qxClick('//div[text()="Open theming window"]/preceding-sibling::div/img[contains(@src,"edit-find.png")]'); // clicking text() alone is not working
+  sel.qxClick('//div[text()="Theme: Ext"]/preceding-sibling::div/img[contains(@src,"dialog-ok.png")]');
   Packages.java.lang.Thread.sleep(2000);
   
 } // Themes()
