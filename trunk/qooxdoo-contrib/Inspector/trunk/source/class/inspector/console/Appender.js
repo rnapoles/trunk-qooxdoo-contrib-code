@@ -24,8 +24,8 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.console.Appender",
-{
+qx.Class.define("inspector.console.Appender", {
+
   extend : qx.log.appender.Abstract,
 
 
@@ -34,47 +34,60 @@ qx.Class.define("inspector.console.Appender",
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function(console) {    
+  construct : function(console) {
     this.base(arguments);
     this._console = console;
   },
   
-
+  
   /*
   *****************************************************************************
      MEMBERS
   *****************************************************************************
   */
   members : {
-    
+    /*
+    *********************************
+       ATTRIBUTES
+    *********************************
+    */
     _console: null,
-
-    // overridden
-    appendLogEvent : function(evt) {       
+    
+    /*
+    *********************************
+       PUBLIC OVERRIDDEN
+    *********************************
+    */
+    /**
+     * Appends the log messages to the inspector console.
+     * @param evt {Object}
+     */
+    appendLogEvent : function(evt) {
+      // get the logger
+      var log = qx.log.Logger;
+      // get the log message
+      var msg = this.formatLogEvent(evt);
       
-        var log = qx.log.Logger;
-        var msg = this.formatLogEvent(evt);
+      switch(evt.level) {
+        case log.LEVEL_DEBUG:
+          this._console.debug(msg);
+          break;
 
-        switch(evt.level) {
-          
-          case log.LEVEL_DEBUG:
-            this._console.debug(msg);
-            break;
+        case log.LEVEL_INFO:
+          this._console.info(msg);
+          break;
 
-          case log.LEVEL_INFO:
-            this._console.info(msg);
-            break;
+        case log.LEVEL_WARN:
+          this._console.warn(msg);
+          break;
 
-          case log.LEVEL_WARN:
-            this._console.warn(msg);
-            break;
-
-          default:
-            this._console.error(msg);
-            break;
-        }      
+        default:
+          this._console.error(msg);
+          break;
+      }
     }
   },
+  
   
   /*
   *****************************************************************************

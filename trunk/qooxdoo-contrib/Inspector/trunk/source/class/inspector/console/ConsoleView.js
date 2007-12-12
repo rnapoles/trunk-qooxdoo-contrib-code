@@ -32,6 +32,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     HISTORY_LENGTH: 20
   },
     
+    
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -39,18 +40,19 @@ qx.Class.define("inspector.console.ConsoleView", {
   */
   construct : function(console) {
     this.base(arguments);
-    // sorte the reference to the console window
+    // store the reference to the console window
     this._console = console;
     // set the dimensions
     this.setWidth("100%");
     this.setHeight("100%");
     
-    // initialize the object folder    
+    // initialize the object folder
     this._objectFolder = [];
     
-    // create the popup for the autocompletion
+    // create the popup for the auto completion
     this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
-      
+    
+    // initialize the htmlEmbed
     this._htmlEmbed = new qx.ui.embed.HtmlEmbed();
     this._htmlEmbed.setBackgroundColor("white");
     this._htmlEmbed.setBorder("inset");
@@ -74,7 +76,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     leadingLabel.setTextColor("blue");
     leadingLabel.setBackgroundColor("white");
 
-    // create a layout which holds the prefix textfield and the entering textfield
+    // create a layout which holds the prefix and the entering textfield
     var textFieldLayout = new qx.ui.layout.HorizontalBoxLayout();      
     textFieldLayout.setBorder("inset");      
     textFieldLayout.setBackgroundColor("white");      
@@ -88,7 +90,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     this._textField.addEventListener("keyup", this._keyUpHandler, this);
     this._textField.addEventListener("keypress", this._keyPressHandler, this);
       
-    // add a event listener which updates the autoCompletion
+    // add a event listener which updates the auto completion
     this._textField.addEventListener("changeValue", function(e) {
       // if the popup is on the screen
       if (this._autoCompletePopup.isOnScreen()) {
@@ -134,12 +136,13 @@ qx.Class.define("inspector.console.ConsoleView", {
     _ctrl: false,
     _autoCompletePopup: null,
     
-    // reference arrays used to stor the objects shown on the console view
+    // reference arrays used to store the objects shown on the console view
     _objectFolder: null,
     _objectFolderIndex: 0,
     
+    // search stuff
     _filter: "",
-
+    
     
     /*
     *********************************
@@ -158,12 +161,12 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Returns the current set Widget
+     * Returns the current set object.
      * @internal
      * @return {qx.core.Object} The current selected object. 
      */
-    getWidget: function() {
-      return this._console.getWidget();
+    getQxObject: function() {
+      return this._console.getQxObject();
     },
     
     
@@ -179,15 +182,15 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     /**
      * Returns the zIndex of the console window.
-     * It is used to set the autocomplete popup to a higher zIndex.
+     * It is used to set the auto complete popup to a higher zIndex.
      * @internal
      * @return {Number} zIndex of the console window.
      */
     getZIndexOfWindow: function() {
       return this._console.getZIndex();
     },
-   
-        
+    
+    
     /**
      * Appends the given string to the textfield.
      * @param string {String} The string to append.
@@ -205,11 +208,11 @@ qx.Class.define("inspector.console.ConsoleView", {
         }  
       }
     },
-
+    
     
     /**
      * Invokes the selecting of the value currently selected in the 
-     * autocomplete popup and appends it to the textfield.
+     * auto complete popup and appends it to the textfield.
      */
     chooseAutoCompleteValue: function() {
       // get the current value of the textfield
@@ -235,13 +238,13 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Prints out the help text on the console.     
+     * Prints out the help text on the console.
      */
     printHelp: function() {        
         var helpText = "<strong>HELP:</strong><br>" +
                        "this = the current selected object<br>" + 
                        "ans = the last return value<br>" +
-                       "Press the CTRL and space key together (or tab) to get an auto complete"; 
+                       "Press the CTRL and space key together (or tab) to get auto complete"; 
         var label = this._getLabel(helpText, "ins_console_help");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -260,6 +263,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       this._scrollToLastLine();
     },     
     
+    
     /*
     *********************************
        APPENDER IMPLEMENTATIONS
@@ -270,10 +274,10 @@ qx.Class.define("inspector.console.ConsoleView", {
      * @param message {String} The error message.
      */    
     error: function(message) {
-            // open the console if it is not opened
-            if (!this._console.isOpen()) {
-                this._console.open();
-            }
+      // open the console if it is not opened
+      if (!this._console.isOpen()) {
+        this._console.open();
+      }
       var label = this._getLabel(message, "ins_console_error", "error");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -289,7 +293,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       // open the console if it is not opened
       if (!this._console.isOpen()) {
         this._console.open();
-      }            
+      }
       var label = this._getLabel(message, "ins_console_warn", "warning");           
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -298,14 +302,14 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Prints aut an info message to the console.
+     * Prints out an info message to the console.
      * @param message {String} The info message.
      */
     info: function(message) {
       // open the console if it is not opened
       if (!this._console.isOpen()) {
         this._console.open();
-      }            
+      }
       var label = this._getLabel(message, "ins_console_info", "info");
       this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
       // scroll to the end of the console 
@@ -335,6 +339,8 @@ qx.Class.define("inspector.console.ConsoleView", {
     *********************************
     */   
     /**
+     * Returns the elements of the ConsoleView which should not appear in
+     * the widget finder document tree.
      * @internal
      * @return The components of the console.
      */
@@ -354,7 +360,7 @@ qx.Class.define("inspector.console.ConsoleView", {
                 
     
     /**
-     * Focuses the textfield. It is used by the console when activating 
+     * Focuses the textfield. It is used by the console when activating
      * the console window.
      * @internal
      */
@@ -367,7 +373,7 @@ qx.Class.define("inspector.console.ConsoleView", {
      * Clears the whole console view.
      */
     clear: function() {
-      // reset the veiw
+      // reset the view
       this._htmlEmbed.setHtml("");
       // reset the storage used for referencing the printed objects
       this._objectFolder = [];
@@ -376,19 +382,20 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Returns the string which should be shown in the caption 
-     * if the console view is visible.
+     * Returns the string which should be shown in the caption bar 
+     * of the console window if the console view is visible.
+     * @internal
      * @return {String}Information string.
      */
     getCaptionMessage: function() {
-      // if a widget is selected
-      if (this._console.getWidget()) {
+      // if a object is selected
+      if (this._console.getQxObject()) {
         // return the classname an the Hashcode
-        return this._console.getWidget().classname + " [" + this._console.getWidget().toHashCode() + "]";      
+        return this._console.getQxObject().classname + " [" + this._console.getQxObject().toHashCode() + "]";      
       }
       // otherwise return that nothing is selected
       return "nothing selected";
-    },     
+    },
     
     
     /**
@@ -402,7 +409,7 @@ qx.Class.define("inspector.console.ConsoleView", {
       
       // check for the browser variants
       if (qx.core.Variant.isSet("qx.client", "gecko")) {
-        // gett all childrin in a gecko browser
+        // get all children in a gecko browser
         var children = document.getElementById("consoleViewHtmlEmbed").childNodes;
       } else if (qx.core.Variant.isSet("qx.client", "opera|webkit|mshtml")) {
         // get all children in opera, ie and safari
@@ -450,7 +457,8 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Returns the string used to filter or if no string is set the defaul message.
+     * Returns the string used to filter or if no string is set the default message.
+     * @internal
      * @return {String} The string used to filter
      */
     getFilter: function() {
@@ -468,13 +476,14 @@ qx.Class.define("inspector.console.ConsoleView", {
     /**
      * Returns the classname of the current this reference in the 
      * console view.
+     * @internal
      * @return {String | null} The name of the class.
      */
     getCurrentSelectedClassname: function() {
       // if there is a object set
-      if (this._console.getWidget() != null) {
+      if (this._console.getQxObject() != null) {
         // return the classname
-        return this._console.getWidget().classname;
+        return this._console.getQxObject().classname;
       }
       // otherwise, return null
       return null;
@@ -494,14 +503,14 @@ qx.Class.define("inspector.console.ConsoleView", {
      */
     _process: function(text) {
       // add the text to the embedded
-      this._printText(this._console.escapeHtml(text));      
+      this._printText(this._console.escapeHtml(text));
       // try to run the code
       try {        
         // run it and store the result in the global ans value
         this._console.setAns(
           (function(text, ans) {
             return eval(text)
-          }).call(this._console.getWidget(), text, this._console.getAns()));
+          }).call(this._console.getQxObject(), text, this._console.getAns()));
 
         // if ans is defined
         if (this._console.getAns() != undefined) {      
@@ -521,18 +530,19 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     
     /**
-     * Scrolls the end of the main layout which holds the aoutput of the console.
+     * Scrolls the end of the main layout which holds the output of the console.
      */
-    _scrollToLastLine: function() {       
+    _scrollToLastLine: function() {
       // flush the queues to ensure that the adding has been recognized
       qx.ui.core.Widget.flushGlobalQueues();      
       // wait until everything is done
       var self = this;
       window.setTimeout(function() {
         // scroll to the bottom of the layout
-        self._htmlEmbed.setScrollTop(self._htmlEmbed.getScrollHeight());        
+        self._htmlEmbed.setScrollTop(self._htmlEmbed.getScrollHeight());
       }, 0);
     },    
+    
     
     /*
     *********************************
@@ -541,7 +551,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     */    
     /**
      * Keyhandler which handels the keydown event on the textfield. This
-     * includes e.g. the historys function by using the up and down keys and 
+     * includes e.g. the history function by using the up and down keys and 
      * much more.
      * @param e {Event} 
      */
@@ -549,40 +559,39 @@ qx.Class.define("inspector.console.ConsoleView", {
           
       // if the esc key is pressed
       if (e.getKeyIdentifier() == "Escape") {
-        // hide the autocomplete popup
+        // hide the auto complete popup
         this._autoCompletePopup.hide();
       }
                 
       // if the enter button is pressed
       if (e.getKeyIdentifier() == "Enter") {
-        if (!this._autoCompletePopup.isOnScreen()) {     
+        // if the auto complete popup is not on the screen
+        if (!this._autoCompletePopup.isOnScreen()) {
           // save the string in the history
           this._history.unshift(this._textField.getComputedValue());
           // process the input
-          this._process(this._textField.getComputedValue());          
+          this._process(this._textField.getComputedValue());
           // empty the textfield
           this._textField.setValue("");
           // rest the history counter
           this._historyCounter = -1;
-          // if the history is biger than it should be
+          // if the history is bigger than it should be
           if (this._history.length > inspector.console.ConsoleView.HISTORY_LENGTH) {
             // remove the last element
-            this._history.pop();            
+            this._history.pop();
           }
-                    
         // if the popup is on screen
         } else {
           this.chooseAutoCompleteValue();
         }
       }
       
-      // if the up key is pressed      
+      // if the up key is pressed
       if (e.getKeyIdentifier() == "Up") {
         // prevent that the cursor is set to another position
         e.preventDefault();
         // if the popup is on screen
         if (!this._autoCompletePopup.isOnScreen()) {
-          
           // if a value is in the history
           if (this._history[this._historyCounter + 1] != undefined) {
             // increase the counter
@@ -601,7 +610,7 @@ qx.Class.define("inspector.console.ConsoleView", {
         if (!this._autoCompletePopup.isOnScreen()) {
           // check if the counter is bigger than 0
           if (this._historyCounter > 0) {
-            // if yes, decreas the cunter
+            // if yes, decreass the counter
             this._historyCounter--;
             // set the new value from the history
             this._textField.setValue(this._history[this._historyCounter]);
@@ -609,30 +618,30 @@ qx.Class.define("inspector.console.ConsoleView", {
         }
       }
           
-      // if the controll key is pressed
+      // if the control key is pressed
       if (e.getKeyIdentifier() == "Control") {
         // mark that in a flag
         this._ctrl = true;
       }
       
       // if the space or tab is pressed
-      if (e.getKeyIdentifier() == "Space" || e.getKeyIdentifier() == "Tab") {      
+      if (e.getKeyIdentifier() == "Space" || e.getKeyIdentifier() == "Tab") {
         // check if the control button is pressed
         if (this._ctrl || e.getKeyIdentifier() == "Tab") {
           // prevent the browser from leaving the textfield
           e.preventDefault();
           
           // if tab is the pressed key
-          if (e.getKeyIdentifier() == "Tab") {            
+          if (e.getKeyIdentifier() == "Tab") {
             var self = this;
             // remove the selection of the text
             window.setTimeout(function() {
               var length = self._textField.getComputedValue().length;
-              self._textField.selectFromTo(length, length);            
+              self._textField.selectFromTo(length, length);
             }, 0);            
           }
 
-          // do the autocomplete
+          // do the auto complete
           try {
             // get the position for the popup
             var left = qx.html.Location.getPageBoxLeft(this._textField.getElement());
@@ -645,7 +654,6 @@ qx.Class.define("inspector.console.ConsoleView", {
           }
         }
       }
-        
     },
     
     
@@ -656,15 +664,15 @@ qx.Class.define("inspector.console.ConsoleView", {
     _keyUpHandler: function(e) {
       // if the control key will be released
       if (e.getKeyIdentifier() == "Control") {
-        // remove the controll flag
+        // remove the control flag
         this._ctrl = false;
       }
     },
     
     
     /**
-     * Keyhandler wich handels the keypress event. This is necessary to 
-     * scrol threw the autocomplete popup by holding the up or down key.
+     * Keyhandler which handels the keypress event. This is necessary to 
+     * scroll threw the auto complete popup by holding the up or down key.
      * @param e {Event} 
      */
     _keyPressHandler: function(e) {
@@ -680,7 +688,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     /*
     *********************************
-       Print functions
+       PRINT FUNCTIONS
     *********************************
     */    
     /**
@@ -698,16 +706,16 @@ qx.Class.define("inspector.console.ConsoleView", {
       } else if (returnValue instanceof Array) {
         // initiate a string to represent the array
         var arrayRepresentation = "";
-        // if the array is a huge one (mor than 2 elements)
+        // if the array is a huge one (more than 2 elements)
         if (returnValue.length > 2) {
-          // take the first tow elements and show how much are unshown
+          // take the first tow elements and show how much are not shown
           arrayRepresentation = returnValue[0] + ", " + returnValue[1] + ", ..." +
                                     (returnValue.length - 2) + " more";
         // if the length is exactly 2
         } else if (returnValue.length == 2) {
           // print out those two elements
           arrayRepresentation = returnValue[0] + ", " + returnValue[1];
-        // if the array hase only the length of one
+        // if the array has only the length of one
         } else if (returnValue.length == 1) {
           // show only this one element
           arrayRepresentation = returnValue[0]; 
@@ -718,7 +726,6 @@ qx.Class.define("inspector.console.ConsoleView", {
                                    "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
                                    "'>[" + arrayRepresentation + "]</span>", "ins_console_return_array");
         this._htmlEmbed.setHtml(this._htmlEmbed.getHtml() + label);
-
         return;
 
       // check for objects
@@ -762,8 +769,9 @@ qx.Class.define("inspector.console.ConsoleView", {
       this._scrollToLastLine();
     },
     
+    
     /**
-     * Prints out a standard text in black with the leading ">> " to the console.
+     * Prints out a standard text in black with the leading ">>> " to the console.
      * @param text {String} The text to print out.
      */
     _printText: function(text) {
@@ -781,20 +789,20 @@ qx.Class.define("inspector.console.ConsoleView", {
     */
     _getLabel: function(text, clazz, icon) {
       // create the text of the label
-      var text = text;      
+      var text = text;
       // handle the icon uri      
       if (icon == "info" || icon == "error" || icon == "warning") {
         var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + 
                        icon + "Icon.png") + "' class='ins_console_icon'>";
         text = iconHtml + "&nbsp;" + text;
       }
-      // create the sourrounding div
+      // create the surrounding div
       text = "<div class='ins_console_common'><div class='" + clazz + "'>" + text + "</div></div>";
       // return the text String
       return text;      
     }
-        
-   },
+  
+  },
    
   /*
   *****************************************************************************
@@ -803,5 +811,5 @@ qx.Class.define("inspector.console.ConsoleView", {
   */
   destruct : function() {
     this._disposeFields("_console", "_objectFolder", "_autoCompletePopup", "_htmlEmbed", "_textField");
-  }     
+  }
 });

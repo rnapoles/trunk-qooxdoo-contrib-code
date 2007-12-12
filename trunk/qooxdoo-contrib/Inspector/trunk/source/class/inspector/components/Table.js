@@ -40,18 +40,21 @@ qx.Class.define("inspector.components.Table", {
   properties: {
     /**
      * Holds the value which should be shown in the statusbar
-     * behind the ammount of rows in singular.
+     * behind the amount of rows in singular.
      */
     rowContentName: {
-      init: "row"
+      init: "row",
+      check: "String"
     },
     
+    
     /**
-     * Holds the valuie which shold be shown in the statusbar
-     * behind the ammount of rows in non-singular.
+     * Holds the value which should be shown in the statusbar
+     * behind the amount of rows in non-singular.
      */
     rowsContentName: {
-      init: "rows"
+      init: "rows",
+      check: "String"
     } 
     
   },
@@ -68,17 +71,18 @@ qx.Class.define("inspector.components.Table", {
     *********************************
     */
     /**
-     * Overridden update function for the statusbar. This functuon adresses the 
-     * stored names for the rows and shows the propper names in the statusbar after 
-     * the ammount of rows. 
-     * The selection of the rows will be ignored in this function.
+     * Overridden update function for the statusbar. This function addresses the 
+     * stored names for the rows and shows the proper names in the statusbar after 
+     * the amount of rows. The amount of selected rows will be ignored in this function.
      */
     _updateStatusBar : function()  {
+      // if there is a statusbar
       if (this.getStatusBarVisible()) {
-        var rowCount = this.getTableModel().getRowCount();        
-
+        // get the row count
+        var rowCount = this.getTableModel().getRowCount();
+        // create the text for the row / rows
         var text = rowCount + ((rowCount == 1) ? " " + this.getRowContentName() : " " + this.getRowsContentName());
-
+        // set the text in the statusbar
         this._statusBar.setText(text);
       }
     }

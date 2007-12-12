@@ -21,17 +21,16 @@ qx.Class.define("inspector.console.Console", {
   
   extend : inspector.components.AbstractWindow,  
 
-    
   /*
   *****************************************************************************
      STATICS
   *****************************************************************************
   */
-  statics: {    
+  statics: {
     SEARCH_TERM: "Search..."    
   },
   
-      
+  
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -44,13 +43,12 @@ qx.Class.define("inspector.console.Console", {
     // add the appender if everything is done
     var self = this;
     window.setTimeout(function() {
-      // if there is a cookie stored that the appender need to be reset
+      // if there is a cookie stored that the appender need to be set
       if (qx.io.local.CookieApi.get("consoleAppender") == "true") {
         // check the appender button
         self._appenderButton.setChecked(true);
       }
     }, 0);
-    
   },
 
 
@@ -66,10 +64,10 @@ qx.Class.define("inspector.console.Console", {
     *********************************
     */
     // main elements
-    _consoleView: null,
-    _domView: null,
     _tabView: null,
     _currentView: null,
+    _consoleView: null,
+    _domView: null,
 
     // buttons
     _clearButton: null,
@@ -104,39 +102,43 @@ qx.Class.define("inspector.console.Console", {
     *********************************
     */  
     /**
+     * Returns the components of the console, which should not be in 
+     * the widget finders document tree.
      * @internal
      * @return The components of the console.
      */
     getComponents: function() {
-      return [this, this._clearTooltip, this._apiTooltip, this._setTooltip, this._appenderTooltip, 
-              this._helpTooltip].concat(this._consoleView.getComponents());
-    },    
-   
-    
-    /**
-     * Set the widget which should be addressd with the this value in the console.
-     * @param widget {qx.core.Object} The current selected object.
-     */
-    setWidget: function(widget) {
-      // set the widget first!
-      this._widget = widget;
-      // show the console view
-      this._consoleButton.setChecked(true);
-      // set the title of the caption bar
-      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                        this._consoleView.getCaptionMessage() + ")");
+      return [this, this._clearTooltip, this._apiTooltip, this._setTooltip,
+              this._appenderTooltip, this._helpTooltip].concat(this._consoleView.getComponents());
     },
     
     
     /**
+     * Set the object which should be addressed with the this value in the console view.
+     * @param widget {qx.core.Object} The current selected object.
+     */
+    setQxObject: function(qxObject) {
+      // set the widget first!
+      this._widget = qxObject;
+      // show the console view
+      this._consoleButton.setChecked(true);
+      // set the title of the caption bar
+      this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" +
+                      this._consoleView.getCaptionMessage() + ")");
+    },
+    
+    
+    /**
+     * Returns the object referenced as this in the console view.
      * @return The current selected object.
      */
-    getWidget: function() {
+    getQxObject: function() {
       return this._widget;
     },
     
     
     /**
+     * Returns the return value of the last call on the console view.
      * @return The answer of the last call.  
      */
     getAns: function() {
@@ -147,7 +149,7 @@ qx.Class.define("inspector.console.Console", {
     /**
      * Sets the last Value of the call.
      * @internal
-     * @param ans {Object} The las returned value.
+     * @param ans {Object} The last returned value.
      */
     setAns: function(ans) {
       this._ans = ans;
@@ -156,10 +158,10 @@ qx.Class.define("inspector.console.Console", {
   
     /**
      * Sets the given object in the dom view.
-     * @param inputObject {Object} The object to inspect.
+     * @param inputObject {qx.core.Object} The object to inspect.
      */
     inspectObject: function(inputObject) {
-      // pase the object to the dom view
+      // give the object to the dom view
       this._domView.setObject(inputObject.object, inputObject.name);
       // show the dom view
       this._domButton.setChecked(true);
@@ -170,10 +172,10 @@ qx.Class.define("inspector.console.Console", {
   
   
     /**
-     * Fetches the object from the console view and tells the dom view to show 
+     * Fetches the object from the console view and tell the dom view to show 
      * the objects properties.
      * @internal
-     * @param id {Number} Set the object assosiated with the given id.
+     * @param id {Number} Set the object associated with the given id.
      */
     inspectObjectByInternalId: function(id) {
       // get the object and the name
@@ -197,14 +199,15 @@ qx.Class.define("inspector.console.Console", {
       this._findField.setValue(this._findField.getDefaultValue());
       // change the title of the console window
       this.setCaption(inspector.Inspector.CONSOLE_CAPTION_TITLE + " (" + 
-                      this._domView.getCaptionMessage() + ")");    
+                      this._domView.getCaptionMessage() + ")");
     },
   
     
-    /**
-     * Escape the html special character.
-     * @param value {String} The text containing the html characters.
-     */
+   /**
+    * Escape the html special character.
+    * @internal
+    * @param value {String} The text containing the html characters.
+    */
     escapeHtml: function(value) {
       function replaceChars(ch) {
         switch(ch) {
@@ -226,22 +229,28 @@ qx.Class.define("inspector.console.Console", {
         return "?";
       }
       return String(value).replace(/[<>&"']/g, replaceChars);
-    },    
-
+    },
+    
     
     /*
     *********************************
        PROTECTED
     *********************************
     */
+    /**
+     * BETA!!! (TODO check for property groups)
+     * This function generates a map of settings for the current 
+     * selected object. Therefore only the settings set by the users
+     * appear in the map.
+     */
    _generateSettingsMap: function() {
       // the first superclass is the class of the selected widget
-      var superclass = this.getWidget();
-      // create new properties array to store the propertey of a class
+      var superclass = this.getQxObject();
+      // create new properties array to store the property of a class
       var properties = [];
       // go threw the inheritance of the selected widget
       for (var i = 1; ; i++) {
-        // store the properties and classnames in seperate array
+        // store the properties and classnames in separate array
         var props = qx.Class.getByName(superclass.classname).$$properties;
         // go threw all properties of the current class
         for (var j in props) {
@@ -260,7 +269,7 @@ qx.Class.define("inspector.console.Console", {
       
       // go threw all properties
       for (var i in properties) {
-        // ignore the cahced properties
+        // ignore the cached properties
         if (properties[i]._cached == true) {
           continue;
         }
@@ -269,7 +278,7 @@ qx.Class.define("inspector.console.Console", {
         var getterName = "get" + qx.lang.String.toFirstUp(properties[i].name);
         // try to read the value
         try {
-          var value = this.getWidget()[getterName].call(this.getWidget());
+          var value = this.getQxObject()[getterName].call(this.getQxObject());
           if (value instanceof Object) {
             continue;
           }
@@ -279,7 +288,7 @@ qx.Class.define("inspector.console.Console", {
         }
         
         // take care of the refined properties
-        var clazz = qx.Class.getByName(this.getWidget().classname);
+        var clazz = qx.Class.getByName(this.getQxObject().classname);
         if (clazz.prototype["__init$" + properties[i].name] == value) {
           continue;
         }
@@ -292,7 +301,7 @@ qx.Class.define("inspector.console.Console", {
       }
       
       // get the styles given by the theme
-      var styles = qx.theme.manager.Appearance.getInstance().styleFrom(this.getWidget().getAppearance(), {}); 
+      var styles = qx.theme.manager.Appearance.getInstance().styleFrom(this.getQxObject().getAppearance(), {}); 
       
       // check for the theme properties
       for (var propertyName in props) {
@@ -328,7 +337,7 @@ qx.Class.define("inspector.console.Console", {
     */
    _clearView: function() {
      // clear the current view
-     this._currentView.clear();     
+     this._currentView.clear();
    },
 
 
@@ -339,16 +348,12 @@ qx.Class.define("inspector.console.Console", {
     _enableButtons: function(view) {
       switch (view) {
         case "console":
-          // this._clearButton.setEnabled(true);
           this._setButton.setEnabled(true);
           this._helpButton.setEnabled(true);
-          // this._findField.setEnabled(true);      
           break;
         case "dom":
-          // this._clearButton.setEnabled(true);
           this._setButton.setEnabled(false);
           this._helpButton.setEnabled(false);
-          // this._findField.setEnabled(true);
           break;
       }
     },
@@ -395,7 +400,7 @@ qx.Class.define("inspector.console.Console", {
     
     
     /**
-     * Creates the man tab view an the needed tabs.
+     * Creates the main tab view an the needed tabs.
      */
     _createMainElement: function() {   
       // create the tabview   
@@ -425,7 +430,7 @@ qx.Class.define("inspector.console.Console", {
 
       // register the clear event listener
       this._clearButton.addEventListener("click", this._clearView, this);    
-      // register a handlert to print out the help text on the console
+      // register a handler to print out the help text on the console
       this._helpButton.addEventListener("click", this._consoleView.printHelp, this._consoleView);
       // register a appear listener for the console view
       consolePage.addEventListener("appear", function() {
@@ -465,7 +470,7 @@ qx.Class.define("inspector.console.Console", {
       // create and add a button to clear the view
       this._clearButton = new qx.ui.toolbar.Button("Clear");
       this._toolbar.add(this._clearButton);      
-      // add a tooltip to the clear buttom
+      // add a tooltip to the clear button
       this._clearTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.CLEAR_BUTTON_TOOLTIP_TEXT, null);
       this._clearButton.setToolTip(this._clearTooltip);  
       
@@ -479,7 +484,7 @@ qx.Class.define("inspector.console.Console", {
         // open the api window
         this._inspector.openApiWindow(classname);          
       }, this);
-      // add a tooltip to the api buttom
+      // add a tooltip to the api button
       this._apiTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.API_BUTTON_TOOLTIP_TEXT, null);
       this._apiButton.setToolTip(this._apiTooltip);        
             
@@ -515,11 +520,11 @@ qx.Class.define("inspector.console.Console", {
       this._setButton.addEventListener("execute", function() {
         this._consoleView.printCode(this._generateSettingsMap());
       }, this);
-      // add a tooltip to the clear buttom
+      // add a tooltip to the clear button
       this._setTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.SET_BUTTON_TOOLTIP_TEXT, null);
       this._setButton.setToolTip(this._setTooltip);        
       
-      // seperator
+      // separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
       
       // create and add a button to make the consola a appender
@@ -557,7 +562,7 @@ qx.Class.define("inspector.console.Console", {
       // create and add a help button
       this._helpButton = new qx.ui.toolbar.Button("Help");
       this._toolbar.add(this._helpButton);
-      // add a tooltip to the help buttom
+      // add a tooltip to the help button
       this._helpTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.HELP_BUTTON_TOOLTIP_TEXT, null);
       this._helpButton.setToolTip(this._helpTooltip);
 
@@ -574,9 +579,9 @@ qx.Class.define("inspector.console.Console", {
       // add the findfield to the toolbar
       this._toolbar.add(this._findField);			
     }
-
-   },
-
+  
+  },
+  
   
   /*
   *****************************************************************************
@@ -584,7 +589,7 @@ qx.Class.define("inspector.console.Console", {
   *****************************************************************************
   */
   destruct : function() {
-    // dispos all fields
+    // dispose all fields
     this._disposeFields("_clearButton", "_clearTooltip", "_apiButton", "_apiTooltip",
                         "_setButton", "_setTooltip", "_appenderButton", "_appenderTooltip", 
                         "_helpButton", "_helpTooltip", "_findField", "_tabView", 

@@ -26,7 +26,7 @@ qx.Class.define("inspector.components.SearchTextField", {
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function(value) {    
+  construct : function(value) {
     this.base(arguments);
     
     // initialize the boxlayout
@@ -59,7 +59,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     
     // if there is no value given
     if (value == null) {
-      // set the dafault value
+      // set the default value
       this.__textField.setValue(this.getDefaultValue());
       // enable the remove button
       this.__image.setEnabled(false);
@@ -67,7 +67,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     
     // add a click event listener for removing the search text and selecting the containing text
     this.__textField.addEventListener("click", this._clickListener);
-    // add a listener which adds the search test if the focus is lost and the textfield ist empty
+    // add a listener which adds the search test if the focus is lost and the textfield is empty
     this.__textField.addEventListener("focusout", this._focusOutListener, this);  
     // add the filter function to the search field
     this.__textField.addEventListener("input", this._inputListener, this);    
@@ -107,8 +107,8 @@ qx.Class.define("inspector.components.SearchTextField", {
     
     
     /**
-     * The defaut value which pill be added to the textfield if it is empty and 
-     * removed if a user ants to enter a new search term.
+     * The default value which will be added to the textfield if it is empty and 
+     * removed if a user wants to enter a new search term.
      */
     defaultValue: {
       init: "Search..."
@@ -128,7 +128,7 @@ qx.Class.define("inspector.components.SearchTextField", {
        ATTRIBUTES
     *********************************
     */        
-    _searchTimer: null,
+    __searchTimer: null,
  
     __textField: null,
     __image: null,
@@ -141,7 +141,8 @@ qx.Class.define("inspector.components.SearchTextField", {
     */
     /**
      * Returns the computed value of the textfield, if it is different from 
-     * the default search term. If it is so, an empty string will be returned.
+     * the default search term. If it is the default search term, an empty string 
+     * will be returned.
      * @return {String} The value of the textfield.
      */
     getComputedValue: function() {
@@ -166,7 +167,6 @@ qx.Class.define("inspector.components.SearchTextField", {
       this.__textField.setValue(value);
       // enable / disable the clear button
       this.__image.setEnabled(value != this.getDefaultValue());
-      
     },
     
     
@@ -177,7 +177,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     */
     /**
      * The listener which removes the default search value form the textfield.
-     * @param e {Event} ClickEvent
+     * @param e {qx.event.type.MouseEvent} ClickEvent
      */
     _clickListener: function(e) {
       // select the whole text
@@ -191,7 +191,8 @@ qx.Class.define("inspector.components.SearchTextField", {
     
     
     /**
-     * Adds the default search value to the textfield if the valus is not set by the user. 
+     * Adds the default search term to the textfield if the value
+     * is not set by the user. 
      * @param e {Event}
      */
     _focusOutListener: function(e) {
@@ -203,25 +204,27 @@ qx.Class.define("inspector.components.SearchTextField", {
     
     
     /**
-     * Executes the given function with the given this reference after 
-     * the input of the textfield has changed an thi given time is over.
+     * Executes the given function with the given context after 
+     * the input of the textfield has changed an the given time is over.
      * @param e {Event}
      */
     _inputListener: function(e) {
-      this.__image.setEnabled(true);    
+      // enabled / disable the clear button
+      this.__image.setEnabled(this.getComputedValue() != "");
       // if a search timer is set
-      if (this._searchTimer) {
+      if (this.__searchTimer) {
         // remove the old search timer
-        window.clearTimeout(this._searchTimer);
+        window.clearTimeout(this.__searchTimer);
       }
-      // store the this reference for the timeout        
+      // store the this reference for the timeout
       var self = this;
-      this._searchTimer = window.setTimeout(function() {          
+      this.__searchTimer = window.setTimeout(function() {
         self.getExecutionFunction().call(self.getContext());
       }, this.getRefreshTime());
     }
 
   },
+  
   
   /*
   *****************************************************************************
@@ -229,7 +232,9 @@ qx.Class.define("inspector.components.SearchTextField", {
   *****************************************************************************
   */
   destruct : function() {
+    // remove the context
     this.setContext("");
+    // dispoe the fields
     this._disposeFields("__textField", "__image");
   }
 });
