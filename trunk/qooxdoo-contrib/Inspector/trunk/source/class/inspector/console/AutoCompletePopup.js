@@ -96,7 +96,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
      * Returns the components of the AutoCompletePopup which should not
      * appear in the widget finder window. 
      * @internal
-     * @return {Array} The components of the AutoCompletePopup.
+     * @return {qx.core.Object[]} The components of the AutoCompletePopup.
      */
     getComponents: function() {
       return [this, this._table, this._tableModel];

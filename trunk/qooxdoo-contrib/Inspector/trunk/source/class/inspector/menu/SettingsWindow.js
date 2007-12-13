@@ -59,7 +59,7 @@ qx.Class.define("inspector.menu.SettingsWindow", {
      * Returns the components of the settings window which should 
      * not appear in the widget finder tree.
      * @internal
-     * @return {Array} The components of the menu.
+     * @return {qx.core.Object[]} The components of the menu.
      */
     getComponents: function() {
       return [this];

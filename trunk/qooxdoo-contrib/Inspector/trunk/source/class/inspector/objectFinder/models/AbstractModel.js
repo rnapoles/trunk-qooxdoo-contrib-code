@@ -21,7 +21,8 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
   
   extend : qx.core.Object,  
   implement : inspector.objectFinder.IModel, 
-    
+  
+  
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -44,14 +45,17 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
     *********************************
     */  
     /**
-     * @param clearData {object} A Object containing two elements
-     *                          object: A list of Objects
-     *                          dbKey : A list of the corresponding dbKeys
-     * @param filter {String | RegExp} The term to search for in the data.
-     * @return {Array} A filterd and cleaned list objects containing
-     *      0     - the amount of the object
-     *      1     - the classname of the object
-     *      dbKey - the key in the objects db
+     * This method manipulates the given clearData (should be a list ob objects 
+     * without the inspector objects) and filters the data according to the 
+     * given filter.
+     * @param clearData {object} A Object containing two elements:
+     *                          - object: A list of Objects -
+     *                          - dbKey : A list of the corresponding dbKeys -
+     * @param filter {String} The term to search for in the data.
+     * @return {Map} A filtered and cleaned list objects containing:
+     *                          - 0: some information on the object -
+     *                          - 1: the classname of the object -
+     *                          - dbKey: the key in the objects db -
      */
     dressUpData: function(clearData, filter) {
       // throw an exception if the method is called on the abstract class
@@ -60,8 +64,8 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
     
     
     /**
-     * Tells the ObjectFinder how to set the nams of the columns of its table.
-     * @return {Array} An Array containing Strings as names.
+     * Should tell the ObjectFinder the names of the columns of its table .
+     * @return {String[]} An Array containing strings as names.
      */
     getColumnNames: function() {
       // throw an exception if the method is called on the abstract class
@@ -70,9 +74,9 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
     
     
     /**
-     * Tells the ObjectFinder if the columns of the table match exactly one object
+     * Should tell the ObjectFinder if the columns of the table match exactly one object
      * so that they can be selected.
-     * @return {boolean} true, if the selection should be on
+     * @return {Boolean} True, if the selection should be on.
      */
     getSelectable: function() {
       // throw an exception if the method is called on the abstract class
@@ -81,8 +85,8 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
     
     
     /**
-     * Tells the ObjectFider which name he should display in the views menu for 
-     * this data mode.
+     * Should tell the ObjectFider which name he should display in the views menu for 
+     * the implementing data mode.
      * @return {String} The name of the data model.
      */
     getMenuName: function() {
@@ -99,10 +103,10 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
     /**
      * Common method used to filter the data.
      * @param data {Object} the data to filter.
-     * @param filter {String | RegExp} Filter pattern.
+     * @param filter {String} Filter pattern.
      */
     _filter: function(data, filter) {
-      // create a new temporary array to store the filterd data
+      // create a new temporary array to store the filtered data
       var newData = [];
       // try to search with a RegExp object
       try {
@@ -112,7 +116,7 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
         for (var i = 0; i < data.length; i++) {
           // if the search text is part of the classname or hash value
           if (regExp.test(data[i][1]) || regExp.test(data[i][0])) {
-            // add the object to the filterd data
+            // add the object to the filtered data
             newData.push(data[i]);
           }          
         } 
@@ -120,7 +124,7 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
         // alert the user it the search string was incorrect
         alert(e);
       }
-      // return the filterd data
+      // return the filtered data
       return newData;
     }
   }

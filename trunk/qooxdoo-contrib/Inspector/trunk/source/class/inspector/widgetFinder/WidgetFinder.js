@@ -73,7 +73,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     /**
      * Returns the components of the widget finder.
      * @internal
-     * @return {Array} A list of all components in the widget finder.
+     * @return {qx.core.Object[]} A list of all components in the widget finder.
      */       
     getComponents: function() {
       return [this, this._reloadToolTip, this._autoReloadToolTip];

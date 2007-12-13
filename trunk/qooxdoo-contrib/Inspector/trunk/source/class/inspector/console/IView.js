@@ -27,7 +27,7 @@ qx.Interface.define("inspector.console.IView", {
     /**
      * The method should return the components of the implementing view so 
      * that the components do not show up in the widget finders tree.
-     * @return {Array} An array of qooxdoo objects.
+     * @return {qx.core.Object[]} An array of qooxdoo objects.
      */
     getComponents: function() {
       return true;

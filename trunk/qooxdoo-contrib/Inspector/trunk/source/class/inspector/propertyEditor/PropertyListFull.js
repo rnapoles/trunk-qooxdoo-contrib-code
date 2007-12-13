@@ -96,7 +96,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     
     /**
      * @internal
-     * @return {Array} A list of all omponents used in this view.
+     * @return {qx.core.Object[]} A list of all omponents used in this view.
      */
     getComponents: function() {
       return [this, this._colorPopup, this._filter].concat(this._comboBoxPopups);
@@ -398,7 +398,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * Removes all groupes form the list that count is higher than the 
      * count of the classes in the current object. This function shold 
      * only be invokes if the class based view is enbaled.  
-     * @param classnames {Array} The classnames array.
+     * @param classnames {String[]} The classnames array.
      */    
     _removeUnnecessaryClasses: function(classnames) {
       // remove all classes from the list which are definitely not in the current widget
@@ -488,7 +488,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * a checkbox for a boolean value.
      * The handler for changing the values of the property will also be added 
      * after the creation process.
-     * @param propertySet {Array} The array containing the propertie values.
+     * @param propertySet {Map} The array containing the propertie values.
      * @param key {String} The name of the propertie.
      * @param classname {String} The classname of the properties class.
      */

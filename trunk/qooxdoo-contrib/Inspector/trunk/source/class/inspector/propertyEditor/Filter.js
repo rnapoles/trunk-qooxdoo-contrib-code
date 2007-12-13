@@ -78,7 +78,7 @@ qx.Class.define("inspector.propertyEditor.Filter", {
      * uses the defined test. If no test could be applied, the property 
      * will be put into a default category.
      * @param propertyName {String} The name of the property.
-     * @param property {Array} The property array itself.
+     * @param property {Map} The property array itself.
      * @param classname {String} The name of the properties class.
      */
     sortIn: function(propertyName, property, classname) {

@@ -96,7 +96,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      * Returns all the components of the property editor which should not
      * be shown in the widget finder.
      * @internal
-     * @return {Array} All components of the property editor.
+     * @return {qx.core.Object[]} All components of the property editor.
      */
     getComponents: function() {
       return [this, this._groupToolTip, this._menu, this._apiButtonToolTip,

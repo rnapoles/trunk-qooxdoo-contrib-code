@@ -789,7 +789,7 @@ qx.Class.define("inspector.Inspector", {
      *
      * @internal
      *
-     * @return {Array} A list of objects containing two values
+     * @return {Map} A list of objects containing two values
      *      begin - the begin of the exclusion index
      *      end   - the end of the exclusion index
      */

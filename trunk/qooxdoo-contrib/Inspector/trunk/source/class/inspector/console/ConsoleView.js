@@ -352,7 +352,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     /**
      * Sets the height of the htmlEmbedded element showing the messages.
      * @internal
-     * @param height {Number} The new height.
+     * @param delta {Number} The delta of the height.
      */
     setMainElementDeltaHeight: function(delta) {
       this._htmlEmbed.setHeight(this._htmlEmbed.getHeight() + delta);
@@ -553,7 +553,7 @@ qx.Class.define("inspector.console.ConsoleView", {
      * Keyhandler which handels the keydown event on the textfield. This
      * includes e.g. the history function by using the up and down keys and 
      * much more.
-     * @param e {Event} 
+     * @param e {Event} The event cuased by keydown.
      */
     _keyDownHandler: function(e) {   
           
@@ -659,7 +659,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     
     /**
      * Keyhandler to handle the keyup event. 
-     * @param e {Event}
+     * @param e {Event} The event cuased by keyup.
      */
     _keyUpHandler: function(e) {
       // if the control key will be released
@@ -673,7 +673,7 @@ qx.Class.define("inspector.console.ConsoleView", {
     /**
      * Keyhandler which handels the keypress event. This is necessary to 
      * scroll threw the auto complete popup by holding the up or down key.
-     * @param e {Event} 
+     * @param e {Event} The event cuased by the keypress.
      */
     _keyPressHandler: function(e) {
       if (this._autoCompletePopup.isOnScreen()) {
@@ -787,6 +787,12 @@ qx.Class.define("inspector.console.ConsoleView", {
        CREATE FUNCTIONS
     *********************************
     */
+    /**
+     * Creates a String containing a div corresponding to the given values.
+     * @param text {String} The text of the label.
+     * @param clazz {String} the css class of the div. 
+     * @param icon {String} The icon to show.
+     */
     _getLabel: function(text, clazz, icon) {
       // create the text of the label
       var text = text;
