@@ -166,7 +166,7 @@ qx.Class.define("inspector.menu.Menu", {
      * Return the components of the menu which should not appear in 
      * the widget finder tree.
      * @internal
-     * @return {Array} The components of the menu.
+     * @return {qx.core.Object[]} The components of the menu.
      */
     getComponents: function() {
       return [this._inspectorMenu, this._hideAllPopup, this._welcomePopup, 

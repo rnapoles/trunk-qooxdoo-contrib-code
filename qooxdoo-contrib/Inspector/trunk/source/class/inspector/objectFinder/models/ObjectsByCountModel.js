@@ -43,14 +43,17 @@ qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
     *********************************
     */  
     /**
-     * @param clearData {object} A Object containing two elements
-     *                          object: A list of Objects
-     *                          dbKey : A list of the corresponding dbKeys
-     * @param filter {String | RegExp} The term to search for in the data.
-     * @return {Array} A filterd and cleaned list objects containing
-     *      0     - the amount of the object
-     *      1     - the classname of the object
-     *      dbKey - the key in the objects db
+     * This method manipulates the given clearData (should be a list ob objects 
+     * without the inspector objects) and filters the data according to the 
+     * given filter.
+     * @param clearData {object} A Object containing two elements:
+     *                          - object: A list of Objects -
+     *                          - dbKey : A list of the corresponding dbKeys -
+     * @param filter {String} The term to search for in the data.
+     * @return {Map} A filtered and cleaned list objects containing:
+     *                          - 0: the amount of the object -
+     *                          - 1: a classname -
+     *                          - dbKey: the key in the objects db -
      */
     dressUpData: function(clearData, filter) {
       // create a temp data objects
@@ -75,7 +78,7 @@ qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
         data.push([tempData[key], key]);
       }
      
-      // apply a filfer if needed
+      // apply a filter if needed
       if (filter != null || filter != "") {
         return this._filter(data, filter);
       }
@@ -85,8 +88,9 @@ qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
     
     
     /**
-     * Tells the ObjectFinder how to set the nams of the columns of its table.
-     * @return {Array} An Array containing Strings as names.
+     * Tells the ObjectFinder table that the first column is the count 
+     * and the second column is the classname.
+     * @return {String[]} ["Count", "Classname"]
      */
     getColumnNames: function() {
       return ["Count", "Classname"];
@@ -94,9 +98,10 @@ qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
     
     
     /**
-     * Tells the ObjectFinder if the columns of the table match exactly one object
-     * so that they can be selected.
-     * @return {boolean} true, if the selection should be on
+     * Tells the ObjectFinder that the columns in the table does 
+     * not contain single objects and that the columns can not 
+     * be selected.
+     * @return {boolean} false.
      */
     getSelectable: function() {
       return false;
@@ -104,9 +109,9 @@ qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
     
     
     /**
-     * Tells the ObjectFider which name he should display in the views menu for 
-     * this data mode.
-     * @return {String} The name of the data model.
+     * Tells the ObjectFider that the name of the DataModel in the menu is
+     * "by count".
+     * @return {String} by count
      */
     getMenuName: function() {
       return "by count";

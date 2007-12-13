@@ -180,7 +180,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * Returns the components of the DomViewHtml which should not
      * appear in the widget finder tree.
      * @internal
-     * @return {Array} The components of the DomViewHtml.
+     * @return {qx.core.Object[]} The components of the DomViewHtml.
      */
     getComponents: function() {
       return [this, this._htmlEmbed];
@@ -523,7 +523,7 @@ qx.Class.define("inspector.console.DomViewHtml", {
      * Returns a html string containing a link to select the given object.
      * @param object {Object} The object to select.
      * @param index {Number} The index in the path to the selected object.
-     * @param index {String} The property to select the new object.
+     * @param key {String} The property to select the new object.
      */
     _getObject: function(object, index, key) {
       var returnString = "<a onclick='" +

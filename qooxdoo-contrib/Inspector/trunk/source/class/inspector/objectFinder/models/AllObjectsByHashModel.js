@@ -43,14 +43,16 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
     *********************************
     */  
     /**
-     * @param clearData {object} A Object containing two elements
-     *                          object: A list of Objects
-     *                          dbKey : A list of the corresponding dbKeys
-     * @param filter {String | RegExp} The term to search for in the data.
-     * @return {Array} A filterd and cleaned list objects containing
-     *      0     - the hashode of the object
-     *      1     - the classname of the object
-     *      dbKey - the key in the objects db
+     * This method creates out of the given clearData Map a Map containing 
+     * its hash value and its classname.
+     * @param clearData {object} A Object containing two elements:
+     *                          - object: A list of Objects -
+     *                          - dbKey : A list of the corresponding dbKeys -
+     * @param filter {String} The term to search for in the data.
+     * @return {Map} A filtered and cleaned list objects containing:
+     *                          - 0: the hash value of the object -
+     *                          - 1: the classname of the object -
+     *                          - dbKey: the key in the objects db -
      */
     dressUpData: function(clearData, filter) {
       // create a data array
@@ -68,7 +70,7 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
         }
       }
             
-      // apply a filfer if needed
+      // apply a filter if needed
       if (filter != null || filter != "") {
         return this._filter(data, filter);
       }
@@ -78,8 +80,9 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
     
     
     /**
-     * Tells the ObjectFinder how to set the nams of the columns of its table.
-     * @return {Array} An Array containing Strings as names.
+     * Tells the ObjectFinder table that the first column is the Hash 
+     * and the second column is the classname.
+     * @return {String[]} ["Hash", "Classname"]
      */
     getColumnNames: function() {
       return ["Hash", "Classname"];
@@ -87,9 +90,9 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
     
     
     /**
-     * Tells the ObjectFinder if the columns of the table match exactly one object
-     * so that they can be selected.
-     * @return {boolean} true, if the selection should be on
+     * Tells the ObjectFinder that the columns in the table contain 
+     * single objects and that every column can be selected.
+     * @return {boolean} true
      */
     getSelectable: function() {
       return true;
@@ -97,9 +100,9 @@ qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
     
     
     /**
-     * Tells the ObjectFider which name he should display in the views menu for 
-     * this data mode.
-     * @return {String} The name of the data model.
+     * Tells the ObjectFider that the name of the DataModel in the menu is
+     * "by Hash".
+     * @return {String} by Hash
      */
     getMenuName: function() {
       return "by Hash";

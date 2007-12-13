@@ -60,7 +60,7 @@ qx.Class.define("inspector.console.Appender", {
     */
     /**
      * Appends the log messages to the inspector console.
-     * @param evt {Object}
+     * @param evt {Object} The log event.
      */
     appendLogEvent : function(evt) {
       // get the logger

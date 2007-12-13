@@ -115,7 +115,7 @@ qx.Class.define("inspector.console.Console", {
     
     /**
      * Set the object which should be addressed with the this value in the console view.
-     * @param widget {qx.core.Object} The current selected object.
+     * @param qxObject {qx.core.Object} The current selected object.
      */
     setQxObject: function(qxObject) {
       // set the widget first!
