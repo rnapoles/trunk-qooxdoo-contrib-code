@@ -17,10 +17,10 @@ class qcl_config_controller extends qcl_jsonrpc_controller
    
  	/**
  	 * constructor 
+ 	 * extending class MUST set a user model before calling this as a parent construktor
    */
  	function __construct()
  	{
-  	// extending class MUST set a user model!
     parent::__construct();
     $configModel =& qcl_config::getSubclass(&$this);
 		$this->setModel("config", &$configModel);
@@ -112,7 +112,7 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 		$value	      =  $params[3];
 		$configModel  =& $this->getModel("config");
     
-		$configModel->update($id,$key,$value);
+		$configModel->updateById($id,$key,$value);
 		$this->addMessage( "qcl.config.messages.key.updated", $id );
 		
 		if ( $key == "value" )

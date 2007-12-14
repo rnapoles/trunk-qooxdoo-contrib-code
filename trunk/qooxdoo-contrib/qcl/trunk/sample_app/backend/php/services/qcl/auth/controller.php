@@ -273,10 +273,11 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
    */
   function method_addPermissionToRole($params)
   {
-  	$userModel->requirePermission("qcl.auth.permissions.manage");
+  	$userModel = $this->getModel("user");
+    $userModel->requirePermission("qcl.auth.permissions.manage");
   	
-  	$permissionRefs = $params[1];
-  	$roleRefs 			= $params[2];
+  	$permRefs = $params[1];
+  	$roleRefs = $params[2];
   	
     // add 
     $permModel = $this->getModel("permission");
@@ -294,7 +295,8 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
    */
   function method_removePermissionFromRole($params)
   {
-  	$userModel->requirePermission("qcl.auth.permissions.manage");
+  	$userModel = $this->getModel("user");
+    $userModel->requirePermission("qcl.auth.permissions.manage");
   	
   	$permRefs 	= $params[1];
   	$roleRefs   = $params[2];

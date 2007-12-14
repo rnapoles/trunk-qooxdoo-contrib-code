@@ -22,6 +22,7 @@ class qcl_auth_common extends qcl_db_model
 	var $table_link_roles_permissions	= "link_roles_permissions";
 	var $icon;
 	var $foreignKey						        = "Needs to be overridden!";
+  var $reservedNames                = array(); 
 
 	//-------------------------------------------------------------
   // internal methods
@@ -75,9 +76,14 @@ class qcl_auth_common extends qcl_db_model
 	 */
 	function create( $namedId, $parentId=null )
   {
+ 		if ( in_array($namedId, $this->$reservedNames ) )
+ 		{
+ 			$this->raiseError ( "'$namedId' is a reserved name and cannto be used." );
+ 		}
+
  		if ( $this->namedIdExists ( $namedId ) )
  		{
- 			$this->raiseError ( get_class($this) . "::create : '$namedId' already exists." );
+ 			$this->raiseError ( "'$namedId' already exists." );
  		}
    		
    	// insert new empty record
@@ -86,54 +92,19 @@ class qcl_auth_common extends qcl_db_model
 		$itemId = $this->insert($data);
 		
 		// link to role
-		if ( is_a( $this, "qcl_auth_user") )
-		{
-			$this->addToRole ( $itemId, $parentId );
-		}
-		elseif ( is_a( $this, "qcl_auth_permission") )
-		{
-			$this->addToRole ( $itemId, $parentId );	
-		}	
+    if ( $parentId )
+    {
+  		if ( is_a( $this, "qcl_auth_user") )
+  		{
+  			$this->addToRole ( $itemId, $parentId );
+  		}
+  		elseif ( is_a( $this, "qcl_auth_permission") )
+  		{
+  			$this->addToRole ( $itemId, $parentId );	
+  		}
+    }	
 		return $itemId;
   }   
-
-	/**
-	 * gets id by namedId
-	 * @param string	$namedId
-	 * @param int id or null if record does not exist
-	 */
-	function getIdByNamedId( $namedId )
-	{
-		$row 		= $this->getByNamedId($namedId);
-		$namedId	= $row[$this->key_namedId];
-		return $namedId ? $namedId : null;
-	}
-
-	/**
-	 * checks if record with $namedId exists
-	 * @param string	$namedId
-	 * @param boolean result
-	 */
-	function namedIdExists( $namedId )
-	{
-		$namedId = $this->getIdByNamedId ( $namedId );
-		return $namedId ? true : false;
-	}
-
-	/**
-	 * creates a new record if the namedId id does not already exist and optionally links it to a role
-	 * @param string	$namedId
-	 * @param int		$parentId 	id of role (unused if class is qcl_auth_role)
-	 * @return int the id of the inserted or existing row 
-	 */
-	function createIfNotExists( $namedId, $parentId=null )
- 	{
- 		if ( $this->namedIdExists( $namedId ) )
- 		{
- 			return $this->getIdByNamedId( $namedId );
- 		}	
-	  return $this->create( $namedId, $parentId );
- 	}   
 
 }
 

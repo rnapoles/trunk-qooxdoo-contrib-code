@@ -6,7 +6,8 @@ require_once ("qcl/db/db.php");
 
 /**
  * simple controller-model architecture for jsonrpc
- * common base class for models based on a sql database
+ * common base class for models based on a (mysql) database
+ * @todo: make this dbms-independent
  */
 
 class qcl_db_model extends qcl_jsonrpc_model
@@ -77,7 +78,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @return Array Array of db record sets
    */
  	function getAllRows($orderBy=null)
-  {
+  {  
     return $this->getRowsWhere(null,$orderBy);
   }  
   
@@ -179,12 +180,19 @@ class qcl_db_model extends qcl_jsonrpc_model
     */
 	function getByNamedId($namedId)
 	{
-		if ( $this->namedId)
-    return $this->db->getRow("
-      SELECT * 
-  		FROM `{$this->table}` 
-  		WHERE `{$this->key_namedId}` = '$namedId'
-    ");   	
+		if ( $this->key_namedId )
+    {
+      $row = $this->db->getRow("
+        SELECT * 
+    		FROM `{$this->table}` 
+    		WHERE `{$this->key_namedId}` = '$namedId'
+      ");
+      return $row;
+    }
+   	else
+   	{
+   		$this->raiseError("qcl_db_model::getByNamedId : model does not have a named id property");	
+   	}
 	}
 
   /**
@@ -202,8 +210,9 @@ class qcl_db_model extends qcl_jsonrpc_model
    	
    	if ( ! is_string ( $ref ) ) 
    	{
-   		$this->raiseError("qcl_auth_common::getIdFromRef : integer or string expected, got '$ref'");	
+   		$this->raiseError("qcl_db_model::getIdFromRef : integer or string expected, got '$ref'");	
    	}
+    
    	$row = $this->db->getRow("
 			SELECT `{$this->key_id}` 
 			FROM `{$this->table}` 
@@ -213,10 +222,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 		return $result;
    }
    
-
-	
  	/**
-   * get record by reference
+   * get record by reference (string id or numeric id)
    * @param mixed $ref numeric id or string name
    */
  	function getByRef($ref)
@@ -231,32 +238,86 @@ class qcl_db_model extends qcl_jsonrpc_model
  		}
  		else
  		{
- 			$this->raiseError("qcl_auth_common::getByRef : integer or string expected, got '$ref'");
+ 			$this->raiseError("qcl_db_model::getByRef : integer or string expected, got '$ref'");
  		}
  	}
 
+	/**
+	 * gets numeric id by string id
+	 * @param string	$namedId
+	 * @param int id or null if record does not exist
+	 */
+	function getIdByNamedId( $namedId )
+	{
+		$row 		= $this->getByNamedId($namedId);
+		return count($row) ? $row[$this->key_id] : null;
+	}
+
+	/**
+	 * gets string id by numeric id
+	 * @param int	$id
+	 * @param string id or null if record does not exist
+	 */
+	function getNamedIdById( $id )
+	{
+		$row 		= $this->getById($id);
+		return count($row) ? $row[$this->key_namedId] : null;
+	}
+
+	/**
+	 * checks if record with $namedId exists
+	 * @param string	$namedId
+	 * @param boolean result
+	 */
+	function namedIdExists( $namedId )
+	{
+		$row = $this->getByNamedId ( $namedId );
+		return count($row) ? true : false;
+	}
+
+	/**
+	 * creates a new record and 
+	 * optionally links it to a role
+	 * @param string	$namedId
+	 * @param int		$parentId 	id of role (unused if class is qcl_auth_role)
+	 * @return int the id of the inserted or existing row 
+	 */
+	function createIfNotExists( $namedId, $parentId=null )
+ 	{
+ 		if ( $this->namedIdExists( $namedId ) )
+ 		{
+ 			return $this->getIdByNamedId( $namedId );
+ 		}	
+	  return $this->create( $namedId, $parentId );
+ 	}   
 
 	/**
 	 * gets the value of a column in a record without field->column translation 
 	 * @param string	$column 	
-	 * @param int		$recordId	if omitted, use current record
-	 * @todo: synchronize field/column getters and setters
+	 * @param int		  $id	if omitted, use current record
 	 */
-	function getColumnValue($column,$recordId= null)
+	function getColumnValue($column, $id = null)
 	{
-		$row = $recordId ? $this->getById($recordId) : $this->currentRecord;
-		return $row[$column];
+		$row = $id ? $this->getById($id) : $this->currentRecord;
+		if ( count ( $row ) )
+    {
+      return $row[$column];
+    }
+    else
+    {
+      $this->raiseError("qcl_db_model::getColumnValue : row '$id' does not exist");  
+    }
 	}
 
 	/**
 	 * sets the value of a column in a record without field->column translation 
 	 * @param string	$column
 	 * @param mixed		$value
-	 * @param int		$recordId 	if omitted, modify current record cache without updating the database 
+	 * @param int		  $id 	if omitted, modify current record cache without updating the database 
 	 */
-	function setColumnValue($column,$value,$recordId=null)
+	function setColumnValue($column,$value,$id=null)
 	{
-		if( $recordId )
+		if( $id )
 		{
 			$data = array();
 			$data[$this->key_id] = $recordId;
