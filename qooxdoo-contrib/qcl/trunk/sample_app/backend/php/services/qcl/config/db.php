@@ -80,7 +80,7 @@ class qcl_config_db extends qcl_db_model
 		");			
 		
 		// create new entry
-		$user = $allowUserVariants ? "default" : "null";
+		$user = $allowUserVariants ? "default" : "global";
 		
 		$this->db->execute("
 			INSERT INTO `{$this->table}` 
@@ -92,27 +92,6 @@ class qcl_config_db extends qcl_db_model
 		");					
 
 		return $this->db->getLastInsertId();
-	} 
-	
-	/**
-	 * updates a config property
-	 * requires permission "qcl.config.permissions.manage"
-	 * 
-	 * @param mixed $id ID of property
-	 * @param string $key Key to update
-	 * @param mixed $value Value
-	 * @return true if success 
-	 */
-	function update( $id, $key, $value )
-	{
-    $controller  =& $this->getController();
-    $userModel   =& $controller->getModel("user");
-		$userModel->requirePermission("qcl.config.permissions.manage");
-
-		$row = array();
-		$row[$key] = $value;
-		$this->update($row,$id);
-		return true;
 	} 
   
 	/**
@@ -192,17 +171,15 @@ class qcl_config_db extends qcl_db_model
 	 * @param string $name
 	 * @param mixed $userRef
 	 */
-	function getRow($name,$userRef=null)
+	function getRow($name,$user=null)
 	{			
 		$controller  =& $this->getController();
     $userModel   =& $controller->getModel("user");
     
-    if ( $userRef !== null )
+    if ( $user !== null )
 		{
 			// user reference given, this is usually only the
 			// case if a manager edits the configuration
-			$user = $userModel->getNamedIdFromRef($userRef);
-			
 			$row = $this->db->getRow("
 				SELECT * 
 				FROM {$this->table}
@@ -210,19 +187,21 @@ class qcl_config_db extends qcl_db_model
 				AND {$this->key_user} = '$user'
 			");
 			
-			// admins can read default value
-			if ( $userRef == "default" and $userModel->hasPermission ("qcl.config.permissions.manage") )
+			// check user status
+			if ( $user == "default" and $userModel->hasPermission ("qcl.config.permissions.manage") )
 			{
-				return $row;
+				// admins can read default value
+        return $row;
+			}
+			elseif ( $row[$this->key_user] == $user )
+			{
+				// active user is allowed to acces their own data
+        return $row;
 			}
 			
-			// active user is allowed to acces their own data
-			if ( $row[$this->key_user] == $user )
-			{
-				return $row;
-			}
-			
-			if( $permissionRead = $row[$this->key_permissionRead] )
+      // is the value protected by a read permission?
+      $permissionRead = $row[$this->key_permissionRead];
+			if( $permissionRead )
 			{
 				$userModel->requirePermisson($permissionRead);
 			}
@@ -237,22 +216,30 @@ class qcl_config_db extends qcl_db_model
 			// get all rows containing key name
 			$rows = $this->db->getAllRows("
 				SELECT * 
-				FROM `{$this->table}`
-				WHERE `{$this->key_name}` = '$name'
+				FROM 
+          `{$this->table}`
+				WHERE 
+            `{$this->key_name}` = '$name'
 					AND 
 					(
-						`{$this->key_user}` = $activeUserNameId
+						`{$this->key_user}` = '$activeUserNameId'
 						OR `{$this->key_user}` = 'default'
-						OR `{$this->key_user}` IS NULL
+						OR `{$this->key_user}` = 'global'
 					)
-				ORDER BY `{$this->key_user}`
 			");
 			
 			if ( count($rows) == 2 )
 			{
 				// config entry has variants, return user variant
 				// since user can access own data
-				return $rows[1];
+				if ( $rows[0][$this->key_user] == $activeUserNameId )
+        {
+          return $rows[0];
+        }
+        else
+        {
+          return $rows[1];
+        }
 			}
 			elseif ( count($rows) == 1 )
 			{
@@ -324,7 +311,7 @@ class qcl_config_db extends qcl_db_model
 	{
 		$controller    =& $this->getController();
     $userModel     =& $controller->getModel("user");
-    $activeUserId  =  $userModel->getActiveUserId(); 
+    $activeUser    =  $userModel->getActiveUserNamedId(); 
     
     // if we set the default value, we need to retrieve 
 		if ( $defaultValue )
@@ -336,7 +323,6 @@ class qcl_config_db extends qcl_db_model
 			$row = $this->getRow($name);
 		}
 		
-    
 		// does the key exist?
 		if ( ! count($row) )
 		{
@@ -346,7 +332,7 @@ class qcl_config_db extends qcl_db_model
 		$id				       = $row[$this->key_id];
 		$type			       = $row[$this->key_type];
 		$permissionWrite = $row[$this->key_permissionWrite];
-		$user			     = $row[$this->key_user];	
+		$user			       = $row[$this->key_user];	
 
 		// type checking
 		$type_error = false;
@@ -362,7 +348,7 @@ class qcl_config_db extends qcl_db_model
 		}
 		
 		// users can set their own entry variant with no further checking
-		if ( $user != $activeUserId )
+		if ( $user != $activeUser )
 		{
 			// but others need to check permission
 			if ( $permissionWrite )
@@ -370,29 +356,46 @@ class qcl_config_db extends qcl_db_model
         $userModel->requirePermission( $permissionWrite );
       }
 			
-			// create variant if necessary
-			if ( $user === 0 and ! $defaultValue )
-			{
-				unset($row[$this->key_id]);
-				$row[$this->key_user] = $activeUserId;
-				$id = $this->db->insert($this->table,$row);
-				$row[$this->key_id] = $id;
-			}
-			
-			// set default value
-			if ( $user === 0 and $defaultValue )
-			{
-				$userModel->requirePermission("qcl.config.permissions.manage");
-			}				
+			if ( $user == "default" )
+      {
+  			if ( $defaultValue )
+  			{
+  				// change default value only if user has permission to do so
+          $userModel->requirePermission("qcl.config.permissions.manage");
+  			}
+  			else
+  			{
+          // create user variant 
+          unset($row[$this->key_id]);
+  				$row[$this->key_user] = $activeUser;
+  				$id = $this->insert($row);
+  				$row[$this->key_id] = $id;  				
+  			}
+      }
 		}		
 				
 		// all checks have been passed, set value
-		$this->db->execute("
-			UPDATE `{$this->table}` 
-			SET `{$this->key_value}` = '$value' 
-			WHERE `{$this->key_id}` = $id
-		");
+    $row[$this->key_value]=$value;
+		$this->update($row);
+    $this->info("'$name' set to '$value' for user '$user'.");
 		return true;
+	}
+
+	/**
+	 * updates a config record
+	 * @return void
+	 * @param $id int
+	 * @param $key string
+	 * @param $value string
+	 */
+	function updateById($id,$key,$value)
+	{
+		$row = $this->getById($id);
+		$controller    =& $this->getController();
+    $userModel     =& $controller->getModel("user");
+    $userModel->requirePermission("qcl.config.permissions.manage");
+    $row[$key]= $value;
+    $this->update($row);
 	}
 
 	/**

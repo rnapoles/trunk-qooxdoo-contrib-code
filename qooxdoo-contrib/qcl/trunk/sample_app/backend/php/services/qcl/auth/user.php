@@ -25,6 +25,7 @@ class qcl_auth_user extends qcl_auth_common
 	var $nodeType		    = "qcl.auth.types.User";
 	var $shortName		  = "user";
 	var $foreignKey		  = "userId";
+  var $reservedNames  = array("default","admin","global");
 	
   //-------------------------------------------------------------
   // internal methods 
@@ -255,7 +256,6 @@ class qcl_auth_user extends qcl_auth_common
    		$permissions 	= $this->getPermissions($username);
   		foreach($permissions as $permission)
   		{
-
   			if ( $permission == $requestedPermission )
   			{
   				return true;
@@ -270,6 +270,14 @@ class qcl_auth_user extends qcl_auth_common
   			}
   		}
   		// permission was not found
+      $controller  =& $this->getController();
+      $permModel   =& $controller->getModel("permission");
+      if ( ! count( $permModel->getByNamedId($requestedPermission) ) )
+      {
+        // permission does not exist, create it
+        $permModel->create($requestedPermission);
+        $this->info("Permission '$requestedPermission' created.");
+      }
   		return false;
    }
    
@@ -286,7 +294,11 @@ class qcl_auth_user extends qcl_auth_common
    		}
    		else
    		{
-   			$this->raiseError("Permission denied");
+        $controller =& $this->getController();
+        $userModel  =  $controller->getModel("user");
+        $userName   =  $userModel->getActiveUserNamedId();
+        $this->info("User '$userName' does not have required permission '$permission'. Access denied.");
+        $this->raiseError("Permission denied.");
    		}
    }
    
@@ -362,7 +374,7 @@ class qcl_auth_user extends qcl_auth_common
    /**
     * removes user(s) from  role(s) 
     * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
-    * @param mixed $roleRefs (array or number) role refs (id or namedId)   
+    * @param mixed $roleRefs (array or number) role refs (id or namedId)  or "*" to remove from all roles 
     */
     function removeFromRole( $userRefs, $roleRefs  )
     {
@@ -382,15 +394,25 @@ class qcl_auth_user extends qcl_auth_common
 	    	foreach ( $roleRefs as $roleRef )
 	    	{
 	    		$roleId = $roleModel->getIdFromRef($roleRef);
-		    	if ( ! $roleId )
+          if ( $roleRef == "*" )
+          {         
+    				$this->db->execute("
+    					DELETE FROM `{$this->table_link_user_roles}`
+    					WHERE 	`{$this->foreignKey}` = $userId
+    				");
+          }
+          elseif ( $roleId )
+          {
+    				$this->db->execute("
+    					DELETE FROM `{$this->table_link_user_roles}`
+    					WHERE 	`{$this->foreignKey}` = $userId
+    					AND 	`{$roleModel->foreignKey}` = $roleId
+    				");            
+          }
+          else 
 		    	{
 		    		$this->raiseError("qcl_auth_user::removeFromRole : Invalid role reference: $roleRef");
 		    	}
-				$this->db->execute("
-					DELETE FROM `{$this->table_link_user_roles}`
-					WHERE 	`{$this->foreignKey}` = $userId
-					AND 	`{$roleModel->foreignKey}` = $roleId
-				");
 	    	}
     	}
     	return true;
