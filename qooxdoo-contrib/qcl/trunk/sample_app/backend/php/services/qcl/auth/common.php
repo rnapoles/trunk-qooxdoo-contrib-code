@@ -55,16 +55,15 @@ class qcl_auth_common extends qcl_db_model
    
    /**
     * gets all identifying names
+    * @return array an array of all distinct values of the namedId column
     */
-   function getAllNames()
+   function getAllNamedIds()
    {
-		$rows = $this->getAllRows();
-        $result = array();
-        foreach ( $rows as $row )
-        {
-        	$result[] = $row[$this->key_namedId];
-        }
-        return $result;
+   	if ( ! $this->key_namedId )
+    {
+   		$this->raiseError("qcl_auth_common::getAllNamedIds : model does not have a named id property");	
+   	}
+    return $this->getDistinctValues($this->key_namedId,null,$this->key_namedId);
    }
 
 	/**

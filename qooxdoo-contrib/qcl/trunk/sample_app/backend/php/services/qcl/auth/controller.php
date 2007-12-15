@@ -402,7 +402,7 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
     $roleModel  =& $this->getModel("role");
     $permModel  =& $this->getModel("permission");           
 
-		$permissionsServer	= $permModel->getAllNames();
+		$permissionsServer	= $permModel->getAllNamedIds();
 		$unassignedRoleId	  = $roleModel->createIfNotExists("qcl.roles.Unassigned");
 		
 		foreach($permissionsClient as $namedId)

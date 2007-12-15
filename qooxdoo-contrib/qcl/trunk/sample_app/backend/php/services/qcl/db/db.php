@@ -3,7 +3,7 @@
 require_once ("qcl/jsonrpc/model.php"); 
  
 /**
- * abstract class for rpc objects which do database queries
+ * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
 class qcl_db extends qcl_object
@@ -34,6 +34,9 @@ class qcl_db extends qcl_object
 	 */
 	var $controller = null;
 	
+  var $host;
+  var $port;
+  var $password;
   
   /**
    * contains a reference to a model if called from a model
@@ -91,11 +94,11 @@ class qcl_db extends qcl_object
 	{
     if ( $dsn )
 		{
-			$this->dsn 	= $dsn;
+			$this->setDsn($dsn);
 		}
 		elseif ( is_a($this->controller,"qcl_jsonrpc_controller" ) )
 		{
-			$this->dsn 	= $this->controller->getConfigValue("database.dsn");	
+			$this->setDsn($this->controller->getConfigValue("database.dsn"));	
 		}
     else
     {
@@ -104,17 +107,19 @@ class qcl_db extends qcl_object
     }
     
     // if we have a valid dsn, initialize the database
-		if ( $this->dsn )
+		if ( $this->getDsn() )
 		{
-      $this->type      = substr($this->dsn,0,strpos($this->dsn,":"));
-      $this->database  = substr($this->dsn,strrpos($this->dsn,"/")+1);
- 			$this->db        = $this->connect();	
+ 			$this->db = $this->connect();	
 		}
     
     // todo: we cannot throw an error here because sometime the database gets
     // initialized later. but this leads to errors which are difficult to trace
     // if we are supposed to initialize here, but the dsn is missing.
 	}
+
+	//-------------------------------------------------------------
+	// accessors
+	//-------------------------------------------------------------
 
 	/**
 	 * getter for DSN 
@@ -124,7 +129,29 @@ class qcl_db extends qcl_object
 	{
 		return $this->dsn;		
 	}
-
+  
+  /**
+   * sets and analyzes the dsn for this database
+   * @param  string dsn
+   * @return 
+   */
+  function setDsn($dsn)
+  {
+    $this->dsn = $dsn; 
+    $matches = array();
+    preg_match(
+      "/([^:]+):\/\/([^:]*):?([^@]+)@([^\/:]+):?([^\/]*)\/(.+)/",
+      $dsn, $matches
+    );
+    $this->type     = $matches[1];
+    $this->user     = $matches[2];
+    $this->password = $matches[3];
+    $this->host     = $matches[4];
+    $this->port     = $matches[5];
+    $this->database = $matches[6];
+  }
+  
+  
 	/**
 	 * getter for database type
 	 * return string
@@ -132,6 +159,42 @@ class qcl_db extends qcl_object
 	function getType()
 	{
 		return $this->type;		
+	}
+
+	/**
+	 * getter for database user
+	 * return string
+	 */
+	function getUser()
+	{
+		return $this->user;		
+	}
+
+	/**
+	 * getter for database user
+	 * return string
+	 */
+	function getPassword()
+	{
+		return $this->password;		
+	}
+
+	/**
+	 * getter for database host
+	 * return string
+	 */
+	function getHost()
+	{
+		return $this->host;		
+	}
+
+	/**
+	 * getter for database port
+	 * return string
+	 */
+	function getPort()
+	{
+		return $this->port;		
 	}
 
   /**
@@ -142,6 +205,8 @@ class qcl_db extends qcl_object
   {
     return $this->database;
   }
+
+
 
 	//-------------------------------------------------------------
 	// abstract methods to be implemented

@@ -120,9 +120,31 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param string|null 		$orderBy 	(optional) order by field
    * @return array Array of values
    */
- 	function getValues($column,$where,$orderBy=null)
+ 	function getValues($column,$where=null,$orderBy=null)
  	{	
 		$sql = "SELECT `$column` FROM {$this->table} \n";
+		
+		if ($where)
+		{
+			$sql .= "WHERE $where ";
+		}
+		if ($orderBy)
+		{
+			$sql .= "ORDER BY `$orderBy`"; 
+		}
+    return $this->db->getValues($sql);   	
+ 	}
+
+ 	/**
+   * gets all distinct values of database columns that match a where condition
+   * @param string			$column		name of column 
+   * @param string 			$where   	where condition to match, if null, get all
+   * @param string|null 		$orderBy 	(optional) order by field
+   * @return array Array of values
+   */
+ 	function getDistinctValues($column,$where=null,$orderBy=null)
+ 	{	
+		$sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
 		
 		if ($where)
 		{
