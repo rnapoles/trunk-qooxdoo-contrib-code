@@ -313,10 +313,6 @@ class qcl_object extends patched_object {
 			{
 				$message .= " [" . get_class($this) ."]";
 			}
-			if ( $this->user )
-			{
-				$message .= "(" . $this->user->getActiveUserName() . ")";
-			}
 			$message .= ": " . $msg . "\n";
 			@error_log($message,3,QCL_LOG_FILE);			
 		}			

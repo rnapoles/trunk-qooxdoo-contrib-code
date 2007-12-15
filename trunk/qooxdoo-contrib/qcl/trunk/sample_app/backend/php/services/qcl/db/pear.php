@@ -203,7 +203,7 @@ class qcl_db_pear extends qcl_db
 		$this->query ( "
 			UPDATE `$table` 
 			SET $pairs
-			WHERE `$idColumn` = $id
+			WHERE `$idColumn` = '$id'
 		");
 	}
 
