@@ -49,6 +49,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   {
 		parent::__construct();
 		$this->configureService();		
+    $this->setSingleton(&$this);
 	}   	
 	
 	/**
