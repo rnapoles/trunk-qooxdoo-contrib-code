@@ -296,9 +296,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
            qx.event.message.Bus.dispatch( 
              new qx.event.message.Message(
                "qcl.databinding.messages.rpc.error",
-               "Async exception (#" + id + "): " + ex.message
+               ex.message
              )
            );
+           _this.warn ( "Async exception (#" + id + "): " + ex.message );
            // notify that data has been received but failed
            _this.createDispatchDataEvent("dataReceived",null);
          }
@@ -665,9 +666,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           qx.event.message.Bus.dispatch( 
            new qx.event.message.Message(
              "qcl.databinding.messages.rpc.error",
-             "Async exception (#" + id + "): " + ex.message
+             ex.message
             )
           );
+          _this.warn ( "Async exception (#" + id + "): " + ex.message );
         }
        };
 
