@@ -39,7 +39,8 @@ class qcl_db_pear extends qcl_db
 		{
 			$dsn = $this->getDsn();
 		}
-
+    $this->log("Connecting to $dsn",QCL_LOG_DEBUG);
+    
 		$db =& DB::connect( $dsn );
 		if (PEAR::isError($db)) 
 		{
