@@ -296,7 +296,7 @@
 					
 			if ( ! confirm ( "Do you really want to delete " + displayName + "?" ) ) return;
 			
-			this.updateServer( this.getServiceName() + ".deleteItem", type, id, parentId )
+			this.updateServer( this.getServiceName() + ".deleteItem", nodeType, id, parentId )
 			
 			]]>
 		</qx:messageSubscriber>
