@@ -58,13 +58,13 @@ var useRunningSession = false;
 var closeBrowser = false;
 var cycleTests = false;
 var stepSpeed  = "1000"; // millisecs after each command
-var useHtmlIds = true;
+var noAutoIds  = false;
 // - Config End ----------------------------------------------------------------
 
 
 function Form (sel)
 {
-  if (!useHtmlIds)
+  if (noAutoIds)
   {
     sel.qxClick('//div[text()="Form"]')
     
@@ -106,7 +106,7 @@ function Form (sel)
     sel.qxClick('qx.ui.pageview.buttonview.Button.4')
     
     // fill 'Name' field
-    sel.type('//div[@id="qx.ui.form.TextField.64"]/input', "Rampano Zampano") // 'input' is native, so no auto-generated Id for it
+    sel.type('//div[@id="qx.ui.form.TextField.64"]//input', "Rampano Zampano") // 'input' is native, so no auto-generated Id for it
 
     // increase spinner
     sel.qxClick('qx.ui.basic.Image.69')  // although 'img' is also native, for click the enclosing div is sufficient
@@ -118,11 +118,11 @@ function Form (sel)
     sel.qxClick('qx.ui.basic.Image.77')
     sel.qxClick('qx.ui.form.ListItem.84')
 
-    // fill 'E-Mail' (problem: no disting. feature regarding 'Name')
-    sel.type('//div[@id="qx.ui.form.TextField.97"]/input','foo@bar.com')
+    // fill 'E-Mail'
+    sel.type('//div[@id="qx.ui.form.TextField.97"]//input','foo@bar.com')
 
     // fill 'Comment'
-    sel.type('//div[@id="qx.ui.form.TextArea.99"]/textarea', "Ruffelpuff woz ere")
+    sel.type('//div[@id="qx.ui.form.TextArea.99"]//textarea', "Ruffelpuff woz ere")
     // click 'Submit'
     sel.qxClick('qx.ui.form.Button.100')
 
@@ -145,60 +145,128 @@ function Form (sel)
 
 function Tooltip (sel) 
 {
-  sel.qxClick('//div[text()="Tooltip"]')
+  sel.qxClick(noAutoIds ? '//div[text()="Tooltip"]' : 'qx.ui.pageview.buttonview.Button.8')
 
   // doesn't work !? - supply coordinates?! 'mouseOverAt'?!
-  sel.mouseOver('//img[contains(@src,"system-run.png")]');
-  sel.mouseOver('//img[contains(@src,"accessories-archiver.png")]');
-  sel.mouseOver('//img[contains(@src,"accessories-disk-usage.png")]');
+  sel.mouseOver(noAutoIds ?
+                '//img[contains(@src,"system-run.png")]' :
+                'qx.ui.basic.Atom.130');
+  sel.mouseOver(noAutoIds ?
+                '//img[contains(@src,"accessories-archiver.png")]' :
+                'qx.ui.basic.Atom.136');
+  sel.mouseOver(noAutoIds ?
+                '//img[contains(@src,"accessories-disk-usage.png")]' :
+                'qx.ui.basic.Atom.143');
 } // Tooltip()
 
 function Menu_and_Toolbar (sel)
 {
-  sel.qxClick('//div[text()="Menu and Toolbar"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Menu and Toolbar"]' :
+                'qx.ui.pageview.buttonview.Button.12')
 
   // walk through menus - one to open, one to close
-  sel.qxClick('//div[text()="File"]')
-  sel.qxClick('//div[text()="File"]')
-  sel.qxClick('//div[text()="Edit"]')
-  sel.qxClick('//div[text()="Edit"]')
-  sel.qxClick('//div[text()="View"]')
-  sel.qxClick('//div[text()="View"]')
-  sel.qxClick('//div[text()="Options"]')
-  sel.qxClick('//div[text()="Options"]')
-  sel.qxClick('//div[text()="Help"]')
-  sel.qxClick('//div[text()="Help"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="File"]' :
+                'qx.ui.toolbar.MenuButton.463')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="File"]' :
+                'qx.ui.toolbar.MenuButton.463')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Edit"]' :
+                'qx.ui.toolbar.MenuButton.465')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Edit"]' :
+                'qx.ui.toolbar.MenuButton.465')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="View"]' :
+                'qx.ui.toolbar.MenuButton.467')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="View"]' :
+                'qx.ui.toolbar.MenuButton.467')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Options"]' :
+                'qx.ui.toolbar.MenuButton.469')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Options"]' :
+                'qx.ui.toolbar.MenuButton.469')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Help"]' :
+                'qx.ui.toolbar.MenuButton.471')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Help"]' :
+                'qx.ui.toolbar.MenuButton.471')
 
   // click toolbar
   var ospeed = sel.getSpeed();
   sel.setSpeed("250");
-  sel.mouseDown('//div[text()="New"]')
-  sel.mouseUp('//div[text()="New"]')
-  sel.mouseDown('//div[text()="Copy"]')
-  sel.mouseUp('//div[text()="Copy"]')
-  sel.mouseDown('//div[text()="Cut"]')
-  sel.mouseUp('//div[text()="Cut"]')
-  sel.mouseDown('//div[text()="Paste"]')
-  sel.mouseUp('//div[text()="Paste"]')
+  sel.mouseDown(noAutoIds ?
+                '//div[text()="New"]' :
+                'qx.ui.toolbar.Button.477')
+  sel.mouseUp(noAutoIds ?
+                '//div[text()="New"]' :
+                'qx.ui.toolbar.Button.477')
+  sel.mouseDown(noAutoIds ?
+                '//div[text()="Copy"]' :
+                'qx.ui.toolbar.Button.482')
+  sel.mouseUp(noAutoIds ?
+                '//div[text()="Copy"]' :
+                'qx.ui.toolbar.Button.482')
+  sel.mouseDown(noAutoIds ?
+                '//div[text()="Cut"]' :
+                'qx.ui.toolbar.Button.485')
+  sel.mouseUp(noAutoIds ?
+                '//div[text()="Cut"]' :
+                'qx.ui.toolbar.Button.485')
+  sel.mouseDown(noAutoIds ?
+                '//div[text()="Paste"]' :
+                'qx.ui.toolbar.Button.488')
+  sel.mouseUp(noAutoIds ?
+                '//div[text()="Paste"]' :
+                'qx.ui.toolbar.Button.488')
   //sel.setSpeed(ospeed);  // dysfunct - getSpeed() returns undef
   sel.setSpeed(stepSpeed);
 
-  sel.mouseUp('//img[contains(@src,"edit-add.png")]');
-  sel.qxClick('//div[text()="Radio1"]')
-  sel.qxClick('//div[text()="Radio2"]')
-  sel.qxClick('//div[text()="Radio3"]')
+  sel.mouseUp(noAutoIds ?
+                '//img[contains(@src,"edit-add.png")]' :
+                'qx.ui.toolbar.CheckBox.494');
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Radio1"]' :
+                'qx.ui.toolbar.RadioButton.500')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Radio2"]' :
+                'qx.ui.toolbar.RadioButton.503')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Radio3"]' :
+                'qx.ui.toolbar.RadioButton.506')
 
   // go through radios
-  sel.qxClick('//div[text()="Show Icons"]')
-  sel.qxClick('//div[text()="Show Label"]')
-  sel.qxClick('//div[text()="Show Icons and Label"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Show Icons"]' :
+                'qx.ui.form.RadioButton.514')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Show Label"]' :
+                'qx.ui.form.RadioButton.517')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Show Icons and Label"]' :
+                'qx.ui.form.RadioButton.511')
 
-  sel.qxClick('//div[text()="Centered"]')
-  sel.qxClick('//div[text()="Right Aligned"]')
-  sel.qxClick('//div[text()="Left Aligned"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Centered"]' :
+                'qx.ui.form.RadioButton.524')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Right Aligned"]' :
+                'qx.ui.form.RadioButton.527')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Left Aligned"]' :
+                'qx.ui.form.RadioButton.521')
 
-  sel.qxClick('//div[text()="Icons: 32 Pixel"]')
-  sel.qxClick('//div[text()="Icons: 22 Pixel"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Icons: 32 Pixel"]' :
+                'qx.ui.form.Button.534')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Icons: 22 Pixel"]' :
+                'qx.ui.form.Button.531')
 } // Menu_and_Toolbar()
 
 
@@ -453,9 +521,9 @@ while (doTests)
   /*
   */
   Form(sel);
-  /*
   Tooltip(sel);
   Menu_and_Toolbar(sel);
+  /*
   Tab(sel);
   Tree(sel);
   List(sel);

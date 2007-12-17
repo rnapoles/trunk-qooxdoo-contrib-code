@@ -25,12 +25,12 @@ var config =
     serverHost : "localhost",
     serverPort : 4444,
     browserStartCommand : "*firefox",
-    // aut*: how to reach the sample app over a local web server
+    // aut*: how to reach the Simulator sample app over a local web server
     autHost    : "localhost",
     autPort    : 80,
     autPath    : "/Simulator/trunk/source/index.html",
-    speed      : "1000",
-    sleep      : 2000
+    speed      : "1000",  // step speed of simulation
+    sleep      : 2000     // pausing at critical points to make simulation more robust
 };
 
 function simulation(keepBrowser)
