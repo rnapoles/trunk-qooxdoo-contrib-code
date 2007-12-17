@@ -47,51 +47,99 @@
 importClass(Packages.com.thoughtworks.selenium.QxSelenium);
 
 // - Config Section ------------------------------------------------------------
-var sel = new QxSelenium("localhost",4444,"*firefox","http://demo.qooxdoo.org");
-//var sel = new QxSelenium("localhost",4444,"*iexplore","http://demo.qooxdoo.org");
+var selServer   = "localhost";
+var selPort     = 4444;
+var testBrowser = "*firefox";
+//var autHost = "http://demo.qooxdoo.org";
+var autHost = "http://localhost";
+//var autPath = "/0.7.2/showcase/index.html";
+var autPath = "/~thron7/.workspace/packages/qooxdoo-0.7.3-pre-sdk/frontend/application/showcase/source/index.html";
 var useRunningSession = false;
 var closeBrowser = false;
 var cycleTests = false;
 var stepSpeed  = "1000"; // millisecs after each command
+var useHtmlIds = true;
 // - Config End ----------------------------------------------------------------
 
 
 function Form (sel)
 {
-  sel.qxClick('//div[text()="Form"]')
-  
-  // fill 'Name' field
-  sel.type('//input[@type="text"]', "Rampano Zampano")
+  if (!useHtmlIds)
+  {
+    sel.qxClick('//div[text()="Form"]')
+    
+    // fill 'Name' field
+    sel.type('//input[@type="text"]', "Rampano Zampano")
 
-  // increase spinner
-  sel.qxClick('//img[contains(@src,"up_small.gif")]')
-  sel.qxClick('//img[contains(@src,"up_small.gif")]')
-  sel.qxClick('//img[contains(@src,"up_small.gif")]')
-  sel.qxClick('//img[contains(@src,"up_small.gif")]')
+    // increase spinner
+    sel.qxClick('//img[contains(@src,"up_small.gif")]')
+    sel.qxClick('//img[contains(@src,"up_small.gif")]')
+    sel.qxClick('//img[contains(@src,"up_small.gif")]')
+    sel.qxClick('//img[contains(@src,"up_small.gif")]')
 
-  // select 'Network' from combo
-  sel.qxClick('//img[contains(@src,"down.gif")]')
-  sel.qxClick('//div[text()="Network"]')
+    // select 'Network' from combo
+    sel.qxClick('//img[contains(@src,"down.gif")]')
+    sel.qxClick('//div[text()="Network"]')
 
-  // fill 'E-Mail' (problem: no disting. feature regarding 'Name')
-  sel.type('//div[text()="E-Mail"]/following-sibling::div/input[@type="text"]','foo@bar.com')
+    // fill 'E-Mail' (problem: no disting. feature regarding 'Name')
+    sel.type('//div[text()="E-Mail"]/following-sibling::div/input[@type="text"]','foo@bar.com')
 
-  // fill 'Comment'
-  sel.type('//textarea', "Ruffelpuff woz ere")
-  // click 'Submit'
-  sel.qxClick('//div[text()="Submit"]')
+    // fill 'Comment'
+    sel.type('//textarea', "Ruffelpuff woz ere")
+    // click 'Submit'
+    sel.qxClick('//div[text()="Submit"]')
 
-  // "Some settings"
-  sel.qxClick('//div[text()="Permit others to view my favorites"]/preceding-sibling::input')
-  sel.qxClick('//div[text()="Use the very high bitrate"]/preceding-sibling::input')
+    // "Some settings"
+    sel.qxClick('//div[text()="Permit others to view my favorites"]/preceding-sibling::input')
+    sel.qxClick('//div[text()="Use the very high bitrate"]/preceding-sibling::input')
 
-  // "Network speed"
-  sel.qxClick('//div[text()="Modem"]/preceding-sibling::input')
-  sel.qxClick('//div[text()="DSL"]/preceding-sibling::input')
-  sel.qxClick('//div[text()="Direct link"]/preceding-sibling::input')
-  sel.qxClick('//div[text()="Modem"]/preceding-sibling::input')
-  sel.qxClick('//div[text()="DSL"]/preceding-sibling::input')
-  sel.qxClick('//div[text()="Direct link"]/preceding-sibling::input')
+    // "Network speed"
+    sel.qxClick('//div[text()="Modem"]/preceding-sibling::input')
+    sel.qxClick('//div[text()="DSL"]/preceding-sibling::input')
+    sel.qxClick('//div[text()="Direct link"]/preceding-sibling::input')
+    sel.qxClick('//div[text()="Modem"]/preceding-sibling::input')
+    sel.qxClick('//div[text()="DSL"]/preceding-sibling::input')
+    sel.qxClick('//div[text()="Direct link"]/preceding-sibling::input')
+  }
+  else
+  {
+    sel.qxClick('qx.ui.pageview.buttonview.Button.4')
+    
+    // fill 'Name' field
+    sel.type('//div[@id="qx.ui.form.TextField.64"]/input', "Rampano Zampano") // 'input' is native, so no auto-generated Id for it
+
+    // increase spinner
+    sel.qxClick('qx.ui.basic.Image.69')  // although 'img' is also native, for click the enclosing div is sufficient
+    sel.qxClick('qx.ui.basic.Image.69')
+    sel.qxClick('qx.ui.basic.Image.69')
+    sel.qxClick('qx.ui.basic.Image.69')
+
+    // select 'Network' from combo
+    sel.qxClick('qx.ui.basic.Image.77')
+    sel.qxClick('qx.ui.form.ListItem.84')
+
+    // fill 'E-Mail' (problem: no disting. feature regarding 'Name')
+    sel.type('//div[@id="qx.ui.form.TextField.97"]/input','foo@bar.com')
+
+    // fill 'Comment'
+    sel.type('//div[@id="qx.ui.form.TextArea.99"]/textarea', "Ruffelpuff woz ere")
+    // click 'Submit'
+    sel.qxClick('qx.ui.form.Button.100')
+
+    // "Some settings"
+    sel.qxClick('qx.ui.form.CheckBox.108')
+    sel.qxClick('qx.ui.form.CheckBox.111')
+    //sel.qxClick('qx.ui.form.InputCheckSymbol.113')
+
+    // "Network speed"
+    sel.qxClick('qx.ui.form.RadioButton.120')
+    sel.qxClick('qx.ui.form.RadioButton.123')
+    sel.qxClick('qx.ui.form.RadioButton.126')
+    sel.qxClick('qx.ui.form.RadioButton.120')
+    sel.qxClick('qx.ui.form.RadioButton.123')
+    sel.qxClick('qx.ui.form.RadioButton.126')
+    //sel.qxClick('qx.ui.form.InputCheckSymbol.125')
+  }
 
 } // Form()
 
@@ -99,7 +147,7 @@ function Tooltip (sel)
 {
   sel.qxClick('//div[text()="Tooltip"]')
 
-  // doesn't work !?
+  // doesn't work !? - supply coordinates?! 'mouseOverAt'?!
   sel.mouseOver('//img[contains(@src,"system-run.png")]');
   sel.mouseOver('//img[contains(@src,"accessories-archiver.png")]');
   sel.mouseOver('//img[contains(@src,"accessories-disk-usage.png")]');
@@ -378,13 +426,14 @@ function Themes (sel)
 
 // - Main --------------------------------------------------------------------
 
+var sel = new QxSelenium(selServer,selPort,testBrowser,autHost);
+
 // not possible to re-use existing sessionId, therefor
 //if (arguments.length < 1) 
 if (true)
 {
   sel.start();
-  //sel.open("http://localhost/~thron7/qooxdoo.div/themen/selenium/showcase/build/");
-  sel.open("http://demo.qooxdoo.org/0.7.2/showcase/index.html");
+  sel.open(autHost + autPath);
 } else 
 {
   // not possible with Java bindings (sessionId private to sel.CommandProcessor(is 
@@ -404,6 +453,7 @@ while (doTests)
   /*
   */
   Form(sel);
+  /*
   Tooltip(sel);
   Menu_and_Toolbar(sel);
   Tab(sel);
@@ -416,7 +466,6 @@ while (doTests)
   Native_Window(sel);
   Internal_Window(sel);
   Themes(sel);
-  /*
   */
   Packages.java.lang.Thread.sleep(3000);
 
