@@ -272,30 +272,64 @@ function Menu_and_Toolbar (sel)
 
 function Tab (sel) 
 {
-  sel.qxClick('//div[text()="Tab"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Tab"]' :
+                'qx.ui.pageview.buttonview.Button.16')
 
   // left pane
-  sel.qxClick('//div[text()="Find"]')
-  sel.qxClick('//div[text()="Backup"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Find"]' :
+                'qx.ui.pageview.tabview.Button.543')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Backup"]' :
+                'qx.ui.pageview.tabview.Button.545')
   //sel.qxClick('//div[text()="Edit"]');  // this finds the 'Edit' menu from Menu_and_Toolbar :-)
-  sel.qxClick('qxh=*/[@label="Tab"]/[@page]/*/[@label="Edit"]');
+  sel.qxClick(noAutoIds ?
+                'qxh=*/[@label="Tab"]/[@page]/*/[@label="Edit"]' :
+                'qx.ui.pageview.tabview.Button.541');
 
-  sel.qxClick('//div[text()="Place bar on top"]')
-  sel.qxClick('//div[text()="Align tabs to left"]')
-  sel.qxClick('//div[text()="Place bar on top"]')
-  sel.qxClick('//div[text()="Align tabs to left"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Place bar on top"]' :
+                'qx.ui.form.CheckBox.552')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Align tabs to left"]' :
+                'qx.ui.form.CheckBox.555')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Place bar on top"]' :
+                'qx.ui.form.CheckBox.552')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Align tabs to left"]' :
+                'qx.ui.form.CheckBox.555')
 
   // right pane
-  sel.qxClick('//div[text()="Colorize"]')
-  sel.qxClick('//div[text()="Icons"]')
-  sel.qxClick('//div[text()="Applications"]')
-  sel.qxClick('//div[text()="System"]')
-  sel.qxClick('//div[text()="Display"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Colorize"]' :
+                'qx.ui.pageview.buttonview.Button.591')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Icons"]' :
+                'qx.ui.pageview.buttonview.Button.594')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Applications"]' :
+                'qx.ui.pageview.buttonview.Button.597')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="System"]' :
+                'qx.ui.pageview.buttonview.Button.600')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Display"]' :
+                'qx.ui.pageview.buttonview.Button.588')
 
-  sel.qxClick('//div[text()="Top"]')
-  sel.qxClick('//div[text()="Right"]')
-  sel.qxClick('//div[text()="Bottom"]')
-  sel.qxClick('//div[text()="Left"]')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Top"]' :
+                'qx.ui.form.RadioButton.613')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Right"]' :
+                'qx.ui.form.RadioButton.616')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Bottom"]' :
+                'qx.ui.form.RadioButton.619')
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Left"]' :
+                'qx.ui.form.RadioButton.622')
   
 } // Tab()
 
@@ -304,14 +338,28 @@ function Tree (sel)
 {
   sel.qxClick('//div[text()="Tree"]')
 
-  /*
+  /* these next ones are strange: easily (and correctly) found with XPather, they show
+     no reaction on qxClick *when the folder is closed*! If the folder is open, they
+     work perfectly!? Therefore, the more complex XPaths further down (using id's).
   sel.qxClick('//div[text()="Desktop"]')
   sel.qxClick('//div[text()="Workspace"]')
   sel.qxClick('//div[text()="Inbox"]')
   */
-  sel.qxClick('//img[contains(@src,"cross_plus.gif")]')
-  sel.qxClick('//img[contains(@src,"cross_plus.gif")]')
+  sel.qxClick(noAutoIds ?
+                '//img[contains(@src,"cross_plus.gif")]' :
+                '//*[@id="qx.ui.tree.TreeFolder.636"]//*[text()="Desktop"]')
+  sel.qxClick(noAutoIds ?
+                '//img[contains(@src,"cross_plus.gif")]' :
+                '//*[@id="qx.ui.tree.TreeFolder.644"]//*[text()="Workspace"]')
   //sel.qxClick('//img[@src="./resource/qx/widget/Windows/tree/cross_plus.gif"]'); // not working because of context node?!
+  if (!noAutoIds)
+  {
+    sel.qxClick('//*[@id="qx.ui.tree.TreeFolder.668"]//*[text()="Inbox"]');
+    // i could just as well click on the descendant ('cross_plus') image (which
+    // is mandatory for *closing* the folder); but clicking the label allows me (a)
+    // to have a more readable locator (says what i'm after), and (b) the value of
+    // the read-only "Current Folder" field is updated!
+  }
 
   sel.qxClick('//div[text()="Use tree lines?"]')
   sel.qxClick('//div[text()="Use tree lines?"]')
@@ -523,9 +571,9 @@ while (doTests)
   Form(sel);
   Tooltip(sel);
   Menu_and_Toolbar(sel);
-  /*
   Tab(sel);
   Tree(sel);
+  /*
   List(sel);
   ListView(sel);
   Table(sel);
