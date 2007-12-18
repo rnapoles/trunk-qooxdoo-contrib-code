@@ -27,15 +27,17 @@ class qcl_auth_common extends qcl_db_model
 	//-------------------------------------------------------------
   // internal methods
   //-------------------------------------------------------------
-
+ 
   /**
    * constructor 
    * @param object reference $controller
    */
-  function __construct($controller)
+ 	function __construct($controller)
   {
     parent::__construct(&$controller);
-  }   
+    // initialize tables
+    $this->initializeTables($this->table); 
+	}   
 
 	//-------------------------------------------------------------
 	// public non-rpc methods 

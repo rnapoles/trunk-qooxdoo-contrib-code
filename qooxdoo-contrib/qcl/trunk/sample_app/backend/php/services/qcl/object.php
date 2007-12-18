@@ -344,12 +344,11 @@ class qcl_object extends patched_object {
 	function raiseError( $message, $number=null, $file=null, $line=null )
 	{
 		global $error;
-		$message = get_class($this) . " - " . $message;
 		if ( $file and $line )
 		{
 			$message .= " in $file, line $line.";
 		}
-		$this->log($message, QCL_LOG_ERROR);
+		$this->log( get_class($this) . " - " . $message, QCL_LOG_ERROR);
 		$error->setError( $number, stripslashes( $message ) );
  		$error->SendAndExit();
 	}

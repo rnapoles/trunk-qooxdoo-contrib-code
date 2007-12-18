@@ -37,6 +37,8 @@ class qcl_config_db extends qcl_db_model
  	function __construct($controller)
  	{
     parent::__construct(&$controller);
+    // initialize tables
+    $this->initializeTables($this->table); 
 	}
 	
 	//-------------------------------------------------------------

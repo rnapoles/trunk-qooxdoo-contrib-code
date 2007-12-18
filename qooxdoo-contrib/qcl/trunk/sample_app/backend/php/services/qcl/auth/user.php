@@ -38,6 +38,8 @@ class qcl_auth_user extends qcl_auth_common
  	function __construct($controller)
   {
     parent::__construct(&$controller);
+    // initialize tables
+    $this->initializeTables($this->table); 
 	}   
  
   //-------------------------------------------------------------
