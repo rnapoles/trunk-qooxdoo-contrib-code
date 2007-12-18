@@ -16,7 +16,10 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * This interface offers a set of method declarations for all classes which 
+ * want to control the {@link inspector.propertyEditor.PropertyList}.
+ */
 qx.Interface.define("inspector.propertyEditor.IPropertyListController", {
   
   /*
@@ -25,33 +28,69 @@ qx.Interface.define("inspector.propertyEditor.IPropertyListController", {
   *****************************************************************************
   */
   members : {
-
+    /**
+     * Should return the current selected object which the property list should 
+     * represent.
+     * @return {qx.core.Object} The selected object.
+     */
     getWidget: function() {
-      return true;      
+      return true;
     },
     
+    
+    /**
+     * This method should be able to take the current selected property.
+     * @param layout {qx.ui.layout.BoxLayout} The layout holding the property.
+     */
     setSelectedProperty: function(layout) {
       return true;
     },
     
+    
+    /**
+     * This method should return the current selected property.
+     * @return {qx.ui.layout.BoxLayout} The layout holding the current selected property.
+     */
     getSelectedProperty: function() {
       return true;
     },
     
+    
+    /**
+     * The controller should tell the lists if they should show the inherited 
+     * properties.
+     * @return {boolean} True, if the inherited properties should be shown.
+     */
     getInheritedStatus: function() {
       return true;
     },
     
+    
+    /**
+     * The grouping of the properties should  be controlled by the implementing 
+     * controller.
+     * @return {boolean} True, if the properties should be grouped.
+     */
     getGroupStatus: function() {
       return true;
     },  
     
+    
+    /**
+     * Should invoke a selection of the current selected property, which should
+     * be a qooxdoo objects, as new current widget.
+     */
     gotoSelectedWidget: function() {
-      return true;      
+      return true;
     },
-		
-		getFilter: function() {
-			return true;
-		}
+    
+    
+    /**
+     * Should return the used {@link inspector.propertyEditor.IFilter}.
+     * @return {inspector.propertyEditor.IFilter} The current used filter.
+     */
+    getFilter: function() {
+      return true;
+    }
   }
 });
