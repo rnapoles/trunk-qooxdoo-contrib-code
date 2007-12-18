@@ -240,30 +240,16 @@ class qcl_locale_manager extends qcl_object
 
 /**
  * translates message if translation exists, otherwise make entry in the 
- * .po file
+ * .po file. You can use the sprinf() syntax to dynamically insert values into
+ * the text.
+ * @param string $message
+ * @param mixed variable
+ * @param mixed variable ...
  */
-function __($message)
-{
-	return $message;
-}
-
-/**
-     * translates a string with the sprintf formatting rules
-
-function __( )
+function __()
 {  
-        $args           = func_get_args();
-        $msgId          = $args[0];
-		$context		= $args[1];
-        $translation    = Zophe::translate ( $msgId, $context );
-        if ( count ( $args ) > 2 ) {
-			$arguments      = array();
-			
-			for ( $i=2; $i<count($args); $i++)
-				$arguments[]= "\$args[$i]";   
-			$arguments      = implode ( ",", $arguments);
-			eval ( '$translation = sprintf($translation,' . $arguments . ");" );
-		}
-        return $translation;
+  $args  = func_get_args();
+  $msgId = $args[0];
+  //$args[0] = $msgId; // todo: implement translation here
+  return call_user_func_array('sprintf',$args);  
 }
-**/

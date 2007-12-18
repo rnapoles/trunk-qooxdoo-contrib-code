@@ -475,12 +475,13 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
      
       // do checks and updates
-      $this->info("*** Initializing tables ***");
+      $this->info("*** Initializing table '$table' ***");
       $this->checkCreateTable($table);
-      $this->updateTableStructure($table);
-      
-      // success
-      $this->setSessionVar($sessionFlagName,true);
+      if ( $this->updateTableStructure($table) )
+      {
+        // success
+        $this->setSessionVar($sessionFlagName,true);
+      }
     }
   }
   
@@ -650,8 +651,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     // store sql to create this table
     if ( ! file_exists ( $this->getSqlFileName($table) ) )
     {
-      $this->saveTableCreateSql($table);
-      return;
+      return $this->saveTableCreateSql($table);
     }
     
     // compare table structure with structure and update table if there is a change
