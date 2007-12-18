@@ -1,4 +1,4 @@
-<?php
+<?php  
 
 // dependencies
 require_once ("qcl/jsonrpc/model.php");
@@ -16,8 +16,8 @@ class qcl_db_model extends qcl_jsonrpc_model
   // class variables
   //-------------------------------------------------------------
   
-  var $key_id         = "id";   // column with unique numeric id 
-  var $key_namedId    = null;   // unique string id, optional  
+  var $key_id                 = "id";    // column with unique numeric id 
+  var $key_namedId            = null;    // unique string id, optional  
   
   //-------------------------------------------------------------
   // instance variables
@@ -464,14 +464,20 @@ class qcl_db_model extends qcl_jsonrpc_model
   {   
     $tables = (array) $tables;
     
+    static $flags = null;
+    $init_flags = "bibliograph_table_initialization";
+    
+    if ( ! $flags )
+    {
+      $flags = (array) $this->retrieve($init_flags);
+    }
+    
     foreach ( $tables as $table )
     {    
-      // $this->addFunctions($table);
-      // ensure this is executed only once per session
-      $sessionFlagName = "table_" . $table . "_initialized";
-      if ( $this->getSessionVar( $sessionFlagName ) )
+      // ensure each table is only checked once
+      if ( $flags[$table] )
       {
-        return;
+        continue;
       }
      
       // do checks and updates
@@ -480,7 +486,8 @@ class qcl_db_model extends qcl_jsonrpc_model
       if ( $this->updateTableStructure($table) )
       {
         // success
-        $this->setSessionVar($sessionFlagName,true);
+        $flags[$table] = true;
+        $this->store($init_flags,$flags);
       }
     }
   }
@@ -610,10 +617,10 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 
   /**
-   * saves the sql commands necessary to create the table into a file and returns it
+   * saves the sql commands necessary to create the table into a file 
    * @return boolen success
    */
-  function saveTableCreateSql($table)
+  function saveTableStructureSql($table)
   {
       $file = $this->getSqlFileName($table);
       if ( is_writeable ( dirname ( $file ) ) )
@@ -628,7 +635,7 @@ class qcl_db_model extends qcl_jsonrpc_model
         }
         else
         {
-          $this->warn ( "Problem saving $table in file $file.");
+          $this->warn ( "Problem saving structure of $table in file $file.");
           return false;
         }
       }
@@ -638,6 +645,7 @@ class qcl_db_model extends qcl_jsonrpc_model
         return false;
       }
   }
+
 
   /**
    * updates or creates table in database if it doesn't exist yet
@@ -651,7 +659,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     // store sql to create this table
     if ( ! file_exists ( $this->getSqlFileName($table) ) )
     {
-      return $this->saveTableCreateSql($table);
+      return $this->saveTableStructureSql($table);
     }
     
     // compare table structure with structure and update table if there is a change
@@ -660,13 +668,14 @@ class qcl_db_model extends qcl_jsonrpc_model
     if ( $currentSql != $normativeSql )
     {
       $this->db->updateTableStructure( $table, $normativeSql );
-      $this->saveTableCreateSql($table);
+      $this->saveTableStructureSql($table);
       $this->info ("Updated table '$table'.");
     }
     else
     {
       $this->info ( "Table '$table' is up to date.");
     }
+    return true;
   }
   
 }	

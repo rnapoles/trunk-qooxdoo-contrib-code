@@ -16,16 +16,17 @@ class qcl_auth_user extends qcl_auth_common
   // class variables, override if necessary
   //-------------------------------------------------------------
 
-	var $table			    = "users";
-	var $key_namedId	  = "username";
-	var $key_name		    = "name";
-	var $key_username 	= "username"; 
-	var $key_password 	= "password";
-	var $icon 			    = "icon/16/apps/system-users.png";
-	var $nodeType		    = "qcl.auth.types.User";
-	var $shortName		  = "user";
-	var $foreignKey		  = "userId";
-  var $reservedNames  = array("default","admin","global");
+	var $table			            = "users";
+	var $key_namedId	          = "username";
+	var $key_name		            = "name";
+	var $key_username 	        = "username"; 
+	var $key_password 	        = "password";
+	var $icon 			            = "icon/16/apps/system-users.png";
+	var $nodeType		            = "qcl.auth.types.User";
+	var $shortName		          = "user";
+	var $foreignKey		          = "userId";
+  
+  var $reservedNames          = array("default","admin","global");
 	
   //-------------------------------------------------------------
   // internal methods 

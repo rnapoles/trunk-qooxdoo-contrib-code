@@ -280,7 +280,7 @@ class qcl_object extends patched_object {
    		{
    			return $obj;
    		}
-		return $data;
+		  return $data;
    	}
    	
    	/**
@@ -288,12 +288,12 @@ class qcl_object extends patched_object {
    	 */
    	function remove ( $id )
    	{
-		if ( ! $id )
+		  if ( ! $id )
    		{
    			$id = get_class($this);
    		}
-		$path = QCL_TMP_PATH . $id;
-		return unlink ($path);		
+		  $path = QCL_TMP_PATH . $id;
+		  return unlink ($path);		
    	}
    	
 	/**
