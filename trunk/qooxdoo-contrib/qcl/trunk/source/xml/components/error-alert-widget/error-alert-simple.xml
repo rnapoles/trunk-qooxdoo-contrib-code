@@ -6,7 +6,7 @@
 	<!-- simple error log window -->		
 	<qx:window 
 		id="errorWindow" 
-		width="400" height="200" 
+		width="400" height="auto" 
 		caption="Error" 
 		showMinimize="false" showMaximize="false" showClose="false" 
 		onAppear="this.centerToBrowser()">
@@ -20,25 +20,31 @@
 		<!-- content -->
 		
 		<qx:verticalBoxLayout 
-			spacing="5" padding="5" 
+			spacing="5" padding="10" 
 			width="100%" height="100%">
 
-			<qx:atom 
-				id="errorText" 
-				icon="icon/32/status/dialog-warning.png"
-				height="1*" width="100%"> 
-				<qx:messageSubscriber filter="qcl.databinding.messages.rpc.error">
-					var msg = message.getData() || "";
-					var msg = "<b>" + msg.replace(/\\n/,"<br/>") + "</b>";
-					this.setLabel(msg);
-				</qx:messageSubscriber>
-			</qx:atom>								
+			<qx:horizontalBoxLayout 
+				width="100%" height="1*" spacing="10"
+				verticalChildrenAlign="middle">
+
+				<qx:image source="icon/32/status/dialog-error.png" dimension="32,32"/>
+
+  			<qx:label 
+					wrap="true" height="100%" width="1*" text=" " mode="html"> 
+  				<qx:messageSubscriber filter="qcl.databinding.messages.rpc.error">
+  					var msg = message.getData() || "";
+  					var msg = "<b>" + msg.replace(/\\n/,"<br/>") + "</b>";
+  					this.setText(msg);
+  				</qx:messageSubscriber>
+  			</qx:label>								
+
+			</qx:horizontalBoxLayout>
 			
 			<qx:horizontalBoxLayout 
 				width="100%" height="auto" 
 				horizontalChildrenAlign="center"
 				spacing="10">
-				<qx:button label="OK" height="30" width="50">
+				<qx:button label="OK" height="25" width="70">
 					<qx:eventListener type="execute">
 						errorWindow.hide();
 					</qx:eventListener>
