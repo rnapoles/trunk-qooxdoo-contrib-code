@@ -404,6 +404,7 @@ function Table (sel)
   sel.qxClick('//div[text()="9"]', "shiftKey=true");
   sel.qxClick('//div[text()="6"]', "ctrlKey=true");
 
+  // sort by a column
   sel.qxClick('//div[text()="A number"]');
   sel.qxClick('//div[text()="A number"]');
   
