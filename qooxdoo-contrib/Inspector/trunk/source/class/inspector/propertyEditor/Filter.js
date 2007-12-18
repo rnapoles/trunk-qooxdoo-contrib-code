@@ -16,7 +16,16 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class is a implementation of the {@link inspector.PropertyEditor.IFilter} 
+ * interface.</p>
+ * <p>It sorts / filters the added properties into a predefined order. This 
+ * order is defined in the {@link #_defineTests} method.</p>
+ * <p>If you want you own order 
+ * with own categories and filter rules, take this class as a base class and override
+ * the method used to define the tests and define your own tests. The categories and 
+ * all other needed stuff will be created automatically.</p>
+ */
 qx.Class.define("inspector.propertyEditor.Filter", {
   
   extend : qx.core.Object,
@@ -29,7 +38,9 @@ qx.Class.define("inspector.propertyEditor.Filter", {
   *****************************************************************************
   */
   statics: {
-    // the name of the default category 
+    /**
+     * The name of the default category.
+     */ 
     DEFAULT_CATEGORY_NAME: "Rest"
   },
 
@@ -38,13 +49,18 @@ qx.Class.define("inspector.propertyEditor.Filter", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates an instance of the filter. This includes creating 
+   * test ({@link #_defineTests}) and categories ({@link #_createCategories}) 
+   * used to sort the properties.
+   */
   construct : function() {
     // call the constructor of the superclass
-    qx.core.Object.call(this);    
+    qx.core.Object.call(this);
     // create the tests array
     this._tests = [];
     // call the function which defines the tests
-    this._defineTests();    
+    this._defineTests();
     // the same like initializing the filter
     this._createCategories();   
   },
@@ -75,8 +91,9 @@ qx.Class.define("inspector.propertyEditor.Filter", {
     */
     /**
      * Sorts in the given property into the filter. For the sorting it 
-     * uses the defined test. If no test could be applied, the property 
-     * will be put into a default category.
+     * uses the defined test ({@link #_defineTests}). If no test could be 
+     * applied, the property will be put into a default category 
+     * ({@link #DEFAULT_CATEGORY_NAME}).
      * @param propertyName {String} The name of the property.
      * @param property {Map} The property array itself.
      * @param classname {String} The name of the properties class.
@@ -103,18 +120,19 @@ qx.Class.define("inspector.propertyEditor.Filter", {
     
     
     /**
-     * Returns the resuls as an object containing two array.
-     * names: An array containing the names of the categories.
-     * props: An array containing the properties of the corresponding categorie.
-     * classes: An array containing arrays of classnames coresponding tu the props array.
-     * The array beginn with the index 1. The two array cooperate with their indices,
-     * e.g. the category[1] contains the category name of the properties found at 
-     * position 1 in the properties array.
+     * Returns the result as an object containing three array.
+     * <li>names: An array containing the names of the 
+     * categories ({@link #_createCategories}).</li>
+     * <li>props: An array containing the properties of the corresponding category.</li>
+     * <li>classes: An array containing arrays of classnames corresponding to the props array.</li>
+     * The array begins with the index 1. The three array cooperate with their indices,
+     * e.g. the <code>category[1]</code> contains the category name of the properties 
+     * found at position 1 in the properties array.
      *
      * @return {Object} An object containing three array:
-     *     categories - An array containing the categories
-     *     props      - An array containing arrays of properties
-     *     calsses    - An array containing arrays of classnames
+     *     <li>categories - An array containing the categories</li>
+     *     <li>props      - An array containing arrays of properties</li>
+     *     <li>classes    - An array containing arrays of classnames</li>
      */
     getResult: function() {
      // create a array for the mapping from the named hash to an indexed array
@@ -128,11 +146,12 @@ qx.Class.define("inspector.propertyEditor.Filter", {
      
      
     /**
-     * Empties the filter which menas that the filter can be reused.
+     * Empties the filter which means that the filter can be reused.
+     * This includes creating a new properties and categories cache.
      */
     empty: function() {
       // this._createCategories();
-      this._createPropertyAndClassnamesArrays();       
+      this._createPropertyAndClassnamesArrays();
     },
     
     
@@ -143,9 +162,9 @@ qx.Class.define("inspector.propertyEditor.Filter", {
     */
     /**
      * Creates the categories array. Therefore it uses the in 
-     * the tests defined categories. Additianally a default category 
-     * will be created as last category.
-     * The order of the categories depends on the first occurance of the 
+     * the {@link #_defineTests} defined categories. Additionally a 
+     * default category will be created as last category.
+     * The order of the categories depends on the first occurrence of the 
      * category name in the tests array.
      */
     _createCategories: function() {
@@ -162,15 +181,15 @@ qx.Class.define("inspector.propertyEditor.Filter", {
       // set the category name for the default category
       this._categories[inspector.propertyEditor.Filter.DEFAULT_CATEGORY_NAME] = i;
       // invoke the creation of the property arrays
-      this._createPropertyAndClassnamesArrays();
+      this.__createPropertyAndClassnamesArrays();
     },
     
     
     /**
-     * Dependent on how mutch categories are available this method 
+     * Dependent on how much categories are available this method 
      * creates an properties array for every category. 
      */
-    _createPropertyAndClassnamesArrays: function() {
+    __createPropertyAndClassnamesArrays: function() {
       // initialize the properties array
       this._properties = [];
       // create a temp classnames array
@@ -184,13 +203,30 @@ qx.Class.define("inspector.propertyEditor.Filter", {
     
     
     /**
-     * The categories and constraints will be defined in this function.
+     * The categories and constraints will be defined in this method.
      * Therefore the function pushes a array containing the test string 
      * and a category name into the tests array. Every array containing 
      * a part of the test string (not case sensitive) will be added to 
      * the corresponding category.  
-     * Example:
-     * this._test.push(["color", "Colors"]); 
+     * Example:<br>
+     * <code>this._test.push(["color", "Colors"]);</code>
+     * The defined tests are:
+     * <pre class='javascript'>
+     * this._tests.push(["align", "Align"]);
+     * this._tests.push(["margin", "Margins and Spacings"]);
+     * this._tests.push(["spacing", "Margins and Spacings"]);
+     * this._tests.push(["padding", "Paddings"]);
+     * this._tests.push(["clip", "Clippings"]);
+     * this._tests.push(["color", "Colors"]);
+     * this._tests.push(["width", "Dimensions"]);
+     * this._tests.push(["height","Dimensions"]);
+     * this._tests.push(["left", "Position"]);
+     * this._tests.push(["right", "Position"]);
+     * this._tests.push(["top", "Position"]);
+     * this._tests.push(["position", "Position"]);
+     * this._tests.push(["bottom", "Position"]);
+     * this._tests.push(["child", "Child dependent"]);
+     * </pre>
      */
     _defineTests: function() {
       this._tests.push(["align", "Align"]);

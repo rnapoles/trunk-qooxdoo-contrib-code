@@ -16,16 +16,29 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class represents the widget finder window.</p>
+ * <p>The widget finder offers a insight into the hierarchical structure
+ * of the current document. Therefore a tree shows all widgets added to 
+ * the document, which is the root element in a qooxdoo GUI.</p>
+ */
 qx.Class.define("inspector.widgetFinder.WidgetFinder", {
   
   extend : inspector.components.AbstractWindow,  
-    
+  
   /*
   *****************************************************************************
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a instance of the widget finder window.
+   * This includes a loading of the widget tree if the window is ready.
+   * If a widget is selected in the inspector, this widget will 
+   * be selected in the tree of the widget finder as well, if possible.
+   * @param main {inspector.Inspector} The main inspector instance.
+   * @param name {string} The name of the window, displayed in the caption bar of the window.
+   */
   construct : function(main, name) {   
     // call the constructor of the superclass
     this.base(arguments, main, name);    
@@ -34,15 +47,15 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     var self = this;
     window.setTimeout(function() {
       self.reload();
-      // if a widget is selected, selet is on open
+      // if a widget is selected, select it on open
       var currentWidget = self._inspector.getWidget();
       if (currentWidget != null) {
         self.selectWidget(currentWidget);
-      }      
-    }, 0);    
+      }
+    }, 0);
   },
-
-
+  
+  
   /*
   *****************************************************************************
      MEMBERS
@@ -78,20 +91,21 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     getComponents: function() {
       return [this, this._reloadToolTip, this._autoReloadToolTip];
     },
-        
+    
     
     /**
      * Tells the widget finder to select the given widget.
      * @param widget {qx.ui.core.Widget} The widget to select.
      */
     selectWidget: function(widget) {
-        this._selectWidgetInTheTree(widget);        
+        this._selectWidgetInTheTree(widget);
     },
     
     
     /**
      * Returns the hash code of the currently selected widget in the tree. If 
      * nothing is selected, null will be returned.
+     * @internal
      * @return {String} The hashcode of the currently selected widget in the tree.
      */
     getSelectedWidgetHash: function() {
@@ -109,13 +123,13 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     /**
      * Reloads the first two layers of the tree.
      */
-    reload: function() {   
+    reload: function() {
       // start the exclusion
-      this._inspector.beginExclusion();      
+      this._inspector.beginExclusion();
       // refill the tree
       this._fillTree(qx.ui.core.ClientDocument.getInstance(), this._tree, 2);
       // end the exclusion
-      this._inspector.endExclusion();      
+      this._inspector.endExclusion();
     },
     
     
@@ -123,18 +137,18 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     *********************************
        PROTECTED
     *********************************
-    */       
+    */
     /**
      * Reload the tree. If the tree is once loaded, only the changes in the tree
      * will be loaded.
      * @param parentWidget {qx.ui.core.Widget} The widget to handle.
      * @param parentTreeFolder {qx.ui.tree.TreeFolder} The folder to add the children 
      *    of the parentWidget.
-     * @param recursive {Integer} Indicates if ther should be a recursive call
+     * @param recursive {Integer} Indicates if there should be a recursive call
      *    of this function.
      */
     _fillTree: function(parentWidget, parentTreeFolder, recursive)  {
-      // get all components fo the inspector application
+      // get all components of the inspector application
       var components = this._inspector.getComponents();
       
       // get the current items of the tree folder
@@ -156,7 +170,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         }
       }
       
-      // seperate index necessary because the components of the inspector are omitted in the tree view
+      // separate index necessary because the components of the inspector are omitted in the tree view
       var i = 0;
       // reduce the recursive calls
       recursive--;
@@ -240,13 +254,13 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
           var newItems = parentTreeFolder.getItems(false, true);
           // if there are more folders than should be
           if (newItems.length - 2 != i) {
-            // go threw all disperable folders an delete them
+            // go threw all dispensable folders an delete them
             for (var l = i + 1; l < newItems.length; l++) {
               parentTreeFolder.removeAt(i + 1);
             }
           }          
         }
-        // count up the seperate index
+        // count up the separate index
         i++;
       }  
     }, 
@@ -254,16 +268,16 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     
     /**
      * Handler function to handle the opening of a tree folder.
-     * The function invokes a reload of the sufolders of the clicked 
-     * forlder
-     * @param e {Event} Event triggert by a changeOpen.
+     * The function invokes a reload of the subfolders of the clicked 
+     * folder
+     * @param e {Event} Event triggered by a changeOpen.
      */
     _treeOpenHandler: function(e) {
       // if the folder is open
       if (e.getValue()) {
         // get the selected widget
         var selectedWidget = e.getTarget().getUserData('instance');        
-        // load the following two hirachi layers of the tree
+        // load the following two hierarchy layers of the tree
         this._fillTree(selectedWidget, e.getTarget(), 2);      
       }
     },
@@ -272,12 +286,12 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
     /**
      * Handler function to handle the click on the tree. The 
      * function selects a new widget.
-     * @param e {ClickEvent} Event triggert by a selectionChange.
+     * @param e {ClickEvent} Event triggered by a selectionChange.
      */
     _treeClickHandler: function(e) {
       // if the changeSelection changes from false -> true
       if (e.getValue()) {
-        // stops the bubbeling of the event
+        // stops the bubbling of the event
         e.stopPropagation();    
         // get the selected widget
         var selectedWidget = e.getTarget().getUserData('instance');
@@ -384,7 +398,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
 
     
     /**
-     * Tells the tree to select the wiget. If the widget is not in the 
+     * Tells the tree to select the widget. If the widget is not in the 
      * tree, the selection will be removed.
      * @param widget {qx.core.Object} The object which should be selected.
      */
@@ -396,7 +410,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       
       // create a array of parents
       var parents = [];
-      // save the parrents in that array
+      // save the parents in that array
       var w = widget;
       while(w.getParent() != null) {
         parents.push(w);
@@ -424,7 +438,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       }
       // for every element
       for (var i = 0; i < items.length; i++) {
-        // if the elemnt was found
+        // if the element was found
         if (items[i].getUserData('id') == id) {
           // mark it as found
           elementFound = true;
@@ -434,7 +448,7 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
           break;
         }
       }            
-      // if the elemnt could not be found      
+      // if the element could not be found
       if (!elementFound) {
         // delete the selection in the tree
         this._tree.getManager().deselectAll();
@@ -464,14 +478,14 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       }
       // for every element
       for (var i = 0; i < items.length; i++) {
-        // if the elemnt was found
+        // if the element was found
         if (items[i].getUserData('id') == id) {
           // select in in the tree
           items[i].open();
           // stop searching for the element
           break;
         }
-      }                
+      }
     },
     
     
@@ -494,12 +508,12 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
         if (self.getDisplay() && self.getVisibility()) {
           self.reload.call(self);
         }
-      }, 200);   
+      }, 200);
     },
     
     
     /**
-     * Stops the autoreload timer and enabeld the reload button.
+     * Stops the autoreload timer and enabled the reload button.
      */
     _disableAutoReload: function () {
       // enable the reload button
@@ -543,12 +557,12 @@ qx.Class.define("inspector.widgetFinder.WidgetFinder", {
       }
       // if the top is not set
       if (this.getTop() == null) {
-        // set top of the window 25% of the browsers heigth
+        // set top of the window 25% of the browsers height
         this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
       }
       // if the height is not set
       if (this.getHeight() == "auto") {
-        // make the widget finder 25% of the browser heigth high
+        // make the widget finder 25% of the browser height high
         this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.25);        
       }
     },

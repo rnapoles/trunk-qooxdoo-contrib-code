@@ -16,7 +16,9 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class is a view on properties of a qooxdoo object.</p>
+ */
 qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
   
   extend : inspector.propertyEditor.PropertyList,
@@ -26,6 +28,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of this view.
+   * @param controller {inspector.propertyEditor.IPropertyListController} A controller for the view.
+   */
   construct : function(controller) {
     // call the constructor of the superclass
     this.base(arguments, controller);
@@ -64,13 +70,15 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     build: function() {
       // only build a list if a widget is set
       if (this._controller.getWidget() != null) {
-        this._makeNewHtmlTable(this._controller.getWidget());        
+        this._makeNewHtmlTable(this._controller.getWidget());
       }
     },
     
     
     /**
      * Tells the view that a property has changed and need to be reloaded.
+     * Because the list does not take care of every single property, the
+     * list will be {@link #build}.
      * @param classkey {String} The classname and property name as a string. 
      */
     update: function(classkey) {
@@ -79,8 +87,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     
     
     /**
+     * Returns the components used in this view.
      * @internal
-     * @return The components of the view.
+     * @return {qx.core.Object[]} The components of the view.
      */
     getComponents: function() {
       return [this._filter];
@@ -88,9 +97,11 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     
     
     /**
-     * Checks if the given property is in the view.
+     * Checks if the given property is in the view. This view does not take 
+     * care of single properties so always <code>false</code> is returned.
      * @param key {String} The name of the property.
      * @param classname {String} the classname of the property.
+     * @return {boolean} Always <code>false</code>.
      */
     containsProperty: function(key, classname) {
       return false;  
@@ -108,7 +119,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
     
     
     /**
-     * Because its a simpe html view, the function doesnt do anything.
+     * Because its a simple html view, the function doesnt do anything.
      */
     recalculateLayout: function() {
       // just do nothing
@@ -125,7 +136,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
      * This table contains all properties of the given object
      * @param qxObject {qx.core.Object} The object to show the properties of.
      */
-    _makeNewHtmlTable: function(qxObject) {            
+    _makeNewHtmlTable: function(qxObject) {
       if (this._controller.getInheritedStatus()) {
         // get the data
         var data = this._getData(qxObject);
@@ -134,7 +145,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
         var properties = data.props;
       
       } else {
-        // add a null in front becaus the array goes 1..n
+        // add a null in front because the array goes 1..n
         var groupNames = [null, qxObject.classname];
         var properties = [null , qx.Class.getByName(qxObject.classname).$$properties];
       }
@@ -144,10 +155,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
       
       // end the table
       this._htmlTable.setHtml("</table>" + this._htmlTable.getHtml());
-      // create a variable to store the bacground color for the properties
+      // create a variable to store the background color for the properties
       var clazz;
-      // go backwords threw the properties array
-      for(var i = properties.length - 1; i > 0 ; i--) {        
+      // go backwards threw the properties array
+      for(var i = properties.length - 1; i > 0 ; i--) {
         // go threw all properties in the current class
         for (var key in properties[i]) {        
           // ignore the property groups  
@@ -155,7 +166,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
             // read value
             var getterName = "get" + qx.lang.String.toFirstUp(key);
             try {
-              var value = qxObject[getterName].call(qxObject);              
+              var value = qxObject[getterName].call(qxObject);
             } catch (e) {
               var value = "<span class='ins_property_editor_html_error'>" + e + "</span>";
             }
@@ -168,7 +179,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
             
             // get the setter name
             var setterName = "set" + qx.lang.String.toFirstUp(key);
-            // if the property can be changed with a simple textfield                   
+            // if the property can be changed with a simple textfield
             if (properties[i][key].check == "Integer" || 
                 properties[i][key].check == "String" ||
                 properties[i][key].check == "NonEmptyString" ||
@@ -191,10 +202,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
                            "box.setAttribute(\"type\", \"text\");" + 
                            "box.setAttribute(\"value\", oldValue);" +
                            "box.setAttribute(\"class\", \"ins_property_editor_html_edit_field\");" +
-                           // swich the current content to the textbox
+                           // switch the current content to the textbox
                            "this.innerHTML = \"\";" +
                            "this.appendChild(box);" +
-                           // remove the onlick listener
+                           // remove the onclick listener
                            "var formerOnclick = this.onclick;" + 
                            "this.onclick = \"\";" +
                            // select the text in the textbox
@@ -213,7 +224,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
                            "  if (key == 13) {" +
                                 // update the widget 
                            "    var success = inspector.Inspector.getInstance().updateWidgetProperty(\"" + key + "\", box.value, \"" + properties[i][key].check + "\");" +
-                                // restor the onld onclick function
+                                // restore the old onclick function
                            "    self.onclick = formerOnclick;" + 
                                 // set the new content into the page
                            "    if (success) {" +
@@ -238,7 +249,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
                       "<td colspan='2' class='ins_property_editor_html_td_classname'>" + groupNames[i] + "</td>" + 
                       "</tr>" + this._htmlTable.getHtml()); 
       }     
-      // beginn the table for the properties
+      // begin the table for the properties
       this._htmlTable.setHtml("<table class='ins_property_editor_html_table'>" + this._htmlTable.getHtml());        
     }
   },
