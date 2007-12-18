@@ -36,7 +36,11 @@ class qcl_auth_common extends qcl_db_model
   {
     parent::__construct(&$controller);
     // initialize tables
-    $this->initializeTables($this->table); 
+    $this->initializeTables(array(
+      $this->table,
+      $this->table_link_user_roles,
+      $this->table_link_roles_permissions
+    )); 
 	}   
 
 	//-------------------------------------------------------------
