@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>The property editor is a inspector window.</p>
+ * <p>This class is responsible for showing all properties of the selected object. 
+ * For that it uses property lists to visualize the properties.</p>
+ */
 qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   
   extend : inspector.components.AbstractWindow,
@@ -28,7 +32,12 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function(main, name) {          
+  /**
+   * Creates a new window instance of the property editor.
+   * @param main {inspector.Inspector} Reference to the inspector.
+   * @param name {String} The title of the windows caption bar.
+   */
+  construct : function(main, name) { 
     // call the constructor of the superclass
     this.base(arguments, main, name);
     // create the Filter for sorting 
@@ -55,7 +64,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // reload buttons
     _reloadButton: null,
     _reloadToolTip: null,
-    // api buttion
+    // api button
     _apiButtonToolTip: null,
     // set null button
     _setNullButton: null,
@@ -63,10 +72,10 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     // init button
     _setPropertyToDefaultButton: null,
     _setPropertyToDefaultTooltip: null,
-    // highlight currenty property button
+    // highlight current property button
     _highlightCurrentPropertyButton: null,
     _highlightCurrentPropertyTooltip: null,
-    // goto selected property button
+    // go to selected property button
     _gotoSelectedPropertyButton: null,
     _gotoSelectedPropertyTooltip: null,
     
@@ -107,18 +116,18 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * Sets a new widget. This new object is shown in the property editor.
+     * Sets a new object. This new object is shown in the property editor.
      * @param qxObject {qx.core.Object} The new qooxdoo object to set.
      */
-    setWidget: function(qxObject) {
+    setQxObject: function(qxObject) {
       // only set the widget if it is a new one
       if (this._qxObject == qxObject) {
         return;
       }
       
-      // save a referente to the current widget
+      // save a reference to the current widget
       this._qxObject = qxObject; 
-      // show a loading message in the titel bar      
+      // show a loading message in the title bar
       this.setCaption(inspector.Inspector.PROPERTY_CAPTION_TITLE + " (Loading...)");
       // save the this reference for the timeout function
       var self = this;
@@ -155,9 +164,10 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * @return The currently selected object. 
+     * Returns the current selected object.
+     * @return {qx.core.Object} The currently selected object. 
      */
-    getWidget: function() {
+    getQxObject: function() {
       return this._qxObject;
     },
          
@@ -174,6 +184,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
+     * Returns the layout holding the current selected property.
      * @internal
      * @return {qx.ui.layout.HorizontalBoxLayout} The selected property.
      */
@@ -183,7 +194,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * @return {boolean} The status of the inheritance.
+     * Returns the status of the inheritance checkbox.
+     * @return {boolean} True, if the inherited properties should be shown.
      */
     getInheritedStatus: function() {
       return this._showInherited;
@@ -191,7 +203,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * @return The status of the group button.
+     * Returns the status of the group button.
+     * @return {boolean} True, if the properties should be grouped.
      */
     getGroupStatus: function() {
       return this._groupButton.getChecked();  
@@ -207,7 +220,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * Returns the Filter used for grouping the properties. 
+     * Returns the Filter used for grouping the properties.
+     * @return {inspector.propertyEditor.IFilter} The current used filter.
      */
     getFilter: function() {
       return this._filter;
@@ -215,7 +229,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * Tells the property list that something hase changed in the layout
+     * Tells the property list that something has changed in the layout
      * and that the calculations based on font size or something else 
      * has to be recalculated. 
      */
@@ -267,7 +281,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
         this._setPropertyToDefaultButton.setEnabled(false);
       }
       
-      // handle the goto and highlight buttons
+      // handle the go to and highlight buttons
       if (key != undefined) {
         try {
           // create the getter name for the property
@@ -286,7 +300,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           
           // get the current value
           var value = this._qxObject[getterName].call(this._qxObject);
-          // if the check constraint is qidget or parent and the selected widget is noch the client document
+          // if the check constraint is widget or parent and the selected widget is not the client document
           if ((property.check == "qx.ui.core.Widget" || property.check == "qx.ui.core.Parent")&& 
               (this._qxObject.classname != "qx.ui.core.ClientDocument") && (value != null)){
             this._highlightCurrentPropertyButton.setEnabled(true);
@@ -296,8 +310,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
             this._gotoSelectedPropertyButton.setEnabled(false);
           }
         } catch (e) {
-          // signal the user that somneting went wrong
-          alert("Error during reading the selecteds Property: " + e);
+          // signal the user that something went wrong
+          alert("Error during reading the selected Property: " + e);
           // mark the property that something went wrong while reading
           this._currentlySelectedProperty.setBackgroundColor(null);
           // reset the current selected property
@@ -309,21 +323,31 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     },
     
     
+    /**
+     * This method opens the api viewer via the inspector and shows the api 
+     * to the current selected object or property if something is selected.
+     */
     _openApiWindow: function() {
-      
-      if (this._qxObject != null) {        
+      // if a object is selected
+      if (this._qxObject != null) {
+        // if a property is selected
         if (this._currentlySelectedProperty != null) {
+          // get the classname and the property name
           var classname = this._currentlySelectedProperty.getUserData("classname");
-          var propertyname = this._currentlySelectedProperty.getUserData("key"); 
+          var propertyname = this._currentlySelectedProperty.getUserData("key");
+          // open the api window to that property 
           this._inspector.openApiWindow(classname, propertyname);
         } else {
+          // open the api window to the class of the current selected property
           this._inspector.openApiWindow(this._qxObject.classname);  
         }
+      // if no object is selected
       } else {
+        // open just the api viewer
         this._inspector.openApiWindow();
       }
-      
     },
+    
     
     /*
     *********************************
@@ -331,7 +355,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     *********************************
     */       
     /**
-     * Starts a timer which automaticly reloads the table every 200 ms 
+     * Starts a timer which automatically reloads the table every 200 ms 
      * if the property editor is on screen.
      */
     _enableAutoReload: function() {
@@ -344,9 +368,8 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           self._inspector.beginExclusion();
           self._propertyList.build();
           self._inspector.endExclusion();
-          // self._readObjects.call(self);
         }
-      }, 200);   
+      }, 200);
     },
     
     
@@ -381,7 +404,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       // try to invoke the setter
       try {
         this._qxObject[setterName].call(this._qxObject, null);
-        // relaod the property view of the current column
+        // reload the property view of the current column
         var classname = this._currentlySelectedProperty.getUserData("classname");
         var key = this._currentlySelectedProperty.getUserData("key");
         this._propertyList.update(key, classname);
@@ -412,7 +435,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       // try to invoke the setter
       try {
         this._qxObject[setterName].call(this._qxObject, property.init);
-        // relaod the property view of the current column
+        // reload the property view of the current column
         var classname = this._currentlySelectedProperty.getUserData("classname");
         var key = this._currentlySelectedProperty.getUserData("key");
         this._propertyList.update(key, classname);
@@ -426,7 +449,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     /**
      * Handler function to handle the execution of the "highlight property" 
      * button. The function reads the value of the property which is a 
-     * widget and dedicates the highligting task to the inspector class.
+     * widget and dedicates the highlighting task to the inspector class.
      */
     _highlightCurrentPropertyButtonEventListener: function() {
       // get the name of the property
@@ -443,12 +466,12 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     
     /**
-     * Handler function to handle the execution of the "goto property" button.
+     * Handler function to handle the execution of the "go to property" button.
      * The function reads the value of the currently selected property which is
      * a widget and selects the new widget.
      */
     _gotoSelectedPropertyButtonEventListener: function() {
-      // go only to the parrent if the widget is not the client document (root)
+      // go only to the parent if the widget is not the client document (root)
       if (this._qxObject.classname != "qx.ui.core.ClientDocument") {
         // get the name of the property
         var key = this._currentlySelectedProperty.getUserData("key");
@@ -461,7 +484,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // reload the configuration for the property buttons
           this._switchPropertyButtons();            
         } catch (e) {
-          alert("Errer during selecting the property widget: " + e);
+          alert("Error during selecting the property widget: " + e);
         }
       }
     },
@@ -469,13 +492,13 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
     
     /**
      * Handler function to handle the execution of the inherited button.
-     * @param e {Event} Event created by a chackbox.
+     * @param e {Event} Event created by a checkbox.
      */
     _switchInheritedStatus: function(e) {
       this._showInherited = e.getCurrentTarget().getChecked();
       this._propertyList.switchInheritedStatus(this._showInherited);
     },
-
+    
     
     /*
     *********************************
@@ -516,7 +539,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
         // set the window beginning at the half of the document
         this.setTop(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
       }
-      // if the height is not set propertly
+      // if the height is not set properly
       if (this.getHeight() == "auto") {
         // set the height to the half of the documents height
         this.setHeight(qx.ui.core.ClientDocument.getInstance().getInnerHeight() * 0.5);
@@ -538,7 +561,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       
     
     /**
-     * Creates the view menu including ths buttons and handlers
+     * Creates the view menu including the buttons and handlers
      * for the menu.
      */
     _createMenu: function() {
@@ -552,14 +575,14 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       autoReloadButton.setCommand(autoReloadCommand);      
       autoReloadCommand.addEventListener("execute", function (e) {
         if (e.getData().getChecked()) {
-          this._enableAutoReload();          
+          this._enableAutoReload();
         } else {
-          this._disableAutoReload();          
+          this._disableAutoReload();
         }
       }, this);            
       this._menu.add(autoReloadButton);
       
-      // seperator
+      // separator
       this._menu.add(new qx.ui.menu.Separator());
       
       // inherited checkbox
@@ -567,7 +590,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._menu.add(this._inheritedButton);
       this._inheritedButton.addEventListener("execute", this._switchInheritedStatus, this);
       
-      // seperator
+      // separator
       this._menu.add(new qx.ui.menu.Separator());      
       
       // non group radio button
@@ -581,7 +604,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
         this._inheritedButton.setEnabled(true); 
       }, this);
       this._menu.add(nonGroupButton);
-      // group radiobutton
+      // group radio button
       this._groupButton = new qx.ui.menu.RadioButton("Group by category");
       this._groupButton.addEventListener("execute", function(e) {
         if (this._qxObject != null) {
@@ -595,7 +618,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       // group radio manager
       new qx.ui.selection.RadioManager(null, [nonGroupButton, this._groupButton]);
 
-      // seperator
+      // separator
       this._menu.add(new qx.ui.menu.Separator());
       
       // edit view button
@@ -606,7 +629,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
           // switch the property lists
           this._mainLayout.removeAt(1);
           this._propertyList = this._propertyListFull;
-          // add the new list to the property editor (bevore reloading! (PREVENTS RENDERING BUG))
+          // add the new list to the property editor (before reloading! (PREVENTS RENDERING BUG))
           this._mainLayout.addAt(this._propertyList, 1);          
           
           // invoke a reload of the list if a widget is selected
@@ -614,7 +637,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
             // reload the view          
             this._propertyList.build();
           }
-          // set the rigth inhrerited status
+          // set the right inherited status
           this._propertyList.switchInheritedStatus();
         // if the button is released
         }
@@ -663,7 +686,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
         this._menu.setZIndex(this.getZIndex() + 1);
       }, this);
       
-      // add a seperator
+      // add a separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
       
       // create and add the reload button
@@ -679,7 +702,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._reloadToolTip = new qx.ui.popup.ToolTip(inspector.Inspector.RELOAD_BUTTON_TOOLTIP_TEXT, null);
       this._reloadButton.setToolTip(this._reloadToolTip);
 
-      // add a seperator
+      // add a separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
 
       // create the API button      
@@ -716,7 +739,7 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
       this._toolbar.add(this._highlightCurrentPropertyButton);
       this._highlightCurrentPropertyButton.addEventListener("execute", this._highlightCurrentPropertyButtonEventListener, this);
   
-      // goto property button
+      // go to property button
       this._gotoSelectedPropertyButton = new qx.ui.toolbar.Button(null , qx.io.Alias.getInstance().resolve("inspector/image/icons/goto.png"));
       this._gotoSelectedPropertyButton.setEnabled(false);
       this._gotoSelectedPropertyTooltip = new qx.ui.popup.ToolTip(inspector.Inspector.GOTO_SELECTED_PROPERTY_BUTTON_TOOLTIP_TEXT, null);
@@ -741,3 +764,4 @@ qx.Class.define("inspector.propertyEditor.PropertyEditor", {
                         "_propertyList", "_filter", "_qxObject", "_inheritedButton", "_groupButton");
   }  
 });
+

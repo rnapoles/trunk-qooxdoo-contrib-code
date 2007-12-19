@@ -16,7 +16,9 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This interface declaration defines a set of methods for all views of the console.</p>
+ */
 qx.Interface.define("inspector.console.IView", {
   /*
   *****************************************************************************

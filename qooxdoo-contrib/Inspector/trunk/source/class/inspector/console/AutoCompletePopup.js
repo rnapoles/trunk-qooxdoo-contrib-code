@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>The auto complete popup is a component used by {@link inspector.console.ConsoleView}.</p>
+ * <p>This popup contains a table which will be filled with suggestions to enter 
+ * in the console.</p>
+ */
 qx.Class.define("inspector.console.AutoCompletePopup", {
   
   extend: qx.ui.popup.Popup,  
@@ -27,6 +31,10 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of a auto complete popup.
+   * @param main {inspector.console.ConsoleView} Reference to the console view. 
+   */
   construct : function(main) {
     // call the constructor of the superclass
     this.base(arguments);

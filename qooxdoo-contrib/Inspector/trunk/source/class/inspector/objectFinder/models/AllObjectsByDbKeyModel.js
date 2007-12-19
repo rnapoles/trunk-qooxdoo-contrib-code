@@ -16,7 +16,10 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * This model is responsible for generating the data containing 
+ * the db key of the objects and the classnames.
+ */
 qx.Class.define("inspector.objectFinder.models.AllObjectsByDbKeyModel", {
   
   extend: inspector.objectFinder.models.AbstractModel,  

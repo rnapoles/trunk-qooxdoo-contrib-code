@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * This model is responsible for generating the data containing 
+ * the amount of the objects class existing in the application and the 
+ * corresponding classnames.
+ */
 qx.Class.define("inspector.objectFinder.models.ObjectsByCountModel", {
   
   extend: inspector.objectFinder.models.AbstractModel,

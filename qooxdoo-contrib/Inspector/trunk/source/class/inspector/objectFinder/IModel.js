@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * This interface defines a set of methods. These methods are requeired if the 
+ * model should be added to the {@link inspector.objectFinder.ObjectFinder} as a data model on the 
+ * applications objects. 
+ */
 qx.Interface.define("inspector.objectFinder.IModel", {
   /*
   *****************************************************************************

@@ -23,7 +23,10 @@
 #module(log)
 
 ************************************************************************ */
-
+/**
+ * <p>This appender enables the ability for the console view to interact with the 
+ * logging system of qooxdoo.</p>
+ */
 qx.Class.define("inspector.console.Appender", {
 
   extend : qx.log.appender.Abstract,
@@ -34,6 +37,10 @@ qx.Class.define("inspector.console.Appender", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of a appender.
+   * @param console {inspector.console.ConsoleView} Reverence to the used console view.
+   */
   construct : function(console) {
     this.base(arguments);
     this._console = console;

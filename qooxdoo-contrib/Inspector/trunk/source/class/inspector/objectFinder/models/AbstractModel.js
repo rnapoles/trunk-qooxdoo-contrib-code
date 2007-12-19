@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This abstract class is the base of all data models for the 
+ * {@link inspector.objectFinder.ObjectFinder}. It defines a common method 
+ * to filter the data. ({@link #_filter})</p>
+ */
 qx.Class.define("inspector.objectFinder.models.AbstractModel", {
   
   extend : qx.core.Object,  
@@ -28,7 +32,7 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
      CONSTRUCTOR
   *****************************************************************************
   */
-  construct : function() {    
+  construct : function() {
     this.base(arguments);
   },
 
@@ -49,13 +53,13 @@ qx.Class.define("inspector.objectFinder.models.AbstractModel", {
      * without the inspector objects) and filters the data according to the 
      * given filter.
      * @param clearData {object} A Object containing two elements:
-     *                          - object: A list of Objects -
-     *                          - dbKey : A list of the corresponding dbKeys -
+     *                          <li>object: A list of Objects</li>
+     *                          <li>dbKey : A list of the corresponding dbKeys</li>
      * @param filter {String} The term to search for in the data.
      * @return {Map} A filtered and cleaned list objects containing:
-     *                          - 0: some information on the object -
-     *                          - 1: the classname of the object -
-     *                          - dbKey: the key in the objects db -
+     *                          <li>0: some information on the object</li>
+     *                          <li>1: the classname of the object</li>
+     *                          <li>dbKey: the key in the objects db</li>
      */
     dressUpData: function(clearData, filter) {
       // throw an exception if the method is called on the abstract class

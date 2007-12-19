@@ -16,6 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
+/**
+ * <p>This class is the object finder window.</p>
+ * <p>It shwos all existing objects in the application in a table sorted 
+ * by different parameters.</p>
+ */
 qx.Class.define("inspector.objectFinder.ObjectFinder", {
   
   extend: inspector.components.AbstractWindow,  
@@ -26,6 +31,11 @@ qx.Class.define("inspector.objectFinder.ObjectFinder", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates an instance of the object finder. 
+   * @param main {inspector.Inspector} Reference to the inspector main class.
+   * @param name {String} The title of the windows caption bar.
+   */
   construct : function(main, name) {
     // create data models
     this._createDataModels();
