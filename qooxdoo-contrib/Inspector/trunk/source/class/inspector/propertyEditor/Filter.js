@@ -17,14 +17,15 @@
 
 ************************************************************************ */
 /**
- * <p>This class is a implementation of the {@link inspector.PropertyEditor.IFilter} 
- * interface.</p>
- * <p>It sorts / filters the added properties into a predefined order. This 
- * order is defined in the {@link #_defineTests} method.</p>
- * <p>If you want you own order 
- * with own categories and filter rules, take this class as a base class and override
- * the method used to define the tests and define your own tests. The categories and 
- * all other needed stuff will be created automatically.</p>
+ * This class is a implementation of the {@link inspector.PropertyEditor.IFilter} 
+ * interface.
+ * 
+ * It sorts / filters the added properties into a predefined order. This 
+ * order is defined in the {@link #_defineTests} method.
+ * 
+ * If you want you own order with own categories and filter rules, take this class 
+ * as a base class and override the method used to define the tests and define your 
+ * own tests. The categories and all other needed stuff will be created automatically.
  */
 qx.Class.define("inspector.propertyEditor.Filter", {
   

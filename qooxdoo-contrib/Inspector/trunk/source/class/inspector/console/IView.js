@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 /**
- * <p>This interface declaration defines a set of methods for all views of the console.</p>
+ * This interface declaration defines a set of methods for all views of the console.
  */
 qx.Interface.define("inspector.console.IView", {
   /*

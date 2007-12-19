@@ -17,9 +17,10 @@
 
 ************************************************************************ */
 /**
- * <p>The property editor is a inspector window.</p>
- * <p>This class is responsible for showing all properties of the selected object. 
- * For that it uses property lists to visualize the properties.</p>
+ * The property editor is a inspector window.
+ * 
+ * This class is responsible for showing all properties of the selected object. 
+ * For that it uses property lists to visualize the properties.
  */
 qx.Class.define("inspector.propertyEditor.PropertyEditor", {
   

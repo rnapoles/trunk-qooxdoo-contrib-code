@@ -17,9 +17,10 @@
 
 ************************************************************************ */
 /**
- * <p>This class is the object finder window.</p>
- * <p>It shwos all existing objects in the application in a table sorted 
- * by different parameters.</p>
+ * This class is the object finder window.
+ * 
+ * It shwos all existing objects in the application in a table sorted 
+ * by different parameters.
  */
 qx.Class.define("inspector.objectFinder.ObjectFinder", {
   

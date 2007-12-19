@@ -17,10 +17,11 @@
 
 ************************************************************************ */
 /**
- * <p>This class represents the widget finder window.</p>
- * <p>The widget finder offers a insight into the hierarchical structure
+ * This class represents the widget finder window.
+ * 
+ * The widget finder offers a insight into the hierarchical structure
  * of the current document. Therefore a tree shows all widgets added to 
- * the document, which is the root element in a qooxdoo GUI.</p>
+ * the document, which is the root element in a qooxdoo GUI.
  */
 qx.Class.define("inspector.widgetFinder.WidgetFinder", {
   

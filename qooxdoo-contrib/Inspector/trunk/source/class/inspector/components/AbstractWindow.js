@@ -17,9 +17,10 @@
 
 ************************************************************************ */
 /**
- * <p>This class is the base class for all inspector windows.</p>
- * <p>It contains the construction of the basic structure of the inspector windows and
- * the handler functions for resizing the windows.</p>
+ * This class is the base class for all inspector windows.
+ * 
+ * It contains the construction of the basic structure of the inspector windows and
+ * the handler functions for resizing the windows.
  */
 qx.Class.define("inspector.components.AbstractWindow", {
   

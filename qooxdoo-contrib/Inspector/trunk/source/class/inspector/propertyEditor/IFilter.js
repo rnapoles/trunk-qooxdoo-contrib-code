@@ -17,11 +17,13 @@
 
 ************************************************************************ */
 /**
- * <p>This interface describes a filter for properties.</p>
- * <p>The right way to use the filter is to create a instance of it and
+ * This interface describes a filter for properties.
+ * 
+ * The right way to use the filter is to create a instance of it and
  * sort all properties in ({@link #sortIn}). After all properties are sorted in
  * which needed to be filtered / sorted, the {@lin #getResult} method returns
- * a object containing the sorted / filtered properties.</p>
+ * a object containing the sorted / filtered properties.
+ * 
  * <pre class='javascript'>
  * var filter = new your.Filter();
  * for (var i in allProperties) {

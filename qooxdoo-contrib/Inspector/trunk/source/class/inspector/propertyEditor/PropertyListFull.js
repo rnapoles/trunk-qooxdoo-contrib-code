@@ -17,11 +17,12 @@
 
 ************************************************************************ */
 /**
- * <p>The class is a implementation of the abstract {@link inspector.propertyEditor.PropertyList}
- * class.</p>
- * <p>It implements all functions and makes the displayed properties accessible to the user.
+ * The class is a implementation of the abstract {@link inspector.propertyEditor.PropertyList}
+ * class.
+ * 
+ * It implements all functions and makes the displayed properties accessible to the user.
  * This includes an easy to use interface for all types of properties like boolean, colors 
- * or strings</p>
+ * or strings
  */
 qx.Class.define("inspector.propertyEditor.PropertyListFull", {
   

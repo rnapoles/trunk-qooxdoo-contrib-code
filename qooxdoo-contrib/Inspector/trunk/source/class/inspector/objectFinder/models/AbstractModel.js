@@ -17,9 +17,9 @@
 
 ************************************************************************ */
 /**
- * <p>This abstract class is the base of all data models for the 
+ * This abstract class is the base of all data models for the 
  * {@link inspector.objectFinder.ObjectFinder}. It defines a common method 
- * to filter the data. ({@link #_filter})</p>
+ * to filter the data. ({@link #_filter})
  */
 qx.Class.define("inspector.objectFinder.models.AbstractModel", {
   

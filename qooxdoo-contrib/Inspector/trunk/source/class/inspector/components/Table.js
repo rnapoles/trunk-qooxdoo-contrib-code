@@ -17,10 +17,11 @@
 
 ************************************************************************ */
 /**
- * <p>This class represents a special table.</p>
- * <p>The only difference to the default qooxdoo table is, that the status bar 
+ * This class represents a special table.
+ * 
+ * The only difference to the default qooxdoo table is, that the status bar 
  * does not care of the selection. There is always only displayed the amount of rows 
- * in the table.</p>
+ * in the table.
  */
 qx.Class.define("inspector.components.Table", {
   

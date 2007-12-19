@@ -17,10 +17,11 @@
 
 ************************************************************************ */
 /**
- * <p>The console is one of the most powerful components of the inspector.</p>
- * <p>With the console and its including two views you can debug you application 
+ * The console is one of the most powerful components of the inspector.
+ * 
+ * With the console and its including two views you can debug you application 
  * more easier. It is like using firebug only in every browser and with special 
- * functions for qooxdoo.</p>
+ * functions for qooxdoo.
  */
 qx.Class.define("inspector.console.Console", {
   
