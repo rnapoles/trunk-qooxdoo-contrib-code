@@ -422,8 +422,15 @@ function SplitPane (sel)
   //sel.waitForPageToLoad(20000);
   Packages.java.lang.Thread.sleep(2000);
 
-  sel.dragAndDrop('//img[contains(@src,"knob-horizontal.png")]',"+100,+0");
-  sel.dragAndDrop('//img[contains(@src,"knob-horizontal.png")]',"-150,+0");
+  sel.dragAndDrop(noAutoIds ?
+                    'qxh=*/qx.ui.splitpane.SplitPaneKnob' :
+                    //'//img[contains(@src,"knob-horizontal.png") or contains(@style,"knob-horizontal.png")]':
+                    '//div[@id="qx.ui.splitpane.SplitPaneKnob.1326"]',
+                  "+100,+0" );
+  sel.dragAndDrop(noAutoIds ?
+                    'qxh=*/qx.ui.splitpane.SplitPaneKnob' :
+                    '//div[@id="qx.ui.splitpane.SplitPaneKnob.1326"]',
+                  "-150,+0" );
 
   
 } // SplitPane()
