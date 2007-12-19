@@ -16,7 +16,12 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>The console is one of the most powerful components of the inspector.</p>
+ * <p>With the console and its including two views you can debug you application 
+ * more easier. It is like using firebug only in every browser and with special 
+ * functions for qooxdoo.</p>
+ */
 qx.Class.define("inspector.console.Console", {
   
   extend : inspector.components.AbstractWindow,  
@@ -27,7 +32,10 @@ qx.Class.define("inspector.console.Console", {
   *****************************************************************************
   */
   statics: {
-    SEARCH_TERM: "Search..."    
+    /**
+     * The default search term used in the search field.
+     */
+    SEARCH_TERM: "Search..."
   },
   
   
@@ -36,6 +44,11 @@ qx.Class.define("inspector.console.Console", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates an instance of the consol window including all contained views.
+   * @param main {inspector.Inspector} Reference to the inspector object.
+   * @param name {String} The title of the window.
+   */
   construct : function(main, name) {
     // call the constructor of the superclass
     this.base(arguments, main, name);
@@ -415,8 +428,8 @@ qx.Class.define("inspector.console.Console", {
       var domPage = new qx.ui.pageview.tabview.Page(this._domButton);
       // content of the pages    
       this._consoleView = new inspector.console.ConsoleView(this);
-      this._domView = new inspector.console.DomViewHtml(this);
-      // set the pane to the borders of the window      
+      this._domView = new inspector.console.DomView(this);
+      // set the pane to the borders of the window
       this._tabView.getPane().setPadding(0);
       // add the content of the pages to the pages
       consolePage.add(this._consoleView);
@@ -567,7 +580,7 @@ qx.Class.define("inspector.console.Console", {
       this._helpButton.setToolTip(this._helpTooltip);
 
       // create and add a find textfield
-      this._findField = new inspector.components.SearchTextField();			
+      this._findField = new inspector.components.SearchTextField();
       // set the reference which is the this reference in the executed function
       this._findField.setContext(this);
       // set the default value for the search textfield
@@ -577,7 +590,7 @@ qx.Class.define("inspector.console.Console", {
         this._currentView.filter(this._findField.getComputedValue());
       });
       // add the findfield to the toolbar
-      this._toolbar.add(this._findField);			
+      this._toolbar.add(this._findField);
     }
   
   },

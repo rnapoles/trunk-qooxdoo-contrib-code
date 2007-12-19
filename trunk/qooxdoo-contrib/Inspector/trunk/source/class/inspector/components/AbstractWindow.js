@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class is the base class for all inspector windows.</p>
+ * <p>It contains the construction of the basic structure of the inspector windows and
+ * the handler functions for resizing the windows.</p>
+ */
 qx.Class.define("inspector.components.AbstractWindow", {
   
   extend : qx.ui.window.Window,
@@ -27,6 +31,11 @@ qx.Class.define("inspector.components.AbstractWindow", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Base constructor which is used to initialize inspector windows.
+   * @param main {inspector.Inspector} reference to the main inspector object.
+   * @param name {String} Title of the window.
+   */
   construct : function(main, name) {
     this.base(arguments);
 

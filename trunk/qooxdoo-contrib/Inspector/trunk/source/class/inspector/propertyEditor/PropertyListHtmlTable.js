@@ -18,6 +18,10 @@
 ************************************************************************ */
 /**
  * <p>This class is a view on properties of a qooxdoo object.</p>
+ * <p>It displays all properties in a plan table with every value as a string.
+ * If the editing of a value is possible, the value will be displayed in bold face.
+ * A single click on that value changes the string into a textbox and the value 
+ * can be edited.</p>
  */
 qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
   
@@ -69,8 +73,8 @@ qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
      */
     build: function() {
       // only build a list if a widget is set
-      if (this._controller.getWidget() != null) {
-        this._makeNewHtmlTable(this._controller.getWidget());
+      if (this._controller.getQxObject() != null) {
+        this._makeNewHtmlTable(this._controller.getQxObject());
       }
     },
     

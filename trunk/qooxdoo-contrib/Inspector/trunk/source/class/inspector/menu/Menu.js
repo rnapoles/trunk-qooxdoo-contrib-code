@@ -16,6 +16,9 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
+/**
+ * The menu is the main access point to the functionality of the inspector.
+ */
 qx.Class.define("inspector.menu.Menu", {
   
   extend : qx.ui.layout.VerticalBoxLayout,
@@ -25,6 +28,10 @@ qx.Class.define("inspector.menu.Menu", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of a inspector menu.
+   * @param inspector {inspector.Inspector} Reference to the main inspector.
+   */
   construct : function(inspector) {
     this.base(arguments);
     // set the zIndex to a higher one than the index of the find mode layer

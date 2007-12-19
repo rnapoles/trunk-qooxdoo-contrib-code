@@ -16,6 +16,9 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
+/**
+ * <p>This class is the window of the inspector where the settings are made.</p>
+ */
 qx.Class.define("inspector.menu.SettingsWindow", {
   
   extend : inspector.components.AbstractWindow,
@@ -25,6 +28,12 @@ qx.Class.define("inspector.menu.SettingsWindow", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * 
+   * @param {Object} main
+   * @param {Object} menu
+   * @param {Object} name
+   */
   construct : function(main, menu, name) {
     // store the reference to the menu (first!)
     this._menu = menu;

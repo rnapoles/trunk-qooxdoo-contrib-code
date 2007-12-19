@@ -16,7 +16,12 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class represents a special table.</p>
+ * <p>The only difference to the default qooxdoo table is, that the status bar 
+ * does not care of the selection. There is always only displayed the amount of rows 
+ * in the table.</p>
+ */
 qx.Class.define("inspector.components.Table", {
   
   extend : qx.ui.table.Table,  
@@ -26,6 +31,11 @@ qx.Class.define("inspector.components.Table", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of a table.
+   * @param tableModel {Object} tableModel
+   * @param custom {Object} custom
+   */
   construct : function(tableModel, custom) {
     // just call the superclass constructor
     this.base(arguments, tableModel, custom);

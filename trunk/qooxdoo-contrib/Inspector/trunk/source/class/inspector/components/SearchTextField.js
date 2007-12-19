@@ -16,7 +16,11 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class is a text field including the functions to call a function
+ * after an amount of time after the content of the text field has changed. Additionally
+ * a reset button is included so the search can easily resetted.</p>
+ */
 qx.Class.define("inspector.components.SearchTextField", {
   
   extend : qx.ui.layout.HorizontalBoxLayout,
@@ -26,6 +30,10 @@ qx.Class.define("inspector.components.SearchTextField", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of a search text field.
+   * @param value {String} The start value to set to the text field.
+   */
   construct : function(value) {
     this.base(arguments);
     
@@ -193,7 +201,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     /**
      * Adds the default search term to the textfield if the value
      * is not set by the user. 
-     * @param e {Event}
+     * @param e {Event} The focus event.
      */
     _focusOutListener: function(e) {
       // if the textfield is empty, add the search term
@@ -206,7 +214,7 @@ qx.Class.define("inspector.components.SearchTextField", {
     /**
      * Executes the given function with the given context after 
      * the input of the textfield has changed an the given time is over.
-     * @param e {Event}
+     * @param e {Event} The input event.
      */
     _inputListener: function(e) {
       // enabled / disable the clear button

@@ -16,8 +16,13 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
-qx.Class.define("inspector.console.DomViewHtml", {
+/**
+ * <p>The dom view is a view plugin for the console window.</p>
+ * <p>This view can be used to view all properties attached to a javascript object.
+ * It does not matter if it is a qooxdoo object or not. If functions will be viewed as
+ * an object, the function code will be highlighted and printed out.</p>
+ */
+qx.Class.define("inspector.console.DomView", {
   
   extend : qx.ui.layout.VerticalBoxLayout,  
   implement : inspector.console.IView, 
@@ -28,6 +33,10 @@ qx.Class.define("inspector.console.DomViewHtml", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates an instance of the dom view used to take a walk threw a object.
+   * @param console {inspector.console.Console} Reference to the console object.
+   */
   construct : function(console) {
     this.base(arguments);
     // store the reference to the console window

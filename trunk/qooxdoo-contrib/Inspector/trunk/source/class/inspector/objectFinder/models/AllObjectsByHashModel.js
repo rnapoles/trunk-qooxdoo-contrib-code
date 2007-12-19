@@ -16,7 +16,10 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * This model is responsible for generating the data containing 
+ * the hash code of the objects and the classnames.
+ */
 qx.Class.define("inspector.objectFinder.models.AllObjectsByHashModel", {
   
   extend: inspector.objectFinder.models.AbstractModel,

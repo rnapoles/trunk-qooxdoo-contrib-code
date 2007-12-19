@@ -16,7 +16,13 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>The class is a implementation of the abstract {@link inspector.propertyEditor.PropertyList}
+ * class.</p>
+ * <p>It implements all functions and makes the displayed properties accessible to the user.
+ * This includes an easy to use interface for all types of properties like boolean, colors 
+ * or strings</p>
+ */
 qx.Class.define("inspector.propertyEditor.PropertyListFull", {
   
   extend : inspector.propertyEditor.PropertyList,
@@ -26,20 +32,21 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates an instance of a full property list.
+   * @param controller {inspector.propertyEditor.IPropertyListController} The used controller.
+   */
   construct : function(controller) {
     // call the constructor of the superclass
     this.base(arguments, controller);
-    
     // create a object to store the currently available property columns
     this._propertyColumns = {};
     // create the array for storing the combobox popups
     this._comboBoxPopups = [];
-    
     // create the color popup
     this._createColorPopup();
-    
     // create the pool in which the property lists are cached
-    this._oldPropertyListPool = {};     
+    this._oldPropertyListPool = {};
   },
 
 
@@ -65,28 +72,29 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     _colorFields: null,
     _currentColorProperty: null,
     
-    // cache to store the already created propertie layouts
+    // cache to store the already created property layouts
     _oldPropertyListPool: null,
 
-
+  
     /*
     *********************************
        PUBLIC
     *********************************
     */
     /**
-     * Invokes a relaod of the view.
+     * Invokes a reload of the view, if a widget is available.
      */
     build: function() {
-			if (this._controller.getWidget() != null) {
+      // if there is a widget selected
+      if (this._controller.getQxObject() != null) {
         this._reloadPropertyListFull();
       }
     },
     
     
     /**
-     * Updates the given propertie. 
-     * @param key {String} The name of the propertie.
+     * Updates the given property. 
+     * @param key {String} The name of the property.
      * @param classname {String} The classname of the properties class.
      */
     update: function(key, classname) {
@@ -95,8 +103,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     
     
     /**
+     * Returns a list of all components which should not be displayed 
+     * in the widget finder tree.
      * @internal
-     * @return {qx.core.Object[]} A list of all omponents used in this view.
+     * @return {qx.core.Object[]} A list of all components used in this view.
      */
     getComponents: function() {
       return [this, this._colorPopup, this._filter].concat(this._comboBoxPopups);
@@ -104,7 +114,8 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     
     
     /**
-     * @param key {String} The name of the propertie.
+     * Returns a boolean weather the given property is in the current view or not.
+     * @param key {String} The name of the property.
      * @param classname {String} The classname of the properties class.
      * @return {boolean} True, if the given property is in the view. 
      */
@@ -118,8 +129,8 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * displayed object. 
      */
     switchInheritedStatus: function() {
-      // go threw all children of the propertylist
-      var children = this.getChildren();      
+      // go threw all children of the property list
+      var children = this.getChildren();
       for (var i = 0; i < children.length; i++) {
         // if the child is marked as inherited
         if (children[i].getUserData("inherited")) {
@@ -136,13 +147,13 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
      * this function.
      */
     recalculateLayout: function() {  
-      // get all children of the current list (atoms with names and group layouts)    
+      // get all children of the current list (atoms with names and group layouts)
       var children = this.getChildren();
       // go threw all children
       for (var i = 0; i < children.length; i++) {
-        // if it is a gooup layout
+        // if it is a group layout
         if (children[i] instanceof qx.ui.layout.VerticalBoxLayout) {
-          // reset the maxwidth          
+          // reset the max width
           var maxWidth = 0;
           // go threw all property layouts
           for (var j = 0; j < children[i].getChildren().length; j++) {
@@ -151,11 +162,11 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             // calculate the max width
             maxWidth = maxWidth > labelName.getPreferredBoxWidth() ? maxWidth : labelName.getPreferredBoxWidth();
           }          
-          // go again threw all children of the grouplayout
+          // go again threw all children of the group layout
           for (var k = 0; k < children[i].getChildren().length; k++) {
-            // the the max width to every layout
+            // set the max width in every layout
             children[i].getChildren()[k].getChildren()[0].setWidth(maxWidth);
-          }            
+          }
         }
       }
     },
@@ -167,51 +178,51 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     *********************************
     */
     /**
-     * Ths function reloads the full property list. It uses recycling to 
+     * This function reloads the full property list. It uses recycling to 
      * speed up the loading process for new properties.
      * It also uses a cache for already seen classes to get more performance.
-     * 
+     * <br>
      * The function first of all reads all properties of the current selected
-     * widget and stores them into a seperate array. The next step is to go 
-     * backwords threw the array and check if the currently displayed properties
+     * widget and stores them into a separate array. The next step is to go 
+     * backwards threw the array and check if the currently displayed properties
      * are the same as these of the selected widget. If that is the case the 
      * function keeps going to the subclass of the widget. Otherwise the current
      * displayed properties which are not equivalent to the properties of the
-     * widget will be deleted and the properties of the new clases will be added. 
-     * If the new properties are not in the cache, thew ill be created and 
+     * widget will be deleted and the properties of the new classes will be added. 
+     * If the new properties are not in the cache, they will be created and 
      * added. Otherwise the old ones out of the cache will be added.
      * At the end of the creating process the function invokes the reloading
      * of the values of all properties.
      */
-    _reloadPropertyListFull: function() {		     
+    _reloadPropertyListFull: function() {
       // variable to signal if the rest of the list should be replaced
-      var replace = false;      
+      var replace = false;
       // variable to signal if the not needed list items are deleted
       var oldremoved = true;
-			
+      
       // get the data
-      var data = this._getData(this._controller.getWidget());
+      var data = this._getData(this._controller.getQxObject());
       // store the data in variables
       var groupNames = data.names;      
       var properties = data.props;
       var classnames = data.classes;    
       
-      // if the class hiracy is enabled
+      // if the class hierarchy is enabled
       if (!this._controller.getGroupStatus()) {
-        // remove thoses groups which are more than in the current wirdget
+        // remove those groups which are more than in the current widget
         this._removeUnnecessaryClasses(groupNames);
       }
 
-      // go backwords threw the propertie arrays
+      // go backwards threw the property arrays
       for(var i = properties.length - 1; i > 0 ; i--) {
         
         // if the class based view is enabled
         if (!this._controller.getGroupStatus()) {            
-            // get the items curently displayed in the list      
+            // get the items currently displayed in the list      
             var currentListChildren = this.getChildren();    
             // if there are children in the list
             if (!replace && currentListChildren.length > 0) {
-              // get the classname of the displayd class in the list
+              // get the classname of the displayed class in the list
               var x = currentListChildren.length - 1 - 2 * (properties.length - i - 1);
               // if the new element is a subclass of the former element
               if (x > 0) {
@@ -289,21 +300,21 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             }
           }, groupLayout);         
 
-          // add the group of properties to the propertyList     
+          // add the group of properties to the property list     
           this.addAfter(groupLayout, groupNameAtom);     
          
-          // save the maxwidth for the current group
+          // save the max width for the current group
           var maxWidth = 0;
           // go threw all properties in the current group
           for (var key in properties[i]) {
             // ignore the property groups  
             if (properties[i][key].group == null) {
               
-              // if the property is in the chache  
+              // if the property is in the cache  
               if (this._oldPropertyListPool[classnames[i][key] + "." + key ] != undefined) {
                 // get the layout from the cache
                 var layout = this._oldPropertyListPool[classnames[i][key] + "." + key];
-                // add it to the current groupe layout
+                // add it to the current group layout
                 groupLayout.add(layout);
                 // get the label and check if it affects the max width
                 var label = layout.getChildren()[0];
@@ -316,7 +327,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
                 continue;
               }
 
-              // create a row in the propertiy editor view
+              // create a row in the property editor view
               var horizontalLayout = new qx.ui.layout.HorizontalBoxLayout();
               horizontalLayout.setHeight("auto");
               horizontalLayout.setPaddingTop(2);
@@ -326,7 +337,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
               horizontalLayout.setUserData("classname", classnames[i][key]);
               groupLayout.add(horizontalLayout);
               
-              // handle the clicks on the horizontalLayout
+              // handle the clicks on the horizontal layout
               horizontalLayout.addEventListener("click", function(e) {
                 // get the horizontal layout
                 var x = e.getTarget();
@@ -335,16 +346,16 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
                 }
                 // get the currently clicked property name
                 var classKey = x.getUserData("classname") + "." + x.getUserData("key");
-                // reset the backgrund color of the former selected property
+                // reset the background color of the former selected property
                 if (this._controller.getSelectedProperty() != null) {
                   this._controller.getSelectedProperty().setBackgroundColor(null);
                 }
                 
-                // if the Propertie is still available
+                // if the property is still available
                 if (this._propertyColumns[classKey] != undefined) {
-                  // set the backgrund color of the new selected property
+                  // set the background color of the new selected property
                   this._propertyColumns[classKey].setBackgroundColor("yellow");
-                  // enable or disable the buttons spesific to the widget
+                  // enable or disable the buttons specific to the widget
                   this._controller.setSelectedProperty(this._propertyColumns[classKey]);                  
                 } else {
                   // reset the selected property if it is no longer available
@@ -360,7 +371,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
               var labelName = new qx.ui.basic.Label();
               labelName.setText(key + ":");
               labelName.setPaddingRight(5);
-              // save the classname as aditional user data as a unique key in kombintaion with the lable
+              // save the classname as additional user data as a unique key in combination with the label
               labelName.setUserData("classname", classnames[i][key]);              
               // add the name of the property
               horizontalLayout.add(labelName);              
@@ -395,9 +406,9 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     
     
     /**
-     * Removes all groupes form the list that count is higher than the 
-     * count of the classes in the current object. This function shold 
-     * only be invokes if the class based view is enbaled.  
+     * Removes all groups form the list that count is higher than the 
+     * count of the classes in the current object. This function should 
+     * only be invokes if the class based view is enabled.  
      * @param classnames {String[]} The classnames array.
      */    
     _removeUnnecessaryClasses: function(classnames) {
@@ -408,19 +419,19 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
         this.removeAt(0);        
         temp.dispose();
        
-        // get the layouts which holt the properties
+        // get the layouts which hold the properties
         var propertyLayouts = this.getChildren()[0].getChildren();
-        // gothrew all layouts of this class
+        // go threw all layouts of this class
         for (var i = 0; i < propertyLayouts.length; i++) {
           // get the classname.key string
           var classKey = propertyLayouts[i].getUserData("classname") + 
                          "." + propertyLayouts[i].getUserData("key");
           // store the layout in the pool
           this._oldPropertyListPool[classKey] = propertyLayouts[i];
-          // delete the layout from the porperty cloumns
+          // delete the layout from the property columns
           delete this._propertyColumns[classKey];
         }
-        // remove the first item i the list
+        // remove the first item in the list
         this.removeAt(0); 
       } 
     },
@@ -442,11 +453,11 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       while (true) {
         // get the classname of the current selected item in the list
         var removedClassName = this.getChildren()[0].getUserData("name");
-        // stop deleting if the class is markt not to delete
+        // stop deleting if the class is marked not to delete
         if (removedClassName == deleteTo) {
           break;
         } else {                
-          // stor the reference in the pool bevor deleting
+          // store the reference in the pool before deleting
           if (this.getChildren()[0].classname == "qx.ui.layout.VerticalBoxLayout") {
             // get the list of all layouts which hold the properties
             var propertyLayouts = this.getChildren()[0].getChildren();
@@ -457,11 +468,11 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
                              "." + propertyLayouts[currentIndex].getUserData("key");
               // put the layout into the cache
               this._oldPropertyListPool[classKey] = propertyLayouts[currentIndex];
-              // delete the layout from the porperty cloumns
+              // delete the layout from the property columns
               delete this._propertyColumns[classKey];
             }
           }
-          // remove the first item i the list
+          // remove the first item in the list
           this.removeAt(0);
         }                
       }
@@ -469,10 +480,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     
     
     /**
-     * Removes all porperties in the list and caches the references in the pool.
+     * Removes all properties in the list and caches the references in the pool.
      */
     _clearList: function() {
-      // store all old porperty layouts in the pool
+      // store all old property layouts in the pool
       for (var key in this._porpertyColumns) {
         this._oldPropertyListPool[key] = this._porpertyColumns[key];
         delete this._porpertyColumns[key];
@@ -484,19 +495,19 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
 
     /**
      * This function creates, dependent on the type of property, a new widget
-     * which representates the value of the widget in the property list e.g. 
-     * a checkbox for a boolean value.
+     * which represents the value of the widget in the property list e.g. 
+     * a checkbox for a boolean value.<br>
      * The handler for changing the values of the property will also be added 
      * after the creation process.
-     * @param propertySet {Map} The array containing the propertie values.
-     * @param key {String} The name of the propertie.
+     * @param propertySet {Map} The array containing the property values.
+     * @param key {String} The name of the property.
      * @param classname {String} The classname of the properties class.
      */
     _getPropertyWidgetFull: function(propertySet, key, classname) {
       // read value
       var getterName = "get" + qx.lang.String.toFirstUp(key);
       try {
-        var value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
+        var value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
       } catch (e) {
         return new qx.ui.basic.Label("Error");
       }
@@ -516,8 +527,8 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
               // try to invoke the setter
               try {
                 // set the new value
-                this._controller.getWidget()[setterName].call(this._controller.getWidget(), checkBox.getChecked());                
-                // relaod the property view of the current column
+                this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), checkBox.getChecked());                
+                // reload the property view of the current column
                 this._setPropertyValueFull(key, classname);                
               } catch (ex) {
                 // alert the user if the sett could not be executed
@@ -534,7 +545,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
         // Combobox
         } else if (propertySet.check instanceof Array) {
           var box = new qx.ui.form.ComboBox();
-          // set the box to the width of the textfields
+          // set the box to the width of the text fields
           box.setWidth(130);
           var values = propertySet.check;
           // go threw all possible values
@@ -558,13 +569,13 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
                 var setterName = "set" + qx.lang.String.toFirstUp(key);
                 // try to invoke the setter
                 try {
-                  this._controller.getWidget()[setterName].call(this._controller.getWidget(), newValue);
+                  this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), newValue);
                   // get the new value
-                  value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
-                  // relaod the property view of the current column
+                  value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
+                  // reload the property view of the current column
                   this._setPropertyValueFull(key, classname);
                   // save the new value
-                  value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
+                  value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
                 } catch (e) {
                   // alert the user if the set could not be executed
                   alert(e);
@@ -574,16 +585,16 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
 
           // get the popup
           var popup = box.getPopup(); 
-          // add the popup of the combobox to the array of popups to omit them in the treeview 
+          // add the popup of the combobox to the array of popups to omit them in the tree view 
           this._comboBoxPopups[this._comboBoxPopups.length] = popup;
-          // add a listener so that the popup is always infont of the window
+          // add a listener so that the popup is always in front of the window
           popup.addEventListener("appear", function() {
-            // set the zIndex to a higher one than the porperty editor window
+            // set the zIndex to a higher one than the property editor window
             popup.setZIndex(this._controller.getZIndex() + 1);
           }, this);
           return box;
   
-        // textfield
+        // text field
         } else if (propertySet.check == "Integer" || 
                    propertySet.check == "String" ||
                    propertySet.check == "NonEmptyString" ||
@@ -591,13 +602,13 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
                    propertySet.check == "Float" ||
                    propertySet.check == "Double" || 
                    propertySet.check == "Number") {
-          // create new textfield
+          // create new text field
           var textField = new qx.ui.form.TextField();
           
           var textFieldHandler = function(e) { 
-            // check which type of event triggert the function
+            // check which type of event triggered the function
             if (e.classname == "qx.event.type.KeyEvent") {
-              // do nothing if it is not the retunr key
+              // do nothing if it is not the return key
               if (e.getKeyIdentifier() != "Enter") {
                 return;
               }
@@ -615,8 +626,8 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             try {
               // parse the value to float if a number is expected
               var newValue = textField.getComputedValue();
-              // get the current setted value
-              value = this._controller.getWidget()[getterName].call(this._controller.getWidget());                              
+              // get the current set value
+              value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
               // stop further processing if the representation is null
               if (e.classname == "qx.event.type.FocusEvent") {
                 if (newValue == "" && value == null) {
@@ -627,11 +638,11 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
               if (propertySet.check == "Integer" || propertySet.check == "Number") {
                 newValue = parseFloat(newValue);
               }
-              this._controller.getWidget()[setterName].call(this._controller.getWidget(), newValue);
-              // relaod the property view of the current column
+              this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), newValue);
+              // reload the property view of the current column
               this._setPropertyValueFull(key, classname);
               // save the new value
-              value = this._controller.getWidget()[getterName].call(this._controller.getWidget());
+              value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
             } catch (e) {
               // alert the user if the sett could not be executed
               alert(e);
@@ -647,7 +658,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             
         // color
         } else if (propertySet.check == "Color") {
-          // create the layout which holds the colorField and the choose button
+          // create the layout which holds the color field and the choose button
           var layout = new qx.ui.layout.HorizontalBoxLayout();
           layout.setVerticalChildrenAlign("middle");
           layout.setWidth("auto");
@@ -658,7 +669,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           colorField.setHeight(15);
           colorField.setBorder("inset");
           layout.add(colorField);
-          // save the color field in the corlor field array
+          // save the color field in the color field array
           this._colorFields[classname + "." + key] = colorField;
           // create the button to choose the colors
           var button = new qx.ui.form.Button("Choose Color");         
@@ -721,14 +732,14 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
     /**
      * This function sets the value of the given property.
      * It first reads the current value of the property. If the value 
-     * is null, the null label will be displayed.
+     * is null, the null label will be displayed.<br>
      * The next step is to check the kind of widget which represents the value 
      * of the property. According to the type of widget, the right value will 
      * be set.
-     * @param key {String} The name of the propertie.
+     * @param key {String} The name of the property.
      * @param classname {String} The classname of the properties class.
      */
-    _setPropertyValueFull: function(key, classname) {			
+    _setPropertyValueFull: function(key, classname) {      
       // get the layout containing the property 
       var layout = this._propertyColumns[classname + "." + key];
       
@@ -743,19 +754,19 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       // read value
       var getterName = "get" + qx.lang.String.toFirstUp(key);
       try {
-        var value = this._controller.getWidget()[getterName].call(this._controller.getWidget());  
+        var value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());  
       } catch (e) {
-				// if there is a label to signal that there was an error
+        // if there is a label to signal that there was an error
         if (layout.getChildren()[1].classname == "qx.ui.basic.Label") {
-					// write the text in red
-					layout.getChildren()[1].setTextColor("red");
-					// print out the error message
-					layout.getChildren()[1].setText(e + "");
-					// hide the null icon
-          layout.getChildren()[2].setDisplay(false);					
-				} else {
-					layout.setBackgroundColor("red");					
-				}
+          // write the text in red
+          layout.getChildren()[1].setTextColor("red");
+          // print out the error message
+          layout.getChildren()[1].setText(e + "");
+          // hide the null icon
+          layout.getChildren()[2].setDisplay(false);          
+        } else {
+          layout.setBackgroundColor("red");          
+        }
         return;
       }
 
@@ -768,24 +779,24 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       
       try {
         // handle the inheritance of the properties
-        var parent = this._controller.getWidget();
+        var parent = this._controller.getQxObject();
         while (value == "inherit") {
           parent = parent.getParent();        
           value = parent[getterName].call(parent);
         }
       } catch (e) {
-        // if there is a label to signal that there was an error				
-				if (layout.getChildren()[1].classname == "qx.ui.basic.Label") {
+        // if there is a label to signal that there was an error        
+        if (layout.getChildren()[1].classname == "qx.ui.basic.Label") {
           // write the text in red
           layout.getChildren()[1].setTextColor("red");
           // print out the error message
-          layout.getChildren()[1].setText(e + "");					
-				} else {
-	        layout.setBackgroundColor("red");					
-				}
+          layout.getChildren()[1].setText(e + "");          
+        } else {
+          layout.setBackgroundColor("red");          
+        }
         return;
       }
-			
+      
       // check box
       if (layout.getChildren()[1].classname == "qx.ui.form.CheckBox") {
         if (value == null) {
@@ -807,7 +818,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           // if it is a widget and not the client document  
           } else if ((property.check == "qx.ui.core.Widget" || 
                       property.check == "qx.ui.core.Parent")&& 
-              (this._controller.getWidget().classname != "qx.ui.core.ClientDocument")) {
+              (this._controller.getQxObject().classname != "qx.ui.core.ClientDocument")) {
             
             // create the link to the widget
             layout.getChildren()[1].setText("<u>" + value.classname + " [" + value.toHashCode() + "]</u>");
@@ -844,7 +855,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           layout.getChildren()[1].setText("");
         }
         
-      // textfields  
+      // text fields  
       } else if (layout.getChildren()[1].classname == "qx.ui.form.TextField") {
         // set the current value
         if (value != null) {
@@ -880,7 +891,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
             
       }
     },    
-
+    
     
     /*
     *********************************
@@ -898,10 +909,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           label : "Basic Colors",
           values : [ "#000", "#333", "#666", "#999", "#CCC", "#FFF", "red", "green", "blue", "yellow", "teal", "maroon" ]
         },
-  
+        
         recent : {
           label : "Recent Colors",
-  
+          
           // In this case we need named colors or rgb-value-strings, hex is not allowed currently
           values : [ ]
         }
@@ -913,10 +924,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       // enable the color popup in catse that the client document will be disabled
       this._colorPopup.setEnabled(true);
       
-      // add the colorpopup to the document
+      // add the color popup to the document
       this._colorPopup.addToDocument();
-
-      // wrapp the function on the color popup which creates the color selector
+      
+      // wrap the function on the color popup which creates the color selector
       // save the reference to the original function
       var orgFunction = this._colorPopup._createColorSelector;
       // create a new function to substitute the old
@@ -932,7 +943,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       // add the new function to the color popup
       this._colorPopup._createColorSelector = newFunction;
       
-      // create the object so save the colorFields in the property editor
+      // create the object so save the color fields in the property editor
       this._colorFields = {};
       
       // handler to set the selected colors
@@ -945,10 +956,10 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
           var setterName = "set" + qx.lang.String.toFirstUp(colorKey);
           // try to invoke the setter
           try {
-            this._controller.getWidget()[setterName].call(this._controller.getWidget(), e.getData());
-            // set the selected color of the colorField
+            this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), e.getData());
+            // set the selected color of the color field
             this._colorFields[this._currentColorProperty].setBackgroundColor(e.getData());
-            // relaod the property view of the current column
+            // reload the property view of the current column
             this._setPropertyValueFull(colorKey, colorClassname);          
           } catch (e) {
             // alert the user if the sett could not be executed
@@ -960,6 +971,7 @@ qx.Class.define("inspector.propertyEditor.PropertyListFull", {
       }, this);
     }
   },
+  
   
   /*
   *****************************************************************************

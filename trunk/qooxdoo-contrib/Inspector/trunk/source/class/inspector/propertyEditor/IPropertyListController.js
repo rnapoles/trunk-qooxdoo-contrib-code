@@ -33,7 +33,7 @@ qx.Interface.define("inspector.propertyEditor.IPropertyListController", {
      * represent.
      * @return {qx.core.Object} The selected object.
      */
-    getWidget: function() {
+    getQxObject: function() {
       return true;
     },
     

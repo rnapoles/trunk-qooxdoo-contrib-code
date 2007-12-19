@@ -16,7 +16,12 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-
+/**
+ * <p>This class represents a plugin for the console window.</p>
+ * <p>Its functionality is analog to the functionality of the mozilla firebug console.
+ * It can run javascript code and it can also be used as appender for the 
+ * qooxdoo logging system.</p>
+ */
 qx.Class.define("inspector.console.ConsoleView", {
   
   extend : qx.ui.layout.VerticalBoxLayout,  
@@ -28,7 +33,9 @@ qx.Class.define("inspector.console.ConsoleView", {
   *****************************************************************************
   */  
   statics: {
-    // the length of the history in the console
+    /**
+     * The length of the history in the console.
+     */
     HISTORY_LENGTH: 20
   },
     
@@ -38,6 +45,10 @@ qx.Class.define("inspector.console.ConsoleView", {
      CONSTRUCTOR
   *****************************************************************************
   */
+  /**
+   * Creates a new instance of a console view.
+   * @param console {inspector.console.Console} Reference to the console object.
+   */
   construct : function(console) {
     this.base(arguments);
     // store the reference to the console window

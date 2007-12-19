@@ -22,7 +22,13 @@
 #embed(inspector.image/*)
 #embed(inspector.css/*)
 ************************************************************************ */
-
+/**
+ * <p>This class is the main part of the inspector.</p>
+ * <p>It is a singleton and can be initialized in one line of code.</p>
+ * <pre class='javascript'>
+ * inspector.Inspector.init();
+ * </pre>
+ */
 qx.Class.define("inspector.Inspector", {
 
   type : "singleton",
@@ -578,7 +584,7 @@ qx.Class.define("inspector.Inspector", {
       if (this._propertyEditor != null) {
         // tell the property editor that a new widget has been selected
         if (this._propertyEditor.getDisplay() && this._propertyEditor.getVisibility()) {
-          this._propertyEditor.setWidget(widget);
+          this._propertyEditor.setQxObject(widget);
         }
       }
       // if it is really a widget and not another qx object
@@ -842,7 +848,7 @@ qx.Class.define("inspector.Inspector", {
       this._propertyEditor.open();
       // set the current widget if the editor is opened
       if (this._widget != null) {
-        this._propertyEditor.setWidget(this._widget);
+        this._propertyEditor.setQxObject(this._widget);
       }
       // save that the editor is open
       qx.io.local.CookieApi.set(this._propertyEditor.classname + "#Open", true);
