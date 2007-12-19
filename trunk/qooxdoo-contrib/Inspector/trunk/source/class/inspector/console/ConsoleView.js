@@ -17,10 +17,11 @@
 
 ************************************************************************ */
 /**
- * <p>This class represents a plugin for the console window.</p>
- * <p>Its functionality is analog to the functionality of the mozilla firebug console.
+ * This class represents a plugin for the console window.
+ * 
+ * Its functionality is analog to the functionality of the mozilla firebug console.
  * It can run javascript code and it can also be used as appender for the 
- * qooxdoo logging system.</p>
+ * qooxdoo logging system.
  */
 qx.Class.define("inspector.console.ConsoleView", {
   

@@ -17,7 +17,7 @@
 
 ************************************************************************ */
 /**
- * <p>This class is the window of the inspector where the settings are made.</p>
+ * This class is the window of the inspector where the settings are made.
  */
 qx.Class.define("inspector.menu.SettingsWindow", {
   

@@ -24,8 +24,8 @@
 
 ************************************************************************ */
 /**
- * <p>This appender enables the ability for the console view to interact with the 
- * logging system of qooxdoo.</p>
+ * This appender enables the ability for the console view to interact with the 
+ * logging system of qooxdoo.
  */
 qx.Class.define("inspector.console.Appender", {
 

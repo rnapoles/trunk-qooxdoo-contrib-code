@@ -17,10 +17,11 @@
 
 ************************************************************************ */
 /**
- * <p>The dom view is a view plugin for the console window.</p>
- * <p>This view can be used to view all properties attached to a javascript object.
+ * The dom view is a view plugin for the console window.
+ * 
+ * This view can be used to view all properties attached to a javascript object.
  * It does not matter if it is a qooxdoo object or not. If functions will be viewed as
- * an object, the function code will be highlighted and printed out.</p>
+ * an object, the function code will be highlighted and printed out.
  */
 qx.Class.define("inspector.console.DomView", {
   

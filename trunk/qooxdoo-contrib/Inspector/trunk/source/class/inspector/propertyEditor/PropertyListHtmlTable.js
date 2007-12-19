@@ -17,11 +17,12 @@
 
 ************************************************************************ */
 /**
- * <p>This class is a view on properties of a qooxdoo object.</p>
- * <p>It displays all properties in a plan table with every value as a string.
+ * This class is a view on properties of a qooxdoo object.
+ * 
+ * It displays all properties in a plan table with every value as a string.
  * If the editing of a value is possible, the value will be displayed in bold face.
  * A single click on that value changes the string into a textbox and the value 
- * can be edited.</p>
+ * can be edited.
  */
 qx.Class.define("inspector.propertyEditor.PropertyListHtmlTable", {
   

@@ -17,9 +17,10 @@
 
 ************************************************************************ */
 /**
- * <p>The auto complete popup is a component used by {@link inspector.console.ConsoleView}.</p>
- * <p>This popup contains a table which will be filled with suggestions to enter 
- * in the console.</p>
+ * The auto complete popup is a component used by {@link inspector.console.ConsoleView}.
+ * 
+ * This popup contains a table which will be filled with suggestions to enter 
+ * in the console.
  */
 qx.Class.define("inspector.console.AutoCompletePopup", {
   

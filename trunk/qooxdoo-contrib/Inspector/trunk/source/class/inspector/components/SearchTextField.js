@@ -17,9 +17,9 @@
 
 ************************************************************************ */
 /**
- * <p>This class is a text field including the functions to call a function
+ * This class is a text field including the functions to call a function
  * after an amount of time after the content of the text field has changed. Additionally
- * a reset button is included so the search can easily resetted.</p>
+ * a reset button is included so the search can easily resetted.
  */
 qx.Class.define("inspector.components.SearchTextField", {
   

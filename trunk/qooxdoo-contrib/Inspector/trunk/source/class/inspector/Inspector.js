@@ -23,8 +23,10 @@
 #embed(inspector.css/*)
 ************************************************************************ */
 /**
- * <p>This class is the main part of the inspector.</p>
- * <p>It is a singleton and can be initialized in one line of code.</p>
+ * This class is the main part of the inspector.
+ * 
+ * It is a singleton and can be initialized in one line of code.
+ * 
  * <pre class='javascript'>
  * inspector.Inspector.init();
  * </pre>

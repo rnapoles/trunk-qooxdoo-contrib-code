@@ -17,10 +17,11 @@
 
 ************************************************************************ */
 /**
- * <p>The abstract class is the base class for property lists.</p>
- * <p>All common methods used in the property lists are defined in 
+ * The abstract class is the base class for property lists.
+ * 
+ * All common methods used in the property lists are defined in 
  * this class. It also acts as interface which holds a couple of methods 
- * needed by the controller.</p>
+ * needed by the controller.
  */
 qx.Class.define("inspector.propertyEditor.PropertyList", {
   
