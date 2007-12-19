@@ -50,15 +50,15 @@ importClass(Packages.com.thoughtworks.selenium.QxSelenium);
 var selServer   = "localhost";
 var selPort     = 4444;
 var testBrowser = "*firefox";
-//var autHost = "http://demo.qooxdoo.org";
-var autHost = "http://localhost";
-//var autPath = "/0.7.2/showcase/index.html";
-var autPath = "/~thron7/.workspace/packages/qooxdoo-0.7.3-pre-sdk/frontend/application/showcase/source/index.html";
+var autHost = "http://demo.qooxdoo.org";
+//var autHost = "http://localhost";
+var autPath = "/0.7.2/showcase/index.html";
+//var autPath = "/~thron7/.workspace/packages/qooxdoo-0.7.3-pre-sdk/frontend/application/showcase/source/index.html";
 var useRunningSession = false;
 var closeBrowser = false;
 var cycleTests = false;
 var stepSpeed  = "1000"; // millisecs after each command
-var noAutoIds  = false;
+var noAutoIds  = true;
 // - Config End ----------------------------------------------------------------
 
 
@@ -423,12 +423,15 @@ function SplitPane (sel)
   Packages.java.lang.Thread.sleep(2000);
 
   sel.dragAndDrop(noAutoIds ?
-                    'qxh=*/qx.ui.splitpane.SplitPaneKnob' :
-                    //'//img[contains(@src,"knob-horizontal.png") or contains(@style,"knob-horizontal.png")]':
+                    // should work in both browsers, but very slow:
+                    //'qxh=*/qx.ui.splitpane.SplitPaneKnob' :
+                    // doesn't work in IE:
+                    '//img[contains(@src,"knob-horizontal.png") or contains(@style,"knob-horizontal.png")]':
                     '//div[@id="qx.ui.splitpane.SplitPaneKnob.1326"]',
                   "+100,+0" );
   sel.dragAndDrop(noAutoIds ?
-                    'qxh=*/qx.ui.splitpane.SplitPaneKnob' :
+                    //'qxh=*/qx.ui.splitpane.SplitPaneKnob' :
+                    '//img[contains(@src,"knob-horizontal.png") or contains(@style,"knob-horizontal.png")]':
                     '//div[@id="qx.ui.splitpane.SplitPaneKnob.1326"]',
                   "-150,+0" );
 
@@ -441,7 +444,9 @@ function Localization (sel)
   sel.qxClick('//div[text()="Localization"]')
   
   // Localized ComboBox
-  sel.qxClick('//div[text()="Localized ComboBox:"]/following-sibling::div/descendant::img[contains(@src,"down.gif")]');
+  sel.qxClick(noAutoIds ?
+                '//div[text()="Localized ComboBox:"]/following-sibling::div/descendant::img[contains(@src,"down.gif")]' :
+                'qx.ui.basic.Atom.1372');
   //sel.qxClick('//div[text()="Localized ComboBox:"]/following-sibling::div/descendant::div[text()="Copy"]');
   sel.qxClick('//div[text()="Paste"]');
 
