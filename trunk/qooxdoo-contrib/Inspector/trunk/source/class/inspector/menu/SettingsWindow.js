@@ -30,9 +30,9 @@ qx.Class.define("inspector.menu.SettingsWindow", {
   */
   /**
    * 
-   * @param {Object} main
-   * @param {Object} menu
-   * @param {Object} name
+   * @param main {Object} TODOC
+   * @param menu {Object} TODOC
+   * @param name {Object} TODOC
    */
   construct : function(main, menu, name) {
     // store the reference to the menu (first!)
