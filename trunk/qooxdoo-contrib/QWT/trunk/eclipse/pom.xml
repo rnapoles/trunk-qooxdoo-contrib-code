@@ -13,7 +13,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <version>3.2.2</version>
   <packaging>jar</packaging>
   <name>Eclipse Base</name>
-
+ 
+  <scm>
+    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/eclipse</connection>
+    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/eclipse</developerConnection>
+    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/eclipse</url>
+  </scm>
+ 
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
