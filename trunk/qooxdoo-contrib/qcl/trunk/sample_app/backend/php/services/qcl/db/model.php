@@ -482,8 +482,8 @@ class qcl_db_model extends qcl_jsonrpc_model
      
       // do checks and updates
       $this->info("*** Initializing table '$table' ***");
-      $this->checkCreateTable($table);
-      if ( $this->updateTableStructure($table) )
+      if ( $this->checkCreateTable($table) or 
+           $this->updateTableStructure($table) )
       {
         // success
         $flags[$table] = true;
@@ -507,7 +507,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      {
        $this->info("Checking if table '$table' exists ... No, creating it.");
        $this->createTable($table);       
-       return false;
+       return true;
      }
   }
   
@@ -532,7 +532,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * adds initial values, using an sql file. To be overridden by table-specific methods
    */
   function addInitialValues($table)
-  {
+  {  
     $sql = $this->loadSql( $table . ".values" );
     if ( $sql )
     {
@@ -575,10 +575,10 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function createFunctions($table)
   {
-    $this->info("Creating functions...");
     $file = $this->getSqlFileName($table . ".functions" );
     if ( file_exists ( $file ) )
     {
+      $this->info("Creating functions...");
       $database  = $this->db->getDatabase();
       $content   = file_get_contents ( $file );
       eval('$sql = "' . str_replace('"',"'",$content) . '";'); 
@@ -645,7 +645,6 @@ class qcl_db_model extends qcl_jsonrpc_model
         if ( ! file_exists( $file ) or is_writeable ( $file ) )
         {
           $sql = $this->getTableCreateSql($table);
-          //$valuesSql = $this->dumpTableValues($table);
           file_put_contents($file, $sql );        
           $this->info("Stored sql for {$table}");
           return true;
