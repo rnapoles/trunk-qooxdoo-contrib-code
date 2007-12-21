@@ -462,11 +462,11 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function initializeTables($tables)
   {   
-    $tables = (array) $tables;
+    $tables       = (array) $tables;
+    $database     = $this->db->getDatabase();
+    $init_flags   = "bibliograph_table_init_{$database}";
     
     static $flags = null;
-    $init_flags = "bibliograph_table_initialization";
-    
     if ( ! $flags )
     {
       $flags = (array) $this->retrieve($init_flags);
@@ -494,17 +494,20 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * check table and create it if necessary
+   * @return boolean true if table was created, false if it already exists
    */
   function checkCreateTable($table)
   {
      if ( $this->db->tableExists( $table ) )
      {
-       $this->info("Checking if table $table exists ... Yes");
+       $this->info("Checking if table '$table' exists ... Yes");
+       return false;
      }
      else
      {
-       $this->info("Checking if table $table exists ... No, creating it.");
+       $this->info("Checking if table '$table' exists ... No, creating it.");
        $this->createTable($table);       
+       return false;
      }
   }
   
@@ -513,7 +516,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function createTable($table)
   {
-    $createSql  = $this->loadTableCreateSql($table);
+    $createSql  = $this->loadSql($table);
     if ( ! $createSql )
     {
       $file = $this->getSqlFileName($table);
@@ -526,11 +529,22 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
   
   /**
-   * adds initial values. Empty stub to be overridden.
+   * adds initial values, using an sql file. To be overridden by table-specific methods
    */
-  function addInitialValues()
+  function addInitialValues($table)
   {
-    // do nothing.
+    $sql = $this->loadSql( $table . ".values" );
+    if ( $sql )
+    {
+      $this->info("Adding initial values ...");
+      foreach ( explode(";", $sql ) as $part )
+      {
+        if ( $part = trim($part) )
+        {
+          $this->db->execute( $part );
+        }
+      }
+    }      
   }
 
   /**
@@ -548,9 +562,9 @@ class qcl_db_model extends qcl_jsonrpc_model
                     str_replace('$database',$database, file_get_contents ( $file ) ) ) ;
       foreach ( explode(";",$sql) as $part )
       {
-        if ( trim ( $part ) )
+        if ( $part = trim($part) )
         {
-          $this->db->execute( $part );  
+          $this->db->execute( $part );
         }
       }
     }
@@ -570,7 +584,10 @@ class qcl_db_model extends qcl_jsonrpc_model
       eval('$sql = "' . str_replace('"',"'",$content) . '";'); 
       foreach ( explode("###",$sql) as $part )
       {
-        $this->db->execute( $part );
+        if ( $part = trim($part) )
+        {
+          $this->db->execute( $part );
+        }
       }
     }
   }
@@ -599,11 +616,11 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * returns sql statement to create a table loaded from the filesystem
    * @return string
-   * @param $table string Table
+   * @param $name string name
    */
-  function loadTableCreateSql($table)
+  function loadSql($name)
   {
-    $file = $this->getSqlFileName($table);
+    $file = $this->getSqlFileName($name);
     if ( file_exists ($file) )
     {
       //$this->info("Checking for file '$file' ... Exists.");
@@ -656,15 +673,18 @@ class qcl_db_model extends qcl_jsonrpc_model
   {
     $this->info ( "Checking for an update for table '$table'...");
    
-    // store sql to create this table
     if ( ! file_exists ( $this->getSqlFileName($table) ) )
     {
+      // store sql to create this table
+      // this is only for the developer who wants to synchronize a 
+      // changed table structure in the database with the sql in 
+      // the file system.
       return $this->saveTableStructureSql($table);
     }
     
     // compare table structure with structure and update table if there is a change
     $currentSql   = $this->getTableCreateSql($table); // from database
-    $normativeSql = $this->loadTableCreateSql($table); // from file
+    $normativeSql = $this->loadSql($table); // from file
     if ( $currentSql != $normativeSql )
     {
       $this->db->updateTableStructure( $table, $normativeSql );
