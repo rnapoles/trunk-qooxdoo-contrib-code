@@ -17,13 +17,16 @@ class qcl_config_controller extends qcl_jsonrpc_controller
    
  	/**
  	 * constructor 
- 	 * extending class MUST set a user model before calling this as a parent construktor
+ 	 * @param $useDefaulConfigModel if true, create default config model
    */
- 	function __construct()
+ 	function __construct( $useDefaulConfigModel=true )
  	{
     parent::__construct();
-    $configModel =& qcl_config::getSubclass(&$this);
-		$this->setModel("config", &$configModel);
+    if ( $useDefaulConfigModel )
+    {
+      $configModel =& qcl_config::getSubclass(&$this);
+  		$this->setModel("config", &$configModel);
+    }
 	}
 	
 	//-------------------------------------------------------------

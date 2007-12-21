@@ -308,13 +308,15 @@ class qcl_db_pear extends qcl_db
     $start     = strpos($sql,"(")+1;
     $end       = strrpos($sql,")")-1;
     $columnSql = trim(substr($sql,$start,$end-$start));
-    $lines     = explode( ",", $columnSql );
+    $lines     = preg_split( "/\r?\n/", $columnSql );
     $columns   = array();
-    
+
     for($i=0;$i<count($lines);$i++)
     {
-     $line = explode(" ",trim($lines[$i]));
-     $columns[$line[0]] = implode(" ",array_slice($line,1));
+     preg_match("/(`[^`]+`|.*KEY)([^,]+),?/",trim($lines[$i]),$line);
+     $columnName = $line[1];
+     $columnDef  = $line[2];
+     $columns[$columnName] = $columnDef ;
     }
     return $columns;
   }
@@ -329,6 +331,7 @@ class qcl_db_pear extends qcl_db
   {
     $currentColumns   = $this->extractColumnData($this->getTableCreateSql($table));
     $normativeColumns = $this->extractColumnData($sql);
+    //$this->raiseError(print_r($normativeColumns,true));
     $after = "FIRST";
     
     foreach($normativeColumns as $columnName => $columnDef )
@@ -339,7 +342,7 @@ class qcl_db_pear extends qcl_db
         if ( $currentDef != $columnDef )
         {
           $this->execute ("
-            ALTER TABLE $table MODIFY COLUMN $columnName $columnDef
+            ALTER TABLE `$table` MODIFY COLUMN $columnName $columnDef
           ");
           $this->info("Modified $table.$column to $columnDef.");
         }
@@ -353,14 +356,14 @@ class qcl_db_pear extends qcl_db
         {
 
           $this->execute ("
-            ALTER TABLE $table CHANGE COLUMN $oldColumnName $columnName $columnDef $after 
+            ALTER TABLE `$table` CHANGE COLUMN $oldColumnName $columnName $columnDef $after 
           ");    
           $this->info("Renamed $table.$oldColumnName to $table.$columnName.");
         }
         else
         {
           $this->execute ("
-            ALTER TABLE $table ADD COLUMN $columnName $columnDef $after 
+            ALTER TABLE `$table` ADD COLUMN $columnName $columnDef $after 
           ");
           $this->info("Added $table.$columnName."); 
         }     
@@ -378,6 +381,7 @@ class qcl_db_pear extends qcl_db
    */
   function tableExists($table)
   {
+    $database = $this->getDatabase();
     return $this->getValue("
       SELECT 
         count(*) 
@@ -385,6 +389,8 @@ class qcl_db_pear extends qcl_db
         INFORMATION_SCHEMA.TABLES
       WHERE 
         TABLE_NAME='$table'
+      AND
+        TABLE_SCHEMA='$database'
     ");
   }
   
