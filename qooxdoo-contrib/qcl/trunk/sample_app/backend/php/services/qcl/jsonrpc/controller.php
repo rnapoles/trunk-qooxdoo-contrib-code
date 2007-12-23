@@ -63,7 +63,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		global $serviceComponents;
 		$currPath = servicePathPrefix;
 		$this->ini = array();
-		
+		$found = false;
+    
 		// traverse service path and look for service.ini.php files 
 		// 
 		for ( $i=0; $i<count($serviceComponents); $i++ )
@@ -73,14 +74,15 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 			 // if config file exists, parse it and add/override config directives
 			 if ( file_exists ($currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
 			 {
-			 	$config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true);
-			 	$this->ini = array_merge ( $this->ini, $config );
+			   $found = true;
+         $config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true);
+			 	 $this->ini = array_merge ( $this->ini, $config );
 			 }
 		}
     
-    if ( ! is_array( $this->ini ) )
+    if ( ! $found )
     {
-      $this->warn("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
+      $this->raiseError("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
     }
 	}
 

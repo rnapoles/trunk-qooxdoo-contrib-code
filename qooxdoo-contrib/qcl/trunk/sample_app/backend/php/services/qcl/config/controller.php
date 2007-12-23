@@ -181,7 +181,9 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 			$user		  = $userId ? $this->user->getById($userId) : null;
 			$userName = $user ? $user[$this->user->key_namedId] : $userId ;
 			$row[$configModel->key_userId] = $userName;
-			$table[]  = array_values($row);
+			$table[]  = array(
+        $row['id'], $row['namedId'], $row['type'],  $row['value'],  $row['permissionRead'],  $row['permissionWrite'],  $row['user'] 
+      );
 		}
 		$this->set( "tabledatamodel", $table );
 		return $this->getResult();

@@ -98,7 +98,12 @@ class qcl_db extends qcl_object
 		}
 		elseif ( is_a($this->controller,"qcl_jsonrpc_controller" ) )
 		{
-			$this->setDsn($this->controller->getConfigValue("database.dsn"));	
+			$dsn = $this->controller->getConfigValue("database.dsn");
+      if ( ! $dsn )
+      {
+        $this->raiseError("Missing DSN. Check service configuration file.");
+      }
+      $this->setDsn($dsn);	
 		}
     else
     {

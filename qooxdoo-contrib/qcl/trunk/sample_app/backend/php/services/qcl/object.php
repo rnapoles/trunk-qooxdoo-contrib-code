@@ -55,6 +55,9 @@ if ( ! defined("QCL_LOG_LEVEL") )
 	 define("QCL_LOG_LEVEL",QCL_LOG_ERROR);
 }
 
+// Stack Trace
+$GLOBALS['_stackTrace'] = array();
+
 /**
  * base class of all json rpc service classes
  */
@@ -69,7 +72,8 @@ class qcl_object extends patched_object {
 	 * @var JsonRpcError $error
 	 */
 	var $error;
-	
+  
+  
    //-------------------------------------------------------------
    // internal methods
    //-------------------------------------------------------------
@@ -80,7 +84,9 @@ class qcl_object extends patched_object {
 	function __construct() 
 	{
 		parent::__construct();
+    $GLOBALS['_stackTrace'][] = get_class($this);
 	}
+
 
   /**
    * get include path for a class name
@@ -348,10 +354,25 @@ class qcl_object extends patched_object {
 		{
 			$message .= " in $file, line $line.";
 		}
-		$this->log( get_class($this) . " - " . $message, QCL_LOG_ERROR);
+		$this->log( 
+      "### Error in " . get_class($this) . " ###\n" . 
+      $message . "\n" . 
+      "Stack Trace:\n" . 
+      $this->getStackTrace(), 
+      QCL_LOG_ERROR
+    );
 		$error->setError( $number, stripslashes( $message ) );
  		$error->SendAndExit();
 	}
+
+  /**
+   * gets the stack trace of invoked objects
+   * @return string list
+   */
+  function getStackTrace()
+  {
+    return implode("\n",$GLOBALS['_stackTrace']) ;
+  }
 	
 	/**
 	* debug a variable 

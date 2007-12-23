@@ -39,7 +39,7 @@ class qcl_db_pear extends qcl_db
 		{
 			$dsn = $this->getDsn();
 		}
-    $this->log("Connecting to $dsn",QCL_LOG_DEBUG);
+    $this->log("Connecting to $dsn.");
     
 		$db =& DB::connect( $dsn );
 		if (PEAR::isError($db)) 
@@ -96,7 +96,12 @@ class qcl_db_pear extends qcl_db
 	 */
 	function &getRow ( $sql, $withColumnNames=true )
 	{
-		$this->log($sql,QCL_LOG_DEBUG);
+		if ( ! is_object($this->db) )
+    {
+      $this->raiseError ( "qcl_db_pear::getRow : No database connection. Aborting.");
+    }
+    
+    $this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
 		if ( PEAR::isError ( $res ) ) {
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
