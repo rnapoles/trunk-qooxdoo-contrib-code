@@ -46,7 +46,10 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
 		}
     else
     {
-			$this->raiseError ("cql_jsonrpc_model : No controller object provided for " . get_class($this) . ". Received a " . get_class($controller) . " object." );
+			$this->raiseError (
+        "cql_jsonrpc_model : No controller object provided for " . get_class($this) . 
+        ". Received a '" . get_class($controller) . "' object." 
+      );
     }
  	}
  	

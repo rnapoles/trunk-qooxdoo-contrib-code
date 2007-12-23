@@ -90,7 +90,7 @@ class qcl_config_db extends qcl_db_model
 				`{$this->key_permissionRead}`,`{$this->key_permissionWrite}`,
 				`{$this->key_user}`) 
 			VALUES 
-				('$name','$type',$permissionRead,$permissionWrite,$user)
+				('$name','$type',$permissionRead,$permissionWrite,'$user')
 		");					
 
 		return $this->db->getLastInsertId();
