@@ -1,5 +1,5 @@
 <?php
-require_once ("qcl/auth/common.php");
+require_once ("qcl/access/common.php");
 
 /**
  * class providing data on permissions
@@ -9,7 +9,7 @@ require_once ("qcl/auth/common.php");
  * in your application service class folder
  */
 
-class qcl_auth_permission extends qcl_auth_common
+class qcl_access_permission extends qcl_access_common
 {    
   
   //-------------------------------------------------------------
@@ -82,7 +82,7 @@ class qcl_auth_permission extends qcl_auth_common
     	$permissionId = $this->getIdFromRef($permissionRef);
     	if ( ! $permissionId )
     	{
-    		$this->raiseError("qcl_auth_permission::addToRole : Invalid permission reference: $permissionRef");
+    		$this->raiseError("qcl_access_permission::addToRole : Invalid permission reference: $permissionRef");
     	}
 
     	foreach ( $roleRefs as $roleRef )
@@ -90,7 +90,7 @@ class qcl_auth_permission extends qcl_auth_common
     		$roleId = $roleModel->getIdFromRef($roleRef);
     		if ( !$roleId )
     		{
-    			$this->raiseError("qcl_auth_permission::addToRole : Invalid role reference: $roleRef");
+    			$this->raiseError("qcl_access_permission::addToRole : Invalid role reference: $roleRef");
     		} 
     		$row = array();
     		$row[$roleModel->foreignKey] = $roleId;
@@ -119,7 +119,7 @@ class qcl_auth_permission extends qcl_auth_common
     	
     	if ( ! $permissionId )
     	{
-    		$this->raiseError("qcl_auth_permission::removeFromRole : Invalid permission reference: $permissionRef");
+    		$this->raiseError("qcl_access_permission::removeFromRole : Invalid permission reference: $permissionRef");
     	}
     	
     	foreach ( $roleRefs as $roleRef )
@@ -127,7 +127,7 @@ class qcl_auth_permission extends qcl_auth_common
     		$roleId = $roleModel->getIdFromRef($roleRef);
     		if ( !$roleId )
     		{
-    			$this->raiseError("qcl_auth_permission::removeFromRole : Invalid role reference: $roleRef");
+    			$this->raiseError("qcl_access_permission::removeFromRole : Invalid role reference: $roleRef");
     		} 
 				$this->db->execute("
 					DELETE FROM `{$this->table_link_roles_permissions}`

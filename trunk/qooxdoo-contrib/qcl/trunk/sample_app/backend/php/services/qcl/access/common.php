@@ -7,7 +7,7 @@ require_once ("qcl/db/model.php");
  * common base class for permission, role and user models
  */
 
-class qcl_auth_common extends qcl_db_model	
+class qcl_access_common extends qcl_db_model	
 {
 
   //-------------------------------------------------------------
@@ -67,7 +67,7 @@ class qcl_auth_common extends qcl_db_model
    {
    	if ( ! $this->key_namedId )
     {
-   		$this->raiseError("qcl_auth_common::getAllNamedIds : model does not have a named id property");	
+   		$this->raiseError("qcl_access_common::getAllNamedIds : model does not have a named id property");	
    	}
     return $this->getDistinctValues($this->key_namedId,null,$this->key_namedId);
    }
@@ -76,7 +76,7 @@ class qcl_auth_common extends qcl_db_model
 	 * creates a new record and optionally links it to a role
 	 * @override
 	 * @param string	$namedId
-	 * @param int		$parentId 	id of role (unused if class is qcl_auth_role)
+	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
 	 * @return int the id of the inserted row 
 	 */
 	function create( $namedId, $parentId=null )
@@ -99,11 +99,11 @@ class qcl_auth_common extends qcl_db_model
 		// link to role
     if ( $parentId )
     {
-  		if ( is_a( $this, "qcl_auth_user") )
+  		if ( is_a( $this, "qcl_access_user") )
   		{
   			$this->addToRole ( $itemId, $parentId );
   		}
-  		elseif ( is_a( $this, "qcl_auth_permission") )
+  		elseif ( is_a( $this, "qcl_access_permission") )
   		{
   			$this->addToRole ( $itemId, $parentId );	
   		}
