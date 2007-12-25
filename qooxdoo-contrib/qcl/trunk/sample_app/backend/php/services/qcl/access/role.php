@@ -1,5 +1,5 @@
 <?php
-require_once ("qcl/auth/common.php");
+require_once ("qcl/access/common.php");
 
 /**
  * class providing data on roles
@@ -9,7 +9,7 @@ require_once ("qcl/auth/common.php");
  * in your application service class folder
  */
 
-class qcl_auth_role extends qcl_auth_common
+class qcl_access_role extends qcl_access_common
 {    
   //-------------------------------------------------------------
   // class variables, override if necessary

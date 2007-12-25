@@ -315,14 +315,15 @@ class qcl_config_db extends qcl_db_model
     $userModel     =& $controller->getModel("user");
     $activeUser    =  $userModel->getActiveUserNamedId(); 
     
-    // if we set the default value, we need to retrieve 
 		if ( $defaultValue )
 		{
-			$row = $this->getRow($name,"default");	
+			// if we set the default, we need to retrieve the row containing the default value
+      $row = $this->getRow($name,"default");	
 		}
 		else
 		{
-			$row = $this->getRow($name);
+			// otherwise, retrieve the user value or the global value
+      $row = $this->getRow($name);
 		}
 		
 		// does the key exist?
@@ -334,7 +335,7 @@ class qcl_config_db extends qcl_db_model
 		$id				       = $row[$this->key_id];
 		$type			       = $row[$this->key_type];
 		$permissionWrite = $row[$this->key_permissionWrite];
-		$user			       = $row[$this->key_user];	
+		$owner		       = $row[$this->key_user];	
 
 		// type checking
 		$type_error = false;
@@ -350,7 +351,7 @@ class qcl_config_db extends qcl_db_model
 		}
 		
 		// users can set their own entry variant with no further checking
-		if ( $user != $activeUser )
+		if ( $owner != $activeUser )
 		{
 			// but others need to check permission
 			if ( $permissionWrite )
@@ -358,7 +359,7 @@ class qcl_config_db extends qcl_db_model
         $userModel->requirePermission( $permissionWrite );
       }
 			
-			if ( $user == "default" )
+			if ( $owner == "default" )
       {
   			if ( $defaultValue )
   			{
@@ -379,7 +380,7 @@ class qcl_config_db extends qcl_db_model
 		// all checks have been passed, set value
     $row[$this->key_value]=$value;
 		$this->update($row);
-    $this->info("'$name' set to '$value' for user '$user'.");
+    $this->info("'$name' set to '$value' for user '$owner'.");
 		return true;
 	}
 

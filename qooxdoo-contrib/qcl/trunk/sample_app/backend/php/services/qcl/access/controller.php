@@ -9,7 +9,7 @@ require_once ("qcl/jsonrpc/controller.php");
  * to subclass it in your application
  */
 
-class qcl_auth_controller extends qcl_jsonrpc_controller
+class qcl_access_controller extends qcl_jsonrpc_controller
 {    
 
   //-------------------------------------------------------------
@@ -183,7 +183,7 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
    	}
    	elseif ( ! $data[$model->key_id] )
    	{
-   		$this->raiseError("qcl_auth_controller::method_updateItem : no id given!");
+   		$this->raiseError("qcl_access_controller::method_updateItem : no id given!");
    	}
     
     // update model
@@ -211,7 +211,7 @@ class qcl_auth_controller extends qcl_jsonrpc_controller
     $model = $this->getModel($type);
     $model->delete($itemId);
 
-    if ( is_a( $model, "qcl_auth_user") or is_a( $model, "qcl_auth_permission") )
+    if ( is_a( $model, "qcl_access_user") or is_a( $model, "qcl_access_permission") )
     {
     	$model->removeFromRole ( $itemId, $parentId );
     }

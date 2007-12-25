@@ -301,7 +301,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * creates a new record and 
 	 * optionally links it to a role
 	 * @param string	$namedId
-	 * @param int		$parentId 	id of role (unused if class is qcl_auth_role)
+	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
 	 * @return int the id of the inserted or existing row 
 	 */
 	function createIfNotExists( $namedId, $parentId=null )

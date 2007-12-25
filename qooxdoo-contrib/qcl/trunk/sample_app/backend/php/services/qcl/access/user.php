@@ -1,5 +1,5 @@
 <?php
-require_once ("qcl/auth/common.php");
+require_once ("qcl/access/common.php");
 
 /**
  * class providing data on users
@@ -9,7 +9,7 @@ require_once ("qcl/auth/common.php");
  * in your application service class folder
  */
 
-class qcl_auth_user extends qcl_auth_common
+class qcl_access_user extends qcl_access_common
 {    
 
   //-------------------------------------------------------------
@@ -21,6 +21,7 @@ class qcl_auth_user extends qcl_auth_common
 	var $key_name		            = "name";
 	var $key_username 	        = "username"; 
 	var $key_password 	        = "password";
+  var $key_lastAction         = null; // enable if you want to use auto-logout
 	var $icon 			            = "icon/16/apps/system-users.png";
 	var $nodeType		            = "qcl.auth.types.User";
 	var $shortName		          = "user";
@@ -155,13 +156,20 @@ class qcl_auth_user extends qcl_auth_common
    }
    
    /**
-    * authenticate a user with a password
-    * @param string $username
-    * @param string $password (MD5-encoded) password
+    * authenticate a user with a password. if no username is given, check if a user has already been logged in,
+    * so you can use this method in your service class without parameters to make sure a login has taken place.
+    * @param string $username or null
+    * @param string $password (MD5-encoded) password or null
+    * @return boolean success
     */
    function authenticate ( $username=null, $password=null )
    {
-   		$row = $this->getByName ( $username );
+   		if ( $username==null and is_array( $this->getActiveUser() ) )
+      {
+        return true;
+      }
+      
+      $row = $this->getByName ( $username );
    		
    		if ( ! is_array($row) )
    		{
@@ -178,7 +186,8 @@ class qcl_auth_user extends qcl_auth_common
    			  $password === md5 ( $savedPw ) ) 
    		{
    			$this->setActiveUser($row);
-   			return true;
+   			$this->resetLastAction();
+        return true;
    		}
    		else
    		{
@@ -194,7 +203,7 @@ class qcl_auth_user extends qcl_auth_common
     */
    function getActiveUser()
    {
-   		return $_SESSION['qcl_auth_user_activeUser']; 
+   		return $_SESSION['qcl_access_user_activeUser']; 
    }
    
    /**
@@ -203,7 +212,7 @@ class qcl_auth_user extends qcl_auth_common
     */
    function setActiveUser($data)
    {
-   		$_SESSION['qcl_auth_user_activeUser'] = $data;
+   		$_SESSION['qcl_access_user_activeUser'] = $data;
    }
 
    /**
@@ -212,7 +221,7 @@ class qcl_auth_user extends qcl_auth_common
     */
    function getActiveUserId()
    {
-   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_id]; 
+   		return $_SESSION['qcl_access_user_activeUser'][$this->key_id]; 
    }
 
    /**
@@ -221,7 +230,7 @@ class qcl_auth_user extends qcl_auth_common
     */
    function getActiveUserName()
    {
-   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_namedId]; 
+   		return $_SESSION['qcl_access_user_activeUser'][$this->key_namedId]; 
    }
 
    /**
@@ -230,7 +239,7 @@ class qcl_auth_user extends qcl_auth_common
     */
    function getActiveUserNamedId()
    {
-   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_namedId]; 
+   		return $_SESSION['qcl_access_user_activeUser'][$this->key_namedId]; 
    }
   
    /**
@@ -239,7 +248,7 @@ class qcl_auth_user extends qcl_auth_common
     */
    function getActiveUserFullName()
    {
-   		return $_SESSION['qcl_auth_user_activeUser'][$this->key_name]; 
+   		return $_SESSION['qcl_access_user_activeUser'][$this->key_name]; 
    }  
   
    /**
@@ -303,121 +312,174 @@ class qcl_auth_user extends qcl_auth_common
    		}
    }
    
-   /**
-    * gets userdata and security policies 
-    * @param string username
-    * @return array security policy and user data
-    */
-    function getSecurity($username)
-    {
-  		// userdata
-  		$userdata = $this->getByName($username);
-  		unset($userdata[$this->key_password]);
-  		$roleNamedIds = $this->getRoles($username);
-  
-  		// roles and permissions
-      $controller =& $this->getController();
-      $roleModel  =& $controller->getModel("role");
-  		$roles = array();
-  		$roleDescriptiveNames = array();
-  		foreach ( $roleNamedIds as $roleNamedId )
-  		{
-  			
-  			$roleDescriptiveNames[]	= $roleModel->getDescriptiveName($roleNamedId);
-  			$roles[$roleNamedId] 	= $roleModel->getPermissions($roleNamedId);
-  		}
-  		
-  		// security policy data for client
-  		$userdata['roles'] = implode(", ",$roleDescriptiveNames);
-  		$userdata['icon']  = $this->icon;
-  		$security = array(
-  			'userdata'	=> $userdata,
-  			'roles'		=> $roles
-  		);
-  		return $security;
-    }
+ /**
+  * gets userdata and security policies 
+  * @param string username
+  * @return array security policy and user data
+  */
+  function getSecurity($username)
+  {
+		// userdata
+		$userdata = $this->getByName($username);
+		unset($userdata[$this->key_password]);
+		$roleNamedIds = $this->getRoles($username);
 
-   /**
-    * add user(s) to role(s) 
-    * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
-    * @param mixed $roleRefs (array or number) role refs (id or namedId)
-    */
-    function addToRole( $userRefs, $roleRefs )
-    {
-    	$userRefs	  = (array) $userRefs;
-    	$roleRefs	  = (array) $roleRefs;
-      $controller =& $this->getController();
-      $roleModel  =& $controller->getModel("role");
-      	
-    	foreach ( $userRefs as $userRef )
-    	{
-	    	$userId = $this->getIdFromRef($userRef);
-	    	if ( ! $userId )
-	    	{
-	    		$this->raiseError("qcl_auth_user::addToRole : Invalid user reference: $userRef");
-	    	}
-	    	foreach ( $roleRefs as $roleRef )
-	    	{
-	    		$roleId = $roleModel->getIdFromRef($roleRef);
-		    	if ( ! $roleId )
-		    	{
-		    		$this->raiseError("qcl_auth_user::addToRole : Invalid role reference: $roleRef");
-		    	}
-	    		$row = array();
-	    		$row[$roleModel->foreignKey] = $roleId;
-	    		$row[$this->foreignKey] = $userId; 
-	    		$this->db->insert($this->table_link_user_roles,$row);
-	    	}
-    	}	
-    	return true;
-    }
+		// roles and permissions
+    $controller =& $this->getController();
+    $roleModel  =& $controller->getModel("role");
+		$roles = array();
+		$roleDescriptiveNames = array();
+		foreach ( $roleNamedIds as $roleNamedId )
+		{
+			
+			$roleDescriptiveNames[]	= $roleModel->getDescriptiveName($roleNamedId);
+			$roles[$roleNamedId] 	= $roleModel->getPermissions($roleNamedId);
+		}
+		
+		// security policy data for client
+		$userdata['roles'] = implode(", ",$roleDescriptiveNames);
+		$userdata['icon']  = $this->icon;
+		$security = array(
+			'userdata'	=> $userdata,
+			'roles'		=> $roles
+		);
+		return $security;
+  }
 
-   /**
-    * removes user(s) from  role(s) 
-    * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
-    * @param mixed $roleRefs (array or number) role refs (id or namedId)  or "*" to remove from all roles 
-    */
-    function removeFromRole( $userRefs, $roleRefs  )
-    {
-    	$userRefs	  =  (array) $userRefs;
-    	$roleRefs	  =  (array) $roleRefs;
-      $controller =& $this->getController();
-      $roleModel  =& $controller->getModel("role");
+ /**
+  * add user(s) to role(s) 
+  * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
+  * @param mixed $roleRefs (array or number) role refs (id or namedId)
+  */
+  function addToRole( $userRefs, $roleRefs )
+  {
+  	$userRefs	  = (array) $userRefs;
+  	$roleRefs	  = (array) $roleRefs;
+    $controller =& $this->getController();
+    $roleModel  =& $controller->getModel("role");
     	
-    	foreach( $userRefs as $userRef )
+  	foreach ( $userRefs as $userRef )
+  	{
+    	$userId = $this->getIdFromRef($userRef);
+    	if ( ! $userId )
     	{
-	    	$userId = $this->getIdFromRef($userRef);
-	    	if ( ! $userId )
+    		$this->raiseError("qcl_access_user::addToRole : Invalid user reference: $userRef");
+    	}
+    	foreach ( $roleRefs as $roleRef )
+    	{
+    		$roleId = $roleModel->getIdFromRef($roleRef);
+	    	if ( ! $roleId )
 	    	{
-	    		$this->raiseError("qcl_auth_user::removeFromRole : Invalid user reference: $userRef");
+	    		$this->raiseError("qcl_access_user::addToRole : Invalid role reference: $roleRef");
 	    	}
-	    	
-	    	foreach ( $roleRefs as $roleRef )
+    		$row = array();
+    		$row[$roleModel->foreignKey] = $roleId;
+    		$row[$this->foreignKey] = $userId; 
+    		$this->db->insert($this->table_link_user_roles,$row);
+    	}
+  	}	
+  	return true;
+  }
+
+ /**
+  * removes user(s) from  role(s) 
+  * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
+  * @param mixed $roleRefs (array or number) role refs (id or namedId)  or "*" to remove from all roles 
+  */
+  function removeFromRole( $userRefs, $roleRefs  )
+  {
+  	$userRefs	  =  (array) $userRefs;
+  	$roleRefs	  =  (array) $roleRefs;
+    $controller =& $this->getController();
+    $roleModel  =& $controller->getModel("role");
+  	
+  	foreach( $userRefs as $userRef )
+  	{
+    	$userId = $this->getIdFromRef($userRef);
+    	if ( ! $userId )
+    	{
+    		$this->raiseError("qcl_access_user::removeFromRole : Invalid user reference: $userRef");
+    	}
+    	
+    	foreach ( $roleRefs as $roleRef )
+    	{
+    		$roleId = $roleModel->getIdFromRef($roleRef);
+        if ( $roleRef == "*" )
+        {         
+  				$this->db->execute("
+  					DELETE FROM `{$this->table_link_user_roles}`
+  					WHERE 	`{$this->foreignKey}` = $userId
+  				");
+        }
+        elseif ( $roleId )
+        {
+  				$this->db->execute("
+  					DELETE FROM `{$this->table_link_user_roles}`
+  					WHERE 	`{$this->foreignKey}` = $userId
+  					AND 	`{$roleModel->foreignKey}` = $roleId
+  				");            
+        }
+        else 
 	    	{
-	    		$roleId = $roleModel->getIdFromRef($roleRef);
-          if ( $roleRef == "*" )
-          {         
-    				$this->db->execute("
-    					DELETE FROM `{$this->table_link_user_roles}`
-    					WHERE 	`{$this->foreignKey}` = $userId
-    				");
-          }
-          elseif ( $roleId )
-          {
-    				$this->db->execute("
-    					DELETE FROM `{$this->table_link_user_roles}`
-    					WHERE 	`{$this->foreignKey}` = $userId
-    					AND 	`{$roleModel->foreignKey}` = $roleId
-    				");            
-          }
-          else 
-		    	{
-		    		$this->raiseError("qcl_auth_user::removeFromRole : Invalid role reference: $roleRef");
-		    	}
+	    		$this->raiseError("qcl_access_user::removeFromRole : Invalid role reference: '$roleRef'");
 	    	}
     	}
-    	return true;
+  	}
+  	return true;
+  }
+  
+  
+  /**
+   * resets the timestamp of the last action  for the currently active user or a specified user ID 
+   * @return void
+   * @param mixed $userId int user id or not given if for currently active user
+   */
+  function resetLastAction( $userId=null )
+  {
+    if ( ! $this->key_lastAction )
+    {
+      $this->raiseError("User model does not have a lastAction column.");
     }
-
+    
+    if ( ! $userId )
+    {
+      $userId = $this->getActiveUserId();  
+    }
+    
+    // reset timestamp
+    $this->db->execute("
+      UPDATE {$this->table}
+      SET {$this->key_lastAction} = NOW()
+      WHERE `{$this->key_id}` = $userId;
+    ");
+  }
+  
+  /**
+   * get number of seconds since resetLastAction() has been called
+   * for the current user or the specified user
+   * @return int seconds
+   * @param $userId int[optional]
+   */
+  function getSecondsSinceLastAction ( $userId = null )
+  {
+    if ( ! $this->key_lastAction )
+    {
+      $this->raiseError("User model does not have a lastAction column.");
+    }
+    
+    if ( ! $userId )
+    {
+      $userId = $this->getActiveUserId();  
+    }
+    
+    // get seconds since last action
+    $seconds = $this->db->getValue("
+      SELECT TIME_TO_SEC( TIMEDIFF( NOW(), {$this->key_lastAction} ) )
+      FROM {$this->table}
+      WHERE `{$this->key_id}` = $userId;
+    ");
+    
+    return $seconds;
+  }
 }
 ?>

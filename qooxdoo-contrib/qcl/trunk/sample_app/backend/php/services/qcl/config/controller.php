@@ -64,7 +64,7 @@ class qcl_config_controller extends qcl_jsonrpc_controller
     
 		foreach( $map as $key => $value )
 		{
-			$configModel->set( $key, $value );
+      $configModel->set( $key, $value );
 		} 
     $this->addMessage( "qcl.config.messages.key.updated", $key );		
  		return $this->getResult(); 
@@ -181,7 +181,7 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 			$user		  = $userId ? $this->user->getById($userId) : null;
 			$userName = $user ? $user[$this->user->key_namedId] : $userId ;
 			$row[$configModel->key_userId] = $userName;
-			$table[]  = array(
+			$table[]  = array (
         $row['id'], $row['namedId'], $row['type'],  $row['value'],  $row['permissionRead'],  $row['permissionWrite'],  $row['user'] 
       );
 		}
