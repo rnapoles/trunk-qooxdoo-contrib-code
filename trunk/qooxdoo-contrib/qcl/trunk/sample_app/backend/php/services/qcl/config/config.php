@@ -53,7 +53,7 @@ class qcl_config extends qcl_jsonrpc_model
 	}
 
 	//-------------------------------------------------------------
-   	// abstract public non-rpc methods 
+   	// abstract public methods 
 	//-------------------------------------------------------------   
 
 	/**
@@ -63,11 +63,11 @@ class qcl_config extends qcl_jsonrpc_model
 	 * @param string $name The name of the property (i.e., myapplication.config.locale)
 	 * @param string $type The type of the property (string|number|object|boolean)
 	 * @param string $permissionRead The permission name that is needed to access 
-	 * 		  and read this property (optional)
+	 * and read this property (optional)
 	 * @param string $permissionWrite The permission name that is needed to access 
-	 * 		  and read this property (optional)
+	 * and read this property (optional)
 	 * @param boolean $allowUserVariants If true, allow users to create their 
-	 * 		  own variant of the configuration setting 
+	 * own variant of the configuration setting 
 	 * @return id of created config entry
 	 */
 	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false ){}
