@@ -51,7 +51,7 @@ class qcl_db_pear extends qcl_db
 		// set encoding to do: this needs to be a property of the datasource model
 		if ( $this->controller )
 		{
-			$encoding = $this->controller->getConfigValue("database.encoding");	
+			$encoding = $this->controller->getIniValue("database.encoding");	
 		}
 		else
 		{

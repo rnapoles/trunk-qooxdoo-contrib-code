@@ -72,11 +72,10 @@ class qcl_object extends patched_object {
 	 * @var JsonRpcError $error
 	 */
 	var $error;
-  
-  
-   //-------------------------------------------------------------
-   // internal methods
-   //-------------------------------------------------------------
+   
+  //-------------------------------------------------------------
+  // internal methods
+  //-------------------------------------------------------------
 	
 	/**
 	 * Class constructor
@@ -84,10 +83,31 @@ class qcl_object extends patched_object {
 	function __construct() 
 	{
 		parent::__construct();
-    $GLOBALS['_stackTrace'][] = get_class($this);
+    $GLOBALS['_stackTrace'][] = get_class($this); // save class method for stack trace
 	}
 
+  //-------------------------------------------------------------
+  // public methods
+  //-------------------------------------------------------------
 
+  /**
+   * getter for error message
+   * @return string
+   */
+  function getError()
+  {
+    return $this->error;
+  }
+
+  /**
+   * setter for error message
+   * @return string
+   */
+  function setError( $error )
+  {
+    $this->error = $error;
+  }
+   
   /**
    * get include path for a class name
    * @return 
@@ -442,6 +462,31 @@ if( ! function_exists( "stream_get_contents" ) )
 		return $stream;
     } 
 }
- 
- 
- 
+
+/**
+ * php4 equivalent of scandir
+ * from http://www.php.net/manual/en/function.scandir.php
+ * @return array list of files
+ * @param string $dir
+ * @param boolean $sortorder 
+ */ 
+if(!function_exists('scandir')) 
+{
+  function scandir($dir, $sortorder = 0) 
+  {
+    if(is_dir($dir) && $dirlist = @opendir($dir)) 
+    {
+      while(($file = readdir($dirlist)) !== false) 
+      {
+          $files[] = $file;
+      }
+      closedir($dirlist);
+      ($sortorder == 0) ? asort($files) : rsort($files); // arsort was replaced with rsort
+      return $files;
+    } 
+    else 
+    {
+      return false;  
+    }
+  }
+}

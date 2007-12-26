@@ -102,7 +102,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * can be (optionally) overridden by values provided by the qcl_config
 	 * class $this->config
 	 */
-	function getConfigValue($path)
+	function getIniValue($path)
 	{
 		$parts 	= explode(".",$path);
 		$value 	= $this->ini;
