@@ -2,7 +2,7 @@
 require_once ("qcl/jsonrpc/model.php");
 
 /**
- * abstract class for classes that implement plugin management
+ * abstract class for classes that implement a plugin
  * 
  */
 
@@ -60,9 +60,9 @@ class qcl_plugin_abstract extends qcl_jsonrpc_model
  	/**
 	 * checks whether plugin works (i.e., if dependencies are met)
 	 * if an error occurs, it can be retrieved with the getEror method.
-	 * @return boolean
+	 * @return boolean if plugin was initialized without error
 	 */
-	function check() {}
+	function initialize() {}
   
   
 	
