@@ -46,8 +46,10 @@ class qcl_plugin_db extends qcl_db_model
    * initializes the plugins in the filesystem
    * @return 
    */
-  function initialize()
+  function initializeAll()
   {
+    $this->info("*** Initializing plugins." );  
+    
     $controller   =& $this->getController();
     $plugin_path  =  $controller->getIniValue("service.plugin_path");
     
@@ -62,16 +64,25 @@ class qcl_plugin_db extends qcl_db_model
         $class  = "{$dir}_plugin";
         $plugin = new $class ( &$controller );
         $active = $plugin->initialize();
+        $error  = $plugin->getError();
         
         $row = array();
         $row['namedId']     = (string)  $plugin->getNamedId();
         $row['description'] = (string)  $plugin->getDescription();
         $row['active']      = (int)     $active;
-        $row['status']      = $active ? "OK" : $plugin->getError();
+        $row['status']      = $active ? "OK" : $error;
         $row['author']      = (string)  $plugin->getAuthor();
         $row['permission']  = (string)  $plugin->getPermission();
         
         $this->insert($row);
+        if ( $active )
+        {
+          $this->info("Plugin '$dir' initialized." );  
+        }
+        else
+        {
+          $this->info("Could not initialize plugin '$dir': $error" );
+        }
       }
     }
     return true;
