@@ -83,6 +83,9 @@ public class FileNode extends Node {
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
         }
+        if (file.getPath().endsWith(File.separator) && file.getParent() != null) {
+            throw new IllegalArgumentException("should not happen because java.io.File normalizes paths: " + file.getPath());
+        }
         this.base = base;
         this.file = file;
     }
