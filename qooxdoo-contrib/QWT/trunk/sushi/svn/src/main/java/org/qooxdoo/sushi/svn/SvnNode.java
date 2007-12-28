@@ -64,15 +64,15 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnNode extends Node {
-    private static final Filesystem FS = new Filesystem("svn:/", '/');
+    private static final char SEPARATOR_CHAR = '/';
+    public static final String SEPARATOR = "" + SEPARATOR_CHAR;
+    public static final int SEPARATOR_LENGTH = 1;
+    private static final Filesystem FS = new Filesystem("svn:/", SEPARATOR_CHAR);
     
     static {
         FSRepositoryFactory.setup();
         DAVRepositoryFactory.setup();
     }
-
-    public static final String SEPARATOR = "/";
-    public static final int SEPARATOR_LENGTH = 1;
 
     //--
     
