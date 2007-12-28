@@ -50,8 +50,8 @@ public class FileNodeTest extends NodeTest {
     }
 
     @Test
-    public void invalidString() {
-        IO.node("/a/");
+    public void normalizePath() {
+        assertEquals("usr", IO.node("/usr/").getPath());
     }
 
     @Test
