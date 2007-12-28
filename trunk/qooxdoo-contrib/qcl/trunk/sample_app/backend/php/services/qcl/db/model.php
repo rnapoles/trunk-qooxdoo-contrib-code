@@ -337,12 +337,12 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @param mixed		$value
 	 * @param int		  $id 	if omitted, modify current record cache without updating the database 
 	 */
-	function setColumnValue($column,$value,$id=null)
+	function setColumnValue( $column, $value, $id=null )
 	{
 		if( $id )
 		{
 			$data = array();
-			$data[$this->key_id] = $recordId;
+			$data[$this->key_id] = $id;
 			$data[$column] = $value;
 			$this->update($data);
 		}
@@ -387,7 +387,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 			$this->raiseError ( "qcl_db_model::setFieldValue : Invalid field '$field'");
 		}
 		
-		$this->setColumnValue($columnName,$value,$recordId);
+		$this->setColumnValue( $columnName, $value, $recordId );
 	}
 
 	/**
@@ -596,9 +596,9 @@ class qcl_db_model extends qcl_jsonrpc_model
    * gets table structure as sql create statement from database
    * @return string
    */
-  function getTableCreateSql($table)
+  function getCreateTableSql($table)
   {
-    return $this->db->getTableCreateSql($table);
+    return $this->db->getCreateTableSql($table);
   }
   
   /**
@@ -644,7 +644,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       {
         if ( ! file_exists( $file ) or is_writeable ( $file ) )
         {
-          $sql = $this->getTableCreateSql($table);
+          $sql = $this->getCreateTableSql($table);
           file_put_contents($file, $sql );        
           $this->info("Stored sql for {$table}");
           return true;
@@ -682,7 +682,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     
     // compare table structure with structure and update table if there is a change
-    $currentSql   = $this->getTableCreateSql($table); // from database
+    $currentSql   = $this->getCreateTableSql($table); // from database
     $normativeSql = $this->loadSql($table); // from file
     if ( $currentSql != $normativeSql )
     {

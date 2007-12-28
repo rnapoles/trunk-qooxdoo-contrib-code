@@ -297,7 +297,7 @@ class qcl_db_pear extends qcl_db
    * @param string $table table name
    * @return string
    */
-  function getTableCreateSql($table)
+  function getCreateTableSql($table)
   {
     $row = $this->db->getRow("SHOW CREATE TABLE $table");
     return $row['Create Table'];
@@ -325,7 +325,21 @@ class qcl_db_pear extends qcl_db
     }
     return $columns;
   }
-  
+
+  /**
+   * gets the sql to do a fulltext search
+   * @return string
+   * @param string $table
+   * @param string $indexName
+   * @param string $expr
+   */
+  function getFullTextSql( $table, $indexName, $expr )
+  {
+    $fullSql = $this->getCreateTableSql( $table );
+    preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
+    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ($expr) . "')" ;
+  }
+
   /**
    * updates table structure to conform with sql create table statement passed
    * @return void
@@ -334,7 +348,7 @@ class qcl_db_pear extends qcl_db
    */
   function updateTableStructure($table,$sql)
   {
-    $currentColumns   = $this->extractColumnData($this->getTableCreateSql($table));
+    $currentColumns   = $this->extractColumnData($this->getCreateTableSql($table));
     $normativeColumns = $this->extractColumnData($sql);
     //$this->raiseError(print_r($normativeColumns,true));
     $after = "FIRST";
