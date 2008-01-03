@@ -20,6 +20,7 @@
 package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 
 import org.apache.catalina.Context;
@@ -132,9 +133,25 @@ public class RunMojo extends WebappBase {
         info("  url: http://localhost:" + port + contextPath);
         info("  log: " + webapp.join("qwt.log"));
         info("");
+        info("Use 'jconsole " + getPid() + "' to start the management console.");
+        info("");
         return embedded;
     }
 
+    // TODO: move to Sushi
+    /** See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4244896 */
+    public static String getPid() {
+        String name;
+        int idx;
+        
+        name = ManagementFactory.getRuntimeMXBean().getName();
+        idx = name.indexOf('@');
+        if (idx == -1) {
+            throw new IllegalStateException(name);
+        }
+        return name.substring(0, idx);
+    }
+    
     private synchronized void run(final Embedded tomcat) throws MojoExecutionException {
         try {
             tomcat.start();
