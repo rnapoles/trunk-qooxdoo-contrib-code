@@ -1,3 +1,23 @@
+### qx/core/Target.java
++++
+    /**
+     * @native
+        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
+        this.addEventListener(type, function(e) {
+            listener.notify(e);
+        });
+     */
+    public native void addJavaEventListener(String type, org.qooxdoo.toolkit.qooxdoo.EventListener listener);
+
+    public void addChangeValueListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener) {
+        addJavaEventListener("changeValue", listener);
+    }
+    public void addExecuteListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener) {
+        addJavaEventListener("execute", listener);
+    }
+    public void addChangeSelectionListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener) {
+		addJavaEventListener("changeSelection", listener);    
+    }
 ### qx/util/manager/Value.java
 ***
 public native Object resolveDynamic(String value);
@@ -21,62 +41,6 @@ public native void renderPadding(Object changes);
 +++
     public static final String AUTO = "auto";
 
-### qx/ui/form/TextField.java
-+++
-    /**
-     * @native
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.addEventListener("changeValue", function(e) {
-            listener.notify(e);
-        });
-     */
-    public native void addChangeValueListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
-### qx/io/remote/Request.java
-+++
-    /**
-     * @native
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.addEventListener("completed", function(e) {
-          listener.notify(e);
-        });
-     */
-    public native void addCompletedListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
-### qx/ui/form/Button.java
-+++
-    /**
-     * @native
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.addEventListener("execute", function(e) {
-          listener.notify(e);
-        });
-     */
-    public native void addExecuteListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
-### qx/ui/toolbar/Button.java
-+++
-    /**
-     * @native
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.addEventListener("execute", function(e) {
-          listener.notify(e);
-        });
-     */
-    public native void addExecuteListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
-### qx/ui/menu/Button.java
-+++
-
-    /**
-     * @native
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.addEventListener("execute", function(e) {
-          listener.notify(e);
-        });
-     */
-    public native void addExecuteListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
 ### qx/ui/basic/Image.java
 +++
     public static final String PREFIX = "images/";
@@ -94,17 +58,6 @@ public class Tree<T> extends TreeFolder<T>
         result.setLabel(root.toString());
         return result;
     }
-
-    /**
-     * @native
-       //
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.getManager().addEventListener("changeSelection", function(e) {
-          listener.notify(e);
-        });
-     */
-    public native void addChangeSelectionListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
 ### qx/ui/tree/AbstractTreeElement.java
 *** 
 class AbstractTreeElement extends qx.ui.layout.BoxLayout
@@ -190,16 +143,6 @@ public class ComboBox<T> extends qx.ui.layout.HorizontalBoxLayout
         }
         return combo;
     }
-
-    /**
-     * @native
-        // #pre(org.qooxdoo.toolkit.qooxdoo.EventListener)
-        this.addEventListener("changeValue", function(e) {
-          listener.notify(e);
-        });
-     */
-    public native void addChangeValueListener(org.qooxdoo.toolkit.qooxdoo.EventListener listener);
-
 
     //--
     
