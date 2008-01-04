@@ -20,9 +20,9 @@
 
 package org.qooxdoo.chat.client;
 
-import org.qooxdoo.chat.common.PongService;
+import org.qooxdoo.chat.common.PersonService;
 
-public class Pong implements PongService {
+public class Pong implements PersonService {
     public void pong(String msg) {
         System.out.println("pong: " + msg);
     }

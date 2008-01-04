@@ -17,8 +17,17 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.chat.common;
+package org.qooxdoo.chat.server;
 
-public interface PongService {
-    void pong(String msg);
+import java.util.List;
+
+import org.qooxdoo.chat.common.PersonService;
+import org.qooxdoo.chat.common.RoomService;
+
+public class Room implements RoomService {
+    private List<String> messages;
+    
+    public void say(String message) {
+        messages.add(message);
+    }
 }

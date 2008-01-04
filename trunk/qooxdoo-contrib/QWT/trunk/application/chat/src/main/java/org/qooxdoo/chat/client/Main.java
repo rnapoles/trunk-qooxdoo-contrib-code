@@ -20,7 +20,7 @@
 package org.qooxdoo.chat.client;
 
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
-import org.qooxdoo.chat.common.PingService;
+import org.qooxdoo.chat.common.RoomService;
 
 import qx.application.Gui;
 import qx.event.type.DataEvent;
@@ -33,9 +33,9 @@ import qx.ui.pageview.tabview.Page;
 import qx.ui.pageview.tabview.TabView;
 
 public class Main extends Gui {
-    private final PingService ping;
+    private final RoomService ping;
     
-    public Main(PingService ping) {
+    public Main(RoomService ping) {
         this.ping = ping;
         if (false) {
             ping.ping(new Pong()); // TODO - force dependency to Ping
@@ -105,9 +105,9 @@ public class Main extends Gui {
 
     // TODO: none-static class
     public static class Clicked implements EventListener {
-        private final PingService ping;
+        private final RoomService ping;
         
-        public Clicked(PingService ping) {
+        public Clicked(RoomService ping) {
             this.ping = ping;
         }
         

@@ -19,6 +19,6 @@
 
 package org.qooxdoo.chat.common;
 
-public interface PingService {
-    void ping(PongService pong);
+public interface PersonService {
+    void pong(String msg);
 }
