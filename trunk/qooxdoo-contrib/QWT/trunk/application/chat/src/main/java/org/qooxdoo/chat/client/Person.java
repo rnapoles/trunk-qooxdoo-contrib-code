@@ -22,8 +22,20 @@ package org.qooxdoo.chat.client;
 
 import org.qooxdoo.chat.common.PersonService;
 
+import qx.ui.form.TextArea;
+
 public class Person implements PersonService {
+    private final TextArea messages;
+    
+    public Person(TextArea history) {
+        this.messages = history;
+    }
+    
     public void notify(String message) {
-        System.out.println("got message: " + message);
+        String str;
+        
+        str = (String) messages.getValue();
+        str = str + message + "\n";
+        messages.setValue(str);
     }
 }
