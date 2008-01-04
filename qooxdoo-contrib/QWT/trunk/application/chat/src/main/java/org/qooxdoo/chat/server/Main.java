@@ -22,10 +22,10 @@ package org.qooxdoo.chat.server;
 import org.qooxdoo.toolkit.qooxdoo.Server;
 
 public class Main extends Server {
-    private final Ping ping;
+    private final Room ping;
     
     public Main() {
-        ping = new Ping();
+        ping = new Room();
         System.out.println("server start");
     }
     
