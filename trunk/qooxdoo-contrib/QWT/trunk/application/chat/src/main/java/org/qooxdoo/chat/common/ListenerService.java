@@ -19,6 +19,6 @@
 
 package org.qooxdoo.chat.common;
 
-public interface PersonService {
+public interface ListenerService {
     void notify(String message);
 }

@@ -20,14 +20,14 @@
 
 package org.qooxdoo.chat.client;
 
-import org.qooxdoo.chat.common.PersonService;
+import org.qooxdoo.chat.common.ListenerService;
 
 import qx.ui.form.TextArea;
 
-public class Person implements PersonService {
+public class Listener implements ListenerService {
     private final TextArea messages;
     
-    public Person(TextArea history) {
+    public Listener(TextArea history) {
         this.messages = history;
     }
     
