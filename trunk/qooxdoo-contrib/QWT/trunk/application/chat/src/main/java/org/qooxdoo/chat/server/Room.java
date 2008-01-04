@@ -38,6 +38,16 @@ public class Room implements RoomService {
         persons.add(person);
     }
     
+    public String getMessages() {
+        String result;
+        
+        result = "";
+        for (String message : messages) {
+            result = result + message + "\n";
+        }
+        return result;
+    }
+    
     public void say(String message) {
         messages.add(message);
         for (PersonService person : persons) {

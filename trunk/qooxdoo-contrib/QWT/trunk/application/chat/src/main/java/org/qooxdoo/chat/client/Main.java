@@ -63,6 +63,7 @@ public class Main extends Gui implements EventListener {
         this.send = new Button("Send");
 
         all = new VerticalBoxLayout();
+        messages.setValue(room.getMessages());
         messages.setHeight(400);
         messages.setWidth(600);
         all.add(messages);
