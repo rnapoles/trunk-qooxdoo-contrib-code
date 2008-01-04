@@ -17,10 +17,10 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets.server;
+package org.qooxdoo.chat.server;
 
-import org.qooxdoo.widgets.common.PingService;
-import org.qooxdoo.widgets.common.PongService;
+import org.qooxdoo.chat.common.PingService;
+import org.qooxdoo.chat.common.PongService;
 
 public class Ping implements PingService {
     public void ping(PongService pong) {

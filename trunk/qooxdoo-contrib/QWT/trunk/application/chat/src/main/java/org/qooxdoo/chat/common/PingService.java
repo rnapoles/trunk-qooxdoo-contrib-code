@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets.common;
+package org.qooxdoo.chat.common;
 
 public interface PingService {
     void ping(PongService pong);

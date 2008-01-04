@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets.server;
+package org.qooxdoo.chat.server;
 
 import org.qooxdoo.toolkit.qooxdoo.Server;
 

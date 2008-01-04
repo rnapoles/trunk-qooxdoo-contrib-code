@@ -17,10 +17,10 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets.client;
+package org.qooxdoo.chat.client;
 
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
-import org.qooxdoo.widgets.common.PingService;
+import org.qooxdoo.chat.common.PingService;
 
 import qx.application.Gui;
 import qx.event.type.DataEvent;

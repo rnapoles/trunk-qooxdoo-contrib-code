@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.widgets.common;
+package org.qooxdoo.chat.common;
 
 public interface PongService {
     void pong(String msg);
