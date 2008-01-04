@@ -22,8 +22,8 @@ package org.qooxdoo.chat.client;
 
 import org.qooxdoo.chat.common.PersonService;
 
-public class Pong implements PersonService {
-    public void pong(String msg) {
-        System.out.println("pong: " + msg);
+public class Person implements PersonService {
+    public void notify(String message) {
+        System.out.println("got message: " + message);
     }
 }

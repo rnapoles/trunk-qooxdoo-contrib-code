@@ -20,5 +20,5 @@
 package org.qooxdoo.chat.common;
 
 public interface PersonService {
-    void pong(String msg);
+    void notify(String message);
 }

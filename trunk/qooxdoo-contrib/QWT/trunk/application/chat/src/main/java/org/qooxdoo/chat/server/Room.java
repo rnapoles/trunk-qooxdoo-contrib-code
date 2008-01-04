@@ -19,6 +19,7 @@
 
 package org.qooxdoo.chat.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.chat.common.PersonService;
@@ -26,8 +27,21 @@ import org.qooxdoo.chat.common.RoomService;
 
 public class Room implements RoomService {
     private List<String> messages;
+    private List<PersonService> persons;
+    
+    public Room() {
+        messages = new ArrayList<String>();
+        persons = new ArrayList<PersonService>();
+    }
+
+    public void enter(PersonService person) {
+        persons.add(person);
+    }
     
     public void say(String message) {
         messages.add(message);
+        for (PersonService person : persons) {
+            person.notify(message);
+        }
     }
 }
