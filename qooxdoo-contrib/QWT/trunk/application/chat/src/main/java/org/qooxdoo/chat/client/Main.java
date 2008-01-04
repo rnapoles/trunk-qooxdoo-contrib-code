@@ -19,112 +19,70 @@
 
 package org.qooxdoo.chat.client;
 
-import org.qooxdoo.toolkit.qooxdoo.EventListener;
 import org.qooxdoo.chat.common.RoomService;
+import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
 import qx.application.Gui;
 import qx.event.type.DataEvent;
-import qx.ui.basic.Image;
 import qx.ui.basic.Label;
-import qx.ui.form.ComboBox;
+import qx.ui.form.Button;
+import qx.ui.form.TextArea;
+import qx.ui.form.TextField;
+import qx.ui.layout.HorizontalBoxLayout;
 import qx.ui.layout.VerticalBoxLayout;
-import qx.ui.pageview.tabview.Button;
-import qx.ui.pageview.tabview.Page;
-import qx.ui.pageview.tabview.TabView;
 
-public class Main extends Gui {
+public class Main extends Gui implements EventListener {
     private final RoomService room;
     private final Person person;
     
+    private final TextArea messages;
+    private final TextField name;
+    private final TextField text;
+    private Button send;
+    
     public Main(RoomService room) {
+        this.messages = new TextArea();
+        this.name = new TextField();
+        this.text = new TextField();
         this.room = room;
-        this.person = new Person();
+        this.person = new Person(messages);
+
         room.enter(person);
-        room.say("hi");
+        if (false) {  // TODO: force reference
+            room.say("hi");
+        }
     }
     
     @Override
     public void main() {
-        TabView view;
+        VerticalBoxLayout all;
+        HorizontalBoxLayout bottom;
         
         super.main();
 
-        view = new TabView();
-        view.setLeft(20);
-        view.setTop(48);
-        view.setRight(335);
-        view.setBottom(48);
+        this.send = new Button("Send");
 
-        addWelcome(view);
-        addControls(view);
-        
-        view.addToDocument();
+        all = new VerticalBoxLayout();
+        messages.setHeight(400);
+        messages.setWidth(600);
+        all.add(messages);
+        bottom = new HorizontalBoxLayout();
+        name.setValue("your name");
+        bottom.add(name);
+        bottom.add(new Label(": "));
+        bottom.add(text);
+        bottom.add(send);
+        all.add(bottom);
+        all.addToDocument();
+        send.addExecuteListener(this);
     }
 
-    private void addWelcome(TabView view) {
-        Button button;
-        Page page;
-        VerticalBoxLayout box;
+    public void notify(DataEvent obj) {
+        String message;
         
-        button = new Button("Welcome");
-        button.setChecked(true);
-        view.getBar().add(button);
-        page = new Page(button);
-        box = new VerticalBoxLayout();
-        page.add(box);
-        for (int i = 1; i <= 5; i++) {
-            box.add(new Label("Line " + i));
-        }
-        box.add(new Image("images/demo.gif"));
-        view.getPane().add(page);
-    }
-
-    private void addControls(TabView view) {
-        Button button;
-        Page page;
-        VerticalBoxLayout box;
-        ComboBox<String> combo;
-        qx.ui.form.Button but;
-        
-        
-        button = new Button("Controls");
-        view.getBar().add(button);
-        page = new Page(button);
-        box = new VerticalBoxLayout();
-        page.add(box);
-        combo = ComboBox.<String>createT(new String[] {"first", "second"});
-        combo.addChangeValueListener(new Changes(combo));
-        box.add(combo);
-        but = new qx.ui.form.Button("Ping");
-        but.setWidth(50);
-        but.setHeight(20);
-        but.addExecuteListener(new Clicked(room));
-        box.add(but);
-        view.getPane().add(page);
-    }
-
-    // TODO: none-static class
-    public static class Clicked implements EventListener {
-        private final RoomService ping;
-        
-        public Clicked(RoomService ping) {
-            this.ping = ping;
-        }
-        
-        public void notify(DataEvent obj) {
-            ping.say("bla");
-        }
-    }
-    
-    public static class Changes implements EventListener {
-        private final ComboBox<?> dest;
-
-        public Changes(ComboBox<?> dest) {
-            this.dest = dest;
-        }
-
-        public void notify(DataEvent obj) {
-            System.out.println("selection changed: " + dest.getValue());
-        }
+        message = name.getValue() + ": " + text.getValue();
+        text.setValue("");
+        System.out.println("message: " + message);
+        room.say(message);
     }
 }
