@@ -19,15 +19,15 @@
 
 package org.qooxdoo.toolkit.engine;
 
-import org.apache.catalina.CometEvent;
-import org.apache.catalina.CometProcessor;
+import java.io.IOException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.apache.catalina.CometEvent;
+import org.apache.catalina.CometProcessor;
 
 public class SessionServlet extends HttpServlet implements CometProcessor {
     /** millis */
@@ -47,13 +47,13 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
 
     public void event(CometEvent event) throws IOException, ServletException {
         String path;
-        HttpServletResponse response;
         Client client;
         Session session;
 
         path = event.getHttpServletRequest().getPathInfo();
         client = application.getClient();
         session = session(client, path);
+        System.out.println(path + ": session=" + session + ", event(" + event.hashCode() + "): " + event.getEventType() + " " + event.getEventSubType());
         if (session == null) {
             if (event.getEventType() != CometEvent.EventType.BEGIN) {
                 throw new IllegalStateException(path + ": unexpected event " + event.getEventType());
@@ -64,11 +64,10 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
             switch (event.getEventType()) {
                case BEGIN:
                    event.setTimeout(SESSION_TIMEOUT);
-                   session.setListener(event);
+                   session.begin(event);
                    break;
                case END:
-                   session.unsetListener(event);
-                   event.close();
+                   // ignore
                    break;
                case ERROR:
                    if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
