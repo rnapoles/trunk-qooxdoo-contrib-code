@@ -48,7 +48,7 @@ public class Room implements RoomService {
     public void say(String message) {
         messages.add(message);
         for (ListenerService listener : listeners) {
-            listener.notify(message);
+            listener.hear(message);
         }
     }
 }

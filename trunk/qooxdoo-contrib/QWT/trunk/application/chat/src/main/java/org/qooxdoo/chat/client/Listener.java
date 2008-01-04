@@ -31,7 +31,7 @@ public class Listener implements ListenerService {
         this.messages = history;
     }
     
-    public void notify(String message) {
+    public void hear(String message) {
         String str;
         
         str = (String) messages.getValue();
