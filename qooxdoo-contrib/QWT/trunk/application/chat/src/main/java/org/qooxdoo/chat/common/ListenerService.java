@@ -20,5 +20,5 @@
 package org.qooxdoo.chat.common;
 
 public interface ListenerService {
-    void notify(String message);
+    void hear(String message);
 }
