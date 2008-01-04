@@ -26,21 +26,18 @@ import org.qooxdoo.chat.common.ListenerService;
 import org.qooxdoo.chat.common.RoomService;
 
 public class Room implements RoomService {
+    private List<ListenerService> listeners;
     private List<String> messages;
-    private List<ListenerService> persons;
     
     public Room() {
+        listeners = new ArrayList<ListenerService>();
         messages = new ArrayList<String>();
-        persons = new ArrayList<ListenerService>();
     }
 
-    public void enter(ListenerService person) {
-        persons.add(person);
-    }
-    
-    public String getMessages() {
+    public String enter(ListenerService person) {
         String result;
-        
+
+        listeners.add(person);
         result = "";
         for (String message : messages) {
             result = result + message + "\n";
@@ -50,8 +47,8 @@ public class Room implements RoomService {
     
     public void say(String message) {
         messages.add(message);
-        for (ListenerService person : persons) {
-            person.notify(message);
+        for (ListenerService listener : listeners) {
+            listener.notify(message);
         }
     }
 }

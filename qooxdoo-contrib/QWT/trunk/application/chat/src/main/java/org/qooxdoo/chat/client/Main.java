@@ -33,7 +33,7 @@ import qx.ui.layout.VerticalBoxLayout;
 
 public class Main extends Gui implements EventListener {
     private final RoomService room;
-    private final Listener person;
+    private final Listener listener;
     
     private final TextArea messages;
     private final TextField name;
@@ -45,12 +45,8 @@ public class Main extends Gui implements EventListener {
         this.name = new TextField();
         this.text = new TextField();
         this.room = room;
-        this.person = new Listener(messages);
-
-        room.enter(person);
-        if (false) {  // TODO: force reference
-            room.say("hi");
-        }
+        this.listener = new Listener(messages);
+        messages.setValue(room.enter(listener));
     }
     
     @Override
@@ -63,7 +59,6 @@ public class Main extends Gui implements EventListener {
         this.send = new Button("Send");
 
         all = new VerticalBoxLayout();
-        messages.setValue(room.getMessages());
         messages.setHeight(400);
         messages.setWidth(600);
         all.add(messages);
