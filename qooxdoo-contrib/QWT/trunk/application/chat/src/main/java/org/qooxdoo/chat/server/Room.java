@@ -22,19 +22,19 @@ package org.qooxdoo.chat.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.chat.common.PersonService;
+import org.qooxdoo.chat.common.ListenerService;
 import org.qooxdoo.chat.common.RoomService;
 
 public class Room implements RoomService {
     private List<String> messages;
-    private List<PersonService> persons;
+    private List<ListenerService> persons;
     
     public Room() {
         messages = new ArrayList<String>();
-        persons = new ArrayList<PersonService>();
+        persons = new ArrayList<ListenerService>();
     }
 
-    public void enter(PersonService person) {
+    public void enter(ListenerService person) {
         persons.add(person);
     }
     
@@ -50,7 +50,7 @@ public class Room implements RoomService {
     
     public void say(String message) {
         messages.add(message);
-        for (PersonService person : persons) {
+        for (ListenerService person : persons) {
             person.notify(message);
         }
     }
