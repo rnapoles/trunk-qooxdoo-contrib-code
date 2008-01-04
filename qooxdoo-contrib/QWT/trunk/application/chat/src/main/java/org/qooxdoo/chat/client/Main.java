@@ -56,7 +56,6 @@ public class Main extends Gui implements EventListener {
         
         super.main();
 
-        name.setLiveUpdate(true);
         name.setValue("Mr. X");
         name.focus();
         text.setValue("Hi!");
