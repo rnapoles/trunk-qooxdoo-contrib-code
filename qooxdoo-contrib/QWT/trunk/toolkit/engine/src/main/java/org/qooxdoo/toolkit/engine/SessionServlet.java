@@ -29,6 +29,12 @@ import javax.servlet.http.HttpServlet;
 import org.apache.catalina.CometEvent;
 import org.apache.catalina.CometProcessor;
 
+/** 
+ * Some experience:
+ *   o the end event is unreliable, I don't use it
+ *   o begin events are stored until they're used by the server;
+ *     after the server use, they're closed and discarded 
+ */
 public class SessionServlet extends HttpServlet implements CometProcessor {
     /** millis */
     private static final int SESSION_TIMEOUT = 5 * 60 * 1000;

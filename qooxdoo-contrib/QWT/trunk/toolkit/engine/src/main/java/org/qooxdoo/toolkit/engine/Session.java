@@ -46,17 +46,9 @@ public class Session implements SessionMBean, CallListener {
 
     public void begin(CometEvent event) {
         if (this.active.size() != 0) {
-            System.out.println("TODO: " + this + ": removing stale listener");
-            this.active.clear();
+            throw new IllegalStateException("duplicate event for session " + this);
         }
         this.active.add(event);
-    }
-
-    public void end(CometEvent event) {
-        if (event != this.active.peek()) {
-            System.out.println("TODO: unexpected event: expected " + this.active.peek() + ", got " + event);
-        }
-        this.active.clear();
     }
 
     public Client getClient() {
@@ -87,11 +79,9 @@ public class Session implements SessionMBean, CallListener {
         CometEvent event;
 
         try {
-            synchronized (active) {
-                event = active.poll(10, TimeUnit.SECONDS);
-                if (event == null) {
-                    throw new IOException("session " + this + " client is unavailable");
-                }
+            event = active.poll(10, TimeUnit.SECONDS);
+            if (event == null) {
+                throw new IOException("session " + this + " client is unavailable");
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -100,8 +90,7 @@ public class Session implements SessionMBean, CallListener {
         writer.print(str);
         writer.close();
         event.close();
-        System.out.println(this + ": notified and event removed");
-        // CAUTION: do not close event or remove the event - that's done by the end event
+        System.out.println("session " + this + ",event(" + event.hashCode() + "): notified and event removed");
     }
  
     @Override
