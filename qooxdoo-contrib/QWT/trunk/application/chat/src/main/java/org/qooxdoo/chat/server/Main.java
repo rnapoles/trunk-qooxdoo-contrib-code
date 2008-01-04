@@ -22,11 +22,11 @@ package org.qooxdoo.chat.server;
 import org.qooxdoo.toolkit.qooxdoo.Server;
 
 public class Main extends Server {
-    private final Room ping;
+    private final Room room;
     
     public Main() {
-        ping = new Room();
-        System.out.println("server start");
+        room = new Room();
+        System.out.println("created chat room");
     }
     
     @Override
@@ -37,7 +37,7 @@ public class Main extends Server {
     @Override
     public Object clientStart() {
         System.out.println("client start");
-        return ping;
+        return room;
     }
 
     @Override

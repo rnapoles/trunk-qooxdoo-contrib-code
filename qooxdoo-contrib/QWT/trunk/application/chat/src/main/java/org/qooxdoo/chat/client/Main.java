@@ -33,13 +33,14 @@ import qx.ui.pageview.tabview.Page;
 import qx.ui.pageview.tabview.TabView;
 
 public class Main extends Gui {
-    private final RoomService ping;
+    private final RoomService room;
+    private final Person person;
     
-    public Main(RoomService ping) {
-        this.ping = ping;
-        if (false) {
-            ping.ping(new Pong()); // TODO - force dependency to Ping
-        }
+    public Main(RoomService room) {
+        this.room = room;
+        this.person = new Person();
+        room.enter(person);
+        room.say("hi");
     }
     
     @Override
@@ -47,7 +48,6 @@ public class Main extends Gui {
         TabView view;
         
         super.main();
-        System.out.println("welcome!");
 
         view = new TabView();
         view.setLeft(20);
@@ -98,7 +98,7 @@ public class Main extends Gui {
         but = new qx.ui.form.Button("Ping");
         but.setWidth(50);
         but.setHeight(20);
-        but.addExecuteListener(new Clicked(ping));
+        but.addExecuteListener(new Clicked(room));
         box.add(but);
         view.getPane().add(page);
     }
@@ -112,8 +112,7 @@ public class Main extends Gui {
         }
         
         public void notify(DataEvent obj) {
-            System.out.println("clicked: " + obj);
-            ping.ping(new Pong());
+            ping.say("bla");
         }
     }
     
