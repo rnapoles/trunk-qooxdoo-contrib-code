@@ -45,6 +45,7 @@ public class Main extends Gui implements EventListener {
         this.name = new TextField();
         this.text = new TextField();
         this.room = room;
+        this.send = new Button("Send");
         this.listener = new Listener(messages);
         messages.setValue(room.enter(listener));
     }
@@ -59,12 +60,11 @@ public class Main extends Gui implements EventListener {
         name.setValue("Mr. X");
         name.focus();
         text.setValue("Hi!");
-        this.send = new Button("Send");
-
+        send.addExecuteListener(this);
         all = new VerticalBoxLayout();
         messages.setReadOnly(true);
         messages.setHeight(400);
-        messages.setWidth(600);
+        messages.setWidth(400);
         all.add(messages);
         bottom = new HorizontalBoxLayout();
         bottom.add(name);
@@ -73,7 +73,6 @@ public class Main extends Gui implements EventListener {
         bottom.add(send);
         all.add(bottom);
         all.addToDocument();
-        send.addExecuteListener(this);
     }
 
     public void notify(DataEvent obj) {
@@ -81,7 +80,7 @@ public class Main extends Gui implements EventListener {
         
         message = name.getValue() + ": " + text.getValue();
         text.setValue("");
-        System.out.println("message: " + message);
+        text.focus();
         room.say(message);
     }
 }
