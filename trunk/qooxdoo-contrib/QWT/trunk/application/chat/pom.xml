@@ -8,10 +8,9 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>org.qooxdoo</groupId>
-  <artifactId>widgets</artifactId>
-  <name>Widget Application</name>
-  <description>QWT Demo Web Application: no-sense-example, we just need a place 
-    to try various widgets.</description>
+  <artifactId>chat</artifactId>
+  <name>Chat Application</name>
+  <description>QWT Application to demonstrate client-server communication.</description>
   <version>${toolkit.version}</version>
 
   <properties>
