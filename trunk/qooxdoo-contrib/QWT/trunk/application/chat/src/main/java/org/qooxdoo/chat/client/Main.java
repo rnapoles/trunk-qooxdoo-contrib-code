@@ -56,14 +56,18 @@ public class Main extends Gui implements EventListener {
         
         super.main();
 
+        name.setLiveUpdate(true);
+        name.setValue("Mr. X");
+        name.focus();
+        text.setValue("Hi!");
         this.send = new Button("Send");
 
         all = new VerticalBoxLayout();
+        messages.setReadOnly(true);
         messages.setHeight(400);
         messages.setWidth(600);
         all.add(messages);
         bottom = new HorizontalBoxLayout();
-        name.setValue("your name");
         bottom.add(name);
         bottom.add(new Label(": "));
         bottom.add(text);
