@@ -18,9 +18,9 @@
  ************************************************************************ */
 
 
-package org.qooxdoo.widgets.client;
+package org.qooxdoo.chat.client;
 
-import org.qooxdoo.widgets.common.PongService;
+import org.qooxdoo.chat.common.PongService;
 
 public class Pong implements PongService {
     public void pong(String msg) {
