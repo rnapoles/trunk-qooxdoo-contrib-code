@@ -28,9 +28,13 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	var $ini;
 	
 	/**
-	 * result value which will be serialized and returned to server
+	 * response data to be serialized and returned to server
 	 */
-	var $result = array();
+	var $_response = array(
+    'result'    => array(),
+    'messages'  => array(),
+    'events'    => array() 
+  );
 	
   
   /**
@@ -51,7 +55,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		$this->configureService();		
     $this->setSingleton(&$this);
 	}   	
-	
+
+	//-------------------------------------------------------------
+  // service configuration
+  //-------------------------------------------------------------
+  
 	/**
 	 * reads initial configuration. looks for service.ini.php files, starting at 
 	 * the top-level service directory. lower-level service.ini.php files can override 
@@ -98,9 +106,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   
 	/**
 	 * gets a configuration value of the pattern "foo.bar.baz"
-	 * This retrieves the values set in the service.ini.php file, but 
-	 * can be (optionally) overridden by values provided by the qcl_config
-	 * class $this->config
+	 * This retrieves the values set in the service.ini.php file.
 	 */
 	function getIniValue($path)
 	{
@@ -110,13 +116,13 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		{
 			$value = $value[$part];  
 		}
-		if ( $this->config and is_a($this->config, "qcl_config" ) )
-		{
-			// todo: implement
-		}
 		return $value;
 	}
 
+	//-------------------------------------------------------------
+  // models
+  //-------------------------------------------------------------
+  
   /**
    * gets a model
    * @return object
@@ -137,7 +143,10 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   {
     $this->_models[$name] =& $object;
   }
-    
+
+	//-------------------------------------------------------------
+  // response data
+  //-------------------------------------------------------------  
 	
 	/**
 	 * assemble a result array for the json response
@@ -155,10 +164,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		}
 		else
 		{
-			$this->result[$first] =& $value;
+			$this->_response['result'][$first] =& $value;
 		}
 	}
-	
 	
 	/**
 	 * gets value for particular result key
@@ -166,119 +174,104 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
 	function &get ( $key )
 	{
-		return $this->result[$key];
+		return $this->_response['result'][$key];
 	}
 	
 	/**
-	 * gets result for json response
+	 * gets result for json response inclusing result data, events, and messages
+	 * @return array
 	 */
-	function &getResult ( $key )
+	function getResponseData()
 	{
-		return $this->result;
+		return $this->_response;
 	}
-	
+
+	//-------------------------------------------------------------
+  // messages and events
+  //-------------------------------------------------------------
+
 	/**
-	 * adds a server message
-	 * @param mixed $message Message name or hash map of messages
+	 * dispatches a server message
+	 * @param string $message Message name 
 	 * @param mixed $data Data dispatched with message
 	 */
-	function addMessage ( $message, $data=true )
+	function dispatchMessage ( $message, $data=true )
 	{
-		$messages =  (array) $this->get("__messages");
-		$this->log("Message $message"); // debug
+		$this->log("Message $message"); 
+    $this->addMessage( $message, $data );
+	}
+
+  /**
+   * adds a message to the message stack
+   * @param string $message Message name
+   * @param mixed $data Message Data
+   * @return void
+   */
+  function addMessage( $message, $data )
+  {
 		if ( is_string ($message) )
 		{
-			$messages[] = array(
+			$this->_response['messages'][] = array(
 				'name' => $message, 
 				'data' => $data
 			);
 		}
-		elseif( is_array($message) )
-		{
-			$messages = array_merge($messages,$message);
-		}
 		else
 		{
-			trigger_error ("Invalid parameter");
+			trigger_error ("Invalid message parameter");
 		}
-		$this->set("__messages", $messages );
-		
-	}
+  }
 
-	//-------------------------------------------------------------
-  // message polling - put this into a separate class
-  //-------------------------------------------------------------
-	
+  /**
+   * get messages on message stack
+   * @return array
+   */
+  function getMessages()
+  {
+    return $this->_response['messages'];
+  }
+
+
 	/**
-	 * server messages
-	 * @param string 	$params[0]	request id
+	 * dispatches a server event
+	 * @param mixed $event Message Event type
+	 * @param mixed $data Data dispatched with event
 	 */
-	function method_getServerMessages( $params )
+	function dispatchEvent ( $event, $data=true )
 	{
-		$requestId 	= $params[0]; 
-		$className	= get_class($this);
-		$sessionId 	= session_id();
-		
-		// get messages from database and delete them
-		$db =& $this->getSingleton("qcl_db_pear");
-		if ( $requestId )
-		{
-			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className' AND `request_id` = '$requestId'";
-		}
-		else
-		{
-			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className'";			
-		}
-
-		// get messages
-		$messages = $db->getAllRows("
-			SELECT * FROM `messages`
-			WHERE $whereQuery
-		");	
-		
-		$this->log("### Polled for ". count($messages) . " messages.");
-		
-		// and delete them
-		$db->execute("
-			DELETE FROM `messages`
-			WHERE $whereQuery
-		");
-		
-		// send to server 
-		foreach ($messages as $message )
-		{ 
-			$this->addMessage( $message['name'], unserialize($message['data']) );
-		}
-		return $this->getResult();
+		$this->log("Event $event"); // debug
+    $this->addEvent( $event, $data );
 	}
 
 	/**
-	 * add server message
-	 * @param string 	$message
-	 * @param mixed		$data
-	 * @param string	$requestId 	(optional)
+	 * adds an event to the event stack
+	 * @param mixed $event Message Event type
+	 * @param mixed $data Data dispatched with event
 	 */
-	function addServerMessage( $name, $data, $requestId = null)
-	{ 
-		$className	= get_class($this);
-		$sessionId 	= session_id();
-		
-		// create data row
-		$row = array(
-			'class'			=> $className,
-			'session_id'	=> $sessionId,
-			'request_id'	=> $requestId,
-			'name'			=> $name,
-			'data'			=> serialize($data)
-		);
-		
-		// insert messages into database
-		$db =& $this->getSingleton("qcl_db_pear");
-		$db->insert("messages",$row);
-		
-		return;
+	function addEvent ( $event, $data )
+	{
+		if ( is_string ($event) )
+		{
+			$this->_response['events'][] = array(
+				'type' => $event, 
+				'data' => $data
+			);
+		}
+		else
+		{
+			trigger_error ("Invalid event parameter");
+		}
 	}
 
+  /**
+   * get messages on message stack
+   * @return array
+   */
+  function getEvents()
+  {
+    return $this->_response['events'];
+  }
+  
 	 
 }	
 

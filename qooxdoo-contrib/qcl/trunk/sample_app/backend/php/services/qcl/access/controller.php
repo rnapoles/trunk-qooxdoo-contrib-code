@@ -75,23 +75,23 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		{
 			$security = $userModel->getSecurity($username);
 			$userModel->setActiveUser($security['userdata']);
-			$this->addMessage("qcl.auth.messages.loginSuccess");						
+			$this->dispatchMessage("qcl.auth.messages.loginSuccess");						
 		}
 		elseif ( ! $username and $activeUser )
 		{
 			$security = $userModel->getSecurity($activeUser[$userModel->key_username]);
-			$this->addMessage("qcl.auth.messages.loginSuccess");
+			$this->dispatchMessage("qcl.auth.messages.loginSuccess");
 		}
 		else
 		{
 			$security = null;
 			$userModel->setActiveUser(null);
-			$this->addMessage( "qcl.auth.messages.loginFailed", $this->error );
+			$this->dispatchMessage( "qcl.auth.messages.loginFailed", $this->error );
 		}
 		
 		$this->set("security", $security );
 		
-		return $this->getResult();
+		return $this->getResponseData();
    }   
    
   /**
@@ -101,8 +101,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   {
     $userModel = $this->getModel("user");
     $userModel->setActiveUser(null);
-    $this->addMessage("qcl.auth.messages.user.loggedOut");
-    return $this->getResult();
+    $this->dispatchMessage("qcl.auth.messages.user.loggedOut");
+    return $this->getResponseData();
   }   
 	
   /**
@@ -135,7 +135,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		
 		// return data
 		$this->set( "tabledatamodel", $data );		
-		return $this->getResult();
+		return $this->getResponseData();
   }
     
   /**
@@ -155,9 +155,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		$model->create($namedId,$parentId);
 		
 		// load and show item 
-		$this->addMessage( "qcl.auth.messages.{$type}.created", $itemId );
+		$this->dispatchMessage( "qcl.auth.messages.{$type}.created", $itemId );
 		
-		return $this->getResult();
+		return $this->getResponseData();
 	}
 	
 	/**
@@ -190,8 +190,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   	$model->update($data);
   	
     // success
-  	$this->addMessage("qcl.auth.messages.{$type}.updated",$data[$model->key_id]);
-  	return $this->getResult();
+  	$this->dispatchMessage("qcl.auth.messages.{$type}.updated",$data[$model->key_id]);
+  	return $this->getResponseData();
   }    
   
   /**
@@ -217,9 +217,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
     }
     
     // success
-    $this->addMessage("qcl.auth.messages.{$type}.deleted",$itemId);
+    $this->dispatchMessage("qcl.auth.messages.{$type}.deleted",$itemId);
     
-    return $this->getResult();
+    return $this->getResponseData();
   }    
 
   /**
@@ -240,8 +240,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   	$userModel->addToRole($userRefs,$roleRefs); 
     
     // success
-  	$this->addMessage("qcl.auth.messages.user.roleAdded",$userRefs);
-  	return $this->getResult();
+  	$this->dispatchMessage("qcl.auth.messages.user.roleAdded",$userRefs);
+  	return $this->getResponseData();
   }
    
   /**
@@ -262,8 +262,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   	$userModel->removeFromRole($userRefs,$roleRefs);
 
     // success
-  	$this->addMessage("qcl.auth.messages.user.roleRemoved",$userRefs); 
-  	return $this->getResult();
+  	$this->dispatchMessage("qcl.auth.messages.user.roleRemoved",$userRefs); 
+  	return $this->getResponseData();
   }
   
   /**
@@ -284,8 +284,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   	$permModel->addToRole($permRefs,$roleRefs); 
     
     // success
-  	$this->addMessage("qcl.auth.messages.permission.roleAdded",$permRefs);
-  	return $this->getResult();
+  	$this->dispatchMessage("qcl.auth.messages.permission.roleAdded",$permRefs);
+  	return $this->getResponseData();
   }
    
   /**
@@ -306,8 +306,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   	$permModel->removeFromRole($permRefs,$roleRefs);
   
     // success
-  	$this->addMessage("qcl.auth.messages.permission.roleRemoved",$permRefs); 
-  	return $this->getResult();
+  	$this->dispatchMessage("qcl.auth.messages.permission.roleRemoved",$permRefs); 
+  	return $this->getResponseData();
   }
 
   //-------------------------------------------------------------
@@ -388,7 +388,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 
 		// return data
 		$this->set( 'treedatamodel', $result );
-		return $this->getResult();
+		return $this->getResponseData();
   }
 
 	/**
@@ -498,7 +498,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 
     	// return data
     	$this->set( 'treedatamodel', $result );
-    	return $this->getResult();
+    	return $this->getResponseData();
     
   }
     
@@ -539,7 +539,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 	  );		
 
 		$this->set( 'treedatamodel', $result );
-		return $this->getResult();
+		return $this->getResponseData();
   }
 
   /**
@@ -580,7 +580,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 	  );
 
 		$this->set( 'treedatamodel', $result );
-		return $this->getResult();
+		return $this->getResponseData();
   }
 }
 ?>

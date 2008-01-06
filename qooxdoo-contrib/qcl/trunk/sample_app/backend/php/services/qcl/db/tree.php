@@ -36,7 +36,7 @@ class qcl_db_tree extends qcl_db_model
 	}   
 	
 	//-------------------------------------------------------------
-  // public non-rpc methods 
+  // public methods 
 	//-------------------------------------------------------------   
    
 	/**
@@ -66,13 +66,12 @@ class qcl_db_tree extends qcl_db_model
 	function getChildCount ( $parentId )
 	{
 		$parentId = (int) $parentId;
-		$count = $this->db->getRow("
+		$count = $this->db->getValue("
 			SELECT COUNT(*) 
-			FROM {$this->table}
-			WHERE {$this->key_parentId} = $parentId
-		");
-		$count =  array_values($count); 
-		return (int) $count[0];
+			FROM `{$this->table}`
+			WHERE `{$this->key_parentId}` = $parentId
+		"); 
+		return (int) $count;
 	}
 	
 	/**
