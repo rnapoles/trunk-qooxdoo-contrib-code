@@ -34,10 +34,29 @@
  * transport and provides several widgets with data or sends their data
  * to the server on demand, respectively.
  * 
- * The result sent from the server must be a hash map. If the key exists as a
+ * Most of the time, the only methods that will be called is updateClient (to 
+ * pull data from the server to update the client object) and updateServer 
+ * (to send client data to the server).
+ * 
+ * The result sent from the server must be a hash map of the following structure.:
+ * <pre>
+ * {
+ *   result : { ... result data ... },
+ *   events : [ { type : "event1", data : ... }, { type : "event2", data: ... }, ... ],
+ *   messages : [ { name : "appname.messages.foo", data : ... }, { name : "appname.messages.bar", data: ... }, ... ]
+ * }
+ * </pre>
+ * 
+ * The "events" and "messages" array elements will be dispatched as events on the
+ * sending/receiving object or as public messages. 
+ * 
+ * The "result" object returned from a "updateClient" call must be a hashmap. 
+ * If a key in this hashmap exists as a
  * widget property, this property will be updated directly. The result data
  * is also sent as a data event of name "dataReceived" so that event handlers
  * can use non-property key data from the hash map for whatever end.
+ * 
+ * A tutorial will be written soon.
  *
  */
 qx.Mixin.define("qcl.databinding.simple.MDataManager",
@@ -166,7 +185,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 
     /**
      * Generic getter for options that can be selected
-     * (
      * @param {Object} value
      * @param {Object} old
      */
@@ -265,7 +283,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
       
       // callback function
-      var callbackFunc = function(result, ex, id) {
+      var callbackFunc = function(data, ex, id) {
         // notify of end of request
         qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));
         request.reset();
@@ -274,24 +292,24 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 
         if (ex == null) 
         {  
-          // server messages
-          if( result.__messages && result.__messages instanceof Array )
-          {
-            result.__messages.forEach(function(message)
-            {
-              qx.event.message.Bus.dispatch( message.name, message.data ); 
-            });
-            delete (result.__messages);
-          }
-          
+           // handle messages and events
+           if (data.messages || data.events) 
+           {
+             _this.__handleEventsAndMessages(data)
+           }
+           
            // handle received data	              
-           _this.__handleDataReceived (result);
-           
+           if ( data.result )
+           {
+             _this.__handleDataReceived (data.result);
+           }
+                    
            // notify that data has been received
-           _this.createDispatchDataEvent("dataReceived",result);
+           _this.createDispatchDataEvent("dataReceived",data.result);
            
-         } else {
-           // generic error handling; todo: delegate to event listeners
+         } 
+         else 
+         {
            // dispatch error message
            qx.event.message.Bus.dispatch( 
              new qx.event.message.Message(
@@ -300,6 +318,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
              )
            );
            _this.warn ( "Async exception (#" + id + "): " + ex.message );
+
            // notify that data has been received but failed
            _this.createDispatchDataEvent("dataReceived",null);
          }
@@ -315,7 +334,31 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.object", request );
        this.createDispatchDataEvent( "requestSent", request ); 
     },
-    
+
+    /**
+     * handles events and messages received with server response
+     */
+    __handleEventsAndMessages : function ( data )
+    {
+      // server messages
+      if( data.messages && data.messages instanceof Array )
+      {
+        data.messages.forEach( function(message)
+        {
+          qx.event.message.Bus.dispatch( message.name, message.data ); 
+        });
+      }
+
+      // server events
+      if( data.events && data.messages instanceof Array )
+      {
+        data.events.forEach( function(event)
+        {
+          this.createDispatchE( event.type, event.data ); 
+        });
+      }       
+    },
+
     /**
      * handles the data sent from the server to update the local state
      *
@@ -638,7 +681,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       var widgetData = this.__getWidgetData();
       
       // callback function
-      var callbackFunc = function(result, ex, id)
+      var callbackFunc = function(data, ex, id)
       {
          // notify of end of request
         qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));		         
@@ -646,22 +689,20 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         request.dispose();
         request = null; // dispose rpc object
         
-        if (ex == null) {
-          
-          // server messages
-          if( result.__messages && result.__messages instanceof Array )
+        if (ex == null) 
+        {
+          // handle messages and events
+          if (data.messages || data.events) 
           {
-            result.__messages.forEach(function(message)
-            {
-              qx.event.message.Bus.dispatch( message.name, message.data ); 
-            });
-            delete (result.__messages);
+            _this.__handleEventsAndMessages(data)
           }
           
           // notify about sent data only if sending was successful
-          _this.createDispatchDataEvent("dataSent",result);
+          _this.createDispatchDataEvent("dataSent",data.result);
           
-        } else {
+        } 
+        else 
+        {
           // dispatch error message, todo
           qx.event.message.Bus.dispatch( 
            new qx.event.message.Message(
@@ -692,8 +733,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     {
       // create new request object
       var req = new qx.io.remote.Request(this.getServiceUrl(), qx.net.Http.METHOD_POST, qx.util.Mime.TEXT);
-      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      req.setCrossDomain(this.getAllowCrossDomainRequests());
+      req.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded" );
+      req.setCrossDomain( this.getAllowCrossDomainRequests() );
       //req.setTimeout(this.getTimeout());
       
       // add form data
@@ -703,9 +744,15 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       
       for (var key in data)
       {
-        if ( ! data[key] ) continue;
-        if (data[key].selected) data[key] = data[key].selected;
-        req.setFormField(key, data[key].value || data[key].text || data[key].checked ||  "" );
+        if ( ! data[key] ) 
+        {
+          continue;
+        }
+        if ( data[key].selected ) 
+        {
+          data[key] = data[key].selected;
+        }
+        req.setFormField( key, data[key].value || data[key].text || data[key].checked ||  "" );
       }
       
       // event listeners
@@ -730,11 +777,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       
       qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.post.start",req));
       req.send();        
-
     },
 
-
-    
     /**
      * gets the data that should be sent to the server
      *
