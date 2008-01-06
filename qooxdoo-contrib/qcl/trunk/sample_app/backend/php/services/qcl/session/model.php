@@ -87,11 +87,11 @@ class qcl_session_model extends qcl_db_model
    */
   function addMessageBroadcast( $sessionId, $message, $data )
   {
-    $serializedData = serialize($data);
+    $serializedData = addSlashes(serialize($data));
     $this->db->execute("
       UPDATE `{$this->table}`
       SET `{$this->key_messages}` = CONCAT(`{$this->key_messages}`,'[[$message][$serializedData]]') 
-      WHERE NOT `{$this->key_namedId}` = '$sessionId'
+      WHERE `{$this->key_namedId}` != '$sessionId'
     ");
   }
   
@@ -109,16 +109,21 @@ class qcl_session_model extends qcl_db_model
     ");
     preg_match_all( "/\[\[([^\]]+)\]\[([^\]]+)\]\]/", $msgData, $matches );
     $messages = array();
-    foreach( $matches as $match )
+    for( $i=0; $i<count($matches[0]); $i++)
     {
-      if ( $match[1] )
+      if ( $matches[1][$i] )
       {
         $messages[] = array(
-          'name'  => $match[1],
-          'data'  => unserialize($match[2])
+          'name'  => $matches[1][$i],
+          'data'  => unserialize($matches[2][$i])
         );        
       }
     }
+    $this->db->execute("
+      UPDATE `{$this->table}`
+      SET `{$this->key_messages}` = ''
+      WHERE `{$this->key_namedId}` = '$sessionId'
+    ");
     return $messages;
   }
   

@@ -1,14 +1,15 @@
 <?php
 
 // dependencies
-require_once ("qcl/jsonrpc/controller.php");
+require_once ("qcl/session/controller.php");
 require_once ("qcl/config/config.php");
 
 /**
  * Service class providing data to the config manager on the client
+ * requires user, permission, role and session models
  */
 
-class qcl_config_controller extends qcl_jsonrpc_controller
+class qcl_config_controller extends qcl_session_controller
 {
 
 	//-------------------------------------------------------------
