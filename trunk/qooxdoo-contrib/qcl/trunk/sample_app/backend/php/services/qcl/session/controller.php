@@ -76,7 +76,7 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 		if ( is_string ($message) )
 		{
 	    $sessionModel =& $this->getModel("session");
-      $sessionModel->addMessageBroadcast( $this->getSessionId, $message, $data );
+      $sessionModel->addMessageBroadcast( $this->getSessionId(), $message, $data );
 		}
 		else
 		{
