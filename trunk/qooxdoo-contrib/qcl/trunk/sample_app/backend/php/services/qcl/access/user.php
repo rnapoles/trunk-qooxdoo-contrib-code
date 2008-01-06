@@ -1,6 +1,8 @@
 <?php
 require_once ("qcl/access/common.php");
 
+define('QCL_ACTIVE_USER_SESSION_VARNAME', "qcl_access_user_activeUser");
+
 /**
  * class providing data on users
  * providing a backend to the qcl.auth client package
@@ -29,18 +31,7 @@ class qcl_access_user extends qcl_access_common
   
   var $reservedNames          = array("default","admin","global");
 	
-  //-------------------------------------------------------------
-  // internal methods 
-  //-------------------------------------------------------------
- 
-  /**
-   * constructor 
-   * @param object reference $controller
-   */
- 	function __construct($controller)
-  {
-    parent::__construct(&$controller);
-	}   
+
  
   //-------------------------------------------------------------
   // public methods 
@@ -203,7 +194,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUser()
    {
-   		return $_SESSION['qcl_access_user_activeUser']; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME]; 
    }
    
    /**
@@ -212,7 +203,7 @@ class qcl_access_user extends qcl_access_common
     */
    function setActiveUser($data)
    {
-   		$_SESSION['qcl_access_user_activeUser'] = $data;
+   		$_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] = $data;
    }
 
    /**
@@ -221,7 +212,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserId()
    {
-   		return $_SESSION['qcl_access_user_activeUser'][$this->key_id]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_id]; 
    }
 
    /**
@@ -230,7 +221,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserName()
    {
-   		return $_SESSION['qcl_access_user_activeUser'][$this->key_namedId]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_namedId]; 
    }
 
    /**
@@ -239,7 +230,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserNamedId()
    {
-   		return $_SESSION['qcl_access_user_activeUser'][$this->key_namedId]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_namedId]; 
    }
   
    /**
@@ -248,7 +239,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserFullName()
    {
-   		return $_SESSION['qcl_access_user_activeUser'][$this->key_name]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_name]; 
    }  
   
    /**

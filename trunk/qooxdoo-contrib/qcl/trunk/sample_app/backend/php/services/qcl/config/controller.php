@@ -50,7 +50,7 @@ class qcl_config_controller extends qcl_jsonrpc_controller
  			$result[$row[$configModel->key_name]] = $row;
  		}
  		$this->set( "configMap", $result );
- 		return $this->getResult(); 
+ 		return $this->getResponseData(); 
  	}
  	
  	/**
@@ -66,8 +66,8 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 		{
       $configModel->set( $key, $value );
 		} 
-    $this->addMessage( "qcl.config.messages.key.updated", $key );		
- 		return $this->getResult(); 
+    $this->dispatchMessage( "qcl.config.messages.key.updated", $key );		
+ 		return $this->getResponseData(); 
  	}
    	
 	/**
@@ -95,8 +95,8 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 			$params[1]->permissionWrite,
 			$params[1]->allowUserVariants
 		);
-		$this->addMessage( "qcl.config.messages.key.created", $id );
-		return $this->getResult();
+		$this->dispatchMessage( "qcl.config.messages.key.created", $id );
+		return $this->getResponseData();
 	} 
 	
 	/**
@@ -116,16 +116,16 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 		$configModel  =& $this->getModel("config");
     
 		$configModel->updateById($id,$key,$value);
-		$this->addMessage( "qcl.config.messages.key.updated", $id );
+		$this->dispatchMessage( "qcl.config.messages.key.updated", $id );
 		
 		if ( $key == "value" )
 		{
 			$row = $configModel->getRowById($id);
 			$data = array();
 			$data[$row[$configModel->key_name]] = $row[$configModel->key_value]; 
-			$this->addMessage( "qcl.config.messages.server.changeConfigKey", $data );	
+			$this->dispatchMessage( "qcl.config.messages.server.changeConfigKey", $data );	
 		}
-		return $this->getResult();
+		return $this->getResponseData();
 	}
 	
 	
@@ -140,7 +140,7 @@ class qcl_config_controller extends qcl_jsonrpc_controller
 	{ 
 		$configModel =& $this->getModel("config");
     $configModel->delete($params[1]);
-		return $this->getResult();
+		return $this->getResponseData();
 	} 
  
 	/**
@@ -158,8 +158,8 @@ class qcl_config_controller extends qcl_jsonrpc_controller
     $configModel->set( $params[0], $params[1], $params[2] );
 		$data = array();
 		$data[$params[0]] = $params[1];
-		$this->addMessage( "qcl.config.messages.server.changeConfigKey", $data );
-		return $this->getResult();
+		$this->dispatchMessage( "qcl.config.messages.server.changeConfigKey", $data );
+		return $this->getResponseData();
 	}
 	
 	/**
@@ -186,7 +186,7 @@ class qcl_config_controller extends qcl_jsonrpc_controller
       );
 		}
 		$this->set( "tabledatamodel", $table );
-		return $this->getResult();
+		return $this->getResponseData();
 	}
 }
 

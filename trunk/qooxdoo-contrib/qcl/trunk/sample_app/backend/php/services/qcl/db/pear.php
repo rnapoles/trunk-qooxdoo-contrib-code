@@ -83,8 +83,10 @@ class qcl_db_pear extends qcl_db
 	
 	/**
 	 * executes a query, alias of $this->query
+	 * @param string $sql
+	 * @return array resultset
 	 */
-	function &execute ( $sql )
+	function execute ( $sql )
 	{
 		return $this->query ( $sql );	
 	}
@@ -92,9 +94,10 @@ class qcl_db_pear extends qcl_db
 	/**
 	 * get first row of result set
 	 * @param string 	  $sql 				      sql query
-	 * @param boolean  	$withColumnNames	if true (default), map values to column names 
+	 * @param boolean  	$withColumnNames	if true (default), map values to column names
+	 * @return array
 	 */
-	function &getRow ( $sql, $withColumnNames=true )
+	function getRow ( $sql, $withColumnNames=true )
 	{
 		if ( ! is_object($this->db) )
     {
@@ -250,15 +253,16 @@ class qcl_db_pear extends qcl_db
 	
 	/**
 	 * gets last inserted primary key
+	 * @return int
 	 */
 	function getLastInsertId()
 	{
-		$res = $this->db->getRow("SELECT last_insert_id()", DB_FETCHMODE_ORDERED );
-		return $res[0];
+		return $this->getValue( "SELECT last_insert_id()" );
 	}
 	
 	/**
 	 * disconnects from database
+	 * @return void
 	 */
 	function disconnect()
 	{
@@ -327,7 +331,7 @@ class qcl_db_pear extends qcl_db
   }
 
   /**
-   * gets the sql to do a fulltext search
+   * gets the sql to do a fulltext search. Uses boolean mode
    * @return string
    * @param string $table
    * @param string $indexName
@@ -337,7 +341,7 @@ class qcl_db_pear extends qcl_db
   {
     $fullSql = $this->getCreateTableSql( $table );
     preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
-    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ($expr) . "')" ;
+    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ($expr) . "' IN BOOLEAN MODE)" ;
   }
 
   /**
