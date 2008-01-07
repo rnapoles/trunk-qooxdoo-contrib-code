@@ -59,7 +59,8 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
         path = event.getHttpServletRequest().getPathInfo();
         client = application.getClient();
         session = session(client, path);
-        System.out.println(path + ": session=" + session + ", event(" + event.hashCode() + "): " + event.getEventType() + " " + event.getEventSubType());
+        System.out.println(path + ": session=" + session + ", event(" + event.hashCode() + "): " 
+                + event.getEventType() + " " + event.getEventSubType());
         if (session == null) {
             if (event.getEventType() != CometEvent.EventType.BEGIN) {
                 throw new IllegalStateException(path + ": unexpected event " + event.getEventType());
