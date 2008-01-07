@@ -1010,6 +1010,19 @@ qx.Class.define("htmlarea.HtmlArea",
     setUnderline : function() {
       return this._execCommand("Underline", false, null);
     },
+    
+    
+    /**
+     * Sets the current selection content to strikethrough font style
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     * 
+     */
+    setStrikeThrough : function()
+    {
+      return this.__execCommand("StrikeThrough", false, null);
+    },
 
 
     /**
@@ -1043,6 +1056,175 @@ qx.Class.define("htmlarea.HtmlArea",
     setTextColor : function(value) {
       return this._execCommand("ForeColor", false, value);
     },
+    
+    
+    /**
+     * Sets the current selection content to the specified background color
+     *
+     * @type member
+     * @param value {String} Color value (supported are Hex,
+     * @return {Boolean} Success of operation
+     */
+    setTextBackgroundColor : function(value)
+    {
+      // use "hilitecolor" for gecko/opera to set the background color
+      // for the current selection - not for the whole block
+      // IE/Safari do this per default with the "backcolor" command
+      if (qx.core.Variant.isSet("qx.client", "gecko|opera"))
+      {
+        return this._execCommand("hilitecolor", false, value);
+      }
+      else
+      {
+        return this._execCommand("backcolor", false, value);
+      }
+    },
+    
+    
+    /**
+     * Left-justifies the current selection
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    setJustifyLeft : function()
+    {
+      return this._execCommand("JustifyLeft", false, null);
+    },
+    
+    
+    /**
+     * Center-justifies the current selection
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    setJustifyCenter : function()
+    {
+      return this._execCommand("JustifyCenter", false, null);
+    },
+    
+    
+    /**
+     * Right-justifies the current selection
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    setJustifyRight : function()
+    {
+      return this._execCommand("JustifyRight", false, null);
+    },
+    
+    
+    /**
+     * Full-justifies the current selection
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    setJustifyFull : function()
+    {
+      return this._execCommand("JustifyFull", false, null);
+    },
+    
+    
+    /**
+     * Indents the current selection
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    insertIndent : function()
+    {
+      return this._execCommand("Indent", false, null);
+    },
+    
+    
+    /**
+     * Outdents the current selection
+     *
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    insertOutdent : function()
+    {
+      return this._execCommand("Outdent", false, null);
+    },
+    
+    
+    /**
+     * Inserts an ordered list
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    insertOrderedList : function()
+    {
+      return this._execCommand("insertOrderedList", false, null);
+    },
+    
+    
+    /**
+     * Inserts an unordered list
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    insertUnorderedList : function()
+    {
+      return this._execCommand("insertUnorderedList", false, null);
+    },
+    
+    
+    /**
+     * Inserts a horizontal ruler
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    insertHorizontalRuler : function()
+    {
+      return this._execCommand("insertHorizontalRule", false, null);
+    },
+    
+    
+    /**
+     * Insert an unordered list
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    insertImage : function()
+    {
+      return this._execCommand("insertImage", false, null);
+    },    
+    
+    
+    
+    /**
+     * Undo the last change
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    undo : function()
+    {
+      return this._execCOmmand("undo", false, null);
+    },
+    
+    
+    /**
+     * Redo the last change 
+     * 
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    redo : function()
+    {
+      return this._execCOmmand("redo", false, null);
+    },
+    
 
 
     /**

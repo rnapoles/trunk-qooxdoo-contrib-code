@@ -84,7 +84,13 @@ qx.Class.define("htmlarea.Application",
       var colorButton = new qx.ui.form.Button("Color");
       colorButton.addEventListener("execute", function(e){
         var result = window.prompt("Color (Hex): ", "#");
-        this.setColor(result);
+        this.setTextColor(result);
+      }, htmlArea);
+      
+      var bgcolorButton = new qx.ui.form.Button("BgColor");
+      bgcolorButton.addEventListener("execute", function(e){
+        var result = window.prompt("BgColor (Hex): ", "#");
+        this.setTextBackgroundColor(result);
       }, htmlArea);
 
       var removeFormatButton = new qx.ui.form.Button("Remove format");
@@ -102,7 +108,7 @@ qx.Class.define("htmlarea.Application",
         alert(this.getComputedValue());
       }, htmlArea);
 
-      hb.add(boldButton, italicButton, fontSizeButton, colorButton, removeFormatButton, setContentButton, getContentButton);
+      hb.add(boldButton, italicButton, fontSizeButton, colorButton, bgcolorButton, removeFormatButton, setContentButton, getContentButton);
 
       var hb2 = new qx.ui.layout.HorizontalBoxLayout;
       hb2.set({ width : "100%", height : "auto", spacing : 10 });
