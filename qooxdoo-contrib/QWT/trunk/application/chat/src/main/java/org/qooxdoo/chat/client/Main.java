@@ -62,11 +62,15 @@ public class Main extends Gui implements EventListener {
         text.setValue("Hi!");
         send.addExecuteListener(this);
         all = new VerticalBoxLayout();
+        all.setHeight("auto");
+        all.setWidth("auto");
         messages.setReadOnly(true);
         messages.setHeight(400);
         messages.setWidth(400);
         all.add(messages);
         bottom = new HorizontalBoxLayout();
+        bottom.setHeight("auto");
+        bottom.setWidth("auto");
         bottom.add(name);
         bottom.add(new Label(": "));
         bottom.add(text);
