@@ -1210,7 +1210,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     undo : function()
     {
-      return this._execCOmmand("undo", false, null);
+      return this._execCommand("undo", false, null);
     },
     
     
@@ -1222,7 +1222,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     redo : function()
     {
-      return this._execCOmmand("redo", false, null);
+      return this._execCommand("redo", false, null);
     },
     
 
