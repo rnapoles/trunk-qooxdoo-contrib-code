@@ -1506,7 +1506,7 @@ qx.Class.define("htmlarea.HtmlArea",
     getSelectedText : function()
     {
       var rng = this.__createRange(this.__getSelection());
-      return (rng) ? rng.text : "";
+      return (rng.text) ? rng.text : rng;
     },
     
     
@@ -1518,7 +1518,7 @@ qx.Class.define("htmlarea.HtmlArea",
     getSelectedHtml : function()
     {
       var rng = this.__createRange(this.__getSelection());
-      return (rng) ? rng.htmlText : "";
+      return (rng.htmlText) ? rng.htmlText : rng;
     },
     
     
