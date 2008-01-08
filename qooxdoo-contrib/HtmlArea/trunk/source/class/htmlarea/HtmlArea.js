@@ -977,7 +977,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertHtml : function (value) {
-      return this._execCommand("insertHtml", false, value);
+      return this._execCommand("InsertHtml", false, value);
     },
 
 
@@ -1085,11 +1085,11 @@ qx.Class.define("htmlarea.HtmlArea",
       // IE/Safari do this per default with the "backcolor" command
       if (qx.core.Variant.isSet("qx.client", "gecko|opera"))
       {
-        return this._execCommand("hilitecolor", false, value);
+        return this._execCommand("Hilitecolor", false, value);
       }
       else
       {
-        return this._execCommand("backcolor", false, value);
+        return this._execCommand("Backcolor", false, value);
       }
     },
     
@@ -1174,7 +1174,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     insertOrderedList : function()
     {
-      return this._execCommand("insertOrderedList", false, null);
+      return this._execCommand("InsertOrderedList", false, null);
     },
     
     
@@ -1186,7 +1186,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     insertUnorderedList : function()
     {
-      return this._execCommand("insertUnorderedList", false, null);
+      return this._execCommand("InsertUnorderedList", false, null);
     },
     
     
@@ -1198,7 +1198,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     insertHorizontalRuler : function()
     {
-      return this._execCommand("insertHorizontalRule", false, null);
+      return this._execCommand("InsertHorizontalRule", false, null);
     },
     
     
@@ -1210,7 +1210,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     insertImage : function()
     {
-      return this._execCommand("insertImage", false, null);
+      return this._execCommand("InsertImage", false, null);
     },    
     
     
@@ -1223,7 +1223,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     undo : function()
     {
-      return this._execCommand("undo", false, null);
+      return this._execCommand("Undo", false, null);
     },
     
     
@@ -1235,7 +1235,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     redo : function()
     {
-      return this._execCommand("redo", false, null);
+      return this._execCommand("Redo", false, null);
     },
     
 
@@ -1437,37 +1437,98 @@ qx.Class.define("htmlarea.HtmlArea",
         focus node
         ----------
       */
-      var focusNode = this.getFocusNode();
-
-      if (qx.core.Client.getInstance().isMshtml()) {
-        var focusNodeStyle = focusNode.currentStyle;
-      } else {
-        var focusNodeStyle = this.__doc.defaultView.getComputedStyle(focusNode, null);
-      }
+      var focusNode      = this.getFocusNode();
+      var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : this.__doc.defaultView.getComputedStyle(focusNode, null);
 
       /*
        * BOLD
        */
-      var isBold;
-
-      if (qx.core.Client.getInstance().isMshtml() || qx.core.Client.getInstance().isOpera()) {
-        isBold = focusNodeStyle.fontWeight == 700 ? true : false;
-      } else {
-        isBold = focusNodeStyle.getPropertyValue("font-weight") == "bold";
-      }
+      var isBold = qx.core.Variant.isSet("qx.client", "mshtml|opera") ? focusNodeStyle.fontWeight == 700 :
+                                                                          focusNodeStyle.getPropertyValue("font-weight") == "bold";
 
       /*
        * ITALIC
        */
-      var isItalic;
+      var isItalic = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.fontStyle == "italic" :
+                                                                    focusNodeStyle.getPropertyValue("font-style") == "italic";
 
-      if (qx.core.Client.getInstance().isMshtml()) {
-        isItalic = focusNodeStyle.fontStyle == "italic";
-      } else {
-        isItalic = focusNodeStyle.getPropertyValue("font-style") == "italic";
-      }
+      /*
+       * UNDERLINE
+       */
+      var isUnderline = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textDecoration == "underline" :
+                                                                       focusNodeStyle.getPropertyValue("text-decoration") == "underline";
 
-      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", [ isBold, isItalic ]), true);
+      /*
+       * STRIKETHROUGH
+       */
+      var isStrikeThrough = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textDecoration == "line-through" :
+                                                                           focusNodeStyle.getPropertyValue("text-decoration") == "line-through";
+
+      /*
+       * FONT SIZE
+       */
+      var fontSize = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.fontSize : focusNodeStyle.getPropertyValue("font-size");
+
+      /*
+       * FONT FAMILY
+       */
+      var fontFamily = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.fontFamily : focusNodeStyle.getPropertyValue("font-family");
+
+      /*
+       * UNORDERED LIST
+       */
+      var unorderedList = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.listStyleType == "circle" ||
+                                                                         focusNodeStyle.listStyleType == "square"
+                                                                         :
+                                                                         focusNodeStyle.getPropertyValue("list-style-type") == "disc"   ||
+                                                                         focusNodeStyle.getPropertyValue("list-style-type") == "circle" ||
+                                                                         focusNodeStyle.getPropertyValue("list-style-type") == "square";
+
+      /*
+       * ORDERED LIST
+       */
+      var orderedList = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.listStyleType != "circle" ||
+                                                                       focusNodeStyle.listStyleType != "square" ||
+                                                                       focusNodeStyle.listStyleType != "none"
+                                                                       :
+                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "disc"   &&
+                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "circle" &&
+                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "square" &&
+                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "none";
+
+      /*
+       * JUSTIFY
+       */
+      var justifyLeft   = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "left" :
+                                                                         focusNodeStyle.getPropertyValue("textAlign") == "left";
+
+      var justifyCenter = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "center" :
+                                                                         focusNodeStyle.getPropertyValue("textAlign") == "center";
+
+      var justifyRight  = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "right" :
+                                                                         focusNodeStyle.getPropertyValue("textAlign") == "right";
+
+      var justifyFull   = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "justify" :
+                                                                         focusNodeStyle.getPropertyValue("textAlign") == "justify";
+
+
+      // put together the data for the "cursorContext" data event
+      var eventMap = {
+        bold          : isBold,
+        italic        : isItalic,
+        underline     : isUnderline,
+        strikethrough : isStrikeThrough,
+        fontSize      : fontSize,
+        fontFamily    : fontFamily,
+        unorderedList : unorderedList,
+        orderedList   : orderedList,
+        justifyLeft   : justifyLeft,
+        justifyCenter : justifyCenter,
+        justifyRight  : justifyRight,
+        justifyFull   : justifyFull
+      };
+
+      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
 
       this._processingExamineCursorContext = false;
     },
