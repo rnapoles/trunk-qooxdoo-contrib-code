@@ -1498,6 +1498,30 @@ qx.Class.define("htmlarea.HtmlArea",
     }),
     
     
+    /**
+     * returns the content of the actual range as text
+     * 
+     * @return {String} selected text
+     */
+    getSelectedText : function()
+    {
+      var rng = this.__createRange(this.__getSelection());
+      return (rng) ? rng.text : "";
+    },
+    
+    
+    /**
+     * returns the content of the actual range as text
+     * 
+     * @return {String} selected text
+     */
+    getSelectedHtml : function()
+    {
+      var rng = this.__createRange(this.__getSelection());
+      return (rng) ? rng.htmlText : "";
+    },
+    
+    
     /*
      -----------------------------------------------------------------------------
      TEXT RANGE
