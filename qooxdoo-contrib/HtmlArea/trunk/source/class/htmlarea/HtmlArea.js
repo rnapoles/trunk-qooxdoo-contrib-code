@@ -832,7 +832,7 @@ qx.Class.define("htmlarea.HtmlArea",
                   * only necessary to have anything AFTER the "br" element to get it work.
                   * Strange hack, I know ;-)
                   */
-                 this._execCommand("insertHtml", false, "<br/><div id='placeholder'></div>");
+                 this.insertHtml("<br/><div id='placeholder'></div>");
                break;
               
                case "webkit":
@@ -842,7 +842,7 @@ qx.Class.define("htmlarea.HtmlArea",
        	  	      * cursor DOES NOT correspond -> it stays at the current line although the linebreak
        	  	      * is inserted. Navigating to the next line with the arrow down key is possible.
        		      */
-      	  	     this._execCommand("insertHtml", false, "<div><br class='webkit-block-placeholder' /></div>");
+      	  	     this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
                break;
 
                case "opera":
@@ -967,6 +967,19 @@ qx.Class.define("htmlarea.HtmlArea",
       EXEC-COMMANDS
     ---------------------------------------------------------------------------
     */
+
+
+    /**
+     * inserts html content on the current selection
+     *
+     * @type member
+     * @param value {String} html content
+     * @return {Boolean} Success of operation
+     */
+    insertHtml : function (value) {
+      return this._execCommand("insertHtml", false, value);
+    },
+
 
     /**
      * Removes all formatting styles on the current selection content
