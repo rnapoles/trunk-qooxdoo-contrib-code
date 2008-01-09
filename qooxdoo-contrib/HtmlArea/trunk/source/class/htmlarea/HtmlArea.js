@@ -955,7 +955,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Eventlistener for all mouse events
+     * Eventlistener for all mouse events.
+     * This method is invoked for mshtml on "click" events and
+     * on "mouseup" events for all others.
      *
      * @type member
      * @param e {Object} Event object
@@ -969,11 +971,7 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
-      if ((qx.core.Client.getInstance().isMshtml() && e.type == "mouseup")) {
-        this.__startExamineCursorContext();
-      } else if (e.type == "click") {
-        this.__startExamineCursorContext();
-      }
+      this.__startExamineCursorContext();
     },
 
 
@@ -1544,41 +1542,46 @@ qx.Class.define("htmlarea.HtmlArea",
       var fontFamily = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.fontFamily : focusNodeStyle.getPropertyValue("font-family");
 
       /*
-       * UNORDERED LIST
+       * ORDERED/UNORDERED LIST
+       * Traverse the DOM to get the result, instead of using the CSS-Properties. In this case the CSS-Properties are not useful, e.g. Gecko always reports
+       * "disc" for "list-style-type" even if it is normal text. ("disc" is the initial value)
        */
-      var unorderedList = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.listStyleType == "circle" ||
-                                                                         focusNodeStyle.listStyleType == "square"
-                                                                         :
-                                                                         focusNodeStyle.getPropertyValue("list-style-type") == "disc"   ||
-                                                                         focusNodeStyle.getPropertyValue("list-style-type") == "circle" ||
-                                                                         focusNodeStyle.getPropertyValue("list-style-type") == "square";
+      var unorderedList = false;
+      var orderedList   = false;
 
-      /*
-       * ORDERED LIST
-       */
-      var orderedList = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.listStyleType != "circle" ||
-                                                                       focusNodeStyle.listStyleType != "square" ||
-                                                                       focusNodeStyle.listStyleType != "none"
-                                                                       :
-                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "disc"   &&
-                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "circle" &&
-                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "square" &&
-                                                                       focusNodeStyle.getPropertyValue("list-style-type") != "none";
+      // traverse the DOM upwards to determine if the focusNode is inside an ordered/unordered list
+      var node = focusNode;
+      while (node.nodeName.toLowerCase() != "body")
+      {
+        var nodename = node.nodeName.toLowerCase();
+        if (nodename == "ol")
+        {
+          orderedList = true;
+          break;
+        }
+        else if (nodename == "ul")
+        {
+          unorderedList = true;
+          break;
+        }
+
+        node = node.parentNode;
+      }
 
       /*
        * JUSTIFY
        */
       var justifyLeft   = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "left" :
-                                                                         focusNodeStyle.getPropertyValue("textAlign") == "left";
+                                                                         focusNodeStyle.getPropertyValue("text-align") == "left";
 
       var justifyCenter = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "center" :
-                                                                         focusNodeStyle.getPropertyValue("textAlign") == "center";
+                                                                         focusNodeStyle.getPropertyValue("text-align") == "center";
 
       var justifyRight  = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "right" :
-                                                                         focusNodeStyle.getPropertyValue("textAlign") == "right";
+                                                                         focusNodeStyle.getPropertyValue("text-align") == "right";
 
       var justifyFull   = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textAlign == "justify" :
-                                                                         focusNodeStyle.getPropertyValue("textAlign") == "justify";
+                                                                         focusNodeStyle.getPropertyValue("text-align") == "justify";
 
 
       // put together the data for the "cursorContext" data event
