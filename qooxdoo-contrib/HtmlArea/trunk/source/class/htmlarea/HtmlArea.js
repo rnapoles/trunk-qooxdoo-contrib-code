@@ -90,7 +90,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /* check for available content */
     if (typeof value == "string") {
-      this.setValue(value);
+      this.__value = value;
     }
     
    
@@ -430,6 +430,7 @@ qx.Class.define("htmlarea.HtmlArea",
        if (typeof value == "string")
        {
          this.__value = value;
+         this.__doc.body.innerHTML = value;
        }
     },
     
@@ -938,9 +939,8 @@ qx.Class.define("htmlarea.HtmlArea",
    /**
     * Called with every blur event of the editor.
     * Compares the current value with the stored one.
-    * If they are different the {@link #setValue} method
-    * is called to sync the current content with the value 
-    * variable.
+    * If they are different the current content is synced
+    * with the value variable.
     * 
     * @type member
     * @return {void}
@@ -949,8 +949,8 @@ qx.Class.define("htmlarea.HtmlArea",
    {
       if (this.getComputedValue() != this.__valueOnFocus)
       {
-        this.setValue(this.getComputedValue());  
-      }      
+        this.__value = this.getComputedValue();
+      }
    },
 
 
@@ -1551,21 +1551,25 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // traverse the DOM upwards to determine if the focusNode is inside an ordered/unordered list
       var node = focusNode;
-      while (node.nodeName.toLowerCase() != "body")
-      {
-        var nodename = node.nodeName.toLowerCase();
-        if (nodename == "ol")
-        {
-          orderedList = true;
-          break;
-        }
-        else if (nodename == "ul")
-        {
-          unorderedList = true;
-          break;
-        }
 
-        node = node.parentNode;
+      if (node != null)
+      {
+        while (node.nodeName.toLowerCase() != "body")
+        {
+          var nodename = node.nodeName.toLowerCase();
+          if (nodename == "ol")
+          {
+            orderedList = true;
+            break;
+          }
+          else if (nodename == "ul")
+          {
+            unorderedList = true;
+            break;
+          }
+
+          node = node.parentNode;
+        }
       }
 
       /*
