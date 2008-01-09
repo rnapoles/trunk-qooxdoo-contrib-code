@@ -1,3 +1,11 @@
+### qx/ui/core/ClientDocument.java
++++
+    /**
+     * TODO: generic solution for static methods
+     *
+     * @alias
+     */
+    public native static ClientDocument getInstance();
 ### qx/core/Target.java
 +++
     /**

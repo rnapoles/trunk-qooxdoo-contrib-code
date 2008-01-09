@@ -19,8 +19,8 @@
 
 package org.qooxdoo.toolkit.qooxdoo;
 
-import qx.event.type.DataEvent;
+import qx.event.type.Event;
 
 public interface EventListener {
-    void notify(DataEvent obj);
+    void notify(Event obj);
 }
