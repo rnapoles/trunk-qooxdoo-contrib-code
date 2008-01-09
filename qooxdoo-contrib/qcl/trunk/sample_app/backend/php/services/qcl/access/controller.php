@@ -130,7 +130,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		{
 			$meta = $model->meta[$key];
 			if ( ! is_array( $meta ) ) continue;
-			$data[]		= array($key,__($key),$value,$meta);
+			$data[]		= array($key,$this->tr($key),$value,$meta);
 		}
 		
 		// return data
