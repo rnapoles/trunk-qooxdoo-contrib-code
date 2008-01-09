@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2004-2007 1&1 Internet AG, Germany, http://www.1and1.org
+     2004-2008 1&1 Internet AG, Germany, http://www.1and1.org
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -19,8 +19,9 @@
 
 /**
  * Rich text editor widget
- * 
- * @param Content {string} Initial content
+ *
+ * @param value {String} Initial content
+ * @param styleInformation {String | null} Optional style information for the editor's document
  */
 qx.Class.define("htmlarea.HtmlArea",
 {
@@ -35,7 +36,7 @@ qx.Class.define("htmlarea.HtmlArea",
   *****************************************************************************
   */
 
-  construct : function(value)
+  construct : function(value, styleInformation)
   {
     // **********************************************************************
     //   INIT
@@ -49,7 +50,10 @@ qx.Class.define("htmlarea.HtmlArea",
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
     this.setHideFocus(true);
-    
+
+    // set the optional style information - if available
+    this.__styleInformation = (styleInformation != null && typeof styleInformation == "string") ? styleInformation : "";
+
     /**
      * Wrapper method for focus events
      * 
@@ -324,7 +328,17 @@ qx.Class.define("htmlarea.HtmlArea",
       s = s.replace(/\xA9/ig, "&copy;");
 
       return s;
-    }
+    },
+
+    /**
+     * Possible values for the style property background-position
+     */
+    __backgroundPosition : [ "top", "bottom", "center", "left", "right" ],
+
+    /**
+     * Possible values for the style property background-repeat
+     */
+    __backgroundRepeat : [ "repeat", "repeat-x", "repeat-y", "no-repeat" ]
  },
 
 
@@ -392,8 +406,9 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
-        head    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title><style type="text/css">html,body { overflow-x:hidden; overflow-y:auto; }</style> ',
-        body    : '<body id="bodyElement" style="background-color:transparent; background-image:none; margin:0 none; padding:1px; overflow: -moz-scrollbars-none;">\n',
+        meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
+        style   : 'html,body { overflow-x:hidden; overflow-y:auto; background-color:transparent; background-image:none; margin:0 none; padding:1px; overflow: -moz-scrollbars-none;}',
+        body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
       }
     },
@@ -555,7 +570,9 @@ qx.Class.define("htmlarea.HtmlArea",
           */
    
          /* RIGHT IMPLEMENTATION */
-         var content = wrap.html + '<head>' + wrap.head + '</head>' + wrap.body + value + wrap.footer;
+         var content = wrap.html +
+                      '<head>' + wrap.meta + '<style type="text/css">' + wrap.style + this.__styleInformation + '</style></head>' +
+                       wrap.body + value + wrap.footer;
          
          this.__doc.open(qx.util.Mime.HTML, true);
          this.__doc.writeln(content);
@@ -1203,17 +1220,69 @@ qx.Class.define("htmlarea.HtmlArea",
     
     
     /**
-     * Insert an unordered list
+     * Insert an image
      * 
      * @type member
+     * @param url {String} url of the image to insert
      * @return {Boolean} Success of operation
      */
-    insertImage : function()
+    insertImage : function(url)
     {
-      return this._execCommand("InsertImage", false, null);
-    },    
-    
-    
+      return this._execCommand("InsertImage", false, url);
+    },
+
+
+    /**
+     * Inserts an background image
+     *
+     * @type member
+     * @param url {String} url of the background image to set
+     * @param repeat {String} repeat mode. Possible values are "repeat|repeat-x|repeat-y|no-repeat". Default value is "no-repeat"
+     * @param position {String} Position of the background image. Possible values are "top|bottom|center|left|right". Default value is "top"
+     * @return {Boolean} Success of operation
+     */
+    setBackgroundImage : function(url, repeat, position)
+    {
+      // return silently if no (valid) url is given
+      if (url == null || typeof url != "string")
+      {
+        return false;
+      }
+
+      // return silently if the parameter "repeat" is not valid
+      // report the error in debug mode
+      if (repeat != null && htmlarea.HtmlArea.__backgroundRepeat.indexOf(repeat))
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on"))
+        {
+          this.error("Wrong value for parameter 'repeat'. Possible values are '" + htmlarea.HtmlArea.__backgroundRepeat.join(" ") + "'");
+        }
+        return false;
+      }
+      else
+      {
+        repeat = "no-repeat";
+      }
+
+      // return silently if the parameter "position" is not valid
+      // report the error in debug mode
+      if (position != null && htmlarea.HtmlArea.__backgroundPosition.indexOf(position))
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on"))
+        {
+          this.error("Wrong value for parameter 'position'. Possible values are '" + htmlarea.HtmlArea.__backgroundPosition.join(" ") + "'");
+        }
+        return false;
+      }
+      else
+      {
+        position = "top";
+      }
+
+      this.__doc.body.style.background = "url(" + url + ") " + repeat + " " + position;
+      return true;
+    },
+
     
     /**
      * Undo the last change
