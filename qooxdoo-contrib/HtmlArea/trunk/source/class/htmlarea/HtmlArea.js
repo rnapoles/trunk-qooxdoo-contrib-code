@@ -779,9 +779,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
    _handleKeyPress : function(e)
    {
-      var keyIdentifier = e.getKeyIdentifier().toLowerCase();
-      
-      
+      var keyIdentifier  = e.getKeyIdentifier().toLowerCase();
+      var isCtrlPressed  = e.isCtrlPressed();
+      var isShiftPressed = e.isShiftPressed();
+
+
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
         if (this.__verboseDebug)
@@ -789,8 +791,8 @@ qx.Class.define("htmlarea.HtmlArea",
           this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
         }
       }
-        
-        
+
+
       switch(keyIdentifier)
       {
         /*
@@ -817,7 +819,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
         case "enter":
           /* if only "Enter" key was pressed and "messengerMode" is activated */
-          if (e.isShiftPressed() == false && e.isCtrlPressed() == false && this.getMessengerMode() == true)
+          if (isShiftPressed == false && isCtrlPressed == false && this.getMessengerMode() == true)
           {
             e.preventDefault();
             e.stopPropagation();
@@ -834,11 +836,11 @@ qx.Class.define("htmlarea.HtmlArea",
            * The implementation for IE is located at the "control" block and at the
            * "_handleKeyUp" method.
            */
-          if (e.isCtrlPressed() == true)
+          if (isCtrlPressed)
           {
             e.preventDefault();
             e.stopPropagation();
-           
+
             switch(qx.core.Client.getInstance().getEngine())
             {
                case "gecko":
@@ -852,15 +854,15 @@ qx.Class.define("htmlarea.HtmlArea",
                   */
                  this.insertHtml("<br/><div id='placeholder'></div>");
                break;
-              
+
                case "webkit":
-       		     /*
-       		      * TODO: this mechanism works well when the user already typed in some text at the
-       		      * current line. If the linebreak is done without any text at the current line the
-       	  	      * cursor DOES NOT correspond -> it stays at the current line although the linebreak
-       	  	      * is inserted. Navigating to the next line with the arrow down key is possible.
-       		      */
-      	  	     this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
+                 /*
+                  * TODO: this mechanism works well when the user already typed in some text at the
+                  * current line. If the linebreak is done without any text at the current line the
+                  * cursor DOES NOT correspond -> it stays at the current line although the linebreak
+                  * is inserted. Navigating to the next line with the arrow down key is possible.
+                  */
+                 this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
                break;
 
                case "opera":
@@ -871,19 +873,19 @@ qx.Class.define("htmlarea.HtmlArea",
                   */
                  var sel    = this.__getSelection();
                  var rng    = this.__createRange(sel);
-                
+
                  var brNode = this.__doc.createElement("br");
                  rng.collapse(true);
                  rng.insertNode(brNode);
                  rng.collapse(true);
-                 
+
                  rng.selectNode(brNode);
                  sel.addRange(rng);
                  rng.collapse(true);
                break;
             }
           } 
-         
+
           break;
 
           /*
@@ -900,7 +902,15 @@ qx.Class.define("htmlarea.HtmlArea",
         case "home":
         case "end":
           this.__startExamineCursorContext();
-          
+
+        break;
+
+        case "a":
+          // select the whole content if "Ctrl+A" was pressed
+          if (isCtrlPressed)
+          {
+            this.selectAll();
+          }
         break;
  
         default:
@@ -1304,7 +1314,18 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this._execCommand("Redo", false, null);
     },
-    
+
+
+    /**
+     * Selects the whole content
+     *
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    selectAll : function()
+    {
+      return this._execCommand("SelectAll", false, null);
+    },
 
 
     /**
