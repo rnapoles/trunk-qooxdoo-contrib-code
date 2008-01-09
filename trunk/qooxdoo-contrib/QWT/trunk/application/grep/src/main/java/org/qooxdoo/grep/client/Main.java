@@ -26,7 +26,7 @@ import org.qooxdoo.grep.common.Match;
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
 import qx.application.Gui;
-import qx.event.type.DataEvent;
+import qx.event.type.Event;
 import qx.ui.form.Button;
 import qx.ui.form.TextField;
 import qx.ui.layout.HorizontalBoxLayout;
@@ -67,7 +67,7 @@ public class Main extends Gui implements EventListener {
         all.addToDocument();
     }
 
-    public void notify(DataEvent obj) {
+    public void notify(Event obj) {
         String substring;
         TreeFolder<String> file;
         List<Match> results;
