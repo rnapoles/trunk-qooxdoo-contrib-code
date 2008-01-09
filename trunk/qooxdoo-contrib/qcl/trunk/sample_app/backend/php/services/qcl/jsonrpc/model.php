@@ -69,6 +69,38 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  			return $this->controller;
  		}
  	}	
+
+	//-------------------------------------------------------------
+  // translation (modeled after qooxdoo syntax)
+  //-------------------------------------------------------------
+  
+  /**
+   * translates a message
+   * @return  String
+   * @param   String  $msgId    Message id of the string to be translated 
+   * @param   Array   $varargs  (optional) Variable number of arguments for the sprintf formatting
+   */
+  function tr( $msgId, $varargs=array() )
+  {
+    $controller =& $this->getController();
+    return $controller->tr($msgId, $varargs);
+  }	
+  
+  /**
+   * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+   *
+   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
+   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
+   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
+   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
+   * @return string
+   */
+  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  {
+    $controller =& $this->getController();
+    return $controller->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
+  }  
+  
 }	
 
 ?>

@@ -2,7 +2,6 @@
 
 // dependencies
 require_once ("qcl/jsonrpc/object.php");
-require_once ("qcl/locale/manager.php");
 
 // constants
 define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");
@@ -145,6 +144,53 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   }
 
 	//-------------------------------------------------------------
+  // translation (modeled after qooxdoo syntax)
+  //-------------------------------------------------------------
+  
+  /**
+   * gets the locale controller and sets the default locale. default is
+   * a qcl_locale_controller (see there). if you want to use a different
+   * controller, override this method
+   * return Object
+   */
+  function &getLocaleController()
+  {
+    static $localeController = null;
+    if ( ! $localeController )
+    {
+      $localeController =& $this->getSingleton("qcl_locale_controller");
+    }
+    return $localeController;
+  }
+  
+  /**
+   * translates a message
+   * @return  String
+   * @param   String  $msgId    Message id of the string to be translated 
+   * @param   Array   $varargs  (optional) Variable number of arguments for the sprintf formatting
+   */
+  function tr( $msgId, $varargs=array() )
+  {
+    $localeController =& $this->getLocaleController();
+    return $localeController->tr($msgId, $varargs);
+  }	
+  
+  /**
+   * Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+   *
+   * @param string   $singularMessageId Message id of the singular form (may contain format strings)
+   * @param string   $pluralMessageId   Message id of the plural form (may contain format strings)
+   * @param int      $count             If greater than 1 the plural form otherwhise the singular form is returned.
+   * @param Array    $varargs           (optional) Variable number of arguments for the sprintf formatting
+   * @return string
+   */
+  function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
+  {
+    $localeController =& $this->getLocaleController();
+    return $localeController->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
+  }
+
+	//-------------------------------------------------------------
   // response data
   //-------------------------------------------------------------  
 	
@@ -274,5 +320,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   
 	 
 }	
+
 
 ?>
