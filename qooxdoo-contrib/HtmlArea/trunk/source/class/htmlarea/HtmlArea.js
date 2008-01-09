@@ -407,7 +407,7 @@ qx.Class.define("htmlarea.HtmlArea",
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
-        style   : 'html,body { overflow-x:hidden; overflow-y:auto; background-color:transparent; background-image:none; margin:0 none; padding:1px; overflow: -moz-scrollbars-none;}',
+        style   : 'html,body { overflow-x:hidden; overflow-y:auto; background-color:transparent; background-image:none; margin:0 none; padding:1px; }',
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
       }
@@ -1552,7 +1552,9 @@ qx.Class.define("htmlarea.HtmlArea",
       // traverse the DOM upwards to determine if the focusNode is inside an ordered/unordered list
       var node = focusNode;
 
-      if (node != null)
+      // only traverse the DOM upwards if were are not already within the body element or at the top of the document
+      // -> nodeType 9 = document node
+      if (node != null && node.nodeName.toLowerCase() != "body" && node.parentNode.nodeType != 9)
       {
         while (node.nodeName.toLowerCase() != "body")
         {
@@ -1571,6 +1573,7 @@ qx.Class.define("htmlarea.HtmlArea",
           node = node.parentNode;
         }
       }
+
 
       /*
        * JUSTIFY
