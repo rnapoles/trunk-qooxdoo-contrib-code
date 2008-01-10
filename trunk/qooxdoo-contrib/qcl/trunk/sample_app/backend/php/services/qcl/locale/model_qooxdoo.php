@@ -31,43 +31,6 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
   // public non-interface methods
   //-------------------------------------------------------------
 
-  /**
-   * updates the existing message catalogues in the locale directory
-   * with the messages extracted from php files in a given folder. 
-   * Requires that PHP has command line access. 
-   * - This is not working on a MAC intel.
-   * @param string $dir folder path 
-   * @param array $locale Array of locale strings
-   * @return void
-   */
-  function updateMessageCatalogues($dir,$locales)
-  {    
-    if ( ! is_dir($dir ) )
-    {
-      $this->raiseError( $this->tr( "Invalid source directory." ) );
-    }
-   
-    foreach ( scandir($dir) as $file )
-    {
-      if ( $file=="." or $file==".." ) continue;
-      
-      $path = "$dir/$file";
-      
-      if ( is_dir ( $path ) )
-      {
-        $this->updateMessageCatalogues( $path, $locales ); // recurse
-      }
-      elseif ( substr( $file, -4) == ".php" )
-      {
-        foreach ( $locales as $locale )
-        {
-          $output_file = $this->locale_dir . "/$locale.php.po";
-          $cmd = "xgettext -o $output_file $path 2>&1;";
-          $this->info( shell_exec( $cmd ) ) ;
-        }
-      }
-    } 
-  }
   
   /**
    * does the actual lookup
@@ -94,7 +57,17 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
    
     // translation found?
     $translation = $catalogue[$messageId];
-    return ( $translation ? $translation : $messageId );
+    
+    if ( $translation)
+    {
+      return $translation;
+    }
+        
+    if ( $locale != "EN"  )
+    {
+      $this->markForTranslation( $messageId );
+    }
+    return $messageId;
     
   }
 
@@ -160,13 +133,7 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
    */
   function translate ( $messageId )
   {
-      $translation = $this->gettext($messageId);
-      $locale = $this->getLocale();
-      if ( $locale != "EN" && $translation == $messageId )
-      {
-        $this->markForTranslation( $messageId );
-      }
-      return $translation;
+      return $this->gettext($messageId);
   }
 
   /**
@@ -182,8 +149,7 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
   }
 
   /**
-   * alternative method, using the translation features of
-   * the qooxdoo build system: on-the-fly addition of untranslated
+   * on-the-fly addition of untranslated
    * messages to a special file. This will also catch dynamically
    * generated message strings.
    * @return 
@@ -191,10 +157,12 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
    */
   function markForTranslation ( $messageId )
   {
-    $content = @file_get_contents( $this->translation_js );
+    $content   = @file_get_contents( $this->translation_js );
+    $messageId = addslashes( $messageId );
+    
     if ( ! strstr( $content, $messageId ) )
     {
-      $content .= "\n" . 'this.marktr("' . addslashes( $messageId ) .'");';
+      $content .= "\n" . 'this.marktr("' . $messageId . '");';
       file_put_contents( $this->translation_js, $content );
     }
   }
