@@ -14,6 +14,7 @@
 
    Authors:
      * Alexander Back (aback)
+     * Michael Haitz (mhaitz)
 
 ************************************************************************ */
 
@@ -60,7 +61,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
-    
+
 
     /**
      * Wrapper method for mouse events. 
@@ -92,8 +93,8 @@ qx.Class.define("htmlarea.HtmlArea",
     if (typeof value == "string") {
       this.__value = value;
     }
-    
-   
+
+
     /*
      * "Fix" Keycode to identifier mapping in opera to suit the needs
      * of the editor component
@@ -746,6 +747,9 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __verboseDebug : false,
 
+    /* Flag for the undo-mechanism to monitor the content changes */
+    __contentEdit : false,
+
 
     /**
      * All keyUp events are delegated to this method
@@ -766,26 +770,25 @@ qx.Class.define("htmlarea.HtmlArea",
        * the linebreak gets inserted.
        */
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
-       {
-         if (keyIdentifier == "enter" && this.__controlPressed == true)
-         {
-            var sel = this.__getSelection();
-            var rng = this.__createRange(sel);
- 
-            rng.collapse(true);
-            rng.pasteHTML('<br/><div class="placeholder"></div>');
-            rng.collapse(true);
-         }
-         /* 
-          * the keyUp event of the control key ends the "Ctrl+Enter"
-          * session. So it is supported that the user is pressing this
-          * combination several times without releasing the "Ctrl" key
-          */
-         else if (keyIdentifier == "control" && this.__controlPressed == true)
-         {
-            this.__controlPressed = false;
-         }
-       }
+      {
+        if (keyIdentifier == "enter" && this.__controlPressed == true)
+        {
+          var sel = this.__getSelection();
+          var rng = this.__createRange(sel);
+          rng.collapse(true);
+          rng.pasteHTML('<br/><div class="placeholder"></div>');
+          rng.collapse(true);
+        }
+        /*
+         * the keyUp event of the control key ends the "Ctrl+Enter"
+         * session. So it is supported that the user is pressing this
+         * combination several times without releasing the "Ctrl" key
+         */
+        else if (keyIdentifier == "control" && this.__controlPressed == true)
+        {
+          this.__controlPressed = false;
+        }
+      }
     },
     
     
@@ -812,6 +815,8 @@ qx.Class.define("htmlarea.HtmlArea",
       var isCtrlPressed  = e.isCtrlPressed();
       var isShiftPressed = e.isShiftPressed();
 
+      // mark content changes for undo
+      this.__contentEdit = true;
 
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
@@ -836,7 +841,7 @@ qx.Class.define("htmlarea.HtmlArea",
              this.__controlPressed = true;
           }
         break;
-       
+
         case "tab":
           if (qx.core.Client.getInstance().isGecko())
           {
@@ -844,9 +849,14 @@ qx.Class.define("htmlarea.HtmlArea",
             this.getFocusRoot().getFocusHandler()._onkeyevent(this.getFocusRoot(), e);
           }
 
+          // mark the redo as not possible anymore
+          this.__redoPossible = false;
           break;
 
         case "enter":
+          // mark the redo as not possible anymore
+          this.__redoPossible = false;
+
           /* if only "Enter" key was pressed and "messengerMode" is activated */
           if (isShiftPressed == false && isCtrlPressed == false && this.getMessengerMode() == true)
           {
@@ -859,7 +869,7 @@ qx.Class.define("htmlarea.HtmlArea",
             /* reset the editor content */
             this.resetHtml();
           }
-         
+
           /*
            * This mechanism is to provide a linebreak when pressing "Ctrl+Enter".
            * The implementation for IE is located at the "control" block and at the
@@ -940,9 +950,16 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             this.selectAll();
           }
+          else
+          {
+            // mark the redo as not possible anymore
+            this.__redoPossible = false;
+          }
         break;
  
         default:
+          // mark the redo as not possible anymore
+          this.__redoPossible = false;
        }
     },
     
@@ -1014,6 +1031,126 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /*
+    ---------------------------------------------------------------------------
+      UNDO / REDO
+    ---------------------------------------------------------------------------
+    */
+    /* Remember every change in this undo-stack */
+    __undoHistory : [],
+
+    /* set this flag if an undo operation is performed */
+    __undoOperation : false,
+
+    /* variable to hold the actions for redo  */
+    __redoAction : null,
+
+    /* flag if a redo operation is possible */
+    __redoPossible : false,
+
+
+    /**
+     * Undo the last change
+     *
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    undo : function()
+    {
+      // check if any content changes occured
+      if (this.__contentEdit)
+      {
+        this.__undoHistory.push({ customChange : false });
+        this.__contentEdit = false;
+      }
+
+      // look after the change history
+      // if any custom change was found undo it manually
+      if (this.__undoHistory.length > 0)
+      {
+        var lastChange = this.__undoHistory.pop();
+        if (lastChange.customChange)
+        {
+          // set this flag to prevent the affected methods to add
+          // the upcoming change to the undo history
+          this.__undoOperation = true;
+
+          switch(lastChange.method)
+          {
+            case "setBackgroundColor":
+              // fill the info for the (possible) redo
+              this.__redoAction = { customChange : true,
+                                    method       : lastChange.method,
+                                    parameter    : [ this.__doc.body.style.backgroundImage,
+                                                     this.__doc.body.style.backgroundRepeat,
+                                                     this.__doc.body.style.backgroundPosition ] };
+
+              this[lastChange.method].call(this, lastChange.parameter[0]);
+            break;
+
+            case "setBackgroundImage":
+              // fill the info for the (possible) redo
+              this.__redoAction = { customChange : true,
+                                    method       : lastChange.method,
+                                    parameter    : [ this.__doc.body.style.backgroundColor ] };
+            
+              this[lastChange.method].call(this, lastChange.parameter[0], lastChange.parameter[1], lastChange.parameter[2]);
+            break;
+          }
+
+          // mark the undo operation over
+          this.__undoOperation = false;
+        }
+        else
+        {
+          this.__redoAction = { customChange : false };
+          this._execCommand("Undo", false, null);
+        }
+
+        // a redo operation is now possible
+        this.__redoPossible = true;
+
+        return true;
+      }
+    },
+
+
+    /**
+     * Redo the last change
+     *
+     * @type member
+     * @return {Boolean} Success of operation
+     */
+    redo : function()
+    {
+      // a redo operation is only possible
+      // if an undo operation was right before performed
+      if (this.__redoPossible)
+      {
+        if (this.__redoAction.customChange)
+        {
+          switch(this.__redoAction.method  )
+          {
+            case "setBackgroundImage":
+              this[this.__redoAction.method].call(this, this.__redoAction.parameter[0], this.__redoAction.parameter[1], this.__redoAction.parameter[2]);
+            break;
+
+            case "setBackgroundColor":
+              this[this.__redoAction.method].call(this, this.__redoAction.parameter[0]);
+            break;
+          }
+        }
+        else
+        {
+          return this._execCommand("Redo", false, null);
+        }
+
+        this.__redoPossible = false;
+      }
+
+      // reset the redoAction
+      this.__redoAction = null;
+    },
 
 
     /*
@@ -1081,14 +1218,14 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Sets the current selection content to strikethrough font style
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
-     * 
+     *
      */
     setStrikeThrough : function()
     {
-      return this.__execCommand("StrikeThrough", false, null);
+      return this._execCommand("StrikeThrough", false, null);
     },
 
 
@@ -1101,7 +1238,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     setFontSize : function(value)
     {
-      /* TODO: implementation complete? 
+      /* TODO: implementation complete?
        * should numbers be the only supported unit?
        * what if "10px" is given as parameter value?
        */
@@ -1162,7 +1299,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Left-justifies the current selection
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1174,7 +1311,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Center-justifies the current selection
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1186,7 +1323,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Right-justifies the current selection
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1198,7 +1335,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Full-justifies the current selection
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1210,7 +1347,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Indents the current selection
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1234,7 +1371,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Inserts an ordered list
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1246,7 +1383,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Inserts an unordered list
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1258,7 +1395,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Inserts a horizontal ruler
-     * 
+     *
      * @type member
      * @return {Boolean} Success of operation
      */
@@ -1270,7 +1407,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Insert an image
-     * 
+     *
      * @type member
      * @param url {String} url of the image to insert
      * @return {Boolean} Success of operation
@@ -1283,7 +1420,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Alias for setBackgroundColor("transparent");
-     * 
+     *
      * @type member
      * @return {Boolean} if succeeded
      */
@@ -1294,25 +1431,40 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * sets the background color of the editor
-     * 
+     *
      * @type member
      * @param value {String} color
      * @return {Boolean} if succeeded
      */
     setBackgroundColor : function (value)
     {
-      if (value != null && typeof value == "string") {
-        this.__doc.body.style.backgroundColor = value;
-      } else {
-        this.__doc.body.style.backgroundColor = "transparent";
+      // remember the old values
+      if (!this.__undoOperation)
+      {
+        // if the content was edited -> add it to the history
+        if (this.__contentEdit)
+        {
+          this.__undoHistory.push({ customChange : false });
+          this.__contentEdit = false;
+        }
+
+        this.__undoHistory.push({ customChange    : true,
+                                  method          : "setBackgroundColor",
+                                  parameter       : [ this.__doc.body.style.backgroundColor ] });
+
+        // after this action a redo is not possible anymore
+        this.__redoPossible = false;
       }
+
+      this.__doc.body.style.backgroundColor = (value != null && typeof value == "string") ? value : "transparent";
+
       return true;
     },
 
 
     /**
      * Alias for setBackgroundImage(null);
-     * 
+     *
      * @type member
      * @return {Boolean} if succeeded
      */
@@ -1371,37 +1523,33 @@ qx.Class.define("htmlarea.HtmlArea",
         position = "top";
       }
 
-      // don't use the "background" css property to prevent overwriting the 
+      // to make an undo possible -> remember to old values in the change history
+      if (!this.__undoOperation)
+      {
+        // if content was edited -> add it to the history
+        if (this.__contentEdit)
+        {
+          this.__undoHistory.push({ customChange : false });
+          this.__contentEdit = false;
+        }
+
+        this.__undoHistory.push({ customChange       : true,
+                                  method             : "setBackgroundImage",
+                                  parameter          : [ this.__doc.body.style.backgroundImage,
+                                                         this.__doc.body.style.backgroundRepeat,
+                                                         this.__doc.body.style.backgroundPosition ]
+                                });
+
+        // after this action a redo is not possible anymore
+        this.__redoPossible = false;
+      }
+
+      // don't use the "background" css property to prevent overwriting the
       // current background color
       this.__doc.body.style.backgroundImage = "url(" + url + ")";
       this.__doc.body.style.backgroundRepeat = repeat;
       this.__doc.body.style.backgroundPosition = position;
-
       return true;
-    },
-
-    
-    /**
-     * Undo the last change
-     * 
-     * @type member
-     * @return {Boolean} Success of operation
-     */
-    undo : function()
-    {
-      return this._execCommand("Undo", false, null);
-    },
-    
-    
-    /**
-     * Redo the last change 
-     * 
-     * @type member
-     * @return {Boolean} Success of operation
-     */
-    redo : function()
-    {
-      return this._execCommand("Redo", false, null);
     },
 
 
@@ -1428,7 +1576,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _execCommand : function(cmd, ui, value)
     {
-      /* 
+      /*
        * Currently all commands are handled equally.
        * The switch statement is implemented for further
        * implementation steps.
@@ -1446,8 +1594,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
             /* (re)-focus the editor after the execCommand */
             this.__focusAfterExecCommand(this);
-            
-            var o = this;
           }
           catch(ex)
           {
@@ -1455,17 +1601,35 @@ qx.Class.define("htmlarea.HtmlArea",
             {
               this.debug("execCommand " + cmd + " with value " + value + " failed");
             }
-            
+
             return false;
           }
       }
 
+      // add all actions besides the undo to the undo history
+      if (cmd.toLowerCase() != "undo")
+      {
+        // if any editing of the content happened before
+        // add the content change as undo history entry
+        if (this.__contentEdit)
+        {
+          this.__undoHistory.push({ customChange : false });
+          this.__contentEdit = false;
+        }
+
+        // add the execCommand as undo history entry
+        this.__undoHistory.push({ customChange : false });
+
+        // after a command (other than "undo") no redo is possible
+        this.__redoPossible = false;
+      }
+
       return result;
     },
-    
+
     /**
      * (Re)-focuses the editor after an execCommand was executed
-     * 
+     *
      * @type member
      * @param context {Object} current context object for window.setTimeout method
      * @return void
@@ -1476,7 +1640,7 @@ qx.Class.define("htmlarea.HtmlArea",
        {
           window.setTimeout(function(e)
           {
-            /* 
+            /*
              * IE needs to change the activeChild to the editor component
              * otherwise the e.g. pressed button (to set the selected content bold)
              * will receive the following events
@@ -1505,7 +1669,7 @@ qx.Class.define("htmlarea.HtmlArea",
          /* for all other browser a short delayed focus on the contentWindow should do the job */
          window.setTimeout(function(e) {
            context.getContentWindow().focus();
-         }, 50);  
+         }, 50);
        }
     }),
 
@@ -1522,7 +1686,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Resets the content of the editor
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     resetHtml : function()
     {
@@ -1532,7 +1696,7 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
       /*
-       * Gecko needs a p element with a text-node (&nbsp;) to 
+       * Gecko needs a p element with a text-node (&nbsp;) to
        * show the caret after clearing out the content. Otherwise
        * the user is able to type ahead but right after the clearing the
        * caret is not visible (-> cursor does not blink)
@@ -1581,7 +1745,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Wrapper method to examine the current context
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     __startExamineCursorContext : function()
     {
@@ -1595,10 +1759,19 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Examines the current context of the cursor (e.g. across bold text)
+     * Examines the current context of the cursor (e.g. over bold text).
+     * This method will dispatch the data event "cursorContext" which holds a map
+     * with different keys like bold, italic, underline etc.
+     * The main purpose for this event is to be able to set the states of your toolbar
+     * buttons so you can e.g. visualize that the cursor is currently over bold text.
+     * 
+     * The possible values are
+     * -1 = command is not possible at the moment. Used to disable the corresponding buttons (e.g. undo/redo are perfect candidates for this
+     *  0 = command is possible at the moment. Used to enable the corresponding buttons (e.g. bold/italic/underline etc.)
+     *  1 = cursor is over content which already received that command. Used to to activate the corresponding buttons (e.g. bold/italic/underline etc.)
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     __examineCursorContext : function()
     {
@@ -1621,7 +1794,8 @@ qx.Class.define("htmlarea.HtmlArea",
        * BOLD
        */
       var isBold = qx.core.Variant.isSet("qx.client", "mshtml|opera") ? focusNodeStyle.fontWeight == 700 :
-                                                                          focusNodeStyle.getPropertyValue("font-weight") == "bold";
+                                                                        focusNodeStyle.getPropertyValue("font-weight") == "bold" ||
+                                                                        focusNode.nodeName.toLowerCase() == "b";
 
       /*
        * ITALIC
@@ -1703,18 +1877,20 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // put together the data for the "cursorContext" data event
       var eventMap = {
-        bold          : isBold,
-        italic        : isItalic,
-        underline     : isUnderline,
-        strikethrough : isStrikeThrough,
+        bold          : isBold ? 1 : 0,
+        italic        : isItalic ? 1 : 0,
+        underline     : isUnderline ? 1 : 0,
+        strikethrough : isStrikeThrough ? 1 : 0,
         fontSize      : fontSize,
         fontFamily    : fontFamily,
-        unorderedList : unorderedList,
-        orderedList   : orderedList,
-        justifyLeft   : justifyLeft,
-        justifyCenter : justifyCenter,
-        justifyRight  : justifyRight,
-        justifyFull   : justifyFull
+        unorderedList : unorderedList ? 1 : 0,
+        orderedList   : orderedList ? 1 : 0,
+        justifyLeft   : justifyLeft ? 1 : 0,
+        justifyCenter : justifyCenter ? 1 : 0,
+        justifyRight  : justifyRight ? 1 : 0,
+        justifyFull   : justifyFull ? 1 : 0,
+        undo          : (this.__undoHistory.length > 0 || this.__contentEdit) ? 0 : -1, // if no undo history entry is available but content was edited
+        redo          : this.__redoPossible ? 0 : -1
       };
 
       this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
@@ -1731,7 +1907,7 @@ qx.Class.define("htmlarea.HtmlArea",
       
     /**
      * Returns the current selection object
-     * 
+     *
      * @return {Selection} Selection object
     */
     __getSelection : qx.core.Variant.select("qx.client",
@@ -1750,7 +1926,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * returns the content of the actual range as text
-     * 
+     *
      * @return {String} selected text
      */
     getSelectedText : function()
@@ -1762,7 +1938,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * returns the content of the actual range as text
-     * 
+     *
      * @return {String} selected text
      */
     getSelectedHtml : function()
@@ -1780,10 +1956,10 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * returns a range for the current selection
-     * 
+     *
      * @param sel {Selection} current selection object
-     * @return {Range} Range object     
-     */    
+     * @return {Range} Range object
+     */
     __createRange : qx.core.Variant.select("qx.client",
     {
       "mshtml" : function(sel)
@@ -1841,7 +2017,7 @@ qx.Class.define("htmlarea.HtmlArea",
          {
            case "Text":
            case "None":
-             /* 
+             /*
               * It seems that even for selection of type "None",
               * there _is_ a correct parent element
               */
@@ -1881,7 +2057,7 @@ qx.Class.define("htmlarea.HtmlArea",
    * Destructor
    *
    * @type member
-   * @return {void} 
+   * @return {void}
    */
   destruct : function()
   {
