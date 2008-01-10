@@ -52,7 +52,7 @@ qx.Class.define("htmlarea.HtmlArea",
     this.setHideFocus(true);
 
     // set the optional style information - if available
-    this.__styleInformation = (styleInformation != null && typeof styleInformation == "string") ? styleInformation : "";
+    this.__styleInformation = htmlarea.HtmlArea.__formatStyleInformation(styleInformation);
 
     /**
      * Wrapper method for focus events
@@ -168,6 +168,35 @@ qx.Class.define("htmlarea.HtmlArea",
 
   statics :
   {
+    /**
+     * formats the style information
+     * 
+     * @type static
+     * @param styleInformation {Map}
+     * @return {String}
+     */
+    __formatStyleInformation : function (styleInformation)
+    {
+      if (styleInformation == null || styleInformation == "") 
+      {
+        return "";
+      }
+      else if (typeof styleInformation == "object")
+      {
+        var str = "";
+        for (var i in styleInformation)
+        {
+          str += i + ":" + styleInformation[i] + ";";
+        }
+        return str;
+      }
+      else
+      {
+        return styleInformation;
+      }
+    },
+
+
     /**
      * Get html content (own recursive method)
      *
@@ -407,7 +436,7 @@ qx.Class.define("htmlarea.HtmlArea",
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
-        style   : 'html,body { overflow-x:hidden; overflow-y:auto; background-color:transparent; background-image:none; margin:0 none; padding:1px; }',
+        style   : 'html,body { overflow-x:hidden; overflow-y:auto; background-color:transparent; background-image:none; margin:0px; padding:1px; }',
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
       }
@@ -1085,6 +1114,18 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * Sets the current selection content to the specified font size
+     *
+     * @type member
+     * @param value {Number} Font size
+     * @return {Boolean} Success of operation
+     */
+    setFontFamily : function(value) {
+      return this._execCommand("FontName", false, value);
+    },
+
+
+    /**
      * Sets the current selection content to the specified font color
      *
      * @type member
@@ -1241,6 +1282,46 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * Alias for setBackgroundColor("transparent");
+     * 
+     * @type member
+     * @return {Boolean} if succeeded
+     */
+    removeBackgroundColor : function () {
+      this.setBackgroundColor("transparent");
+    },
+
+
+    /**
+     * sets the background color of the editor
+     * 
+     * @type member
+     * @param value {String} color
+     * @return {Boolean} if succeeded
+     */
+    setBackgroundColor : function (value)
+    {
+      if (value != null && typeof value == "string") {
+        this.__doc.body.style.backgroundColor = value;
+      } else {
+        this.__doc.body.style.backgroundColor = "transparent";
+      }
+      return true;
+    },
+
+
+    /**
+     * Alias for setBackgroundImage(null);
+     * 
+     * @type member
+     * @return {Boolean} if succeeded
+     */
+    removeBackgroundImage : function () {
+      this.setBackgroundImage();
+    },
+
+
+    /**
      * Inserts an background image
      *
      * @type member
@@ -1251,10 +1332,13 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     setBackgroundImage : function(url, repeat, position)
     {
-      // return silently if no (valid) url is given
+      // if url is null remove the background image
       if (url == null || typeof url != "string")
       {
-        return false;
+        this.__doc.body.style.backgroundImage = "";
+        this.__doc.body.style.backgroundRepeat = "";
+        this.__doc.body.style.backgroundPosition = "";
+        return true;
       }
 
       // return silently if the parameter "repeat" is not valid
@@ -1287,7 +1371,12 @@ qx.Class.define("htmlarea.HtmlArea",
         position = "top";
       }
 
-      this.__doc.body.style.background = "url(" + url + ") " + repeat + " " + position;
+      // don't use the "background" css property to prevent overwriting the 
+      // current background color
+      this.__doc.body.style.backgroundImage = "url(" + url + ")";
+      this.__doc.body.style.backgroundRepeat = repeat;
+      this.__doc.body.style.backgroundPosition = position;
+
       return true;
     },
 
