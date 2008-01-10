@@ -56,5 +56,13 @@ public class HttpNodeTest {
         url = new URL("jar:file:/usr/home/mhm/Projects/pfixentertainment/projects/servletconf/tomcat/shared/lib/de.schlund.pfixschlund.order-modules+stageassistent+1.0.6.jar!/");
         System.out.println(new HttpNode(io, url).join("script/main.js").readString()); 
     }
+
+    @Test
+    public void ampersend() throws IOException {
+        URL url;
+        
+        url = new URL("http://www.heise.de/?b=1&c=d");
+        assertTrue(new HttpNode(io, url).readString().length() > 1); 
+    }
 }
 
