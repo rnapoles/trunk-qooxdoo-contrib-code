@@ -1,3 +1,54 @@
+### qx/ui/table/cellrenderer/Abstract.java
+***
+    public native void createDataCellHtml(Object cellInfo, String htmlArr);
+    public native void createDataCellHtml(Object cellInfo, java.lang.String htmlArr);
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
+***
+    public native String _getCellClass(Object cellInfo);
+    public native java.lang.String _getCellClass(Object cellInfo);
+### qx/ui/table/cellrenderer/String.java
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
+***
+    public native String _getCellClass(Object cellInfo);
+    public native java.lang.String _getCellClass(Object cellInfo);
+### qx/ui/table/cellrenderer/Date.java
+***
+    public native String _getCellClass(Object cellInfo);
+    public native java.lang.String _getCellClass(Object cellInfo);
+### qx/ui/table/cellrenderer/Number.java
+***
+    public native String _getCellClass(Object cellInfo);
+    public native java.lang.String _getCellClass(Object cellInfo);
+### qx/ui/table/cellrenderer/Dynamic.java
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
+### qx/ui/table/cellrenderer/Replace.java
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
+### qx/ui/table/cellrenderer/Password.java
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
+### qx/ui/table/cellrenderer/Default.java
+***
+    public native String _getCellClass(Object cellInfo);
+    public native java.lang.String _getCellClass(Object cellInfo);
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
+### qx/ui/table/cellrenderer/Icon.java
+***
+    public native String _getCellClass(Object cellInfo);
+    public native java.lang.String _getCellClass(Object cellInfo);
+***
+    public native String _getContentHtml(Object cellInfo);
+    public native java.lang.String _getContentHtml(Object cellInfo);
 ### qx/ui/core/ClientDocument.java
 +++
     /**
