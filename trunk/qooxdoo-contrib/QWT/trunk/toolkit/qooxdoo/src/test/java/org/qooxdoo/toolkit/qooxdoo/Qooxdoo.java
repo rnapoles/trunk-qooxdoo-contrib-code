@@ -66,6 +66,7 @@ public class Qooxdoo {
         addBootstrapDependency(repository);
         
         repository.get("qx.log.Logger").head().deps.add("qx.log.appender.Native");
+        repository.get("qx.log.Logger").head().deps.add("qx.Interface");
 
         // TODO: Qooxdoo loads runtime dependencies earlier ...
         repository.get("qx.Class").head().deps.add("qx.lang.Object");
