@@ -184,10 +184,11 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 				switch ( cmd )
 				{	  
           case "type":
-            switch ( metaData['type'])
+            switch ( metaData.type )
             {
               case "checkbox": return new qx.ui.table.cellrenderer.Boolean;
               case "password": return new qx.ui.table.cellrenderer.Password;
+              case "link":     return new qcl.ui.LinkCellRenderer;
             }
             break;
             
