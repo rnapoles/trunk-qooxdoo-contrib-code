@@ -185,10 +185,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 
     /**
      * Generic getter for options that can be selected
-     * @param {Object} value
-     * @param {Object} old
+     * retrieves selection manager and selects the widget
      */
-    _applyItemSelected : function(value,old)
+    _applyItemSelected : function()
     {
       // item might have not yet be attached to parent, set with timeout
       qx.client.Timer.once(function(){

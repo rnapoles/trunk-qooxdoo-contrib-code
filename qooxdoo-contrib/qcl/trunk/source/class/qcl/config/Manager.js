@@ -136,8 +136,8 @@ qx.Class.define("qcl.config.Manager",
     
     /**
      * sets a config value
-     * @param {String} key
-     * @param {Mixed} value
+     * @param key {String}
+     * @param value {Mixed} 
      */
     setKey : function (key, value)
     {
@@ -148,8 +148,8 @@ qx.Class.define("qcl.config.Manager",
     
     /**
 		 * sets a config value
-		 * @param {Map} data key-value pairs with config data
-		 * @param {Boolean} noServerUpdate If true, do not notify server of change
+		 * @param data {Map} key-value pairs with config data
+		 * @param noServerUpdate {Boolean}  If true, do not notify server of change
 		 * dispatches changeConfigMap data event
 		 */
 		setData : function ( data, noServerUpdate )
