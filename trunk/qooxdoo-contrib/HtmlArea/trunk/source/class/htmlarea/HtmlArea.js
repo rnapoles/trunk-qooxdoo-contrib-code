@@ -1932,20 +1932,21 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedText : function()
     {
-      var rng = this.__createRange(this.__getSelection());
-      return (rng.text) ? rng.text : rng;
+      var sel = this.__getSelection();
+      return (typeof sel == "string") ? sel : sel.toString();
     },
     
     
     /**
      * returns the content of the actual range as text
      *
+     * @TODO: need to be implemented correctly
      * @return {String} selected text
      */
     getSelectedHtml : function()
     {
-      var rng = this.__createRange(this.__getSelection());
-      return (rng.htmlText) ? rng.htmlText : rng;
+      var sel = this.__getSelection();
+      return (typeof sel == "string") ? sel : sel.toString();
     },
     
     
