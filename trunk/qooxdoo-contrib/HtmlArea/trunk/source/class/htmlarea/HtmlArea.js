@@ -368,7 +368,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Possible values for the style property background-repeat
      */
-    __backgroundRepeat : [ "repeat", "repeat-x", "repeat-y", "no-repeat" ]
+    __backgroundRepeat : "repeat repeat-x repeat-y no-repeat"
  },
 
 
@@ -1495,11 +1495,11 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // return silently if the parameter "repeat" is not valid
       // report the error in debug mode
-      if (repeat != null && htmlarea.HtmlArea.__backgroundRepeat.indexOf(repeat))
+      if (repeat != null && htmlarea.HtmlArea.__backgroundRepeat.indexOf(repeat) < 0 )
       {
         if (qx.core.Variant.isSet("qx.debug", "on"))
         {
-          this.error("Wrong value for parameter 'repeat'. Possible values are '" + htmlarea.HtmlArea.__backgroundRepeat.join(" ") + "'");
+          this.error("The value '" +repeat + "' is not allowed for parameter 'repeat'. Possible values are '" + htmlarea.HtmlArea.__backgroundRepeat + "'");
         }
         return false;
       }
@@ -1510,7 +1510,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // return silently if the parameter "position" is not valid
       // report the error in debug mode
-      if (position != null && htmlarea.HtmlArea.__backgroundPosition.indexOf(position))
+      // TODO: combination of some values possible???? i think so
+      if (position != null && htmlarea.HtmlArea.__backgroundPosition.indexOf(position) < 0)
       {
         if (qx.core.Variant.isSet("qx.debug", "on"))
         {
