@@ -312,13 +312,14 @@ class qcl_object extends patched_object {
    	/**
    	 * remove stored object
    	 */
-   	function remove ( $id )
+   	function remove ( $id, $prependPath = true )
    	{
 		  if ( ! $id )
    		{
    			$id = get_class($this);
    		}
-		  $path = QCL_TMP_PATH . $id;
+		  if ( $prependPath) $path = QCL_TMP_PATH . $id;
+      else $path = $id;
 		  return unlink ($path);		
    	}
    	
