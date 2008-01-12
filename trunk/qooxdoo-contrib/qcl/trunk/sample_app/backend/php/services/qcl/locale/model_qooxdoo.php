@@ -3,17 +3,15 @@
 require_once ("qcl/jsonrpc/model.php");
 
 /**
- * locale model using the  the qooxdoo translation system, using the "frontend/source/translation" 
- * directory. currently, only language codes and not territory codes are supported 
- * ("DE", but not "DE_de" or "EN" and not "EN_us"). 
+ * locale model using the  the qooxdoo translation system.
  */
 class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
 {
 	
-  var $default_locale = "EN";
+  var $default_locale = "EN"; // todo
   var $locale_dir     = "../../../frontend/source/translation"; 
-  var $locale_js_dir  = "../../../frontend/source/class/bibliograph/translation"; 
-  var $translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // adapt this to your setup
+  var $locale_js_dir  = "../../../frontend/source/class/bibliograph/translation";  // todo
+  var $translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // todo
 
 	//-------------------------------------------------------------
   // internal methods
@@ -63,7 +61,7 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
       return $translation;
     }
         
-    if ( $locale != "EN"  )
+    if ( $locale != $default_locale )
     {
       $this->markForTranslation( $messageId );
     }

@@ -15,7 +15,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
   // class variables
   //-------------------------------------------------------------
   	
-  var $default_locale = "EN";
+  var $default_locale = "EN"; // todo
  
 	//-------------------------------------------------------------
   // internal methods
@@ -64,7 +64,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
     $locale = null;
     foreach ( $browser_locales as $brlc )
     {
-      $lc = strtoupper( substr( $brlc, 0, 2 ) );
+      $lc = strtoupper( substr( $brlc, 0, 2 ) ); // todo: to lower case!
       if ( $localeModel->hasLocale( $lc ) )
       {
         $locale = $lc; 
@@ -148,21 +148,6 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
     $this->info( "  System locale : " . getenv("LANGUAGE") );
     $this->info( "  User locale: " . $this->getUserLocale() );
   }  
-  
-  
-  /**
-   * updates the existing message catalogues in the locale directory
-   * with the messages extracted from the backend php files
-   * @return void
-   */
-  function method_updateMessageCatalogues()
-  {
-    // todo: check access
-    $localeModel =& $this->getModel("locale");
-    $availableLocales = $localeModel->getAvailableLocales();
-    $this->info("Extracting backend message ids for locales " . implode(",", $availableLocales) . " ... ");
-    $localeModel->updateMessageCatalogues(SERVICE_PATH,$availableLocales);
-  }
 }
 
 
