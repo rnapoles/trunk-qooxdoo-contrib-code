@@ -84,8 +84,8 @@ class qcl_db_model extends qcl_jsonrpc_model
   
  	/**
    * gets all database records or those that match a where condition
-   * @param string 			$where   	where condition to match, if null, get all
-   * @param string|null 		$orderBy 	(optional) order by field
+   * @param string 			  $where   	where condition to match, if null, get all
+   * @param string|null 	$orderBy 	(optional) order by field
    * @param array|null		$fields		(optional) Array of fields to retrieve 
    * @return Array Array of db record sets
    */
@@ -115,14 +115,19 @@ class qcl_db_model extends qcl_jsonrpc_model
 
  	/**
    * gets values of database columns that match a where condition
-   * @param string			$column		name of column 
-   * @param string 			$where   	where condition to match, if null, get all
+   * @param string|array	 	$column		name of column(s) 
+   * @param string 			    $where   	where condition to match, if null, get all
    * @param string|null 		$orderBy 	(optional) order by field
    * @return array Array of values
    */
  	function getValues($column,$where=null,$orderBy=null)
  	{	
-		$sql = "SELECT `$column` FROM {$this->table} \n";
+		if ( is_array( $column ) )
+    {
+      $column = implode("`,`",$column);
+    }
+    
+    $sql = "SELECT `$column` FROM {$this->table} \n";
 		
 		if ($where)
 		{
@@ -137,13 +142,18 @@ class qcl_db_model extends qcl_jsonrpc_model
 
  	/**
    * gets all distinct values of database columns that match a where condition
-   * @param string			$column		name of column 
-   * @param string 			$where   	where condition to match, if null, get all
+   * @param string|array	  $column		name of column(s) 
+   * @param string 			    $where   	where condition to match, if null, get all
    * @param string|null 		$orderBy 	(optional) order by field
    * @return array Array of values
    */
  	function getDistinctValues($column,$where=null,$orderBy=null)
  	{	
+		if ( is_array( $column ) )
+    {
+      $column = implode("`,`",$column);
+    }
+
 		$sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
 		
 		if ($where)
