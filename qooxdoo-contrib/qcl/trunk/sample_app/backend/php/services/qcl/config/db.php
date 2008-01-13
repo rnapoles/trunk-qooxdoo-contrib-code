@@ -136,7 +136,17 @@ class qcl_config_db extends qcl_db_model
 		$row = $this->getRow($name);
 		return $row[$this->key_value];	
 	} 
-	
+  
+	/**
+	 * checks if the config entry exists (optional: for a specific user)
+	 * @param string $name
+	 * @param mixed $userRef
+	 */
+	function has($name,$user=null)  
+  {
+    return ( count( $this->getRow($name,$user) ) > 0 );
+  }
+  
 	/**
 	 * gets config data by id
 	 * @param string $id The row id of the key 
