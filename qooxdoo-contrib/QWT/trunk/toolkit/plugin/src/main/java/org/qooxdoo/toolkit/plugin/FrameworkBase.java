@@ -39,7 +39,6 @@ public abstract class FrameworkBase extends Base {
     /**
      * Svn revision
      * @parameter
-     * @required
      */
     protected String frameworkRevision;
 
@@ -61,6 +60,12 @@ public abstract class FrameworkBase extends Base {
         String workspaceRevision;
         String workspaceUrl;
         
+        if (frameworkRevision == null || frameworkRevision.trim().length() == 0) {
+            p = new Program((FileNode) frameworkDir.getParent());
+            p.add("svn", "info", frameworkUrl);
+            frameworkRevision = extract(p.exec(), "Revision:");
+            info("frameworkRevision: " + frameworkRevision);
+        }
         if (!frameworkDir.isDirectory()) {
             p = new Program((FileNode) frameworkDir.getParent());
             p.add("svn", "co", "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
