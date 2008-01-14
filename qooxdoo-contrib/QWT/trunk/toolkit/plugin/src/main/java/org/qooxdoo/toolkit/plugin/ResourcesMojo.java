@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.util.Program;
 
 /**
  * Packages Qooxdoo resources.
@@ -85,18 +84,12 @@ public class ResourcesMojo extends FrameworkBase {
         
         log = classes().join("log");
         log.mkdirOpt();
-        log(log.join("info.log"), "svn", "info", frameworkDir.getAbsolute());
-        log(log.join("status.log"), "svn", "status", "-v", "-N", frameworkDir.getAbsolute());
-        log(log.join("diff.log"), "svn", "diff", frameworkDir.getAbsolute());
+        log(log.join("info.log"), "info");
+        log(log.join("status.log"), "status", "-v", "-N");
+        log(log.join("diff.log"), "diff");
     }
 
     private void log(Node file, String ... cmd) throws IOException {
-        Program p;
-        
-        p = new Program(io.getWorking(), cmd);
-        // force output in english:
-        p.builder.environment().put("LANG", "C");
-        p.builder.environment().put("LC_ALL", "C");
-        file.writeString(p.exec());
+        file.writeString(svn(cmd).exec());
     }
 }
