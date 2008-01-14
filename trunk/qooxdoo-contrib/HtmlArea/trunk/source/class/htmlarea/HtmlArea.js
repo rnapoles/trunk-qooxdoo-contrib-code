@@ -1884,8 +1884,8 @@ qx.Class.define("htmlarea.HtmlArea",
         strikethrough : isStrikeThrough ? 1 : 0,
         fontSize      : fontSize,
         fontFamily    : fontFamily,
-        unorderedList : unorderedList ? 1 : 0,
-        orderedList   : orderedList ? 1 : 0,
+        insertUnorderedList : unorderedList ? 1 : 0,
+        insertOrderedList   : orderedList ? 1 : 0,
         justifyLeft   : justifyLeft ? 1 : 0,
         justifyCenter : justifyCenter ? 1 : 0,
         justifyRight  : justifyRight ? 1 : 0,
@@ -1945,8 +1945,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedHtml : function()
     {
-      var sel = this.__getSelection();
-      return (typeof sel == "string") ? sel : sel.toString();
+      return this.getFocusNode().innerHTML;
     },
     
     
