@@ -20,6 +20,7 @@
 package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
@@ -61,18 +62,15 @@ public abstract class FrameworkBase extends Base {
         String workspaceUrl;
         
         if (frameworkRevision == null || frameworkRevision.trim().length() == 0) {
-            p = new Program((FileNode) frameworkDir.getParent());
-            p.add("svn", "info", frameworkUrl);
+            p = svn((FileNode) frameworkDir.getParent(), "info", frameworkUrl);
             frameworkRevision = extract(p.exec(), "Revision:");
             info("frameworkRevision: " + frameworkRevision);
         }
         if (!frameworkDir.isDirectory()) {
-            p = new Program((FileNode) frameworkDir.getParent());
-            p.add("svn", "co", "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
+            p = svn((FileNode) frameworkDir.getParent(), "co", "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
             p.exec(System.out);
         } else {
-            p = new Program((FileNode) frameworkDir);
-            p.add("svn", "info");
+            p = svn("info");
             output = p.exec();
             workspaceRevision = extract(output, "Revision:");
             workspaceUrl = extract(output, "URL:");
@@ -82,8 +80,7 @@ public abstract class FrameworkBase extends Base {
                 getLog().info("switching workspace:");
                 getLog().info("  old: " + workspaceUrl + "@" + workspaceRevision);
                 getLog().info("  new: " + frameworkUrl + "@" + frameworkRevision);
-                p = new Program((FileNode) frameworkDir);
-                p.add("svn", "switch", "-r", frameworkRevision, frameworkUrl, frameworkDir.getAbsolute());
+                svn("switch", "-r", frameworkRevision, frameworkUrl, frameworkDir.getAbsolute());
                 p.exec(System.out);
             }
         }
@@ -104,6 +101,23 @@ public abstract class FrameworkBase extends Base {
             throw new IllegalArgumentException("missing newline in " + str);
         }
         return str.substring(start, end).trim();
+    }
+
+    public Program svn(String ... args) {
+        return svn((FileNode) frameworkDir, args);
+    }
+    
+    public Program svn(FileNode dir, String ... args) {
+        Program p;
+        
+        p = new Program((FileNode) dir);
+        // force output in english:
+        p.builder.environment().put("LANG", "C");
+        p.builder.environment().put("LC_ALL", "C");
+        p.add("svn");
+        p.addAll(Arrays.asList(args));
+        debug("svn command: " + p.toString());
+        return p;
     }
 
     public abstract void doExecuteWithOrig() throws MojoExecutionException, IOException, SAXException, XmlException;
