@@ -110,7 +110,7 @@ public class BindingMojo extends FrameworkBase {
         Program p;
         
         if (!all && doctree.isFile() && output.isFile() && isFrameworkOlder(Math.min(doctree.lastModified(), output.lastModified()))) {
-            getLog().info(doctree + " and " + output + " up-to-date, generation skipped.");
+            info(doctree + " and " + output + " up-to-date, generation skipped.");
         } else {
             frameworkDir.checkDirectory();
             generator = (FileNode) frameworkDir.join("tool", "generator.py");
@@ -128,10 +128,10 @@ public class BindingMojo extends FrameworkBase {
                 "--print-dependencies",
                 "--generate-api", "--add-new-lines", "--class-path=" + CLASS, 
                 "--api-documentation-xml-file=" + doctree.getName());
-            getLog().info("executing " + p);
+            info("executing " + p);
             p.exec(dest);
             dest.close();
-            getLog().info("doctree written to " + doctree + ", output to " + output);
+            info("doctree written to " + doctree + ", output to " + output);
         }
     }
 
@@ -139,20 +139,12 @@ public class BindingMojo extends FrameworkBase {
         info("check modified");
         for (Node node : frameworkDir.join(CLASS).find("**/*.js")) {
             if (modified <= node.lastModified()) {
-                info("modified: " + node);
+                debug("modified: " + node);
                 return false;
             }
         }
         info("done");
         return true;
-    }
-    
-    private static String quote(String str) {
-        if (OS.CURRENT == OS.WINDOWS) {
-            return "\"" + str + "\"";
-        } else {
-            return str;
-        }
     }
     
     protected void binding(Node src, Node output) throws IOException, SAXException, XmlException {
