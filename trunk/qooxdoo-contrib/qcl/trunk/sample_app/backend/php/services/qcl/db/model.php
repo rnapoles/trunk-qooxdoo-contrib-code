@@ -34,7 +34,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param object reference 	$controller
    * @param boolean			$initialize 	if true(default), initialize attached database object
    */
-	function __construct($controller,$initialize=true)
+	function __construct( $controller, $initialize=true )
   {
     parent::__construct(&$controller);
 		if ( $initialize ) 
