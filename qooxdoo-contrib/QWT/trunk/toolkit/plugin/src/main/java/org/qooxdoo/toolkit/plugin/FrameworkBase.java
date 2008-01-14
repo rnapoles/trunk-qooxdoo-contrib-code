@@ -22,12 +22,11 @@ package org.qooxdoo.toolkit.plugin;
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.xml.sax.SAXException;
 
 public abstract class FrameworkBase extends Base {
     /**
@@ -58,13 +57,48 @@ public abstract class FrameworkBase extends Base {
     @Override
     public void doExecute() throws IOException, SAXException, XmlException, MojoExecutionException {
         Program p;
+        String output;
+        String workspaceRevision;
+        String workspaceUrl;
         
         if (!frameworkDir.isDirectory()) {
             p = new Program((FileNode) frameworkDir.getParent());
             p.add("svn", "co", "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
             p.exec(System.out);
+        } else {
+            p = new Program((FileNode) frameworkDir);
+            p.add("svn", "info");
+            output = p.exec();
+            workspaceRevision = extract(output, "Revision:");
+            workspaceUrl = extract(output, "URL:");
+            if (workspaceRevision.equals(frameworkRevision) && workspaceUrl.equals(frameworkUrl)) {
+                getLog().info("workspace used without changes");
+            } else {
+                getLog().info("switching workspace:");
+                getLog().info("  old: " + workspaceUrl + "@" + workspaceRevision);
+                getLog().info("  new: " + frameworkUrl + "@" + frameworkRevision);
+                p = new Program((FileNode) frameworkDir);
+                p.add("svn", "switch", "-r", frameworkRevision, frameworkUrl, frameworkDir.getAbsolute());
+                p.exec(System.out);
+            }
         }
         doExecuteWithOrig();
+    }
+
+    private static String extract(String str, String key) {
+        int start;
+        int end;
+        
+        start = str.indexOf(key);
+        if (start == - 1) {
+            throw new IllegalArgumentException("missing " + key + " in " + str);
+        }
+        start += key.length();
+        end = str.indexOf('\n', start);
+        if (end == -1) {
+            throw new IllegalArgumentException("missing newline in " + str);
+        }
+        return str.substring(start, end).trim();
     }
 
     public abstract void doExecuteWithOrig() throws MojoExecutionException, IOException, SAXException, XmlException;
