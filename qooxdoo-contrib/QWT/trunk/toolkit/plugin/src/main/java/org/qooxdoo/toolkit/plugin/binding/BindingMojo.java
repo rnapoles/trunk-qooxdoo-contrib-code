@@ -19,6 +19,7 @@
 
 package org.qooxdoo.toolkit.plugin.binding;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -42,7 +43,7 @@ import org.xml.sax.SAXParseException;
  * @phase generate-sources
  */
 public class BindingMojo extends FrameworkBase {
-    private static final String CLASS = "source/class";
+    private static final String CLASS = "source" + File.separator + "class";
 
     /**
      * Always generate, don't reuse existing stuff
@@ -108,8 +109,8 @@ public class BindingMojo extends FrameworkBase {
         OutputStream dest;
         Program p;
         
-        if (!all && doctree.isFile() && output.isFile()) {
-            getLog().info(doctree + " and " + output + " exists, generation skipped.");
+        if (!all && doctree.isFile() && output.isFile() && isFrameworkOlder(Math.min(doctree.lastModified(), output.lastModified()))) {
+            getLog().info(doctree + " and " + output + " up-to-date, generation skipped.");
         } else {
             frameworkDir.checkDirectory();
             generator = (FileNode) frameworkDir.join("tool", "generator.py");
@@ -134,6 +135,18 @@ public class BindingMojo extends FrameworkBase {
         }
     }
 
+    private boolean isFrameworkOlder(long modified) throws IOException {
+        info("check modified");
+        for (Node node : frameworkDir.join(CLASS).find("**/*.js")) {
+            if (modified <= node.lastModified()) {
+                info("modified: " + node);
+                return false;
+            }
+        }
+        info("done");
+        return true;
+    }
+    
     private static String quote(String str) {
         if (OS.CURRENT == OS.WINDOWS) {
             return "\"" + str + "\"";
