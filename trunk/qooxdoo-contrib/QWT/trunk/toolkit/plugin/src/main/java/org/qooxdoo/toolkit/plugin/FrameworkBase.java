@@ -38,7 +38,7 @@ public abstract class FrameworkBase extends Base {
     protected String frameworkUrl;
     
     /**
-     * Svn revision
+     * Svn revision. Optional - latest revision is used if not specified  
      * @parameter
      */
     protected String frameworkRevision;
@@ -75,12 +75,12 @@ public abstract class FrameworkBase extends Base {
             workspaceRevision = extract(output, "Revision:");
             workspaceUrl = extract(output, "URL:");
             if (workspaceRevision.equals(frameworkRevision) && workspaceUrl.equals(frameworkUrl)) {
-                getLog().info("workspace used without changes");
+                info("workspace used without changes");
             } else {
-                getLog().info("switching workspace:");
-                getLog().info("  old: " + workspaceUrl + "@" + workspaceRevision);
-                getLog().info("  new: " + frameworkUrl + "@" + frameworkRevision);
-                svn("switch", "-r", frameworkRevision, frameworkUrl, frameworkDir.getAbsolute());
+                info("switching workspace:");
+                info("  old: " + workspaceUrl + "@" + workspaceRevision);
+                info("  new: " + frameworkUrl + "@" + frameworkRevision);
+                p = svn("switch", "-r", frameworkRevision, frameworkUrl);
                 p.exec(System.out);
             }
         }
