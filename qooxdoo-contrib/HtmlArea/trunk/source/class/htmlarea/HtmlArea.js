@@ -1110,6 +1110,8 @@ qx.Class.define("htmlarea.HtmlArea",
         // a redo operation is now possible
         this.__redoPossible = true;
 
+        // need to inform the toolbar, because context has changed
+        this.__startExamineCursorContext();
         return true;
       }
     },
@@ -1142,7 +1144,12 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         else
         {
-          return this._execCommand("Redo", false, null);
+          var returnValue = this._execCommand("Redo", false, null);
+
+          // need to inform the toolbar, because context has changed
+          this.__startExamineCursorContext();
+
+          return returnValue;
         }
 
         this.__redoPossible = false;
@@ -1150,6 +1157,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // reset the redoAction
       this.__redoAction = null;
+
+      // need to inform the toolbar, because context has changed
+      this.__startExamineCursorContext();
     },
 
 
@@ -1932,8 +1942,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedText : function()
     {
-      var sel = this.__getSelection();
-      return (typeof sel == "string") ? sel : sel.toString();
+      var sel = this.getRange();
+      if (range) {
+        return (typeof range == "string") ? range : range.toString();
+      }
+      return "";
     },
     
     
@@ -1945,7 +1958,22 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedHtml : function()
     {
-      return this.getFocusNode().innerHTML;
+      var tmpBody = document.createElement("body");
+      var range   = this.getRange();
+
+      if (!range) {
+        return "";
+      };
+
+      if (range.cloneContents) {
+        tmpBody.appendChild(range.cloneContents()); 
+      } else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined') {
+        return range.item ? range.item(0).outerHTML : range.htmlText;
+      } else {
+        return range.toString();
+      }
+
+      return tmpBody.innerHTML;
     },
     
     
@@ -1954,7 +1982,19 @@ qx.Class.define("htmlarea.HtmlArea",
      TEXT RANGE
      -----------------------------------------------------------------------------
     */
-    
+
+    /**
+     * returns the range of the current selection
+     * 
+     * @type member
+     * @return {Range} Range object
+     */
+    getRange : function ()
+    {
+      return this.__createRange(this.__getSelection());
+    },
+
+
     /**
      * returns a range for the current selection
      *
