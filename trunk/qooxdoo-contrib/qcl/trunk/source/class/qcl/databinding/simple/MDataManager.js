@@ -294,7 +294,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
            // handle messages and events
            if (data.messages || data.events) 
            {
-             _this.__handleEventsAndMessages(data)
+             _this.__handleEventsAndMessages(_this,data)
            }
            
            // handle received data	              
@@ -337,7 +337,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     /**
      * handles events and messages received with server response
      */
-    __handleEventsAndMessages : function ( data )
+    __handleEventsAndMessages : function ( obj, data )
     {
       // server messages
       if( data.messages && data.messages instanceof Array )
@@ -349,11 +349,11 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       }
 
       // server events
-      if( data.events && data.messages instanceof Array )
+      if( data.events && data.events instanceof Array )
       {
         data.events.forEach( function(event)
         {
-          this.createDispatchE( event.type, event.data ); 
+          obj.createDispatchDataEvent( event.type, event.data ); 
         });
       }       
     },
@@ -548,11 +548,11 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             var data = data.tabledatamodel;
             
             // just replace the whole table, for dynamic loading use remoteTableModel
-            if ( data && typeof data == "object" && data.length )
+            if ( data && data instanceof Array && data.length )
             {
 						  dataModel.setData(data);            
             }
-            else if ( data && typeof data == "object" )
+            else if ( data && data instanceof Array )
             {
 						  dataModel.setData([]);            
             }
@@ -693,7 +693,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           // handle messages and events
           if (data.messages || data.events) 
           {
-            _this.__handleEventsAndMessages(data)
+            _this.__handleEventsAndMessages( _this, data )
           }
           
           // notify about sent data only if sending was successful
