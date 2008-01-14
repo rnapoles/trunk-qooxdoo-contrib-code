@@ -4,6 +4,7 @@ require_once ("qcl/jsonrpc/model.php");
 
 /**
  * locale model using the  the qooxdoo translation system.
+ * @todo: externally set paths
  */
 class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
 {
@@ -37,6 +38,8 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
    */
   function gettext($messageId)
   {    
+    if ( ! trim ( $messageId ) ) return "";
+    
     $locale = $this->getLocale();
     
     // get cached catalogue or build it
@@ -155,16 +158,18 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
    */
   function markForTranslation ( $messageId )
   {
-    $content   = @file_get_contents( $this->translation_js );
-    $messageId = addslashes( $messageId );
-    
-    if ( ! strstr( $content, $messageId ) )
+    if ( trim($messageId)  ) 
     {
-      $content .= "\n" . 'this.marktr("' . $messageId . '");';
-      file_put_contents( $this->translation_js, $content );
+      $content   = @file_get_contents( $this->translation_js );
+      $messageId = addslashes( $messageId );
+      
+      if ( ! strstr( $content, $messageId ) )
+      {
+        $content .= "\n" . 'this.marktr("' . $messageId . '");';
+        file_put_contents( $this->translation_js, $content );
+      }      
     }
   }
-
 }
 
 ?>

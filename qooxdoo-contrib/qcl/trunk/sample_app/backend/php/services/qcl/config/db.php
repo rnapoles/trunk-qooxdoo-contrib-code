@@ -390,7 +390,7 @@ class qcl_config_db extends qcl_db_model
 		// all checks have been passed, set value
     $row[$this->key_value]=$value;
 		$this->update($row);
-    $this->info("'$name' set to '$value' for user '$owner'.");
+    $this->log("'$name' set to '$value' for user '$owner'.");
 		return true;
 	}
 
