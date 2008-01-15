@@ -2,25 +2,24 @@
 
 // dependencies
 require_once ("qcl/jsonrpc/model.php");
-require_once ("qcl/java/shell.php");
 
 // Directory where the jar files are located
-define("SAXON_DIR", SERVICE_PATH . "qcl/xslt/saxon/" );
+define("SAXON_DIR", SERVICE_PATH . "qcl/xml/saxon/" );
 
 /**
- * Component to do XSLT - Transformations
+ * Model to do XSLT - Transformations
  **/
-class qcl_xslt_transformer extends qcl_jsonrpc_model
+class qcl_xml_transformer extends qcl_jsonrpc_model
 {
     var $error;
     
-    /**
+  /**
 	 * constructor
 	 **/
-    function __construct( &$controller )
-    {
-        $this->controller 	=& $controller;
-    }
+  function __construct( $controller )
+  {
+      parent::__construct( &$controller );
+  }
 
 	/**
 	 * transforms xml data with xsl stylesheet
@@ -30,31 +29,31 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	 * @param string	$version	XSLT version ("1.0" or "2.0"). XSLT 2.0 conversions require the java saxon library
 	 * @return string transformed xml
 	 */
-    function transform ($xml,$xsl,$params=null,$version="1.0")
-    {
-    	if ( $version < 2 )
-    	{
-    		if ( PHP_VERSION < 5 )
-    		{
-    			if ( function_exists( "domxml_open_file" ) )
-    			{
-    				return $this->_useDomXml($xml,$xsl,$params=null,$debugfile=null);	
-    			}
-				else
-				{
-					$this->raiseError("dom_xml extension is not installed.");
-				}	
-    		}
-    		else
-    		{
-    			return $this->_useLibxslt($xml,$xsl,$params=null,$debugfile=null);
-    		}
-    	}
-    	else
-    	{
-    		return $this->_useSaxonViaShell($xml,$xsl,$params=null,$debugfile=null);
-    	}
-    }
+  function transform ($xml,$xsl,$params=null,$version="1.0")
+  {
+  	if ( $version < 2 )
+  	{
+  		if ( PHP_VERSION < 5 )
+  		{
+  			if ( function_exists( "domxml_open_file" ) )
+  			{
+  				return $this->_useDomXml($xml,$xsl,$params=null,$debugfile=null);	
+  			}
+			else
+			{
+				$this->raiseError("dom_xml extension is not installed.");
+			}	
+  		}
+  		else
+  		{
+  			return $this->_useLibxslt($xml,$xsl,$params=null,$debugfile=null);
+  		}
+  	}
+  	else
+  	{
+  		return $this->_useSaxonViaShell($xml,$xsl,$params=null,$debugfile=null);
+  	}
+  }
     
 	/**
 	 * transforms xml data with xsl stylesheet using the php domxml extension (XSLT 1.0, PHP4 only)
@@ -64,8 +63,8 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	 * @param string 	$debugfile 	file to write debug information to 
 	 * @return string transformed xml
 	 */
-    function _useDomXml($xml,$xsl,$params=null,$debugfile=null)
-    {
+  function _useDomXml($xml,$xsl,$params=null,$debugfile=null)
+  {
 		$domXmlObj 	= @is_file($xml) ? 
 			domxml_open_file($xml): 
 			domxml_open_mem ($xml);
@@ -73,8 +72,7 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 		{
 			file_put_contents($debugfile,$xml);
 			$this->error = ("Invalid xml data");
-			return false;
-			
+			return false;			
 		}
 		
 		$domXsltObj = @is_file($xsl) ? 
@@ -103,7 +101,7 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 		}	
     }
     
-   	/**
+  /**
 	 * transforms xml data with xsl stylesheet using the php libxslt extension (XSLT 1.0, PHP5 only) 
 	 * this requires the presence of the JavaBridge extension
 	 * @param mixed 	$xml 		string or filename of xml file to transform
@@ -112,8 +110,8 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	 * @param string 	$debugfile 	file to write debug information to 
 	 * @return string transformed xml
 	 */
-    function _useLibxslt($xml,$xsl,$params=null,$debugfile=null)
-    {
+  function _useLibxslt($xml,$xsl,$params=null,$debugfile=null)
+  {
 		$this->raiseError("Not yet implemented");
 		/*
 		$doc = new DOMDocument();
@@ -126,20 +124,22 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 		$xsl->setParameter('', 'name', $value);
 		return  $xsl->transformToXML($doc);
 		 */    	
-    }
-
-	/**
-	 * transforms xml data with xsl stylesheet using the java saxon package (XSLT 2.0)
-	 * through the shell
-	 * @param mixed 	$xml 		string or filename of xml file to transform
-	 * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
-	 * @param array 	$params 	an associated array to pass to the xsl as top-level parameters
-	 * @param string 	$debugfile 	file to write debug information to 
-	 * @return string transformed xml
-	 */ 
-    function _useSaxonViaShell($xml,$xsl,$params=null,$debugfile=null)
+  }
+  
+  /**
+   * transforms xml data with xsl stylesheet using the java saxon package (XSLT 2.0)
+   * through the shell
+   * @param mixed 	$xml 		string or filename of xml file to transform
+   * @param mixed 	$xsl 		string or filename of xslt file to transform xml with
+   * @param array 	$params 	an associated array to pass to the xsl as top-level parameters
+   * @param string 	$debugfile 	file to write debug information to 
+   * @return string transformed xml
+   */ 
+  function _useSaxonViaShell($xml,$xsl,$params=null,$debugfile=null)
 	{	 		
-		// write xml to file if string
+		require_once ("qcl/java/shell.php");
+    
+    // write xml to file if string
 		if ( !@is_file($xmlFile=$xml) )
 		{
 			$xmlFile = $this->store(".xml",$xml);  
@@ -204,7 +204,7 @@ class qcl_xslt_transformer extends qcl_jsonrpc_model
 	 * @param string 	$debugfile 	file to write debug information to 
 	 * @return string transformed xml
 	 */ 
-    function _useSaxonViaJavaBridge($xml,$xsl,$params=null,$debugfile=null)
+  function _useSaxonViaJavaBridge($xml,$xsl,$params=null,$debugfile=null)
 	{
 		// include the jars
 		java_require(
