@@ -75,7 +75,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     if (qx.core.Variant.isSet("qx.client", "mshtml"))
     {
-      this.__handleMouseOut = qx.lang.Function.bind(this._handleMouseOut, this);
+      this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
     }
 
     /*
@@ -650,7 +650,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        qx.html.EventRegistration.addEventListener(this.__doc, "mouseout", this.__handleMouseOut);
+        qx.html.EventRegistration.addEventListener(this.__doc, "focusout", this.__handleFocusOut);
       }
 
       /* register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
@@ -769,7 +769,6 @@ qx.Class.define("htmlarea.HtmlArea",
      * has to be stored in order to perform the desired execCommand correctly.
      */
     __currentRange    : null,
-    __validRange      : false,
 
 
     /**
@@ -838,9 +837,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // mark content changes for undo
       this.__contentEdit = true;
-
-      // invalidates the range
-      this.__validRange = false;
 
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
@@ -1056,18 +1052,17 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Eventlistener for all mouse out events.
+     * Eventlistener for focus out events to save the current selection.
      * NOTE: this method is currently only used for mshtml.
      *
      * @type member
-     * @param e {qx.event.type.MouseEvent} mouse event
+     * @param e {qx.event.type.Event} focus out event
      * @return {void}
      */
-    _handleMouseOut : function(e)
+    _handleFocusOut : function(e)
     {
       this.__currentSelection = this.__getSelection();
       this.__currentRange     = this.__createRange(this.__currentSelection);
-      this.__validRange       = true;
     },
 
 
@@ -1649,11 +1644,6 @@ qx.Class.define("htmlarea.HtmlArea",
             // saved Text Range object rather than the document object.
             if (qx.core.Variant.isSet("qx.client", "mshtml"))
             {
-              if (!this.__validRange)
-              {
-                this.__currentRange.collapse(false);
-              }
-
               // select the content of the Text Range object to set the cursor at the right position
               // and to give user feedback. Otherwise IE will set the cursor at the first position of the
               // editor area.
