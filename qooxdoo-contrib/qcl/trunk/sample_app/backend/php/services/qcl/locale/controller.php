@@ -15,7 +15,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
   // class variables
   //-------------------------------------------------------------
   	
-  var $default_locale = "EN"; // todo
+  var $default_locale = "en"; 
  
 	//-------------------------------------------------------------
   // internal methods
@@ -64,7 +64,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
     $locale = null;
     foreach ( $browser_locales as $brlc )
     {
-      $lc = strtoupper( substr( $brlc, 0, 2 ) ); // todo: to lower case!
+      $lc = strtolower( substr( $brlc, 0, 2 ) );
       if ( $localeModel->hasLocale( $lc ) )
       {
         $locale = $lc; 
@@ -77,8 +77,13 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
        $system_locale = getenv("LANGUAGE");
        if ( $system_locale )
        {
-         $locale = $system_locale;
+         $locale = substr( $system_locale, 0, 2 );
        }
+    }
+    
+    if ( !$locale )
+    {
+      $locale = $this->default_locale;
     }
     return $locale;
   }
