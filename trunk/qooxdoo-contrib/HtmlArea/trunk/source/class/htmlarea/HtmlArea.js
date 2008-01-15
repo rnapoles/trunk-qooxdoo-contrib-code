@@ -782,7 +782,6 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       var keyIdentifier = e.getKeyIdentifier().toLowerCase();
 
-   
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -791,7 +790,7 @@ qx.Class.define("htmlarea.HtmlArea",
        */
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        if (keyIdentifier == "enter" && this.__controlPressed == true)
+        if (keyIdentifier == "enter" && this.__controlPressed)
         {
           var sel = this.__getSelection();
           var rng = this.__createRange(sel);
@@ -804,9 +803,16 @@ qx.Class.define("htmlarea.HtmlArea",
          * session. So it is supported that the user is pressing this
          * combination several times without releasing the "Ctrl" key
          */
-        else if (keyIdentifier == "control" && this.__controlPressed == true)
+        else if (keyIdentifier == "control" && this.__controlPressed)
         {
           this.__controlPressed = false;
+        }
+        /*
+         * execute the "selectAll" command identifier whenever the shortcut "Ctrl+A" is pressed
+         */
+        else if(keyIdentifier == "a" && this.__controlPressed)
+        {
+          this.selectAll();
         }
       }
     },
@@ -965,7 +971,14 @@ qx.Class.define("htmlarea.HtmlArea",
         break;
 
         case "a":
-          // select the whole content if "Ctrl+A" was pressed
+          /*
+           * Select the whole content if "Ctrl+A" was pressed
+           *
+           * NOTE: this code is NOT executed for mshtml. To get to
+           * know if "Ctrl+A" is pressed in mshtml one need to check
+           * this within the "keyUp" event. This info is not available
+           * within the "keyPress" event in mshtml.
+           */
           if (isCtrlPressed)
           {
             this.selectAll();
@@ -1622,56 +1635,51 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _execCommand : function(cmd, ui, value)
     {
-      /*
-       * Currently all commands are handled equally.
-       * The switch statement is implemented for further
-       * implementation steps.
-       */
-      switch(cmd)
+      try
       {
-        default:
-          try
+        // the document object is the default target for all execCommands
+        var execCommandTarget = this.__doc;
+
+        if (!qx.core.Client.getInstance().isOpera()) {
+          this.__doc.body.focus();
+        }
+
+        /*
+         * IE looses the selection if the user clicks on any other element e.g. a toolbar item
+         * To manipulate the selected text correctly IE has to execute the command on the previously
+         * saved Text Range object rather than the document object.
+         *
+         * Ignore the "SelectAll" command otherwise the range handling would interfere with it.
+         */
+        if (qx.core.Variant.isSet("qx.client", "mshtml") && cmd.toLowerCase() != "selectall")
+        {
+          // select the content of the Text Range object to set the cursor at the right position
+          // and to give user feedback. Otherwise IE will set the cursor at the first position of the
+          // editor area.
+          this.__currentRange.select();
+
+          // if the saved Text Range object contains no text
+          // collapse it and execute the command at the document object
+          if (this.__currentRange.text.length > 0)
           {
-            // the document object is the default target for all execCommands
-            var execCommandTarget = this.__doc;
-
-            if (!qx.core.Client.getInstance().isOpera()) {
-              this.__doc.body.focus();
-            }
-
-            // IE looses the selection if the user clicks on any other element e.g. a toolbar item
-            // To manipulate the selected text correctly IE has to execute the command on the previously
-            // saved Text Range object rather than the document object.
-            if (qx.core.Variant.isSet("qx.client", "mshtml"))
-            {
-              // select the content of the Text Range object to set the cursor at the right position
-              // and to give user feedback. Otherwise IE will set the cursor at the first position of the
-              // editor area.
-              this.__currentRange.select();
-
-              // if the saved Text Range object contains no text
-              // collapse it and execute the command at the document object
-              if (this.__currentRange.text.length > 0)
-              {
-                // run the execCommand on the saved text range
-                execCommandTarget = this.__currentRange;
-              }
-            }
-
-            var result = execCommandTarget.execCommand(cmd, ui, value);
-
-            /* (re)-focus the editor after the execCommand */
-            this.__focusAfterExecCommand(this);
+            // run the execCommand on the saved text range
+            execCommandTarget = this.__currentRange;
           }
-          catch(ex)
-          {
-            if (qx.core.Variant.isSet("qx.debug", "on"))
-            {
-              this.debug("execCommand " + cmd + " with value " + value + " failed");
-            }
+        }
 
-            return false;
-          }
+        var result = execCommandTarget.execCommand(cmd, ui, value);
+
+        /* (re)-focus the editor after the execCommand */
+        this.__focusAfterExecCommand(this);
+      }
+      catch(ex)
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on"))
+        {
+          this.debug("execCommand " + cmd + " with value " + value + " failed");
+        }
+
+        return false;
       }
 
       // add all actions besides the undo to the undo history
