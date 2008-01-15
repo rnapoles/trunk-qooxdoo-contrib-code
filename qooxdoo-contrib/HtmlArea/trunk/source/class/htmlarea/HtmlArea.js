@@ -73,6 +73,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     this.__handleMouseEvent = qx.lang.Function.bind(this._handleMouseEvent, this);
 
+    if (qx.core.Variant.isSet("qx.client", "mshtml"))
+    {
+      this.__handleMouseOut = qx.lang.Function.bind(this._handleMouseOut, this);
+    }
+
     /*
      * catch load event - no timer needed which polls if the component is ready and 
      * to set the editor in the "editable" mode.
@@ -643,6 +648,11 @@ qx.Class.define("htmlarea.HtmlArea",
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur", this.__handleFocusEvent);
 
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        qx.html.EventRegistration.addEventListener(this.__doc, "mouseout", this.__handleMouseOut);
+      }
+
       /* register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.html.EventRegistration.addEventListener(this.__doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
     },
@@ -747,8 +757,19 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __verboseDebug : false,
 
-    /* Flag for the undo-mechanism to monitor the content changes */
+    /*
+     * Flag for the undo-mechanism to monitor the content changes
+     */
     __contentEdit : false,
+
+    /*
+     * Store the current range for IE browser to support execCommands
+     * fired from e.g. toolbar buttons. If the HtmlArea looses the selection
+     * because the user e.g. clicked at a toolbar button the last selection
+     * has to be stored in order to perform the desired execCommand correctly.
+     */
+    __currentRange    : null,
+    __validRange      : false,
 
 
     /**
@@ -790,8 +811,8 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
     },
-    
-    
+
+
     /**
      * All keyDown events are delegated to this method
      *
@@ -800,8 +821,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {void} 
      */
     _handleKeyDown : function(e) {},
-    
-    
+
+
     /**
      * All keyPress events are delegated to this method
      *
@@ -817,6 +838,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // mark content changes for undo
       this.__contentEdit = true;
+
+      // invalidates the range
+      this.__validRange = false;
 
       if (qx.core.Variant.isSet("qx.debug", "on"))
       {
@@ -1031,6 +1055,22 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * Eventlistener for all mouse out events.
+     * NOTE: this method is currently only used for mshtml.
+     *
+     * @type member
+     * @param e {qx.event.type.MouseEvent} mouse event
+     * @return {void}
+     */
+    _handleMouseOut : function(e)
+    {
+      this.__currentSelection = this.__getSelection();
+      this.__currentRange     = this.__createRange(this.__currentSelection);
+      this.__validRange       = true;
+    },
+
+
     /*
     ---------------------------------------------------------------------------
       UNDO / REDO
@@ -1093,7 +1133,7 @@ qx.Class.define("htmlarea.HtmlArea",
               this.__redoAction = { customChange : true,
                                     method       : lastChange.method,
                                     parameter    : [ this.__doc.body.style.backgroundColor ] };
-            
+
               this[lastChange.method].call(this, lastChange.parameter[0], lastChange.parameter[1], lastChange.parameter[2]);
             break;
           }
@@ -1597,11 +1637,38 @@ qx.Class.define("htmlarea.HtmlArea",
         default:
           try
           {
+            // the document object is the default target for all execCommands
+            var execCommandTarget = this.__doc;
+
             if (!qx.core.Client.getInstance().isOpera()) {
               this.__doc.body.focus();
             }
 
-            var result = this.__doc.execCommand(cmd, ui, value);
+            // IE looses the selection if the user clicks on any other element e.g. a toolbar item
+            // To manipulate the selected text correctly IE has to execute the command on the previously
+            // saved Text Range object rather than the document object.
+            if (qx.core.Variant.isSet("qx.client", "mshtml"))
+            {
+              if (!this.__validRange)
+              {
+                this.__currentRange.collapse(false);
+              }
+
+              // select the content of the Text Range object to set the cursor at the right position
+              // and to give user feedback. Otherwise IE will set the cursor at the first position of the
+              // editor area.
+              this.__currentRange.select();
+
+              // if the saved Text Range object contains no text
+              // collapse it and execute the command at the document object
+              if (this.__currentRange.text.length > 0)
+              {
+                // run the execCommand on the saved text range
+                execCommandTarget = this.__currentRange;
+              }
+            }
+
+            var result = execCommandTarget.execCommand(cmd, ui, value);
 
             /* (re)-focus the editor after the execCommand */
             this.__focusAfterExecCommand(this);
@@ -1888,20 +1955,20 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // put together the data for the "cursorContext" data event
       var eventMap = {
-        bold          : isBold ? 1 : 0,
-        italic        : isItalic ? 1 : 0,
-        underline     : isUnderline ? 1 : 0,
-        strikethrough : isStrikeThrough ? 1 : 0,
-        fontSize      : fontSize,
-        fontFamily    : fontFamily,
+        bold                : isBold ? 1 : 0,
+        italic              : isItalic ? 1 : 0,
+        underline           : isUnderline ? 1 : 0,
+        strikethrough       : isStrikeThrough ? 1 : 0,
+        fontSize            : fontSize,
+        fontFamily          : fontFamily,
         insertUnorderedList : unorderedList ? 1 : 0,
         insertOrderedList   : orderedList ? 1 : 0,
-        justifyLeft   : justifyLeft ? 1 : 0,
-        justifyCenter : justifyCenter ? 1 : 0,
-        justifyRight  : justifyRight ? 1 : 0,
-        justifyFull   : justifyFull ? 1 : 0,
-        undo          : (this.__undoHistory.length > 0 || this.__contentEdit) ? 0 : -1, // if no undo history entry is available but content was edited
-        redo          : this.__redoPossible ? 0 : -1
+        justifyLeft         : justifyLeft ? 1 : 0,
+        justifyCenter       : justifyCenter ? 1 : 0,
+        justifyRight        : justifyRight ? 1 : 0,
+        justifyFull         : justifyFull ? 1 : 0,
+        undo                : (this.__undoHistory.length > 0 || this.__contentEdit) ? 0 : -1, // if no undo history entry is available but content was edited
+        redo                : this.__redoPossible ? 0 : -1
       };
 
       this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
@@ -1925,16 +1992,16 @@ qx.Class.define("htmlarea.HtmlArea",
     {
        "mshtml" : function()
        {
-         return this.__doc.selection
+         return this.__doc.selection;
        },
-       
+
        "default" : function()
        {
          return this.getContentWindow().getSelection();
        }
     }),
-    
-    
+
+
     /**
      * returns the content of the actual range as text
      *
@@ -1948,8 +2015,8 @@ qx.Class.define("htmlarea.HtmlArea",
       }
       return "";
     },
-    
-    
+
+
     /**
      * returns the content of the actual range as text
      *
@@ -1975,8 +2042,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return tmpBody.innerHTML;
     },
-    
-    
+
+
     /*
      -----------------------------------------------------------------------------
      TEXT RANGE
