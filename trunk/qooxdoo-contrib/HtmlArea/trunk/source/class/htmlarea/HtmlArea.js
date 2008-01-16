@@ -1212,6 +1212,42 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /*
+     * Adds the occured changes to the undo history and
+     * sets a flag for the redo action.
+     *
+     * @type member
+     * @param changeInfo {Object ? null} infos of the change.
+                                         Either a map containing details or null for change through a command identifier
+     * @return {void}
+     */
+    __updateUndoRedoStatus : function(changeInfo)
+    {
+      /*
+       * if any editing of the content happened before
+       * add the content change as undo history entry
+       */
+      if (this.__contentEdit)
+      {
+        this.__undoHistory.push({ customChange : false });
+        this.__contentEdit = false;
+      }
+
+      if (changeInfo != null)
+      {
+        this.__undoHistory.push(changeInfo);
+      }
+      else
+      {
+        // add the execCommand as undo history entry
+        this.__undoHistory.push({ customChange : false });
+      }
+
+      // after a command (other than "undo") no redo is possible
+      this.__redoPossible = false;
+    },
+
+
+    /*
     ---------------------------------------------------------------------------
       EXEC-COMMANDS
     ---------------------------------------------------------------------------
@@ -1226,7 +1262,19 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertHtml : function (value) {
-      return this._execCommand("InsertHtml", false, value);
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        // check for the saved range object otherwise use the current one
+        var rng = this.__currentRange != null && this.__currentRange.text.length > 0 ? this.__currentRange : this.getRange();
+        // use the "pasteHTML" method of the text range object to insert the HTML code
+        rng.pasteHTML(value);
+
+        return true;
+      }
+      else
+      {
+        return this._execCommand("InsertHtml", false, value);
+      }
     },
 
 
@@ -1499,19 +1547,10 @@ qx.Class.define("htmlarea.HtmlArea",
       // remember the old values
       if (!this.__undoOperation)
       {
-        // if the content was edited -> add it to the history
-        if (this.__contentEdit)
-        {
-          this.__undoHistory.push({ customChange : false });
-          this.__contentEdit = false;
-        }
-
-        this.__undoHistory.push({ customChange    : true,
-                                  method          : "setBackgroundColor",
-                                  parameter       : [ this.__doc.body.style.backgroundColor ] });
-
-        // after this action a redo is not possible anymore
-        this.__redoPossible = false;
+        // update the undo/redo status
+        this.__updateUndoRedoStatus({ customChange    : true,
+                                      method          : "setBackgroundColor",
+                                      parameter       : [ this.__doc.body.style.backgroundColor ] });
       }
 
       this.__doc.body.style.backgroundColor = (value != null && typeof value == "string") ? value : "transparent";
@@ -1585,22 +1624,13 @@ qx.Class.define("htmlarea.HtmlArea",
       // to make an undo possible -> remember to old values in the change history
       if (!this.__undoOperation)
       {
-        // if content was edited -> add it to the history
-        if (this.__contentEdit)
-        {
-          this.__undoHistory.push({ customChange : false });
-          this.__contentEdit = false;
-        }
-
-        this.__undoHistory.push({ customChange       : true,
-                                  method             : "setBackgroundImage",
-                                  parameter          : [ this.__doc.body.style.backgroundImage,
-                                                         this.__doc.body.style.backgroundRepeat,
-                                                         this.__doc.body.style.backgroundPosition ]
-                                });
-
-        // after this action a redo is not possible anymore
-        this.__redoPossible = false;
+        // update the undo/redo status
+        this.__updateUndoRedoStatus({ customChange       : true,
+                                      method             : "setBackgroundImage",
+                                      parameter          : [ this.__doc.body.style.backgroundImage,
+                                                             this.__doc.body.style.backgroundRepeat,
+                                                             this.__doc.body.style.backgroundPosition ]
+                                    });
       }
 
       // don't use the "background" css property to prevent overwriting the
@@ -1685,19 +1715,7 @@ qx.Class.define("htmlarea.HtmlArea",
       // add all actions besides the undo to the undo history
       if (cmd.toLowerCase() != "undo")
       {
-        // if any editing of the content happened before
-        // add the content change as undo history entry
-        if (this.__contentEdit)
-        {
-          this.__undoHistory.push({ customChange : false });
-          this.__contentEdit = false;
-        }
-
-        // add the execCommand as undo history entry
-        this.__undoHistory.push({ customChange : false });
-
-        // after a command (other than "undo") no redo is possible
-        this.__redoPossible = false;
+        this.__updateUndoRedoStatus();
       }
 
       return result;
