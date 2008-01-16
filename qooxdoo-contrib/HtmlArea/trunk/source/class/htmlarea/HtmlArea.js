@@ -1264,10 +1264,13 @@ qx.Class.define("htmlarea.HtmlArea",
     insertHtml : function (value) {
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        // check for the saved range object otherwise use the current one
-        var rng = this.__currentRange != null && this.__currentRange.text.length > 0 ? this.__currentRange : this.getRange();
-        // use the "pasteHTML" method of the text range object to insert the HTML code
-        rng.pasteHTML(value);
+        if (this.__currentRange == null)
+        {
+          this.__currentRange = this.__createRange(this.__getSelection());
+        }
+        
+        this.__currentRange.select();
+    	this.__currentRange.pasteHTML(value);
 
         return true;
       }
