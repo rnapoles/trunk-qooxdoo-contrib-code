@@ -1262,6 +1262,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     insertHtml : function (value) {
+      var ret;
+      
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         if (this.__currentRange == null)
@@ -1270,14 +1272,19 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         
         this.__currentRange.select();
-    	this.__currentRange.pasteHTML(value);
-
-        return true;
+    	  this.__currentRange.pasteHTML(value);
+        
+        ret = true;
       }
       else
       {
-        return this._execCommand("InsertHtml", false, value);
+        ret = this._execCommand("InsertHtml", false, value);
       }
+      
+      // update the undo/redo status
+      this.__updateUndoRedoStatus();
+      
+      return ret;
     },
 
 
@@ -1668,6 +1675,8 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _execCommand : function(cmd, ui, value)
     {
+      var updateUndoRedoStatus = true;
+      
       try
       {
         // the document object is the default target for all execCommands
@@ -1714,9 +1723,30 @@ qx.Class.define("htmlarea.HtmlArea",
 
         return false;
       }
-
-      // add all actions besides the undo to the undo history
-      if (cmd.toLowerCase() != "undo")
+      
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        /* 
+         * ignore the update if an undo command is performed or
+         * the range currently manipulated is collapsed. If the range
+         * is collapsed gecko marks this manipulation NOT as an extra action
+         * -> no extra undo step
+         */
+        if (cmd.toLowerCase() == "undo" || this.getRange().collapsed)
+        {
+          updateUndoRedoStatus = false;
+        }
+      }
+      else
+      {
+        if (cmd.toLowerCase() != "undo")
+        {
+          updateUndoRedoStatus = false; 
+        }
+      }
+      
+      // only update the status if the flag is set
+      if (updateUndoRedoStatus)
       {
         this.__updateUndoRedoStatus();
       }
