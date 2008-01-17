@@ -442,7 +442,7 @@ qx.Class.define("htmlarea.HtmlArea",
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
-        style   : 'html,body { overflow-x:hidden; overflow-y:auto; background-color:transparent; background-image:none; margin:0px; padding:1px; }',
+        style   : 'html, body { overflow-y: auto; background-color:transparent; background-image:none; margin:0px; padding:1px; }',
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
       }
@@ -593,6 +593,12 @@ qx.Class.define("htmlarea.HtmlArea",
       
       if (typeof value == "string")
       {
+         /*
+          * To hide the horizontal scrollbars in gecko browsers set the "overflow-x" explicit to "hidden"
+          * In mshtml browsers this does NOT work. The property "overflow-x" overwrites the value of "overflow-y".
+          */
+         var geckoOverflow = qx.core.Client.getInstance().isGecko() ? " html, body {overflow-x: hidden; } " : "";
+         
          var wrap = this.__contentWrap[this.getContentType()];
    
          /*
@@ -607,7 +613,7 @@ qx.Class.define("htmlarea.HtmlArea",
    
          /* RIGHT IMPLEMENTATION */
          var content = wrap.html +
-                      '<head>' + wrap.meta + '<style type="text/css">' + wrap.style + this.__styleInformation + '</style></head>' +
+                      '<head>' + wrap.meta + '<style type="text/css">' + wrap.style + geckoOverflow + this.__styleInformation + '</style></head>' +
                        wrap.body + value + wrap.footer;
          
          this.__doc.open(qx.util.Mime.HTML, true);
