@@ -154,19 +154,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.2</version>
+        <!-- TODO: I didn't find predefind maven variables for this in mvn 2.0.8:
         <configuration>
           <archive>
             <manifestEntries>
-	      <Specification-Version>${pom.version}</Specification-Version>
-	      <!-- TODO: don't use antrun to generate manifest because child projects
-	           with antrun plugins get it twice (e.g. apt was run twice ...):
-	      <Data>dd.MM.yyyy HH:mm</Date-->
-	      <!-- TODO: Implementation-Vendor already defined by maven -->
-              <Vendor>${user.name}@${env.HOSTNAME}</Vendor>
+	      <Build-Date>dd.MM.yyyy HH:mm</Build-Date>
+              <Build-Hostname>${env.HOSTNAME}</Build-Hostname>
             </manifestEntries>
           </archive>
-        </configuration>
+        </configuration -->
       </plugin> 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
