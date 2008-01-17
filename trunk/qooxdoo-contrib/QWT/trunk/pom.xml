@@ -155,16 +155,17 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.2</version>
-        <!-- TODO: I didn't find predefind maven variables for this in mvn 2.0.8:
         <configuration>
           <archive>
-            <manifestEntries>
-	      <Build-Date>dd.MM.yyyy HH:mm</Build-Date>
-              <Build-Hostname>${env.HOSTNAME}</Build-Hostname>
-            </manifestEntries>
+            <!-- TODO: I didn't find predefind maven variables to add a machine name and the build date in mvn 2.0.8 -->
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
           </archive>
-        </configuration -->
-      </plugin> 
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
