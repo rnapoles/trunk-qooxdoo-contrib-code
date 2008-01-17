@@ -2058,7 +2058,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedText : function()
     {
-      var sel = this.getRange();
+      var sel = this.__getCurrentRange();
       if (range) {
         return (typeof range == "string") ? range : range.toString();
       }
@@ -2075,7 +2075,7 @@ qx.Class.define("htmlarea.HtmlArea",
     getSelectedHtml : function()
     {
       var tmpBody = document.createElement("body");
-      var range   = this.getRange();
+      var range   = this.__getCurrentRange();
 
       if (!range) {
         return "";
@@ -2108,6 +2108,22 @@ qx.Class.define("htmlarea.HtmlArea",
     getRange : function ()
     {
       return this.__createRange(this.__getSelection());
+    },
+
+
+    /**
+     * returns the current stored range
+     * 
+     * @type member
+     * @return {Range} Range object
+     */
+    __getCurrentRange : function ()
+    {
+      if (this.__currentRange != null)
+      {
+        return this.__currentRange;
+      }
+      return this.getRange();
     },
 
 
