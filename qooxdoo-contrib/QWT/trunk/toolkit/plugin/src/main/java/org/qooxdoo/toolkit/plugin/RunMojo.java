@@ -28,6 +28,7 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Embedded;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
@@ -87,7 +88,6 @@ public class RunMojo extends WebappBase {
         engine.setName("engine");
         engine.addChild(host);
         engine.setDefaultHost(host.getName());
-        engine.setParentClassLoader(getClass().getClassLoader());
         engine.setBackgroundProcessorDelay(2);
         embedded.addEngine(engine);
         embedded.addConnector(embedded.createConnector((InetAddress) null, port, 
@@ -114,6 +114,7 @@ public class RunMojo extends WebappBase {
 
     private Context createContext(Embedded embedded) throws MojoExecutionException, IOException {
         StandardContext context;
+        WebappLoader loader;
 
         if (!webapp.isDirectory()) {
             webapp();
@@ -121,6 +122,9 @@ public class RunMojo extends WebappBase {
         context = (StandardContext) embedded.createContext(contextPath, webapp.getAbsolute());
         context.setAllowLinking(true);
         context.setReloadable(true);
+        loader = new WebappLoader(getClass().getClassLoader());
+        loader.setDelegate(false);
+        context.setLoader(loader);
         return context;
     }
 
@@ -133,7 +137,7 @@ public class RunMojo extends WebappBase {
         info("  url: http://localhost:" + port + contextPath);
         info("  log: " + webapp.join("qwt.log"));
         info("");
-        info("Use 'jconsole " + getPid() + "' to start the management console.");
+        info("Run 'jconsole " + getPid() + "' to start the management console.");
         info("");
         return embedded;
     }
