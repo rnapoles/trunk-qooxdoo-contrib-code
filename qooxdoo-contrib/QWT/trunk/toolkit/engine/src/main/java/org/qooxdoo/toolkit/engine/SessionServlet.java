@@ -33,7 +33,10 @@ import org.apache.catalina.CometProcessor;
  * Some experience:
  *   o the end event is unreliable, I don't use it
  *   o begin events are stored until they're used by the server;
- *     after the server use, they're closed and discarded 
+ *     after the server use, they're closed and discarded
+ *   o calling event.close() avoids END calls on this event;
+ *     this is particularly important when handling END events, 
+ *     you get an infinite loop otherwise!
  */
 public class SessionServlet extends HttpServlet implements CometProcessor {
     /** millis */
@@ -74,7 +77,7 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
                    session.begin(event);
                    break;
                case END:
-                   // ignore
+                   event.close();
                    break;
                case ERROR:
                    if (event.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
