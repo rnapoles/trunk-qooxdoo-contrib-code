@@ -177,6 +177,22 @@ public class Client implements ClientMBean {
         application.register(session);
         return session;
     }
+    
+    // only for session.stop
+    protected void stopped(Session session) {
+        if (sessions.remove(session) != session) {
+            throw new IllegalArgumentException();
+        }
+    }
+    
+    public void stop() {
+        for (Session session : sessions.values()) {
+            session.stop();
+        }
+        if (sessions.size() != 0) {
+            throw new IllegalStateException(sessions.toString());
+        }
+    }
 
     public Session lookup(int id) {
         return sessions.get(id);

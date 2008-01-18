@@ -40,7 +40,7 @@ public class ResourceServlet extends Servlet {
 
     @Override
     public void destroy() {
-        application.shutdown();
+        application.stop();
         super.destroy();
     }
 
