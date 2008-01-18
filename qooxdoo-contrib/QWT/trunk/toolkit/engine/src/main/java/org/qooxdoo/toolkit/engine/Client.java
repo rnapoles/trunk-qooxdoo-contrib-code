@@ -160,7 +160,7 @@ public class Client implements ClientMBean {
         return index.length();
     }
 
-    public Session start(HttpServletResponse response) throws IOException, ServletException {
+    public Session startSession(HttpServletResponse response) throws IOException, ServletException {
         Session session;
         Writer writer;
         Object argument;
@@ -180,11 +180,12 @@ public class Client implements ClientMBean {
     
     // only for session.stop
     protected void stopped(Session session) {
-        if (sessions.remove(session) != session) {
-            throw new IllegalArgumentException();
+        if (!sessions.values().remove(session)) {
+            throw new IllegalArgumentException(session.toString());
         }
     }
     
+    /** TODO: start() method preforming application.register() */
     public void stop() {
         for (Session session : sessions.values()) {
             session.stop();
@@ -192,6 +193,7 @@ public class Client implements ClientMBean {
         if (sessions.size() != 0) {
             throw new IllegalStateException(sessions.toString());
         }
+        application.unregister(this);
     }
 
     public Session lookup(int id) {

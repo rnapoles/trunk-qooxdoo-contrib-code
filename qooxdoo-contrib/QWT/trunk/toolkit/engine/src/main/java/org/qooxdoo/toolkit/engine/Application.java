@@ -261,7 +261,10 @@ public class Application implements ApplicationMBean {
         unregister(this);
         if (mbeans.values().size() > 0) {
             log.info("mbean still registered: " + mbeans.values().toString());
-            throw new RuntimeException("");
+            for (MBean obj : mbeans.keySet()) {
+                System.out.println("still registed: " + obj.getName());
+            }
+            throw new RuntimeException(mbeans.values().toString());
         }
         for (Handler h : log.getHandlers()) {
             h.close();

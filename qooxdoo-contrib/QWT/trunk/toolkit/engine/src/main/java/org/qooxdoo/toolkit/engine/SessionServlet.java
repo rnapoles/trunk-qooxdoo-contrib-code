@@ -73,7 +73,7 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
             if (event.getEventType() != CometEvent.EventType.BEGIN) {
                 throw new IllegalStateException(path + ": unexpected event " + event.getEventType());
             }
-            client.start(event.getHttpServletResponse());
+            client.startSession(event.getHttpServletResponse());
             event.close();
         } else {
             switch (event.getEventType()) {
