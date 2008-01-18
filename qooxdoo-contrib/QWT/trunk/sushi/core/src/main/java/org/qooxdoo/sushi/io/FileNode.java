@@ -51,7 +51,7 @@ public class FileNode extends Node {
     private static Filesystem findFs(File file) {
         String str;
         
-        str = file.getAbsolutePath();
+        str = file.getAbsolutePath().toUpperCase();
         for (Filesystem fs : FSS) {
             if (str.startsWith(fs.root)) {
                 return fs;

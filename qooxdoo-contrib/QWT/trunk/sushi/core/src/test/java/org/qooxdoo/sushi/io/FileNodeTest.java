@@ -52,7 +52,7 @@ public class FileNodeTest extends NodeTest {
     @Test
     public void normalizeSlashAfterDirectory() {
         if (OS.CURRENT == OS.WINDOWS) {
-            assertEquals("c:\\WINDOWS", IO.node("c:\\WINDOWS\\").getPath());
+            assertEquals("WINDOWS", IO.node("c:\\WINDOWS\\").getPath());
         } else {
             assertEquals("usr", IO.node("/usr/").getPath());
         }
