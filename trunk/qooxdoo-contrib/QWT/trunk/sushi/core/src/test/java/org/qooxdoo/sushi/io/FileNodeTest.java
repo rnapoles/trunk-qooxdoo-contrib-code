@@ -50,8 +50,12 @@ public class FileNodeTest extends NodeTest {
     }
 
     @Test
-    public void normalizePath() {
-        assertEquals("usr", IO.node("/usr/").getPath());
+    public void normalizeSlashAfterDirectory() {
+        if (OS.CURRENT == OS.WINDOWS) {
+            assertEquals("c:\\WINDOWS", IO.node("c:\\WINDOWS\\").getPath());
+        } else {
+            assertEquals("usr", IO.node("/usr/").getPath());
+        }
     }
 
     @Test
