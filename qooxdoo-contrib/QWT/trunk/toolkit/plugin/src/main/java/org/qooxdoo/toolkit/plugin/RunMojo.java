@@ -201,7 +201,6 @@ public class RunMojo extends WebappBase {
             if (super.modified()) {
                 return true;
             }
-            System.out.println("start check");
             try {
                 modified = Long.MIN_VALUE;
                 for (Node file : classes.find("**/*.class")) {
@@ -214,7 +213,6 @@ public class RunMojo extends WebappBase {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("end check");
             return false;
         }
     }
