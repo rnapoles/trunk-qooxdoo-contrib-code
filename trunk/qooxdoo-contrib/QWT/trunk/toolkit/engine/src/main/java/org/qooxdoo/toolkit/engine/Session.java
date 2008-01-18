@@ -27,7 +27,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.catalina.CometEvent;
 import org.qooxdoo.toolkit.engine.common.CallListener;
 
-/** A running client. Create instances with Client.start. */
+/** 
+ * A running client. Create instances with Client.start. A session is closed
+ * a) by application shutdown, or b) by a client timeout. 
+ */
 public class Session implements SessionMBean, CallListener {
     private final Client client;
     private final int id;
@@ -64,12 +67,20 @@ public class Session implements SessionMBean, CallListener {
     }
 
     public void stop() {
+        CometEvent event;
+        
         client.getApplication().getServer().clientStop();
         client.getApplication().unregister(this);
-        if (active.peek() != null) {
-            System.out.println("TODO: stopped with active event");
+        event = active.peek();
+        if (event != null) {
+            try {
+                event.close();
+            } catch (IOException e) {
+                throw new RuntimeException("TODO", e);
+            }
             active.clear();
         }
+        client.stopped(this);
     }
     
     //--

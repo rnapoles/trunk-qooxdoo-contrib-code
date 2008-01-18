@@ -255,23 +255,20 @@ public class Application implements ApplicationMBean {
     }
 
 
-    public void shutdown() {
+    public void stop() {
+        client.stop();
         server.stop();
-        for (ObjectName name : mbeans.values()) {
-            try {
-                mbeanServer.unregisterMBean(name);
-            } catch (MBeanRegistrationException e) {
-                throw new RuntimeException(name.toString(), e);
-            } catch (InstanceNotFoundException e) {
-                throw new RuntimeException(name.toString(), e);
-            } 
+        unregister(this);
+        if (mbeans.values().size() > 0) {
+            log.info("mbean still registered: " + mbeans.values().toString());
+            throw new RuntimeException("");
         }
-        log.info("shotdown done");
         for (Handler h : log.getHandlers()) {
             h.close();
             log.removeHandler(h);
         }
         server = null;
+        log.info("application stopped");
     }
     
     public synchronized void register(MBean mbean) {

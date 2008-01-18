@@ -54,6 +54,11 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
         application = Application.get(context);
     }
 
+    @Override
+    public void destroy() {
+        System.out.println("destroy");
+    }
+    
     public void event(CometEvent event) throws IOException, ServletException {
         String path;
         Client client;
