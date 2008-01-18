@@ -11,56 +11,23 @@ require_once ("qcl/config/db.php");
 
 class qcl_config_session extends qcl_config_db
 {    
-
-	//-------------------------------------------------------------
-  // class variables
-	//------------------------------------------------------------- 
-	
-
-	//-------------------------------------------------------------
-  // internal methods
-	//------------------------------------------------------------- 
-   
- 	/**
- 	 * constructor
- 	 * @param object reference $controller
-   */
- 	function __construct($controller)
- 	{
-    parent::__construct(&$controller);
-	}
 	
 	//-------------------------------------------------------------
   // public methods 
 	//-------------------------------------------------------------    
  
 	/**
-	 * creates a config property, overwriting any previous entry
-	 * requires permission "qcl.config.permissions.manage"
-	 * 
-	 * @param string $name The name of the property (i.e., myapplication.config.locale)
-	 * @param string $type The type of the property (string|number|object|boolean)
-	 * @param string $permissionRead The permission name that is needed to access 
-	 * 		  and read this property (optional)
-	 * @param string $permissionWrite The permission name that is needed to access 
-	 * 		  and read this property (optional)
-	 * @param boolean $allowUserVariants If true, allow users to create their 
-	 * 		  own variant of the configuration setting 
-	 * @return id of created config entry
+	 * overridden, because not allowed in this model
 	 */
-	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false )
+	function create()
 	{
     $this->raiseError("Creating config key not supported in this config model"); 
 	} 
   
 	/**
-	 * deletes a config property completely or only its user variant 
-	 * requires permission qcl.config.permissions.manage
-	 * 
-	 * @param mixed $ref Id or name of the property (i.e., myapplication.config.locale)
-	 * @return true if success 
+	 * overridden, because not allowed in this model
 	 */
-	function delete( $ref )
+	function delete( )
 	{
 	  $this->raiseError("Deleting config key not supported in this config model"); 
 	} 
@@ -70,7 +37,7 @@ class qcl_config_session extends qcl_config_db
 	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
 	 * @return value of property or null if value does not exist.
 	 */
-	function get($name)
+	function get( $name )
 	{
 		if ( $this->hasSessionVar($name) ) 
     {
@@ -82,27 +49,22 @@ class qcl_config_session extends qcl_config_db
 	/**
 	 * checks if the config entry exists (optional: for a specific user)
 	 * @param string $name
-	 * @param mixed $userRef
 	 */
-	function has($name,$user=null)  
+	function has( $name )  
   {
     if ( $this->hasSessionVar($name) ) return true;
-    return parent::has($name,$user);
+    return parent::has($name);
   }
-  
  
 	/**
 	 * sets config property
 	 * @param string $name The name of the property (i.e., myapplication.config.locale)
 	 * @param string $value The value of the property. 
-	 * @param boolean $defaultValue If true, set the key's default value for keys that allow
-	 *  	user variants. This is necessary so that the admin can change the defaults instead
-	 * 		of editing her/his own variant.
 	 * @return true if success or false if there was an error
 	 */
-	function set( $name, $value, $defaultValue=false)
+	function set( $name, $value )
 	{
-    $this->info("Setting temporary config value $name to $value");
+    //$this->info("Setting temporary config value $name to $value");
     $this->setSessionVar( $name, $value );
 	}
 
