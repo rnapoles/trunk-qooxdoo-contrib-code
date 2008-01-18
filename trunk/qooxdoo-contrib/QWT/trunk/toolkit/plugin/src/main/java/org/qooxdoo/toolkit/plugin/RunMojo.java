@@ -136,8 +136,7 @@ public class RunMojo extends WebappBase {
         info("  application: " +  id);
         info("  url: http://localhost:" + port + contextPath);
         info("  log: " + webapp.join("qwt.log"));
-        info("");
-        info("Run 'jconsole " + getPid() + "' to start the management console.");
+        info("  admin: jconsole " + getPid());
         info("");
         return embedded;
     }
