@@ -121,7 +121,11 @@ public class PatchSet {
             file = dir.join(name);
             builder = new StringBuilder(file.readString());
             for (Patch patch : patches.get(name)) {
-                patch.apply(builder);
+                try {
+                    patch.apply(builder);
+                } catch (PatchException e) {
+                    throw new PatchException(file + ":" + e.getMessage(), e);
+                }
             }
             file.writeString(builder.toString());
         }

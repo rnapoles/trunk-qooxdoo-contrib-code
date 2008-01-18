@@ -23,10 +23,6 @@
 ***
     public native String _getCellClass(Object cellInfo);
     public native java.lang.String _getCellClass(Object cellInfo);
-### qx/ui/table/cellrenderer/Dynamic.java
-***
-    public native String _getContentHtml(Object cellInfo);
-    public native java.lang.String _getContentHtml(Object cellInfo);
 ### qx/ui/table/cellrenderer/Replace.java
 ***
     public native String _getContentHtml(Object cellInfo);
