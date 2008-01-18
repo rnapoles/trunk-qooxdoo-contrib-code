@@ -136,14 +136,14 @@ public class BindingMojo extends FrameworkBase {
     }
 
     private boolean isFrameworkOlder(long modified) throws IOException {
-        info("check modified");
+        debug("check modified");
         for (Node node : frameworkDir.join(CLASS).find("**/*.js")) {
             if (modified <= node.lastModified()) {
                 debug("modified: " + node);
                 return false;
             }
         }
-        info("done");
+        debug("done");
         return true;
     }
     

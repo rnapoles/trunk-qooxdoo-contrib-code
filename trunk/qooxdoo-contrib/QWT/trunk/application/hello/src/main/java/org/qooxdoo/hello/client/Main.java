@@ -26,6 +26,6 @@ public class Main extends Gui {
     @Override
     public void main() {
         super.main();
-        new Label("Hello, world!!").addToDocument();
+        new Label("Hello, world!").addToDocument();
     }
 }
