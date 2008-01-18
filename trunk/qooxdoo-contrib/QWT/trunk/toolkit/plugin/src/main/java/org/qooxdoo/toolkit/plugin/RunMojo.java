@@ -32,6 +32,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Embedded;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.io.Node;
 
 /**
  * Starts QWT application in an embedded Tomcat.
@@ -122,8 +123,7 @@ public class RunMojo extends WebappBase {
         context = (StandardContext) embedded.createContext(contextPath, webapp.getAbsolute());
         context.setAllowLinking(true);
         context.setReloadable(true);
-        loader = new WebappLoader(getClass().getClassLoader());
-        loader.setDelegate(false);
+        loader = new MyWebappLoader(webapp.join("WEB-INF", "classes"), System.currentTimeMillis());
         context.setLoader(loader);
         return context;
     }
@@ -177,6 +177,45 @@ public class RunMojo extends WebappBase {
             wait();
         } catch (InterruptedException exception) {
             throw new MojoExecutionException("interrupted", exception);
+        }
+    }
+
+    /** TODO: Tomcat 6.0.13 and 6.0.14 doesn't seem to check the classes directory. 
+        It checks everything in WebappClassLoader.getClassLoader().path, but I didn't find
+        a way to get the classes directory there. */
+    public static class MyWebappLoader extends WebappLoader {
+        private final Node classes;
+        private long started;
+        
+        public MyWebappLoader(Node classes, long started) {
+            super(RunMojo.class.getClassLoader());
+            setDelegate(false);
+            this.classes = classes;
+            this.started = started;
+        }
+        
+        @Override
+        public boolean modified() {
+            long modified;
+            
+            if (super.modified()) {
+                return true;
+            }
+            System.out.println("start check");
+            try {
+                modified = Long.MIN_VALUE;
+                for (Node file : classes.find("**/*.class")) {
+                    modified = Math.max(modified, file.lastModified());
+                }
+                if (modified > started) {
+                    started = modified;
+                    return true;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("end check");
+            return false;
         }
     }
 }
