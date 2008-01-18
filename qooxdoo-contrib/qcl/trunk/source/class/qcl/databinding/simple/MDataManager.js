@@ -418,14 +418,18 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                 delete props.classname;
                 
                 // event listeners
-                if ( typeof props.events == "object" )
+                if ( props.events && typeof props.events != "object" )
+                {
+                  console.log ("props.event is a" + typeof props.events );
+                }
+                else if ( typeof props.events == "object" )
                 {
                   for ( var type in props.events )
                   {
-                    w.addEventListener(type,function(event){
-                      eval(props.events[type]);
-                    });
+                    var evalCode = props.events[type]; // creating local variable for closure
+                    w.addEventListener(type,function(event){eval(evalCode)});
                   }
+                  delete props.events;
                 }
                 
                 w.set(props);
@@ -433,7 +437,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               }
               catch (e)
               {
-                this.error (e);
+                this.warn(e);
               }
             }
             break;
