@@ -462,7 +462,52 @@ class qcl_db_model extends qcl_jsonrpc_model
 	{
 		$this->db->deleteWhere ( $this->table, $where );
 	} 
-	
+
+  function _getInitFlags ()
+  {
+    $database     = $this->db->getDatabase();
+    $init_flags   = "bibliograph_table_init_{$database}";
+    if ( ! $this->_initFlags  )
+    {
+      $this->_initFlags = (array) $this->retrieve($init_flags);
+    }
+    return $this->_initFlags;
+  }
+
+  function _setInitFlags ($flags)
+  {
+    $database     = $this->db->getDatabase();
+    $init_flags   = "bibliograph_table_init_{$database}";
+    $this->_initFlags = $flags;
+    $this->store($init_flags,$flags);
+  }
+
+  /**
+   * checks whether model table(s) have been initialized
+   * @return Boolean
+   * @param $table string[optional] defaults to model able
+   */
+  function isInitialized ( $table=null )
+  {
+    $flags = $this->_getInitFlags();
+    $table = either ( $table, $this->table );
+    return ( $flags[$table] == true );
+  }
+
+  /**
+   * sets the initialized state of model table(s) 
+   * @return 
+   * @param $table String[optional] defaults to model table
+   * @param $value Bool[optional] defaults to true
+   */
+  function setInitialized ($table=null, $value=true)
+  {
+    $flags = $this->_getInitFlags();
+    $table = either ( $table, $this->table );
+    $flags[$table] = $value;
+    $this->_setInitFlags($flags);    
+  }
+
   /**
    * initializes tables, i.e. either creates them if they do not exist or
    * update them if their definition has changed. this should only be done
@@ -474,18 +519,11 @@ class qcl_db_model extends qcl_jsonrpc_model
   {   
     $tables       = (array) $tables;
     $database     = $this->db->getDatabase();
-    $init_flags   = "bibliograph_table_init_{$database}";
-    
-    static $flags = null;
-    if ( ! $flags )
-    {
-      $flags = (array) $this->retrieve($init_flags);
-    }
     
     foreach ( $tables as $table )
     {    
       // ensure each table is only checked once
-      if ( $flags[$table] )
+      if ( $this->isInitialized( $table) )
       {
         continue;
       }
@@ -496,8 +534,7 @@ class qcl_db_model extends qcl_jsonrpc_model
            $this->updateTableStructure($table) )
       {
         // success
-        $flags[$table] = true;
-        $this->store($init_flags,$flags);
+        $this->setInitialized($table,true);
       }
     }
   }
@@ -633,12 +670,12 @@ class qcl_db_model extends qcl_jsonrpc_model
     $file = $this->getSqlFileName($name);
     if ( file_exists ($file) )
     {
-      //$this->info("Checking for file '$file' ... Exists.");
+      $this->log("Checking for file '$file' ... Exists.");
       return  file_get_contents($file);
     }
     else
     {
-      $this->info("Checking for file '$file' ... Does not exist.");
+      $this->log("Checking for file '$file' ... Does not exist.");
       return null;
     }
   }
