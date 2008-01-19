@@ -45,6 +45,12 @@ class qcl_access_controller extends qcl_jsonrpc_controller
     return $type;
   }
   
+  function requirePermission( $permission )
+  {
+    $userModel =& $this->getModel("user");
+    $userModel->requirePermission( $permision );
+  }
+  
   //-------------------------------------------------------------
   // public rpc methods 
   //-------------------------------------------------------------
