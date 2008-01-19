@@ -92,7 +92,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		{
 			$security = null;
 			$userModel->setActiveUser(null);
-			$this->dispatchMessage( "qcl.auth.messages.loginFailed", $this->error );
+			$this->dispatchMessage( "qcl.auth.messages.loginFailed", $this->tr("Wrong username or password.") );
 		}
 		
 		$this->set("security", $security );
