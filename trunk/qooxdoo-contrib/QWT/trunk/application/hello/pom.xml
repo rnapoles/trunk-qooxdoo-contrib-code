@@ -2,9 +2,6 @@
      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <!-- Feel free to use your own parent pom here. 
-       org.qooxdoo:qooxdoo nails down Maven plugin versions 
-       and adjusts settings like Java 5 or ".classpath with source jars". -->
   <parent>
     <groupId>org.qooxdoo</groupId>
     <artifactId>qooxdoo</artifactId>
