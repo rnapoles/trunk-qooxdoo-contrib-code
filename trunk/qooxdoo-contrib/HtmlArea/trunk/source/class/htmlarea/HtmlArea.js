@@ -735,7 +735,7 @@ qx.Class.define("htmlarea.HtmlArea",
       else
       {
         if (this.__isLoaded) {
-          this.__doc.body.focus();
+          this.getContentDocument().focus();
         }
       }
 
@@ -1278,7 +1278,7 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         
         this.__currentRange.select();
-    	  this.__currentRange.pasteHTML(value);
+        this.__currentRange.pasteHTML(value);
         
         ret = true;
       }
