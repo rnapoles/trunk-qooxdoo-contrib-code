@@ -120,7 +120,7 @@ public class BindingMojo extends FrameworkBase {
             if (OS.CURRENT == OS.WINDOWS) {
                 p.add("cmd", "/C");
             }
-            p.add(generator.getAbsolute());;
+            p.add(generator.getAbsolute());
             p.add(
                 "--cache-directory", ".cache",
                 "--print-dependencies",
