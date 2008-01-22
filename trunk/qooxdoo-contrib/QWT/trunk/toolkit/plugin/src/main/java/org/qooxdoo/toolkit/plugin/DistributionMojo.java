@@ -39,7 +39,7 @@ import org.qooxdoo.sushi.util.Strings;
 import org.tmatesoft.svn.core.SVNException;
 
 /**
- * Creates a distribution.
+ * Creates a distribution file.
  * 
  * @requiresProject false
  * @goal dist
@@ -64,8 +64,6 @@ public class DistributionMojo extends Base {
 
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
-        long started;
-        
         distribution.deleteOpt();
         distribution.mkdirsOpt();
 
