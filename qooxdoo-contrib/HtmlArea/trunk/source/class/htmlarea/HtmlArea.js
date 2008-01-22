@@ -161,7 +161,12 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * This event is dispatched when the editor is ready to use
      */
-    "ready"            : "qx.event.type.Event"
+    "ready"            : "qx.event.type.Event",
+    
+    /**
+     * This event is dispatched when the editor gets the focus and his own handling is done
+     */
+    "focused"          : "qx.event.type.Event"
   },
 
 
@@ -1038,6 +1043,13 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * executes a method and prevent default
+     * 
+     * @type member
+     * @param method {String} name of the moethod which should be called
+     * @param preventDefault {Boolean} wheater do preventDefault or not
+     */
     __executeHotkey : function (method, preventDefault)
     {
       if (this[method])
@@ -1078,6 +1090,7 @@ qx.Class.define("htmlarea.HtmlArea",
    __onFocus : function()
    {
      this.__valueOnFocus = this.getComputedValue();
+     this.createDispatchEvent('focused');
    },
    
    
