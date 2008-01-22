@@ -119,10 +119,8 @@ public class BindingMojo extends FrameworkBase {
             p = new Program((FileNode) frameworkDir);
             if (OS.CURRENT == OS.WINDOWS) {
                 p.add("cmd", "/C");
-                p.add("tool\\generator.py");
-            } else {
-                p.add("tool/generator.py");
             }
+            p.add(generator.getAbsolute());;
             p.add(
                 "--cache-directory", ".cache",
                 "--print-dependencies",
