@@ -846,6 +846,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var keyIdentifier  = e.getKeyIdentifier().toLowerCase();
       var isCtrlPressed  = e.isCtrlPressed();
       var isShiftPressed = e.isShiftPressed();
+      this.__currentEvent = e;
 
       // mark content changes for undo
       this.__contentEdit = true;
@@ -976,6 +977,38 @@ qx.Class.define("htmlarea.HtmlArea",
 
         break;
 
+        // special shortcuts
+        case "b": 
+          if (isCtrlPressed) {
+            this.__executeHotkey('setBold', true);
+          } 
+          break;
+        case "i":
+        case "k":
+          if (isCtrlPressed) {
+            this.__executeHotkey('setItalic', true);
+          }
+          break;
+        case "u":
+          if (isCtrlPressed) {
+            this.__executeHotkey('setUnderline', true);
+          }
+          break;
+        case "z":
+          if (isCtrlPressed && !isShiftPressed) {
+            this.__executeHotkey('undo', true);
+          }
+          else if (isCtrlPressed && isShiftPressed)
+          {
+            this.__executeHotkey('redo', true);
+          }
+          break;
+        case "y":
+          if (isCtrlPressed) {
+            this.__executeHotkey('redo', true);
+          }
+          break;
+
         case "a":
           /*
            * Select the whole content if "Ctrl+A" was pressed
@@ -1000,8 +1033,25 @@ qx.Class.define("htmlarea.HtmlArea",
           // mark the redo as not possible anymore
           this.__redoPossible = false;
        }
+
+       this.__currentEvent = null;
     },
-    
+
+
+    __executeHotkey : function (method, preventDefault)
+    {
+      if (this[method])
+      {
+        this[method]();
+
+        if (preventDefault)
+        {
+          this.__currentEvent.preventDefault();
+          this.__currentEvent.stopPropagation();
+        }
+      }
+    },
+
 
     /**
      * Eventlistener for focus events
@@ -1716,6 +1766,10 @@ qx.Class.define("htmlarea.HtmlArea",
         }
 
         var result = execCommandTarget.execCommand(cmd, ui, value);
+        if (qx.core.Variant.isSet("qx.debug", "on"))
+        {
+          this.debug("execCommand " + cmd + " with value " + value + " succeded");
+        }
 
         /* (re)-focus the editor after the execCommand */
         this.__focusAfterExecCommand(this);
