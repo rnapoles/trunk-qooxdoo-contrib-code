@@ -508,6 +508,18 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * returns the complete content of the editor
+     * 
+     * @type member
+     * @return {String}
+     */
+    getCompleteHtml : function ()
+    {
+      return this.__getWrappedContent(this.getHtml(), true);
+    },
+
+
     /*
     ---------------------------------------------------------------------------
       INITIALIZATION
@@ -529,6 +541,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
       this.__isLoaded = true;
 
+      /* setting a shortcut for the content document */
+      this.__doc = this.getContentDocument();
+
       /*
        * For IE the document needs to be set in "designMode"
        * BEFORE the content is rendered.
@@ -536,10 +551,6 @@ qx.Class.define("htmlarea.HtmlArea",
       if (qx.core.Client.getInstance().isMshtml()) {
         this.setEditable(true);
       }
-
-
-      /* setting a shortcut for the content document */
-      this.__doc = this.getContentDocument();
 
 
       /*
@@ -587,6 +598,88 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * returns style attribute as string of a given element
+     *
+     * @type member
+     * @param elem {Object} TODOC
+     * @return {String} style
+     */
+    __getElementStyleAsString : function(elem)
+    {
+      var style = "";
+
+      if (!elem) {
+        return style;
+      }
+
+      try
+      {
+        var styleAttrib = elem.getAttribute("style");
+
+        if (!styleAttrib) {
+          return style;
+        }
+
+        // IE returns an array when calling getAttribute
+        if (qx.core.Client.getInstance().isMshtml()) {
+          style = styleAttrib.cssText;
+        } else {
+          style = styleAttrib;
+        }
+      }
+      catch(exc)
+      {
+        this.info("can't extract style from elem. ");
+      }
+
+      return style;
+    },
+
+
+    /**
+     * returns the wrapped content of the editor
+     * 
+     * @type member
+     * @param value {String} body.innerHTML
+     * @return {String} content
+     */
+    __getWrappedContent : function (value, useCurrentBodyStyle)
+    {
+      var value = (typeof value == "string") ? value : "";
+
+      /**
+       * To hide the horizontal scrollbars in gecko browsers set the "overflow-x" explicit to "hidden"
+       * In mshtml browsers this does NOT work. The property "overflow-x" overwrites the value of "overflow-y".
+       **/
+      var geckoOverflow = qx.core.Client.getInstance().isGecko() ? " html, body {overflow-x: hidden; } " : "";
+      
+      var wrap = this.__contentWrap[this.getContentType()];
+      
+      /**
+       * When setting the content with a doctype IE7 has one major problem.
+       * With EVERY char inserted the editor component hides the text/flickers. To display it again
+       * it is necessary to unfocus and focus again the editor component. To avoid this unwanted
+       * behaviour it is necessary to set NO DOCTYPE.
+       * 
+       * WRONG IMPLEMENTATION:
+       * propValue = wrap.doctype + wrap.html + '<head>' + wrap.head + '</head>' + wrap.body + propValue + wrap.footer;
+       **/
+      
+      var body = "";
+      if (useCurrentBodyStyle === true)
+      {
+        body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(this.__doc.body)+'">');
+      }
+      
+      /* RIGHT IMPLEMENTATION */
+      return wrap.html +
+             '<head>' + wrap.meta + 
+             '<style type="text/css">' + wrap.style + geckoOverflow + this.__styleInformation + '</style>' +
+             '</head>' + body + value + wrap.footer;
+    },
+
+
+    /**
      * Opens a new document and sets the content (if available)
      *
      * @type member
@@ -598,29 +691,8 @@ qx.Class.define("htmlarea.HtmlArea",
       
       if (typeof value == "string")
       {
-         /*
-          * To hide the horizontal scrollbars in gecko browsers set the "overflow-x" explicit to "hidden"
-          * In mshtml browsers this does NOT work. The property "overflow-x" overwrites the value of "overflow-y".
-          */
-         var geckoOverflow = qx.core.Client.getInstance().isGecko() ? " html, body {overflow-x: hidden; } " : "";
-         
-         var wrap = this.__contentWrap[this.getContentType()];
-   
-         /*
-          * When setting the content with a doctype IE7 has one major problem.
-          * With EVERY char inserted the editor component hides the text/flickers. To display it again
-          * it is necessary to unfocus and focus again the editor component. To avoid this unwanted
-          * behaviour it is necessary to set NO DOCTYPE.
-          * 
-          * WRONG IMPLEMENTATION:
-          * propValue = wrap.doctype + wrap.html + '<head>' + wrap.head + '</head>' + wrap.body + propValue + wrap.footer;
-          */
-   
-         /* RIGHT IMPLEMENTATION */
-         var content = wrap.html +
-                      '<head>' + wrap.meta + '<style type="text/css">' + wrap.style + geckoOverflow + this.__styleInformation + '</style></head>' +
-                       wrap.body + value + wrap.footer;
-         
+         var content = this.__getWrappedContent(value);
+          
          this.__doc.open(qx.util.Mime.HTML, true);
          this.__doc.writeln(content);
          this.__doc.close();
@@ -689,35 +761,38 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyEditable : function(propValue, propOldValue, propData)
     {
-      /* setting the designMode - works for all browser engines */
-      this.getContentDocument().designMode = propValue ? "on" : "off";
-
-      /*
-       * for Gecko set additionally "styleWithCSS" and as fallback for older
-       * Gecko engines "useCSS".
-       */
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      if (this.__doc)
       {
-        try
+        /* setting the designMode - works for all browser engines */
+        this.__doc.designMode = propValue ? "on" : "off";
+  
+        /*
+         * for Gecko set additionally "styleWithCSS" and as fallback for older
+         * Gecko engines "useCSS".
+         */
+        if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
-          /* 
-           * use the new command "styleWithCSS" to turn on CSS
-           * useCSS is deprecated - see http://www.mozilla.org/editor/midas-spec.html
-           */
-          this.getContentDocument().execCommand("styleWithCSS", false, true);
-          
-          /* 
-           * this command only works when the cursor is inside a paragraph. Then
-           * it is needed to press the Enter key twice to get paragraphs.
-           */
-          //this.__doc.execCommand("insertbronreturn", false, false);
-        }
-        catch(ex)
-        {
-          try {
-            this.getContentDocument().execCommand("useCSS", false, false);
-          } catch(ex) {
-            throw new Error("Failed to enable rich edit functionality");
+          try
+          {
+            /* 
+             * use the new command "styleWithCSS" to turn on CSS
+             * useCSS is deprecated - see http://www.mozilla.org/editor/midas-spec.html
+             */
+            this.__doc.execCommand("styleWithCSS", false, true);
+            
+            /* 
+             * this command only works when the cursor is inside a paragraph. Then
+             * it is needed to press the Enter key twice to get paragraphs.
+             */
+            //this.__doc.execCommand("insertbronreturn", false, false);
+          }
+          catch(ex)
+          {
+            try {
+              this.__doc.execCommand("useCSS", false, false);
+            } catch(ex) {
+              throw new Error("Failed to enable rich edit functionality");
+            }
           }
         }
       }
@@ -740,7 +815,7 @@ qx.Class.define("htmlarea.HtmlArea",
       else
       {
         if (this.__isLoaded) {
-          this.getContentDocument().focus();
+          this.getContentDocument().body.focus();
         }
       }
 
