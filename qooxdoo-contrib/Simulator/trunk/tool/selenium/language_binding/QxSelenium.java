@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2007 1&1 Internet AG, Germany, http://www.1and1.org
+     2007-2008 1&1 Internet AG, Germany, http://www.1and1.org
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -16,20 +16,6 @@
      * Thomas Herchenroeder (thron7)
 
 ************************************************************************ */
-
-qx.Class.define("qxunit.runner._mod_head",
-{
-  extend : qx.core.Object,
-
-  construct : function()
-  {
-    this.base(arguments);
-  },
-
-  members : {
-
-  }
-});
 
 package com.thoughtworks.selenium;
 
