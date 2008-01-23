@@ -36,3 +36,6 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
         else:
             self.do_command("qxClickAt", [locator, opts,])
 
+    def qxGetPageGeom(self):
+        self.do_command("qxGetPageGeom", [])
+
