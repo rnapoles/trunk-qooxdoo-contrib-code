@@ -20,6 +20,7 @@
 package org.qooxdoo.chat.common;
 
 public interface RoomService {
+    String nextUser();
     String enter(ListenerService listener);
     void say(String message);
 }

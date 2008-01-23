@@ -26,6 +26,7 @@ import qx.application.Gui;
 import qx.event.type.Event;
 import qx.event.type.KeyEvent;
 import qx.ui.basic.Label;
+import qx.ui.core.ClientDocument;
 import qx.ui.form.Button;
 import qx.ui.form.TextArea;
 import qx.ui.form.TextField;
@@ -38,7 +39,7 @@ public class Main extends Gui implements EventListener {
     
     private final TextArea messages;
     private final TextField name;
-    private final TextField text;
+    private TextField text;
     private Button send;
     
     public Main(RoomService room) {
@@ -58,9 +59,9 @@ public class Main extends Gui implements EventListener {
         
         super.main();
 
-        text.addJavaEventListener("keydown", this);
+        ClientDocument.getInstance().addJavaEventListener("keydown", this);
         
-        name.setValue("Mr. X");
+        name.setValue(room.nextUser());
         name.focus();
         text.setValue("Hi!");
         send.addExecuteListener(this);
@@ -88,11 +89,14 @@ public class Main extends Gui implements EventListener {
         
         if (obj instanceof KeyEvent) {
             ke = (KeyEvent) obj;
-            System.out.println("keypressed " + ke.getCharCode() + " " + ke.getKeyIdentifier());
             if (!"Enter".equals(ke.getKeyIdentifier())) {
                 return;
             }
         }
+        // force value updates:
+        text.blur();
+        name.blur();
+
         message = name.getValue() + ": " + text.getValue();
         text.setValue("");
         text.focus();

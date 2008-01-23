@@ -28,12 +28,18 @@ import org.qooxdoo.chat.common.RoomService;
 public class Room implements RoomService {
     private List<ListenerService> listeners;
     private List<String> messages;
+    private int user;
     
     public Room() {
         listeners = new ArrayList<ListenerService>();
         messages = new ArrayList<String>();
+        user = 1;
     }
 
+    public String nextUser() {
+        return "User " + user++;
+    }
+    
     public String enter(ListenerService person) {
         String result;
 
