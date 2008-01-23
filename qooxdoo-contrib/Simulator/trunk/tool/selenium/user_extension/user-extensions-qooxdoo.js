@@ -346,6 +346,62 @@ Selenium.prototype.doQxExecute = function(locator, eventParams)
 };
 
 
+Selenium.prototype.doQxGetPageGeom = function(locator, eventParams)
+{
+  var docelem = this.page().findElementOrNull("dom=document"); // evtl. document.body
+
+  
+  // event handler to capture coordinates
+  function eh(e)
+  {
+    // get coordinates
+    var mouseX;
+    var mouseY; // relat. mouse coords
+    // this is from quirksmode.org
+    if (e.pageX || e.pageY)
+    {
+      mouseX = e.pageX;
+      mouseY = e.pageY;
+    } else if (e.clientX || e.clientY)
+    {
+      mouseX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+      mouseY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    } else
+    {
+      mouseX = 0;
+      mouseY = 0;
+    }
+    var originX = e.screenX - mouseX;
+    var originY = e.screenY - mouseY;
+    width   = PageBot.prototype._getWinWidth();
+    height  = PageBot.prototype._getWinHeight();
+    var geom = width+'x'+height+'+'+originX+'+'+originY;
+    LOG.info("Page geometry (WxH+X+Y): "+ geom);
+    // write to var
+    if (! storedVars)
+    {
+      storedVars = {};
+    }
+    storedVars['PageGeomStr'] = geom;
+    // de-register myself
+    PageBot.prototype._removeEventListener(docelem, "click", eh);
+  };
+
+  // register handler
+  PageBot.prototype._addEventListener(docelem, "click", eh);
+
+  // fire a mouse event at 0,0
+  /*
+  var eventParamObject = new Selenium.prototype.qx.MouseEventParameters(???);
+  this.browserbot.triggerMouseEventQx("click", docelem,eventParamObject);
+
+  // ------
+  this.doQxClickAt(locator, eventParams);  // 0,0
+  */
+
+};
+
+
 /**
  * Clicks on a qooxdoo-element.
  * mousedown, mouseup will be fired instead of only click
@@ -1264,3 +1320,68 @@ PageBot.prototype.qx._getGeneralProperty = function(actobj, attrib, qx)
   */
   return null;
 };
+
+
+// code from qx.html.EventRegistration.js
+
+PageBot.prototype._addEventListener = function(vElement, vType, vFunction) 
+{
+  if(vElement.attachEvent)
+  {
+    vElement.attachEvent("on" + vType, vFunction);
+  } else
+  {
+    vElement.addEventListener(vType, vFunction, false);
+  }
+};
+
+
+PageBot.prototype._removeEventListener = function(vElement, vType, vFunction) 
+{
+  if(vElement.detachEvent)
+  {
+    vElement.detachEvent("on" + vType, vFunction);
+  } else
+  {
+    vElement.removeEventListener(vType, vFunction, false);
+  }
+};
+
+
+PageBot.prototype._getWinWidth = function(w)
+{
+  var win = w||window;
+  if (win.document.body && win.document.body.clientWidth)
+  {
+    return win.document.body.clientWidth;
+  }
+  else if (win.innerWidth)
+  {
+    return win.innerWidth;
+  }
+  else
+  {
+    var doc = win.document;
+    return doc.compatMode === "CSS1Compat" ? doc.documentElement.clientWidth : doc.body.clientWidth;
+  }
+};
+
+
+PageBot.prototype._getWinHeight = function(w)
+{
+  var win = w||window;
+  if (win.document.body && win.document.body.clientHeight)
+  {
+    return win.document.body.clientHeight;
+  }
+  else if (win.innerHeight)
+  {
+    return win.innerHeight;
+  }
+  else
+  {
+    var doc = win.document;
+    return doc.compatMode === "CSS1Compat" ? doc.documentElement.clientHeight : doc.body.clientHeight;
+  }
+};
+
