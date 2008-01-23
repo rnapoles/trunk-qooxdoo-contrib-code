@@ -76,7 +76,7 @@ public class DistributionMojo extends Base {
     }
 
     private void bin() throws IOException {
-        distribution.join("qwt", "src", "dist").copyDirectory(distribution);
+        distribution.join("qwt", "toolkit", "plugin", "src", "dist").copyDirectory(distribution);
         distribution.join("bin", "settings.xml").writeString(
                 "<settings>\n" +  
                 "  <pluginGroups>\n" + 
