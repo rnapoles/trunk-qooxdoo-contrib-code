@@ -17,5 +17,6 @@ cd "$QWT_HOME"
 QWT_HOME=`pwd`
 cd "$current"
 
-export QWT_OPTS="-Dmaven.repo.local=$QWT_HOME/repository -Dorg.apache.maven.global-settings=$QWT_HOME/bin/settings.xml"
+# TODO: preferIPv4Stack work's around a Tomcat 6.0.14 startup problem on Mac OS
+export QWT_OPTS="-Djava.net.preferIPv4Stack=true -Dmaven.repo.local=$QWT_HOME/repository -Dorg.apache.maven.global-settings=$QWT_HOME/bin/settings.xml"
 $QWT_HOME/apache-maven-2.0.8/bin/mvn $QWT_OPTS "$@"
