@@ -1801,7 +1801,9 @@ qx.Class.define("htmlarea.HtmlArea",
       }
       else
       {
-        position = "top";
+        if (!position) {
+          position = "top";
+        }
       }
 
       // to make an undo possible -> remember to old values in the change history
