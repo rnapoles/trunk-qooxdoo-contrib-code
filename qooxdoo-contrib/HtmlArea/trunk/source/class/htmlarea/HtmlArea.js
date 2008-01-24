@@ -373,7 +373,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Possible values for the style property background-position
      */
-    __backgroundPosition : [ "top", "bottom", "center", "left", "right" ],
+    __backgroundPosition : "top bottom center left right",
 
     /**
      * Possible values for the style property background-repeat
@@ -837,7 +837,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * set this flag and insert the linebreak at the keyup event.
      */
     __controlPressed : false,
-    
+
     /*
      * flag to control the debugging output
      */
@@ -971,7 +971,7 @@ qx.Class.define("htmlarea.HtmlArea",
           this.__redoPossible = false;
 
           /* if only "Enter" key was pressed and "messengerMode" is activated */
-          if (isShiftPressed == false && isCtrlPressed == false && this.getMessengerMode() == true)
+          if (!isShiftPressed && !isCtrlPressed && this.getMessengerMode())
           {
             e.preventDefault();
             e.stopPropagation();
@@ -1036,7 +1036,22 @@ qx.Class.define("htmlarea.HtmlArea",
                  rng.collapse(true);
                break;
             }
-          } 
+          }
+          
+          // special handling for IE when hitting the "Enter" key
+          // instead of letting the IE insert a <p> insert manually a <br>
+          if (qx.core.Variant.isSet("qx.client", "mshtml"))
+          {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            /*
+             * manually reset the current range object to force the "insertHtml"
+             * method to create a new range object (out of the current selection)
+             */            
+            this.__currentRange = null;
+            this.insertHtml("<br/>");
+          }
 
           break;
 
@@ -1407,14 +1422,14 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     insertHtml : function (value) {
       var ret;
-      
+
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         if (this.__currentRange == null)
         {
           this.__currentRange = this.__createRange(this.__getSelection());
         }
-        
+
         this.__currentRange.select();
         this.__currentRange.pasteHTML(value);
         
@@ -1424,7 +1439,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         ret = this._execCommand("InsertHtml", false, value);
       }
-      
+
       // update the undo/redo status
       this.__updateUndoRedoStatus();
       
@@ -1766,7 +1781,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         if (qx.core.Variant.isSet("qx.debug", "on"))
         {
-          this.error("Wrong value for parameter 'position'. Possible values are '" + htmlarea.HtmlArea.__backgroundPosition.join(" ") + "'");
+          this.error("The value '" + position + "' is not allowed for parameter 'position'. Possible values are '" + htmlarea.HtmlArea.__backgroundPosition + "'");
         }
         return false;
       }
@@ -1789,8 +1804,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // don't use the "background" css property to prevent overwriting the
       // current background color
-      this.__doc.body.style.backgroundImage = "url(" + url + ")";
-      this.__doc.body.style.backgroundRepeat = repeat;
+      this.__doc.body.style.backgroundImage    = "url(" + url + ")";
+      this.__doc.body.style.backgroundRepeat   = repeat;
       this.__doc.body.style.backgroundPosition = position;
       return true;
     },
@@ -1925,7 +1940,7 @@ qx.Class.define("htmlarea.HtmlArea",
             context._visualizeFocus();
           }, 50);
        },
-       
+
        "webkit" : function(context)
        {
          /*
@@ -1938,7 +1953,7 @@ qx.Class.define("htmlarea.HtmlArea",
             context.getContentWindow().focus();
           }, 50);
        },
-       
+
        "default" : function(context)
        {
          /* for all other browser a short delayed focus on the contentWindow should do the job */
