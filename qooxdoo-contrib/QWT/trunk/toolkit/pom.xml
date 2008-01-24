@@ -27,22 +27,4 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>qooxdoo</module>
     <module>engine</module>
   </modules>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.qooxdoo.toolkit</groupId>
-        <artifactId>plugin</artifactId>
-        <version>${toolkit.version}</version>
-        <executions>
-          <execution>
-            <id>package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>dist</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
