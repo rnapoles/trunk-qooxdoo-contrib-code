@@ -161,15 +161,15 @@ public class DistributionMojo extends Base {
                       + "</settings>\n");
     }
 
+    private static final String MAVEN_NAME = "apache-maven-2.0.8-bin.zip";
     private void mvn() throws IOException {
-        final String NAME = "apache-maven-2.0.8-bin.zip";
         Node src;
         
         HttpNode download;
 
-        src = io.getTemp().join(NAME);
+        src = io.getTemp().join(MAVEN_NAME);
         if (!src.isFile()) {
-            download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/" + NAME));
+            download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/" + MAVEN_NAME));
             info("downloading " + download);
             download.copyFile(src);
         } else {
