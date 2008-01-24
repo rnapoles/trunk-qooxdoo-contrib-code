@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>toolkit</artifactId>
+    <version>2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.qooxdoo.toolkit</groupId>
+  <artifactId>dist</artifactId>
+  <name>Toolkit Distribution builder</name>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <sushi.version>1.2.0</sushi.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.qooxdoo.sushi</groupId>
+      <artifactId>core</artifactId>
+      <version>${sushi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.qooxdoo.sushi</groupId>
+      <artifactId>ssh</artifactId>
+      <version>${sushi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.qooxdoo.sushi</groupId>
+      <artifactId>svn</artifactId>
+      <version>${sushi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>1.0-alpha-9</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>de.schlund.maven.plugins</groupId>
+        <artifactId>launcher</artifactId>
+        <version>1.0.6</version>
+        <configuration>
+          <name>qxdist</name>
+          <main>org.qooxdoo.toolkit.dist.Main</main>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
