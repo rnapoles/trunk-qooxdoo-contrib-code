@@ -100,7 +100,7 @@ public class Main extends Cli implements Command {
     }
 
     private void bin() throws IOException {
-        distribution.join("qwt", "toolkit", "plugin", "src", "dist")
+        distribution.join("qwt", "toolkit", "dist", "src", "dist")
                 .copyDirectory(distribution);
         distribution
                 .join("bin", "settings.xml")
