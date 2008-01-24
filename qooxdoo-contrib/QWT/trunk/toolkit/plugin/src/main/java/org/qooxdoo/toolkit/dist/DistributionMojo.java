@@ -162,10 +162,20 @@ public class DistributionMojo extends Base {
     }
 
     private void mvn() throws IOException {
+        final String NAME = "apache-maven-2.0.8-bin.zip";
+        Node src;
+        
         HttpNode download;
 
-        download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
-        Archive.loadZip(download).data.copy(unzipped);
+        src = io.getTemp().join(NAME);
+        if (!src.isFile()) {
+            download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/" + NAME));
+            info("downloading " + download);
+            download.copyFile(src);
+        } else {
+            info("reusing download: " + src);
+        }
+        Archive.loadZip(src).data.copy(unzipped);
     }
 
     //--
