@@ -26,16 +26,28 @@ class qxSelenium(selenium): # add qooxdoo specific extensions
 
     def qxClick(self, locator, opts=None):
         if opts==None:
-            self.do_command("qxClick", [locator,])
+            return self.do_command("qxClick", [locator,])
         else:
-            self.do_command("qxClick", [locator, opts,])
+            return self.do_command("qxClick", [locator, opts,])
 
     def qxClickAt(self, locator, opts=None):
         if opts==None:
-            self.do_command("qxClickAt", [locator,])
+            return self.do_command("qxClickAt", [locator,])
         else:
-            self.do_command("qxClickAt", [locator, opts,])
+            return self.do_command("qxClickAt", [locator, opts,])
 
-    def qxGetPageGeom(self):
-        self.do_command("qxGetPageGeom", [])
+    def get_viewport(self):
+        return self.do_command("getViewport", [])
+
+    # overloading method from selenium.py
+    def capture_screenshot(self,filename,geometry=None):
+        """
+        Captures a PNG screenshot to the specified file.
+        
+        'filename' is the absolute path to the file to be written, e.g. "c:\blah\screenshot.png"
+        """
+        if geometry==None:
+            return self.do_command("captureScreenshot", [filename,])
+        else:
+            return self.do_command("captureScreenshot", [filename, geometry,])
 

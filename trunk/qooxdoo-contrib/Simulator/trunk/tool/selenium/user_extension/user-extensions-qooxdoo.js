@@ -97,6 +97,10 @@
  * by Robert Zimmermann
  */
 
+// -- Config section ------------------------------------------------
+var initGetViewportByHand = true;
+// -- Config end ----------------------------------------------------
+
 Selenium.prototype.qx = {};
 
 // ***************************************************
@@ -346,9 +350,10 @@ Selenium.prototype.doQxExecute = function(locator, eventParams)
 };
 
 
-Selenium.prototype.doQxGetPageGeom = function(locator, eventParams)
+Selenium.prototype.doGetViewport = function(locator, eventParams)
 {
   var docelem = this.page().findElementOrNull("dom=document"); // evtl. document.body
+  var win     = docelem.parentWindow? docelem.parentWindow : docelem.defaultView;
 
   
   // event handler to capture coordinates
@@ -362,19 +367,24 @@ Selenium.prototype.doQxGetPageGeom = function(locator, eventParams)
     {
       mouseX = e.pageX;
       mouseY = e.pageY;
+      LOG.debug("pageX, pageY: "+mouseX+"'"+mouseY);
     } else if (e.clientX || e.clientY)
     {
       mouseX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
       mouseY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      LOG.debug("e.clientX,e.clientY,document.body.scrollLeft,document.documentElement.scrollLeft,document.body.scrollTop,document.documentElement.scrollTop:\n"+
+                e.clientX+','+e.clientY+','+document.body.scrollLeft+','+document.documentElement.scrollLeft+','+document.body.scrollTop+','+document.documentElement.scrollTop);
     } else
     {
       mouseX = 0;
       mouseY = 0;
+      LOG.debug("no X,Y coords from event object");
     }
+    LOG.debug("e.screenX,e.screenY: "+e.screenX+','+e.screenY);
     var originX = e.screenX - mouseX;
     var originY = e.screenY - mouseY;
-    width   = PageBot.prototype._getWinWidth();
-    height  = PageBot.prototype._getWinHeight();
+    width   = PageBot.prototype._getWinWidth(win);
+    height  = PageBot.prototype._getWinHeight(win);
     var geom = width+'x'+height+'+'+originX+'+'+originY;
     LOG.info("Page geometry (WxH+X+Y): "+ geom);
     // write to var
@@ -382,7 +392,7 @@ Selenium.prototype.doQxGetPageGeom = function(locator, eventParams)
     {
       storedVars = {};
     }
-    storedVars['PageGeomStr'] = geom;
+    storedVars['ViewportStr'] = geom;
     // de-register myself
     PageBot.prototype._removeEventListener(docelem, "click", eh);
   };
@@ -391,12 +401,18 @@ Selenium.prototype.doQxGetPageGeom = function(locator, eventParams)
   PageBot.prototype._addEventListener(docelem, "click", eh);
 
   // fire a mouse event at 0,0
+  if (initGetViewportByHand) {
+    //alert("Please click anywhere in the document"); // destroys event handling!!!
+  } else {
+    // this is essentially useless since the resulting mouse event lacks screenX
+    // and screenY coords
+    this.doQxClickAt("dom=document", "clientX=0,clientY=0");  // 0,0
+  }
   /*
-  var eventParamObject = new Selenium.prototype.qx.MouseEventParameters(???);
+  var eventParamObject = new Selenium.prototype.qx.MouseEventParameters();
   this.browserbot.triggerMouseEventQx("click", docelem,eventParamObject);
 
   // ------
-  this.doQxClickAt(locator, eventParams);  // 0,0
   */
 
 };
@@ -1351,18 +1367,20 @@ PageBot.prototype._removeEventListener = function(vElement, vType, vFunction)
 PageBot.prototype._getWinWidth = function(w)
 {
   var win = w||window;
-  if (win.document.body && win.document.body.clientWidth)
+  //if (win.document.body && win.document.body.clientWidth)
+  if (browserVersion.isOpera)
   {
     return win.document.body.clientWidth;
   }
-  else if (win.innerWidth)
+  else if (browserVersion.isSafari)
   {
     return win.innerWidth;
   }
   else
   {
     var doc = win.document;
-    return doc.compatMode === "CSS1Compat" ? doc.documentElement.clientWidth : doc.body.clientWidth;
+    var width = doc.compatMode === "CSS1Compat" ? doc.documentElement.clientWidth : doc.body.clientWidth;
+    return width - 5; // correct value for FF
   }
 };
 
@@ -1370,18 +1388,19 @@ PageBot.prototype._getWinWidth = function(w)
 PageBot.prototype._getWinHeight = function(w)
 {
   var win = w||window;
-  if (win.document.body && win.document.body.clientHeight)
+  if (browserVersion.isOpera)
   {
     return win.document.body.clientHeight;
   }
-  else if (win.innerHeight)
+  else if (browserVersion.isSafari)
   {
     return win.innerHeight;
   }
   else
   {
     var doc = win.document;
-    return doc.compatMode === "CSS1Compat" ? doc.documentElement.clientHeight : doc.body.clientHeight;
+    var height = doc.compatMode === "CSS1Compat" ? doc.documentElement.clientHeight : doc.body.clientHeight;
+    return height - 35; // correct value for FF
   }
 };
 
