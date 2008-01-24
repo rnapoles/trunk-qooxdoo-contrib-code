@@ -34,7 +34,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>1.0-alpha-9</version>
+      <version>1.0-alpha-7</version><!-- alpha 9 contains incompatible class changes -->
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>

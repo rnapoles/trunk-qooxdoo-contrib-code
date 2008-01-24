@@ -46,9 +46,12 @@ import org.tmatesoft.svn.core.SVNException;
 import com.jcraft.jsch.JSchException;
 
 /**
- * Creates a distribution file.
- *
- * @requiresProject false
+ * Creates a distribution file. To be called from qooxdoo parent pom. 
+ * To build distributions reliably:
+ * * use a fresh checkout
+ * * wipe your local repository
+ * * run mvn clean install
+ * 
  * @goal dist
  */
 public class DistributionMojo extends Base {
@@ -93,22 +96,13 @@ public class DistributionMojo extends Base {
     /**
      * Local Repository location
      *
-     * @parameter expression="${maven.localRepository}"
-     * @required
+     * @parameter expression="${maven.repo.local}"
      */
     private FileNode localRepository;
 
     public void setLocalRepository(String path) {
         localRepository = io.node(path);
     }
-
-    /**
-     * Where to assemble distribution file
-     *
-     * @parameter expression="${toolkit.version}"
-     * @required
-     */
-    private String version;
 
     // can't use Sushi because I need executable flags
     /**
@@ -118,6 +112,9 @@ public class DistributionMojo extends Base {
 
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
+        if (localRepository == null) {
+            localRepository = (FileNode) io.getHome().join(".m2", "repository");
+        }
         if (!qwtSource.join("Manifest.js").isFile()) {
             throw new MojoExecutionException("qx:dist can only be called from qwt directory");
         }
@@ -152,17 +149,20 @@ public class DistributionMojo extends Base {
     }
 
     private void bin() throws IOException {
-        unzipped.join("qwt", "toolkit", "dist", "src", "dist").copyDirectory(unzipped);
+        info("+ bin");
+        unzipped.join("qwt", "toolkit", "plugin", "src", "dist").copyDirectory(unzipped);
         unzipped.join("bin", "settings.xml").writeString(
                         "<settings>\n"
                       + "  <pluginGroups>\n"
                       + "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n"
-                      + "  </pluginGroups>\n" + "</settings>\n");
+                      + "  </pluginGroups>\n" 
+                      + "</settings>\n");
     }
 
     private void mvn() throws IOException {
         HttpNode download;
 
+        info("+ mvn");
         download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
         Archive.loadZip(download).data.copy(unzipped);
     }
@@ -172,12 +172,13 @@ public class DistributionMojo extends Base {
     private void qwt() throws IOException, SVNException {
         Node qwt;
         
+        info("+ qwt");
         // Fetch qwt source code from svn. Get from svn, don't copy source:
         // + well-defined
         // + no ide files to take care of
         // - no uncommitted dists
         // - slow
-        qwt = unzipped.join("qwt");
+        qwt = unzipped.join("qwt").mkdir();
         if (true) {
             qwtCopy(qwt);
         } else {
@@ -200,6 +201,8 @@ public class DistributionMojo extends Base {
         filter.exclude("target/**/*");
         filter.exclude("nbproject");
         filter.exclude("nbproject/**/*");
+        filter.exclude("toolkit/qooxdoo/src/framework");
+        filter.exclude("toolkit/qooxdoo/src/framework/**/*");
         qwtSource.copyDirectory(filter, dest);
     }
 
@@ -209,7 +212,6 @@ public class DistributionMojo extends Base {
         long revision;
 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        qwt.mkdir();
         info("creating " + qwt);
         src = SvnNode.create(io, url);
         revision = src.export(qwt);
@@ -217,9 +219,10 @@ public class DistributionMojo extends Base {
     }
 
     private void repository() throws IOException {
+        info("+ repository");
         if (true) {
             // fast
-            localRepository.copyDirectory(unzipped.join("repository"));
+            localRepository.copyDirectory(unzipped.join("repository").mkdir());
         } else {
             // save
             mvn((FileNode) unzipped.join("qwt"), "clean", "install");
@@ -272,9 +275,9 @@ public class DistributionMojo extends Base {
     private String getName() {
         String name;
         
-        name = this.version;
+        name = getVersion();
         if (name.endsWith("-SNAPSHOT")) {
-            name = version.substring(0, version.length() - 8)
+            name = name.substring(0, name.length() - 8)
                     + new SimpleDateFormat("yyMMdd").format(new Date());
         }
         return "qwt-" + name;
