@@ -85,7 +85,7 @@ public class DistributionMojo extends Base {
     /**
      * QWT Source
      *
-     * @parameter expression="${basedir}"
+     * @parameter expression="${basedir}/../.."
      * @required
      */
     private FileNode qwtSource;
