@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
@@ -93,28 +94,24 @@ public class DistributionMojo extends Base {
         qwtSource = io.node(path);
     }
 
-    /**
-     * Local Repository location
-     *
-     * @parameter expression="${maven.repo.local}"
-     */
-    private FileNode localRepository;
-
-    public void setLocalRepository(String path) {
-        localRepository = io.node(path);
-    }
-
     // can't use Sushi because I need executable flags
     /**
      * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
      */
     private ZipArchiver archiver;
 
+    /**
+     * @parameter expression="${localRepository}"
+     * @required
+     * @readonly
+     */
+    protected ArtifactRepository localRepositoryObject;
+
+    private FileNode localRepository;
+    
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
-        if (localRepository == null) {
-            localRepository = (FileNode) io.getHome().join(".m2", "repository");
-        }
+        localRepository = (FileNode) io.node(localRepositoryObject.getBasedir());
         if (!qwtSource.join("Manifest.js").isFile()) {
             throw new MojoExecutionException("qx:dist can only be called from qwt directory");
         }
@@ -136,20 +133,25 @@ public class DistributionMojo extends Base {
             unzipped.deleteOpt();
             unzipped.mkdirsOpt();
 
+            info("+ mvn");
             mvn();
+            info("+ qwt");
             qwt();
+            info("+ bin");
             bin();
             xFlags();
+            info("+ repository");
             repository();
         }
         zip = pack();
+        info("= " + zip + ", " + zip.length() + " bytes");
         if (upload) {
+            info("uploading ...");
             upload(zip);
         }
     }
 
     private void bin() throws IOException {
-        info("+ bin");
         unzipped.join("qwt", "toolkit", "plugin", "src", "dist").copyDirectory(unzipped);
         unzipped.join("bin", "settings.xml").writeString(
                         "<settings>\n"
@@ -162,7 +164,6 @@ public class DistributionMojo extends Base {
     private void mvn() throws IOException {
         HttpNode download;
 
-        info("+ mvn");
         download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
         Archive.loadZip(download).data.copy(unzipped);
     }
@@ -172,7 +173,6 @@ public class DistributionMojo extends Base {
     private void qwt() throws IOException, SVNException {
         Node qwt;
         
-        info("+ qwt");
         // Fetch qwt source code from svn. Get from svn, don't copy source:
         // + well-defined
         // + no ide files to take care of
@@ -212,14 +212,12 @@ public class DistributionMojo extends Base {
         long revision;
 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        info("creating " + qwt);
         src = SvnNode.create(io, url);
         revision = src.export(qwt);
         qwt.join("svninfo").writeLines("url=" + url, "revision=" + revision);
     }
 
     private void repository() throws IOException {
-        info("+ repository");
         if (true) {
             // fast
             localRepository.copyDirectory(unzipped.join("repository").mkdir());
@@ -252,7 +250,6 @@ public class DistributionMojo extends Base {
 
         name = getName();
         zip = (FileNode) unzipped.getParent().join(name + ".zip");
-        info("create " + zip);
         try {
             archiver.addDirectory(unzipped.getFile(), name + "/",
                     new String[] { "**/*" }, Strings.append(SCRIPTS, FRAMEWORK,
@@ -268,7 +265,6 @@ public class DistributionMojo extends Base {
         } catch (ArchiverException e) {
             throw new RuntimeException("cannot create zip", e);
         }
-        info("done: " + zip + ", " + zip.length() + " bytes");
         return zip;
     }
 
@@ -314,7 +310,6 @@ public class DistributionMojo extends Base {
         Connection connection;
         Node dest;
 
-        info("uploading ...");
         connection = Connection.create("shell.sourceforge.net", User.withUserKey(io, "mlhartme"));
         try {
             dest = new SshNode(io, connection.open(), "home/groups/q/qo/qooxdoo-contrib/htdocs/distributions/qwt/nightly");
@@ -322,6 +317,5 @@ public class DistributionMojo extends Base {
         } finally {
             connection.close();
         }
-        info("done");
     }
 }
