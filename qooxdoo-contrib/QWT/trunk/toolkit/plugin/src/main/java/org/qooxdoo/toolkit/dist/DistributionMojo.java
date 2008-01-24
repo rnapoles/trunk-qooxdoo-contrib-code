@@ -26,14 +26,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.qooxdoo.sushi.archive.Archive;
+import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.HttpNode;
-import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.ssh.Connection;
 import org.qooxdoo.sushi.ssh.SshNode;
@@ -41,6 +40,7 @@ import org.qooxdoo.sushi.ssh.User;
 import org.qooxdoo.sushi.svn.SvnNode;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.util.Strings;
+import org.qooxdoo.toolkit.plugin.Base;
 import org.tmatesoft.svn.core.SVNException;
 
 import com.jcraft.jsch.JSchException;
@@ -51,9 +51,7 @@ import com.jcraft.jsch.JSchException;
  * @requiresProject false
  * @goal dist
  */
-public class DistributionMojo extends AbstractMojo {
-    private final IO io = new IO();
-    
+public class DistributionMojo extends Base {
     /**
      * Reuse existing unzipped directory.
      *
@@ -81,6 +79,30 @@ public class DistributionMojo extends AbstractMojo {
     }
 
     /**
+     * QWT Source
+     *
+     * @parameter expression="${basedir}"
+     * @required
+     */
+    private FileNode qwtSource;
+
+    public void setQwtSource(String path) {
+        qwtSource = io.node(path);
+    }
+
+    /**
+     * Local Repository location
+     *
+     * @parameter expression="${maven.localRepository}"
+     * @required
+     */
+    private FileNode localRepository;
+
+    public void setLocalRepository(String path) {
+        localRepository = io.node(path);
+    }
+
+    /**
      * Where to assemble distribution file
      *
      * @parameter expression="${toolkit.version}"
@@ -94,11 +116,13 @@ public class DistributionMojo extends AbstractMojo {
      */
     private ZipArchiver archiver;
 
-    public void execute() throws MojoExecutionException {
+    @Override
+    public void doExecute() throws MojoExecutionException, IOException {
+        if (!qwtSource.join("Manifest.js").isFile()) {
+            throw new MojoExecutionException("qx:dist can only be called from qwt directory");
+        }
         try {
-            doExecute();
-        } catch (IOException e) {
-            throw new MojoExecutionException("io failure", e);
+            doDoExecute();
         } catch (SVNException e) {
             throw new MojoExecutionException("svn failure", e);
         } catch (JSchException e) {
@@ -106,7 +130,7 @@ public class DistributionMojo extends AbstractMojo {
         }
     }
     
-    public void doExecute() throws IOException, SVNException, JSchException {
+    public void doDoExecute() throws IOException, SVNException, JSchException {
         Node zip;
         
         if (reuse) {
@@ -119,7 +143,7 @@ public class DistributionMojo extends AbstractMojo {
             qwt();
             bin();
             xFlags();
-            build();
+            repository();
         }
         zip = pack();
         if (upload) {
@@ -143,31 +167,63 @@ public class DistributionMojo extends AbstractMojo {
         Archive.loadZip(download).data.copy(unzipped);
     }
 
-    // Fetch qwt source code. Get from svn, don't copy source:
-    // + well-defined
-    // + no ide files to take care of
-    // - no uncommitted dists
-    // - slow
+    //--
+    
     private void qwt() throws IOException, SVNException {
+        Node qwt;
+        
+        // Fetch qwt source code from svn. Get from svn, don't copy source:
+        // + well-defined
+        // + no ide files to take care of
+        // - no uncommitted dists
+        // - slow
+        qwt = unzipped.join("qwt");
+        if (true) {
+            qwtCopy(qwt);
+        } else {
+            qwtSvn(qwt);
+        }
+    }
+
+    private void qwtCopy(Node dest) throws IOException {
+        Filter filter;
+        
+        filter = io.filter();
+        filter.include("**/*");
+        filter.exclude(".svn");
+        filter.exclude(".svn/*");
+        filter.exclude(".classpath");
+        filter.exclude(".project");
+        filter.exclude(".settings");
+        filter.exclude(".settings/**/*");
+        filter.exclude("target");
+        filter.exclude("target/**/*");
+        filter.exclude("nbproject");
+        filter.exclude("nbproject/**/*");
+        qwtSource.copyDirectory(filter, dest);
+    }
+
+    private void qwtSvn(Node qwt) throws IOException, SVNException {
         String url;
         SvnNode src;
-        Node qwt;
         long revision;
 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        qwt = unzipped.join("qwt").mkdir();
+        qwt.mkdir();
         info("creating " + qwt);
         src = SvnNode.create(io, url);
         revision = src.export(qwt);
         qwt.join("svninfo").writeLines("url=" + url, "revision=" + revision);
     }
 
-    /**
-     * The main purpose it to build the repository. I don't want to copy an
-     * existing repository because it might contain old qwt versions.
-     */
-    private void build() throws IOException {
-        mvn((FileNode) unzipped.join("qwt"), "clean", "install");
+    private void repository() throws IOException {
+        if (true) {
+            // fast
+            localRepository.copyDirectory(unzipped.join("repository"));
+        } else {
+            // save
+            mvn((FileNode) unzipped.join("qwt"), "clean", "install");
+        }
     }
 
     // --
@@ -264,9 +320,5 @@ public class DistributionMojo extends AbstractMojo {
             connection.close();
         }
         info("done");
-    }
-    
-    private void info(String msg) {
-        getLog().info(msg);
     }
 }
