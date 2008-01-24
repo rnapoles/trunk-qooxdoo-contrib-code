@@ -425,7 +425,17 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       refine : true,
       init   : "html-area"
-    }
+    },
+    
+    /** 
+     * Toggles whether a p element is inserted on each line break or not.
+     * A "normal" linebreak can be achieved using the combination "Shift+Enter" anyway
+     */
+   insertParagraphOnLinebreak :
+   {
+     check : "Boolean",
+     init  : true
+   }
   },
 
 
@@ -1040,17 +1050,21 @@ qx.Class.define("htmlarea.HtmlArea",
           
           // special handling for IE when hitting the "Enter" key
           // instead of letting the IE insert a <p> insert manually a <br>
+          // if the corresponding property is set
           if (qx.core.Variant.isSet("qx.client", "mshtml"))
           {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            /*
-             * manually reset the current range object to force the "insertHtml"
-             * method to create a new range object (out of the current selection)
-             */            
-            this.__currentRange = null;
-            this.insertHtml("<br/>");
+            if (!this.getInsertParagraphOnLinebreak())
+            {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              /*
+               * manually reset the current range object to force the "insertHtml"
+               * method to create a new range object (out of the current selection)
+               */
+              this.__currentRange = null;
+              this.insertHtml("<br/>");
+            }
           }
 
           break;
