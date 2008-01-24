@@ -57,6 +57,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>sushi</module>
     <module>eclipse</module>
     <module>toolkit</module>
+    <module>dist</module>
     <module>application</module>
   </modules>
 
