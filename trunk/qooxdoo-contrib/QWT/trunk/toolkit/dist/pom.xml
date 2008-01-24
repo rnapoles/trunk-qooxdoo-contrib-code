@@ -10,13 +10,9 @@
   
   <groupId>org.qooxdoo.toolkit</groupId>
   <artifactId>dist</artifactId>
-  <name>Toolkit Distribution builder</name>
-  <version>1.0.0</version>
-  <packaging>jar</packaging>
-
-  <properties>
-    <sushi.version>1.2.0</sushi.version>
-  </properties>
+  <name>Toolkit Distribution Plugin</name>
+  <version>${toolkit.version}</version>
+  <packaging>maven-plugin</packaging>
 
   <dependencies>
     <dependency>
@@ -39,26 +35,29 @@
       <artifactId>plexus-archiver</artifactId>
       <version>1.0-alpha-9</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${maven.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>de.schlund.maven.plugins</groupId>
-        <artifactId>launcher</artifactId>
-        <version>1.0.6</version>
+        <artifactId>maven-plugin-plugin</artifactId>
         <configuration>
-          <name>qxdist</name>
-          <main>org.qooxdoo.toolkit.dist.Main</main>
+          <goalPrefix>qwt</goalPrefix>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>

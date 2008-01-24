@@ -26,15 +26,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.qooxdoo.sushi.archive.Archive;
-import org.qooxdoo.sushi.cli.Cli;
-import org.qooxdoo.sushi.cli.Command;
-import org.qooxdoo.sushi.cli.Option;
-import org.qooxdoo.sushi.cli.Value;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.HttpNode;
+import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.ssh.Connection;
 import org.qooxdoo.sushi.ssh.SshNode;
@@ -47,45 +46,74 @@ import org.tmatesoft.svn.core.SVNException;
 import com.jcraft.jsch.JSchException;
 
 /**
- * Creates a QWT distribution.
- * 
- * This is a stand-alone-program, it's not build into Maven because I need 
- * to package maven and a suitable local repository; the safest way to do this
- * is to create the final maven install and to this as a separate process. 
+ * Creates a distribution file.
+ *
+ * @requiresProject false
+ * @goal dist
  */
-public class Main extends Cli implements Command {
-    public static void main(String[] args) throws Exception {
-        System.exit(new Main().run(args));
+public class DistributionMojo extends AbstractMojo {
+    private final IO io = new IO();
+    
+    /**
+     * Reuse existing unzipped directory.
+     *
+     * @parameter expression="${reuse}" default-value="false"
+     */
+    private boolean reuse;
+
+    /**
+     * Upload distribution to Sourceforge
+     *
+     * @parameter expression="${upload}" default-value="false"
+     */
+    private boolean upload;
+
+    /**
+     * Where to assemble distribution file
+     *
+     * @parameter expression="${project.build.directory}/distribution"
+     * @required
+     */
+    private FileNode unzipped;
+
+    public void setUnzipped(String path) {
+        unzipped = io.node(path);
     }
 
-    @Option("reuse")
-    private boolean reuse = false;
-    
-    @Option("upload")
-    private boolean upload = false;
-
-    @Value(name = "distribution", position = 1)
-    private FileNode distribution;
-
-    @Value(name = "version", position = 2)
+    /**
+     * Where to assemble distribution file
+     *
+     * @parameter expression="${toolkit.version}"
+     * @required
+     */
     private String version;
 
-    public Main() {
-    }
+    // can't use Sushi because I need executable flags
+    /**
+     * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
+     */
+    private ZipArchiver archiver;
 
-    @Override
-    public void printHelp() {
-        info("build qooxdoo distribution");
+    public void execute() throws MojoExecutionException {
+        try {
+            doExecute();
+        } catch (IOException e) {
+            throw new MojoExecutionException("io failure", e);
+        } catch (SVNException e) {
+            throw new MojoExecutionException("svn failure", e);
+        } catch (JSchException e) {
+            throw new MojoExecutionException("ssh failure", e);
+        }
     }
     
-    public void invoke() throws IOException, SVNException, JSchException {
+    public void doExecute() throws IOException, SVNException, JSchException {
         Node zip;
         
         if (reuse) {
-            distribution.checkExists();
+            unzipped.checkExists();
         } else {
-            distribution.deleteOpt();
-            distribution.mkdirsOpt();
+            unzipped.deleteOpt();
+            unzipped.mkdirsOpt();
 
             mvn();
             qwt();
@@ -100,26 +128,19 @@ public class Main extends Cli implements Command {
     }
 
     private void bin() throws IOException {
-        distribution.join("qwt", "toolkit", "dist", "src", "dist")
-                .copyDirectory(distribution);
-        distribution
-                .join("bin", "settings.xml")
-                .writeString(
+        unzipped.join("qwt", "toolkit", "dist", "src", "dist").copyDirectory(unzipped);
+        unzipped.join("bin", "settings.xml").writeString(
                         "<settings>\n"
-                                + "  <pluginGroups>\n"
-                                + "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n"
-                                + "  </pluginGroups>\n" + "</settings>\n");
-
+                      + "  <pluginGroups>\n"
+                      + "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n"
+                      + "  </pluginGroups>\n" + "</settings>\n");
     }
 
     private void mvn() throws IOException {
         HttpNode download;
 
-        download = new HttpNode(
-                console.io,
-                new URL(
-                        "http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
-        Archive.loadZip(download).data.copy(distribution);
+        download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"));
+        Archive.loadZip(download).data.copy(unzipped);
     }
 
     // Fetch qwt source code. Get from svn, don't copy source:
@@ -134,9 +155,9 @@ public class Main extends Cli implements Command {
         long revision;
 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        qwt = distribution.join("qwt").mkdir();
+        qwt = unzipped.join("qwt").mkdir();
         info("creating " + qwt);
-        src = SvnNode.create(console.io, url);
+        src = SvnNode.create(io, url);
         revision = src.export(qwt);
         qwt.join("svninfo").writeLines("url=" + url, "revision=" + revision);
     }
@@ -146,13 +167,13 @@ public class Main extends Cli implements Command {
      * existing repository because it might contain old qwt versions.
      */
     private void build() throws IOException {
-        mvn((FileNode) distribution.join("qwt"), "clean", "install");
+        mvn((FileNode) unzipped.join("qwt"), "clean", "install");
     }
 
     // --
 
     private void xFlags() throws IOException {
-        for (Node node : distribution.find("**/bin/*")) {
+        for (Node node : unzipped.find("**/bin/*")) {
             ((FileNode) node).setMode(0755);
         }
     }
@@ -167,24 +188,21 @@ public class Main extends Cli implements Command {
     private static final String[] GENERATED = { "**/target/**/*" };
 
     private Node pack() throws IOException {
-        ZipArchiver archiver;
         FileNode zip;
         String name;
 
-        // can't use Sushi because I need executable flags
-        archiver = new ZipArchiver();
         name = getName();
-        zip = (FileNode) distribution.getParent().join(name + ".zip");
+        zip = (FileNode) unzipped.getParent().join(name + ".zip");
         info("create " + zip);
         try {
-            archiver.addDirectory(distribution.getFile(), name + "/",
+            archiver.addDirectory(unzipped.getFile(), name + "/",
                     new String[] { "**/*" }, Strings.append(SCRIPTS, FRAMEWORK,
                             GENERATED, REPOSITORY_ALL));
-            archiver.addDirectory(distribution.getFile(), name + "/",
+            archiver.addDirectory(unzipped.getFile(), name + "/",
                     REPOSITORY_ALL, repositoryExcludes());
-            for (Node script : distribution.find(console.io.filter().include(SCRIPTS))) {
+            for (Node script : unzipped.find(io.filter().include(SCRIPTS))) {
                 archiver.addFile(((FileNode) script).getFile(), name + "/"
-                        + script.getRelative(distribution), 0755);
+                        + script.getRelative(unzipped), 0755);
             }
             archiver.setDestFile(zip.getFile());
             archiver.createArchive();
@@ -213,7 +231,7 @@ public class Main extends Cli implements Command {
         String prefix;
 
         excludes = new ArrayList<String>();
-        for (Node dir : distribution.join("qwt/application").find("*")) {
+        for (Node dir : unzipped.join("qwt/application").find("*")) {
             prefix = "repository/org/qooxdoo/" + dir.getName();
             excludes.add(prefix);
             excludes.add(prefix + "/**/*");
@@ -227,7 +245,7 @@ public class Main extends Cli implements Command {
         Program p;
 
         p = new Program(dir);
-        p.add(distribution.join("bin", "mvn").getAbsolute());
+        p.add(unzipped.join("bin", "mvn").getAbsolute());
         p.add(args);
         info(p.toString());
         p.exec(System.out);
@@ -238,9 +256,9 @@ public class Main extends Cli implements Command {
         Node dest;
 
         info("uploading ...");
-        connection = Connection.create("shell.sourceforge.net", User.withUserKey(console.io, "mlhartme"));
+        connection = Connection.create("shell.sourceforge.net", User.withUserKey(io, "mlhartme"));
         try {
-            dest = new SshNode(console.io, connection.open(), "home/groups/q/qo/qooxdoo-contrib/htdocs/distributions/qwt/nightly");
+            dest = new SshNode(io, connection.open(), "home/groups/q/qo/qooxdoo-contrib/htdocs/distributions/qwt/nightly");
             zip.copy(dest.join(zip.getName()));
         } finally {
             connection.close();
@@ -249,6 +267,6 @@ public class Main extends Cli implements Command {
     }
     
     private void info(String msg) {
-        console.info.println(msg);
+        getLog().info(msg);
     }
 }
