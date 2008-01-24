@@ -191,18 +191,18 @@ public class DistributionMojo extends Base {
         
         filter = io.filter();
         filter.include("**/*");
-        filter.exclude(".svn");
-        filter.exclude(".svn/*");
-        filter.exclude(".classpath");
-        filter.exclude(".project");
-        filter.exclude(".settings");
-        filter.exclude(".settings/**/*");
-        filter.exclude("target");
-        filter.exclude("target/**/*");
-        filter.exclude("nbproject");
-        filter.exclude("nbproject/**/*");
-        filter.exclude("toolkit/qooxdoo/src/framework");
-        filter.exclude("toolkit/qooxdoo/src/framework/**/*");
+        filter.exclude("**/.svn");
+        filter.exclude("**/.svn/*");
+        filter.exclude("**/.classpath");
+        filter.exclude("**/.project");
+        filter.exclude("**/.settings");
+        filter.exclude("**/.settings/**/*");
+        filter.exclude("**/target");
+        filter.exclude("**/target/**/*");
+        filter.exclude("**/nbproject");
+        filter.exclude("**/nbproject/**/*");
+        filter.exclude("**/toolkit/qooxdoo/src/framework");
+        filter.exclude("**/toolkit/qooxdoo/src/framework/**/*");
         qwtSource.copyDirectory(filter, dest);
     }
 
