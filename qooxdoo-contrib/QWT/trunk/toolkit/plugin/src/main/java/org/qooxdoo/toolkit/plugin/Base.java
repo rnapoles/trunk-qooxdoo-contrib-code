@@ -64,7 +64,6 @@ public abstract class Base extends AbstractMojo {
     protected String getVersion() {
         if (version == null) {
             version = getVersion(io);
-            info("Qooxdoo Plugin version: " + version);
         }
         return version;
     }

@@ -49,7 +49,7 @@ public class HelpMojo extends Base {
         info("Misc");
         info("  jconsole                             jmx console for running application");
         info("");
-        getVersion(); // info as a side-effect
+        info("Qooxdoo Plugin version: " + getVersion());
         info("");
         info("See also: http://qooxdoo.org/documentation/contrib/contributions/qwt");
     }
