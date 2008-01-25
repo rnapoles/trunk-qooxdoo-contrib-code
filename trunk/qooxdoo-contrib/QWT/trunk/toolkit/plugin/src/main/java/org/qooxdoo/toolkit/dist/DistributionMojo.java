@@ -204,7 +204,7 @@ public class DistributionMojo extends Base {
 
         // because I ask Hudson to place the local repository here
         filter.exclude("repository");
-        filter.exclude("repository/**");
+        filter.exclude("repository/**/*");
 
         qwtSource.copyDirectory(filter, dest);
     }
