@@ -105,6 +105,7 @@ public class DistributionMojo extends Base {
         if (!qwtSource.join("Manifest.js").isFile()) {
             throw new MojoExecutionException("qx:dist can only be called from qwt directory");
         }
+        info("local repository: " + localRepository);
         try {
             doDoExecute();
         } catch (SVNException e) {
