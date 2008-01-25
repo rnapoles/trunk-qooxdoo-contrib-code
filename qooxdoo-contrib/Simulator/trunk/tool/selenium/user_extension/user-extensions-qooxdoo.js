@@ -353,8 +353,13 @@ Selenium.prototype.doQxExecute = function(locator, eventParams)
 Selenium.prototype.doGetViewport = function(locator, eventParams)
 {
   var docelem = this.page().findElementOrNull("dom=document"); // evtl. document.body
-  var win     = docelem.parentWindow? docelem.parentWindow : docelem.defaultView;
+  //var win     = docelem.parentWindow? docelem.parentWindow : docelem.defaultView;
+  var win     = selenium.browserbot.getCurrentWindow();
 
+  // clear old geom string
+  if (storedVars && storedVars['ViewportStr']) {
+    delete storedVars['ViewportStr'];
+  }
   
   // event handler to capture coordinates
   function eh(e)
@@ -411,8 +416,6 @@ Selenium.prototype.doGetViewport = function(locator, eventParams)
   /*
   var eventParamObject = new Selenium.prototype.qx.MouseEventParameters();
   this.browserbot.triggerMouseEventQx("click", docelem,eventParamObject);
-
-  // ------
   */
 
 };
@@ -1380,7 +1383,7 @@ PageBot.prototype._getWinWidth = function(w)
   {
     var doc = win.document;
     var width = doc.compatMode === "CSS1Compat" ? doc.documentElement.clientWidth : doc.body.clientWidth;
-    return width - 5; // correct value for FF
+    return width; // no further correction currently
   }
 };
 
@@ -1400,7 +1403,7 @@ PageBot.prototype._getWinHeight = function(w)
   {
     var doc = win.document;
     var height = doc.compatMode === "CSS1Compat" ? doc.documentElement.clientHeight : doc.body.clientHeight;
-    return height - 35; // correct value for FF
+    return height; // no further correction currently
   }
 };
 
