@@ -194,12 +194,18 @@ public class DistributionMojo extends Base {
         filter.exclude("**/.project");
         filter.exclude("**/.settings");
         filter.exclude("**/.settings/**/*");
+        filter.exclude("**/.checkstyle");
         filter.exclude("**/target");
         filter.exclude("**/target/**/*");
         filter.exclude("**/nbproject");
         filter.exclude("**/nbproject/**/*");
         filter.exclude("**/toolkit/qooxdoo/src/framework");
         filter.exclude("**/toolkit/qooxdoo/src/framework/**/*");
+
+        // because I ask Hudson to place the local repository here
+        filter.exclude("repository");
+        filter.exclude("repository/**");
+
         qwtSource.copyDirectory(filter, dest);
     }
 
