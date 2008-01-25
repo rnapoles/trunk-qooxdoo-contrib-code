@@ -35,9 +35,6 @@ import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.HttpNode;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.ssh.Connection;
-import org.qooxdoo.sushi.ssh.SshNode;
-import org.qooxdoo.sushi.ssh.User;
 import org.qooxdoo.sushi.svn.SvnNode;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.util.Strings;
@@ -62,13 +59,6 @@ public class DistributionMojo extends Base {
      * @parameter expression="${reuse}" default-value="false"
      */
     private boolean reuse;
-
-    /**
-     * Upload distribution to Sourceforge
-     *
-     * @parameter expression="${upload}" default-value="false"
-     */
-    private boolean upload;
 
     /**
      * Where to assemble distribution file
@@ -145,10 +135,6 @@ public class DistributionMojo extends Base {
         }
         zip = pack();
         info("= " + zip + ", " + zip.length() + " bytes");
-        if (upload) {
-            info("uploading ...");
-            upload(zip);
-        }
     }
 
     private void bin() throws IOException {
@@ -314,18 +300,5 @@ public class DistributionMojo extends Base {
         p.add(args);
         info(p.toString());
         p.exec(System.out);
-    }
-
-    private void upload(Node zip) throws JSchException, IOException {
-        Connection connection;
-        Node dest;
-
-        connection = Connection.create("shell.sourceforge.net", User.withUserKey(io, "mlhartme"));
-        try {
-            dest = new SshNode(io, connection.open(), "home/groups/q/qo/qooxdoo-contrib/htdocs/distributions/qwt/nightly");
-            zip.copy(dest.join(zip.getName()));
-        } finally {
-            connection.close();
-        }
     }
 }
