@@ -1309,117 +1309,105 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     undo : function()
     {
-      /* IE uses its own undo mechanism - no execCommands (not reliable) */
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      /* 
+       * Check if any content changes occured
+       * only needed for non-mshtml - for mshtml exists an own implementation
+       */
+      if (!qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        if (this.__undoStack.length > 0)
+        if (this.__startTyping)
         {
-          /* Get the last undo step */
-          var undoStep = this.__undoStack.pop();
+          this.__addToUndoStack("content");
+        }
+      }
+      
+      /* 
+       * Look after the change history
+       * if any custom change was found undo it manually
+       */
+      if (this.__undoStack.length > 0)
+      {
+        var undoStep = this.__undoStack.pop();
 
-          switch (undoStep.type)
+        /* Check for any custom actions to rollback */
+        if (this.__customUndoActions.indexOf(undoStep.type) != -1)
+        {
+          /* 
+           * Set this flag to prevent the affected methods to add 
+           * the upcoming change to the undo history
+           */
+          this.__undoOperation = true;
+
+          /* Fill the info for the (possible) redo */
+          this.__redoAction = { type      : undoStep.type,
+                                method    : undoStep.method };
+          
+          /* Add the (different) needed parameter for the redo */
+          switch(undoStep.type)
           {
             case "backgroundColor":
-              /* TODO: implement special undo action */
+              this.__redoAction.parameter = [ qx.bom.element.Style.get(this.__doc.body, "backgroundColor") ];
             break;
 
             case "backgroundImage":
-              /* TODO: implement special undo action */
+              this.__redoAction.parameter = [ qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
+                                              qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
+                                              qx.bom.element.Style.get(this.__doc.body, "backgroundPosition") ];
             break;
+          }
+          
+          /* Undo changes by applying the corresponding method */
+          this[undoStep.method].apply(this, undoStep.parameter);
 
-            case "execCommand":
-              var redoRange = undoStep.range;
-              
-              this.__currentRange = undoStep.range;
+          /* Mark the undo operation over */
+          this.__undoOperation = false;
+        }
+        else
+        {
+          /* IE uses its own undo mechanism - no execCommands (not reliable) */
+          if (qx.core.Variant.isSet("qx.client", "mshtml"))
+          {
+            if (undoStep.type == "execCommand")
+            {
+              var redoRange = this.__currentRange = undoStep.range;
+                 
               this._execCommand(undoStep.cmd, false, null, false);
-            break;
-
-            default:
+            }
+            else
+            {
               var redoRange = undoStep.range;
               
-              /* populate the info for a possible redo */
+              /* Populate the info for a possible redo */
               this.__redoAction = { type    : "content",
                                     range   : redoRange,
-                                    content : redoRange.htmlText };
+                                    content : redoRange.htmlText,
+                                    marker  : redoRange.getBookmark() };
 
               undoStep.range.select();
               undoStep.range.pasteHTML("");
 
-              /* move the cursor back to the original position using the bookmark */
+              /* Move the cursor back to the original position using the bookmark */
               undoStep.range.moveToBookmark(undoStep.marker);
               undoStep.range.select();
               undoStep.range.collapse(false);
-          }
-
-          /* (re)set the flags */
-          this.__startTyping  = false;
-          this.__redoPossible = true;
-        }
-      }
-      else
-      {
-        /* Check if any content changes occured */
-        if (this.__startTyping)
-        {
-          this.__addToUndoStack("content");
-          this.__startTyping = false;
-        }
-
-        /* 
-         * Look after the change history
-         * if any custom change was found undo it manually
-         */
-        if (this.__undoStack.length > 0)
-        {
-          var lastChange = this.__undoStack.pop();
-
-          // check for any custom actions to rollback
-          if (lastChange.type.indexOf(this.__customUndoActions) != -1)
-          {
-            // set this flag to prevent the affected methods to add
-            // the upcoming change to the undo history
-            this.__undoOperation = true;
-
-            // fill the info for the (possible) redo
-            switch(lastChange.method)
-            {
-              case "setBackgroundColor":
-                this.__redoAction = { type      : "backgroundColor",
-                                      method    : lastChange.method,
-                                      parameter : [ this.__doc.body.style.backgroundImage,
-                                                    this.__doc.body.style.backgroundRepeat,
-                                                    this.__doc.body.style.backgroundPosition ] };
-
-                // undo changes to backgroundColor
-                this[lastChange.method].call(this, lastChange.parameter[0]);
-              break;
-
-              case "setBackgroundImage":
-                this.__redoAction = { type      : "backgroundImage",
-                                      method    : lastChange.method,
-                                      parameter : [ this.__doc.body.style.backgroundColor ] };
-
-                // undo changes to backgroundImage
-                this[lastChange.method].call(this, lastChange.parameter[0], lastChange.parameter[1], lastChange.parameter[2]);
-              break;
             }
-
-            // mark the undo operation over
-            this.__undoOperation = false;
           }
           else
           {
-            this.__redoAction = { type : lastChange.type };
+            this.__redoAction = { type : undoStep.type };
             this._execCommand("Undo", false, null);
           }
-
-          // a redo operation is now possible
-          this.__redoPossible = true;
-
-          // need to inform the toolbar, because context has changed
-          this.__startExamineCursorContext();
-          return true;
         }
+        
+        /* (re)set the flags */
+        this.__startTyping  = false;
+        
+        /* A redo operation is now possible */
+        this.__redoPossible = true;
+
+        /* Need to inform the toolbar, because context has changed */
+        this.__startExamineCursorContext();
+        return true;
       }
     },
 
@@ -1430,25 +1418,25 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Boolean} Success of operation
      */
-    redo : qx.core.Variant.select("qx.client", {
-      "mshtml" : function()
+    redo : function()
+    {
+      if (this.__redoPossible)
       {
-        if (this.__redoPossible)
+        var returnValue = true;
+        
+        switch(this.__redoAction.type)
         {
-          switch(this.__redoAction.type)
-          {
-            case "backgroundColor":
-
-            break;
-
-            case "backgroundImage":
-
-            break;
-
-            default:
+          /* FALLTHROUGH */
+          case "backgroundColor":
+          case "backgroundImage":
+            this[this.__redoAction.method].apply(this, this.__redoAction.parameter);
+          break;
+          
+          default:
+            if (qx.core.Variant.isSet("qx.client", "mshtml"))
+            {
               var redoRange = this.__redoAction.range;
-
-              var rng = this.__doc.body.createTextRange();
+              var rng       = this.__doc.body.createTextRange();
               
               rng.collapse(false);
               rng.setEndPoint("StartToStart", redoRange);
@@ -1469,67 +1457,42 @@ qx.Class.define("htmlarea.HtmlArea",
               rng.select();
 
               /* Update the undo history */
-              this.__addToUndoStack({ type   : "content",
-                                              range  : rng,
-                                              marker : rng.getBookmark() });
-          }
-
-          /* Reset the redoAction object and the redoPossible flag */  
-          this.__redoAction   = null;
-          this.__redoPossible = false;
-        }
-      },
-
-      "default" : function()
-      {
-        /* 
-         * A redo operation is only possible
-         * if an undo operation was right before performed
-         */
-        if (this.__redoPossible)
-        {
-          var returnValue = true;
-
-          switch(this.__redoAction.type)
-          {
-            case "backgroundColor":
-              this[this.__redoAction.method].call(this, this.__redoAction.parameter[0]);
-            break;
-
-            case "backgroundImage":
-              this[this.__redoAction.method].call(this, this.__redoAction.parameter[0], this.__redoAction.parameter[1], this.__redoAction.parameter[2]);
-            break;
-
-            default:
+              this.__addToUndoStack({ type    : "content",
+                                      range   : rng,
+                                      content : rng.htmlText, 
+                                      marker  : rng.getBookmark() });
+            }
+            else
+            {
               returnValue = this._execCommand("Redo", false, null);
-          }
-
-          // need to inform the toolbar, because context has changed
-          this.__startExamineCursorContext();
-
-          // resetting flag and redo info
-          this.__redoPossible = false;
-          this.__redoAction = null;
-
-          return returnValue;
+            }
         }
-      }
-    }),
+        
+        /* Need to inform the toolbar, because context has changed */
+        this.__startExamineCursorContext();
 
+        /* Resetting flag and redo info */
+        this.__redoPossible = false;
+        this.__redoAction   = null;
+        
+        return returnValue;
+      }
+    },
+    
 
     /**
      * Adds the occured changes to the undo history and
      * sets a flag for the redo action.
      *
      * @type member
-     * @param changeInfo {Object ? String} infos of the change.
-                                         Either a map containing details or null for change through a command identifier
+     * @param changeInfo {Object ? String} Infos of the change.
+                                           Either a map containing details or null for change through a command identifier
      * @return {void}
      */
     __updateUndoRedoStatus : function(changeInfo)
     {
       /*
-       * if any editing of the content happened before
+       * If any editing of the content happened before
        * add the content change as undo history entry
        */
       if (this.__startTyping)
@@ -1538,10 +1501,10 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__startTyping = false;
       }
 
-      // add the change to the undo history
+      /* Add the change to the undo history */
       this.__addToUndoStack(changeInfo);
 
-      // after a command (other than "undo") no redo is possible
+      /* After a command (other than "undo") no redo is possible */
       this.__redoPossible = false;
     },
 
@@ -1731,9 +1694,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     setTextBackgroundColor : function(value)
     {
-      // use "hilitecolor" for gecko/opera to set the background color
-      // for the current selection - not for the whole block
-      // IE/Safari do this per default with the "backcolor" command
+      /* 
+       * Use "hilitecolor" for gecko/opera to set the background color
+       * for the current selection - not for the whole block
+       * IE/Safari do this per default with the "backcolor" command
+       */
       if (qx.core.Variant.isSet("qx.client", "gecko|opera"))
       {
         return this._execCommand("Hilitecolor", false, value);
@@ -1878,7 +1843,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * sets the background color of the editor
+     * Sets the background color of the editor
      *
      * @type member
      * @param value {String} color
@@ -1886,16 +1851,16 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     setBackgroundColor : function (value)
     {
-      // remember the old values
+      /* Remember the old values */
       if (!this.__undoOperation)
       {
-        // update the undo/redo status
+        /* Update the undo/redo status */
         this.__updateUndoRedoStatus({ type      : "backgroundColor",
                                       method    : "setBackgroundColor",
-                                      parameter : [ this.__doc.body.style.backgroundColor ] });
+                                      parameter : [ qx.bom.element.Styel.get(this.__doc.body, "backgroundColor") ] });
       }
 
-      this.__doc.body.style.backgroundColor = (value != null && typeof value == "string") ? value : "transparent";
+      qx.bom.element.Style.set(this.__doc.body, "backgroundColor", (value != null && typeof value == "string") ? value : "transparent");
 
       return true;
     },
@@ -1923,17 +1888,32 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     setBackgroundImage : function(url, repeat, position)
     {
-      // if url is null remove the background image
+      /* If url is null remove the background image */
       if (url == null || typeof url != "string")
       {
-        this.__doc.body.style.backgroundImage = "";
-        this.__doc.body.style.backgroundRepeat = "";
-        this.__doc.body.style.backgroundPosition = "";
+        qx.bom.element.Style.set(this.__doc.body, "backgroundImage", "");
+        qx.bom.element.Style.set(this.__doc.body, "backgroundRepeat", "");
+        qx.bom.element.Style.set(this.__doc.body, "backgroundPosition", "");
+        
         return true;
       }
+      /* 
+       * Normalize the url parameter. Especially when doing undo/redo operations the url
+       * *can* be passed in as full CSS like 'url(SOMEURL)' rather than just 'SOMEURL'.
+       */
+      else
+      {
+        /* Quick test for 'url(' */
+        if (url.search(/^url.*\(/) == -1)
+        {
+          url = "url(" + url + ")";
+        }
+      }
 
-      // return silently if the parameter "repeat" is not valid
-      // report the error in debug mode
+      /* 
+       * Return silently if the parameter "repeat" is not valid and report 
+       * the error in debug mode
+       */
       if (repeat != null && htmlarea.HtmlArea.__backgroundRepeat.indexOf(repeat) < 0 )
       {
         if (qx.core.Variant.isSet("qx.debug", "on"))
@@ -1947,8 +1927,10 @@ qx.Class.define("htmlarea.HtmlArea",
         repeat = "no-repeat";
       }
 
-      // return silently if the parameter "position" is not valid
-      // report the error in debug mode
+      /* 
+       * Return silently if the parameter "position" is not valid
+       * and report the error in debug mode
+       */
       // TODO: combination of some values possible???? i think so
       if (position != null && htmlarea.HtmlArea.__backgroundPosition.indexOf(position) < 0)
       {
@@ -1965,23 +1947,26 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
 
-      // to make an undo possible -> remember to old values in the change history
+      /* To make an undo possible -> remember to old values in the change history */
       if (!this.__undoOperation)
       {
-        // update the undo/redo status
+        /* Update the undo/redo status */
         this.__updateUndoRedoStatus({ type      : "backgroundImage",
                                       method    : "setBackgroundImage",
-                                      parameter : [ this.__doc.body.style.backgroundImage,
-                                                             this.__doc.body.style.backgroundRepeat,
-                                                             this.__doc.body.style.backgroundPosition ]
+                                      parameter : [ qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
+                                                    qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
+                                                    qx.bom.element.Style.get(this.__doc.body, "backgroundPosition") ]
                                     });
       }
 
-      // don't use the "background" css property to prevent overwriting the
-      // current background color
-      this.__doc.body.style.backgroundImage    = "url(" + url + ")";
-      this.__doc.body.style.backgroundRepeat   = repeat;
-      this.__doc.body.style.backgroundPosition = position;
+      /*
+       * Don't use the "background" css property to prevent overwriting the
+       * current background color
+       */
+      qx.bom.element.Style.set(this.__doc.body, "backgroundImage", url);
+      qx.bom.element.Style.set(this.__doc.body, "backgroundRepeat", repeat);
+      qx.bom.element.Style.set(this.__doc.body, "backgroundPosition", position);
+      
       return true;
     },
 
@@ -2009,12 +1994,12 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _execCommand : function(cmd, ui, value, addToUndoStack)
     {
-      // set a default if the parameter is not provided
+      /* Set a default if the parameter is not provided */
       addToUndoStack = addToUndoStack != null ? addToUndoStack : true;
-
+      
       try
       {
-        // the document object is the default target for all execCommands
+        /* The document object is the default target for all execCommands */
         var execCommandTarget = this.__doc;
 
         if (!qx.core.Client.getInstance().isOpera()) {
@@ -2063,7 +2048,7 @@ qx.Class.define("htmlarea.HtmlArea",
         /* (re)-focus the editor after the execCommand */
         this.__focusAfterExecCommand(this);
         
-        /* reset the startTyping flag to mark the next insert of any char as a new undo step */
+        /* Reset the startTyping flag to mark the next insert of any char as a new undo step */
         this.__startTyping = false;
       }
       catch(ex)
@@ -2076,7 +2061,8 @@ qx.Class.define("htmlarea.HtmlArea",
         return false;
       }
 
-      /* only update the status if the flag is set */
+      
+      /* Only update the status if the flag is set */
       if (addToUndoStack)
       {
         if (qx.core.Variant.isSet("qx.client", "gecko"))
