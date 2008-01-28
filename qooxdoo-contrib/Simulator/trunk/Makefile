@@ -16,6 +16,7 @@
 #    * Sebastian Werner (wpbasti)
 #    * Andreas Ecker (ecker)
 #    * Fabian Jakobs (fjakobs)
+#    * Thomas Herchenroeder (thron7)
 #
 ################################################################################
 
@@ -64,7 +65,8 @@ error:
 # SELENIUM STUFF
 ################################################################################
 QOOXDOO_SELENIUM_USER_EXTENSION = ./tool/selenium/user_extension/user-extensions-qooxdoo.js
-QOOXDOO_SELENIUM_JAVA_CLIENTP = ./tool/selenium/language_binding
+QOOXDOO_SELENIUM_JAVA_CLIENTP = ./tool/selenium/client_driver
+QOOXDOO_SERVER_FILES = ./tool/selenium/server
 SELENIUM_BUILD_DIR = ./tool/script
 
 simulator: simulator-build-dirs selenium-server-ext selenium-java-client-ext 
@@ -84,7 +86,7 @@ selenium-java-client-ext:
 	$(JAR) cf selenium-java-client-driver.jar -C java-client-driver . \
 	)
 
-selenium-server-ext:
+selenium-server-ext: 
 	(cd $(SELENIUM_BUILD_DIR); \
   rm -rf selenium-server; \
   mkdir selenium-server; \
@@ -92,6 +94,10 @@ selenium-server-ext:
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar); \
 	cd ..; \
 	cat ../../$(QOOXDOO_SELENIUM_USER_EXTENSION) >> selenium-server/core/scripts/user-extensions.js; \
+	export SF="../../$(wildcard $(QOOXDOO_SERVER_FILES)/*.java)"; \
+	if [ "$${SF}" != "../../$(QOOXDOO_SERVER_FILES)/" ]; then \
+		$(JAVAC) -cp selenium-server -d selenium-server $${SF}; \
+	fi; \
 	$(JAR) cmf selenium-server/META-INF/MANIFEST.MF selenium-server.jar -C selenium-server . \
 	)
 
