@@ -83,6 +83,8 @@ selenium-java-client-ext:
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-java-client-driver-*/selenium-java-client-driver.jar); \
 	cd ..; \
 	$(JAVAC) -cp java-client-driver -d java-client-driver ../../$(QOOXDOO_SELENIUM_JAVA_CLIENTP)/QxSelenium.java; \
+	[ -f ../../$(QOOXDOO_SERVER_FILES)/Selenium.java ] && $(JAVAC) -cp java-client-driver -d java-client-driver ../../$(QOOXDOO_SERVER_FILES)/Selenium.java; \
+	[ -f ../../$(QOOXDOO_SERVER_FILES)/DefaultSelenium.java ] && $(JAVAC) -cp java-client-driver -d java-client-driver ../../$(QOOXDOO_SERVER_FILES)/DefaultSelenium.java; \
 	$(JAR) cf selenium-java-client-driver.jar -C java-client-driver . \
 	)
 
@@ -94,7 +96,7 @@ selenium-server-ext:
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar); \
 	cd ..; \
 	cat ../../$(QOOXDOO_SELENIUM_USER_EXTENSION) >> selenium-server/core/scripts/user-extensions.js; \
-	export SF="$(wildcard $(QOOXDOO_SERVER_FILES)/*.java)"; \
+	export SF="$(wildcard $(QOOXDOO_SERVER_FILES)/SeleniumDriverResourceHandler.java)"; \
 	if [ "$${SF}" != "" ]; then \
 		for f in $${SF}; do \
 			$(JAVAC) -cp selenium-server -d selenium-server ../../$${f}; \
