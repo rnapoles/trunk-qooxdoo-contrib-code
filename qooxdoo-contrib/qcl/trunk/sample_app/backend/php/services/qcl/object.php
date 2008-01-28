@@ -43,7 +43,7 @@ class patched_object {
 }
 
 // log constants
-define( "QCL_LOG_FILE" ,	QCL_LOG_PATH . "bibliograph.log" );
+define( "QCL_LOG_FILE" ,	QCL_LOG_PATH . "bibliograph.log" ); // todo: make application-specific!
 define( "QCL_LOG_OFF", 		0 );
 define( "QCL_LOG_DEBUG", 	1 );
 define( "QCL_LOG_INFO", 	2 );

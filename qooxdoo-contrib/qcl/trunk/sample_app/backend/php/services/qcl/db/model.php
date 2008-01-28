@@ -71,6 +71,24 @@ class qcl_db_model extends qcl_jsonrpc_model
  			$this->db->setController(&$controller);	
  		} 
  	}
+  
+  /**
+   * gets the name of the column that holds the unique (numeric) id of this table
+   * @return string
+   */
+  function getIdKey()
+  {
+    return $this->key_id;
+  }
+  
+  /**
+   * gets the name of the column in other tables that contains a reference to a record in this table (foreign key)
+   * return string
+   */
+  function getForeignKey()
+  {
+    return $this->foreignKey;
+  }
  	
   /**
    * gets all database records optionally sorted by field
@@ -108,7 +126,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 		}
 		if ($orderBy)
 		{
-			$sql .= "ORDER BY `$orderBy`"; 
+			$orderBy = implode("`,`", (array) $orderBy );
+      $sql .= "ORDER BY `$orderBy`"; 
 		}
       return $this->db->getAllRows($sql);   	
  	}
@@ -135,7 +154,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 		}
 		if ($orderBy)
 		{
-			$sql .= "ORDER BY `$orderBy`"; 
+			$orderBy = implode("`,`", (array) $orderBy );
+      $sql .= "ORDER BY `$orderBy`"; 
 		}
     return $this->db->getValues($sql);   	
  	}
@@ -162,7 +182,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 		}
 		if ($orderBy)
 		{
-			$sql .= "ORDER BY `$orderBy`"; 
+			$orderBy = implode("`,`", (array) $orderBy );
+      $sql .= "ORDER BY `$orderBy`"; 
 		}
     return $this->db->getValues($sql);   	
  	}
@@ -306,6 +327,25 @@ class qcl_db_model extends qcl_jsonrpc_model
 		$row = $this->getByNamedId ( $namedId );
 		return count($row) ? true : false;
 	}
+  
+  /**
+   * gets the record in this table that is referred to by the record from a different table (argument) 
+   * @return array
+   * @param Array   $record  record from a different table that contains a key corresponding to the foreign id of this table
+   * @param Boolean $idOnly if true, return only the value of the foreign key column
+   */
+  function getByForeignKey( $record, $idOnly = false )
+  {
+    $id = $record[ $this->getForeignKey() ];
+    if ( $idOnly )
+    {
+      return $id;
+    }
+    else
+    {
+      return $this->getById( $id );
+    }
+  }
 
 	/**
 	 * creates a new record and 
