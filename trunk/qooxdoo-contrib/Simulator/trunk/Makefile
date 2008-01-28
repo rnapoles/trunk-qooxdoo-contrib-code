@@ -94,9 +94,11 @@ selenium-server-ext:
 	$(JAR) xf ../../../$(wildcard $(SELENIUM_RC_PATH)/selenium-server-*/selenium-server.jar); \
 	cd ..; \
 	cat ../../$(QOOXDOO_SELENIUM_USER_EXTENSION) >> selenium-server/core/scripts/user-extensions.js; \
-	export SF="../../$(wildcard $(QOOXDOO_SERVER_FILES)/*.java)"; \
-	if [ "$${SF}" != "../../$(QOOXDOO_SERVER_FILES)/" ]; then \
-		$(JAVAC) -cp selenium-server -d selenium-server $${SF}; \
+	export SF="$(wildcard $(QOOXDOO_SERVER_FILES)/*.java)"; \
+	if [ "$${SF}" != "" ]; then \
+		for f in $${SF}; do \
+			$(JAVAC) -cp selenium-server -d selenium-server ../../$${f}; \
+	  done; \
 	fi; \
 	$(JAR) cmf selenium-server/META-INF/MANIFEST.MF selenium-server.jar -C selenium-server . \
 	)
