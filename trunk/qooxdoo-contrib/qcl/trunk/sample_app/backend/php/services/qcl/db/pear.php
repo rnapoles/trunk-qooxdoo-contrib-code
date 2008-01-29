@@ -323,7 +323,7 @@ class qcl_db_pear extends qcl_db
     for($i=0;$i<count($lines);$i++)
     {
      $l = trim($lines[$i]);
-     if ( substr($l,-1,1) == ";" )
+     if ( substr($l,-1,1) == "," )
      {
        $l= substr($l,0,-2); 
      }
