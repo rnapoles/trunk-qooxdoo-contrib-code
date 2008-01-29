@@ -325,7 +325,7 @@ class qcl_db_pear extends qcl_db
      $l = trim($lines[$i]);
      if ( substr($l,-1,1) == "," )
      {
-       $l= substr($l,0,-2); 
+       $l= substr($l,0,-1); 
      }
      preg_match("/(`[^`]+`|.*KEY)(.+)$/",$l,$line);
      $columnName = $line[1];
