@@ -367,7 +367,7 @@ class qcl_db_pear extends qcl_db
           $this->execute ("
             ALTER TABLE `$table` MODIFY COLUMN $columnName $columnDef
           ");
-          $this->info("Modified $table.$column to $columnDef.");
+          $this->info("Modified $table.$columnName to $columnDef.");
         }
       }
       else
@@ -385,9 +385,18 @@ class qcl_db_pear extends qcl_db
         }
         else
         {
-          $this->execute ("
-            ALTER TABLE `$table` ADD COLUMN $columnName $columnDef $after 
-          ");
+          if ( strstr( $columnName, "FULLTEXT KEY" ) )
+          {
+             $this->execute ("
+              ALTER TABLE `$table` ADD $columnName $columnDef 
+            ");           
+          }
+          else
+          {
+            $this->execute ("
+              ALTER TABLE `$table` ADD COLUMN $columnName $columnDef $after 
+            ");            
+          }
           $this->info("Added $table.$columnName."); 
         }     
       }

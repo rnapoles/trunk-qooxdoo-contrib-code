@@ -636,7 +636,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * adds table-related triggers.
-   * db user needs "SUPER" (mysql < 5.1) or "TRIGGER" (mysql >= 5.1) priviledges
+   * db user needs "SUPER" (mysql < 5.1) or "TRIGGER" (mysql >= 5.1) privileges
    */
   function createTriggers($table)
   {
