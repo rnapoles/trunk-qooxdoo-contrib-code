@@ -601,7 +601,7 @@ qx.Class.define("htmlarea.HtmlArea",
           focusRoot.setFocusedChild(this);
         }
       }
-      
+
       /* dispatch the "ready" event at the end of the initialization */
       this.dispatchEvent(new qx.event.type.Event("ready"), true);
     },
@@ -1857,7 +1857,7 @@ qx.Class.define("htmlarea.HtmlArea",
         /* Update the undo/redo status */
         this.__updateUndoRedoStatus({ type      : "backgroundColor",
                                       method    : "setBackgroundColor",
-                                      parameter : [ qx.bom.element.Styel.get(this.__doc.body, "backgroundColor") ] });
+                                      parameter : [ qx.bom.element.Style.get(this.__doc.body, "backgroundColor") ] });
       }
 
       qx.bom.element.Style.set(this.__doc.body, "backgroundColor", (value != null && typeof value == "string") ? value : "transparent");
