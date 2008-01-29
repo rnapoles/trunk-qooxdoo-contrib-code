@@ -375,7 +375,15 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Possible values for the style property background-repeat
      */
-    __backgroundRepeat : "repeat repeat-x repeat-y no-repeat"
+    __backgroundRepeat : "repeat repeat-x repeat-y no-repeat",
+    
+    /**
+     * Actions for which a special undo operation is needed
+     * because the browser could not handle them automatically
+     * with the "undo" execCommand. As IE uses his own undo
+     * mechanism this variable is not used in IE. 
+     */
+    __customUndoActions : "backgroundColor backgroundImage"
  },
 
 
@@ -1059,6 +1067,16 @@ qx.Class.define("htmlarea.HtmlArea",
               this.insertHtml("<br/>");
             }
           }
+          else
+          {
+            if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
+            {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              this.insertHtml("<p></p>");
+            }
+          }
 
         break;
 
@@ -1293,13 +1311,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /* Flag if a redo operation is possible */
     __redoPossible : false,
 
-    /* Actions for which a special undo operation is needed
-     * because the browser could not handle them automatically
-     * with the "undo" execCommand. As IE uses his own undo
-     * mechanism this variable is not used in IE. 
-     */
-    __customUndoActions : "backgroundColor backgroundImage",
-
 
     /**
      * Undo the last change
@@ -1330,7 +1341,7 @@ qx.Class.define("htmlarea.HtmlArea",
         var undoStep = this.__undoStack.pop();
 
         /* Check for any custom actions to rollback */
-        if (this.__customUndoActions.indexOf(undoStep.type) != -1)
+        if (htmlarea.HtmlArea.__customUndoActions.indexOf(undoStep.type) != -1)
         {
           /* 
            * Set this flag to prevent the affected methods to add 
@@ -1383,6 +1394,7 @@ qx.Class.define("htmlarea.HtmlArea",
                                     content : redoRange.htmlText,
                                     marker  : redoRange.getBookmark() };
 
+              /* Select and clear the range */
               undoStep.range.select();
               undoStep.range.pasteHTML("");
 
@@ -1510,23 +1522,39 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * TODO: DOCUMENT THIS
+     * Utility method to add an entry to the undoStack. This method
+     * is called from {@link __updateUndoRedoStatus} to update the status of
+     * undo/redo. If the passed in changeInfo is a (simple) string it is
+     * added as the type of the change otherwise the map is pushed as is to
+     * the undoStack.
+     * 
+     * @type member
+     * @param changeInfo {Object ? String} Infos of the change
+     * 
+     * @return {void}
      */
-    __addToUndoStack : function(changeType)
+    __addToUndoStack : function(changeInfo)
     {
-      if (typeof changeType == "string")
+      if (typeof changeInfo == "string")
       {
-        this.__undoStack.push({ type : changeType });
+        this.__undoStack.push({ type : changeInfo });
       }
       else
       {
-        this.__undoStack.push(changeType);
+        this.__undoStack.push(changeInfo);
       }
     },
 
 
     /**
-     * TODO: DOCUMENT THIS
+     * This method is currently only used from mshtml browser. 
+     * The goal is to create a new range and a corresponding bookmark.
+     * These infos are added to the undoStack to determine the (content)
+     * changes done so far, undo these correctly and move the cursor 
+     * accordingly at the original position.
+     * 
+     * @type member
+     * @return {Object} Map containing of a range and a bookmark.
      */
     __createUndoRange : qx.core.Variant.select("qx.client", {
         "mshtml" : function()
@@ -1576,7 +1604,7 @@ qx.Class.define("htmlarea.HtmlArea",
         ret = this._execCommand("InsertHtml", false, value);
       }
 
-      // update the undo/redo status
+      /* Update the undo/redo status */
       this.__updateUndoRedoStatus("execCommand");
 
       return ret;
