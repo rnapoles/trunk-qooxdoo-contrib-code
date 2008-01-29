@@ -369,9 +369,9 @@ class qcl_db_pear extends qcl_db
       {
         if ( $currentDef != $columnDef )
         {
-          if ( strstr( $columnName, "FULLTEXT KEY" ) )
+          if ( strstr( $columnName, " KEY" ) )
           {
-             $columnName = str_replace("KEY","INDEX", $columnName );
+             //$columnName = str_replace("KEY","INDEX", $columnName );
              $this->execute ("
               ALTER TABLE `$table` MODIFY $columnName $columnDef 
             ");           
@@ -400,9 +400,9 @@ class qcl_db_pear extends qcl_db
         }
         else
         {
-          if ( strstr( $columnName, "FULLTEXT KEY" ) )
+          if ( strstr( $columnName, " KEY" ) )
           {
-             $columnName = str_replace("KEY","INDEX", $columnName );
+             //$columnName = str_replace("KEY","INDEX", $columnName );
              $this->execute ("
               ALTER TABLE `$table` ADD $columnName $columnDef 
             ");           
