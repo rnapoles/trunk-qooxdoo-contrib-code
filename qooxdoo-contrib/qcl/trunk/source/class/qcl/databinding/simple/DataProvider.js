@@ -197,8 +197,12 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
       var data={};
       for ( var key in boundWidgets )
       {
-        var widget = boundWidgets[key]; 
-        data[key] = typeof widget == "object" ? widget.getWidgetData() : null;
+        var widget = boundWidgets[key];
+        if ( typeof widget == "object" )
+        {
+          if ( widget.getUpdateTarget() == "client" ) continue;
+          data[key] =  widget.getWidgetData();         
+        }
       }
       return data;
     },    
@@ -221,8 +225,10 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
       {
         for ( key in result )
         {
-          try {
+          try 
+          { 
             var widget = this.getBoundWidget(key);
+            if ( widget.getUpdateTarget() == "server" ) continue;
             var value  = result[key];
             if (typeof widget == "object" )
             {

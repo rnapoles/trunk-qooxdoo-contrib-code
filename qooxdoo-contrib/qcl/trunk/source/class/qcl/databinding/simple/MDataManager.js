@@ -82,6 +82,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       check : "Boolean",
       init: false
     },
+
+    /** 
+     * which direction should the update go to the server only (ignore updateClient), 
+     * to the client only (ignore updateServer), or both ways
+     */
+    updateTarget :
+    {
+      check : ["server","client","both"],
+      init: "both"
+    },
     
     /** the external data manager, if set. */
     dataProvider :
@@ -232,6 +242,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     _updateClient : function()
     {
         if ( ! this.getDataBinding() ) return false;
+        if ( this.getUpdateTarget() == "server" ) return false;
         
         for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
         
@@ -628,6 +639,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     _updateServer : function()
     {
         if ( ! this.getDataBinding() ) return false;
+        if ( this.getUpdateTarget() == "client" ) return false;
+        
         for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
         
         switch (this.getTransport())
