@@ -57,7 +57,7 @@ public class Index {
               "    <script type='text/javascript'>");
         lines(writer, 
                 "window.qxsettings = {" +
-                "  'qx.version' : '" + qooxdoo.version + "'," +
+                "  'qx.version' : '" + qooxdoo.version + "'" +
                 "};");
         modules(writer, Transport.class.getName(), client);
         lines(writer,
