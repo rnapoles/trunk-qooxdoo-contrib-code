@@ -322,7 +322,7 @@ class qcl_db_pear extends qcl_db
 
     for($i=0;$i<count($lines);$i++)
     {
-     preg_match("/(`[^`]+`|.*KEY)([^,]+),?/",trim($lines[$i]),$line);
+     preg_match("/(`[^`]+`|.*KEY)(.+),?$/",trim($lines[$i]),$line);
      $columnName = $line[1];
      $columnDef  = $line[2];
      $columns[$columnName] = $columnDef ;
@@ -364,9 +364,19 @@ class qcl_db_pear extends qcl_db
       {
         if ( $currentDef != $columnDef )
         {
-          $this->execute ("
-            ALTER TABLE `$table` MODIFY COLUMN $columnName $columnDef
-          ");
+          if ( strstr( $columnName, "FULLTEXT KEY" ) )
+          {
+             $columnName = str_replace("KEY","INDEX", $columnName );
+             $this->execute ("
+              ALTER TABLE `$table` MODIFY $columnName $columnDef 
+            ");           
+          }
+          else
+          {         
+            $this->execute ("
+              ALTER TABLE `$table` MODIFY COLUMN $columnName $columnDef
+            ");
+          }
           $this->info("Modified $table.$columnName to $columnDef.");
         }
       }
