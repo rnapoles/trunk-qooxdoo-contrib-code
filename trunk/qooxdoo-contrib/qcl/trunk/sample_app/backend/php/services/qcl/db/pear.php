@@ -387,6 +387,7 @@ class qcl_db_pear extends qcl_db
         {
           if ( strstr( $columnName, "FULLTEXT KEY" ) )
           {
+             $columnName = str_replace("KEY","INDEX", $columnName );
              $this->execute ("
               ALTER TABLE `$table` ADD $columnName $columnDef 
             ");           
