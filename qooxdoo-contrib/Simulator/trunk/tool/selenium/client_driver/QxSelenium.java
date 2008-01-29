@@ -25,20 +25,28 @@ public class QxSelenium extends DefaultSelenium
     super(serverHost, serverPort, browserStartCommand, browserURL);
   }
 
-  public void qxClick(String locator) {
-    this.commandProcessor.doCommand("qxClick", new String[] {locator,});
+  public String qxClick(String locator) {
+    return this.commandProcessor.doCommand("qxClick", new String[] {locator,});
   }
 
-  public void qxClick(String locator, String opts) {
-    this.commandProcessor.doCommand("qxClick", new String[] {locator, opts,});
+  public String qxClick(String locator, String opts) {
+    return this.commandProcessor.doCommand("qxClick", new String[] {locator, opts,});
   }
 
-  public void qxClickAt(String locator) {
-    this.commandProcessor.doCommand("qxClickAt", new String[] {locator,});
+  public String qxClickAt(String locator) {
+    return this.commandProcessor.doCommand("qxClickAt", new String[] {locator,});
   }
  
-  public void qxClickAt(String locator, String opts) {
-    this.commandProcessor.doCommand("qxClickAt", new String[] {locator, opts,});
+  public String qxClickAt(String locator, String opts) {
+    return this.commandProcessor.doCommand("qxClickAt", new String[] {locator, opts,});
+  }
+
+  public String getViewport() {
+    return this.commandProcessor.doCommand("getViewport", new String[] {});
+  }
+
+  public String captureScreenshot(String filename, String geometry) {
+    return this.commandProcessor.doCommand("captureScreenshot", new String[] {filename, geometry});
   }
 
 }

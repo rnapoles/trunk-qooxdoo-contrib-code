@@ -54,11 +54,15 @@ var autHost = "http://demo.qooxdoo.org";
 //var autHost = "http://localhost";
 var autPath = "/0.7.2/showcase/index.html";
 //var autPath = "/~thron7/.workspace/packages/qooxdoo-0.7.3-pre-sdk/frontend/application/showcase/source/index.html";
-var useRunningSession = false;
-var closeBrowser = false;
-var cycleTests = false;
+var useRunningSession = false;  // hijack existing browser session -- not possible currently
+var closeBrowser = false;//  close down browser session when test finishes
+var cycleTests = false;  // cycle at the end of the test -- untested
 var stepSpeed  = "1000"; // millisecs after each command
-var noAutoIds  = true;
+var noAutoIds  = true;   // whether to rely on auto-generated @id's in the app
+var takeScreenshots = false; // if true, the test will take screenshots here and there
+                             // to make this work, you need a patched SRC server, as
+                             // described here: http://qooxdoo.org/documentation/contrib/simulator
+var shotsDir = ".";      // relative to dir where you started the SRC server
 // - Config End ----------------------------------------------------------------
 
 
@@ -100,6 +104,7 @@ function Form (sel)
     sel.qxClick('//div[text()="Modem"]/preceding-sibling::input')
     sel.qxClick('//div[text()="DSL"]/preceding-sibling::input')
     sel.qxClick('//div[text()="Direct link"]/preceding-sibling::input')
+
   }
   else
   {
@@ -141,6 +146,11 @@ function Form (sel)
     //sel.qxClick('qx.ui.form.InputCheckSymbol.125')
   }
 
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s1.png", geometry);
+  }
+
 } // Form()
 
 function Tooltip (sel) 
@@ -157,6 +167,10 @@ function Tooltip (sel)
   sel.mouseOver(noAutoIds ?
                 '//img[contains(@src,"accessories-disk-usage.png")]' :
                 'qx.ui.basic.Atom.143');
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s2.png", geometry);
+  }
 } // Tooltip()
 
 function Menu_and_Toolbar (sel)
@@ -267,6 +281,10 @@ function Menu_and_Toolbar (sel)
   sel.qxClick(noAutoIds ?
                 '//div[text()="Icons: 22 Pixel"]' :
                 'qx.ui.form.Button.531')
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s3.png", geometry);
+  }
 } // Menu_and_Toolbar()
 
 
@@ -331,6 +349,10 @@ function Tab (sel)
                 '//div[text()="Left"]' :
                 'qx.ui.form.RadioButton.622')
   
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s4.png", geometry);
+  }
 } // Tab()
 
 
@@ -363,6 +385,11 @@ function Tree (sel)
 
   sel.qxClick('//div[text()="Use tree lines?"]')
   sel.qxClick('//div[text()="Use tree lines?"]')
+
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s5.png", geometry);
+  }
   
 } // Tree()
 
@@ -380,6 +407,10 @@ function List (sel)
   sel.qxClick('//div[text()="Show Icon"]');
   sel.qxClick('//div[text()="Show Both"]');
   
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s6.png", geometry);
+  }
 } // List()
 
 
@@ -392,6 +423,10 @@ function ListView (sel)
   sel.qxClick('//div[text()="E-Mail 9"]', "shiftKey=true");
   sel.qxClick('//div[text()="E-Mail 6"]', "ctrlKey=true");
   
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s7.png", geometry);
+  }
 } // ListView()
 
 
@@ -408,6 +443,10 @@ function Table (sel)
   sel.qxClick('//div[text()="A number"]');
   sel.qxClick('//div[text()="A number"]');
   
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s8.png", geometry);
+  }
 } // Table()
 
 
@@ -436,6 +475,10 @@ function SplitPane (sel)
                   "-150,+0" );
 
   
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s9.png", geometry);
+  }
 } // SplitPane()
 
 
@@ -465,6 +508,10 @@ function Localization (sel)
   // Re-open Command Menu
   sel.qxClick('//div[starts-with(text(),"Command-Men")]');
 
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s10.png", geometry);
+  }
 } // Localization()
 
 
@@ -539,6 +586,10 @@ function Internal_Window (sel)
   sel.qxClick('//div[text()="Open Modal Dialog 1"]/preceding-sibling::div/img[contains(@src,"edit-find.png")]'); // trick: look for the button text, but then click the image
   sel.qxClick('//div[text()="First Modal Dialog"]/following-sibling::div/descendant::img[contains(@src,"close.gif")]');
 
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s11.png", geometry);
+  }
 } // Internal_Window()
 
 
@@ -551,7 +602,20 @@ function Themes (sel)
   sel.qxClick('//div[text()="Theme: Ext"]/preceding-sibling::div/img[contains(@src,"dialog-ok.png")]');
   Packages.java.lang.Thread.sleep(2000);
   
+  if (takeScreenshots) 
+  {
+    sel.captureScreenshot(shotsDir+"/s12.png", geometry);
+  }
 } // Themes()
+
+function prepareScreenshots(sel) 
+{
+  sel.getViewport();
+  print("Click in the test window within 5secs!");
+  sel.waitForCondition("storedVars['ViewportStr']", 5000);
+  geometry = sel.getEval("storedVars['ViewportStr']");
+  //sel.geometry = geom; // !cannot extend a Java object!
+}
 
 // - Main --------------------------------------------------------------------
 
@@ -575,6 +639,11 @@ Packages.java.lang.Thread.sleep(2000);
 var doTests = true;
 
 sel.setSpeed(stepSpeed);
+
+if (takeScreenshots) 
+{
+  prepareScreenshots(sel);
+}
 
 while (doTests)
 {
