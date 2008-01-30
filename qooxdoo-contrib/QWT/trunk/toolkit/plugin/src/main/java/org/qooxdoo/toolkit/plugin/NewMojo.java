@@ -47,6 +47,7 @@ public class NewMojo extends Base {
      */
     private String pkg;
     
+    
     /**
      * Application to be generated.
      *
