@@ -50,7 +50,7 @@ class qcl_config_controller extends qcl_session_controller
       $result[$row[$configModel->key_name]] = array(
         'name' => $row[$configModel->key_name],
         'type' => $row[$configModel->key_type],
-        'value' => $row[$configModel->key_value]
+        'value' => $configModel->getValue($row)
       );
  		}
  		$this->set( "configMap", $result );
