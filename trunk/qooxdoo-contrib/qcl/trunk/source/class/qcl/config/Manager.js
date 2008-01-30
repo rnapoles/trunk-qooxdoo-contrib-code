@@ -165,15 +165,11 @@ qx.Class.define("qcl.config.Manager",
       {
         if ( !configMap[key] )
         {
-          this.error("'" + key + "' is no registered config key.");
+          configMap[key] = { value : null };
         }
         
-        /* todo: this doesn't work since everything is a string
-        if ( typeof data[key] != configMap[key].type )
-        {
-          this.error("Invalid value '" + data[key] + "' Should be " + configMap[key].type + " but is " + typeof data[key] );
-        }                
-        */
+        // todo: check permission
+        
         var configMapChanged = false;
         
         if ( configMap[key].value != data[key] )
