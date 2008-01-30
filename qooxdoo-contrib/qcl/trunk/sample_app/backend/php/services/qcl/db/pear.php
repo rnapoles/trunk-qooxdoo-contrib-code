@@ -359,7 +359,6 @@ class qcl_db_pear extends qcl_db
   {
     $currentColumns   = $this->extractColumnData($this->getCreateTableSql($table));
     $normativeColumns = $this->extractColumnData($sql);
-    //$this->raiseError(print_r($normativeColumns,true));
     $after = "FIRST";
     
     foreach($normativeColumns as $columnName => $columnDef )

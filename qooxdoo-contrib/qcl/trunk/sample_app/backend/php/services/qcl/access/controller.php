@@ -27,7 +27,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    */
   function __construct()
   { 
-    parent::__construct();
+    parent::__construct( true ); // allow anonymous access for authentication
     // extending classes MUST set the user, role, and permission models after calling
     // this parent constructor
   }  
@@ -119,6 +119,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    */
   function method_getItemData($params)
   {
+    // todo: security!
+    
     $type     = (string)   $params[0]; 
     $itemId 	= (int)      $params[1];
     
@@ -153,7 +155,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    */		
 	function method_createItem($params)
 	{
-		$type       = (string)  $this->extractType($params[1]); 
+		// todo: security!
+    $type       = (string)  $this->extractType($params[1]); 
     $namedId 		= (string)  $params[2];
 		$parentId 	= (int)     $params[3];
 		
@@ -209,6 +212,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    */
   function method_deleteItem($params)
   {
+    // todo: security!
     $type       = (string)  $this->extractType($params[1]); 
     $itemId 		= (int)     $params[2];
     $parentId 	= (int)     $params[3];
@@ -279,7 +283,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    */
   function method_addPermissionToRole($params)
   {
-  	$userModel = $this->getModel("user");
+  	$this->requirePermission("qcl.auth.permissions.manage");
+    
+    $userModel = $this->getModel("user");
     $userModel->requirePermission("qcl.auth.permissions.manage");
   	
   	$permRefs = $params[1];
@@ -301,7 +307,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    */
   function method_removePermissionFromRole($params)
   {
-  	$userModel = $this->getModel("user");
+  	$this->requirePermission("qcl.auth.permissions.manage");
+    
+    $userModel = $this->getModel("user");
     $userModel->requirePermission("qcl.auth.permissions.manage");
   	
   	$permRefs 	= $params[1];
