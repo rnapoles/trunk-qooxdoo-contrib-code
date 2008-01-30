@@ -135,8 +135,15 @@ class qcl_config_db extends qcl_db_model
 	 */
 	function get($name)
 	{
-		$row = $this->getRow($name);
-		return $row[$this->key_value];	
+		$row     = $this->getRow($name);
+    $value   = $row[$this->key_value];
+    $type    = $row[$this->key_type];	
+    switch ( $type )
+    {
+      case "number": return floatval($value);
+      case "boolean" : return (bool) $value;
+      default: return strval($value);
+    }
 	} 
   
 	/**
