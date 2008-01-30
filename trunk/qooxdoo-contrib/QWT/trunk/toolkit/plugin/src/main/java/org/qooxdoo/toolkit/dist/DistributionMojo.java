@@ -35,6 +35,7 @@ import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.HttpNode;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.svn.SvnNode;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.util.Strings;
@@ -234,7 +235,11 @@ public class DistributionMojo extends Base {
 
     private void xFlags() throws IOException {
         for (Node node : unzipped.find("**/bin/*")) {
-            ((FileNode) node).setMode(0755);
+            if (OS.CURRENT == OS.WINDOWS) {
+                info(node + ": chmod skipped");
+            } else {
+                ((FileNode) node).setMode(0755);
+            }
         }
     }
 
