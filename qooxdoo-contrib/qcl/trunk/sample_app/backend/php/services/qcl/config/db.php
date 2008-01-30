@@ -136,6 +136,16 @@ class qcl_config_db extends qcl_db_model
 	function get($name)
 	{
 		$row     = $this->getRow($name);
+    return $this->getValue($row);
+	} 
+  
+  /**
+   * gets the value in the correct type
+   * @return mixed $value
+   * @param array $row 
+   */
+  function getValue ( $row )
+  {
     $value   = $row[$this->key_value];
     $type    = $row[$this->key_type];	
     switch ( $type )
@@ -144,7 +154,7 @@ class qcl_config_db extends qcl_db_model
       case "boolean" : return (bool) $value;
       default: return strval($value);
     }
-	} 
+  }
   
 	/**
 	 * checks if the config entry exists (optional: for a specific user)
@@ -226,6 +236,7 @@ class qcl_config_db extends qcl_db_model
 			{
 				$userModel->requirePermisson($permissionRead);
 			}
+      
 			return $row;
 		}
 		else
