@@ -78,7 +78,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Catch load event - no timer needed which polls if the component is ready and 
      * to set the editor in the "editable" mode.
      */
-    this.addEventListener("load", this._loaded);
+    this.addEventListener("load", this._loaded, this);
 
     /*
      * Catch key events. The DOM key events get transformed to qooxdoo key event objects
@@ -86,9 +86,9 @@ qx.Class.define("htmlarea.HtmlArea",
      * at the editor instance. This is the point to which the qooxdoo key event handler 
      * dispatches all his events.
      */
-    this.addEventListener("keyup", this._handleKeyUp);
-    this.addEventListener("keydown", this._handleKeyDown);
-    this.addEventListener("keypress", this._handleKeyPress);
+    this.addEventListener("keyup", this._handleKeyUp, this);
+    this.addEventListener("keydown", this._handleKeyDown, this);
+    this.addEventListener("keypress", this._handleKeyPress, this);
 
     /* Check for available content */
     if (typeof value == "string") {
@@ -560,6 +560,11 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Setting a shortcut for the content document */
       this.__doc = this.getContentDocument();
 
+      if (qx.core.Variant.isSet("qx.debug", "on"))
+      {
+        this.debug('document:' + this.__doc);
+      }
+
       /*
        * For IE the document needs to be set in "designMode"
        * BEFORE the content is rendered.
@@ -568,7 +573,6 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         this.setEditable(true);
       }
-
 
       /*
        * Render content - opens a new document and inserts
@@ -710,7 +714,7 @@ qx.Class.define("htmlarea.HtmlArea",
       if (typeof value == "string")
       {
          var content = this.__getWrappedContent(value);
-          
+         
          this.__doc.open(qx.util.Mime.HTML, true);
          this.__doc.writeln(content);
          this.__doc.close();
@@ -779,7 +783,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyEditable : function(propValue, propOldValue, propData)
     {
-      if (this.__doc)
+      if (this.__isLoaded)
       {
         /* Setting the designMode - works for all browser engines */
         this.__doc.designMode = propValue ? "on" : "off";
@@ -828,7 +832,9 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       if (qx.core.Client.getInstance().isGecko())
       {
-        this.getContentWindow().focus();
+        if (this.__isLoaded) {
+          this.getContentWindow().focus();
+        }
       }
       else
       {
@@ -1589,6 +1595,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
+        this._visualizeFocus();
+        
         if (this.__currentRange == null)
         {
           this.__currentRange = this.__createRange(this.__getSelection());
