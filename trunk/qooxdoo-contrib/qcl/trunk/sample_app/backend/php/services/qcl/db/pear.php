@@ -370,10 +370,10 @@ class qcl_db_pear extends qcl_db
         {
           if ( strstr( $columnName, " KEY" ) )
           {
-             preg_match("/`.+`/", $columnName, $matches );
-             $indexName = $matches[0];
+             preg_match("/`([^`]+)`/", $columnName, $matches );
+             $indexName = $matches[1];
              $this->execute ("
-              ALTER TABLE `$table` DROP $indexName 
+              ALTER TABLE `$table` DROP `$indexName` 
             ");           
             $this->execute ("
               ALTER TABLE `$table` ADD $columnName $columnDef 
