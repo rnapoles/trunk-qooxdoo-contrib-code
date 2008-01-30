@@ -327,9 +327,15 @@ class qcl_config_db extends qcl_db_model
             {
               if ( $r[$this->key_name] == $row[$this->key_name] and $r[$this->key_user] == $userId ) $found = true;
             }
-            if ( $found ) continue;
+            if ( $found ) 
+            {
+               continue; 
+            }
           }
-          continue;
+          else
+          {
+            continue; 
+          }
         }
       }
       
