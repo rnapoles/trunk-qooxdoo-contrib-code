@@ -131,7 +131,11 @@ qx.Class.define("qcl.config.Manager",
 		 */
 		getKey : function ( key )
 		{
-			return this.getConfigMap()[key].value;
+			if ( this.getConfigMap()[key] )
+      {
+        return this.getConfigMap()[key].value;  
+      }
+      return null;
 		},
     
     /**
