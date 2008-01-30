@@ -47,8 +47,11 @@ class qcl_config_controller extends qcl_session_controller
     
  		foreach ( $rows as $row )
  		{
- 			unset($row[$configModel->key_id]);
- 			$result[$row[$configModel->key_name]] = $row;
+      $result[$row[$configModel->key_name]] = array(
+        'name' => $row[$configModel->key_name],
+        'type' => $row[$configModel->key_type],
+        'value' => $row[$configModel->key_value]
+      );
  		}
  		$this->set( "configMap", $result );
  		return $this->getResponseData(); 
@@ -167,12 +170,14 @@ class qcl_config_controller extends qcl_session_controller
 	 * gets all config property value that are readable by the active user
 	 * @param string $param[0] return only a subset of entries that start with $mask
 	 * @return array tabledatamodel
+	 * @todo: encrypt data?
 	 */
 	function method_getAll( $params )
 	{
-		$userModel    =& $this->getModel("user");
+		$mask         =  $params[0];
+    $userModel    =& $this->getModel("user");
     $configModel  =& $this->getModel("config"); 
-    $rows         =  $configModel->getAll( $params[0] );
+    $rows         =  $configModel->getAll( $mask );
     
 		$table = array();
 		
