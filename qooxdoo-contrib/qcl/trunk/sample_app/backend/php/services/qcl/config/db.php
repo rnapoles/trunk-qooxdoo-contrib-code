@@ -322,9 +322,9 @@ class qcl_config_db extends qcl_db_model
           // if default value look for a config entry for the user. if exists, do not return default value
           if ( $userId == "default" )
           {
+            $found = false;
             foreach ( $rows as $r )
             {
-              $found = false;
               if ( $r[$this->key_name] == $row[$this->key_name] and $r[$this->key_user] == $userId ) $found = true;
             }
             if ( $found ) continue;
