@@ -373,7 +373,7 @@ class qcl_db_pear extends qcl_db
              preg_match("/`([^`]+)`/", $columnName, $matches );
              $indexName = $matches[1];
              $this->execute ("
-              ALTER TABLE `$table` DROP `$indexName` 
+              ALTER TABLE `$table` DROP INDEX `$indexName` 
             ");           
             $this->execute ("
               ALTER TABLE `$table` ADD $columnName $columnDef 
