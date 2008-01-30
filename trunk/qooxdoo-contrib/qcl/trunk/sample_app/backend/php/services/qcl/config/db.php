@@ -325,10 +325,16 @@ class qcl_config_db extends qcl_db_model
             $found = false;
             foreach ( $rows as $r )
             {
-              if ( $r[$this->key_name] == $row[$this->key_name] and $r[$this->key_user] == $userId ) $found = true;
+              $this->info ( $row[$this->key_name] .  "->" . $row[$this->key_name] ." " . $r[$this->key_user] . "->" . $userId );
+              
+              if ( $r[$this->key_name] == $row[$this->key_name] and $r[$this->key_user] == $userId ) 
+              {
+                $found = true; break;  
+              }
             }
             if ( $found ) 
             {
+               $this->info ("found!");
                continue; 
             }
           }
