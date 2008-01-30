@@ -47,7 +47,7 @@ public class HelpMojo extends Base {
         info("  mvn eclipse:eclipse                  generate eclipse files");
         info("");
         info("Misc");
-        info("  jconsole                             jmx console for running application");
+        info("  jconsole                             admin console for running application");
         info("");
         info("Qooxdoo Plugin version: " + getVersion());
         info("");
