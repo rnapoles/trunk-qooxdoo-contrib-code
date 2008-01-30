@@ -64,7 +64,9 @@ class qcl_config_db extends qcl_db_model
 		// check permission
     $controller  =& $this->getController();
     $userModel   =& $controller->getModel("user");
-		$userModel->requirePermission("qcl.config.permissions.manage");
+    $userModel->requirePermission("qcl.config.permissions.manage");
+		
+		// todo: check if key already exists, if yes, abort
 		
 		// check type
 		if ( ! in_array( $type, $this->types ) )
@@ -298,9 +300,40 @@ class qcl_config_db extends qcl_db_model
 			");			
 		}
 		
+    //isConfigManager = $userModel->hasPermission("bibliograph.config.permissions.manage");
 		$result = array();
 		foreach ( $rows as $row )
 		{
+      // admin read do everything
+      if ( $isConfigManager )
+      {
+        $result[] = $row;
+        continue;
+      }
+      
+      // global, default or user value
+      $userId = $row[$this->key_user]; 
+      
+      if ( $userId )
+      {
+        // get key if owned by active user or if global
+        if ( $userId != $activeUserId and $userId != "global" )
+        {
+          // if default value look for a config entry for the user. if exists, do not return default value
+          if ( $userId = "default" )
+          {
+            foreach ( $rows as $r )
+            {
+              $found = false;
+              if ( $r[$this->key_name] == $row[$this->key_name] and $r[$this->key_user] == $userId ) $found = true;
+              if ( $found ) continue;
+            }
+          }
+          continue;
+        }
+      }
+      
+      // read permission ?
       $permissionRead = $row[$this->key_permissionRead];
 			if ( ! $permissionRead or $userModel->hasPermission($permissionRead) )
 			{
@@ -336,10 +369,19 @@ class qcl_config_db extends qcl_db_model
       $row = $this->getRow($name);
 		}
 		
-		// does the key exist?
+		// create if key doesn't exist - todo: this is a security problem!
 		if ( ! count($row) )
 		{
-			$this->raiseError("qcl_config::set : no config key '$name' ");
+		
+      // type
+      if ( is_bool ( $value) ) $type = "boolean";
+      elseif ( is_numeric( $value ) ) $type = "number";
+      else $type = "string";
+      
+      $this->info("qcl_config::set : creating non-existant key '$name', type '$type'.");
+      
+      $this->create($name, $type, null, null, true );
+      return $this->set ( $name, $value );
 		}
     
 		$id				       = $row[$this->key_id];
