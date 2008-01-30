@@ -68,9 +68,12 @@ class qcl_config_controller extends qcl_session_controller
     
 		foreach( $map as $key => $value )
 		{
-      $configModel->set( $key, $value );
-		} 
-    $this->dispatchMessage( "qcl.config.messages.key.updated", $key );		
+      $result = $configModel->set( $key, $value );
+		  if ( $result !== false )
+      {
+        $this->dispatchMessage( "qcl.config.messages.key.updated", $key );		  
+      }
+    } 
  		return $this->getResponseData(); 
  	}
    	
