@@ -320,7 +320,7 @@ class qcl_config_db extends qcl_db_model
         if ( $userId != $activeUserId and $userId != "global" )
         {
           // if default value look for a config entry for the user. if exists, do not return default value
-          if ( $userId = "default" )
+          if ( $userId == "default" )
           {
             foreach ( $rows as $r )
             {
