@@ -67,7 +67,8 @@ public abstract class FrameworkBase extends Base {
             info("frameworkRevision: " + frameworkRevision);
         }
         if (!frameworkDir.isDirectory()) {
-            p = svn((FileNode) frameworkDir.getParent(), "co", NON_INTERACTIVE, "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
+            p = svn((FileNode) frameworkDir.getParent(), "co", NON_INTERACTIVE, "-r", frameworkRevision, 
+                    frameworkUrl, frameworkDir.getName());
             p.exec(System.out);
         } else {
             p = svn("info", NON_INTERACTIVE);
