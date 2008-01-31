@@ -45,6 +45,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       </roles>
       <timezone>+1</timezone>
     </contributor>
+    <contributor>
+      <name>Michael Rütten</name>
+      <email>michael.ruetten@1und1.de</email>
+      <organization>1&amp;1</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
   </contributors>
 
   <scm>
