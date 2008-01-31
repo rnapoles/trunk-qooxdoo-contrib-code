@@ -370,7 +370,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Possible values for the style property background-position
      */
-    __backgroundPosition : "top bottom center left right",
+    __backgroundPosition : "|top|bottom|center|left|right|right top|left top|left bottom|right bottom|",
 
     /**
      * Possible values for the style property background-repeat
@@ -1967,8 +1967,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * Return silently if the parameter "position" is not valid
        * and report the error in debug mode
        */
-      // TODO: combination of some values possible???? i think so
-      if (position != null && htmlarea.HtmlArea.__backgroundPosition.indexOf(position) < 0)
+      if (position != null && htmlarea.HtmlArea.__backgroundPosition.indexOf('|'+position+'|') < 0)
       {
         if (qx.core.Variant.isSet("qx.debug", "on"))
         {
