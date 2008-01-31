@@ -84,9 +84,9 @@ public class ResourcesMojo extends FrameworkBase {
         
         log = classes().join("log");
         log.mkdirOpt();
-        log(log.join("info.log"), "info");
-        log(log.join("status.log"), "status", "-v", "-N");
-        log(log.join("diff.log"), "diff");
+        log(log.join("info.log"), "info", NON_INTERACTIVE);
+        log(log.join("status.log"), "status", NON_INTERACTIVE, "-v", "-N");
+        log(log.join("diff.log"), "diff", NON_INTERACTIVE);
     }
 
     private void log(Node file, String ... cmd) throws IOException {

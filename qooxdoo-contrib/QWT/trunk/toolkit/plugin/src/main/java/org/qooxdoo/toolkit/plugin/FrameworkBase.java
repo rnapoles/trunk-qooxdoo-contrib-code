@@ -62,15 +62,15 @@ public abstract class FrameworkBase extends Base {
         String workspaceUrl;
         
         if (frameworkRevision == null || frameworkRevision.trim().length() == 0) {
-            p = svn((FileNode) frameworkDir.getParent(), "info", frameworkUrl);
+            p = svn((FileNode) frameworkDir.getParent(), "info", NON_INTERACTIVE, frameworkUrl);
             frameworkRevision = extract(p.exec(), "Revision:");
             info("frameworkRevision: " + frameworkRevision);
         }
         if (!frameworkDir.isDirectory()) {
-            p = svn((FileNode) frameworkDir.getParent(), "co", "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
+            p = svn((FileNode) frameworkDir.getParent(), "co", NON_INTERACTIVE, "-r", frameworkRevision, frameworkUrl, frameworkDir.getName());
             p.exec(System.out);
         } else {
-            p = svn("info");
+            p = svn("info", NON_INTERACTIVE);
             output = p.exec();
             workspaceRevision = extract(output, "Revision:");
             workspaceUrl = extract(output, "URL:");
@@ -80,7 +80,7 @@ public abstract class FrameworkBase extends Base {
                 info("switching workspace:");
                 info("  old: " + workspaceUrl + "@" + workspaceRevision);
                 info("  new: " + frameworkUrl + "@" + frameworkRevision);
-                p = svn("switch", "-r", frameworkRevision, frameworkUrl);
+                p = svn("switch", NON_INTERACTIVE, "-r", frameworkRevision, frameworkUrl);
                 p.exec(System.out);
             }
         }
@@ -103,6 +103,8 @@ public abstract class FrameworkBase extends Base {
         return str.substring(start, end).trim();
     }
 
+    public static final String NON_INTERACTIVE = "--non-interactive";
+    
     public Program svn(String ... args) {
         return svn((FileNode) frameworkDir, args);
     }
