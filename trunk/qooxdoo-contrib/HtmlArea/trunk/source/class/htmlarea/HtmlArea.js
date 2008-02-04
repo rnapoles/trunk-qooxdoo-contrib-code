@@ -542,6 +542,8 @@ qx.Class.define("htmlarea.HtmlArea",
     ---------------------------------------------------------------------------
     */
 
+    __loadCounter : 0,
+
     /**
      * Is executed when event "load" is fired
      *
@@ -560,9 +562,24 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Setting a shortcut for the content document */
       this.__doc = this.getContentDocument();
 
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      // sometimes IE6 does some strange things
+      if (!this.__doc)
       {
-        this.debug('document:' + this.__doc);
+        if (qx.core.Variant.isSet("qx.debug", "on"))
+        {
+          this.debug('document:' + this.__doc);
+        }
+        
+        if (this.__loadCounter >= 5)
+        {
+          throw new Error('cant load HtmlArea. Document is not available. ' + this.__doc);
+        }
+        
+        var self = this;
+        this.__loadCounter++;
+        window.setTimeout(function() {
+          self._loaded(e);
+        },0);
       }
 
       /*
