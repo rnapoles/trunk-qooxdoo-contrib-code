@@ -404,3 +404,25 @@ if(!function_exists('scandir'))
     }
   }
 }
+
+/**
+ * php4 equivalent of array_diff_key
+ * from http://de3.php.net/manual/en/function.array-diff-key.php
+ * @return array 
+ */ 
+if(!function_exists('array_diff_key')) 
+{
+  function array_diff_key()
+  {
+    $arrs = func_get_args();
+    $result = array_shift($arrs);
+    foreach ($arrs as $array) {
+      foreach ($result as $key => $v) {
+        if (array_key_exists($key, $array)) {
+            unset($result[$key]);
+        }
+      }
+    }
+    return $result;
+   }
+}
