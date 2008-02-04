@@ -111,7 +111,7 @@ class qcl_db_model extends qcl_jsonrpc_model
  	{
 		if ( $fields )
 		{
-			$fields = "`" . implode("`,`", $fields) . "`";
+			$fields = "`" . implode("`,`", (array) $fields ) . "`";
 		}
 		else
 		{
@@ -363,6 +363,18 @@ class qcl_db_model extends qcl_jsonrpc_model
 	  return $this->create( $namedId, $parentId );
  	}   
 
+  /**
+   * gets the column name from a normalized field name
+   * @return string
+   * @param string $fieldName
+   */
+  function getColumnName ( $fieldName )
+  {
+		$varName 	= "key_{$fieldName}";
+		$columnName	= $this->$varName;
+    return $columnName;
+  }
+
 	/**
 	 * gets the value of a column in a record without field->column translation 
 	 * @param string	$column 	
@@ -409,8 +421,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function getFieldValue ( $field, $recordId=null )
 	{
-		$varName 	= "key_$field";
-		$columnName	= $this->$varName;
+		$columnName	= $this->getColumnName( $field );
 		
 		if ( ! $columnName )
 		{

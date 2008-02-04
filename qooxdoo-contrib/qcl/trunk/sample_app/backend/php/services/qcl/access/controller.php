@@ -81,7 +81,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		{
 			$security = $userModel->getSecurity($username);
 			$userModel->setActiveUser($security['userdata']);
-			$this->dispatchMessage("qcl.auth.messages.loginSuccess");						
+			$this->dispatchMessage("qcl.auth.messages.loginSuccess");	
+      $this->info ("Logging on user $username.");		
 		}
 		elseif ( ! $username and $activeUser )
 		{
@@ -96,6 +97,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		}
 		
 		$this->set("security", $security );
+    
+    
 		
 		return $this->getResponseData();
    }   
@@ -106,6 +109,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   function method_logout()
   {
     $userModel = $this->getModel("user");
+    $username = $userModel->getActiveUserNamedId();
+    $this->info ("Logging out user $username.");
     $userModel->setActiveUser(null);
     $this->dispatchMessage("qcl.auth.messages.user.loggedOut");
     return $this->getResponseData();
