@@ -42,11 +42,12 @@ class qcl_config_controller extends qcl_session_controller
  	{
  		$mask 	      = $params[0];
     $configModel  = $this->getModel("config");
- 		$rows 	      = $configModel->getAll( $mask );
+    $keys         = $configModel->getDistinctValues($configModel->key_namedId,null,$configModel->key_namedId);
  		$result	      = array();
     
- 		foreach ( $rows as $row )
+ 		foreach ( $keys as $key )
  		{
+      $row = $configModel->getRow($key);
       $result[$row[$configModel->key_name]] = array(
         'name' => $row[$configModel->key_name],
         'type' => $row[$configModel->key_type],
@@ -186,10 +187,6 @@ class qcl_config_controller extends qcl_session_controller
 		
 		foreach( $rows as $row )
 		{
-			$userId  	= $row[$configModel->key_userId];
-			$user		  = $userId ? $this->user->getById($userId) : null;
-			$userName = $user ? $user[$this->user->key_namedId] : $userId ;
-			$row[$configModel->key_userId] = $userName;
 			$table[]  = array (
         $row['id'], $row['namedId'], $row['type'],  $row['value'],  $row['permissionRead'],  $row['permissionWrite'],  $row['user'] 
       );
