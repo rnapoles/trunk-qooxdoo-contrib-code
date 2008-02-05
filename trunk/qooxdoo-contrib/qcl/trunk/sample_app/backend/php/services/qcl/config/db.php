@@ -19,7 +19,8 @@ class qcl_config_db extends qcl_db_model
 	var $table 					      = "config";
 	var $key_id 				      = "id";
 	var $key_name 				    = "namedId";
-	var $key_type 				    = "type";
+	var $key_namedId			    = "namedId";
+  var $key_type 				    = "type";
 	var $key_value 				    = "value";
 	var $key_permissionRead 	= "permissionRead";
 	var $key_permissionWrite 	= "permissionWrite";
@@ -245,8 +246,21 @@ class qcl_config_db extends qcl_db_model
 			$activeUser 	    = $userModel->getActiveUser(); 
 			$activeUserNameId = $userModel->getActiveUserNamedId();
 	
-			// get all rows containing key name
-			$rows = $this->db->getAllRows("
+			// get row containing key name
+			$row = $this->db->getRow("
+				SELECT * 
+				FROM 
+          `{$this->table}`
+				WHERE 
+            `{$this->key_name}` = '$name'
+					AND 
+						`{$this->key_user}` = '$activeUserNameId'
+			");
+			// return if found
+			if ( count($row) ) return $row;
+      
+			// get all row containing default or global value
+			$row = $this->db->getRow("
 				SELECT * 
 				FROM 
           `{$this->table}`
@@ -254,34 +268,14 @@ class qcl_config_db extends qcl_db_model
             `{$this->key_name}` = '$name'
 					AND 
 					(
-						`{$this->key_user}` = '$activeUserNameId'
-						OR `{$this->key_user}` = 'default'
+						`{$this->key_user}` = 'default'
 						OR `{$this->key_user}` = 'global'
 					)
 			");
-			
-			if ( count($rows) == 2 )
-			{
-				// config entry has variants, return user variant
-				// since user can access own data
-				if ( $rows[0][$this->key_user] == $activeUserNameId )
-        {
-          return $rows[0];
-        }
-        else
-        {
-          return $rows[1];
-        }
-			}
-			elseif ( count($rows) == 1 )
-			{
-				// only a non-variant or default entry available, check permission
-				if( $permissionRead = $rows[0][$this->key_permissionRead] )
-				{
-					$userModel->requirePermission($permissionRead);
-				}
-				return $rows[0];				
-			}
+      // return if found
+			if ( count($row) ) return $row;
+      
+      // nothing found
 			return null;
 		}
 	}
@@ -318,7 +312,7 @@ class qcl_config_db extends qcl_db_model
 			");			
 		}
 		
-    //isConfigManager = $userModel->hasPermission("bibliograph.config.permissions.manage");
+    $isConfigManager = $userModel->hasPermission("bibliograph.config.permissions.manage");
 		$result = array();
 		foreach ( $rows as $row )
 		{
