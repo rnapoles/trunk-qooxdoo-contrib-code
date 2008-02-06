@@ -557,8 +557,6 @@ qx.Class.define("htmlarea.HtmlArea",
         return;
       }
 
-      this.__isLoaded = true;
-
       /* Setting a shortcut for the content document */
       this.__doc = this.getContentDocument();
 
@@ -581,6 +579,8 @@ qx.Class.define("htmlarea.HtmlArea",
           self._loaded(e);
         },0);
       }
+
+      this.__isLoaded = true;
 
       /*
        * For IE the document needs to be set in "designMode"
