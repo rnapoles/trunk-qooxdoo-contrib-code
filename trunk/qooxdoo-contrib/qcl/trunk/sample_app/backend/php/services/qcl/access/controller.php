@@ -110,7 +110,10 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   {
     $userModel = $this->getModel("user");
     $username = $userModel->getActiveUserNamedId();
-    $this->info ("Logging out user $username.");
+    if ( $username)
+    {
+      $this->info ("Logging out user $username.");  
+    }
     $userModel->setActiveUser(null);
     $this->dispatchMessage("qcl.auth.messages.user.loggedOut");
     return $this->getResponseData();
