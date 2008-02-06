@@ -366,8 +366,47 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return s;
     },
-
+    
+    
     /**
+     * Checks if the given node is a block node
+     * 
+     * @type static
+     * @param node {Node} Node
+     * @return {Boolean} whether it is a block node
+     */
+    isBlockNode : function(node) {
+			if (!qx.dom.Node.isElement(node))
+			{
+			 return false;
+			}
+			
+			node = node.nodeName || node;
+      
+			return /^(body|form|textarea|fieldset|ul|ol|dl|li|div|p|h[1-6]|quote|pre|table|thead|tbody|tfoot|tr|td|th|iframe|address|blockquote)$/.test(node.toLowerCase());
+		},
+		
+		
+		/** 
+     * Checks if one element is in the list of elements that are allowed to contain a paragraph in HTML
+     *  
+     * @param node {Node} node to check
+     * @return {Boolean}
+     */
+    isParagraphParent : function(node)
+    {
+      if (!qx.dom.Node.isElement(node))
+      {
+        return false;
+      }
+      
+      node = node.nodeName || node;
+      
+      return /^(body|td|th|caption|fieldset|div)$/.test(node.toLowerCase());
+    },
+		
+		
+		/**
      * Possible values for the style property background-position
      */
     __backgroundPosition : "|top|bottom|center|left|right|right top|left top|left bottom|right bottom|",
@@ -1094,10 +1133,11 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
-              e.preventDefault();
-              e.stopPropagation();
-              
-              this.insertHtml("<p></p>");
+              if (this.__insertParagraphOnLinebreak())
+              {
+                e.preventDefault();
+                e.stopPropagation();
+              }
             }
           }
 
@@ -1205,6 +1245,172 @@ qx.Class.define("htmlarea.HtmlArea",
        }
 
        this.__currentEvent = null;
+    },
+    
+    
+    /**
+     * Inserts a paragraph when hitting the "enter" key
+     * @type member
+     * @return {Boolean} whether the key event should be stopped or not
+     */
+    __insertParagraphOnLinebreak : function()
+    {
+      /* Current selection and range */
+      var selection = this.__getSelection();
+      var range     = this.__createRange(selection);
+      
+      /* Delete any content which is currently selected */
+      if ( !range.collapsed )
+      {
+        range.deleteContents();
+      }
+      
+      /* 
+       * SPECIAL CASE
+       * The user is at the beginning of the document -> insert an empty text node
+       */
+      if (range.startContainer == range.endContainer && range.startContainer == this.__doc.body 
+          && !range.startOffset && !range.endOffset)
+      {
+        range.selectNodeContents(this.__doc.body.insertBefore(this.__doc.createTextNode(" "), this.__doc.body.firstChild));
+      }
+      
+      /* 
+       * Get all the ancestor nodes of the current startContainer to get to
+       * know if the current range is already within a paragraph element
+       */
+      var ancestorNodes = qx.dom.Hierarchy.getAncestors(range.startContainer);
+      
+      var paragraph       = null;
+      var paragraphParent = null;
+      for (var i=0, j=ancestorNodes.length; i<j; ++i)
+      {
+        if (htmlarea.HtmlArea.isParagraphParent(ancestorNodes[i]))
+        {
+          paragraphParent = ancestorNodes[i];
+          break;
+        }
+        else if (htmlarea.HtmlArea.isBlockNode(ancestorNodes[i]) && !(/body|html/i.test(ancestorNodes[i].nodeName)))
+        {
+          paragraph = ancestorNodes[i];
+          break;
+        }
+      }
+      
+      /* If no paragraph element is available -> get the content of the range and put it inside a new paragraph  */
+      if (paragraph == null)
+      {
+        /* Check if a paragraphContainer (and its firstChild element) is already available */
+        if (paragraphParent != null && paragraphParent.firstChild)
+        {
+          wrap = paragraphParent.firstChild;
+        }
+        else
+        {
+          /* Start with the startContainer and traverse the DOM up until the first child of the paragraphContainer element is found */
+          var wrap = range.startContainer;
+          while (wrap.parentNode && !htmlarea.HtmlArea.isParagraphParent(wrap.parentNode))
+          {
+            wrap = wrap.parentNode;
+          }
+        }
+        
+        var start = wrap;
+        var end   = wrap;
+        
+        /* Check all all siblings at the left for block nodes */
+        while (start.previousSibling)
+        {
+          /* detail check for elements - skip check for e.g. text nodes */
+          if (qx.dom.Node.isElement(start.previousSibling))
+          {
+            if (!htmlarea.HtmlArea.isBlockNode(start.previousSibling))
+            {
+              start = start.previousSibling;
+            }
+            else
+            {
+              break;
+            }
+          }
+          else
+          {
+            start = start.previousSibling;
+          }
+        }
+        
+        /* Check all all siblings at the right for block nodes */
+        while (end.nextSibling)
+        {
+          /* detail check for elements - skip check for e.g. text nodes */
+          if (qx.dom.Node.isElement(end.nextSibling))
+          {
+            if (!htmlarea.HtmlArea.isBlockNode(end.nextSibling))
+            {
+              end = end.nextSibling;
+            }
+            else
+            {
+              break;
+            }
+          }
+          else
+          {
+            end = end.nextSibling;
+          }
+        }
+    
+        /* 
+         * (re)set start and end of range to encapsulate the content which need
+         * to be surrounded by a new paragraph element.
+         */
+        range.setStartBefore(start);
+        range.setEndAfter(end);
+        
+        /* Surround the current range with a paragraph element */
+        var paragraph = this.__doc.createElement("p");
+        range.surroundContents(paragraph);
+        
+        /* 
+         * Check for a br element at the end - if it is not available create 
+         * and append it. This is especially needed for Gecko browser to ensure
+         * the next enter is automatically turned into a paragraph.
+         */
+        if (paragraph.childNodes.length > 0 && paragraph.lastChild.nodeName.toLowerCase() != "br")
+        {
+          paragraph.appendChild(this.__doc.createElement("br"));
+        }
+        
+        /*
+         * Check if the paragraph element is the last within the document
+         * if so create a new paragraph with a textNode and a "br" element
+         * as childs to force the browser to create a new line.
+         */
+        if (paragraph.parentNode.nextSibling == null)
+        {
+          var newPara  = this.__doc.createElement("p");
+          var textNode = this.__doc.createTextNode(" "); 
+          var brNode   = this.__doc.createElement("br");
+          newPara.appendChild(textNode);
+          newPara.appendChild(brNode);
+          
+          paragraph.parentNode.appendChild(newPara);
+          range.selectNode(textNode);
+          range.collapse(true);
+        }
+        
+        return true;
+      }
+      else
+      {
+        /* 
+         * If we are already within a paragraph element there is
+         * nothing left to do. The browser is doing the rest for us.
+         * (Creating a new paragraph element and position the cursor in
+         * this new paragraph element).
+         */
+        return false;
+      }
     },
 
 
@@ -2553,12 +2759,12 @@ qx.Class.define("htmlarea.HtmlArea",
            try {
              return sel.getRangeAt(0);
            } catch(ex) {
-             return this._doc.createRange();
+             return this.__doc.createRange();
            }
          }
          else
          {
-           return this._doc.createRange();
+           return this.__doc.createRange();
          }
        }
     }),
