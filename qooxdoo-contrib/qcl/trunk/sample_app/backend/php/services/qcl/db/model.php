@@ -18,6 +18,8 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   var $key_id                 = "id";    // column with unique numeric id 
   var $key_namedId            = null;    // unique string id, optional  
+  var $key_modified;                     // the model SHOULD have a "modified" column with a timestamp
+  var $key_created;                      // the model CAN have "created" column with a timestamp
   
   //-------------------------------------------------------------
   // instance variables
@@ -825,6 +827,49 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->info ( "Table '$table' is up to date.");
     }
     return true;
+  }
+  
+  /**
+   * Returns a hash map of ids the modification timestamp
+   * @return array
+   */
+  function getModificationList()
+  {
+    if ( ! $this->key_modified )
+    {
+      $this->raiseError("Table {$this->table} has no timestamp column");
+    }
+    
+    $rows = $this->db->getAllRows("
+      SELECT 
+        {$this->key_id}       AS id,
+        {$this->key_modified} AS timestamp
+      FROM {$this->table}
+    ") ;  
+    $map = array();
+    foreach ($rows as $row)
+    {
+      $map[$row['id']] = $row['timestamp'];
+    }
+    return $map;
+  }
+  
+  /**
+   * updates the modification date without changing the data
+   * @return 
+   */
+  function updateTimestamp( $id )
+  {
+    if (!  $id )
+    {
+      $this->raiseError("qcl_db_model::updateTimestamp : invalid id");
+    }
+    
+    $this->db->execute(" 
+      UPDATE `{$this->table}` 
+      SET `{$this->key_modified}` = NOW()
+      WHERE `{$this->key_id}` = $id
+    ");
   }
   
 }	

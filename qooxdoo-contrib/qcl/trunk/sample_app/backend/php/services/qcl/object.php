@@ -197,7 +197,7 @@ class qcl_object extends patched_object {
     $instance =& $GLOBALS['qcl_jsonrpc_singletons'][$classname];
     if ( ! $instance )  
     {
-      $instance = $this->getNewInstance( $classname, &$controller );
+      $instance = $this->getNew( $classname, &$controller );
     }
     return $instance;
   }
@@ -211,7 +211,7 @@ class qcl_object extends patched_object {
 	 * 											to the singleton constructor  
 	 * @return object reference to singleton instance
 	 */
-	function &getNewInstance( $classname, $controller = null ) 
+	function &getNew( $classname, $controller = null ) 
 	{       
     // check for class existence
     if ( ! class_exists ( $classname ) ) 
@@ -221,7 +221,7 @@ class qcl_object extends patched_object {
       // check class
       if ( ! class_exists ( $classname) )
       {
-    		$this->raiseError ( get_class($this) . "::getNewInstance : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );    	
+    		$this->raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );    	
       }
     }
     
@@ -233,27 +233,33 @@ class qcl_object extends patched_object {
     $instance =& new $classname(&$controller);
     return $instance;
   }
-    
-    
  
 	/**
 	 * log to file on server
 	 */
 	function log( $msg, $logLevel=QCL_LOG_DEBUG )
 	{
+		if ( is_array($msg) or is_object($msg) )
+    {
+      $msg = var_export ( $msg, true );  
+    }
+    
+    $message = date("y-m-j H:i:s");
+		if ( QCL_LOG_SHOW_CLASS_NAME )
+		{
+			$message .= " [" . get_class($this) ."]";
+		}
+		$message .= ": " . $msg . "\n";
+		$this->writeLog($message,$logLevel);			
+	}
+
+	/**
+	 * write to log file
+	 */
+	function writeLog( $message, $logLevel=QCL_LOG_DEBUG )
+	{
 		if ( QCL_LOG_LEVEL and QCL_LOG_LEVEL <= $logLevel)
 		{
-			if ( is_array($msg) or is_object($msg) )
-      {
-        $msg = var_export ( $msg, true );  
-      }
-      
-      $message = date("y-m-j H:i:s");
-			if ( QCL_LOG_SHOW_CLASS_NAME )
-			{
-				$message .= " [" . get_class($this) ."]";
-			}
-			$message .= ": " . $msg . "\n";
 			@error_log($message,3,QCL_LOG_FILE);			
 		}			
 	}
