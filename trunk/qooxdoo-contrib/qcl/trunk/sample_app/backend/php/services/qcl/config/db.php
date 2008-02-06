@@ -242,9 +242,10 @@ class qcl_config_db extends qcl_db_model
 		}
 		else
 		{
-			// no user reference given, assume active user
+			
+      // no user reference given, assume active user
 			$activeUser 	    = $userModel->getActiveUser(); 
-			$activeUserNameId = $userModel->getActiveUserNamedId();
+      $activeUserNameId = $userModel->getActiveUserNamedId();
 	
 			// get row containing key name
 			$row = $this->db->getRow("
@@ -258,7 +259,7 @@ class qcl_config_db extends qcl_db_model
 			");
 			// return if found
 			if ( count($row) ) return $row;
-      
+  
 			// get all row containing default or global value
 			$row = $this->db->getRow("
 				SELECT * 
