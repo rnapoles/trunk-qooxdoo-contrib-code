@@ -73,6 +73,38 @@ class qcl_db_model extends qcl_jsonrpc_model
  	}
   
   /**
+   * checks if model has a property. in simple db models, properties are
+   * equivalent to fields / columns, but more complicated modedls could
+   * differentiate between metadata, normalized data fields, and column implementations 
+   * @return boolean
+   * @param string $name
+   */
+  function hasProperty($name)
+  {
+    return $this->hasColumn($name);
+  }
+  
+  /**
+   * checks if model has a corresponding column in the table (normatively,
+   * doesn't check whether the column really exists)
+   * @return boolean
+   * @param string $name 
+   */
+  function hasColumn($name)
+  {
+    $key_name = "key_{$name}";
+    return ( isset( $this->$key_name ) and $this->$key_name !== null ) ; 
+  }
+  
+  /**
+   * @todo: implement
+   */
+  function columnExists()
+  {
+    $this->raiseError("Not implemented");
+  }
+  
+  /**
    * gets the name of the column that holds the unique (numeric) id of this table
    * @return string
    */
