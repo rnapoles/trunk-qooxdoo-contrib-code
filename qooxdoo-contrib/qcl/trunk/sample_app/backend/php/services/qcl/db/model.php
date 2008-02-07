@@ -25,7 +25,8 @@ class qcl_db_model extends qcl_jsonrpc_model
   // instance variables
   //-------------------------------------------------------------
   
-	var $currentRecord; // the current record
+	var $currentRecord;                   // the current record
+	var $emptyRecord = array();           // you can pre-insert static values here
 
 	//-------------------------------------------------------------
   // internal methods
@@ -474,8 +475,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function setFieldValue ( $field, $value, $recordId=null )
 	{
-		$varName 	= "key_$field";
-		$columnName	= $this->$varName;
+		$columnName	= $this->getColumnName($field);
 		
 		if ( ! $columnName )
 		{
@@ -486,15 +486,56 @@ class qcl_db_model extends qcl_jsonrpc_model
 	}
 
 	/**
+	 * translates column to field names
+	 * @param array $row
+	 * @todo: use "normalize" / "unnormalize"?? concept
+	 * @return array
+	 */
+	function columnsToFields ( $row )
+	{
+		$translatedRow 	= array();
+		foreach ( $row as $column => $value )
+		{
+			$field = $this->getFieldName($column);
+			if ( $field and $value )
+			{
+  			$translatedRow[$field]=$value;	
+			}
+		}
+		return $translatedRow;
+	}
+
+	/**
+	 * translates field to column names
+	 * @todo: use "normalize" / "unnormalize"?? concept
+	 * @param array $row
+	 * @return array
+	 */
+	function fieldsToColumns ( $row )
+	{
+		$translatedRow = array();
+		foreach ( $row as $field => $value )
+		{
+			$column = $this->getColumnName($field);
+			if ( $column and $value )
+			{
+		  	$translatedRow[$column]=$value;	
+			}
+		}
+		return $translatedRow;
+	}
+
+
+	/**
 	 * inserts a record into a table and returns last_insert_id()
 	 * @return int the id of the inserted row 
 	 */
 	function create()
    	{
-   		$row = array();
-   		$row[$this->key_id]=null;
+   		$row = $this->emptyRecord;
+   		$row[$this->key_id]=null; // so at least one field is set
    		$id = $this->db->insert($this->table,$row);
-   		$this->getById($id);
+   		$this->currentRecord = $this->getById($id);
    		return $id;
    	}
 
@@ -505,7 +546,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function insert( $data )
  	{
- 		return $this->db->insert( $this->table,$data );
+    return $this->db->insert( $this->table,$data );
  	}
 
 	/**

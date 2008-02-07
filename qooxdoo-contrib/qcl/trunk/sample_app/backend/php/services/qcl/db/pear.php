@@ -183,7 +183,7 @@ class qcl_db_pear extends qcl_db
 		}
 		$values = implode (",", $values );
 		
-		$this->query ("
+		$this->execute ("
 			INSERT IGNORE INTO 
 				`$table` (`$columns`) 
 			VALUES ($values)
