@@ -121,7 +121,7 @@
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.loginFailed">
 			var msg = message.getData();
-			if (msg) alert(this.tr(msg));
+			if (msg) alert(msg);
 		</qx:messageSubscriber>
 		
 		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
