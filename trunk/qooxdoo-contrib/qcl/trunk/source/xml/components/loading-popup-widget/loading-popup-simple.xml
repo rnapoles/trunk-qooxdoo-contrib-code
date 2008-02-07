@@ -4,6 +4,8 @@
 	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
 	
 	<!-- loading indicator -->
+  <!-- todo: cancel requests selectively -->
+  
 	<qx:popup
 		height="auto" width="auto" autoHide="false"
 		onAppear="this.centerToBrowser()">
@@ -42,7 +44,14 @@
 						this.getParent().hide();
 					}
 					]]>
-				</qx:messageSubscriber>					
+				</qx:messageSubscriber>
+        
+        <!-- clear queue and hide popup -->
+        <qx:eventListener type="click">
+          this.setUserData("queue",[]);
+          this.getParent().hide();
+        </qx:eventListener>		
+        
 		</qx:atom>
 		
 	</qx:popup>		
