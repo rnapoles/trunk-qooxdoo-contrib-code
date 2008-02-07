@@ -1828,6 +1828,11 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__currentRange.select();
         this.__currentRange.pasteHTML(value);
         
+        // move the cursor to end
+        this.__currentRange.moveEnd('character', this.__currentRange.text.length);
+        this.__currentRange.moveStart('character', this.__currentRange.text.length);
+        this.__currentRange.select();
+        
         ret = true;
       }
       else
