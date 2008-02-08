@@ -27,7 +27,9 @@ class qcl_db_model extends qcl_jsonrpc_model
   
 	var $currentRecord;                   // the current record
 	var $emptyRecord = array();           // you can pre-insert static values here
-
+	var $metaColumns = array();           // assoc. array containing the metadata fields  => columns
+  var $metaFields  = array();           // assoc. array containing the metadata columns => fields
+  
 	//-------------------------------------------------------------
   // internal methods
   //-------------------------------------------------------------
@@ -40,14 +42,40 @@ class qcl_db_model extends qcl_jsonrpc_model
 	function __construct( $controller, $initialize=true )
   {
     parent::__construct(&$controller);
-		if ( $initialize ) 
+		
+    if ( $initialize ) 
 		{
       $this->init();
 		}
-	}   	
+    
+    // generate list of metadata columns ($key_ ...)
+    $this->_initMetaColumns(); 
+	}
+     	
+	//-------------------------------------------------------------
+  // public non-rpc methods 
+	//-------------------------------------------------------------   
+
+  /**
+   * read class vars starting with "key_" into an array object property
+   * @return void
+   */
+  function _initMetaColumns()
+  {
+    $classVars = get_class_vars(get_class($this));
+    foreach ( $classVars as $key => $value )
+    {
+      if ( substr( $key,0,4) == "key_" )
+      {
+        $key = substr($key,4);
+        $this->metaColumns[$key] = $value;
+      }
+    }
+    $this->metaFields = array_flip( $this->metaColumns );
+  }
 
 	//-------------------------------------------------------------
-   	// public non-rpc methods 
+ 	// public non-rpc methods 
 	//-------------------------------------------------------------   
 
 	/**
@@ -405,9 +433,17 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getColumnName ( $fieldName )
   {
-		$varName 	= "key_{$fieldName}";
-		$columnName	= $this->$varName;
-    return $columnName;
+    return $this->metaColumns[$fieldName];
+  }
+
+  /**
+   * gets the (normalized) field name from a column name
+   * @return string Field Name
+   * @param string $columnName
+   */
+  function getFieldName ( $columnName )
+  {
+    return $this->metaFields[$columnName];
   }
 
 	/**
@@ -493,6 +529,10 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function columnsToFields ( $row )
 	{
+		if ( ! $row )
+    {
+      $row = $this->currentRecord;
+    }
 		$translatedRow 	= array();
 		foreach ( $row as $column => $value )
 		{
@@ -511,9 +551,9 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @param array $row
 	 * @return array
 	 */
-	function fieldsToColumns ( $row )
+	function fieldsToColumns ( $row=null )
 	{
-		$translatedRow = array();
+    $translatedRow = array();
 		foreach ( $row as $field => $value )
 		{
 			$column = $this->getColumnName($field);
@@ -531,13 +571,14 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @return int the id of the inserted row 
 	 */
 	function create()
-   	{
-   		$row = $this->emptyRecord;
-   		$row[$this->key_id]=null; // so at least one field is set
-   		$id = $this->db->insert($this->table,$row);
-   		$this->currentRecord = $this->getById($id);
-   		return $id;
-   	}
+ 	{
+    $data = $this->emptyRecord;
+ 		$data[$this->key_id]=null; // so at least one field is set
+    $id = $this->insert( $data );
+ 		
+    $this->currentRecord = $this->getById($id);
+ 		return $id;
+ 	}
 
 	/**
 	 * inserts a record into a table and returns last_insert_id()
@@ -546,6 +587,18 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function insert( $data )
  	{
+    // created timestamp
+    if ( $this->key_created and ! isset ( $data[$this->key_created] ) )
+    {
+      $data[$this->key_created] = strftime("%Y-%m-%d %T");
+    }
+    
+    // modified timestamp
+    if ( $this->key_modified and ! isset ( $data[$this->key_created] )  )
+    {
+      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
+    } 
+    
     return $this->db->insert( $this->table,$data );
  	}
 
@@ -557,7 +610,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function update ( $data=null, $id=null )   	
 	{
-		if ($data === null)
+		// use cached record data
+    if ($data === null)
 		{
 			$data = $this->currentRecord;
 		}
@@ -568,6 +622,13 @@ class qcl_db_model extends qcl_jsonrpc_model
 				$data[$this->key_id] = $id;
 			}
 		}
+    
+    // modified timestamp
+    if ( $this->key_modified )
+    {
+      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
+    }    
+    
 		return $this->db->update( $this->table, $data, $this->key_id );
 	}   	
 	
@@ -897,19 +958,21 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * updates the modification date without changing the data
-   * @return 
+   * @param int|array $ids One or more record ids
+   * @return void
    */
-  function updateTimestamp( $id )
+  function updateTimestamp( $ids )
   {
-    if (!  $id )
+    if (! is_numeric($ids) and ! is_array($ids)  )
     {
-      $this->raiseError("qcl_db_model::updateTimestamp : invalid id");
+      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
     }
     
+    $ids = implode(",", (array) $ids);
     $this->db->execute(" 
       UPDATE `{$this->table}` 
       SET `{$this->key_modified}` = NOW()
-      WHERE `{$this->key_id}` = $id
+      WHERE `{$this->key_id}` IN ($ids)
     ");
   }
   
