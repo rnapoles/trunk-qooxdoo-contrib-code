@@ -27,7 +27,7 @@ import java.net.URL;
 
 import org.junit.Test;
 
-public class HttpNodeTest {
+public class HttpNodeFullTest {
     private IO io = new IO();
     
     @Test // TODO: fails behind proxy
