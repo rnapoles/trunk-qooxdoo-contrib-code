@@ -13,9 +13,9 @@
   <groupId>org.qooxdoo.toolkit</groupId>
   <artifactId>dist</artifactId>
   <name>QWT Distribution</name>
-  <description>This is a separate module because: 
-    1) qooxdoo is a multi-module an cannot have plugins attached 
-    2) I can build toolkit without the dist
+  <description>This is a separate module because both qooxdoo 
+    and toolkit are multi-modules that cannot have plugins attached.
+    It's not under toolkit because I can build the toolkit without a dist.
   </description>
   <version>${toolkit.version}</version>
   <packaging>pom</packaging>
