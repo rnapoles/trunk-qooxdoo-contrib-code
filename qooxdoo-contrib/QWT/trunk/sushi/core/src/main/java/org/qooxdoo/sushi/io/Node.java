@@ -63,6 +63,7 @@ public abstract class Node {
         this.fs = fs;
     }
     
+    /** @return node with the specified path */
     public abstract Node newInstance(String path);
 
     public abstract Node getBase();
