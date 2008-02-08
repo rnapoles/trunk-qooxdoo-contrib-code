@@ -39,11 +39,14 @@ public class HttpNodeTest {
         url = getClass().getResource("/java/lang/Object.class");
         assertEquals("jar", url.getProtocol());
         node = new HttpNode(io, url);
+        // TODO !?
+        assertEquals(url.toString(), "jar:" + node.getPath());
         assertTrue(node.exists());
         assertTrue(node.isFile());
         assertTrue(node.getParent().getPath().endsWith("/java/lang"));
         node = (HttpNode) node.getParent().join("Object.class");
-        // TODO assertTrue(node.exists());
+        // TODO: 
+        // assertTrue(node.exists());
     }
     
     @Ignore

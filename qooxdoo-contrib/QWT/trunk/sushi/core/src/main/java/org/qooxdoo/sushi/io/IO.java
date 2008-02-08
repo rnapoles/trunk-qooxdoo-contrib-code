@@ -287,10 +287,10 @@ public class IO {
     /**
      * Returns the file of a certain class at a special location. e.g. jar files
      *
-     * @param url the destination path
-     * @param resourcename  absolute resource name **
+     * @param url the destination path to the resource
+     * @param resourcename  absolute resource name; redundant, but necessary to strip from urls
      *
-     * @return the physical file refering to the class
+     * @return the physical file referring to the class
      */
     public FileNode locateClasspathItem(URL url, String resourcename) {
         String filename;
