@@ -163,7 +163,7 @@ qx.Class.define("qcl.config.Manager",
       // set data
       for ( key in data )
       {
-        if ( !configMap[key] )
+        if ( ! configMap[key] )
         {
           configMap[key] = { value : null };
         }

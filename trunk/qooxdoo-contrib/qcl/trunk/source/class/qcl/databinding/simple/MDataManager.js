@@ -405,7 +405,21 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       if ( typeof data != "object" )
       {
         key = this._getWidgetDataProperties().split(",")[0]; // just use first one
-        this.set(key,data);
+        if ( key == "combobox" )
+        {
+						if ( this.getEditable() )
+            {
+              this.setValue( data );
+            } 
+            else
+            {
+              this.setSelected(this.getList().findValue(data));
+            }
+        }
+        else
+        {
+          this.set(key,data);  
+        }
         return;
       }
       
@@ -587,14 +601,19 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 						this.setConfigMap(data.configMap);
 						break;	
             
-          /* userdata */
-          case "userData":
-            for (var key in data.userData)
-            {
-              this.setUserData(key,data.userData[key]);  
-            }
-						break;	             
-                  
+          /* qcl.config */
+          case "configMap":
+						this.setConfigMap(data.configMap);
+						break;
+            	
+          /* enabled, set with timeout to not conflict with form enabling / disabling */
+          case "enabled":
+            var _this = this;
+            qx.client.Timer.once(function(){
+              _this.setEnabled(data.enabled);
+            },50);
+						break;
+         
           /* default: set property */    
           default:
             var setter = "set" + key.charAt(0).toUpperCase() + key.substr(1);
@@ -841,6 +860,26 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "userData":
             data[prop]= this.getUserData("content");
             break;
+            
+          // get combobox value / selected item value
+          case "combobox":
+						if (this.getEditable()) 
+            {
+              data = this.getValue();
+            }
+            else 
+            {
+              var sel = this.getManager().getSelectedItem();
+              if (sel) 
+              {
+                data = sel.getValue();
+              }
+              else 
+              {
+                data = null;
+              }
+            }
+            break;
           
           // get data from selection
           case "selected":
@@ -922,9 +961,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "qx.ui.form.ListItem":
           case "qx.ui.form.Spinner":
           case "qx.ui.form.RadioButton":
-          case "qx.ui.form.ComboBox":
           case "qx.ui.form.ComboBoxEx":
             return "value";
+          case "qx.ui.form.ComboBox":
+            return "combobox";
           case "qx.ui.basic.Label":
             return "text";
           case "qx.ui.embed.HtmlEmbed":
