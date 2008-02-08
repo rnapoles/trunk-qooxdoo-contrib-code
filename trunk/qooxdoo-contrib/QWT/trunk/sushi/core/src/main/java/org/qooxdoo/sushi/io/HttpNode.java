@@ -28,6 +28,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+/** 
+ * Use http networking properties to specify proxies:
+ * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
+ */
 public class HttpNode extends Node {
     private static final Filesystem FS = new Filesystem("http:/", '/');
     
