@@ -27,10 +27,11 @@ import java.net.URL;
 
 import org.junit.Test;
 
+/** Accesses external hosts and might need proxy configuration => Full test */
 public class HttpNodeFullTest {
     private IO io = new IO();
     
-    @Test // TODO: fails behind proxy
+    @Test
     public void normal() throws IOException {
         URL url;
         HttpNode node;
