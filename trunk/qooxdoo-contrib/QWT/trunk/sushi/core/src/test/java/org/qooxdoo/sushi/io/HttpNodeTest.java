@@ -25,12 +25,26 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.URL;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class HttpNodeTest {
     private IO io = new IO();
     
+    @Test // TODO: fails behind proxy
+    public void normal() throws IOException {
+        URL url;
+        HttpNode node;
+        
+        url = new URL("http://qooxdoo.org/documentation/0.7");
+        node = new HttpNode(io, url);
+        assertEquals("documentation/0.7", node.getPath());
+        assertTrue(node.isFile());
+        assertTrue(node.exists());
+        assertTrue(node.readString().length() > 1);
+        assertEquals("documentation", node.getParent().getPath());
+        assertEquals("", node.getParent().getParent().getPath());
+    }
+
     @Test
     public void jarUrl() {
         URL url;
@@ -39,27 +53,15 @@ public class HttpNodeTest {
         url = getClass().getResource("/java/lang/Object.class");
         assertEquals("jar", url.getProtocol());
         node = new HttpNode(io, url);
-        // TODO !?
-        assertEquals(url.toString(), "jar:" + node.getPath());
+        assertEquals(url.toString().substring(4), node.getPath());
         assertTrue(node.exists());
         assertTrue(node.isFile());
         assertTrue(node.getParent().getPath().endsWith("/java/lang"));
         node = (HttpNode) node.getParent().join("Object.class");
-        // TODO: 
-        // assertTrue(node.exists());
-    }
-    
-    @Ignore
-    public void todo() throws IOException {
-        URL url;
-        
-        url = new URL("jar:file:/usr/home/mhm/Projects/pfixentertainment/projects/servletconf/tomcat/shared/lib/de.schlund.pfixschlund.order-modules+stageassistent+1.0.6.jar!/script/main.js");
-        assertTrue(new HttpNode(io, url).exists()); 
-        url = new URL("jar:file:/usr/home/mhm/Projects/pfixentertainment/projects/servletconf/tomcat/shared/lib/de.schlund.pfixschlund.order-modules+stageassistent+1.0.6.jar!/");
-        System.out.println(new HttpNode(io, url).join("script/main.js").readString()); 
+        assertTrue(node.exists());
     }
 
-    @Ignore // TODO: fails behind proxy
+    @Test
     public void ampersand() throws IOException {
         URL url;
         

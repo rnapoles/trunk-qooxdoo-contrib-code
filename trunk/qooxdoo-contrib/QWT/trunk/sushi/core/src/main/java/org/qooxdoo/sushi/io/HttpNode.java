@@ -78,7 +78,7 @@ public class HttpNode extends Node {
     @Override
     public HttpNode newInstance(String path) {
         try {
-            return new HttpNode(io, new URL(url, path));
+            return new HttpNode(io, new URL(url.getProtocol(), url.getHost(), path));
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -150,6 +150,13 @@ public class HttpNode extends Node {
 
     @Override
     public String getPath() {
-        return url.getPath();
+        String result;
+        
+        result = url.getPath();
+        if (result.startsWith("/")) {
+            return result.substring(1);
+        } else {
+            return result;
+        }
     }
 }
