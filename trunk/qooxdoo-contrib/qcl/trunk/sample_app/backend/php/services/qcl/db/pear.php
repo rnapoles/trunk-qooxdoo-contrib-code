@@ -159,7 +159,8 @@ class qcl_db_pear extends qcl_db
 	 */
 	function insert ( $table, $data ) 
 	{
-		if ( is_array($data[0]) )
+		// inserting several rows at once
+    if ( is_array($data[0]) )
     {
       foreach($data as $row)
       {
@@ -167,12 +168,23 @@ class qcl_db_pear extends qcl_db
       }
       return;
     }
-    $columns = implode("`,`", array_keys($data) );
-		$values	 = array();
-		
-		foreach ( array_values($data) as $value )
+    
+    // construct query
+		$columns = array();
+    $values	 = array();
+    
+		foreach ( $data as $key => $value )
 		{
-			if ( is_numeric($value) )
+			if ( ! trim($key) )
+      {
+        continue;
+      }
+      else
+      {
+        $columns[] = $key;
+      }
+      
+      if ( is_numeric($value) )
 			{
 				$values[] = $value;
 			}	
@@ -181,7 +193,8 @@ class qcl_db_pear extends qcl_db
 				$values[] = "'" . $this->escape( $value ) . "'";	
 			}
 		}
-		$values = implode (",", $values );
+    $columns = implode("`,`", $columns );
+		$values  = implode (",", $values );
 		
 		$this->execute ("
 			INSERT IGNORE INTO 
