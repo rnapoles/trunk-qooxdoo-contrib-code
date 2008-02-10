@@ -79,6 +79,13 @@
               <goal>compile</goal>
             </goals>
           </execution>
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>dist</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>

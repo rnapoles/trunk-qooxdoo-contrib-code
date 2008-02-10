@@ -56,9 +56,7 @@
         <version>${toolkit.version}</version>
         <configuration>
           <frameworkUrl>https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/branches/legacy_0_7_x/qooxdoo/frontend/framework</frameworkUrl>
-          <!-- don't force revision - use latest:
-              frameworkRevision>XXXX</frameworkRevision>
-            -->
+          <frameworkRevision>11623</frameworkRevision>
         </configuration>
         <executions>
           <execution>
