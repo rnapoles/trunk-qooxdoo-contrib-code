@@ -55,6 +55,13 @@ import com.jcraft.jsch.JSchException;
  */
 public class DistributionMojo extends Base {
     /**
+     * Build distribution.
+     *
+     * @parameter expression="${dist}" default-value="false"
+     */
+    private boolean dist;
+
+    /**
      * Reuse existing unzipped directory.
      *
      * @parameter expression="${reuse}" default-value="false"
@@ -76,7 +83,7 @@ public class DistributionMojo extends Base {
     /**
      * QWT Source
      *
-     * @parameter expression="${basedir}/.."
+     * @parameter expression="${basedir}/../.."
      * @required
      */
     private FileNode qwtSource;
@@ -102,6 +109,10 @@ public class DistributionMojo extends Base {
     
     @Override
     public void doExecute() throws MojoExecutionException, IOException {
+        if (!dist) {
+            info("distribution skipped");
+            return;
+        }
         localRepository = (FileNode) io.node(localRepositoryObject.getBasedir());
         if (!qwtSource.join("Manifest.js").isFile()) {
             throw new MojoExecutionException("qx:dist can only be called from qwt directory");
