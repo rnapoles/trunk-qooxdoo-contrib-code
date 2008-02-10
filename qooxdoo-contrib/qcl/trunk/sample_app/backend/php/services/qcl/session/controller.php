@@ -96,7 +96,7 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 	 */
 	function getResponseData()
 	{
-		$sessionModel =& $this->getModel("session");
+		$sessionModel        =& $this->getModel("session");
     $broadcastedMessages = $sessionModel->getBroadcastedMessages($this->getSessionId());
     foreach( $broadcastedMessages as $message )
     {

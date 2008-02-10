@@ -37,23 +37,20 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * constructor 
    * @param object reference 	$controller
-   * @param boolean			$initialize 	if true(default), initialize attached database object
    */
-	function __construct( $controller, $initialize=true )
+	function __construct( $controller )
   {
     parent::__construct(&$controller);
 		
-    if ( $initialize ) 
-		{
-      $this->init();
-		}
-    
+    // initialize the database handler
+    $this->init();
+
     // generate list of metadata columns ($key_ ...)
     $this->_initMetaColumns(); 
 	}
      	
 	//-------------------------------------------------------------
-  // public non-rpc methods 
+  // constructor methods
 	//-------------------------------------------------------------   
 
   /**
@@ -74,15 +71,22 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->metaFields = array_flip( $this->metaColumns );
   }
 
-	//-------------------------------------------------------------
- 	// public non-rpc methods 
-	//-------------------------------------------------------------   
+	/**
+	 * public API function to initialize the internal database handler
+	 * when object is created. Override if you want to initialize
+	 * at a later point and then call the private _init function. 
+	 * @param string 	$dsn 
+	 */
+	function init($dsn=null)
+	{
+    $this->_init($dsn);
+	}
 
 	/**
 	 * initializes the internal database handler 
 	 * @param string 	$dsn 
 	 */
-	function init($dsn=null)
+	function _init($dsn=null)
 	{
     $this->db =& qcl_db::getSubclass(&$this->controller,$dsn);
     $this->db->model =& $this;
@@ -448,32 +452,65 @@ class qcl_db_model extends qcl_jsonrpc_model
 
 	/**
 	 * gets the value of a column in a record without field->column translation 
-	 * @param string	$column 	
-	 * @param int		  $id	if omitted, use current record
+	 * @param string	     $column 	
+	 * @param int|string   $id	if omitted, use current record
 	 */
-	function getColumnValue($column, $id = null)
+	function getColumnValue( $column, $id = null)
 	{
-		$row = $id ? $this->getById($id) : $this->currentRecord;
-		if ( count ( $row ) )
+    if ( is_numeric( $id ) )
+    {
+      // id is numeric
+      $row = $this->getById( $id );
+    } 
+    elseif ( is_string($id) )
+    {
+      // id is string => namedId
+      $row = $this->getByNamedId( $id );
+    }
+    elseif ( $id === null )
+    {
+      // operate on current record
+      $row = $this->currentRecord;  
+    }
+    
+    // return value
+    if ( count ( $row ) )
     {
       return $row[$column];
     }
     else
     {
-      $this->raiseError("qcl_db_model::getColumnValue : row '$id' does not exist");  
+      if ( $id )
+      {
+        $this->raiseError("qcl_db_model::getColumnValue : row '$id' does not exist");  
+      }
+      else
+      {
+        $this->raiseError("qcl_db_model::getColumnValue : no current record");  
+      }
     }
 	}
 
 	/**
 	 * sets the value of a column in a record without field->column translation 
-	 * @param string	$column
-	 * @param mixed		$value
-	 * @param int		  $id 	if omitted, modify current record cache without updating the database 
+	 * @param string	    $column
+	 * @param mixed		    $value
+	 * @param int|string  $id 	if omitted, modify current record cache without updating the database 
 	 */
 	function setColumnValue( $column, $value, $id=null )
 	{
-		if( $id )
+    if( $id )
 		{
+      if ( ! is_numeric( $id ) )
+      {
+        $namedId = $id;
+        $id = $this->getIdByNamedId ( $namedId );
+        if ( ! $id )
+        {
+          $this->raiseError("Invalid named id '$namedId'.");
+        }
+      }
+      // set data
 			$data = array();
 			$data[$this->key_id] = $id;
 			$data[$column] = $value;
@@ -487,10 +524,10 @@ class qcl_db_model extends qcl_jsonrpc_model
  
 	/**
 	 * translates field names to column names and returns value of field in current record
-	 * @param string 	$field 		field name	
-	 * @param int		$recordId 	if omitted, use current record 
+	 * @param string 	   $field 		field name	
+	 * @param int|string $id 	if omitted, use current record 
 	 */
-	function getFieldValue ( $field, $recordId=null )
+	function getFieldValue ( $field, $id=null )
 	{
 		$columnName	= $this->getColumnName( $field );
 		
@@ -499,17 +536,28 @@ class qcl_db_model extends qcl_jsonrpc_model
 			$this->raiseError ( "qcl_db_model::getFieldValue : Invalid field '$field'");
 		}		
 		
-		return $this->getColumnValue($columnName,$recordId);
+		return $this->getColumnValue($columnName,$id);
 	}
+
+  /**
+   * Get a property. By default, properties are "fields". This can be overridden as necessary
+   * @param string       $name Property name
+   * @param int|string   $id Optional - set property for id, otherwise operate on cached record
+   * @return mixed value of property
+   */
+  function getProperty( $name, $id = null )
+  {
+    return $this->getFieldValue( $name, $id );
+  }
 
 	/**
 	 * translates field names to column names and sets value of field in current record
-	 * @param string	$field			field name to translate
-	 * @param mixed		$value	
-	 * @param int		$recordId 		if omitted, modify current record cache without updating the database 
+	 * @param string	   $field			field name to translate
+	 * @param mixed		   $value	
+	 * @param int|string $id 		if omitted, modify current record cache without updating the database 
 	 * @return void
 	 */
-	function setFieldValue ( $field, $value, $recordId=null )
+	function setFieldValue ( $field, $value, $id=null )
 	{
 		$columnName	= $this->getColumnName($field);
 		
@@ -517,9 +565,20 @@ class qcl_db_model extends qcl_jsonrpc_model
 		{
 			$this->raiseError ( "qcl_db_model::setFieldValue : Invalid field '$field'");
 		}
-		
-		$this->setColumnValue( $columnName, $value, $recordId );
+		$this->setColumnValue( $columnName, $value, $id );
 	}
+  
+  /**
+   * Set a property. By default, properties are "fields". This can be overridden as necessary
+   * @return void 
+   * @param string     $name
+   * @param mixed      $value 
+   * @param int|string $id Optional - set property for id, otherwise operate on cached record
+   */
+  function setProperty( $name, $value, $id = null )
+  {
+    $this->setFieldValue( $name, $value, $id);
+  }
 
 	/**
 	 * translates column to field names
@@ -565,6 +624,64 @@ class qcl_db_model extends qcl_jsonrpc_model
 		return $translatedRow;
 	}
 
+	//-------------------------------------------------------------
+  // options: one column which contains a serialized assoc. array
+  //-------------------------------------------------------------
+
+  /**
+   * get unserialized options from record
+   * @return array
+   * @param $id int[optional]
+   */
+  function getOptions( $id = null )
+  {
+    return (array) unserialize( $this->getProperty( "options", $id ) );
+  }
+
+  /**
+   * serializes option array and saves it to record
+   * @return 
+   * @param $options array
+   * @param $id int[optional]
+   */
+  function setOptions( $options, $id = null )
+  {
+    if ( ! is_array( $options) or ! count ( $options ) )
+    {
+      $this->raiseError("Invalid Options.");
+    }
+    $this->setProperty("options", serialize($options), $id );
+  }
+  
+  /**
+   * gets a single option value
+   * @return 
+   * @param $name string
+   * @param $id int/string[optional]
+   */
+  function getOption($name, $id=null)
+  {
+    $options = $this->getOptions( $id );
+    return $options[$name];
+  }
+
+  /**
+   * sets a single option value
+   * @return 
+   * @param $name string
+   * @param $value mixed
+   * @param $id int/string[optional]
+   */
+  function setOption($name, $value, $id=null)
+  {
+    $options = $this->getOptions( $id );
+    $options[$name] = $value;
+    $this->setOptions( $options, $id );
+  }
+
+	//-------------------------------------------------------------
+  // standard creat/insert/update/delete methods
+  //-------------------------------------------------------------
 
 	/**
 	 * inserts a record into a table and returns last_insert_id()
@@ -604,13 +721,13 @@ class qcl_db_model extends qcl_jsonrpc_model
 
 	/**
 	 * updates a record in a table identified by id
-	 * @param array 	$data 	associative array with the column names as keys and the column data as values
-	 * @param boolean	$id		if the id key is not provided in the $data paramenter, provide it here (optional)
+	 * @param array 	    $data 	associative array with the column names as keys and the column data as values
+	 * @param int|string	$id		if the id key is not provided in the $data paramenter, provide it here (optional)
 	 * @return boolean success 
 	 */
 	function update ( $data=null, $id=null )   	
 	{
-		// use cached record data
+    // use cached record data
     if ($data === null)
 		{
 			$data = $this->currentRecord;
@@ -652,8 +769,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   function _getInitFlags ()
   {
-    $database     = $this->db->getDatabase();
-    $init_flags   = "bibliograph_table_init_{$database}";
+    $init_flags   = "bibliograph_table_init";
     if ( ! $this->_initFlags  )
     {
       $this->_initFlags = (array) $this->retrieve($init_flags);
@@ -663,8 +779,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   function _setInitFlags ($flags)
   {
-    $database     = $this->db->getDatabase();
-    $init_flags   = "bibliograph_table_init_{$database}";
+    $init_flags   = "bibliograph_table_init";
     $this->_initFlags = $flags;
     $this->store($init_flags,$flags);
   }
@@ -705,7 +820,6 @@ class qcl_db_model extends qcl_jsonrpc_model
   function initializeTables($tables)
   {   
     $tables       = (array) $tables;
-    $database     = $this->db->getDatabase();
     
     foreach ( $tables as $table )
     {    
@@ -750,7 +864,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function createTable($table)
   {
-    $createSql  = $this->loadSql($table);
+    $createSql = $this->loadSql($table);
     if ( ! $createSql )
     {
       $file = $this->getSqlFileName($table);

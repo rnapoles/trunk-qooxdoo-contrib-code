@@ -317,7 +317,116 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   {
     return $this->_response['events'];
   }
+
+	//-------------------------------------------------------------
+  // request id & process management
+  //-------------------------------------------------------------
+
+  /**
+   * gets the unique id of the current request, if any
+   * @return string
+   */
+  function getRequestId()
+  {
+    return $this->_requestId;
+  }
+
+  /**
+   * sets the unique id of the current request
+   * @return 
+   * @param $requestId Object
+   */
+  function setRequestId( $requestId )
+  {
+    $this->_requestId = $requestId;
+  }
+
+  /**
+   * aborts a long-running process. call with updateServer()
+   * @param string $params[1] request id
+   * @param bool   $params[2] if true, remove killfile only
+   */
+  function method_abortRequest ( $params )
+  {
+    $requestId      = $params[1];
+    $removeKillFile = $params[2];
+    $messagefile    = QCL_TMP_PATH . $requestId;
+    $killfile       = $messagefile . ".kill";
+   
+    if ( $removeKillFile ) 
+    {
+      if ( ! unlink ( $killfile ) )
+      {
+         $this->raiseError("qcl_jsonrpc_controller::method_abortRequest : Cannot remove kill file '$killfile'."); 
+      }
+      $this->dispatchEvent("requestAbortCompleted",$requestId);
+      return $this->getResponseData();
+    }
+    if ( file_exists ( $messagefile ) ) 
+    {
+      if ( ! touch ( $killfile ) )
+      {
+         $this->raiseError("qcl_jsonrpc_controller::method_abortRequest : Cannot create kill file '$killfile'."); 
+      }
+      if ( ! unlink ( $messagefile ) )      
+      {
+         $this->raiseError("qcl_jsonrpc_controller::method_abortRequest : Cannot remove message file '$messagefile'."); 
+      }
+    }
+    $this->dispatchEvent("requestAborted",$requestId);
+    return $this->getResponseData();
+  }
+
   
+  /**
+   * communicates with progress.php through message file to output a simple progress meter or log
+   * @return 
+   * @param mixed  $i     string message, int percent of progress or current index variable (if $count is given)
+   * @param int    $count (optional) maximal number
+   */
+  function progress( $i="", $count=null )
+  {
+    $messagefile = QCL_TMP_PATH . $this->getRequestId();
+    $killfile    = $messagefile . ".kill";
+    
+    // abort process if kill file is found
+    if ( file_exists ( $killfile ) )
+    {
+       @unlink( $messagefile );
+       @unlink( $killfile );
+       $this->raiseError( "Request Aborted" ); 
+    }
+
+    if ( ! touch( $messagefile ) ) 
+    {
+      $this->raiseError ( "bibliograph_controller::progress : Cannot write to $messagefile.");
+    }
+
+    if ( $i === null )
+    {
+      // delete messagefile on a null value to terminate progress.php
+      @unlink( $messagefile );
+      return;
+    }
+    
+    if ( is_numeric($i) )
+    {
+      if ( is_numeric( $count) )
+      {
+        $i = ($i/$count) * 100;
+      }
+      $msg = "<script> progress($i);</script>";
+    }
+    else
+    {
+      $msg = "<script> message('" . addslashes($i)  . "');</script>";
+      $msg .= $i . "<br/>";
+    }
+    
+    // output to log file
+    error_log( $msg, 3, $messagefile );
+    return true;
+  }  
 	 
 }	
 
