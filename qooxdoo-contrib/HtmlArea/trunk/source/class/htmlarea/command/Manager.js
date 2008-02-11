@@ -467,18 +467,7 @@ qx.Class.define("htmlarea.command.Manager",
          }
        }
  
-       /* To make an undo possible -> remember to old values in the change history */
-       if (!this.__undoOperation)
-       {
-         /* Update the undo/redo status */
-         this.__updateUndoRedoStatus({ type      : "backgroundImage",
-                                       method    : "setBackgroundImage",
-                                       parameter : [ qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
-                                                     qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
-                                                     qx.bom.element.Style.get(this.__doc.body, "backgroundPosition") ]
-                                     });
-       }
-
+ 
        /*
         * Don't use the "background" css property to prevent overwriting the
         * current background color
