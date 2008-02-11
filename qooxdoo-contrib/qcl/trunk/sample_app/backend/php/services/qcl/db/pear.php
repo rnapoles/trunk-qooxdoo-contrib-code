@@ -385,12 +385,19 @@ class qcl_db_pear extends qcl_db
           {
              preg_match("/`([^`]+)`/", $columnName, $matches );
              $indexName = $matches[1];
-             $this->execute ("
-              ALTER TABLE `$table` DROP INDEX `$indexName` 
-            ");           
-            $this->execute ("
-              ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef 
-            ");    
+             if ( $indexName)
+             {
+               $this->execute ("
+                ALTER TABLE `$table` DROP INDEX `$indexName` 
+              ");           
+              $this->execute ("
+                ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef 
+              ");                   
+             }
+             else
+             {
+               $this->warn("Column name part '$columnName' contains no index name!");
+             }
           }
           else
           {         
@@ -420,9 +427,17 @@ class qcl_db_pear extends qcl_db
           {
              preg_match("/`([^`]+)`/", $columnName, $matches );
              $indexName = $matches[1];
-             $this->execute ("
-              ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef 
-            ");           
+             if ( $indexName)
+             {
+               $this->execute ("
+                ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef 
+              ");                    
+             }
+             else
+             {
+               $this->warn("Column name part '$columnName' contains no index name!");
+             }             
+      
           }
           else
           {
