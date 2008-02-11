@@ -179,7 +179,7 @@
 				editable="true" />
 			<qx:tableColumn key="permissionWrite" label="Write Perm." width="1*"
 				editable="true" />
-			<qx:tableColumn key="userId" label="User/Status"  width="1*" editable="true"/>
+			<qx:tableColumn key="user" label="User/Status"  width="1*" editable="true"/>
 			
 			<!-- (re)load  -->
 			
