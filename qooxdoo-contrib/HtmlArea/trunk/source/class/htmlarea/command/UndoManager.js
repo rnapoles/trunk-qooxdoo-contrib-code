@@ -466,6 +466,12 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
         else
         {
+          /* Check for __currentRange object */
+          if (this.__commandManager.__currentRange == null)
+          {
+            this.__commandManager.__currentRange = this.__editorInstance.getRange();
+          }
+          
           this.__commandManager.__currentRange.select();
           
           if (this.__commandManager.__currentRange.text.length > 0)

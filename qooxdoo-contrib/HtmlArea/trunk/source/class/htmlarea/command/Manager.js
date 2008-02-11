@@ -153,7 +153,7 @@ qx.Class.define("htmlarea.command.Manager",
         underline             : { useBuiltin : true, identifier : "Underline", method : null },
         strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null },
         
-        fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
+        fontname              : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : true, identifier : "FontSize", method : null },
         
         textcolor             : { useBuiltin : true, identifier : "ForeColor", method : null },
@@ -361,13 +361,13 @@ qx.Class.define("htmlarea.command.Manager",
            this.__editorInstance.__currentRange = this.__editorInstance.getRange();
          }
          
-         this.__editorInstance.__currentRange.select();
+         this.__editorInstance.__currentRange.collapse(false);
          this.__editorInstance.__currentRange.pasteHTML(value);
           
-        // move the cursor to end
-        this.__editorInstance.__currentRange.moveEnd('character', this.__editorInstance.__currentRange.text.length);
-        this.__editorInstance.__currentRange.moveStart('character', this.__editorInstance.__currentRange.text.length);
-        this.__editorInstance.__currentRange.select();
+         // move the cursor to end
+         this.__editorInstance.__currentRange.moveEnd('character', this.__editorInstance.__currentRange.text.length);
+         this.__editorInstance.__currentRange.moveStart('character', this.__editorInstance.__currentRange.text.length);
+         this.__editorInstance.__currentRange.select();
         
          ret = true;
        }
