@@ -1604,7 +1604,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setFontFamily : function(value) {
-      return this.__commandManager.execute("fontname", value);
+      return this.__commandManager.execute("fontfamily", value);
     },
 
 
@@ -1616,7 +1616,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @return {Boolean} Success of operation
      */
     setTextColor : function(value) {
-      return this.__commandManager.execute("forecolor", value);
+      return this.__commandManager.execute("textcolor", value);
     },
     
     

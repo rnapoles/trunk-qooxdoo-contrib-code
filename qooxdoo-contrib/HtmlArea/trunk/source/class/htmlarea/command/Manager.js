@@ -153,7 +153,7 @@ qx.Class.define("htmlarea.command.Manager",
         underline             : { useBuiltin : true, identifier : "Underline", method : null },
         strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null },
         
-        fontname              : { useBuiltin : true, identifier : "FontName", method : null },
+        fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : true, identifier : "FontSize", method : null },
         
         textcolor             : { useBuiltin : true, identifier : "ForeColor", method : null },
