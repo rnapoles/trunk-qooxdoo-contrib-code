@@ -128,6 +128,25 @@ qx.Class.define("htmlarea.HtmlArea",
       keyEventHandler._keyCodeToIdentifierMap[115] = "S";
       keyEventHandler._keyCodeToIdentifierMap[120] = "X";
     }
+    
+    /* 
+     * Build up this commandManager object to stack all commands
+     * which are arriving before the "real" commandManager is initialised.
+     * Once initialised the stacked commands will be executed.
+     */
+    this.__commandManager = {
+      execute        : function(command, value)
+      {
+        /* Set the flag to show the "real" commandManager a command was stacked */
+        this.stackedCommands = true;
+        
+        this.commandStack.push( { command : command, value : value } );
+      },
+      
+      commandStack   : [],
+      
+      stackedCommands : false
+    };
   },
 
 
@@ -618,6 +637,14 @@ qx.Class.define("htmlarea.HtmlArea",
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
        * ******************************************* */
+      
+      /* Look out for any queued commands which are execute BEFORE this commandManager was available */
+      var commandStack = null;
+      if (this.__commandManager.stackedCommands)
+      {
+        commandStack = this.__commandManager.commandStack;
+      }
+      
       this.__commandManager = new htmlarea.command.Manager(this);
     
       /* Decorate the commandManager with the UndoManager if undo/redo is enabled */
@@ -628,7 +655,16 @@ qx.Class.define("htmlarea.HtmlArea",
       
       /* Inform the commandManager on which document he should operate */
       this.__commandManager.setContentDocument(this.__doc);
-
+      
+      /* Execute the stacked commmands - if any */
+      if (commandStack != null)
+      {
+        for (var i=0, j=commandStack.length; i<j; i++)
+        {
+          this.__commandManager.execute(commandStack[i].command, commandStack[i].value);
+        }
+      }
+      
       this.__isLoaded = true;
 
       /*
