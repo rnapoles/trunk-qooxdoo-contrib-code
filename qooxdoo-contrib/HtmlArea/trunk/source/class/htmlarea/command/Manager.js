@@ -405,9 +405,19 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __setBackgroundImage : function(value, commandObject)
      {
-       var url      = value[0];
-       var repeat   = value[1];
-       var position = value[2];
+       var url, repeat, position;
+       
+       /* Check for value */
+       if (value == null)
+       {
+         url = null;
+       }
+       else
+       {
+         url      = value[0];
+         repeat   = value[1];
+         position = value[2];         
+       }
        
        /* If url is null remove the background image */
        if (url == null || typeof url != "string")
@@ -418,6 +428,7 @@ qx.Class.define("htmlarea.command.Manager",
         
          return true;
        }
+       
        /* 
         * Normalize the url parameter. Especially when doing undo/redo operations the url
         * *can* be passed in as full CSS like 'url(SOMEURL)' rather than just 'SOMEURL'.

@@ -656,15 +656,6 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Inform the commandManager on which document he should operate */
       this.__commandManager.setContentDocument(this.__doc);
       
-      /* Execute the stacked commmands - if any */
-      if (commandStack != null)
-      {
-        for (var i=0, j=commandStack.length; i<j; i++)
-        {
-          this.__commandManager.execute(commandStack[i].command, commandStack[i].value);
-        }
-      }
-      
       this.__isLoaded = true;
 
       /*
@@ -713,6 +704,15 @@ qx.Class.define("htmlarea.HtmlArea",
 
         if (focusRoot) {
           focusRoot.setFocusedChild(this);
+        }
+      }
+      
+      /* Execute the stacked commmands - if any */
+      if (commandStack != null)
+      {
+        for (var i=0, j=commandStack.length; i<j; i++)
+        {
+          this.execute(commandStack[i].command, commandStack[i].value);
         }
       }
 
@@ -1826,7 +1826,15 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     undo : function()
     {
-      return this.__commandManager.execute("undo");
+      /* Only execute this command if undo/redo is activated */
+      if (this.getUseUndoRedo())
+      {
+        return this.__commandManager.execute("undo");
+      }
+      else
+      {
+        return true;
+      }
     },
     
     
@@ -1838,7 +1846,15 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     redo : function()
     {
-      return this.__commandManager.execute("redo");
+      /* Only execute this command if undo/redo is activated */
+      if (this.getUseUndoRedo())
+      {
+        return this.__commandManager.execute("redo");
+      }
+      else
+      {
+        return true;
+      }
     },
     
 
