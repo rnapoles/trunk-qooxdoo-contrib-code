@@ -10,14 +10,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <groupId>org.qooxdoo</groupId>
   <artifactId>application</artifactId>
   <name>Application</name>
-  <version>1-SNAPSHOT</version>
+  <version>2-SNAPSHOT</version>
   <packaging>pom</packaging>
-
-  <!-- CAUTION:
-         this is not a parent pom for applications -
-         because they have to build if only the application
-         directory is checked-out
-   -->
   <modules>
     <module>hello</module>
     <module>grep</module>
