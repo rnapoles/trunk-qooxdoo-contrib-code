@@ -213,7 +213,7 @@ qx.Class.define("htmlarea.command.Manager",
         /* Pass all useBuiltin commands right to the browser */
         if (commandObject.useBuiltin)
         {
-          return this.__executeCommand(commandObject.identifier, false, value); //this.__doc.execCommand(commandObject.identifier, false, value);
+          return this.__executeCommand(commandObject.identifier, false, value);
         }
         else
         {

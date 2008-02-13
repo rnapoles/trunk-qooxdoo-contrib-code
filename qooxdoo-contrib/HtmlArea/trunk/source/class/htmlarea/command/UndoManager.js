@@ -453,13 +453,17 @@ qx.Class.define("htmlarea.command.UndoManager",
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
           /* 
-           * Ignore the update if the range currently manipulated is collapsed. 
+           * Ignore the command if the range currently manipulated is collapsed. 
            * If the range is collapsed gecko marks this manipulation NOT as an 
            * extra action.
            * 
            * -> no extra undo step
            */
-          if (!this.__editorInstance.getRange().collapsed)
+          if (this.__editorInstance.getRange().collapsed)
+          {
+            return;
+          } 
+          else
           {
             undoObject.actionType = "Command";
           }
