@@ -161,7 +161,11 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     
     /**
-     * TODOC
+     * Undo facade method. The different types of undo (command/custom/content)
+     * are delegated to their specialized implementation.
+     * 
+     * @type member
+     * @return {Boolean}
      */
     undo : function()
     {
@@ -207,7 +211,13 @@ qx.Class.define("htmlarea.command.UndoManager",
      
      
      /**
-      * TODOC
+      * Undo a custom command like setting a backgroumd image/color. These commands
+      * are not supported by the browsers with an execCommand identifier. The command
+      * has to be executed manually and therefore the undo mechanism.
+      * 
+      * @type member
+      * @param undoInfo {Object} Undo info object
+      * @return {Boolean}
       */
     __undoCustom : function(undoInfo)
     {
@@ -229,13 +239,16 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
       
       /* Undo changes by applying the corresponding command */
-      return this.__commandManager.execute(undoInf.command, undoInfo.parameter);
-      //this[undoInfo.method].apply(this, undoInfo.parameter);
+      return this.__commandManager.execute(undoInfo.command, undoInfo.parameter);
     },
     
     
     /**
-     * TODOC
+     * Undo a browser-supported command.
+     * 
+     * @type member
+     * @param undoInfo {Object} Undo info object
+     * @return {Boolean}
      */
     __undoCommand : qx.core.Variant.select("qx.client", {
       "mshtml" : function(undoInfo)
@@ -244,7 +257,6 @@ qx.Class.define("htmlarea.command.UndoManager",
         this.__redoAction = undoInfo;
         
         return this.__commandManager.execute(undoInfo.command, undoInfo.value);
-        //this._execCommand(undInfo.cmd, false, null, false);
       },
       
       "default" : function(undoInfo)
@@ -258,7 +270,11 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     
     /**
-     * TODOC 
+     * Undo content manipulation.
+     * 
+     * @type member
+     * @param undoInfo {Object} Undo info object
+     * @return {Boolean}
      */
     __undoContent : qx.core.Variant.select("qx.client", {
       "mshtml" : function(undoInfo)
@@ -293,9 +309,13 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
     }),
     
-     /**
-      * TODOC
-      */
+    /**
+     * Redo facade method. The different types of redo (command/custom/content)
+     * are delegated to their specialized implementation.
+     * 
+     * @type member
+     * @return {Boolean}
+     */ 
      redo : function()
      {
        if (this.__redoPossible)
@@ -318,17 +338,24 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     
     /**
-     * TODOC
+     * Redo a custom command.
+     * 
+     * @type member
+     * @param redoInfo {Object} Redo info object
+     * @return {Boolean}
      */
     __redoCustom : function(redoInfo)
     {
       return this.__commandManager.execute(redoInfo.command, redoInfo.value);
-      //this[this.__redoAction.method].apply(this, this.__redoAction.parameter);
     },
     
     
     /**
-     * TODOC
+     * Redo a browser-supported command.
+     * 
+     * @type member
+     * @param redoInfo {Object} Redo info object
+     * @return {Boolean}
      */
     __redoCommand : qx.core.Variant.select("qx.client", {
       "mshtml" : function(redoInfo)
@@ -367,6 +394,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         
         return true;
       },
+      
       "default" : function(redoInfo)
       {
         return this.__doc.execCommand("Redo", false, null);      
@@ -375,7 +403,11 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     
     /**
-     * TODOC
+     * Redo a content manipulation
+     * 
+     * @type member
+     * @param redoInfo {Object} Redo info object
+     * @return {Boolean}
      */
     __redoContent : qx.core.Variant.select("qx.client", {
       "mshtml" : function(redoInfo)
@@ -412,6 +444,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         
         return true;
       },
+      
       "default" : function(redoInfo)
       {
         return this.__doc.execCommand("Redo", false, null);      
