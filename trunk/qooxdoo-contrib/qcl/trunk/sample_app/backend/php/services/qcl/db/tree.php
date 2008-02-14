@@ -38,7 +38,8 @@ class qcl_db_tree extends qcl_db_model
 	//-------------------------------------------------------------
   // public methods 
 	//-------------------------------------------------------------   
-   
+
+
 	/**
 	 * gets child nodes of a branch ordered by the order field
 	 * @param int $parentId
@@ -161,6 +162,110 @@ class qcl_db_tree extends qcl_db_model
 		$this->setFieldValue("parentId",$parentId);
 		$this->update();
 	}
+  
+  /**
+   * gets the path of a folder in the folder hierarchie
+   * @return 
+   */
+  function getPath( $id=null )
+  {
+    if ( $id !== null )
+    {
+      $folder = $this->getById($id);  
+    }
+    else
+    {
+      $id = $this->currentRecord[$this->key_id];
+      $folder = $this->currentRecord;
+    }
+    
+    if ( ! $id )
+    {
+      return "";
+    }
+    
+    //if ( $this->__hasHierarchyFunc or $this->db->routineExists("{$this->table}_getHierarchyPath") )
+    //{
+    //  $this->__hasHierarchyFunc = true;
+    //  $path = $this->db->getValue( "SELECT {$this->table}_getHierarchyPath($id)");
+    //}
+    //else
+    //{
+      $label =  trim( str_replace( "/", "\\/", $folder[$this->key_label] ) );
+      $path = $this->getPath( $folder[$this->key_parentId] ) . "/" . $label;
+    //}
+    return $path;
+  }
+  
+  /**
+   * gets the ids in the path of a folder in the folder hierarchy
+   * @return 
+   */
+  function getHierarchyIds( $id=null )
+  {
+    if ( $id !== null )
+    {
+      $folder = $this->getById($id);  
+    }
+    else
+    {
+      $id = $this->currentRecord[$this->key_id];
+      $folder = $this->currentRecord;
+    }
+    
+    if ( ! $id )
+    {
+      return array();
+    }
+    
+    //if ( $this->__hasHierarchyFunc or $this->db->routineExists("{$this->table}_getHierarchyPath") )
+    //{
+    //  $this->__hasHierarchyFunc = true;
+    //  $path = $this->db->getValue( "SELECT {$this->table}_getHierarchyPath($id)");
+    //}
+    //else
+    //{
+      
+      $hierarchyIds = $this->getHierarchyIds( $folder[$this->key_parentId] );
+      array_push($hierarchyIds,$id);
+      
+    //}
+    return $hierarchyIds;
+  }
+  
+  /**
+   * gets the id of a folder given its label path
+   * @todo to be implemented
+   * @return int 
+   * @param string $path
+   */
+  function getIdByPath ( $path )
+  {
+    $path = str_replace("\\/","&backslash;",$path);
+    $parts = explode("/",$path);
+    foreach ( $parts as $part )
+    {
+      $this->db->getValue("SELECT {}"); /// todo: implement
+    }
+  }
+  
+  /**
+   * creates folders along the path 
+   * @todo to be implemented
+   * @return int 
+   * @param string $path
+   */
+  function createPath( $path )
+  {
+    $path = str_replace("\\/","&backslash;",$path);
+    $parts = explode("/",$path);
+    foreach ( $parts as $part )
+    {
+      // to do: implement
+    }
+  }
+  
+  
 }
 
 ?>
