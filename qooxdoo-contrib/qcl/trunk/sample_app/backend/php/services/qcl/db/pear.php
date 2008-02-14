@@ -490,6 +490,44 @@ class qcl_db_pear extends qcl_db
         ROUTINE_NAME='$routine'
     ");
   }
+  
+  /**
+   * creates a temporary table and fills it with data
+   * @return array of citekeys
+   * @param string    $name     name of the table
+   * @param array     $columns  map: column name => column definition
+   * @param array     $data     map: column name => column value
+   */
+  function createTemporaryTable ( $name, $columnData, $data )
+  {
+    
+    // create table
+    $columnDefinition = array();
+    foreach ( $columnData as $columnName => $columnDef )
+    {
+      $columnDefinition[] = "`$columnName` $columnDef";  
+    }
+    $columnDefinition = implode(",",$columnDefinition);
+    
+    $this->db->execute("
+      CREATE TEMPORARY TABLE `$name` (
+        $columnDefinition
+      )
+    ");
+    
+    // insert values
+    $columns = array_keys($columnData);
+    foreach( $data as $row )
+    {
+      $values = array();
+      foreach( array_values( (array) $row ) as $value )
+      {
+        $values[] = "'" . addslashes($value) . "'";
+      }
+      $values = implode("'",$values);
+      $this->db->execute("INSERT INTO `$name` ($columns) VALUES($values)");   
+    }
+  }
 }
 
 ?>
