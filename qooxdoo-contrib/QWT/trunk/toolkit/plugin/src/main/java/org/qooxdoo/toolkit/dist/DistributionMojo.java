@@ -45,12 +45,22 @@ import org.tmatesoft.svn.core.SVNException;
 import com.jcraft.jsch.JSchException;
 
 /**
- * Creates a distribution file. To be called from qooxdoo parent pom. 
- * To build distributions reliably:
+ * Creates a distribution file. To be attached to the engine module.
+ * Similar to assembly plugin, but: 
+ * * re-packages maven
+ * * packs the local repository. 
+ * 
+ * To build a distributions reliably:
  * * use a fresh checkout
  * * wipe your local repository
- * * run mvn clean install
+ * * run mvn clean install -Ddist in the tolevel directory
  * 
+ * If you want nightly builds:
+ * * run the above build with in hudson
+ * * actually upload the dist files via your private machine because you won't want
+ *   to place your private key on the build machine. If you use cron to do this: make 
+ *   sure it doesn't need a passphrase! 
+ *
  * @goal dist
  */
 public class DistributionMojo extends Base {
