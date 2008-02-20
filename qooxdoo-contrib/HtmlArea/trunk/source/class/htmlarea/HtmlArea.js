@@ -134,19 +134,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * which are arriving before the "real" commandManager is initialised.
      * Once initialised the stacked commands will be executed.
      */
-    this.__commandManager = {
-      execute        : function(command, value)
-      {
-        /* Set the flag to show the "real" commandManager a command was stacked */
-        this.stackedCommands = true;
-        
-        this.commandStack.push( { command : command, value : value } );
-      },
-      
-      commandStack   : [],
-      
-      stackedCommands : false
-    };
+    this.__commandManager = this.__createStackCommandManager();
   },
 
 
@@ -639,12 +627,9 @@ qx.Class.define("htmlarea.HtmlArea",
        * ******************************************* */
       
       /* Look out for any queued commands which are execute BEFORE this commandManager was available */
-      var commandStack = null;
-      if (this.__commandManager.stackedCommands)
-      {
-        commandStack = this.__commandManager.commandStack;
-      }
+      var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
       
+      /* Create a new command manager instance */
       this.__commandManager = new htmlarea.command.Manager(this);
     
       /* Decorate the commandManager with the UndoManager if undo/redo is enabled */
@@ -656,6 +641,7 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Inform the commandManager on which document he should operate */
       this.__commandManager.setContentDocument(this.__doc);
       
+      /* Set the "isLoaded" flag */
       this.__isLoaded = true;
 
       /*
@@ -864,6 +850,33 @@ qx.Class.define("htmlarea.HtmlArea",
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         qx.html.EventRegistration.addEventListener(this.__doc, "focusout", this.__handleFocusOut);
+      }
+    },
+    
+    
+    /**
+     * Helper method to create an object which acts like
+     * a command manager instance to collect all commands
+     * which are executed BEFORE the command manager instance
+     * is ready
+     * 
+     * @type member
+     * @return {Object} stack command manager object
+     */
+    __createStackCommandManager : function()
+    {
+      return {
+        execute : function(command, value)
+        {
+         /* Set the flag to show the "real" commandManager a command was stacked */
+         this.stackedCommands = true;
+        
+         this.commandStack.push( { command : command, value : value } );
+        },
+      
+        commandStack : [],
+      
+        stackedCommands : false
       }
     },
 
@@ -1144,14 +1157,15 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (!this.getInsertParagraphOnLinebreak())
             {
-              e.preventDefault();
-              e.stopPropagation();
               
               /*
                * Manually reset the current range object to force the "insertHtml"
                * method to create a new range object (out of the current selection)
                */
-              this.__commandManager.execute("inserthtml", "<br/>");
+              this.__commandManager.execute("inserthtml", "<br>");
+              
+              e.preventDefault();
+              e.stopPropagation();
             }
           }
           else
@@ -2104,6 +2118,26 @@ qx.Class.define("htmlarea.HtmlArea",
          return this.getContentWindow().getSelection();
        }
     }),
+    
+    
+    /**
+     * Returns the currently selected text.
+     * 
+     * @type member
+     * @return {String} Selected plain text.
+     */
+    getSelectedText : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function()
+      {
+        return this.getRange().text;
+      },
+      
+      "default" : function()
+      {
+        return this.getRange().toString();
+      }
+    }),
 
 
     /*
@@ -2118,7 +2152,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Range} Range object
      */
-    getRange : function ()
+    getRange : function()
     {
       return this.__createRange(this.__getSelection());
     },
