@@ -19,13 +19,29 @@
 
 package org.qooxdoo.hello.client;
 
-import qx.application.Gui;
-import qx.ui.basic.Label;
+import org.qooxdoo.toolkit.qooxdoo.EventListener;
 
-public class Main extends Gui {
+import qx.application.Gui;
+import qx.event.type.Event;
+import qx.ui.form.Button;
+
+public class Main extends Gui implements EventListener {
     @Override
     public void main() {
+        Button button;
+        
         super.main();
-        new Label("Hello, world!").addToDocument();
+        
+        button = new Button("Your first button", "images/button.png");
+        button.setTop(50);
+        button.setLeft(50);
+
+        button.addToDocument();
+
+        button.addExecuteListener(this);
+    }
+
+    public void notify(Event obj) {
+        System.out.println("Hello, World!");
     }
 }
