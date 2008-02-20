@@ -11,7 +11,7 @@
   <artifactId>hello</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>Hello World Application</name>
-  <description>QWT Application</description>
+  <description>QWT Application to demonstrate basic client site features.</description>
   <packaging>jar</packaging>
 
   <properties>
