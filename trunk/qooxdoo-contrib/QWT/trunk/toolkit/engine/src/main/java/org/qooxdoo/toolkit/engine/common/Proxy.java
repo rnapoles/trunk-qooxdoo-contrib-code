@@ -86,7 +86,7 @@ public class Proxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         StringBuilder builder;
         String str;
-        
+
         builder = new StringBuilder();
         builder.append(id);
         builder.append(',');
@@ -99,6 +99,7 @@ public class Proxy implements InvocationHandler {
         }
         str = builder.toString();
         listener.notify(str);
-        return null;
+        // TODO
+        return null; /* aka "void" */
     }
 }
