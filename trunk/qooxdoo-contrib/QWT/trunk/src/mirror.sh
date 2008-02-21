@@ -33,6 +33,7 @@ echo
 echo Transfer to Sourceforge
 echo
 
-rsync -v -a --delete --rsh="ssh -l mlhartme" $SITE/qooxdoo-0.2.0/ mlhartme@shell.sourceforge.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/sites/qooxdoo-0.2.0/
+# rename site to qwt, that's what Andreas wants
+rsync -v -a --delete --rsh="ssh -l mlhartme" $SITE/qooxdoo-0.2.0/ mlhartme@shell.sourceforge.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/sites/qwt-0.2.0/
 rsync -v -a --delete --rsh="ssh -l mlhartme" $REPO/ mlhartme@shell.sourceforge.net:/home/groups/q/qo/qooxdoo-contrib/htdocs/maven/repository/org/
 
