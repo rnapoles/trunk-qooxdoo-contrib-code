@@ -124,7 +124,7 @@ public class Transport {
         String result;
 
         result = post(METHOD_RAW + sessionId + "/" + object + "_" + method, argumentsString(registry, args));
-        return Parser.run(registry, null, result);
+        return unbox(Parser.run(registry, null, result));
     }
 
     /**
