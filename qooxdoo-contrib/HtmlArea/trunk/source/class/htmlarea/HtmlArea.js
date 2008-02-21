@@ -505,7 +505,7 @@ qx.Class.define("htmlarea.HtmlArea",
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
-        style   : 'html, body { overflow-y: auto; background-color:transparent; background-image:none; margin:0px; padding:1px; width:100%; height:100%; }',
+        style   : 'html { overflow-y: auto; margin:0px; padding:0px; } body { background-color:transparent; background-image:none; margin:0px; padding:1px; width:100%; height:100%; }',
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
       }
@@ -1462,6 +1462,7 @@ qx.Class.define("htmlarea.HtmlArea",
    __onFocus : function()
    {
      this.__valueOnFocus = this.getComputedValue();
+     this.__storedSelectedHtml = null;
      this.createDispatchEvent("focused");
    },
    
@@ -1516,9 +1517,11 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleFocusOut : qx.core.Variant.select("qx.client", {
       "mshtml" : function(e)
       {
+        this.__storedSelectedHtml = null;
+        this.__storedSelectedHtml = this.getSelectedHtml();
         this.createDispatchEvent("focusOut");
       },
-      "default" : function(e) {}      
+      "default" : function(e) {}
     }),
      
         
@@ -2149,11 +2152,17 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedHtml : function()
     {
+      // if a selection is stored, return it.
+      if (this.__storedSelectedHtml != null)
+      {
+        return this.__storedSelectedHtml;
+      }
+
       var range = this.getRange();
 
       if (!range) {
         return "";
-      };
+      }
 
       if (range.cloneContents)
       {
