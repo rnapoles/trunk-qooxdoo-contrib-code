@@ -505,7 +505,7 @@ qx.Class.define("htmlarea.HtmlArea",
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
-        style   : 'html, body { overflow-y: auto; background-color:transparent; background-image:none; margin:0px; padding:1px; }',
+        style   : 'html, body { overflow-y: auto; background-color:transparent; background-image:none; margin:0px; padding:1px; width:100%; height:100%; }',
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
       }
