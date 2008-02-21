@@ -1250,6 +1250,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     /**
      * Inserts a paragraph when hitting the "enter" key
+     * 
      * @type member
      * @return {Boolean} whether the key event should be stopped or not
      */
@@ -2138,6 +2139,38 @@ qx.Class.define("htmlarea.HtmlArea",
         return this.getRange().toString();
       }
     }),
+
+
+    /**
+     * returns the content of the actual range as text
+     *
+     * @TODO: need to be implemented correctly
+     * @return {String} selected text
+     */
+    getSelectedHtml : function()
+    {
+      var range = this.getRange();
+
+      if (!range) {
+        return "";
+      };
+
+      if (range.cloneContents)
+      {
+        var tmpBody = document.createElement("body");
+        tmpBody.appendChild(range.cloneContents());
+        return tmpBody.innerHTML;
+      }
+      else if (typeof (range.item) != 'undefined' || 
+               typeof (range.htmlText) != 'undefined')
+      {
+        return range.item ? range.item(0).outerHTML : range.htmlText;
+      }
+      else
+      {
+        return range.toString();
+      }
+    },
 
 
     /*
