@@ -8,7 +8,7 @@
 # o we have backups
 # o we can deploy sites automatically - without firewall problems.
  
-export ROOT=$HOME/Projects/qwt/data/mirror
+export ROOT=$HOME/Projects/qwt/sourceforge/mirror
 export REPO=$ROOT/repository
 export SITE=$ROOT/site
 
