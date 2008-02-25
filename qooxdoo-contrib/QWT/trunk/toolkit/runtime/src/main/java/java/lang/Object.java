@@ -26,7 +26,7 @@ public class Object {
 
     /**
      * @native 
-         return this.__proto__.constructor;
+         return this.constructor;
      */
     public final native Object getJsClass();
 
