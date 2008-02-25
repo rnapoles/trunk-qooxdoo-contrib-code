@@ -20,6 +20,7 @@
 package org.qooxdoo.hello.client;
 
 import org.qooxdoo.toolkit.qooxdoo.EventListener;
+import org.qooxdoo.toolkit.qooxdoo.Util;
 
 import qx.application.Gui;
 import qx.event.type.Event;
@@ -42,6 +43,6 @@ public class Main extends Gui implements EventListener {
     }
 
     public void notify(Event obj) {
-        System.out.println("Hello, World!");
+        Util.alert("Hello, World!");
     }
 }
