@@ -23,7 +23,8 @@
  *
  * @param value {String} Initial content
  * @param styleInformation {String | Map | null} Optional style information for the editor's document
- *                                               Can be a string or a map (example: { "p" : "padding:2px" } 
+ *                                               Can be a string or a map (example: { "p" : "padding:2px" }
+ * @param source {String} source of the iframe 
  */
 qx.Class.define("htmlarea.HtmlArea",
 {
@@ -35,12 +36,12 @@ qx.Class.define("htmlarea.HtmlArea",
   *****************************************************************************
   */
 
-  construct : function(value, styleInformation)
+  construct : function(value, styleInformation, source)
   {
     // **********************************************************************
     //   INIT
     // **********************************************************************
-    this.base(arguments);
+    this.base(arguments, source);
 
     /* Set some init values */
     this.__isLoaded = false;
