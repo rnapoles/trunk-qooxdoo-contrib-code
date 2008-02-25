@@ -8,7 +8,6 @@ require_once("qcl/jsonrpc/model.php");
 
 class qcl_encoding_converter extends qcl_jsonrpc_model 
 {
-  var $error;			                // error message
   var $converter_cmd = "";  
   
 	//-------------------------------------------------------------
