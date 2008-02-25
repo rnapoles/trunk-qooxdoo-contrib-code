@@ -161,8 +161,7 @@ function newInitializedArray() {
 
 // getClass is defined by Firefox
 function getQwtClass(instance) {
-    // TODO: __proto__ in IE?
-	return instance.__proto__.constructor;
+	return instance.constructor;
 }
 
 function instanceofInterface(instance, Class) {
