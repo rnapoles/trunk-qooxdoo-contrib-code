@@ -202,13 +202,13 @@ function getBase(Class) {
     if (Class === java.lang.Object) {
         return null;
     }
-    if (Class.prototype.__proto__ === null) {
-        qwtFail("no prototype: " + Class);
-    }
     if (isQwtInterface(Class)) {
         return null; 
     }
-    return Class.prototype.__proto__.constructor;
+    if (Class.superclass === null) {
+        qwtFail("no superclass: " + Class);
+    }
+    return Class.superclass;
 }
 
 //--
