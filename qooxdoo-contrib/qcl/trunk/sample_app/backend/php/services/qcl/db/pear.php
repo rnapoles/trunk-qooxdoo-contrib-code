@@ -162,11 +162,12 @@ class qcl_db_pear extends qcl_db
 		// inserting several rows at once
     if ( is_array($data[0]) )
     {
+      $ids = array();
       foreach($data as $row)
       {
-        $this->insert($table,$row);
+        $ids[] = $this->insert($table,$row);
       }
-      return;
+      return $ids;
     }
     
     // construct query
@@ -270,7 +271,8 @@ class qcl_db_pear extends qcl_db
 	 */
 	function getLastInsertId()
 	{
-		return $this->getValue( "SELECT last_insert_id()" );
+		$id = $this->getValue( "SELECT last_insert_id()" );
+    return $id;
 	}
 	
 	/**
