@@ -41,9 +41,11 @@ qx.Class.define("qcl.ui.LinkCellRenderer",
   {
     this.base(arguments);
     this.IMG_LINK = qx.io.Alias.getInstance().resolve("icon/16/places/folder-remote.png");
-    
+ 
+     /**   
     // the following doesn't work
     var clazz = this.self(arguments);
+
     if (!clazz.stylesheet)
     {
       clazz.stylesheet = qx.html.StyleSheet.createElement(
@@ -52,7 +54,7 @@ qx.Class.define("qcl.ui.LinkCellRenderer",
         "  background: url(" + this.IMG_LINK + ") top left no-repeat;" +
         "}"
       );
-    }
+    }**/
   },
 
   /*
@@ -73,9 +75,11 @@ qx.Class.define("qcl.ui.LinkCellRenderer",
     // overridden
     _getContentHtml : function(cellInfo)
     {
+      /**
       var content = [];
       if ( cellInfo.value )
       {
+        
         // because the stylesheet/class stuff doesn't work, do it manually
         content.push('<div style="padding-left: 20px; background: url(' );  
         content.push(this.IMG_LINK);
@@ -88,9 +92,15 @@ qx.Class.define("qcl.ui.LinkCellRenderer",
         content.push(cellInfo.value)
         content.push("</a>");  
         
-        content.push("</div>");      
+        content.push("</div>");
+       
+       
       }
       return content.join("");
+      **/
+      content = cellInfo.value || "";
+      return content.replace(/(http:\/\/[\w\-\.]+)([^\s;]*)/g, '<a target="_blank" href="$1$2">$1/...<\/a>');
+   
     }
   }
 });
