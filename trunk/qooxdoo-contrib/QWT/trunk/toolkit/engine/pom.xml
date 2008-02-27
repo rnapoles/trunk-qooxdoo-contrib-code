@@ -81,7 +81,8 @@
           </execution>
           <execution>
             <id>package</id>
-            <phase>package</phase>
+            <!-- CAUTION: not package because engine would be missing from local repository -->
+            <phase>install</phase>
             <goals>
               <goal>dist</goal>
             </goals>
