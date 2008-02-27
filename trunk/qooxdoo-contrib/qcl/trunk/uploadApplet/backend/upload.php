@@ -7,7 +7,7 @@ if ( count ($_FILES) )
   {
     if ($_FILES['uploadfile']['size'] > $maxfilesize*1024)
     {
-       die ("<P>File exceeds maximum filesize: $maxfilesize kByte.</P>");
+       die ("<P><FONT COLOR=RED>File exceeds maximum filesize: $maxfilesize kByte.</FONT></P>");
     }
     
     $tmp_name  = $_FILES['uploadfile']['tmp_name'];
@@ -15,19 +15,19 @@ if ( count ($_FILES) )
     $tgt_path  = "./uploads/$file_name";
     if ( file_exists ( $tgt_path) )
     {
-      die ("<P>File '$file_name' exists - not uploaded.</P>");
+      die ("<P><FONT COLOR=RED>File '$file_name' exists - not uploaded.</FONT></P>");
     }
     
     if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
     {
-      die ("<P>Problem during upload.</P>");
+      die ("<P><FONT COLOR=RED>Problem during upload.</FONT></P>");
     }
 
-    echo "<P>Upload of '$file_name' successful.</P>";
+    echo "<P><FONT COLOR=GREEN>Upload of '$file_name' successful.</FONT></P>";
   }
 }
 else
 {
-      die ("<P>No file data received.</P>");
+      die ("<P><FONT COLOR=RED>No file data received.</FONT></P>");
 }
 ?>

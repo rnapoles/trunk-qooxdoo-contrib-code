@@ -63,7 +63,8 @@
     <!-- Step 4. Sign the applet JAR file.  This will generate the
          signed_dndapplet.jar file.
     -->
-    <signjar alias="dndappletdemo" 
+  	<delete file="${frontend}/signed_dndapplet.jar" />
+  	<signjar alias="dndappletdemo" 
              storepass="dndapplet"
              keystore="dndappletstore"
              preservelastmodified="true" 

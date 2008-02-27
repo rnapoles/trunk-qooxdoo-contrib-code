@@ -35,9 +35,8 @@ import java.net.*;
 
 /**
  * This applet allows users to select files from their file system using drag 
- * and drop and upload them to a remote server.  All files will be zipped and 
- * sent to the server as a single file to improve upload performance.  This 
- * applet will use the HTTP protocol to communicate with the server.
+ * and drop and upload them to a remote server. The applet uploads each file
+ * individually as a POST request.
  *
  */
 public class DNDApplet extends Applet implements DropTargetListener, ActionListener
@@ -72,6 +71,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         dropLabel = new JLabel("Drag and Drop Files Here"); 
         //dropLabel.setSize( this.getWidth(), this.getWidth() );
         JScrollPane scroll = new JScrollPane(dropLabel);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         DropTarget dt2 = new DropTarget(dropLabel, this);
         add(scroll, BorderLayout.CENTER);        
         
@@ -80,8 +80,8 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
          */
         updloadButton = new JButton("Upload");
         updloadButton.addActionListener(this);
-        add(updloadButton, BorderLayout.SOUTH);
         updloadButton.setEnabled(false);
+        add(updloadButton, BorderLayout.SOUTH);
 
     }
 
@@ -99,7 +99,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         
         //System.out.println(url);
         
-        dropLabel.setText("<html>");
+        dropLabel.setText("<html><font size=2>");
         
         /* for each file, make an upload request
          * 
@@ -114,8 +114,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            File f = (File) fileList.get(i);     	        	
             	
             	/*
-	             * Create and setup our HTTP connection.  This connection will use 
-	             * the PUT method, will not follow redirects 
+	             * Create and setup our HTTP POST connection.  
 	             */
 		
 	            conn = (HttpURLConnection) new URL(url).openConnection();
@@ -151,7 +150,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            Writer wr = new OutputStreamWriter(raw);
 	            
 	            /*
-	             * http command
+	             * send multipart section
 	             */
 	            String command = 
 	            	"--dill\r\n"
@@ -210,10 +209,8 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	        } 
 	        catch (Exception e) 
 	        {
-	        	dropLabel.setText("There was a problem. Could not upload");
+	        	dropLabel.setText("<html><font size=2>There was a problem. Could not upload</font></html>");
 	        	e.printStackTrace();
-	        	 fileList.clear();
-	        	return;
 	        } 
 	        finally 
 	        {
@@ -223,7 +220,9 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            if (conn != null) conn.disconnect();
 	        }
         }
+
         fileList.clear();
+        updloadButton.setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e)
@@ -302,21 +301,26 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                  * our application.
                  */
                 List list = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-                fileList.addAll(list);
-
+                
+                if ( ! fileList.containsAll(list) )
+                {
+                	fileList.addAll(list);
+                }
+                
                 /*
                  * We are going to take the path to each file and add it to the list
                  * so the user can see which files they have selected.
                  */
                 StringBuffer sb = new StringBuffer();
-                sb.append("<HTML><UL>");
+                sb.append("<HTML><FONT size=2>");
 
                 for (int i = 0; i < fileList.size(); i++) {
                     File f = (File) fileList.get(i);
-                    sb.append("<LI>" + f + "</LI>\n");
+                    String fileName = f.getName();
+                    sb.append("<P>" + fileName + "</P>\n");
                 }
 
-                sb.append("</UL></HTML>");
+                sb.append("</FONT></HTML>");
 
                 dropLabel.setText(sb.toString());
 
