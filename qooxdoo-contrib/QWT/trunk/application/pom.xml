@@ -10,6 +10,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <groupId>org.qooxdoo</groupId>
   <artifactId>application</artifactId>
   <name>Application</name>
+  <description>
+    CAUTION: this pom is not the parent of it's modules!
+    (Because the dist file does not include this pom)
+  </description>
   <version>2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
