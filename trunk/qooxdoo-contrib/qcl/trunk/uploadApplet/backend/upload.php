@@ -15,7 +15,7 @@ if ( count ($_FILES) )
     $tgt_path  = "./uploads/$file_name";
     if ( file_exists ( $tgt_path) )
     {
-      die ("<P><FONT COLOR=RED>File '$file_name' exists - not uploaded.</FONT></P>");
+      die ("<P><FONT COLOR=RED>File exists - not uploaded.</FONT></P>");
     }
     
     if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
@@ -23,7 +23,7 @@ if ( count ($_FILES) )
       die ("<P><FONT COLOR=RED>Problem during upload.</FONT></P>");
     }
 
-    echo "<P><FONT COLOR=GREEN>Upload of '$file_name' successful.</FONT></P>";
+    echo "<P><FONT COLOR=GREEN>Upload successful.</FONT></P>";
   }
 }
 else

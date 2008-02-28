@@ -23,7 +23,11 @@ package dndapplet.applet;
 import java.applet.*;
 
 import javax.swing.*;
-import javax.swing.border.*;
+
+import com.apple.crypto.provider.MessageDigestMD5;
+
+import sun.security.provider.MD5;
+
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.awt.dnd.*;
@@ -32,6 +36,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.*;
 import java.net.*;
+import netscape.javascript.*;
+import java.security.*;
 
 /**
  * This applet allows users to select files from their file system using drag 
@@ -54,7 +60,12 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * This is the list of files which will be uploaded
      */
     private ArrayList fileList = new ArrayList();
-
+    
+    /**
+     * prefix for file names
+     */
+    private String prefix ="";
+    
     /**
      * The init method creates all of the UI controls and performs all of the 
      * layout of the UI.
@@ -86,13 +97,30 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     }
 
     /**
+     * public method accessible to javascript
+     */
+    public void setPrefix ( String p )
+    {
+    	prefix = p;
+    }
+
+    /**
+     * public method accessible to javascript
+     */
+    public String getPrefix ()
+    {
+    	return prefix;
+    }    
+    
+    
+    /**
      * This method handles uploading the selected files to the server.
      */
     private void uploadFiles()
     {
     	uploadButton.setText("Uploading files, please wait...");
     	uploadButton.setEnabled(false);
-    	uploadButton.repaint();
+    	repaint();
     	
     	HttpURLConnection conn = null;
 
@@ -119,19 +147,36 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 		    /*
 		     * display upload
 		     */
-		    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + "...</P>" );                
-		    dropLabel.repaint();
+		    int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
+		    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + " (" + fileSize + "kB) ...</P>" );                
+		    repaint();
+		    
+		    /**
+		     * filename with prefix
+		     */
+		    String fileName = prefix + f.getName();
 		    
             try 
             {        	
-            	
+            	/*
+            	 * create md5 hash for file
+            	 */
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                md5.reset();
+                md5.update(fileName.getBytes());
+                byte[] result = md5.digest();
+                StringBuffer hexString = new StringBuffer();
+                for (int j=0; j<result.length; j++) {
+                    hexString.append(Integer.toHexString(0xFF & result[j]));
+                }
+                String hash = hexString.toString();
+                
             	/*
 	             * Create and setup our HTTP POST connection.  
 	             */
-		
 	            conn = (HttpURLConnection) new URL(url).openConnection();
 	            conn.setRequestMethod("POST");
-	            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=dill");
+	            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + hash );
 	            
 	            conn.setFollowRedirects(false);
 	            
@@ -159,9 +204,8 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            /*
 	             * send multipart section
 	             */
-	            String command = 
-	            	"--dill\r\n"
-	            	+ "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + f.getName() + "\"\r\n"
+	            String command = "\r\n" + "--" + hash + "\r\n"
+	            	+ "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + fileName + "\"\r\n"
 	            	+ "\r\n";
 	            wr.write(command);	            
 	            
@@ -170,12 +214,13 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            fis.readFully(data);
 	            fis.close();
 	            
+	            
 	            /*
 	             * write file content
 	             */
 	            raw.write(data);
 	            raw.flush();
-	            wr.write("\r\n--dill--\r\n");
+	            wr.write("\r\n--" + hash + "--\r\n");
 	            wr.flush();
 	            
 	            /*
@@ -192,7 +237,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         		String line;
         		while ((line = rd.readLine()) != null) {
         			dropLabel.setText( dropLabel.getText() + line );
-        			dropLabel.repaint();
+        			repaint();
         		}
 	            
 	            try 
@@ -303,6 +348,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
          */
         try {
             DataFlavor flavors[] = t.getTransferDataFlavors();
+            
             if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                 /*
                  * We are looking for the list of files data flavor.  This will be a
@@ -342,21 +388,54 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                  * upload button.
                  */
                 uploadButton.setEnabled(true);
-            } else {
+            } 
+            else 
+            {
                 /*
-                 * There is a very large number of other data flavors the user can 
-                 * drop onto our applet.  we will just show the information from 
-                 * those types, but we can't get a list of files to upload from 
-                 * them.
+                 * pass other data flavors to javascript
                  */
                 DataFlavor df = DataFlavor.selectBestTextFlavor(flavors);
-
-                JOptionPane.showMessageDialog(this, "df: " + df);
-
-                JOptionPane.showMessageDialog(this, "t.getTransferData(df): " + t.getTransferData(df));
+                String mimeType = df.getMimeType();
+                String representationClass = df.getDefaultRepresentationClassAsString();
+                JSObject w = JSObject.getWindow(this);
+                
+                //JOptionPane.showMessageDialog(this, representationClass);
+                if ( representationClass == "java.io.InputStream" )
+                {
+                	/*
+                	 * mimetype can be read as a string
+                	 */
+                	InputStreamReader r = (InputStreamReader) t.getTransferData(df);
+                	BufferedReader in = new BufferedReader( r );
+            		String line;
+            		StringBuffer sb = new StringBuffer("");
+            		while ((line = in.readLine()) != null) 
+            		{
+            			sb.append(line);
+            		}
+	                String funcName = getParameter("funcNameStringMimeType");                
+	                if ( funcName != null)
+	                {
+	                	w.call(funcName, new Object[] { mimeType, sb.toString() } );
+	                }
+                }
+                else
+                {
+	                /*
+	                 * unknown mimetype
+	                 */
+	                Object data = t.getTransferData(df);    
+	                String funcName = getParameter("funcNameUnknownMimeType");                
+	                if ( funcName != null)
+	                {
+	                	w.call(funcName, new Object[] { mimeType, data } );
+	                }
+                }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            // todo : print to java console or alert box
+        	ex.printStackTrace();
+        	//JOptionPane.showMessageDialog(this, "error ");
         }
     }
 }
