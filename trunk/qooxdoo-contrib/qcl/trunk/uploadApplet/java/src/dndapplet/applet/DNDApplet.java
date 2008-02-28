@@ -48,7 +48,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     /**
      * This is the button which starts the upload process
      */
-    private JButton updloadButton;
+    private JButton uploadButton;
     
     /**
      * This is the list of files which will be uploaded
@@ -78,10 +78,10 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         /*
          * The upload button
          */
-        updloadButton = new JButton("Upload");
-        updloadButton.addActionListener(this);
-        updloadButton.setEnabled(false);
-        add(updloadButton, BorderLayout.SOUTH);
+        uploadButton = new JButton("Upload");
+        uploadButton.addActionListener(this);
+        uploadButton.setEnabled(false);
+        add(uploadButton, BorderLayout.SOUTH);
 
     }
 
@@ -90,7 +90,10 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     private void uploadFiles()
     {
-        HttpURLConnection conn = null;
+    	uploadButton.setText("Uploading files, please wait...");
+    	uploadButton.setEnabled(false);
+    	
+    	HttpURLConnection conn = null;
 
         String url = getDocumentBase().toString();
         String uploadPath = ( getParameter("uploadPath") != null ? getParameter("uploadPath") : "upload.php" ); 
@@ -224,7 +227,8 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         }
 
         fileList.clear();
-        updloadButton.setEnabled(false);
+        uploadButton.setText("Upload finished.");
+
     }
 
     public void actionPerformed(ActionEvent e)
@@ -333,7 +337,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                  * Now that we have at least one file to upload we can enable the 
                  * upload button.
                  */
-                updloadButton.setEnabled(true);
+                uploadButton.setEnabled(true);
             } else {
                 /*
                  * There is a very large number of other data flavors the user can 
