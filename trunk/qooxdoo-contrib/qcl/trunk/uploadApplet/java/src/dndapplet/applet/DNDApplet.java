@@ -106,12 +106,19 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
          */
         for (int i = 0; i < fileList.size(); i++ ) 
         {
+
+			/*
+		     * For each file we will create a stream the file into that entry.
+		     */
+		    File f = (File) fileList.get(i);     	        	
+			
+		    /*
+		     * display upload
+		     */
+		    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + "...</P>" );                
+        	
             try 
             {        	
-	            /*
-	             * For each file we will create a stream the file into that entry.
-	             */
-	            File f = (File) fileList.get(i);     	        	
             	
             	/*
 	             * Create and setup our HTTP POST connection.  
@@ -137,11 +144,6 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	             * the data we are ready to connect to the server.
 	             */
 	            conn.connect();            	
-	
-	            /*
-	             * display upload
-	             */
-	            dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + "...</P>" );                
 	            
 	            /*
 	             * output stream
@@ -302,6 +304,9 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                  */
                 List list = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
                 
+                /**
+                 * only add to the list if not already in the list.
+                 */
                 if ( ! fileList.containsAll(list) )
                 {
                 	fileList.addAll(list);

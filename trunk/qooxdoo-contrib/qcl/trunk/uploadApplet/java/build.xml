@@ -71,13 +71,7 @@
              jar="${frontend}/dndapplet.jar"
              signedjar="${frontend}/signed_dndapplet.jar" />
 
-  	<!-- step 5. Copy HTML/PHP file to frontend dir and delete the unsigned jarfile
-  	-->
   	<delete file="${frontend}/dndapplet.jar" />
-  	<delete file="${frontend}/upload.html" />
-  	<copy file="frontend/upload.html" todir="${frontend}"/>  	
-  	<delete file="${backend}/upload.php" />
-  	<copy file="backend/upload.php" todir="${backend}"/>
   	  
   </target>
 
