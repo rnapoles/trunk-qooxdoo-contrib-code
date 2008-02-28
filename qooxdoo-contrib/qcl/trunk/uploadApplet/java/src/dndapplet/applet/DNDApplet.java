@@ -92,6 +92,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     {
     	uploadButton.setText("Uploading files, please wait...");
     	uploadButton.setEnabled(false);
+    	this.repaint();
     	
     	HttpURLConnection conn = null;
 
@@ -119,7 +120,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 		     * display upload
 		     */
 		    dropLabel.setText(dropLabel.getText() + "<html>P>Uploading " + f.getName() + "...</P></html>" );                
-        	
+		    this.repaint();
             try 
             {        	
             	
