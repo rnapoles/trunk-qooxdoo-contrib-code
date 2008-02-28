@@ -153,6 +153,11 @@ qx.Class.define("htmlarea.HtmlArea",
     "load"             : "qx.event.type.Event",
     
     /**
+     * Thrown when the editor gets an error at loading time.
+     */
+    "loadingError"     : "qx.event.type.DataEvent",
+    
+    /**
      * Only available if messengerMode is active. This event returns the current content of the editor.
      */
     "messengerContent" : "qx.event.type.DataEvent",
@@ -805,11 +810,17 @@ qx.Class.define("htmlarea.HtmlArea",
       
       if (typeof value == "string")
       {
-         var content = this.__getWrappedContent(value);
-         
-         this.__doc.open(qx.util.Mime.HTML, true);
-         this.__doc.writeln(content);
-         this.__doc.close();
+         try
+         {
+           this.__doc.open(qx.util.Mime.HTML, true)
+           this.__doc.writeln(this.__getWrappedContent(value));
+           this.__doc.close();
+         }
+         catch (e)
+         {
+           this.error("cant open document on source '"+this.getSource()+"'", e);
+           this.createDispatchDataEvent("loadingError", e);
+         }
       }
     },
 
