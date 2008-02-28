@@ -99,7 +99,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         
         //System.out.println(url);
         
-        dropLabel.setText("<html><font size=2>");
+        dropLabel.setText("<html><font size=2><P>Uploading Files...<P></html>");
         
         /* for each file, make an upload request
          * 
@@ -115,7 +115,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 		    /*
 		     * display upload
 		     */
-		    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + "...</P>" );                
+		    dropLabel.setText(dropLabel.getText() + "<html>P>Uploading " + f.getName() + "...</P></html>" );                
         	
             try 
             {        	
@@ -186,7 +186,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            		InputStreamReader(conn.getInputStream()));
         		String line;
         		while ((line = rd.readLine()) != null) {
-        			dropLabel.setText( dropLabel.getText() + line );
+        			dropLabel.setText( dropLabel.getText() + "<html>" + line + "</html>" );
         		}
 	            
 	            try 
