@@ -51,8 +51,7 @@
     -->
     <delete file="${frontend}/dndapplet.jar" />
     <jar jarfile="${frontend}/dndapplet.jar">
-        <zipfileset dir="${build}/dndapplet/applet"
-                prefix="dndapplet/applet" />
+        <zipfileset dir="${build}" />
     </jar>
 
     <!-- Step 3. Generate the key store to sign the applet with if it

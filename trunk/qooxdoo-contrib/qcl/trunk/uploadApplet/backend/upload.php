@@ -1,5 +1,36 @@
 <?php
+/**********************************************************************
+ * 
+ * PHP backend for Drag & Drop Upload Java Applet
+ * This is Public Domain, you can use, modify or distribute it in any
+ * way you wish, but please report improvements to 
+ * 
+ * info@bibliograph.org
+ * 
+ **********************************************************************/
+
 //error_reporting(E_ALL);
+
+if ( ! isset($_SERVER['PHP_AUTH_USER'])) 
+{
+    header('WWW-Authenticate: Basic realm="Upload Area"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo 'Access denied';
+    exit;
+} 
+else 
+{
+    $username = $_SERVER['PHP_AUTH_USER'];
+    $password = $_SERVER['PHP_AUTH_PW'];
+    if ( $username != "username" or $password != "password" )
+    {
+      echo "<P><FONT COLOR=RED>Wrong username or password!</P>";
+      exit;
+    }
+}
+
+//echo "<p>Correct username $username and password $password!</p>";
+
 if ( count ($_FILES) )
 {
   $maxfilesize = 30000; //kByte
@@ -27,6 +58,6 @@ if ( count ($_FILES) )
 }
 else
 {
-      die ("<P><FONT COLOR=RED>No file data received.</FONT></P>");
+   die ("<P><FONT COLOR=RED>No file data received.</FONT></P>");
 }
 ?>
