@@ -89,6 +89,11 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     private JSObject window = null;
     
     /**
+     * the thread that uploads the files
+     */
+    private Thread uploaderThread;
+    
+    /**
      * The init method creates all of the UI controls and performs all of the 
      * layout of the UI.
      */
@@ -192,6 +197,10 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
        else if ( e.getSource() == cancelButton )
        {
     	   resetInput();
+    	   if ( uploaderThread.isAlive() )
+    	   {
+    	     uploaderThread.interrupt();
+    	   }
        }
     }
     
@@ -216,7 +225,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
       /*
        * we start a new thread for the loop
        */
-      new Thread( new Runnable()
+      uploaderThread = new Thread( new Runnable()
       {
         public void run()
         {
@@ -263,7 +272,14 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
            */
           for (int i = 0; i < fileList.size(); i++ ) 
           {
-    
+            /*
+             * check for interrupt
+             */
+            if ( Thread.currentThread().isInterrupted() )
+            {
+              continue;
+            }
+            
       		  /*
       	     * For each file we will create a stream the file into that entry.
       	     */
@@ -375,15 +391,6 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                */
               wr.write("\r\n" );	            	            
               wr.flush();
-      
-              /*
-               * Read and output file content
-               *
-              DataInputStream fis = new DataInputStream( new BufferedInputStream( new FileInputStream(f) ) );
-              byte[] data = new byte[ (int) f.length() ];
-              fis.readFully(data);
-              fis.close();
-              */
               
               /* 
                * write data and update progress bar
@@ -397,17 +404,34 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
               BufferedInputStream bufin = new BufferedInputStream(new FileInputStream(f));
               while ((bytesRead = bufin.read(b)) != -1) 
               {
-                 raw.write(b, 0, bytesRead); 
-                 raw.flush();
-                 progress += bytesRead;
-                 final int p = progress;
-                 SwingUtilities.invokeLater( new Runnable(){
-                   public void run()
-                   {
-                     progressBar.setValue(p);
-                     progressBar.revalidate();
-                   }
-                 });                 
+                
+                /*
+                 * check for interrupt
+                 */
+                if ( Thread.currentThread().isInterrupted() )
+                {
+                  // todo : graceful abort
+                }
+                
+                /*
+                 * write output
+                 */
+                raw.write(b, 0, bytesRead); 
+                raw.flush();
+                progress += bytesRead;
+                
+                /*
+                 * update progress bar
+                 */
+                final int p = progress;
+                SwingUtilities.invokeLater( new Runnable(){
+                  public void run()
+                  {
+                    progressBar.setValue(p);
+                    progressBar.revalidate();
+                  }
+                });   
+
               }
               
               /*
@@ -486,7 +510,9 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
            */
           window.call("endUpload", new Object[] { null } );      
         }
-      } ).start();
+      } );
+      
+      uploaderThread.start();
     }
 
     public void dragExit(DropTargetEvent dte)
