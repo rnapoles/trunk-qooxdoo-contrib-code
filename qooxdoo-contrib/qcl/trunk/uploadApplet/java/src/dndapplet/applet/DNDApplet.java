@@ -21,13 +21,7 @@
 package dndapplet.applet;
 
 import java.applet.*;
-
 import javax.swing.*;
-
-import com.apple.crypto.provider.MessageDigestMD5;
-
-import sun.security.provider.MD5;
-
 import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.awt.dnd.*;
@@ -248,7 +242,8 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            BufferedReader rd = new BufferedReader(new
 	            		InputStreamReader(conn.getInputStream()));
         		String line;
-        		while ((line = rd.readLine()) != null) {
+        		while ((line = rd.readLine()) != null) 
+        		{
         			dropLabel.setText( dropLabel.getText() + line );
         			repaint();
         		}
@@ -445,7 +440,9 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	                }
                 }
             }
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) 
+        {
             // todo : print to java console or alert box
         	ex.printStackTrace();
         	//JOptionPane.showMessageDialog(this, "error ");
