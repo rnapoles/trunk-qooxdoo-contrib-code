@@ -121,6 +121,13 @@ public class Client implements ClientMBean {
     
     public void setMinimize(boolean minimize) {
         this.minimize = minimize;
+        try {
+            this.link();
+        } catch (IOException e) {
+            throw new RuntimeException("TODO", e);
+        } catch (ServletException e) {
+            throw new RuntimeException("TODO", e);
+        }
     }
     
     public boolean getMinimize() {
