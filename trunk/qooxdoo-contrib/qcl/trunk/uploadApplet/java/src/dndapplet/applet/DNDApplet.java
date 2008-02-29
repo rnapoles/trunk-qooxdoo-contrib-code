@@ -202,24 +202,37 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	            Writer wr = new OutputStreamWriter(raw);
 	            
 	            /*
-	             * send multipart section
+	             * multipart header
 	             */
-	            String command = "\r\n" + "--" + hash + "\r\n"
-	            	+ "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + fileName + "\"\r\n"
-	            	+ "\r\n";
-	            wr.write(command);	            
+	            String mheader = "--" + hash + "\r\n"
+	            	+ "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + fileName + "\"\r\n";
+	            wr.write(mheader);	            
 	            
+	            /*
+	             * content-length, todo: calculate properly!
+	             */
+	            //long contentLength = f.length() + mheader.length() + hash.length() + 3;		           	           
+	            //wr.write("Content-length: " + contentLength + "\r\n" );
+	            
+	            /*
+	             * end of multipart header 
+	             */
+	            wr.write("\r\n" );	            	            
+	            wr.flush();
+
+	            /*
+	             * file content
+	             */
 	            DataInputStream fis = new DataInputStream( new BufferedInputStream( new FileInputStream(f) ) );
 	            byte[] data = new byte[ (int) f.length() ];
 	            fis.readFully(data);
 	            fis.close();
-	            
-	            
-	            /*
-	             * write file content
-	             */
 	            raw.write(data);
 	            raw.flush();
+	            
+	            /*
+	             * write closing boundary
+	             */
 	            wr.write("\r\n--" + hash + "--\r\n");
 	            wr.flush();
 	            
