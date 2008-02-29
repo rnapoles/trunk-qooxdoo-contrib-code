@@ -19,11 +19,14 @@
 
 package org.qooxdoo.toolkit.engine;
 
+import java.io.IOException;
 import java.util.Date;
+
+import javax.servlet.ServletException;
 
 public interface ClientMBean extends MBean {
     Date getCreated();
     long getSize();
     boolean getMinimize();
-    void setMinimize(boolean minimize);
+    void setMinimize(boolean minimize) throws IOException, ServletException;
 } 

@@ -119,7 +119,7 @@ public class Client implements ClientMBean {
         return application;
     }
     
-    public void setMinimize(boolean minimize) {
+    public void setMinimize(boolean minimize) throws IOException, ServletException {
         this.minimize = minimize;
         try {
             this.link();
