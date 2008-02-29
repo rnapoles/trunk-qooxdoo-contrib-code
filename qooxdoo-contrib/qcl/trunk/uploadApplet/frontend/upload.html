@@ -25,39 +25,99 @@
           
        </applet>
        
-       <!-- pass file prefix to applet -->
-       <p>
+       <!-- status label -->
+       <div id="statusLabel" >JavaScript Status</div>
+       
+       <!-- file prefix -->
+       <div>
          File prefix:
          <input
            id="prefix" 
            onchange="document.uploadApplet.setPrefix(this.value);"/>
-       </p>   
+       </div>   
 
        <!-- username for upload -->
-       <p>
+       <div>
          User name:
          <input 
            id="username"
            value="username" 
-           onchange="document.uploadApplet.setUsername(this.value);"/>
-       </p> 
+           onchange="setUsername(this.value);"/>
+       </div> 
 
        <!-- password for upload -->
-       <p>
+       <div>
          Password:
          <input
            id="password" 
            value="password" 
-           onchange="document.uploadApplet.setPassword(this.value);"/>
-       </p> 
+           onchange="setPassword(this.value);"/>
+       </div> 
        
        <!-- javascript section -->
        <script>
          
          // username and passwort
-         document.uploadApplet.setUsername("username");
-         document.uploadApplet.setPassword("password");
+         setUsername("username");
+         setPassword("password");
          
+         // functions
+         
+          /**
+          * sets the prefix of the files to be uploaded
+          * @param {String} prefix
+          */
+         function setPrefix( prefix )
+         {
+           document.uploadApplet.setPrefix( prefix );
+         }
+         
+         /**
+          * sets the username for basic http authentication
+          * @param {String} prefix
+          */
+         function setUsername( username )
+         {
+           document.uploadApplet.setUsername( username );
+         }
+
+         /**
+          * sets the password for basic http authentication
+          * @param {String} prefix
+          */
+         function setPassword( password )
+         {
+           document.uploadApplet.setPassword( password );
+         }
+         
+         /**
+          * called when upload starts with number of files to transmit
+          * @param {int} number
+          */
+         function startUpload ( number )
+         {
+           window._number = number;
+           window._index = 1;
+         }
+         
+         /**
+          * called when a file is uploaded
+          * @param {String} filename
+          */
+         function currentUpload ( filename )
+         {
+           msg = "Uploading " + filename + " (" + (window._index++) + "/" + window._number + ")...";
+           document.getElementById("statusLabel").innerHTML = msg;
+         }
+         
+         /**
+          * called when upload is finished
+          */
+         function endUpload()
+         {
+           document.getElementById("statusLabel").innerHTML = "Upload finished";
+         }
+                 
          /**
           * handle mime types that can be represented as a string
           * @param {Object} mimeType

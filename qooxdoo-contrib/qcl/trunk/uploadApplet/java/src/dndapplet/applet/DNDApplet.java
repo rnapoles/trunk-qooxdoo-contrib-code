@@ -77,6 +77,10 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     private String password = null;
 
+    /**
+     * the window object in which the applet is embedded
+     */
+    private JSObject window = null;
     
     /**
      * The init method creates all of the UI controls and performs all of the 
@@ -84,41 +88,50 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     public void init()
     {
-        setLayout(new BorderLayout());
+      
+      /**
+       * the window object
+       */
+      window = JSObject.getWindow(this);
+      
+      /**
+       * set the layout for the applet
+       */
+      setLayout(new BorderLayout());
 
-        /* 
-         * the drop area displays the files
-         * for upload and the response messages
-         * 
-         */
-        dropLabel = new JLabel("Drag and Drop Files Here"); 
-        JScrollPane scroll = new JScrollPane(dropLabel);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        DropTarget dt2 = new DropTarget(dropLabel, this);
-        add(scroll, BorderLayout.CENTER);        
-        
-        /*
-         * The upload button
-         */
-        uploadButton = new JButton("Upload");
-        uploadButton.addActionListener(this);
-        uploadButton.setEnabled(false);
-        
-        /*
-         * The cancel button
-         */
-        cancelButton = new JButton("Clear");
-        cancelButton.addActionListener(this);
-        cancelButton.setEnabled(false);
-        
-        /**
-         * Button panel
-         */
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(uploadButton,BorderLayout.NORTH);
-        panel.add(cancelButton,BorderLayout.SOUTH);
-        add(panel, BorderLayout.SOUTH);
+      /* 
+       * the drop area displays the files
+       * for upload and the response messages
+       * 
+       */
+      dropLabel = new JLabel("Drag and Drop Files Here"); 
+      JScrollPane scroll = new JScrollPane(dropLabel);
+      scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+      DropTarget dt2 = new DropTarget(dropLabel, this);
+      add(scroll, BorderLayout.CENTER);        
+      
+      /*
+       * The upload button
+       */
+      uploadButton = new JButton("Upload");
+      uploadButton.addActionListener(this);
+      uploadButton.setEnabled(false);
+      
+      /*
+       * The cancel button
+       */
+      cancelButton = new JButton("Clear");
+      cancelButton.addActionListener(this);
+      cancelButton.setEnabled(false);
+      
+      /**
+       * Button panel
+       */
+      JPanel panel = new JPanel();
+      panel.setLayout(new BorderLayout());
+      panel.add(uploadButton,BorderLayout.NORTH);
+      panel.add(cancelButton,BorderLayout.SOUTH);
+      add(panel, BorderLayout.SOUTH);
     }
 
     /**
@@ -186,20 +199,34 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     private void uploadFiles()
     {
-    	uploadButton.setText("Uploading files, please wait...");
+    	/*
+    	 * call javascript function to indicate start of upload
+    	 */
+      Long number = new Long(fileList.size());
+      window.call("startUpload", new Object[] { number  } );
+      
+      /*
+       * update applet display
+       */
+      uploadButton.setText("Uploading files, please wait...");
     	cancelButton.setText("Cancel upload");
     	uploadButton.setEnabled(false);
+    	dropLabel.setText("<html><font size=2>" );
     	repaint();
     	
-    	HttpURLConnection conn = null;
-
+    	/*
+    	 * url
+    	 */
       String url = getDocumentBase().toString();
       String uploadPath = ( getParameter("uploadPath") != null ? getParameter("uploadPath") : "upload.php" ); 
       url = url.substring(0,5).compareTo("file:") == 0 ? "http://localhost" : url.substring(0, url.lastIndexOf("/"));
       url = url + "/" + uploadPath;
+    	
+    	/*
+    	 * http connection 
+    	 */
+    	HttpURLConnection conn = null;
       
-      //System.out.println(url);
-
       /*
        * Authentication hash
        */
@@ -210,36 +237,39 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
           authHash = new sun.misc.BASE64Encoder().encode(s.getBytes());   
       }
       
-      dropLabel.setText("<html><font size=2>" );
-      
       /* for each file, make an upload request
        * 
        */
       for (int i = 0; i < fileList.size(); i++ ) 
       {
 
-		  /*
-	     * For each file we will create a stream the file into that entry.
-	     */
-	    File f = (File) fileList.get(i);     	        	
-		
-	    /*
-	     * display upload
-	     */
-	    int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
-	    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + " (" + fileSize + "kB) ...</P>" );                
-	    repaint();
-	    
-	    /**
-	     * filename with prefix
-	     */
-	    String fileName = prefix + f.getName();
-	    
-      try 
-      {        	
-      	/*
-      	 * create md5 hash for file
-      	 */
+  		  /*
+  	     * For each file we will create a stream the file into that entry.
+  	     */
+  	    File f = (File) fileList.get(i);     	        	
+
+        /*
+         * call javascript function to indicate current upload
+         */
+        window.call("currentUpload", new Object[] { f.getName() } );  	    
+  	    
+  	    /*
+  	     * display upload
+  	     */
+  	    int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
+  	    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + " (" + fileSize + "kB) ...</P>" );                
+  	    repaint();
+  	    
+  	    /*
+  	     * filename with prefix
+  	     */
+  	    String fileName = prefix + f.getName();
+  	    
+        try 
+        {        	
+        	/*
+        	 * create md5 hash for file
+        	 */
           MessageDigest md5 = MessageDigest.getInstance("MD5");
           md5.reset();
           md5.update(fileName.getBytes());
@@ -256,7 +286,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
           HttpURLConnection.setFollowRedirects(false);
 
           /*
-           * create reusable onnection
+           * create reusable connection
            */
           conn = (HttpURLConnection) new URL(url).openConnection();
           
@@ -383,10 +413,18 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         }
       }
   
+      /*
+       * reset list and display
+       */
       fileList.clear();
       uploadButton.setText("Upload finished.");
       cancelButton.setText("Clear");
       cancelButton.setEnabled(false);
+      
+      /*
+       * call javascript function to indicate start of upload
+       */
+      window.call("endUpload", new Object[] { null } );      
     }
 
     public void dragExit(DropTargetEvent dte)
@@ -504,7 +542,6 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                 DataFlavor df = DataFlavor.selectBestTextFlavor(flavors);
                 String mimeType = df.getMimeType();
                 String representationClass = df.getDefaultRepresentationClassAsString();
-                JSObject w = JSObject.getWindow(this);
                 
                 //JOptionPane.showMessageDialog(this, representationClass);
                 if ( representationClass == "java.io.InputStream" )
@@ -523,7 +560,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	                String funcName = getParameter("funcNameStringMimeType");                
 	                if ( funcName != null)
 	                {
-	                	w.call(funcName, new Object[] { mimeType, sb.toString() } );
+	                	window.call(funcName, new Object[] { mimeType, sb.toString() } );
 	                }
                 }
                 else
@@ -535,7 +572,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 	                String funcName = getParameter("funcNameUnknownMimeType");                
 	                if ( funcName != null)
 	                {
-	                	w.call(funcName, new Object[] { mimeType, data } );
+	                	window.call(funcName, new Object[] { mimeType, data } );
 	                }
                 }
             }
