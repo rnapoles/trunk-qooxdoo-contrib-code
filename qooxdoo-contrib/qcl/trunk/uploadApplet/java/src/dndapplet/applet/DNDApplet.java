@@ -32,6 +32,7 @@ import java.io.*;
 import java.net.*;
 import netscape.javascript.*;
 import java.security.*;
+import java.awt.*;
 
 
 /**
@@ -56,6 +57,11 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * This is the button which starts the upload process
      */
     private JButton cancelButton;    
+    
+    /**
+     * The progress bar
+     */
+    private JProgressBar progressBar;
     
     /**
      * This is the list of files which will be uploaded
@@ -124,13 +130,21 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
       cancelButton.addActionListener(this);
       cancelButton.setEnabled(false);
       
-      /**
+      /*
+       * The progress bar
+       */
+      progressBar = new JProgressBar(0,100);
+      progressBar.setEnabled(false);
+      progressBar.setStringPainted(true);
+      
+      /*
        * Button panel
        */
       JPanel panel = new JPanel();
       panel.setLayout(new BorderLayout());
       panel.add(uploadButton,BorderLayout.NORTH);
-      panel.add(cancelButton,BorderLayout.SOUTH);
+      panel.add(cancelButton,BorderLayout.CENTER);
+      panel.add(progressBar,BorderLayout.SOUTH);
       add(panel, BorderLayout.SOUTH);
     }
 
@@ -199,232 +213,280 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     private void uploadFiles()
     {
-    	/*
-    	 * call javascript function to indicate start of upload
-    	 */
-      Long number = new Long(fileList.size());
-      window.call("startUpload", new Object[] { number  } );
-      
       /*
-       * update applet display
+       * we start a new thread for the loop
        */
-      uploadButton.setText("Uploading files, please wait...");
-    	cancelButton.setText("Cancel upload");
-    	uploadButton.setEnabled(false);
-    	dropLabel.setText("<html><font size=2>" );
-    	repaint();
-    	
-    	/*
-    	 * url
-    	 */
-      String url = getDocumentBase().toString();
-      String uploadPath = ( getParameter("uploadPath") != null ? getParameter("uploadPath") : "upload.php" ); 
-      url = url.substring(0,5).compareTo("file:") == 0 ? "http://localhost" : url.substring(0, url.lastIndexOf("/"));
-      url = url + "/" + uploadPath;
-    	
-    	/*
-    	 * http connection 
-    	 */
-    	HttpURLConnection conn = null;
-      
-      /*
-       * Authentication hash
-       */
-      String authHash = null;
-      if ( username != null && password != null )
+      new Thread( new Runnable()
       {
-          String s = username + ":" + password;                
-          authHash = new sun.misc.BASE64Encoder().encode(s.getBytes());   
-      }
-      
-      /* for each file, make an upload request
-       * 
-       */
-      for (int i = 0; i < fileList.size(); i++ ) 
-      {
-
-  		  /*
-  	     * For each file we will create a stream the file into that entry.
-  	     */
-  	    File f = (File) fileList.get(i);     	        	
-
-        /*
-         * call javascript function to indicate current upload
-         */
-        window.call("currentUpload", new Object[] { f.getName() } );  	    
-  	    
-  	    /*
-  	     * display upload
-  	     */
-  	    int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
-  	    dropLabel.setText(dropLabel.getText() + "<P>Uploading " + f.getName() + " (" + fileSize + "kB) ...</P>" );                
-  	    repaint();
-  	    
-  	    /*
-  	     * filename with prefix
-  	     */
-  	    String fileName = prefix + f.getName();
-  	    
-        try 
-        {        	
-        	/*
-        	 * create md5 hash for file
+        public void run()
+        {
+          /*
+        	 * call javascript function to indicate start of upload
         	 */
-          MessageDigest md5 = MessageDigest.getInstance("MD5");
-          md5.reset();
-          md5.update(fileName.getBytes());
-          byte[] result = md5.digest();
-          StringBuffer hexString = new StringBuffer();
-          for (int j=0; j<result.length; j++) {
-              hexString.append(Integer.toHexString(0xFF & result[j]));
-          }
-          String hash = hexString.toString();
+          Long number = new Long(fileList.size());
+          window.call("startUpload", new Object[] { number  } );
           
           /*
-           * do not follow redirects
+           * update applet display
            */
-          HttpURLConnection.setFollowRedirects(false);
-
-          /*
-           * create reusable connection
-           */
-          conn = (HttpURLConnection) new URL(url).openConnection();
-          
-          /*
-           * Authorize connection if necessary
-           */
-          if ( authHash != null )
-          {
-            conn.setDoInput( true );
-            conn.setRequestProperty( "Authorization", "Basic " + authHash );
-            conn.connect();
-            conn.disconnect();
-          }
-          
+          uploadButton.setText("Uploading files, please wait...");
+        	cancelButton.setText("Cancel upload");
+        	uploadButton.setEnabled(false);
+        	dropLabel.setText("<html><font size=2>" );
+        	repaint();
+        	
         	/*
-           * Create and setup our HTTP POST connection.  
-           */    
-          conn.setRequestMethod("POST");
-        
-          /*
-           * Set content type
-           */
-          conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + hash );
+        	 * url
+        	 */
+          String url = getDocumentBase().toString();
+          String uploadPath = ( getParameter("uploadPath") != null ? getParameter("uploadPath") : "upload.php" ); 
+          url = url.substring(0,5).compareTo("file:") == 0 ? "http://localhost" : url.substring(0, url.lastIndexOf("/"));
+          url = url + "/" + uploadPath;
+        	
+        	/*
+        	 * http connection 
+        	 */
+        	HttpURLConnection conn = null;
           
           /*
-           * We intend to send output to the server.
+           * Authentication hash
            */
-          conn.setDoOutput(true);
-  
-          /*
-           * Connect to the server.
-           */
-          conn.connect();            	
-          
-          /*
-           * Initialize output stream
-           */
-          DataOutputStream raw = new DataOutputStream( conn.getOutputStream() );
-          Writer wr = new OutputStreamWriter(raw);
-          
-          /*
-           * Create multipart header
-           */
-          String mheader = "--" + hash + "\r\n"
-          	+ "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + fileName + "\"\r\n";
-          wr.write(mheader);	            
-          
-          /*
-           * content-length, todo: calculate properly!
-           */
-          //long contentLength = f.length() + mheader.length() + hash.length() + 3;		           	           
-          //wr.write("Content-length: " + contentLength + "\r\n" );
-          
-          /*
-           * end of multipart header 
-           */
-          wr.write("\r\n" );	            	            
-          wr.flush();
-  
-          /*
-           * Read and output file content
-           */
-          DataInputStream fis = new DataInputStream( new BufferedInputStream( new FileInputStream(f) ) );
-          byte[] data = new byte[ (int) f.length() ];
-          fis.readFully(data);
-          fis.close();
-          raw.write(data);
-          raw.flush();
-          
-          /*
-           * Write closing boundary
-           */
-          wr.write("\r\n--" + hash + "--\r\n");
-          wr.flush();
-          
-          /*
-           * Close streams
-           */
-          wr.close();
-          raw.close();
-          
-          /*
-           * Get server response
-           */
-          BufferedReader rd = new BufferedReader(new
-          		InputStreamReader(conn.getInputStream()));
-      		String line;
-      		while ((line = rd.readLine()) != null) 
-      		{
-      			dropLabel.setText( dropLabel.getText() + line );
-      			repaint();
-      		}
-            
-          try 
+          String authHash = null;
+          if ( username != null && password != null )
           {
+              String s = username + ":" + password;                
+              authHash = new sun.misc.BASE64Encoder().encode(s.getBytes());   
+          }
+              
+          /* for each file, make an upload request
+           * 
+           */
+          for (int i = 0; i < fileList.size(); i++ ) 
+          {
+    
+      		  /*
+      	     * For each file we will create a stream the file into that entry.
+      	     */
+      	    File f = (File) fileList.get(i);     	        	
+    
             /*
-             * If we got a 401 (unauthorized), we can't get that data. We will
-             * get an IOException. This makes no sense since a 401 does not
-             * consitute an IOException, it just says we need to provide the
-             * username again.
+             * call javascript function to indicate current upload
              */
-            int responseCode 		= conn.getResponseCode();
-            String responseMessage  = conn.getResponseMessage();
-          } 
-          catch (IOException ioe) 
-          {
-              System.out.println(ioe.getMessage());
+            window.call("currentUpload", new Object[] { f.getName() } );  	    
+      	    
+      	    /*
+      	     * display upload
+      	     */
+      	    int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
+            final String msg = "<P>Uploading " + f.getName() + " (" + fileSize + "kB) ...</P>";
+            SwingUtilities.invokeLater( new Runnable(){
+              public void run()
+              {
+                dropLabel.setText(dropLabel.getText() + msg );                                
+                repaint();
+              }
+            });
+      	    
+      	    
+      	    /*
+      	     * filename with prefix
+      	     */
+      	    String fileName = prefix + f.getName();
+      	    
+            try 
+            {        	
+            	/*
+            	 * create md5 hash for file
+            	 */
+              MessageDigest md5 = MessageDigest.getInstance("MD5");
+              md5.reset();
+              md5.update(fileName.getBytes());
+              byte[] result = md5.digest();
+              StringBuffer hexString = new StringBuffer();
+              for (int j=0; j<result.length; j++) {
+                  hexString.append(Integer.toHexString(0xFF & result[j]));
+              }
+              String hash = hexString.toString();
+              
+              /*
+               * do not follow redirects
+               */
+              HttpURLConnection.setFollowRedirects(false);
+    
+              /*
+               * create reusable connection
+               */
+              conn = (HttpURLConnection) new URL(url).openConnection();
+              
+              /*
+               * Authorize connection if necessary
+               */
+              if ( authHash != null )
+              {
+                conn.setDoInput( true );
+                conn.setRequestProperty( "Authorization", "Basic " + authHash );
+                conn.connect();
+                conn.disconnect();
+              }
+              
+            	/*
+               * Create and setup our HTTP POST connection.  
+               */    
+              conn.setRequestMethod("POST");
+            
+              /*
+               * Set content type
+               */
+              conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + hash );
+              
+              /*
+               * We intend to send output to the server.
+               */
+              conn.setDoOutput(true);
+      
+              /*
+               * Connect to the server.
+               */
+              conn.connect();            	
+              
+              /*
+               * Initialize output stream
+               */
+              DataOutputStream raw = new DataOutputStream( conn.getOutputStream() );
+              Writer wr = new OutputStreamWriter(raw);
+              
+              /*
+               * Create multipart header
+               */
+              String mheader = "--" + hash + "\r\n"
+              	+ "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + fileName + "\"\r\n"
+                + "Content-Type: application/octet-stream\r\n"
+                + "Content-Transfer-Encoding: binary\r\n";
+              wr.write(mheader);	            
+              
+              /*
+               * content-length, todo: calculate properly!
+               */
+              //long contentLength = f.length() + mheader.length() + hash.length() + 3;		           	           
+              //wr.write("Content-length: " + contentLength + "\r\n" );
+              
+              /*
+               * end of multipart header 
+               */
+              wr.write("\r\n" );	            	            
+              wr.flush();
+      
+              /*
+               * Read and output file content
+               *
+              DataInputStream fis = new DataInputStream( new BufferedInputStream( new FileInputStream(f) ) );
+              byte[] data = new byte[ (int) f.length() ];
+              fis.readFully(data);
+              fis.close();
+              */
+              
+              /* 
+               * write data and update progress bar
+               */
+              progressBar.setMinimum(0);
+              progressBar.setMaximum((int) f.length());
+              
+              int progress = 0;
+              int bytesRead = 0;
+              byte b[] = new byte[1024];
+              BufferedInputStream bufin = new BufferedInputStream(new FileInputStream(f));
+              while ((bytesRead = bufin.read(b)) != -1) 
+              {
+                 raw.write(b, 0, bytesRead); 
+                 raw.flush();
+                 progress += bytesRead;
+                 final int p = progress;
+                 SwingUtilities.invokeLater( new Runnable(){
+                   public void run()
+                   {
+                     progressBar.setValue(p);
+                     progressBar.revalidate();
+                   }
+                 });                 
+              }
+              
+              /*
+               * Write closing boundary
+               */
+              wr.write("\r\n--" + hash + "--\r\n");
+              wr.flush();
+              
+              /*
+               * Close streams
+               */
+              wr.close();
+              raw.close();
+              
+              /*
+               * Get server response
+               */
+              BufferedReader rd = new BufferedReader(new
+              		InputStreamReader(conn.getInputStream()));
+          		String line;
+          		while ((line = rd.readLine()) != null) 
+          		{
+          			final String l = line;
+          		  SwingUtilities.invokeLater( new Runnable(){
+            		  public void run()
+            		  {
+            			  dropLabel.setText( dropLabel.getText() + l );
+              			repaint();
+            		  }
+          			});
+          		}
+                
+              try 
+              {
+                /*
+                 * If we got a 401 (unauthorized), we can't get that data. We will
+                 * get an IOException. This makes no sense since a 401 does not
+                 * consitute an IOException, it just says we need to provide the
+                 * username again.
+                 */
+                int responseCode 		= conn.getResponseCode();
+                String responseMessage  = conn.getResponseMessage();
+              } 
+              catch (IOException ioe) 
+              {
+                  System.out.println(ioe.getMessage());
+              }
+      
+              //System.out.println("conn.getResponseCode(): " + responseCode);
+              //System.out.println("conn.getResponseMessage(): " + responseMessage);   
+            } 
+            catch (Exception e) 
+            {
+              dropLabel.setText("<html><font size=2>There was a problem. Could not upload</font></html>");
+            	e.printStackTrace();
+            } 
+            finally 
+            {
+              /*
+               * Once we are done we want to make sure to disconnect from the server.
+               */
+              if (conn != null) conn.disconnect();
+            }
           }
   
-          //System.out.println("conn.getResponseCode(): " + responseCode);
-          //System.out.println("conn.getResponseMessage(): " + responseMessage);   
-        } 
-        catch (Exception e) 
-        {
-          dropLabel.setText("<html><font size=2>There was a problem. Could not upload</font></html>");
-        	e.printStackTrace();
-        } 
-        finally 
-        {
           /*
-           * Once we are done we want to make sure to disconnect from the server.
+           * reset list and display
            */
-          if (conn != null) conn.disconnect();
+          fileList.clear();
+          uploadButton.setText("Upload finished.");
+          cancelButton.setText("Clear");
+          cancelButton.setEnabled(false);
+          
+          /*
+           * call javascript function to indicate start of upload
+           */
+          window.call("endUpload", new Object[] { null } );      
         }
-      }
-  
-      /*
-       * reset list and display
-       */
-      fileList.clear();
-      uploadButton.setText("Upload finished.");
-      cancelButton.setText("Clear");
-      cancelButton.setEnabled(false);
-      
-      /*
-       * call javascript function to indicate start of upload
-       */
-      window.call("endUpload", new Object[] { null } );      
+      } ).start();
     }
 
     public void dragExit(DropTargetEvent dte)
@@ -551,12 +613,12 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                 	 */
                 	InputStreamReader r = (InputStreamReader) t.getTransferData(df);
                 	BufferedReader in = new BufferedReader( r );
-            		String line;
-            		StringBuffer sb = new StringBuffer("");
-            		while ((line = in.readLine()) != null) 
-            		{
-            			sb.append(line);
-            		}
+              		String line;
+              		StringBuffer sb = new StringBuffer("");
+              		while ((line = in.readLine()) != null) 
+              		{
+              			sb.append(line);
+              		}
 	                String funcName = getParameter("funcNameStringMimeType");                
 	                if ( funcName != null)
 	                {
