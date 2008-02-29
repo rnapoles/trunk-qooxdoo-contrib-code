@@ -22,7 +22,6 @@ if ( count ($_FILES) )
     {
       die ("<P><FONT COLOR=RED>Problem during upload.</FONT></P>");
     }
-
     echo "<P><FONT COLOR=GREEN>Upload successful.</FONT></P>";
   }
 }
