@@ -9,8 +9,9 @@
  * 
  **********************************************************************/
 
-//error_reporting(E_ALL);
-
+/*
+ * check http basic authentication
+ */ 
 if ( ! isset($_SERVER['PHP_AUTH_USER'])) 
 {
     header('WWW-Authenticate: Basic realm="Upload Area"');
@@ -29,35 +30,50 @@ else
     }
 }
 
-//echo "<p>Correct username $username and password $password!</p>";
-
-if ( count ($_FILES) )
-{
-  $maxfilesize = 30000; //kByte
-  if ( isset ($_FILES['uploadfile'] ) )
-  {
-    if ($_FILES['uploadfile']['size'] > $maxfilesize*1024)
-    {
-       die ("<P><FONT COLOR=RED>File exceeds maximum filesize: $maxfilesize kByte.</FONT></P>");
-    }
-    
-    $tmp_name  = $_FILES['uploadfile']['tmp_name'];
-    $file_name = $_FILES['uploadfile']['name'];
-    $tgt_path  = "./uploads/$file_name";
-    if ( file_exists ( $tgt_path) )
-    {
-      die ("<P><FONT COLOR=RED>File exists - not uploaded.</FONT></P>");
-    }
-    
-    if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
-    {
-      die ("<P><FONT COLOR=RED>Problem during upload.</FONT></P>");
-    }
-    echo "<P><FONT COLOR=GREEN>Upload successful.</FONT></P>";
-  }
-}
-else
+/*
+ * check if something has been uploaded 
+ */
+$field_name = 'uploadfile';
+if ( ! count ($_FILES) or ! isset ( $_FILES[$field_name] ) )
 {
    die ("<P><FONT COLOR=RED>No file data received.</FONT></P>");
 }
+  
+/*
+ * check file size
+ */
+$maxfilesize = 30000; //kByte  
+if ($_FILES['uploadfile']['size'] > $maxfilesize*1024)
+{
+   die ("<P><FONT COLOR=RED>File exceeds maximum filesize: $maxfilesize kByte.</FONT></P>");
+}
+
+/*
+ * get file info
+ */
+$tmp_name  = $_FILES['uploadfile']['tmp_name'];
+$file_name = $_FILES['uploadfile']['name'];
+$tgt_path  = "./uploads/$file_name";
+
+/*
+ * check if file exists
+ */
+if ( file_exists ( $tgt_path) )
+{
+  die ("<P><FONT COLOR=RED>File exists - not uploaded.</FONT></P>");
+}
+
+/*
+ * move temporary file to target location
+ */
+if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
+{
+  die ("<P><FONT COLOR=RED>Problem during upload.</FONT></P>");
+}
+
+/*
+ * report upload succes
+ */
+echo "<P><FONT COLOR=GREEN>Upload successful.</FONT></P>";
+
 ?>
