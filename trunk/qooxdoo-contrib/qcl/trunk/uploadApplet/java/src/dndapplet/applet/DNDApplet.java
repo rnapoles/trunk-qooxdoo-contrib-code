@@ -21,6 +21,8 @@
 package dndapplet.applet;
 
 import java.applet.*;
+
+import javax.print.attribute.standard.JobHoldUntil;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.*;
@@ -45,10 +47,16 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * This label shows the user the files they have selected and their status.
      */
     private JLabel dropLabel;
+    
     /**
      * This is the button which starts the upload process
      */
     private JButton uploadButton;
+
+    /**
+     * This is the button which starts the upload process
+     */
+    private JButton cancelButton;    
     
     /**
      * This is the list of files which will be uploaded
@@ -74,7 +82,6 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
          * 
          */
         dropLabel = new JLabel("Drag and Drop Files Here"); 
-        //dropLabel.setSize( this.getWidth(), this.getWidth() );
         JScrollPane scroll = new JScrollPane(dropLabel);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         DropTarget dt2 = new DropTarget(dropLabel, this);
@@ -86,8 +93,20 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
         uploadButton = new JButton("Upload");
         uploadButton.addActionListener(this);
         uploadButton.setEnabled(false);
-        add(uploadButton, BorderLayout.SOUTH);
+        
 
+        /*
+         * The cancel button
+         */
+        cancelButton = new JButton("Clear");
+        cancelButton.addActionListener(this);
+        cancelButton.setEnabled(false);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(uploadButton,BorderLayout.NORTH);
+        panel.add(cancelButton,BorderLayout.SOUTH);
+        add(panel, BorderLayout.SOUTH);
     }
 
     /**
@@ -104,8 +123,35 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     public String getPrefix ()
     {
     	return prefix;
-    }    
+    }  
     
+    /**
+     * the action that is called when a button is pressed 
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+       if ( e.getSource() == uploadButton )
+       {
+    	   uploadFiles();
+       }
+       else if ( e.getSource() == cancelButton )
+       {
+    	   resetInput();
+       }
+    }
+    
+    /**
+     * resets the user interface
+     */
+    public void resetInput()
+    {
+        fileList.clear();
+        dropLabel.setText("Drag and drop files here.");
+        uploadButton.setText("Upload");
+        uploadButton.setEnabled(false);
+        cancelButton.setText("Clear");
+        cancelButton.setEnabled(false);
+    }
     
     /**
      * This method handles uploading the selected files to the server.
@@ -113,6 +159,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     private void uploadFiles()
     {
     	uploadButton.setText("Uploading files, please wait...");
+    	cancelButton.setText("Cancel upload");
     	uploadButton.setEnabled(false);
     	repaint();
     	
@@ -284,12 +331,9 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
 
         fileList.clear();
         uploadButton.setText("Upload finished.");
+        cancelButton.setText("Clear");
+        cancelButton.setEnabled(false);
 
-    }
-
-    public void actionPerformed(ActionEvent e)
-    {
-       uploadFiles();
     }
 
     public void dragExit(DropTargetEvent dte)
@@ -396,6 +440,8 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                  * upload button.
                  */
                 uploadButton.setEnabled(true);
+                cancelButton.setEnabled(true);
+           
             } 
             else 
             {
