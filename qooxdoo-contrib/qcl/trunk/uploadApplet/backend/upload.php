@@ -16,7 +16,7 @@ if ( ! isset($_SERVER['PHP_AUTH_USER']))
 {
     header('WWW-Authenticate: Basic realm="Upload Area"');
     header('HTTP/1.0 401 Unauthorized');
-    echo 'Access denied';
+    echo '<font color=red>Access denied</font>';
     exit;
 } 
 else 
@@ -25,7 +25,7 @@ else
     $password = $_SERVER['PHP_AUTH_PW'];
     if ( $username != "username" or $password != "password" )
     {
-      echo "<P><FONT COLOR=RED>Wrong username $username or password $password!</P>";
+      echo "<font color=red>Wrong username $username or password $password!</font>";
       exit;
     }
 }
@@ -36,7 +36,7 @@ else
 $field_name = 'uploadfile';
 if ( ! count ($_FILES) or ! isset ( $_FILES[$field_name] ) )
 {
-   die ("<P><FONT COLOR=RED>No file data received.</FONT></P>");
+   die ("<FONT COLOR=RED>No file data received (File might be to large).</FONT>");
 }
   
 /*
@@ -45,7 +45,7 @@ if ( ! count ($_FILES) or ! isset ( $_FILES[$field_name] ) )
 $maxfilesize = 30000; //kByte  
 if ($_FILES['uploadfile']['size'] > $maxfilesize*1024)
 {
-   die ("<P><FONT COLOR=RED>File exceeds maximum filesize: $maxfilesize kByte.</FONT></P>");
+   die ("<FONT COLOR=RED>File exceeds maximum filesize: $maxfilesize kByte.</FONT>");
 }
 
 /*
@@ -60,7 +60,7 @@ $tgt_path  = "./uploads/$file_name";
  */
 if ( file_exists ( $tgt_path) )
 {
-  die ("<P><FONT COLOR=RED>File exists - not uploaded.</FONT></P>");
+  die ("<FONT COLOR=RED>File exists - not uploaded.</FONT>");
 }
 
 /*
@@ -68,12 +68,13 @@ if ( file_exists ( $tgt_path) )
  */
 if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
 {
-  die ("<P><FONT COLOR=RED>Problem during upload.</FONT></P>");
+  echo nl2br(print_r($_FILES,true));
+  die ("<FONT COLOR=RED>Problem during upload.</FONT>");
 }
 
 /*
  * report upload succes
  */
-echo "<P><FONT COLOR=GREEN>Upload successful.</FONT></P>";
+echo "<FONT COLOR=GREEN>Upload successful.</FONT>";
 
 ?>
