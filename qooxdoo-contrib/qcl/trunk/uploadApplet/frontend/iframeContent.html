@@ -14,10 +14,13 @@
           mayscript="true"
           width="100%" height="100%">
             
-          <param name="uploadPath" value="../../../backend/php/services/uploader.php">
-          <param name="funcNameHandleError" value="handleError">
-          <param name="funcNameStringMimeType" value="handleStringMimeType">
-          <param name="funcNameUnknownMimeType" value="handleUnkownMimeType">
+          <param name="uploadPath"                  value="../../../backend/php/services/uploader.php">
+          <param name="funcNameHandleError"         value="handleError">
+          <param name="funcNamehandleStartUpload"   value="handleStartUpload">
+          <param name="funcNamehandleCurrentUpload" value="handleCurrentUpload">
+          <param name="funcNamehandleEndUpload"     value="handleEndUpload">
+          <param name="funcNameStringMimeType"      value="handleStringMimeType">
+          <param name="funcNameUnknownMimeType"     value="handleUnkownMimeType">
           
           <!-- the form will be displayed if the browser cannot display applets -->
    	      <form enctype="multipart/form-data" action="../../../backend/php/services/uploader.php" method="post">
