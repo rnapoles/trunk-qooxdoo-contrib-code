@@ -548,7 +548,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
             } 
             catch (Exception e) 
             {
-              display("<font color=red>There was a problem. Could not upload</font>");
+              display("<font color=red>An error occurred: "+e.getMessage()+"</font>");
               e.printStackTrace();
             } 
             finally 
