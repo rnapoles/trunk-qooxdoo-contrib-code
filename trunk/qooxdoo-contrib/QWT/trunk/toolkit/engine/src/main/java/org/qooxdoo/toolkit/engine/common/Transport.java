@@ -53,6 +53,24 @@ public class Transport {
     public static final String SESSION = "/" + SESSION_RAW;
     
     private static int sessionId = 0;
+
+    private static Object currentRequest = null;
+    
+    /** IE 7 hangs if an application is reloaded without terminating! */
+    public static void terminate() {
+        Object obj;
+        
+        obj = currentRequest;  // if the request finishes in the meanwhile
+        if (obj != null) {
+            System.out.println("aborting request ...");
+            abortRequest(obj);
+            currentRequest = null;
+            System.out.println("done");
+        }
+    }
+    
+    /** @native request.abort() */
+    private static native void abortRequest(Object request);
     
     public static Object clientArgument(Registry registry) {
         String str;
@@ -76,11 +94,13 @@ public class Transport {
          req.onreadystatechange = function() {
            if (req.readyState == 4) {
              org.qooxdoo.toolkit.engine.common.Transport.processCall(REGISTRY, sessionNo, req.status, req.responseText);
+             org.qooxdoo.toolkit.engine.common.Transport.currentRequest = null;
            }
          }
          req.open("POST", url + sessionNo, true);   
          req.setRequestHeader("Content-Type", "text/plain");   
          req.send(null);     
+         org.qooxdoo.toolkit.engine.common.Transport.currentRequest = req;
      */
     private static native void requestEvent(String url, int sessionNo);
     

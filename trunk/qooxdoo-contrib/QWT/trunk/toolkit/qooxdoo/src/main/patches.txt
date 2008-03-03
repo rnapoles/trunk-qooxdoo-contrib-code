@@ -1,3 +1,7 @@
+### qx/application/Gui.java
+***
+    terminate : function() {},
+    terminate : function() { org.qooxdoo.toolkit.engine.common.Transport.terminate(); },
 ### qx/ui/table/cellrenderer/Html.java
 ***
     public native String _getContentHtml(Object cellInfo);
