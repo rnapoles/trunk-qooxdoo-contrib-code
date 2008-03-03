@@ -289,7 +289,6 @@ class qcl_object extends patched_object {
 	 */
 	function raiseError( $message, $number=null, $file=null, $line=null )
 	{
-		global $error;
 		if ( $file and $line )
 		{
 			$message .= " in $file, line $line.";
@@ -301,8 +300,17 @@ class qcl_object extends patched_object {
       $this->getStackTrace(), 
       QCL_LOG_ERROR
     );
-		$error->setError( $number, stripslashes( $message ) );
- 		$error->SendAndExit();
+    // pass error to jsonrpc error object ( or end gracefully)
+    global $error;
+    if ( is_object($error) )
+    {
+  		$error->setError( $number, stripslashes( $message ) );
+   		$error->SendAndExit();
+      // never gets here
+      exit;
+    }
+    echo $message;
+    exit;
 	}
 
   /**
