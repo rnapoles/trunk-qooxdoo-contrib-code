@@ -256,7 +256,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
       }
       String html = "" 
         + "<html>"
-        + "<head><style>body { font: Arial 10px }</style></head>"
+        + "<head><style>body { font: Arial 8px }</style></head>"
         + "<body>"
         + dropDisplayPaneContent.toString()
         + "</body>"
@@ -297,12 +297,12 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
            * call javascript function to indicate start of upload
            */
           Long number = new Long(fileList.size());
-          String funcName = getParameter("funcNameStartUpload");
+          String funcName = getParameter("funcNameHandleStartUpload");
           if ( funcName != null )
           {
             try
             {
-              window.call("startUpload", new Object[] { number  } );
+              window.call(funcName, new Object[] { number  } );
             }
             catch( JSException e )
             {
@@ -577,9 +577,9 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                 {
                   window.call(funcName3, new Object[] { e.getMessage() } );
                 }
-                catch ( JSException e2 )
+                catch ( JSException e3 )
                 {
-                  System.out.println( e2.getMessage() );
+                  System.out.println( e3.getMessage() );
                 }              
               }
               display("<font color=red>An error occurred: "+e.getMessage()+"</font>");
@@ -762,7 +762,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                 sb.append(line);
               }
                             
-              String funcName1 = getParameter("funcNameStringMimeType");   
+              String funcName1 = getParameter("funcNameHandleStringMimeType");   
               
               if ( funcName1 != null)
               {
@@ -782,7 +782,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                * unknown mimetype
                */
               Object data = t.getTransferData(df);    
-              String funcName2 = getParameter("funcNameUnknownMimeType");
+              String funcName2 = getParameter("funcNameHandleUnknownMimeType");
               if ( funcName2 != null)
               {
                 try
