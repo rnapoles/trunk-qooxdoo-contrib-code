@@ -56,7 +56,7 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
 
     @Override
     public void destroy() {
-        System.out.println("destroy");
+        application.log.info("[destroy]");
     }
     
     public void event(CometEvent event) throws IOException, ServletException {
@@ -67,11 +67,11 @@ public class SessionServlet extends HttpServlet implements CometProcessor {
         path = event.getHttpServletRequest().getPathInfo();
         client = application.getClient();
         session = session(client, path);
-        System.out.println(path + ": session=" + session + ", event(" + event.hashCode() + "): " 
-                + event.getEventType() + " " + event.getEventSubType());
+        application.log.info("["  +(session == null ? "+" : session.getId()) + "] " 
+                + event.getEventType() + " " + event.getEventSubType() + " (" + event.hashCode() + ")");
         if (session == null) {
             if (event.getEventType() != CometEvent.EventType.BEGIN) {
-                throw new IllegalStateException(path + ": unexpected event " + event.getEventType());
+                throw new IllegalStateException(path + ": expected BEGIN event, got " + event.getEventType());
             }
             client.startSession(event.getHttpServletResponse());
             event.close();
