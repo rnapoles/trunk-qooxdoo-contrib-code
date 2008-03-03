@@ -16,6 +16,7 @@
           width="300" height="200">
             
           <param name="uploadPath" value="../backend/upload.php">
+          <param name="funcNameHandleError" value="handleError">
           <param name="funcNameStringMimeType" value="handleStringMimeType">
           <param name="funcNameUnknownMimeType" value="handleUnkownMimeType">
           
@@ -118,6 +119,16 @@
          {
            document.getElementById("statusLabel").innerHTML = "Upload finished";
          }
+
+         /**
+          * handle errors
+          * @param {String} error message
+          */
+         function handleError( message )
+         {
+           document.getElementById("statusLabel").innerHTML = message;
+         }
+
                  
          /**
           * handle mime types that can be represented as a string
