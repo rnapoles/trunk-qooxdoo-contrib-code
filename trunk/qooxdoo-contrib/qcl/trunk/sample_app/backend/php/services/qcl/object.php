@@ -319,7 +319,7 @@ class qcl_object extends patched_object {
    */
   function getStackTrace()
   {
-    return implode("\n",$GLOBALS['_stackTrace']) ;
+    return implode("\n",array_reverse($GLOBALS['_stackTrace'])) ;
   }
 	
 	/**
