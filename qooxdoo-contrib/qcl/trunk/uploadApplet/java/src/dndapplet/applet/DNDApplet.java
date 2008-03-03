@@ -47,7 +47,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * Label on which files are dropped and which shows the user 
      * the files they have selected and their status.
      */
-    private JEditorPane dropDisplayPane;
+    private JTextPane dropDisplayPane;
 
     /**
      * The cached content of the EditorPane
@@ -58,6 +58,11 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * The scroll area in which the dropLabel is embedded
      */
     private JScrollPane scrollPane;    
+    
+    /**
+     * The drop target
+     */
+    private DropTarget dropTarget;    
     
     /**
      * This is the button which starts the upload process
@@ -110,13 +115,19 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     public void init()
     {
-      
-      /**
+      /*
        * the window object
        */
-      window = JSObject.getWindow(this);
+      try
+      {
+        window = JSObject.getWindow(this);
+      }
+      catch ( JSException e1 )
+      {
+        System.out.println("Cannot get a reference to the container window.");
+      }
       
-      /**
+      /*
        * set the layout for the applet
        */
       setLayout(new BorderLayout());
@@ -124,14 +135,13 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
       /* 
        * the drop area displays the files
        * for upload and the response messages
-       * 
        */
-      dropDisplayPane  = new JEditorPane();
+      dropDisplayPane  = new JTextPane();
       dropDisplayPane.setContentType("text/html");
       dropDisplayPane.setEditable(false);
       scrollPane = new JScrollPane(dropDisplayPane);
       scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-      new DropTarget(dropDisplayPane, this);
+      dropTarget = new DropTarget(dropDisplayPane, this);
       add(scrollPane, BorderLayout.CENTER);        
       
       /*
@@ -167,7 +177,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     }
 
     /**
-     * public method accessible to javascript
+     * public method accessible to JavaScript
      */
     public void setPrefix ( String p )
     {
@@ -175,7 +185,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     }
 
     /**
-     * public method accessible to javascript
+     * public method accessible to JavaScript
      */
     public String getPrefix ()
     {
@@ -183,7 +193,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     }  
 
     /**
-     * public method accessible to javascript
+     * public method accessible to JavaScript
      */
     public void setUsername ( String u )
     {
@@ -191,7 +201,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     }
 
     /**
-     * public method accessible to javascript
+     * public method accessible to JavaScript
      */
     public void setPassword ( String pw )
     {
@@ -619,8 +629,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      */
     private void fromTransferable(Transferable t)
     {
-        if (t == null)
-            return;
+        if (t == null) return;
 
         /*
          * The user may have dropped a file or anything else from any application
@@ -630,89 +639,91 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
          * contains the text without any of this information.  We need to look for
          * the data flavor we know how to support and read the list of files from it.
          */
-        try {
-            DataFlavor flavors[] = t.getTransferDataFlavors();
-            
-            if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                /*
-                 * We are looking for the list of files data flavor.  This will be a
-                 * list of the paths to the files the user dragged and dropped on to
-                 * our application.
-                 */
-                List list = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-                
-                /**
-                 * only add to the list if not already in the list.
-                 */
-                if ( ! fileList.containsAll(list) )
-                {
-                  fileList.addAll(list);
-                  uploadButton.setText("Upload " + fileList.size() + " files.");
-                }
-                
-                display(null); // clear display
-                
-                /*
-                 * We are going to take the path to each file and add it to the list
-                 * so the user can see which files they have selected.
-                 */
-                for (int i = 0; i < fileList.size(); i++) {
-                    File f = (File) fileList.get(i);
-                    String fileName = f.getName();
-                    int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
-                    display(fileName + " (" + fileSize + " kB)<br>");
-                }
+        try 
+        {
 
-                /*
-                 * Now that we have at least one file to upload we can enable the 
-                 * upload button.
-                 */
-                uploadButton.setEnabled(true);
-                cancelButton.setEnabled(true);
-           
-            } 
-            else 
+          if ( t.isDataFlavorSupported( DataFlavor.javaFileListFlavor) ) 
+          {
+            /*
+             * We are looking for the list of files data flavor.  This will be a
+             * list of the paths to the files the user dragged and dropped on to
+             * our application.
+             */
+            List list = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+            
+            /*
+             * only add to the list if not already in the list.
+             */
+            if ( ! fileList.containsAll(list) )
             {
-                /*
-                 * pass other data flavors to javascript
-                 */
-                DataFlavor df = DataFlavor.selectBestTextFlavor(flavors);
-                String mimeType = df.getMimeType();
-                String representationClass = df.getDefaultRepresentationClassAsString();
-                
-                //JOptionPane.showMessageDialog(this, representationClass);
-                if ( representationClass == "java.io.InputStream" )
-                {
-                  /*
-                   * mimetype can be read as a string
-                   */
-                  InputStreamReader r = (InputStreamReader) t.getTransferData(df);
-                  BufferedReader in = new BufferedReader( r );
-                  String line;
-                  StringBuffer sb = new StringBuffer("");
-                  while ((line = in.readLine()) != null) 
-                  {
-                    sb.append(line);
-                  }
-                  String funcName = getParameter("funcNameStringMimeType");                
-                  if ( funcName != null)
-                  {
-                    window.call(funcName, new Object[] { mimeType, sb.toString() } );
-                  }
-                }
-                else
-                {
-                  /*
-                   * unknown mimetype
-                   */
-                  Object data = t.getTransferData(df);    
-                  String funcName = getParameter("funcNameUnknownMimeType");                
-                  if ( funcName != null)
-                  {
-                    window.call(funcName, new Object[] { mimeType, data } );
-                  }
-                }
+              fileList.addAll(list);
+              uploadButton.setText("Upload " + fileList.size() + " files.");
             }
+            
+            display(null); // clear display
+            
+            /*
+             * We are going to take the path to each file and add it to the list
+             * so the user can see which files they have selected.
+             */
+            for (int i = 0; i < fileList.size(); i++) 
+            {
+              File f = (File) fileList.get(i);
+              String fileName = f.getName();
+              int fileSize = (int) Math.floor(  (double) f.length() / 1024 );
+              display( fileName + " (" + fileSize + " kB)<br>" );
+            }
+
+            /*
+             * Now that we have at least one file to upload we can enable the 
+             * upload button.
+             */
+            uploadButton.setEnabled(true);
+            cancelButton.setEnabled(true);           
+          } 
+          else 
+          {
+            /*
+             * pass other data flavors to javascript
+             */
+            DataFlavor flavors[] = t.getTransferDataFlavors();
+            DataFlavor df = DataFlavor.selectBestTextFlavor(flavors);
+            String mimeType = df.getMimeType();
+            String representationClass = df.getDefaultRepresentationClassAsString();
+            
+            //JOptionPane.showMessageDialog(this, representationClass);
+            if ( representationClass == "java.io.InputStream" )
+            {
+              /*
+               * mimetype can be read as a string
+               */
+              InputStreamReader r = (InputStreamReader) t.getTransferData(df);
+              BufferedReader in = new BufferedReader( r );
+              String line;
+              StringBuffer sb = new StringBuffer("");
+              while ((line = in.readLine()) != null) 
+              {
+                sb.append(line);
+              }
+              String funcName = getParameter("funcNameStringMimeType");                
+              if ( funcName != null)
+              {
+                window.call(funcName, new Object[] { mimeType, sb.toString() } );
+              }
+            }
+            else
+            {
+              /*
+               * unknown mimetype
+               */
+              Object data = t.getTransferData(df);    
+              String funcName = getParameter("funcNameUnknownMimeType");                
+              if ( funcName != null)
+              {
+                window.call(funcName, new Object[] { mimeType, data } );
+              }
+            }
+          }
         } 
         catch (Exception ex) 
         {
