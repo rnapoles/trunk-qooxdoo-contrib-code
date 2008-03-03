@@ -14,8 +14,11 @@
         	code="dndapplet/applet/DNDApplet" archive="signed_dndapplet.jar"
           mayscript="true"
           width="300" height="200">
-            
+          
+          <!-- the uploadPath parameter MUST be supplied and points to the script that handles the upload -->
           <param name="uploadPath"                  value="../backend/upload.php">
+          
+          <!-- the following parameters are optional and specify the names of functions that are called -->
           <param name="funcNameHandleError"         value="handleError">
           <param name="funcNamehandleStartUpload"   value="handleStartUpload">
           <param name="funcNamehandleCurrentUpload" value="handleCurrentUpload">
