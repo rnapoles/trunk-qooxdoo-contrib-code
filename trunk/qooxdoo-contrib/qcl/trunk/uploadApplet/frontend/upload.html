@@ -8,17 +8,20 @@
    <head>
      <title>Drag & Drop Java Applet Demo</title>
    </head>
-    <body>
+   <body>
         <applet 
           name="uploadApplet"
         	code="dndapplet/applet/DNDApplet" archive="signed_dndapplet.jar"
           mayscript="true"
           width="300" height="200">
             
-          <param name="uploadPath" value="../backend/upload.php">
-          <param name="funcNameHandleError" value="handleError">
-          <param name="funcNameStringMimeType" value="handleStringMimeType">
-          <param name="funcNameUnknownMimeType" value="handleUnkownMimeType">
+          <param name="uploadPath"                  value="../backend/upload.php">
+          <param name="funcNameHandleError"         value="handleError">
+          <param name="funcNamehandleStartUpload"   value="handleStartUpload">
+          <param name="funcNamehandleCurrentUpload" value="handleCurrentUpload">
+          <param name="funcNamehandleEndUpload"     value="handleEndUpload">          
+          <param name="funcNameStringMimeType"      value="handleStringMimeType">
+          <param name="funcNameUnknownMimeType"     value="handleUnkownMimeType">
           
           <!-- the form will be displayed if the browser cannot display applets -->
    	      <form enctype="multipart/form-data" action="../backend/upload.php" method="post">

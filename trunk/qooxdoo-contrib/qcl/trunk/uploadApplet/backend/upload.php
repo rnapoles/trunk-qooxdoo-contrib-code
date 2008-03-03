@@ -33,7 +33,7 @@ else
  * check if something has been uploaded 
  */
 $field_name = 'uploadfile';
-if ( ! count ($_FILES) or ! isset ( $_FILES[$field_name] ) )
+if ( ! isset($_FILES) or ! count ($_FILES) or ! isset ( $_FILES[$field_name] ) )
 {
    die ("<FONT COLOR=RED>No file data received (File might be to large).</FONT>");
 }

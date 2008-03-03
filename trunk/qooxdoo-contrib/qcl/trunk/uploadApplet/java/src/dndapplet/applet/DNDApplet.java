@@ -297,7 +297,18 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
            * call javascript function to indicate start of upload
            */
           Long number = new Long(fileList.size());
-          window.call("startUpload", new Object[] { number  } );
+          String funcName = getParameter("funcNameStartUpload");
+          if ( funcName != null )
+          {
+            try
+            {
+              window.call("startUpload", new Object[] { number  } );
+            }
+            catch( JSException e )
+            {
+              System.out.println(e.getMessage());
+            }
+          }
           
           /*
            * update applet display
@@ -349,9 +360,20 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
             File f = (File) fileList.get(i);                
     
             /*
-             * call javascript function to indicate current upload
+             * call JavaScript function to indicate current upload
              */
-            window.call("currentUpload", new Object[] { f.getName() } );        
+            String funcName2 = getParameter("funcNameHandleCurrentUpload");
+            if ( funcName2 != null )
+            {
+              try
+              {
+                window.call(funcName2, new Object[] { f.getName() } );
+              }
+              catch( JSException e3 )
+              {
+                System.out.println(e3.getMessage());
+              }            
+            }
             
             /*
              * display upload
@@ -548,6 +570,18 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
             } 
             catch (Exception e) 
             {
+              String funcName3 = getParameter("funcNameHandleError");
+              if ( funcName3 != null )
+              {
+                try
+                {
+                  window.call(funcName3, new Object[] { e.getMessage() } );
+                }
+                catch ( JSException e2 )
+                {
+                  System.out.println( e2.getMessage() );
+                }              
+              }
               display("<font color=red>An error occurred: "+e.getMessage()+"</font>");
               e.printStackTrace();
             } 
@@ -569,9 +603,20 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
           cancelButton.setEnabled(false);
           
           /*
-           * call javascript function to indicate start of upload
+           * call JavaScript function to indicate start of upload
            */
-          window.call("endUpload", new Object[] { null } );      
+          String funcName4 = getParameter("funcNameHandleEndUpload");
+          if ( funcName4 != null )
+          {
+            try
+            {
+              window.call(funcName4, new Object[] { null } );
+            }
+            catch ( JSException e4 )
+            {
+              System.out.println( e4.getMessage() );
+            }
+          }
         }
       } );
       
@@ -705,10 +750,17 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
               {
                 sb.append(line);
               }
-              String funcName = getParameter("funcNameStringMimeType");                
-              if ( funcName != null)
+              String funcName1 = getParameter("funcNameStringMimeType");                
+              if ( funcName1 != null)
               {
-                window.call(funcName, new Object[] { mimeType, sb.toString() } );
+                try
+                {
+                  window.call(funcName1, new Object[] { mimeType, sb.toString() } );
+                }
+                catch ( JSException e1 )
+                {
+                  System.out.println( e1.getMessage() );
+                }                
               }
             }
             else
@@ -717,10 +769,17 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                * unknown mimetype
                */
               Object data = t.getTransferData(df);    
-              String funcName = getParameter("funcNameUnknownMimeType");                
-              if ( funcName != null)
+              String funcName2 = getParameter("funcNameUnknownMimeType");
+              if ( funcName2 != null)
               {
-                window.call(funcName, new Object[] { mimeType, data } );
+                try
+                {
+                  window.call(funcName2, new Object[] { mimeType, data } );
+                }
+                catch ( JSException e2 )
+                {
+                  System.out.println( e2.getMessage() );
+                }  
               }
             }
           }
