@@ -742,15 +742,28 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
               /*
                * mimetype can be read as a string
                */
-              InputStreamReader r = (InputStreamReader) t.getTransferData(df);
-              BufferedReader in = new BufferedReader( r );
-              String line;
               StringBuffer sb = new StringBuffer("");
+              Object td = t.getTransferData(df);
+              InputStreamReader r;
+              
+              if (td instanceof ByteArrayInputStream)
+              {
+                r = new InputStreamReader( (ByteArrayInputStream) td);
+              }                
+              else
+              {
+                r = (InputStreamReader) td;
+              }
+              
+              String line;
+              BufferedReader in = new BufferedReader( r );
               while ((line = in.readLine()) != null) 
               {
                 sb.append(line);
               }
-              String funcName1 = getParameter("funcNameStringMimeType");                
+                            
+              String funcName1 = getParameter("funcNameStringMimeType");   
+              
               if ( funcName1 != null)
               {
                 try
