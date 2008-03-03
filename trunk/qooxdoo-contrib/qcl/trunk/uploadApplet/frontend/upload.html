@@ -14,17 +14,14 @@
         	code="dndapplet/applet/DNDApplet" archive="signed_dndapplet.jar"
           mayscript="true"
           width="300" height="200">
-          
-          <!-- the uploadPath parameter MUST be supplied and points to the script that handles the upload -->
-          <param name="uploadPath"                  value="../backend/upload.php">
-          
-          <!-- the following parameters are optional and specify the names of functions that are called -->
-          <param name="funcNameHandleError"         value="handleError">
-          <param name="funcNamehandleStartUpload"   value="handleStartUpload">
-          <param name="funcNamehandleCurrentUpload" value="handleCurrentUpload">
-          <param name="funcNamehandleEndUpload"     value="handleEndUpload">          
-          <param name="funcNameStringMimeType"      value="handleStringMimeType">
-          <param name="funcNameUnknownMimeType"     value="handleUnkownMimeType">
+            
+          <param name="uploadPath"                      value="../backend/upload.php">
+          <param name="funcNameHandleError"             value="handleError">
+          <param name="funcNameHandleStartUpload"       value="handleStartUpload">
+          <param name="funcNameHandleCurrentUpload"     value="handleCurrentUpload">
+          <param name="funcNameHandleEndUpload"         value="handleEndUpload">
+          <param name="funcNameHandleStringMimeType"    value="handleStringMimeType">
+          <param name="funcNameHandleUnknownMimeType"   value="handleUnkownMimeType">
           
           <!-- the form will be displayed if the browser cannot display applets -->
    	      <form enctype="multipart/form-data" action="../backend/upload.php" method="post">
@@ -102,7 +99,7 @@
           * called when upload starts with number of files to transmit
           * @param {int} number
           */
-         function startUpload ( number )
+         function handleStartUpload ( number )
          {
            window._number = number;
            window._index = 1;
@@ -112,7 +109,7 @@
           * called when a file is uploaded
           * @param {String} filename
           */
-         function currentUpload ( filename )
+         function handleCurrentUpload ( filename )
          {
            msg = "Uploading " + filename + " (" + (window._index++) + "/" + window._number + ")...";
            document.getElementById("statusLabel").innerHTML = msg;
@@ -121,7 +118,7 @@
          /**
           * called when upload is finished
           */
-         function endUpload()
+         function handleEndUpload()
          {
            document.getElementById("statusLabel").innerHTML = "Upload finished";
          }
