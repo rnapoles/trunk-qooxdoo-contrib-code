@@ -25,8 +25,7 @@ else
     $password = $_SERVER['PHP_AUTH_PW'];
     if ( $username != "username" or $password != "password" )
     {
-      echo "<font color=red>Wrong username $username or password $password!</font>";
-      exit;
+      die ("<font color=red>Wrong username $username or password $password!</font>");
     }
 }
 
@@ -68,7 +67,6 @@ if ( file_exists ( $tgt_path) )
  */
 if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
 {
-  echo nl2br(print_r($_FILES,true));
   die ("<FONT COLOR=RED>Problem during upload.</FONT>");
 }
 
