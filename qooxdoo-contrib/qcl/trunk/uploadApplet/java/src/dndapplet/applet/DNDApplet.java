@@ -124,7 +124,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
       }
       catch ( JSException e1 )
       {
-        System.out.println("Cannot get a reference to the container window.");
+        System.out.println("Cannot get a reference to the container window:" + e1.getMessage() );
       }
       
       /*
@@ -294,11 +294,11 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
           display(null);
           
           /*
-           * call javascript function to indicate start of upload
+           * call JavaScript function to indicate start of upload
            */
           Long number = new Long(fileList.size());
           String funcName = getParameter("funcNameHandleStartUpload");
-          if ( funcName != null )
+          if ( funcName != null && window != null )
           {
             try
             {
@@ -363,7 +363,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
              * call JavaScript function to indicate current upload
              */
             String funcName2 = getParameter("funcNameHandleCurrentUpload");
-            if ( funcName2 != null )
+            if ( funcName2 != null && window != null )
             {
               try
               {
@@ -571,7 +571,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
             catch (Exception e) 
             {
               String funcName3 = getParameter("funcNameHandleError");
-              if ( funcName3 != null )
+              if ( funcName3 != null && window != null )
               {
                 try
                 {
@@ -606,7 +606,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
            * call JavaScript function to indicate start of upload
            */
           String funcName4 = getParameter("funcNameHandleEndUpload");
-          if ( funcName4 != null )
+          if ( funcName4 != null && window != null )
           {
             try
             {
@@ -764,7 +764,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                             
               String funcName1 = getParameter("funcNameHandleStringMimeType");   
               
-              if ( funcName1 != null)
+              if ( funcName1 != null && window != null )
               {
                 try
                 {
@@ -783,7 +783,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                */
               Object data = t.getTransferData(df);    
               String funcName2 = getParameter("funcNameHandleUnknownMimeType");
-              if ( funcName2 != null)
+              if ( funcName2 != null && window != null )
               {
                 try
                 {
