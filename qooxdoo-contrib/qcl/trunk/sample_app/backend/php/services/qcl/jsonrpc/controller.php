@@ -68,7 +68,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	function configureService()
 	{
 		global $serviceComponents;
-		$currPath = servicePathPrefix;
+		$currPath = defined(servicePathPrefix) ? servicePathPrefix : "";
 		$this->ini = array();
 		$found = false;
     
