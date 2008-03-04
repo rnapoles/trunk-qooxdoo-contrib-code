@@ -24,7 +24,7 @@
  * @param value {String} Initial content
  * @param styleInformation {String | Map | null} Optional style information for the editor's document
  *                                               Can be a string or a map (example: { "p" : "padding:2px" }
- * @param source {String} source of the iframe 
+ * @param source {String} source of the iframe
  */
 qx.Class.define("htmlarea.HtmlArea",
 {
@@ -54,42 +54,42 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Wrapper method for focus events
-     * 
+     *
      * @param e {Object} Event object
      */
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
 
 
     /**
-     * Wrapper method for mouse events. 
+     * Wrapper method for mouse events.
      * The mouse events are primarily needed to examine the current cursor context.
      * The cursor context examines if the current text node is formatted in any manner
      * like bold or italic. An event is thrown to e.g. activate/deactivate toolbar buttons.
-     * 
+     *
      * @param e {Object} Event object
      */
     this.__handleMouseEvent = qx.lang.Function.bind(this._handleMouseEvent, this);
 
     /*
-     * Catch load event - no timer needed which polls if the component is ready and 
+     * Catch load event - no timer needed which polls if the component is ready and
      * to set the editor in the "editable" mode.
      */
     this.addEventListener("load", this._loaded, this);
 
     /*
      * Catch key events. The DOM key events get transformed to qooxdoo key event objects
-     * to use facilities like "keyIdentifier". It is neccesary to catch the events directly 
-     * at the editor instance. This is the point to which the qooxdoo key event handler 
+     * to use facilities like "keyIdentifier". It is neccesary to catch the events directly
+     * at the editor instance. This is the point to which the qooxdoo key event handler
      * dispatches all his events.
      */
     this.addEventListener("keyup", this._handleKeyUp, this);
     this.addEventListener("keydown", this._handleKeyDown, this);
     this.addEventListener("keypress", this._handleKeyPress, this);
-    
+
     if (qx.core.Variant.isSet("qx.client", "mshtml"))
     {
       this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
-    }    
+    }
 
     /* Check for available content */
     if (typeof value == "string") {
@@ -106,31 +106,31 @@ qx.Class.define("htmlarea.HtmlArea",
       /*
        * To correct the broken key handling in Opera "fix" the meanings of
        * the several keyCodes manually to the desired Identifiers
-       * 
+       *
        * However for these keys it is bit more complicated:
-       * 
+       *
        * KEY   RESULT   POSSIBLE SOLUTION
        * ************************************
        * $     "Home"   SHIFT + "Home"  -> $
        * (     "Down"   SHIFT + "Down"  -> (
        * '     "Right"  SHIFT + "Right" -> '
-       * 
+       *
        */
       var keyEventHandler = qx.event.handler.KeyEventHandler.getInstance();
-    
+
       /*
        * fix mapping for the keys "#", "-", "P", "S", "X"
        * for other keys there maybe also a problem with the wrong identifier,
        * but here are only these keys fixed which are needed for the smiley handling
-       */   
+       */
       keyEventHandler._keyCodeToIdentifierMap[35]  = "#";
       keyEventHandler._keyCodeToIdentifierMap[45]  = "-";
       keyEventHandler._keyCodeToIdentifierMap[112] = "P";
       keyEventHandler._keyCodeToIdentifierMap[115] = "S";
       keyEventHandler._keyCodeToIdentifierMap[120] = "X";
     }
-    
-    /* 
+
+    /*
      * Build up this commandManager object to stack all commands
      * which are arriving before the "real" commandManager is initialised.
      * Once initialised the stacked commands will be executed.
@@ -151,33 +151,33 @@ qx.Class.define("htmlarea.HtmlArea",
      * Thrown when the editor is loaded.
      */
     "load"             : "qx.event.type.Event",
-    
+
     /**
      * Thrown when the editor gets an error at loading time.
      */
     "loadingError"     : "qx.event.type.DataEvent",
-    
+
     /**
      * Only available if messengerMode is active. This event returns the current content of the editor.
      */
     "messengerContent" : "qx.event.type.DataEvent",
-    
+
     /**
      * This event consists of two boolean values. These values represent if the text in the current cursor context is bo
      */
     "cursorContext"    : "qx.event.type.DataEvent",
-    
+
     /**
      * This event is dispatched when the editor is ready to use
      */
     "ready"            : "qx.event.type.Event",
-    
+
     /**
      * This event is dispatched when the editor gets the focus and his own handling is done
      */
     "focused"          : "qx.event.type.Event",
-    
-    
+
+
     /**
      * This event is dispatched when the document receives an "focusout" event
      */
@@ -197,14 +197,14 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Formats the style information. If the styleInformation was passed
      * in as a map it gets converted to a string.
-     * 
+     *
      * @type static
      * @param styleInformation {Map} CSS styles which should be applied at startup of the editor
      * @return {String}
      */
     __formatStyleInformation : function (styleInformation)
     {
-      if (styleInformation == null || styleInformation == "") 
+      if (styleInformation == null || styleInformation == "")
       {
         return "";
       }
@@ -385,30 +385,30 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return s;
     },
-    
-    
+
+
     /**
      * Checks if the given node is a block node
-     * 
+     *
      * @type static
      * @param node {Node} Node
      * @return {Boolean} whether it is a block node
      */
     isBlockNode : function(node) {
-			if (!qx.dom.Node.isElement(node))
-			{
-			 return false;
-			}
-			
-			node = node.nodeName || node;
-      
-			return /^(body|form|textarea|fieldset|ul|ol|dl|li|div|p|h[1-6]|quote|pre|table|thead|tbody|tfoot|tr|td|th|iframe|address|blockquote)$/.test(node.toLowerCase());
-		},
-		
-		
-		/** 
+      if (!qx.dom.Node.isElement(node))
+      {
+       return false;
+      }
+
+      node = node.nodeName || node;
+
+      return /^(body|form|textarea|fieldset|ul|ol|dl|li|div|p|h[1-6]|quote|pre|table|thead|tbody|tfoot|tr|td|th|iframe|address|blockquote)$/.test(node.toLowerCase());
+    },
+
+
+    /**
      * Checks if one element is in the list of elements that are allowed to contain a paragraph in HTML
-     *  
+     *
      * @param node {Node} node to check
      * @return {Boolean}
      */
@@ -418,9 +418,9 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         return false;
       }
-      
+
       node = node.nodeName || node;
-      
+
       return /^(body|td|th|caption|fieldset|div)$/.test(node.toLowerCase());
     }
  },
@@ -481,7 +481,7 @@ qx.Class.define("htmlarea.HtmlArea",
       check : "Boolean",
       init  : true
     },
-    
+
     /**
      * Toggles whether to use Undo/Redo
      */
@@ -516,15 +516,15 @@ qx.Class.define("htmlarea.HtmlArea",
         footer  : '</body></html>'
       }
     },
-    
+
 
     /** private field which holds the content of the editor  */
     __value        : "",
 
-    
-    /** 
+
+    /**
      * Setting the value of the editor
-     * 
+     *
      * @type member
      * @param value {String} new content to set
      * @return {void}
@@ -537,32 +537,32 @@ qx.Class.define("htmlarea.HtmlArea",
          this.__doc.body.innerHTML = value;
        }
     },
-    
-    
-    /** 
+
+
+    /**
      * Getting the value of the editor.
      * <b>Attention</b>: The content of the editor is synced
      * at focus/blur events, but not on every input. This method
      * is not delivering the current content in a stable manner.
      * To get the current value of the editor use the {@link #getComputedValue}
      * method instead.
-     * 
+     *
      * @type member
      * @return {String} value of the editor
      */
     getValue : function()
     {
-      return this.__value; 
+      return this.__value;
     },
-    
-    
-    /** 
+
+
+    /**
      * Getting the computed value of the editor.
      * This method returns the current value of the editor traversing
      * the elements below the body element. With this method you always
      * get the current value, but it is much more expensive. So use it
      * carefully.
-     * 
+     *
      * @type member
      * @return {String} computed value of the editor
      */
@@ -574,7 +574,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * returns the complete content of the editor
-     * 
+     *
      * @type member
      * @return {String}
      */
@@ -597,7 +597,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      * @param e {Object} Event object
-     * @return {void} 
+     * @return {void}
      */
     _loaded : function(e)
     {
@@ -611,42 +611,40 @@ qx.Class.define("htmlarea.HtmlArea",
       // sometimes IE6 does some strange things
       if (!this.__doc)
       {
-        if (qx.core.Variant.isSet("qx.debug", "on"))
-        {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
           this.debug('document:' + this.__doc);
         }
-        
-        if (this.__loadCounter >= 5)
-        {
+
+        if (this.__loadCounter >= 5) {
           throw new Error('cant load HtmlArea. Document is not available. ' + this.__doc);
         }
-        
+
         var self = this;
         this.__loadCounter++;
         window.setTimeout(function() {
           self._loaded(e);
         },0);
       }
-      
+
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
        * ******************************************* */
-      
+
       /* Look out for any queued commands which are execute BEFORE this commandManager was available */
       var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
-      
+
       /* Create a new command manager instance */
       this.__commandManager = new htmlarea.command.Manager(this);
-    
+
       /* Decorate the commandManager with the UndoManager if undo/redo is enabled */
       if (this.getUseUndoRedo())
       {
        this.__commandManager = new htmlarea.command.UndoManager(this.__commandManager, this);
       }
-      
+
       /* Inform the commandManager on which document he should operate */
       this.__commandManager.setContentDocument(this.__doc);
-      
+
       /* Set the "isLoaded" flag */
       this.__isLoaded = true;
 
@@ -685,7 +683,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * ready to use after startup -> user can type ahead immediately
        *
        * TODO: Webkit is not able to set the cursor at startup
-       * Tried to append textNode and make new selection/range -> not worked 
+       * Tried to append textNode and make new selection/range -> not worked
        */
 
       if (this.getFocused())
@@ -698,7 +696,7 @@ qx.Class.define("htmlarea.HtmlArea",
           focusRoot.setFocusedChild(this);
         }
       }
-      
+
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
       {
@@ -757,7 +755,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Returns the wrapped content of the editor
-     * 
+     *
      * @type member
      * @param value {String} body.innerHTML
      * @return {String} content
@@ -771,28 +769,28 @@ qx.Class.define("htmlarea.HtmlArea",
        * In mshtml browsers this does NOT work. The property "overflow-x" overwrites the value of "overflow-y".
        **/
       var geckoOverflow = qx.core.Client.getInstance().isGecko() ? " html, body {overflow-x: hidden; } " : "";
-      
+
       var wrap = this.__contentWrap[this.getContentType()];
-      
+
       /**
        * When setting the content with a doctype IE7 has one major problem.
        * With EVERY char inserted the editor component hides the text/flickers. To display it again
        * it is necessary to unfocus and focus again the editor component. To avoid this unwanted
        * behaviour it is necessary to set NO DOCTYPE.
-       * 
+       *
        * WRONG IMPLEMENTATION:
        * propValue = wrap.doctype + wrap.html + '<head>' + wrap.head + '</head>' + wrap.body + propValue + wrap.footer;
        **/
-      
+
       var body = "";
       if (useCurrentBodyStyle === true)
       {
         body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(this.__doc.body)+'">');
       }
-      
+
       /* RIGHT IMPLEMENTATION */
       return wrap.html +
-             '<head>' + wrap.meta + 
+             '<head>' + wrap.meta +
              '<style type="text/css">' + wrap.style + geckoOverflow + this.__styleInformation + '</style>' +
              '</head>' + body + value + wrap.footer;
     },
@@ -802,12 +800,12 @@ qx.Class.define("htmlarea.HtmlArea",
      * Opens a new document and sets the content (if available)
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     __renderContent : function()
     {
       var value = this.getValue();
-      
+
       if (typeof value == "string")
       {
          try
@@ -829,7 +827,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Adds all needed eventlistener
      *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     __addEventListeners : function()
     {
@@ -845,12 +843,12 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /*
        * Register event handler for focus/blur events
-       * 
+       *
        * IE has to catch focus and blur events on the body element
        * Webkit is listening to the contentWindow and all others catch them at the document directly
        */
 
-      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? this.__doc.body : 
+      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? this.__doc.body :
                             qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : this.__doc;
 
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
@@ -858,20 +856,20 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.html.EventRegistration.addEventListener(this.__doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
-      
+
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         qx.html.EventRegistration.addEventListener(this.__doc, "focusout", this.__handleFocusOut);
       }
     },
-    
-    
+
+
     /**
      * Helper method to create an object which acts like
      * a command manager instance to collect all commands
      * which are executed BEFORE the command manager instance
      * is ready
-     * 
+     *
      * @type member
      * @return {Object} stack command manager object
      */
@@ -882,12 +880,12 @@ qx.Class.define("htmlarea.HtmlArea",
         {
          /* Set the flag to show the "real" commandManager a command was stacked */
          this.stackedCommands = true;
-        
+
          this.commandStack.push( { command : command, value : value } );
         },
-      
+
         commandStack : [],
-      
+
         stackedCommands : false
       }
     },
@@ -917,7 +915,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         /* Setting the designMode - works for all browser engines */
         this.__doc.designMode = propValue ? "on" : "off";
-  
+
         /*
          * For Gecko set additionally "styleWithCSS" and as fallback for older
          * Gecko engines "useCSS".
@@ -926,13 +924,13 @@ qx.Class.define("htmlarea.HtmlArea",
         {
           try
           {
-            /* 
+            /*
              * use the new command "styleWithCSS" to turn on CSS
              * useCSS is deprecated - see http://www.mozilla.org/editor/midas-spec.html
              */
             this.__commandManager.execute("stylewithcss", true);
-            
-            /* 
+
+            /*
              * this command only works when the cursor is inside a paragraph. Then
              * it is needed to press the Enter key twice to get paragraphs.
              */
@@ -949,7 +947,7 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
     },
-    
+
 
     /**
      * Sets the focus on the editor component
@@ -974,7 +972,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
       qx.ui.embed.Iframe.prototype._visualizeFocus.call(this);
     },
-    
+
 
     /*
     ---------------------------------------------------------------------------
@@ -985,19 +983,19 @@ qx.Class.define("htmlarea.HtmlArea",
     /*
      * This flag is only needed by IE to implement the mechanism
      * of a linebreak when pressing "Ctrl+Enter". It is not possible
-     * in IE to get to know that both keys are pressed together (at the 
+     * in IE to get to know that both keys are pressed together (at the
      * keypress event). It is only possible to look at the keypress event,
      * set this flag and insert the linebreak at the keyup event.
      */
     __controlPressed : false,
 
-    
+
     /**
      * All keyUp events are delegated to this method
      *
      * @type member
      * @param e {Object} Event object
-     * @return {void} 
+     * @return {void}
      */
     _handleKeyUp : function(e)
     {
@@ -1006,7 +1004,7 @@ qx.Class.define("htmlarea.HtmlArea",
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
-       * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one 
+       * "Ctrl" key and the keyup the "Enter" key. If the latter occurs right after the first one
        * the linebreak gets inserted.
        */
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
@@ -1044,7 +1042,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      * @param e {Object} Event object
-     * @return {void} 
+     * @return {void}
      */
     _handleKeyDown : function(e) {},
 
@@ -1054,7 +1052,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      * @param e {Object} Event object
-     * @return {void} 
+     * @return {void}
      */
    _handleKeyPress : function(e)
    {
@@ -1063,8 +1061,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
 
-      if (qx.core.Variant.isSet("qx.debug", "on"))
-      {
+      if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
       }
 
@@ -1073,8 +1070,8 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         case "control":
           /*
-           * Set a flag if the control key was pressed. It is used to insert a 
-           * linebreak when pressing the "Ctrl+Enter" combination. The linebreak 
+           * Set a flag if the control key was pressed. It is used to insert a
+           * linebreak when pressing the "Ctrl+Enter" combination. The linebreak
            * gets inserted at the keyUp event at the "_handleKeyUp" method.
            */
           if (qx.core.Client.getInstance().isMshtml())
@@ -1118,10 +1115,10 @@ qx.Class.define("htmlarea.HtmlArea",
             switch(qx.core.Client.getInstance().getEngine())
             {
                case "gecko":
-                 /* 
+                 /*
                   * Insert additionally an empty div element - this ensures that
                   * the caret is shown and the cursor moves down a line correctly
-                  * 
+                  *
                   * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
                   * only necessary to have anything AFTER the "br" element to get it work.
                   * Strange hack, I know ;-)
@@ -1159,8 +1156,8 @@ qx.Class.define("htmlarea.HtmlArea",
                break;
             }
           }
-          
-          /* 
+
+          /*
            * Special handling for IE when hitting the "Enter" key
            * instead of letting the IE insert a <p> insert manually a <br>
            * if the corresponding property is set
@@ -1169,13 +1166,13 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (!this.getInsertParagraphOnLinebreak())
             {
-              
+
               /*
                * Manually reset the current range object to force the "insertHtml"
                * method to create a new range object (out of the current selection)
                */
               this.__commandManager.execute("inserthtml", "<br>");
-              
+
               e.preventDefault();
               e.stopPropagation();
             }
@@ -1209,10 +1206,10 @@ qx.Class.define("htmlarea.HtmlArea",
         break;
 
         /* Special shortcuts */
-        case "b": 
+        case "b":
           if (isCtrlPressed) {
             this.__executeHotkey('setBold', true);
-          } 
+          }
           break;
         case "i":
         case "k":
@@ -1258,11 +1255,11 @@ qx.Class.define("htmlarea.HtmlArea",
 
        this.__currentEvent = null;
     },
-    
-    
+
+
     /**
      * Inserts a paragraph when hitting the "enter" key
-     * 
+     *
      * @type member
      * @return {Boolean} whether the key event should be stopped or not
      */
@@ -1270,29 +1267,29 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       /* Current selection and range */
       var range     = this.getRange();
-      
+
       /* Delete any content which is currently selected */
       if (!range.collapsed)
       {
         range.deleteContents();
       }
-      
-      /* 
+
+      /*
        * SPECIAL CASE
        * The user is at the beginning of the document -> insert an empty text node
        */
-      if (range.startContainer == range.endContainer && range.startContainer == this.__doc.body && 
+      if (range.startContainer == range.endContainer && range.startContainer == this.__doc.body &&
           !range.startOffset && !range.endOffset)
       {
         range.selectNodeContents(this.__doc.body.insertBefore(this.__doc.createTextNode(" "), this.__doc.body.firstChild));
       }
-      
-      /* 
+
+      /*
        * Get all the ancestor nodes of the current startContainer to get to
        * know if the current range is already within a paragraph element
        */
       var ancestorNodes = qx.dom.Hierarchy.getAncestors(range.startContainer);
-      
+
       var paragraph       = null;
       var paragraphParent = null;
       for (var i=0, j=ancestorNodes.length; i<j; ++i)
@@ -1308,7 +1305,7 @@ qx.Class.define("htmlarea.HtmlArea",
           break;
         }
       }
-      
+
       /* If no paragraph element is available -> get the content of the range and put it inside a new paragraph  */
       if (paragraph == null)
       {
@@ -1326,10 +1323,10 @@ qx.Class.define("htmlarea.HtmlArea",
             wrap = wrap.parentNode;
           }
         }
-        
+
         var start = wrap;
         var end   = wrap;
-        
+
         /* Check all all siblings at the left for block nodes */
         while (start.previousSibling)
         {
@@ -1350,7 +1347,7 @@ qx.Class.define("htmlarea.HtmlArea",
             start = start.previousSibling;
           }
         }
-        
+
         /* Check all all siblings at the right for block nodes */
         while (end.nextSibling)
         {
@@ -1371,20 +1368,20 @@ qx.Class.define("htmlarea.HtmlArea",
             end = end.nextSibling;
           }
         }
-    
-        /* 
+
+        /*
          * (re)set start and end of range to encapsulate the content which need
          * to be surrounded by a new paragraph element.
          */
         range.setStartBefore(start);
         range.setEndAfter(end);
-        
+
         /* Surround the current range with a paragraph element */
         var paragraph = this.__doc.createElement("p");
         range.surroundContents(paragraph);
-        
-        /* 
-         * Check for a br element at the end - if it is not available create 
+
+        /*
+         * Check for a br element at the end - if it is not available create
          * and append it. This is especially needed for Gecko browser to ensure
          * the next enter is automatically turned into a paragraph.
          */
@@ -1392,7 +1389,7 @@ qx.Class.define("htmlarea.HtmlArea",
         {
           paragraph.appendChild(this.__doc.createElement("br"));
         }
-        
+
         /*
          * Check if the paragraph element is the last within the document
          * if so create a new paragraph with a textNode and a "br" element
@@ -1401,21 +1398,21 @@ qx.Class.define("htmlarea.HtmlArea",
         if (paragraph.parentNode.nextSibling == null)
         {
           var newPara  = this.__doc.createElement("p");
-          var textNode = this.__doc.createTextNode(" "); 
+          var textNode = this.__doc.createTextNode(" ");
           var brNode   = this.__doc.createElement("br");
           newPara.appendChild(textNode);
           newPara.appendChild(brNode);
-          
+
           paragraph.parentNode.appendChild(newPara);
           range.selectNode(textNode);
           range.collapse(true);
         }
-        
+
         return true;
       }
       else
       {
-        /* 
+        /*
          * If we are already within a paragraph element there is
          * nothing left to do. The browser is doing the rest for us.
          * (Creating a new paragraph element and position the cursor in
@@ -1428,7 +1425,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Executes a method and prevent default
-     * 
+     *
      * @type member
      * @param method {String} name of the method which should be called
      * @param preventDefault {Boolean} whether do preventDefault or not
@@ -1454,20 +1451,20 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      * @param e {Object} Event object
-     * @return {void} 
+     * @return {void}
      */
     _handleFocusEvent : function(e)
     {
       this.setFocused(e.type == "focus");
       e.type == "focus" ? this.__onFocus() : this.__onBlur();
     },
-    
-    
+
+
     /**
      * Called with every focus event of the editor.
      * Stores the current content of the editor for later
      * comparison (see at {@link #__onBlur} method)
-     * 
+     *
      * @type member
      * @return {void}
      */
@@ -1477,14 +1474,14 @@ qx.Class.define("htmlarea.HtmlArea",
      this.__storedSelectedHtml = null;
      this.createDispatchEvent("focused");
    },
-   
-   
+
+
    /**
     * Called with every blur event of the editor.
     * Compares the current value with the stored one.
     * If they are different the current content is synced
     * with the value variable.
-    * 
+    *
     * @type member
     * @return {void}
     */
@@ -1504,20 +1501,19 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      * @param e {Object} Event object
-     * @return {void} 
+     * @return {void}
      */
     _handleMouseEvent : function(e)
     {
-      if (qx.core.Variant.isSet("qx.debug", "on"))
-      {
+      if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug("handleMouse " + e.type);
       }
 
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
     },
-    
-    
+
+
     /**
      * Eventlistener for focus out events to save the current selection.
      * NOTE: this method is currently only used for mshtml.
@@ -1535,8 +1531,8 @@ qx.Class.define("htmlarea.HtmlArea",
       },
       "default" : function(e) {}
     }),
-     
-        
+
+
     /*
     ---------------------------------------------------------------------------
       EXEC-COMMANDS
@@ -1598,8 +1594,8 @@ qx.Class.define("htmlarea.HtmlArea",
     setUnderline : function() {
       return this.__commandManager.execute("underline");
     },
-    
-    
+
+
     /**
      * Sets the current selection content to strikethrough font style
      *
@@ -1648,8 +1644,8 @@ qx.Class.define("htmlarea.HtmlArea",
     setTextColor : function(value) {
       return this.__commandManager.execute("textcolor", value);
     },
-    
-    
+
+
     /**
      * Sets the current selection content to the specified background color
      *
@@ -1661,8 +1657,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("textbackgroundcolor", value);
     },
-    
-    
+
+
     /**
      * Left-justifies the current selection
      *
@@ -1673,8 +1669,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("justifyleft");
     },
-    
-    
+
+
     /**
      * Center-justifies the current selection
      *
@@ -1685,8 +1681,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("justifycenter");
     },
-    
-    
+
+
     /**
      * Right-justifies the current selection
      *
@@ -1697,8 +1693,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("justifyright");
     },
-    
-    
+
+
     /**
      * Full-justifies the current selection
      *
@@ -1709,8 +1705,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("justifyfull");
     },
-    
-    
+
+
     /**
      * Indents the current selection
      *
@@ -1721,8 +1717,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("indent");
     },
-    
-    
+
+
     /**
      * Outdents the current selection
      *
@@ -1733,8 +1729,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("outdent");
     },
-    
-    
+
+
     /**
      * Inserts an ordered list
      *
@@ -1745,8 +1741,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("insertorderedlist");
     },
-    
-    
+
+
     /**
      * Inserts an unordered list
      *
@@ -1757,8 +1753,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("insertunorderedlist");
     },
-    
-    
+
+
     /**
      * Inserts a horizontal ruler
      *
@@ -1769,8 +1765,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("inserthorizontalrule");
     },
-    
-    
+
+
     /**
      * Insert an image
      *
@@ -1826,7 +1822,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param url {String} url of the background image to set
      * @param repeat {String} repeat mode. Possible values are "repeat|repeat-x|repeat-y|no-repeat".
      *                                     Default value is "no-repeat"
-     * @param position {String} Position of the background image. Possible values are "|top|bottom|center|left|right|right top|left top|left bottom|right bottom". 
+     * @param position {String} Position of the background image. Possible values are "|top|bottom|center|left|right|right top|left top|left bottom|right bottom".
      *                          Default value is "top"
      * @return {Boolean} Success of operation
      */
@@ -1846,11 +1842,11 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("selectall");
     },
-    
-    
+
+
     /**
      * Undo last operation
-     * 
+     *
      * @type member
      * @return {void}
      */
@@ -1866,11 +1862,11 @@ qx.Class.define("htmlarea.HtmlArea",
         return true;
       }
     },
-    
-    
+
+
     /**
      * Redo last undo
-     * 
+     *
      * @type member
      * @return {void}
      */
@@ -1886,7 +1882,7 @@ qx.Class.define("htmlarea.HtmlArea",
         return true;
       }
     },
-    
+
 
     /*
     ---------------------------------------------------------------------------
@@ -1976,7 +1972,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * with different keys like bold, italic, underline etc.
      * The main purpose for this event is to be able to set the states of your toolbar
      * buttons so you can e.g. visualize that the cursor is currently over bold text.
-     * 
+     *
      * The possible values are
      * -1 = command is not possible at the moment. Used to disable the corresponding buttons (e.g. undo/redo are perfect candidates for this
      *  0 = command is possible at the moment. Used to enable the corresponding buttons (e.g. bold/italic/underline etc.)
@@ -2109,14 +2105,14 @@ qx.Class.define("htmlarea.HtmlArea",
 
       this._processingExamineCursorContext = false;
     },
-    
-  
+
+
     /*
      -----------------------------------------------------------------------------
      SELECTION
      -----------------------------------------------------------------------------
     */
-      
+
     /**
      * Returns the current selection object
      *
@@ -2134,11 +2130,11 @@ qx.Class.define("htmlarea.HtmlArea",
          return this.getContentWindow().getSelection();
        }
     }),
-    
-    
+
+
     /**
      * Returns the currently selected text.
-     * 
+     *
      * @type member
      * @return {String} Selected plain text.
      */
@@ -2148,7 +2144,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         return this.getRange().text;
       },
-      
+
       "default" : function()
       {
         return this.getRange().toString();
@@ -2182,7 +2178,7 @@ qx.Class.define("htmlarea.HtmlArea",
         tmpBody.appendChild(range.cloneContents());
         return tmpBody.innerHTML;
       }
-      else if (typeof (range.item) != 'undefined' || 
+      else if (typeof (range.item) != 'undefined' ||
                typeof (range.htmlText) != 'undefined')
       {
         return range.item ? range.item(0).outerHTML : range.htmlText;
@@ -2202,7 +2198,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * returns the range of the current selection
-     * 
+     *
      * @type member
      * @return {Range} Range object
      */
@@ -2235,7 +2231,7 @@ qx.Class.define("htmlarea.HtmlArea",
           return this.__doc.createTextRange();
         }
        },
-       
+
        "default" : function(sel)
        {
          this.setFocused(true);
@@ -2254,8 +2250,8 @@ qx.Class.define("htmlarea.HtmlArea",
          }
        }
     }),
-   
-   
+
+
     /*
       -----------------------------------------------------------------------------
       NODES
@@ -2270,7 +2266,7 @@ qx.Class.define("htmlarea.HtmlArea",
        {
          var sel = this.__getSelection();
          var rng;
-      
+
          switch(sel.type)
          {
            case "Text":
@@ -2282,28 +2278,28 @@ qx.Class.define("htmlarea.HtmlArea",
              rng = this.__createRange(sel);
              rng.collapse(false);  /* collapse to end */
              return rng.parentElement();
-      
+
            case "Control":
              rng = this.__createRange(sel);
-      
+
              try {
                rng.collapse(false);  /* collapse to end */
              } catch(ex) {}
-      
+
              return rng.item(0);
-      
+
            default:
              return this.__doc.body;
          }
        },
-       
+
        "default" : function()
        {
          return this.__getSelection().focusNode.parentNode;
        }
     })
   },
-  
+
 
   /*
   ---------------------------------------------------------------------------

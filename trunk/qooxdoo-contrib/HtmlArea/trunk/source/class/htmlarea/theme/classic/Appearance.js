@@ -34,18 +34,18 @@ qx.Theme.define("htmlarea.theme.classic.Appearance",
   title: "Classic mixin for HtmlArea",
 
   appearances :
-  {    
-    "html-area" : 
+  {
+    "html-area" :
     {
       include : "iframe",
-       
+
       style : function(states) {
         return {
-          border          : new qx.ui.core.Border(1, "solid", "#CCCCCC"),          
+          border          : new qx.ui.core.Border(1, "solid", "#CCCCCC"),
           backgroundColor : states.focused ? "#DFEBFD" : "white"
         }
       }
     }
-    
+
   }
 });
