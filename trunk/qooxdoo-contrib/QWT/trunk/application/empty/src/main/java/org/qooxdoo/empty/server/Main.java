@@ -22,11 +22,4 @@ package org.qooxdoo.empty.server;
 import org.qooxdoo.toolkit.qooxdoo.Server;
 
 public class Main extends Server {
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void clientStop() {
-    }
 }
