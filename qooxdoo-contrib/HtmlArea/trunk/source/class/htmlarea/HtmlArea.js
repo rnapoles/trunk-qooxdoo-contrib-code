@@ -552,7 +552,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getValue : function()
     {
-      return this.getComputedValue();
+      return this.__value;
     },
 
 
