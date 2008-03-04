@@ -552,7 +552,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getValue : function()
     {
-      return this.__value;
+      return this.getComputedValue();
     },
 
 
@@ -1470,7 +1470,6 @@ qx.Class.define("htmlarea.HtmlArea",
      */
    __onFocus : function()
    {
-     this.__valueOnFocus = this.getComputedValue();
      this.__storedSelectedHtml = null;
      this.createDispatchEvent("focused");
    },
@@ -1487,10 +1486,7 @@ qx.Class.define("htmlarea.HtmlArea",
     */
    __onBlur : function()
    {
-      if (this.getComputedValue() != this.__valueOnFocus)
-      {
-        this.__value = this.getComputedValue();
-      }
+      // nothing to do
    },
 
 
@@ -1959,7 +1955,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       /* setting a timeout is important to get the right result */
       var o = this;
-
+      htmlarea.HtmlArea.__timerExamine = new Date().getTime();
+      this.info("MEASSURE (examine): " + (new Date().getTime()-htmlarea.HtmlArea.__timerExamine) + "ms");
       window.setTimeout(function(e) {
         o.__examineCursorContext();
       }, 200);
@@ -2102,7 +2099,7 @@ qx.Class.define("htmlarea.HtmlArea",
       };
 
       this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
-
+this.info("MEASSURE (examine): " + (new Date().getTime()-htmlarea.HtmlArea.__timerExamine) + "ms");
       this._processingExamineCursorContext = false;
     },
 
@@ -2160,15 +2157,19 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getSelectedHtml : function()
     {
+      htmlarea.HtmlArea.__timerSelHtml = new Date().getTime();
+      this.info("MEASSURE (__timerSelHtml): " + (new Date().getTime()-htmlarea.HtmlArea.__timerSelHtml) + "ms");
       // if a selection is stored, return it.
       if (this.__storedSelectedHtml != null)
       {
+        this.info("MEASSURE (__timerSelHtml): " + (new Date().getTime()-htmlarea.HtmlArea.__timerSelHtml) + "ms");
         return this.__storedSelectedHtml;
       }
 
       var range = this.getRange();
 
       if (!range) {
+        this.info("MEASSURE (__timerSelHtml): " + (new Date().getTime()-htmlarea.HtmlArea.__timerSelHtml) + "ms");
         return "";
       }
 
@@ -2176,15 +2177,18 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var tmpBody = document.createElement("body");
         tmpBody.appendChild(range.cloneContents());
+        this.info("MEASSURE (__timerSelHtml): " + (new Date().getTime()-htmlarea.HtmlArea.__timerSelHtml) + "ms");
         return tmpBody.innerHTML;
       }
       else if (typeof (range.item) != 'undefined' ||
                typeof (range.htmlText) != 'undefined')
       {
+        this.info("MEASSURE (__timerSelHtml): " + (new Date().getTime()-htmlarea.HtmlArea.__timerSelHtml) + "ms");
         return range.item ? range.item(0).outerHTML : range.htmlText;
       }
       else
       {
+        this.info("MEASSURE (__timerSelHtml): " + (new Date().getTime()-htmlarea.HtmlArea.__timerSelHtml) + "ms");
         return range.toString();
       }
     },
@@ -2264,6 +2268,8 @@ qx.Class.define("htmlarea.HtmlArea",
     {
        "mshtml" : function()
        {
+htmlarea.HtmlArea.__timerFocNode = new Date().getTime();
+      this.info("MEASSURE (__timerFocNode): " + (new Date().getTime()-htmlarea.HtmlArea.__timerFocNode) + "ms");
          var sel = this.__getSelection();
          var rng;
 
@@ -2277,6 +2283,7 @@ qx.Class.define("htmlarea.HtmlArea",
               */
              rng = this.__createRange(sel);
              rng.collapse(false);  /* collapse to end */
+this.info("MEASSURE (__timerFocNode): " + (new Date().getTime()-htmlarea.HtmlArea.__timerFocNode) + "ms");
              return rng.parentElement();
 
            case "Control":
@@ -2286,9 +2293,11 @@ qx.Class.define("htmlarea.HtmlArea",
                rng.collapse(false);  /* collapse to end */
              } catch(ex) {}
 
+this.info("MEASSURE (__timerFocNode): " + (new Date().getTime()-htmlarea.HtmlArea.__timerFocNode) + "ms");
              return rng.item(0);
 
            default:
+this.info("MEASSURE (__timerFocNode): " + (new Date().getTime()-htmlarea.HtmlArea.__timerFocNode) + "ms");
              return this.__doc.body;
          }
        },
