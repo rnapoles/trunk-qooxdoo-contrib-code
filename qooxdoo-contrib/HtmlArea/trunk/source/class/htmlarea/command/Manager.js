@@ -20,25 +20,25 @@
 /**
  * Available commands for the HtmlArea component
  *
- *  
+ *
  */
 qx.Class.define("htmlarea.command.Manager",
 {
   extend : qx.core.Object,
-  
+
   construct : function(editorInstance)
   {
     this.base(arguments);
-    
+
     this.__editorInstance = editorInstance;
     this.__doc            = null;
-    
+
     this.__commands       = null;
     this.__populateCommandList();
-    
+
     this.__editorInstance.addEventListener("focusOut", this._handleFocusOut, this);
   },
-  
+
   statics :
   {
     /**
@@ -51,17 +51,17 @@ qx.Class.define("htmlarea.command.Manager",
      */
     __backgroundRepeat : "repeat repeat-x repeat-y no-repeat"
   },
-  
+
   members :
   {
     /* ****************************************************************
      *                BASIC / INITIALISATION
      * **************************************************************** */
-    
+
     /**
      * Set the contentDocument on which this manager should execute
      * his commands
-     * 
+     *
      * @type member
      * @param doc {Object} contentDocument of the editor instance
      * @return {void}
@@ -70,8 +70,8 @@ qx.Class.define("htmlarea.command.Manager",
     {
       this.__doc = doc;
     },
-    
-    
+
+
     /*
      * Store the current range for IE browser to support execCommands
      * fired from e.g. toolbar buttons. If the HtmlArea looses the selection
@@ -79,11 +79,11 @@ qx.Class.define("htmlarea.command.Manager",
      * has to be stored in order to perform the desired execCommand correctly.
      */
     __currentRange    : null,
-    
-    
+
+
     /**
      * Returns the current stored range
-     * 
+     *
      * @type member
      * @return {Range} Range object
      */
@@ -93,12 +93,12 @@ qx.Class.define("htmlarea.command.Manager",
       {
         return this.__currentRange;
       }
-      
+
       /* Fallback is getting a new range from the editor */
       return this.__editorInstance.getRange();
     },
-    
-    
+
+
     /**
      * Eventlistener for focus out events to save the current selection.
      * NOTE: this method is currently only used for mshtml.
@@ -114,18 +114,18 @@ qx.Class.define("htmlarea.command.Manager",
       },
       "default" : function() {}
     }),
-    
-    
+
+
     /* ****************************************************************
      *                  COMMAND PROCESSING
      * **************************************************************** */
-    
+
     /**
      * Returns the commandobject of the given command name
-     * 
+     *
      * @type member
      * @param commandName {String} name of the command
-     * @return {Object ? null} commandObject or null if no command is available for the given command name 
+     * @return {Object ? null} commandObject or null if no command is available for the given command name
      */
     getCommandObject : function(commandName)
     {
@@ -138,12 +138,12 @@ qx.Class.define("htmlarea.command.Manager",
         return null;
       }
     },
-    
+
     /**
      * Populate the internal "commands" object with the available commands and their settings.
-     * 
+     *
      * @type member
-     * @return {void} 
+     * @return {void}
      */
     __populateCommandList : function()
     {
@@ -152,48 +152,48 @@ qx.Class.define("htmlarea.command.Manager",
         italic                : { useBuiltin : true, identifier : "Italic", method : null },
         underline             : { useBuiltin : true, identifier : "Underline", method : null },
         strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null },
-        
+
         fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : true, identifier : "FontSize", method : null },
-        
+
         textcolor             : { useBuiltin : true, identifier : "ForeColor", method : null },
         textbackgroundcolor   : { useBuiltin : true, identifier : qx.core.Variant.isSet("qx.client", "gecko|opera") ? "Hilitecolor" : "BackColor", method : null },
-        
+
         backgroundcolor       : { useBuiltin : false, identifier : null, method : "__setBackgroundColor" },
         backgroundimage       : { useBuiltin : false, identifier : null, method : "__setBackgroundImage" },
-        
+
         justifyleft           : { useBuiltin : true, identifier : "JustifyLeft", method : null },
         justifyright          : { useBuiltin : true, identifier : "JustifyRight", method : null },
         justifycenter         : { useBuiltin : true, identifier : "JustifyCenter", method : null },
         justifyfull           : { useBuiltin : true, identifier : "JustifyFull", method : null },
-        
+
         indent                : { useBuiltin : true, identifier : "Indent", method : null },
         outdent               : { useBuiltin : true, identifier : "Outdent", method : null },
-        
+
         insertorderedlist     : { useBuiltin : true, identifier : "InsertOrderedList", method : null },
         insertunorderedlist   : { useBuiltin : true, identifier : "InsertUnorderedList", method : null },
-        
+
         inserthorizontalrule  : { useBuiltin : true, identifier : "InsertHorizontalRule", method : null },
         insertimage           : { useBuiltin : true, identifier : "InsertImage", method : null },
-        
+
         selectall             : { useBuiltin : true, identifier : "SelectAll", method : null },
         selectedtext          : { useBuiltin : false, identifier : null, method : "__getSelectedText" },
         selectedhtml          : { useBuiltin : false, identifier : null, method : "__getSelectedHtml" },
-        
+
         inserthtml            : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHtml" },
         resethtml             : { useBuiltin : false, identifier : null, method : "__resetHtml" },
         gethtml               : { useBuiltin : false, identifier : null, method : "__getHtml" },
         removeFormat          : { useBuiltin : true, identifier : "RemoveFormat", method : null },
-        
+
         stylewithcss          : { useBuiltin : false, identifier : "styleWithCSS", method : "__styleWithCSS" },
         usecss                : { useBuiltin : false, identifier : "useCSS", method : "__useCSS" }
       }
     },
-    
-    
+
+
     /**
      * Executes the given command
-     * 
+     *
      * @type member
      * @param {String} Command to execute
      * @param {String ? Integer ? null} Value of the command (if any)
@@ -203,13 +203,13 @@ qx.Class.define("htmlarea.command.Manager",
     {
       /* Normalize */
       command = command.toLowerCase();
-      value   = value != null ? value : null;   
-      
+      value   = value != null ? value : null;
+
       /* Check if the given command is supported */
       if (this.__commands[command])
       {
         var commandObject = this.__commands[command];
-        
+
         /* Pass all useBuiltin commands right to the browser */
         if (commandObject.useBuiltin)
         {
@@ -233,16 +233,16 @@ qx.Class.define("htmlarea.command.Manager",
         this.error("Command " + command + " is currently not supported!");
       }
     },
-    
-    
+
+
     /**
      * Internal method to deal with special cases when executing commands
-     * 
+     *
      * @type member
      * @param command {String} command to execute
      * @param ui {Boolean} Whether to show an ui when executing a command. Default is false.
      * @param value {String ? Integer ? null} value of the command
-     * @return {Boolean} Success of operation  
+     * @return {Boolean} Success of operation
      */
     __executeCommand : function(command, ui, value)
     {
@@ -264,7 +264,7 @@ qx.Class.define("htmlarea.command.Manager",
          */
         if (qx.core.Variant.isSet("qx.client", "mshtml") && command != "selectall")
         {
-          /* 
+          /*
            * Select the content of the Text Range object to set the cursor at the right position
            * and to give user feedback. Otherwise IE will set the cursor at the first position of the
            * editor area
@@ -277,9 +277,9 @@ qx.Class.define("htmlarea.command.Manager",
            */
           execCommandTarget = this.__currentRange.text.length > 0 ? this.__currentRange : this.__doc;
         }
-        
+
         var result = execCommandTarget.execCommand(command, ui, value);
-        
+
         /* Debug info */
         if (qx.core.Variant.isSet("qx.debug", "on"))
         {
@@ -288,7 +288,7 @@ qx.Class.define("htmlarea.command.Manager",
 
         /* (re)-focus the editor after the execCommand */
         this.__focusAfterExecCommand();
-        
+
         /* Reset the startTyping flag to mark the next insert of any char as a new undo step */
         this.__startTyping = false;
       }
@@ -301,48 +301,48 @@ qx.Class.define("htmlarea.command.Manager",
 
         return false;
       }
-      
+
       return result;
     },
-    
-    
-    
+
+
+
     /* ************************************************************
-     *          CUSTOM COMMAND IMPLEMENTATION        
+     *          CUSTOM COMMAND IMPLEMENTATION
      * *********************************************************** */
-     
+
      /**
       * Command used at startup to setup the iframe as an editable area.
-      *  
+      *
       * @type member
       * @param value {Boolean} value of the command
       * @param commandObject {Object} command infos
-      * @return {Boolean} Succes of operation  
+      * @return {Boolean} Succes of operation
       */
      __styleWithCSS : function(value, commandObject)
      {
        return this.__doc.execCommand(commandObject.identifier, false, value);
      },
-     
-     
+
+
      /**
       * Command used at startup to setup the iframe as an editable area. This
       * command is a fallback to the "styleWithCSS" command.
-      * 
+      *
       * @type member
       * @param value {Boolean} value of the command
       * @param commandObject {Object} command infos
-      * @return {Boolean} Success of the operation  
+      * @return {Boolean} Success of the operation
       */
      __useCSS : function(value, commandObject)
      {
        return this.__doc.execCommand(commandObject.identifier, false, value);
      },
-     
-     
+
+
      /**
       * Inserts custom HTML code at the selection point.
-      * 
+      *
       * @type member
       * @param value {String} HTML code to insert
       * @param commandObject {Object} command infos
@@ -355,24 +355,24 @@ qx.Class.define("htmlarea.command.Manager",
        if (qx.core.Variant.isSet("qx.client", "mshtml"))
        {
          this.__editorInstance._visualizeFocus();
-         
+
          var currentRange = this.__editorInstance.getRange();
          currentRange.pasteHTML(value);
-         
+
          ret = true;
        }
        else
        {
          ret = this.__doc.execCommand(commandObject.identifier, false, value);
        }
-  
+
        return ret;
      },
-     
-     
+
+
      /**
       * Internal method to set a background color for the whole document
-      * 
+      *
       * @type member
       * @param value {String} color info
       * @param commandObject {Object} command infos
@@ -382,21 +382,21 @@ qx.Class.define("htmlarea.command.Manager",
      {
        /* Normalize */
        value = value != null && typeof value == "string" ? value : "transparent";
-       
+
        /* Set the new background color */
        qx.bom.element.Style.set(this.__doc.body, "backgroundColor", value);
 
        return true;
      },
-     
-     
+
+
      /**
       * TODOC
       */
      __setBackgroundImage : function(value, commandObject)
      {
        var url, repeat, position;
-       
+
        /* Check for value */
        if (value == null)
        {
@@ -406,20 +406,20 @@ qx.Class.define("htmlarea.command.Manager",
        {
          url      = value[0];
          repeat   = value[1];
-         position = value[2];         
+         position = value[2];
        }
-       
+
        /* If url is null remove the background image */
        if (url == null || typeof url != "string")
        {
          qx.bom.element.Style.set(this.__doc.body, "backgroundImage", "");
          qx.bom.element.Style.set(this.__doc.body, "backgroundRepeat", "");
          qx.bom.element.Style.set(this.__doc.body, "backgroundPosition", "");
-        
+
          return true;
        }
-       
-       /* 
+
+       /*
         * Normalize the url parameter. Especially when doing undo/redo operations the url
         * *can* be passed in as full CSS like 'url(SOMEURL)' rather than just 'SOMEURL'.
         */
@@ -432,8 +432,8 @@ qx.Class.define("htmlarea.command.Manager",
          }
        }
 
-       /* 
-        * Return silently if the parameter "repeat" is not valid and report 
+       /*
+        * Return silently if the parameter "repeat" is not valid and report
         * the error in debug mode
         */
        if (repeat != null && htmlarea.command.Manager.__backgroundRepeat.indexOf(repeat) < 0 )
@@ -449,7 +449,7 @@ qx.Class.define("htmlarea.command.Manager",
          repeat = "no-repeat";
        }
 
-       /* 
+       /*
         * Return silently if the parameter "position" is not valid
         * and report the error in debug mode
         */
@@ -460,15 +460,15 @@ qx.Class.define("htmlarea.command.Manager",
            this.error("The value '" + position + "' is not allowed for parameter 'position'. Possible values are '" + htmlarea.command.Manager.__backgroundPosition + "'");
          }
          return false;
-       } 
+       }
        else
        {
          if (!position) {
            position = "top";
          }
        }
- 
- 
+
+
        /*
         * Don't use the "background" css property to prevent overwriting the
         * current background color
@@ -476,11 +476,11 @@ qx.Class.define("htmlarea.command.Manager",
        qx.bom.element.Style.set(this.__doc.body, "backgroundImage", url);
        qx.bom.element.Style.set(this.__doc.body, "backgroundRepeat", repeat);
        qx.bom.element.Style.set(this.__doc.body, "backgroundPosition", position);
-      
-       return true;       
+
+       return true;
      },
-     
-     
+
+
      /**
      * Returns the content of the actual range as text
      *
@@ -494,7 +494,7 @@ qx.Class.define("htmlarea.command.Manager",
       {
         return (typeof range == "string") ? range : range.toString();
       }
-      
+
       return "";
     },
 
@@ -516,7 +516,7 @@ qx.Class.define("htmlarea.command.Manager",
 
       if (range.cloneContents)
       {
-        tmpBody.appendChild(range.cloneContents()); 
+        tmpBody.appendChild(range.cloneContents());
       }
       else if (typeof (range.item) != 'undefined' || typeof (range.htmlText) != 'undefined')
       {
@@ -529,8 +529,8 @@ qx.Class.define("htmlarea.command.Manager",
 
       return tmpBody.innerHTML;
     },
-     
-     
+
+
      /**
      * (Re)-focuses the editor after an execCommand was executed
      *
@@ -541,7 +541,7 @@ qx.Class.define("htmlarea.command.Manager",
     __focusAfterExecCommand : function()
     {
       var that = this.__editorInstance;
-      
+
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         window.setTimeout(function(e)
@@ -577,13 +577,13 @@ qx.Class.define("htmlarea.command.Manager",
        }
     }
   },
-  
-  
+
+
   /**
    * Destructor
    */
   destruct : function()
   {
-    
+
   }
 });
