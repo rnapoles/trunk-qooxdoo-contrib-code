@@ -24,11 +24,9 @@ import org.qooxdoo.toolkit.qooxdoo.Server;
 public class Main extends Server {
     @Override
     public void stop() {
-        System.out.println("stop");
     }
     
     @Override
     public void clientStop() {
-        System.out.println("client stop");
     }
 }
