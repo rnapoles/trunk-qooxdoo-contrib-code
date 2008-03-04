@@ -126,7 +126,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
       {
         System.out.println("Cannot get a reference to the container window:" + e1.getMessage() );
       }
-      
+    
       /*
        * set the layout for the applet
        */
@@ -797,6 +797,10 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
             }
           }
         } 
+        catch (NullPointerException npe)
+        {
+          window.call("alert", new Object[] { "Internal error. Please restart your browser and make sure the upload applet is only running in  browser window."  } );
+        }
         catch (Exception ex) 
         {
             // todo : print to java console or alert box
