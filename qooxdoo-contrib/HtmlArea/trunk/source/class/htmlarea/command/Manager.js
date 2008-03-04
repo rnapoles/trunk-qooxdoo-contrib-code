@@ -170,6 +170,10 @@ qx.Class.define("htmlarea.command.Manager",
         indent                : { useBuiltin : true, identifier : "Indent", method : null },
         outdent               : { useBuiltin : true, identifier : "Outdent", method : null },
 
+        copy                  : { useBuiltin : true, identifier : "Copy", method : null },
+        cut                   : { useBuiltin : true, identifier : "Cut", method : null },
+        paste                 : { useBuiltin : true, identifier : "Paste", method : null },
+        
         insertorderedlist     : { useBuiltin : true, identifier : "InsertOrderedList", method : null },
         insertunorderedlist   : { useBuiltin : true, identifier : "InsertUnorderedList", method : null },
 
