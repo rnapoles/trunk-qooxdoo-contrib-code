@@ -78,6 +78,7 @@
          {
            document.uploadApplet.setUsername( password );
          }
+
          
          /**
           * called when upload starts with number of files to transmit
@@ -121,6 +122,9 @@
           */
          function handleStringMimeType(mimeType,string)
          {
+           // make copies of passed data
+           mimeType = "" + mimeType;
+           string   = "" + string;
            getContainer().createDispatchDataEvent( "dropStringMimeType", [mimeType,string] ); 
          }
          
