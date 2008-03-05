@@ -537,7 +537,9 @@ qx.Class.define("htmlarea.command.UndoManager",
 
           this.__commandManager.__currentRange.select();
 
-          if (this.__commandManager.__currentRange.text.length > 0)
+          var text = this.__commandManager.__currentRange.text;
+
+          if (text && text.length > 0)
           {
             undoObject.actionType = "Command";
             undoObject.range      = this.__commandManager.__currentRange;
