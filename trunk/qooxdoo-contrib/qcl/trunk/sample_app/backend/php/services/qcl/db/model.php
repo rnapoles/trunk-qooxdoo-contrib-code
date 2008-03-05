@@ -307,6 +307,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     		FROM `{$this->table}` 
     		WHERE `{$this->key_namedId}` = '$namedId'
       ");
+      $this->currentRecord = $row;
       return $row;
     }
    	else
@@ -482,11 +483,15 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       if ( $id )
       {
-        $this->raiseError("qcl_db_model::getColumnValue : row '$id' does not exist");  
+        $this->raiseError("qcl_db_model::getColumnValue : Row '$id' does not exist");  
       }
+      elseif ( $id == 0 )
+      {
+        $this->raiseError("qcl_db_model::getColumnValue : ID is 0.");  
+      }      
       else
       {
-        $this->raiseError("qcl_db_model::getColumnValue : no current record");  
+        $this->raiseError("qcl_db_model::getColumnValue : No current record");  
       }
     }
 	}
@@ -626,6 +631,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 
 	//-------------------------------------------------------------
   // options: one column which contains a serialized assoc. array
+  // containing additional dynamic fields that need not have their
+  // own database columns
   //-------------------------------------------------------------
 
   /**
