@@ -45,6 +45,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /* Set some init values */
     this.__isLoaded = false;
+    this.__isEditable = false;
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
     this.setHideFocus(true);
@@ -608,7 +609,7 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Setting a shortcut for the content document */
       this.__doc = this.getContentDocument();
 
-      // sometimes IE6 does some strange things
+      // sometimes IE6 does some strange things and the document is not available
       if (!this.__doc)
       {
         if (qx.core.Variant.isSet("qx.debug", "on")) {
@@ -625,6 +626,7 @@ qx.Class.define("htmlarea.HtmlArea",
           self._loaded(e);
         },0);
       }
+      this.__loadCounter = 0;
 
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
@@ -746,7 +748,7 @@ qx.Class.define("htmlarea.HtmlArea",
       }
       catch(exc)
       {
-        this.info("can't extract style from elem. ");
+        this.error("can't extract style from elem. ");
       }
 
       return style;
@@ -913,8 +915,15 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       if (this.__isLoaded)
       {
-        /* Setting the designMode - works for all browser engines */
-        this.__doc.designMode = propValue ? "on" : "off";
+        /* Setting the designMode - works for all browser engines? */
+        try
+        {
+          this.__doc.designMode = propValue ? "on" : "off";
+        }
+        catch (e)
+        {
+          throw new Error("Failed to enable rich edit functionality");
+        }
 
         /*
          * For Gecko set additionally "styleWithCSS" and as fallback for older
@@ -945,6 +954,8 @@ qx.Class.define("htmlarea.HtmlArea",
             }
           }
         }
+        
+        this.__isEditable = propValue;
       }
     },
 
@@ -1534,6 +1545,27 @@ qx.Class.define("htmlarea.HtmlArea",
       EXEC-COMMANDS
     ---------------------------------------------------------------------------
     */
+
+    /**
+     * TODOC
+     * 
+     * @return {Boolean}
+     */
+    isLoaded : function ()
+    {
+      return this.__isLoaded;
+    },
+
+
+    /**
+     * TODOC
+     * 
+     * @return {Boolean}
+     */
+    isEditable : function ()
+    {
+      return this.__isEditable;
+    },
 
 
     /**
