@@ -49,14 +49,6 @@ qx.Class.define("qcl.databinding.simple.RemoteTableModel",
         this.setRowCount(null);
         this.setRowData([]);
       }
-      else if ( "rowCount" in result ) 
-      {
-        this.setRowCount(result.rowCount);
-      }
-      else if ( "rowData" in result )
-      {
-        this.setRowData(result.rowData);
-      }
     });
   },
   
