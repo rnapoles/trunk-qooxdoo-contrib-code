@@ -205,6 +205,13 @@ qx.Class.define("htmlarea.command.Manager",
      */
     execute : function(command, value)
     {
+      if (!this.__editorInstance.isLoaded() || 
+          !this.__editorInstance.isEditable())
+      {
+        this.error("editor not ready! '"+command+"':'"+value+"'");
+        return false;
+      }
+
       /* Normalize */
       command = command.toLowerCase();
       value   = value != null ? value : null;
