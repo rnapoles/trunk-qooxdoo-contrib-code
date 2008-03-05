@@ -593,6 +593,17 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function columnsToFields ( $row )
 	{
+    return $this->_columnsToFields ( $row );
+  }
+  
+	/**
+	 * translates column to field names
+	 * @param array $row
+	 * @todo: use "normalize" / "unnormalize"?? concept
+	 * @return array
+	 */
+	function _columnsToFields ( $row )
+	{
 		if ( ! $row )
     {
       $row = $this->currentRecord;
@@ -616,6 +627,17 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @return array
 	 */
 	function fieldsToColumns ( $row=null )
+	{
+    return $this->_fieldsToColumns ( $row );
+  }
+  
+	/**
+	 * translates field to column names
+	 * @todo: use "normalize" / "unnormalize"?? concept
+	 * @param array $row
+	 * @return array
+	 */
+	function _fieldsToColumns ( $row=null )
 	{
     $translatedRow = array();
 		foreach ( $row as $field => $value )

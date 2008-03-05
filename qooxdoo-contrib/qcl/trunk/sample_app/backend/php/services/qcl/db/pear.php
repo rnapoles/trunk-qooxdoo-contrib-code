@@ -68,15 +68,23 @@ class qcl_db_pear extends qcl_db
 	
 	/**
 	 * queries database
+	 * @param string $sql
+	 * @param bool $abortOnError if true (default), raise a JSONRPC error and abort, else return false
 	 * @return PEAR_DB resultset
 	 */
-	function &query ( $sql )
+	function &query ( $sql, $abortOnError=true )
 	{
 		global $error;
 		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->query( $sql );
-		if (PEAR::isError($res)) {
-			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
+		if ( PEAR::isError($res) ) 
+    {
+			$this->error = $res->getMessage() . ": " . $res->getUserInfo();
+      if ( $abortOnError )
+      {
+        $this->raiseError( $this->error );  
+      }
+      return false;
 		}
 		return $res;
 	}
@@ -84,11 +92,12 @@ class qcl_db_pear extends qcl_db
 	/**
 	 * executes a query, alias of $this->query
 	 * @param string $sql
+	 * @param bool $abortOnError if true (default), raise a JSONRPC error and abort, else return false
 	 * @return array resultset
 	 */
-	function execute ( $sql )
+	function execute ( $sql, $abortOnError=true )
 	{
-		return $this->query ( $sql );	
+		return $this->query ( $sql, $abortOnError );	
 	}
 
 	/**
