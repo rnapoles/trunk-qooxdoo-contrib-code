@@ -641,6 +641,7 @@ qx.Class.define("htmlarea.HtmlArea",
         doc.close();
 
         this.__loadCounter = 0;
+        
         handler.call(this);
       }
       catch (exc)
@@ -682,9 +683,21 @@ qx.Class.define("htmlarea.HtmlArea",
         return;
       }
 
-      // sometimes IE6 does some strange things and the document is not available
-      // so we wait for it
-      this.__waitForDocumentReady(this._onDocumentIsReady);
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        // we need some thinking time in gecko --> https://bugzilla.mozilla.org/show_bug.cgi?id=191994
+        var self = this;
+        window.setTimeout( function()
+        {
+          self._onDocumentIsReady();
+        }, 10);
+      }
+      else
+      {
+        // sometimes IE does some strange things and the document is not available
+        // so we wait for it
+        this.__waitForDocumentReady(this._onDocumentIsReady);
+      }
     },
 
     _onDocumentIsReady : function ()
@@ -983,12 +996,14 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyEditable : function(propValue, propOldValue, propData)
     {
+      this.__doc = this.getContentDocument();
+
       if (this.__isLoaded)
       {
         /* Setting the designMode - works for all browser engines? */
         try
         {
-          this.__doc.designMode = propValue ? "on" : "off";
+          this.__doc.designMode = propValue ? "On" : "Off";
         }
         catch (e)
         {
