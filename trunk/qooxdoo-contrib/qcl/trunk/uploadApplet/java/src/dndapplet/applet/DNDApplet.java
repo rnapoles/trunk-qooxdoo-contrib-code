@@ -83,7 +83,21 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * This is the list of files which will be uploaded
      */
     private ArrayList fileList = new ArrayList();
+
+    /**
+     * the window object in which the applet is embedded
+     */
+    private JSObject window = null;
     
+    /**
+     * the thread that uploads the files
+     */
+    private Thread uploaderThread;
+    
+    /*
+     * data properties
+     * 
+     */
     /**
      * prefix for file names
      */
@@ -98,16 +112,11 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
      * password for protected upload targets
      */
     private String password = null;
-
-    /**
-     * the window object in which the applet is embedded
-     */
-    private JSObject window = null;
     
     /**
-     * the thread that uploads the files
+     * metadata on the documents such as keywords etc. 
      */
-    private Thread uploaderThread;
+    private String metadata = null;
     
     /**
      * The init method creates all of the UI controls and performs all of the 
@@ -207,6 +216,14 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
     {
       password = pw;
     }
+
+    /**
+     * public method accessible to JavaScript
+     */
+    public void setMetadata ( String md )
+    {
+      metadata = md;
+    }    
     
     /**
      * the action that is called when a button is pressed 
@@ -219,7 +236,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
        }
        else if ( e.getSource() == cancelButton )
        {
-         if ( uploaderThread.isAlive() )
+         if ( uploaderThread != null && uploaderThread.isAlive() )
          {
            SwingUtilities.invokeLater( new Runnable(){
              public void run()
@@ -232,11 +249,19 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
            uploaderThread.interrupt();
           try
           {
-            uploaderThread.join();
+            uploaderThread.join();         
           }
           catch (InterruptedException e1){}
-          display("<p><font color=red>Upload interrupted.</font></p>");
-          resetInput();          
+          finally
+          {
+            display("<p><font color=red>Upload interrupted.</font></p>"); 
+            resetInput();
+          }
+         }
+         else
+         {
+           display(null);
+           resetInput();
          }
        }
     }
@@ -395,19 +420,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
             
             try 
             {         
-              /*
-               * create md5 hash for file
-               */
-              MessageDigest md5 = MessageDigest.getInstance("MD5");
-              md5.reset();
-              md5.update(fileName.getBytes());
-              byte[] result = md5.digest();
-              StringBuffer hexString = new StringBuffer();
-              for (int j=0; j<result.length; j++) {
-                  hexString.append(Integer.toHexString(0xFF & result[j]));
-              }
-              String hash = hexString.toString();
-    
+              
               /*
                * create reusable connection
                */
@@ -428,11 +441,21 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
                * Create and setup our HTTP POST connection.  
                */    
               conn.setRequestMethod("POST");
-            
+
+              /*
+               * boundary string
+               */
+              String boundary = "boundary220394209402349823";
+              
+              /*
+               * tail string
+               */
+              String tail    = "\r\n--" + boundary + "--\r\n";              
+              
               /*
                * Set content type
                */
-              conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + hash );
+              conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary );
               
               /*
                * We intend to send output to the server.
@@ -440,26 +463,33 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
               conn.setDoOutput(true);
 
               /*
-               * Create multipart header 
+               * Create metadata section 
                */
-              String head1 = "--" + hash + "\r\n"
+              String metadataPart = "--" + boundary + "\r\n"
+                + "Content-Disposition: form-data; name=\"metadata\"\r\n\r\n"
+                + metadata + "\r\n";          
+             
+              /*
+               * Create file data header 
+               */
+              String fileHeader1 = "--" + boundary + "\r\n"
                 + "Content-Disposition: form-data; name=\"uploadfile\"; filename=\"" + fileName + "\"\r\n"
                 + "Content-Type: application/octet-stream\r\n"
                 + "Content-Transfer-Encoding: binary\r\n";              
               
+              long   fileLength  = f.length() + tail.length();                          
+              String fileHeader2 = "Content-length: " + fileLength + "\r\n";
+              String fileHeader  = fileHeader1 + fileHeader2 + "\r\n";   
+              
               /*
-               * create tail
+               * non-binary part of message
                */
-              String tail = "\r\n--" + hash + "--\r\n";
-
+              String stringData = metadataPart + fileHeader;
+              
               /*
-               * Length of whole request and of multi-part section
+               * Length of whole request 
                */
-              long contentLength = f.length() + tail.length();                          
-              String head2  = "Content-length: " + contentLength + "\r\n";
-              String header = head1 + head2 + "\r\n";
-              long requestLength = header.length() + contentLength ;
-
+              long requestLength = stringData.length() + fileLength ;
               conn.setRequestProperty("Content-length", "" + requestLength );
 
               /*
@@ -481,7 +511,7 @@ public class DNDApplet extends Applet implements DropTargetListener, ActionListe
               /*
                * write header 
                */
-              out.writeBytes(header);                            
+              out.writeBytes(stringData);                            
               out.flush();
               
               /* 
