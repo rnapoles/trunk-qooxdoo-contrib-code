@@ -1109,9 +1109,8 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleKeyUp : function(e)
     {
-      this.info("xxxxx 1");
       var keyIdentifier = e.getKeyIdentifier().toLowerCase();
-this.info("xxxxx 2");
+
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -1146,7 +1145,6 @@ this.info("xxxxx 2");
         }
       }
       
-      this.info("xxxxx 3");
     },
 
 
@@ -1169,7 +1167,6 @@ this.info("xxxxx 2");
      */
    _handleKeyPress : function(e)
    {
-     this.info('yyyyy 1');
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
@@ -1367,7 +1364,7 @@ this.info("xxxxx 2");
           }
         break;
        }
-this.info('yyyyy 2');
+
        this.__currentEvent = null;
     },
 
