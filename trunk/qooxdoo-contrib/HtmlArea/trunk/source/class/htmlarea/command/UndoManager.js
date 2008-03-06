@@ -283,7 +283,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         redoObject.actionType = "Content";
         redoObject.range      = undoInfo.range;
         redoObject.content    = undoInfo.range.htmlText;
-        redoObject.marker     = undoInfo.range.getBookmark();
+        redoObject.marker     = this.__getBookmark(undoInfo.range);
 
         this.__redoStack.push(redoObject);
 
@@ -376,6 +376,22 @@ qx.Class.define("htmlarea.command.UndoManager",
 
 
     /**
+     * TODOC
+     */
+    __getBookmark : function (rng)
+    {
+      try
+      {
+        return rng.getBookmark();
+      }
+      catch (e)
+      {
+        return null;
+      }
+    },
+
+
+    /**
      * Redo a browser-supported command.
      *
      * @type member
@@ -413,7 +429,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         undoObject.actionType = "Content";
         undoObject.range      = rng;
         undoObject.content    = rng.htmlText;
-        undoObject.marker     = rng.getBookmark();
+        undoObject.marker     = this.__getBookmark(rng);
 
         this.__addToUndoStack(undoObject);
 
@@ -463,7 +479,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         undoObject.actionType = "Content";
         undoObject.range      = rng;
         undoObject.content    = rng.htmlText;
-        undoObject.marker     = rng.getBookmark();
+        undoObject.marker     = this.__getBookmark(rng);
 
         this.__addToUndoStack(undoObject);
 
@@ -543,7 +559,7 @@ qx.Class.define("htmlarea.command.UndoManager",
           {
             undoObject.actionType = "Command";
             undoObject.range      = this.__commandManager.__currentRange;
-            undoObject.marker     = this.__commandManager.__currentRange.getBookmark();
+            undoObject.marker     = this.__getBookmark(this.__commandManager.__currentRange);
           }
           else
           {
@@ -649,7 +665,7 @@ qx.Class.define("htmlarea.command.UndoManager",
          "mshtml" : function()
          {
            var rng    = this.__editorInstance.getRange();
-           var marker = rng.getBookmark();
+           var marker = this.__getBookmark(rng);
 
            return { range    : rng,
                     bookmark : marker };
