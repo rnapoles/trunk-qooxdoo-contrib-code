@@ -205,8 +205,7 @@ qx.Class.define("htmlarea.command.Manager",
      */
     execute : function(command, value)
     {
-      if (!this.__editorInstance.isLoaded() || 
-          !this.__editorInstance.isEditable())
+      if (!this.__editorInstance.__isReady)
       {
         this.error("editor not ready! '"+command+"':'"+value+"'");
         return false;

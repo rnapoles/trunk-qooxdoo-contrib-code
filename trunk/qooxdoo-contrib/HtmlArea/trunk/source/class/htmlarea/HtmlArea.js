@@ -46,6 +46,8 @@ qx.Class.define("htmlarea.HtmlArea",
     /* Set some init values */
     this.__isLoaded = false;
     this.__isEditable = false;
+    this.__isReady = false;
+
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
     this.setHideFocus(true);
@@ -593,6 +595,80 @@ qx.Class.define("htmlarea.HtmlArea",
 
     __loadCounter : 0,
 
+
+    /**
+     * should be removed if someone find a better way to ensure that the document
+     * is ready in IE6
+     * 
+     * @type member
+     * @param handler {Object}
+     * @return {void}
+     */
+    __waitForDocumentReady : function (handler)
+    {
+      var doc = this.getContentDocument();
+
+      // first we try to get the document
+      if (!doc)
+      {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug('document:' + this.__doc);
+        }
+
+        if (this.__loadCounter >= 5) {
+          this.__loadCounter = 0;
+
+          this.error('cant load HtmlArea. Document is not available. ' + doc, exc);
+          this.createDispatchDataEvent("loadingError", exc);
+        }
+
+        var self = this;
+        window.setTimeout(function() {
+          if (qx.core.Variant.isSet("qx.debug", "on")) {
+            this.debug('document not available, try again...');
+          }
+
+          this.__loadCounter++;
+          self.__waitForDocumentReady(handler);
+        },0);
+      }
+
+      // reset counter, now we try to open the document
+      this.__loadCounter = 0;
+
+      try {
+        doc.open();
+        doc.close();
+
+        this.__loadCounter = 0;
+        handler.call(this);
+      }
+      catch (exc)
+      {
+        this.__loadCounter++;
+
+        if (this.__loadCounter > 5)
+        {
+          this.__loadCounter = 0;
+
+          this.error("document cant opened", exc);
+          this.createDispatchDataEvent("loadingError", exc);
+        }
+        else
+        {
+          if (qx.core.Variant.isSet("qx.debug", "on")) {
+            this.debug("document cant opened, try again...");
+          }
+
+          var self = this;
+          window.setTimeout( function()
+          {
+            self.__waitForDocumentReady(handler);
+          }, 0);
+        }
+      }
+    },
+
     /**
      * Is executed when event "load" is fired
      *
@@ -606,46 +682,31 @@ qx.Class.define("htmlarea.HtmlArea",
         return;
       }
 
+      // sometimes IE6 does some strange things and the document is not available
+      // so we wait for it
+      this.__waitForDocumentReady(this._onDocumentIsReady);
+    },
+
+    _onDocumentIsReady : function ()
+    {
       /* Setting a shortcut for the content document */
       this.__doc = this.getContentDocument();
-
-      // sometimes IE6 does some strange things and the document is not available
-      if (!this.__doc)
-      {
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug('document:' + this.__doc);
-        }
-
-        if (this.__loadCounter >= 5) {
-          throw new Error('cant load HtmlArea. Document is not available. ' + this.__doc);
-        }
-
-        var self = this;
-        this.__loadCounter++;
-        window.setTimeout(function() {
-          self._loaded(e);
-        },0);
-      }
-      this.__loadCounter = 0;
 
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
        * ******************************************* */
 
-      /* Look out for any queued commands which are execute BEFORE this commandManager was available */
-      var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
-
       /* Create a new command manager instance */
-      this.__commandManager = new htmlarea.command.Manager(this);
+      var cm = new htmlarea.command.Manager(this);
 
       /* Decorate the commandManager with the UndoManager if undo/redo is enabled */
       if (this.getUseUndoRedo())
       {
-       this.__commandManager = new htmlarea.command.UndoManager(this.__commandManager, this);
+       cm = new htmlarea.command.UndoManager(cm, this);
       }
 
       /* Inform the commandManager on which document he should operate */
-      this.__commandManager.setContentDocument(this.__doc);
+      cm.setContentDocument(this.__doc);
 
       /* Set the "isLoaded" flag */
       this.__isLoaded = true;
@@ -699,14 +760,23 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
 
+      // now we can set the ready state
+      this.__isReady = true;
+
+      /* Look out for any queued commands which are execute BEFORE this commandManager was available */
+      var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
+
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
       {
         for (var i=0, j=commandStack.length; i<j; i++)
         {
-          this.execute(commandStack[i].command, commandStack[i].value);
+          cm.execute(commandStack[i].command, commandStack[i].value);
         }
       }
+
+      // stack is finished, set commandManager to the real one
+      this.__commandManager = cm;
 
       /* dispatch the "ready" event at the end of the initialization */
       this.dispatchEvent(new qx.event.type.Event("ready"), true);
@@ -922,7 +992,12 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         catch (e)
         {
-          throw new Error("Failed to enable rich edit functionality");
+          if (!this.__isReady) {
+            this.error("Failed to set designMode");
+            this.createDispatchDataEvent("loadingError", e);
+          } else {
+            throw new Error("Failed to set designMode");
+          }
         }
 
         /*
@@ -950,7 +1025,12 @@ qx.Class.define("htmlarea.HtmlArea",
             try {
               this.__commandManager.execute("usecss", false);
             } catch(ex) {
-              throw new Error("Failed to enable rich edit functionality");
+              if (!this.__isReady) {
+                this.error("Failed to enable rich edit functionality");
+                this.createDispatchDataEvent("loadingError", ex);
+              } else {
+                throw new Error("Failed to enable rich edit functionality");
+              }
             }
           }
         }
