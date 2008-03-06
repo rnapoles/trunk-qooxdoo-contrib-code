@@ -216,17 +216,27 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 
 
     /**
-     * dispatches a hash map of messages
-     * @param messages {Array}
-     * @type member
-     * @return {void}
+     * handles events and messages received with server response
      */
-    _dispatchMessages : function ( messages )
+    __handleEventsAndMessages : function ( obj, data )
     {
-      messages.forEach(function(message)
+      // server messages
+      if( data.messages && data.messages instanceof Array )
       {
-        qx.event.message.Bus.dispatch( message.name, message.data ); 
-      });
+        data.messages.forEach( function(message)
+        {
+          qx.event.message.Bus.dispatch( message.name, message.data ); 
+        });
+      }
+
+      // server events
+      if( data.events && data.events instanceof Array )
+      {
+        data.events.forEach( function(event)
+        {
+          obj.createDispatchDataEvent( event.type, event.data ); 
+        });
+      }       
     },
 
     /**
@@ -269,26 +279,22 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 			      rpc.setServiceName(_this.getServiceName() );
 		        rpc.setCrossDomain(_this.getAllowCrossDomainRequests());
 			      var request = rpc.callAsync(
-			       function(result, ex, id){
+			       function(data, ex, id){
 			        request.reset();
 			        request.dispose();
 	            request = null; // dispose rpc object            
-	            if (ex == null) {
-	              // dispatch response events
-	              if (typeof result=="object" && result.__messages instanceof Array )
-	              {
-	               _this._dispatchMessages(result.__messages);
-                 delete result.__messages;
-	              }
-	            } else {
+	            if (ex == null) 
+              {
+               // handle messages and events
+               if (data.messages || data.events) 
+               {
+                 _this.__handleEventsAndMessages(_this,data)
+               }
+	            } 
+              else 
+              {
 	              // generic error handling; todo: proper error handling
-	              qx.event.message.Bus.dispatch(
-                    "qcl.databinding.messages.rpc.error",
-                    "Async(" + id + ") exception: " + 
-                    "origin: " + ex.origin +
-                    "; code: " + ex.code +
-                    "; message: " + ex.message
-                );
+	              qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.error", ex.message );
 	            }
 	           }, 
 	           _this.getServiceMethod(),
@@ -344,22 +350,17 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
 	            
 	            if (ex == null) 
               {
-	              // dispatch response events
-	              if (typeof result=="object" && result.__messages instanceof Array )
-	              {
-	               _this._dispatchMessages(result.__messages);
-                 delete (result.__messages);
-	              }
-	            } else {
+                // handle messages and events
+                if (data.messages || data.events) 
+                {
+                  _this.__handleEventsAndMessages(_this,data)
+                }
+	            } 
+              else 
+              {
 	              // generic error handling;
 	              _this.getTimer().stop();
-	              qx.event.message.Bus.dispatch(
-                    "qcl.databinding.messages.rpc.error",
-                    "Async(" + id + ") exception: " + 
-                    "origin: " + ex.origin +
-                    "; code: " + ex.code +
-                    "; message: " + ex.message
-                );
+	              qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.error", ex.message );
 	            }
 	           }, 
 	           this.getServiceMethod(),
