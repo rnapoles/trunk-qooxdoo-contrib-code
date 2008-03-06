@@ -1109,8 +1109,9 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleKeyUp : function(e)
     {
+      this.info("xxxxx 1");
       var keyIdentifier = e.getKeyIdentifier().toLowerCase();
-
+this.info("xxxxx 2");
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -1144,6 +1145,8 @@ qx.Class.define("htmlarea.HtmlArea",
           this.selectAll();
         }
       }
+      
+      this.info("xxxxx 3");
     },
 
 
@@ -1166,6 +1169,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
    _handleKeyPress : function(e)
    {
+     this.info('yyyyy 1');
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
@@ -1298,7 +1302,7 @@ qx.Class.define("htmlarea.HtmlArea",
               }
             }
           }
-        break;
+          break;
 
         /*
          * For all keys which are able to reposition the cursor
@@ -1311,9 +1315,10 @@ qx.Class.define("htmlarea.HtmlArea",
         case "pageup":
         case "pagedown":
         case "home":
+        case "delete":
         case "end":
           this.__startExamineCursorContext();
-        break;
+          break;
 
         /* Special shortcuts */
         case "b":
@@ -1362,7 +1367,7 @@ qx.Class.define("htmlarea.HtmlArea",
           }
         break;
        }
-
+this.info('yyyyy 2');
        this.__currentEvent = null;
     },
 
@@ -2421,7 +2426,14 @@ qx.Class.define("htmlarea.HtmlArea",
 
        "default" : function()
        {
-         return this.__getSelection().focusNode.parentNode;
+         var sel = this.__getSelection();
+
+         if (sel && sel.focusNode)
+         {
+           return sel.focusNode.parentNode;
+         }
+
+         return this.__doc.body;
        }
     })
   },
