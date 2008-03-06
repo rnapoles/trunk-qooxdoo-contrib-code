@@ -692,11 +692,15 @@ qx.Class.define("htmlarea.HtmlArea",
           self._onDocumentIsReady();
         }, 10);
       }
-      else
+      else if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         // sometimes IE does some strange things and the document is not available
         // so we wait for it
         this.__waitForDocumentReady(this._onDocumentIsReady);
+      }
+      else
+      {
+        this._onDocumentIsReady();
       }
     },
 
