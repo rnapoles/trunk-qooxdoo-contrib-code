@@ -62,7 +62,16 @@
            value="password" 
            onchange="setPassword(this.value);"/>
        </div> 
-       
+
+       <!-- password for upload -->
+       <div>
+         Metadata:
+         <input
+           id="metadata" 
+           value="metadata such as keywords etc." 
+           onchange="setMetadata(this.value);"/>
+       </div> 
+              
        <!-- javascript section -->
        <script>
          
@@ -97,6 +106,16 @@
          function setPassword( password )
          {
            document.uploadApplet.setPassword( password );
+         }
+
+         /**
+          * sets the metadata for the uploaded document
+          * the receiving script can parse this string 
+          * @param {String} prefix
+          */
+         function setMetadata( metadata )
+         {
+           document.uploadApplet.setMetadata( metadata );
          }
          
          /**

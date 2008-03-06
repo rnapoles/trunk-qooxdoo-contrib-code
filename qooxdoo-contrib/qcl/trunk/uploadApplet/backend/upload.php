@@ -10,6 +10,11 @@
  **********************************************************************/
 
 /*
+ * constants
+ */
+$uploadPath = "./uploads";
+
+/*
  * check http basic authentication
  */ 
 if ( ! isset($_SERVER['PHP_AUTH_USER'])) 
@@ -48,11 +53,44 @@ if ($_FILES['uploadfile']['size'] > $maxfilesize*1024)
 }
 
 /*
+ * check if upload directory is writeable
+ */
+if ( ! is_writable( $uploadPath) )
+{
+  die ("<FONT COLOR=RED>Upload path is not writeable.</FONT>");
+}
+
+/*
  * get file info
  */
 $tmp_name  = $_FILES['uploadfile']['tmp_name'];
 $file_name = $_FILES['uploadfile']['name'];
-$tgt_path  = "./uploads/$file_name";
+
+/*
+ * check file name for validity 
+ */
+
+if ( strstr($file_name, ".." ) )
+{
+  die ("<FONT COLOR=RED>Illegal filename.</FONT>");
+}
+
+/*
+ * do we have to create a subdirectory?
+ */
+if ( strstr($file_name, "/") )
+{
+  $basedir = dirname($file_name);
+  if ( ! mkdir ( $basedir ) )
+  {
+    die ("<FONT COLOR=RED>Could not create '$basedir'.</FONT>");
+  }
+}
+
+/*
+ * target path
+ */
+$tgt_path  = "$uploadPath/$file_name";
 
 /*
  * check if file exists
@@ -73,6 +111,6 @@ if ( ! move_uploaded_file( $tmp_name, $tgt_path ) )
 /*
  * report upload succes
  */
-echo "<FONT COLOR=GREEN>Upload successful.</FONT>";
+echo "<FONT COLOR=GREEN>Upload successful, metadata is '" . $_POST['metadata']. "'.</FONT>";
 
 ?>
