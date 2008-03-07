@@ -155,7 +155,7 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
     
   },
 
-	
+  
   /*
   *****************************************************************************
      MEMBERS
@@ -273,38 +273,38 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
         {
           // use JSON-RPC
           case "jsonrpc":
-			      var rpc = new qx.io.remote.Rpc();
-			      rpc.setTimeout(_this.getTimeout());
-			      rpc.setUrl(_this.getServiceUrl());
-			      rpc.setServiceName(_this.getServiceName() );
-		        rpc.setCrossDomain(_this.getAllowCrossDomainRequests());
-			      var request = rpc.callAsync(
-			       function(data, ex, id){
-			        request.reset();
-			        request.dispose();
-	            request = null; // dispose rpc object            
-	            if (ex == null) 
+            var rpc = new qx.io.remote.Rpc();
+            rpc.setTimeout(_this.getTimeout());
+            rpc.setUrl(_this.getServiceUrl());
+            rpc.setServiceName(_this.getServiceName() );
+            rpc.setCrossDomain(_this.getAllowCrossDomainRequests());
+            var request = rpc.callAsync(
+             function(data, ex, id){
+              request.reset();
+              request.dispose();
+              request = null; // dispose rpc object            
+              if (ex == null) 
               {
                // handle messages and events
                if (data.messages || data.events) 
                {
                  _this.__handleEventsAndMessages(_this,data)
                }
-	            } 
+              } 
               else 
               {
-	              // generic error handling; todo: proper error handling
-	              qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.error", ex.message );
-	            }
-	           }, 
-	           _this.getServiceMethod(),
-	           message.getName(),
-	           message.getData(),
+                // generic error handling; todo: proper error handling
+                qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.error", ex.message );
+              }
+             }, 
+             _this.getServiceMethod(),
+             message.getName(),
+             message.getData(),
              this.getRequestId()
-	          );
-	          break;
-	          
-	         default:
+            );
+            break;
+            
+           default:
             this.error ("Method not implemented");
             break;         
         }
@@ -331,47 +331,47 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
         {
           // use JSON-RPC
           case "jsonrpc":
-			      var rpc = new qx.io.remote.Rpc();
-			      rpc.setTimeout(this.getTimeout());
-			      rpc.setUrl(this.getServiceUrl());
-			      rpc.setServiceName(this.getServiceName() );
-		        rpc.setCrossDomain(this.getAllowCrossDomainRequests());
-		        var _this = this;
-			      var request = rpc.callAsync(
-			      function(result, ex, id){
-			        // dispose rpc object
-			        request.reset();
-			        request.dispose();
-	            request = null; 
-	            _this._requestPending = null;
+            var rpc = new qx.io.remote.Rpc();
+            rpc.setTimeout(this.getTimeout());
+            rpc.setUrl(this.getServiceUrl());
+            rpc.setServiceName(this.getServiceName() );
+            rpc.setCrossDomain(this.getAllowCrossDomainRequests());
+            var _this = this;
+            var request = rpc.callAsync(
+            function(data, ex, id){
+              // dispose rpc object
+              request.reset();
+              request.dispose();
+              request = null; 
+              _this._requestPending = null;
               
-	            //check if interval has changed
-	            _this.getTimer().setInterval( _this.getInterval() );
-	            
-	            if (ex == null) 
+              //check if interval has changed
+              _this.getTimer().setInterval( _this.getInterval() );
+              
+              if (ex == null) 
               {
                 // handle messages and events
                 if (data.messages || data.events) 
                 {
                   _this.__handleEventsAndMessages(_this,data)
                 }
-	            } 
+              } 
               else 
               {
-	              // generic error handling;
-	              _this.getTimer().stop();
-	              qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.error", ex.message );
-	            }
-	           }, 
-	           this.getServiceMethod(),
+                // generic error handling;
+                _this.getTimer().stop();
+                qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.error", ex.message );
+              }
+             }, 
+             this.getServiceMethod(),
              this.getRequestId()
-	          );
+            );
             
             // do not send another request until this one has returned
             this._requestPending = rpc;
-	          break;
-	          
-	         default:
+            break;
+            
+           default:
             this.error ("Method not implemented");
             break;         
         }
