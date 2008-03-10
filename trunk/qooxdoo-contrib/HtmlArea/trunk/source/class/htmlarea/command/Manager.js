@@ -199,8 +199,8 @@ qx.Class.define("htmlarea.command.Manager",
      * Executes the given command
      *
      * @type member
-     * @param {String} Command to execute
-     * @param {String ? Integer ? null} Value of the command (if any)
+     * @param command {String} Command to execute
+     * @param value {String ? Integer ? null} Value of the command (if any)
      * @return {Boolean} Result of operation
      */
     execute : function(command, value)
