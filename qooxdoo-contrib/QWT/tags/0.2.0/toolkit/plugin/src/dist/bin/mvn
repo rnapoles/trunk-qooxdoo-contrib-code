@@ -1,0 +1,31 @@
+#!/bin/sh
+
+ME="$0"
+while [ -h "$ME" ] ; do
+  ls=`ls -ld "$ME"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    ME="$link"
+  else
+    ME="`dirname "$ME"`/$link"
+  fi
+done
+
+QWT_HOME=`dirname "$ME"`/..
+current=`pwd`
+cd "$QWT_HOME"
+QWT_HOME=`pwd`
+cd "$current"
+
+REPO=$QWT_HOME/repository
+SETTINGS=$QWT_HOME/bin/settings.xml
+MVN=$QWT_HOME/apache-maven-2.0.8/bin/mvn
+case "`uname`" in
+  CYGWIN*) REPO=`cygpath --windows $REPO`
+    SETTINGS=`cygpath --windows $SETTINGS`
+esac 
+
+# TODO: preferIPv4Stack work's around a Tomcat 6.0.14 startup problem on Mac OS 
+QWT_OPTS="-Djava.net.preferIPv4Stack=true -Dmaven.repo.local=$REPO -Dorg.apache.maven.global-settings=$SETTINGS"
+
+$MVN $QWT_OPTS "$@"

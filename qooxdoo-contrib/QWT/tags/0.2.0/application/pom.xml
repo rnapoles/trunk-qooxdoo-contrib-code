@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.qooxdoo</groupId>
+    <artifactId>qooxdoo</artifactId>
+    <version>2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.qooxdoo</groupId>
+  <artifactId>application</artifactId>
+  <name>Application</name>
+  <description>
+    CAUTION: this pom is not the parent of it's modules!
+    (Because the dist file does not include this pom)
+  </description>
+  <version>2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>hello</module>
+    <module>grep</module>
+    <module>chat</module>
+  </modules>
+</project>
