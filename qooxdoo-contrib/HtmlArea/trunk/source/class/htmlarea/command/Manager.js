@@ -261,9 +261,8 @@ qx.Class.define("htmlarea.command.Manager",
         /* The document object is the default target for all execCommands */
         var execCommandTarget = this.__doc;
 
-        if (!qx.core.Client.getInstance().isOpera()) {
-          this.__doc.body.focus();
-        }
+        /* Body element must have focus before executing command */
+        this.__doc.body.focus();
 
         /*
          * IE looses the selection if the user clicks on any other element e.g. a toolbar item
@@ -287,6 +286,8 @@ qx.Class.define("htmlarea.command.Manager",
            */
           execCommandTarget = this.__currentRange.text.length > 0 ? this.__currentRange : this.__doc;
         }
+
+
 
         var result = execCommandTarget.execCommand(command, ui, value);
 

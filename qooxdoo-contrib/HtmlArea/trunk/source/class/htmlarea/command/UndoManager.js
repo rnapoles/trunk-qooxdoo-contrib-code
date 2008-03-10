@@ -289,7 +289,19 @@ qx.Class.define("htmlarea.command.UndoManager",
 
        /* Select and clear the range */
        undoInfo.range.select();
-       undoInfo.range.pasteHTML("");
+       try
+       {
+         undoInfo.range.pasteHTML("");
+       }
+       /* Sometimes pasteHTML fails with an "unknown error" */
+       catch(e)
+       {
+         if (qx.core.Variant.isSet("qx.debug", "on")) {
+           this.debug("pasteHTML failed: "+e);
+         }
+
+         this.__doc.body.innerHTML = "";
+       }
 
        /* Move the cursor back to the original position using the bookmark */
        undoInfo.range.moveToBookmark(undoInfo.marker);
