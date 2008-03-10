@@ -41,8 +41,16 @@ class qcl_db_pear extends qcl_db
 		}
     $this->log("Connecting to $dsn.");
     
-		$db =& DB::connect( $dsn );
-		if (PEAR::isError($db)) 
+		if ( is_string ( $dsn ) or is_array ( $dsn ) )
+    {
+      $db =& DB::connect( $dsn );  
+    }
+		else
+    {
+      $this->raiseError("Invalid DSN $dsn");
+    }
+    
+    if (PEAR::isError($db)) 
 		{
 			$this->raiseError( $db->getMessage() . ": " . $db->getUserInfo() );
 		}

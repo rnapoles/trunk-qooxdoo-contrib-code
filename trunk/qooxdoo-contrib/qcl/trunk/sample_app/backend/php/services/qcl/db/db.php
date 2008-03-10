@@ -143,17 +143,31 @@ class qcl_db extends qcl_object
   function setDsn($dsn)
   {
     $this->dsn = $dsn; 
-    $matches = array();
-    preg_match(
-      "/([^:]+):\/\/([^:]*):?([^@]+)@([^\/:]+):?([^\/]*)\/(.+)/",
-      $dsn, $matches
-    );
-    $this->type     = $matches[1];
-    $this->user     = $matches[2];
-    $this->password = $matches[3];
-    $this->host     = $matches[4];
-    $this->port     = $matches[5];
-    $this->database = $matches[6];
+    if ( is_string ($dsn ) )
+    {
+      $matches = array();
+      preg_match(
+        "/([^:]+):\/\/([^:]*):?([^@]+)@([^\/:]+):?([^\/]*)\/(.+)/",
+        $dsn, $matches
+      );
+      $this->type     = $matches[1];
+      $this->user     = $matches[2];
+      $this->password = $matches[3];
+      $this->host     = $matches[4];
+      $this->port     = $matches[5];
+      $this->database = $matches[6];
+    }
+    elseif ( is_array( $dsn ) )
+    {
+      foreach ( $dsn as $key => $value )
+      {
+        $this->$key = $value;
+      }
+    }
+    else
+    {
+      $this->raiseError("qcl_db::setDsn : Invalid DSN '$dsn'" );
+    }
   }
   
   
