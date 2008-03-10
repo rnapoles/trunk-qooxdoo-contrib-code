@@ -1,0 +1,20 @@
+Qooxdoo Web Toolkit
+-------------------
+
+CAUTION: this is early beta software.
+
+Building
+
+  mvn clean install
+
+
+Directory structure
+
+  sushi          gerneral purpose stuff, like apache commons
+  eclipse        addition jar needed for the compiler
+  toolkit        qwt itself
+  application    example applications
+
+
+See also: http://qooxdoo.org/documentation/contrib/contributions/qwt
+
