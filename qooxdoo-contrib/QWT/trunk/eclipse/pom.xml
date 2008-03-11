@@ -50,7 +50,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
                      package phase failed when executed as part of a multi-module build.
                      So I pretend it's resources: -->
                 <unzip src="${basedir}/${pom.groupId}-${pom.artifactId}-${pom.version}.jar"
-                       dest="${basedir}/target/classes">
+                       dest="${project.build.directory}/classes">
                 </unzip>
               </tasks>
             </configuration>

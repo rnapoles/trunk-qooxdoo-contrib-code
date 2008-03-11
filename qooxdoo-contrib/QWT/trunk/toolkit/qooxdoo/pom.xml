@@ -64,7 +64,8 @@
             <configuration>
               <undocumented>qx/theme/*.js, qx/theme/icon/**/*.js, qx/theme/classic/**/*.js, qx/theme/ext/**/*.js, **/__init__.js</undocumented>
               <patches>${basedir}/src/main/patches.txt</patches>
-              <bindings>${basedir}/target/bindings</bindings>
+              <bindings>${project.build.directory}/bindings</bindings>
+              <serialized>${project.build.directory}/classes/doctree.ser</serialized>
               <excludes>**/__init__.js</excludes>
             </configuration>
             <goals>

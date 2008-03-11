@@ -43,7 +43,7 @@ import org.xml.sax.SAXParseException;
  * @phase generate-sources
  */
 public class BindingMojo extends FrameworkBase {
-    private static final String CLASS = "source" + File.separator + "class";
+    public static final String CLASS = "source" + File.separator + "class";
 
     /**
      * Always generate, don't reuse existing stuff
@@ -83,6 +83,18 @@ public class BindingMojo extends FrameworkBase {
     
     public void setPatches(String path) {
         patches = io.node(path);
+    }
+
+    /**
+     * Where to save to doctree
+     * 
+     * @parameter
+     * @required
+     */
+    private Node serialized;
+    
+    public void setSerialized(String path) {
+        serialized = io.node(path);
     }
 
     /**
@@ -160,6 +172,9 @@ public class BindingMojo extends FrameworkBase {
             throw new IOException(src.getName() + ": " + e.getMessage());
         }
         info(doctree.size() + " class docs loaded from " + src);
+        serialized.getParent().mkdirOpt();
+        serialized.writeObject(doctree);
+        info("class docs serialized to " + serialized);
         doctree.toJava(bindings);
         info(doctree.size() + " Java classes written to " + bindings);
         patchSet.apply(bindings);

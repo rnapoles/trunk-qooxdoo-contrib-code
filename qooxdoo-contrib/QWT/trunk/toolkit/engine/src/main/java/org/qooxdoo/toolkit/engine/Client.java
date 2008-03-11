@@ -83,7 +83,7 @@ public class Client implements ClientMBean {
 
     // CAUTION: not static!
     private final Application application;
-    private final Node src;
+    private final Node sources;
     private final String[] includes;
     private final String[] excludes;
     private final List<Node> classpath;
@@ -100,13 +100,13 @@ public class Client implements ClientMBean {
     
     //--
     
-    public Client(Application application, Node src, String[] includes, String[] excludes,   
+    public Client(Application application, Node sources, String[] includes, String[] excludes,   
             String title, String main, FileNode dir) {
         this.application = application;
-        this.src = src;
+        this.sources = sources;
         this.includes = includes;
         this.excludes = excludes;
-        this.classpath = classpath(src.io);
+        this.classpath = classpath(sources.io);
         this.title = title;
         this.main = main;
         this.nextSessionId = 0;
@@ -217,15 +217,15 @@ public class Client implements ClientMBean {
         Node tmp;
         Qooxdoo qooxdoo;
         
-        io = src.io;
+        io = sources.io;
         srcFilter = io.filter();
         srcFilter.include(includes);
         srcFilter.exclude(excludes);
         task = new Task(io, Naming.createRootRepository(io), srcFilter);
         task.classpath(classpath);
-        task.sourcepath(src);
+        task.sourcepath(sources.find("*"));
         if (task.sources.size() == 0) {
-            throw new ServletException("no Java files in directory " + src.getAbsolute());
+            throw new ServletException("no Java files in directory " + sources.getAbsolute());
         }
         qooxdoo = Qooxdoo.create(io, task.repository);
         application.log.info("qooxdoo: " + qooxdoo);

@@ -17,10 +17,15 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.java;
+package org.qooxdoo.qul.client;
 
-import java.io.Serializable;
+import qx.application.Gui;
 
-public interface Type extends Serializable {
-    String getJavaName();
+public class Main extends Gui {
+    @Override
+    public void main() {
+        super.main();
+
+        Qul.create().addToDocument();
+    }
 }
