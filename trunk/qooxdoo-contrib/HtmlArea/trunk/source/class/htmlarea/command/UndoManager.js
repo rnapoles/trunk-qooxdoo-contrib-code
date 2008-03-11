@@ -122,6 +122,13 @@ qx.Class.define("htmlarea.command.UndoManager",
         }
         else
         {
+
+          /* Check if last undo removed all content from area: */
+          if ( (command == "redo") && this.__editorInstance.containsOnlyPlaceholder() ){
+            /* Clear body element to remove dummy element from area. */
+            this.__doc.body.innerHTML = "";
+          }
+
           /* Call the responsible method */
           result = this[command].call(this);
 
