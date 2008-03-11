@@ -2076,6 +2076,29 @@ qx.Class.define("htmlarea.HtmlArea",
       return htmlarea.HtmlArea.__getHtml(this.__doc.body, false);
     },
 
+    
+    /**
+     * Helper function to examine if HTMLArea is empty, except for
+     * place holder(s) needed by some browsers.
+     * 
+     * @type member
+     * @return {Boolean} True, if area is empty - otherwise false.
+     */
+    containsOnlyPlaceholder : qx.core.Variant.select("qx.client",
+    {
+
+      "mshtml" : function()
+      {
+        return (this.__doc.body.innerHTML == "<P>&nbsp;</P>");
+      },
+
+      "default" : function()
+      {
+        return false;
+      }
+
+    }),
+
 
     /*
       -----------------------------------------------------------------------------
