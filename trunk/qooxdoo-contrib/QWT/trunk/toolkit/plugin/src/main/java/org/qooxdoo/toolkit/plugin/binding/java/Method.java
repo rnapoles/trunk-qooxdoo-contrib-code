@@ -29,7 +29,7 @@ public class Method extends Item {
     private final boolean isNative;
     private final boolean isStatic;
     private final boolean isConstructor;
-    private Type type;
+    public Type type;
     private final String name;
     private final String docFrom;
     private final String fromProperty;
@@ -79,7 +79,7 @@ public class Method extends Item {
         GroupType gt;
         
         if (fromProperty != null) {
-            prop = owner.findProperty(fromProperty);
+            prop = owner.findField(fromProperty);
             if (prop == null) {
                 throw new IllegalArgumentException("fromProperty " + fromProperty + " not found.");
             }

@@ -30,9 +30,13 @@ import javax.xml.parsers.SAXParser;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.metadata.xml.SAXLoaderException;
+import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Builder;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.binding.java.Field;
+import org.qooxdoo.toolkit.plugin.binding.java.Method;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
+import org.qooxdoo.toolkit.plugin.binding.java.Type;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -112,10 +116,51 @@ public class Loader extends DefaultHandler {
             head(fullName);
         }
         v = var();
-        write("        ");
-        write(fullName + " " + v + " = new ");
-        write(fullName);
-        write("();\n");
+        line(fullName, " ", v, " = new ", fullName, "();");
+        attributes(attrs, v, clazz);
+    }
+    
+    private void attributes(Attributes attrs, String v, Clazz clazz) {
+        String name;
+        String methodName;
+        Type type;
+        
+        for (int i = 0, max = attrs.getLength(); i < max; i++) {
+            name = attrs.getQName(i);
+            methodName = "set" + Strings.capitalize(name);
+            type = lookup(clazz, name, methodName);
+            if (type == null) {
+                throw new RuntimeException("unkown property: " + name);
+            }
+            // TODO: property types
+            line(v, ".", methodName, "(", quote(attrs.getValue(i)), ");");
+        }
+    }
+    
+    private Type lookup(Clazz clazz, String name, String methodName) {
+        Field field;
+        Method method;
+        Clazz s;
+        
+        field = clazz.findField(name);
+        if (field != null) {
+            return field.getType();
+        }
+        method = clazz.findMethod(methodName, false);
+        if (method != null && method.params().size() == 1) {
+            // TODO: overloaded method ...
+            return method.params().get(0).getType();
+        }
+        s = clazz.getSuperClass();
+        if (s != null) {
+            return lookup(s, name, methodName);
+        } else {
+            return null;
+        }
+    }
+    
+    public static String quote(String str) {
+        return '"' + str + '"'; // TODO
     }
 
     @Override
@@ -172,22 +217,31 @@ public class Loader extends DefaultHandler {
 
     private void head(String type) {
         if (pkg != null) {
-            write("package ");
-            write(pkg);
-            write(";\n\n");
+            line(0, "package ", pkg, ";");
+            line(0);
         }
-        write("public class ");
-        write(className);
-        write(" {\n");
-        write("    public static ");
-        write(type);
-        write(" create() {\n");
+        line(0, "public class ", className, " {");
+        line(1, "public static ", type, " create() {");
     }
     
     public void tail() {
-        write("        return v0;\n");
-        write("    }\n");
-        write("}\n");
+        line("return v0;");
+        line(1, "}");
+        line(0, "}");
+    }
+
+    private void line(String ... args) {
+        line(2, args);
+    }
+
+    private void line(int indent, String ... args) {
+        while (indent-- > 0) {
+            write("    ");
+        }
+        for (String arg : args) {
+            write(arg);
+        }
+        write("\n");
     }
 
     private void write(String str) {
