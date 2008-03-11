@@ -57,39 +57,27 @@ qx.Class.define("htmlarea.command.UndoManager",
     /* Flag for the undo-mechanism to monitor the content changes */
     __startTyping : false,
 
+    
+    /* *******************************************************
+     *
+     *                 PUBLIC METHODS
+     * 
+     * *******************************************************/
+    
     /**
-     * TODOC
+     * Set the document instance on which the UndoManager should perform his actions.
+     * 
+     * @type member
+     * @param doc {Document} document node to work on
+     * @return {void}
      */
     setContentDocument : function(doc)
     {
       this.__doc = doc;
       this.__commandManager.setContentDocument(doc);
     },
-
-    /**
-     * TODOC
-     */
-    __populateCommandList : function()
-    {
-      this.__commands = {
-        undo         : { passthrough : false },
-        redo         : { passthrough : false },
-
-        stylewithcss : { passthrough : true },
-        usecss       : { passthrough : true }
-      };
-
-      /*
-       * Actions for which a special undo operation is needed because
-       * the browser could not handle them automatically with the "undo"
-       * execCommand. This is only needed for non-mshtml as IE uses his own
-       * undo mechanism.
-       */
-      this.__commandManager.__commands["backgroundcolor"].customUndo = true;
-      this.__commandManager.__commands["backgroundimage"].customUndo = true;
-    },
-
-
+    
+    
     /**
      * Executes the given command and collects (if necessary) undo information.
      *
@@ -148,8 +136,15 @@ qx.Class.define("htmlarea.command.UndoManager",
       
       return result;
     },
-
-
+    
+    
+    /* *******************************************************
+     *
+     *                  UNDO METHODS
+     * 
+     * *******************************************************/
+    
+    
     /**
      * Service method to check if an undo operation is currently possible
      *
@@ -161,20 +156,8 @@ qx.Class.define("htmlarea.command.UndoManager",
       /* If no undo history entry is available but content was edited */
       return this.__undoStack.length > 0 || this.__startTyping;
     },
-
-
-    /**
-     * Service method to check if a redo operation is currently possible
-     *
-     * @type member
-     * @return {Boolean} Whether redo is possible or not
-     */
-    isRedoPossible : function()
-    {
-      return (this.__redoStack.length > 0) && (!this.__startTyping);
-    },
-
-
+    
+    
     /**
      * Undo facade method. The different types of undo (command/custom/content)
      * are delegated to their specialized implementation.
@@ -349,6 +332,26 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
     }),
 
+
+
+    /* *******************************************************
+     *
+     *                  REDO METHODS
+     * 
+     * *******************************************************/
+
+    /**
+     * Service method to check if a redo operation is currently possible
+     *
+     * @type member
+     * @return {Boolean} Whether redo is possible or not
+     */
+    isRedoPossible : function()
+    {
+      return (this.__redoStack.length > 0) && (!this.__startTyping);
+    },
+    
+    
     /**
      * Redo facade method. The different types of redo (command/custom/content)
      * are delegated to their specialized implementation.
@@ -402,24 +405,8 @@ qx.Class.define("htmlarea.command.UndoManager",
 
       return this.__commandManager.execute(redoInfo.command, redoInfo.value);
     },
-
-
-    /**
-     * TODOC
-     */
-    __getBookmark : function (rng)
-    {
-      try
-      {
-        return rng.getBookmark();
-      }
-      catch (e)
-      {
-        return null;
-      }
-    },
-
-
+    
+    
     /**
      * Redo a browser-supported command.
      *
@@ -520,11 +507,54 @@ qx.Class.define("htmlarea.command.UndoManager",
         this.__addToUndoStack(redoInfo);
         return this.__doc.execCommand("Redo", false, null);
       }
-    }),
-
+    }),    
+    
+    
+    /* *******************************************************
+     *
+     *             PRIVATE UTILITY METHODS
+     * 
+     * *******************************************************/
 
     /**
-     * TODOC
+     * Populates the internal command list. This list determines
+     * which commands are handled directly by the undo manager and
+     * which commands are passed through (without added to the undo/redo
+     * history).
+     * 
+     * @type member
+     * @return {void}
+     */
+    __populateCommandList : function()
+    {
+      this.__commands = {
+        undo         : { passthrough : false },
+        redo         : { passthrough : false },
+
+        stylewithcss : { passthrough : true },
+        usecss       : { passthrough : true }
+      };
+
+      /*
+       * Actions for which a special undo operation is needed because
+       * the browser could not handle them automatically with the "undo"
+       * execCommand. This is only needed for non-mshtml as IE uses his own
+       * undo mechanism.
+       */
+      this.__commandManager.__commands["backgroundcolor"].customUndo = true;
+      this.__commandManager.__commands["backgroundimage"].customUndo = true;
+    },
+    
+
+    /**
+     * Collects the necessary info about the current action and adds this
+     * info to the undo history.
+     * 
+     * @type member
+     * @param command {String} command to execute
+     * @param {String ? Integer ? null} Value of the command (if any)
+     * @param {Object} internal commandObject
+     * @return {void}
      */
     __collectUndoInfo : function(command, value, commandObject)
     {
@@ -597,7 +627,6 @@ qx.Class.define("htmlarea.command.UndoManager",
       /* Add the undoObject to the undoStack */
       this.__updateUndoStack(undoObject);
     },
-
 
 
     /**
@@ -706,7 +735,12 @@ qx.Class.define("htmlarea.command.UndoManager",
 
 
      /**
-     * TODOC
+     * Key press handler for the undo manager. Only acts on specific events which
+     * are important to the undo manager.
+     * 
+     * @type member
+     * @param e {qx.event.type.KeyEvent} key event instance
+     * @return {void} 
      */
     _handleKeyPress : function(e)
     {
@@ -766,7 +800,35 @@ qx.Class.define("htmlarea.command.UndoManager",
             this.__startTyping = true;
           }
        }
-    }
+    },
+    
+    
+    /**
+     * Utility method to get a bookmark of the given range object.
+     * Works only for IE.
+     * 
+     * @type member
+     * @param rng {Range} given range object
+     * @return {Bookmark ? null}
+     */
+    __getBookmark : qx.core.Variant.select("qx.client",
+    { "mshtml" : function(rng)
+      {
+        try
+        {
+          return rng.getBookmark();
+        }
+        catch (e)
+        {
+          return null;
+        }
+      },
+      
+      "default" : function()
+      {
+        return null;
+      }
+    })
   },
 
 
