@@ -197,6 +197,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
   statics :
   {
+    /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
+    simpleLinebreak : "<br>",
+    
     /**
      * Formats the style information. If the styleInformation was passed
      * in as a map it gets converted to a string.
@@ -259,7 +262,7 @@ qx.Class.define("htmlarea.HtmlArea",
               if (root.tagName.toLowerCase() == "div" && root.className && root.className == "placeholder")
               {
                 for (i=root.firstChild; i; i=i.nextSibling) {
-                  html += htmlArea.HtmlArea.__getHtml(i, true);
+                  html += htmlarea.HtmlArea.__getHtml(i, true);
                 }
                 return html;
               }
@@ -1279,13 +1282,15 @@ qx.Class.define("htmlarea.HtmlArea",
             {
 
               /*
-               * Manually reset the current range object to force the "insertHtml"
-               * method to create a new range object (out of the current selection)
+               * Insert a "br" element to force a line break. If the insertion succeeds
+               * stop the key event otherwise let the browser handle the linebreak e.g.
+               * if the user is currently editing an (un)ordered list.
                */
-              this.__commandManager.execute("inserthtml", "<br>");
-
-              e.preventDefault();
-              e.stopPropagation();
+              if (this.__commandManager.execute("inserthtml", htmlarea.HtmlArea.simpleLinebreak))
+              {
+                e.preventDefault();
+                e.stopPropagation();
+              }              
             }
           }
           else
