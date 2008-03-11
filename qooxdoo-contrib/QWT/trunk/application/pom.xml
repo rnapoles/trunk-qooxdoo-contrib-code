@@ -17,8 +17,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <version>2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
+    <module>empty</module>
     <module>hello</module>
     <module>grep</module>
     <module>chat</module>
+    <module>qul</module>
   </modules>
 </project>
