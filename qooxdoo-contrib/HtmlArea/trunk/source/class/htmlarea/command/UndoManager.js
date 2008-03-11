@@ -90,10 +90,17 @@ qx.Class.define("htmlarea.command.UndoManager",
 
 
     /**
-     * TODOC
+     * Executes the given command and collects (if necessary) undo information.
+     *
+     * @type member
+     * @param {String} Command to execute
+     * @param {String ? Integer ? null} Value of the command (if any)
+     * @return {Boolean} Result of operation
      */
     execute : function(command, value)
     {
+      var result;
+      
       /* Normalize */
       command = command.toLowerCase();
 
@@ -111,12 +118,12 @@ qx.Class.define("htmlarea.command.UndoManager",
          */
         if (this.__commands[command].passthrough)
         {
-          this.__commandManager.execute(command, value);
+          result = this.__commandManager.execute(command, value);
         }
         else
         {
           /* Call the responsible method */
-          this[command].call(this);
+          result = this[command].call(this);
 
           /* (re)set the focus in the editor */
           this.__commandManager.__focusAfterExecCommand();
@@ -128,8 +135,10 @@ qx.Class.define("htmlarea.command.UndoManager",
         this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
 
         /* Execute the command */
-        this.__commandManager.execute(command, value);
+        result = this.__commandManager.execute(command, value);
       }
+      
+      return result;
     },
 
 
@@ -563,10 +572,7 @@ qx.Class.define("htmlarea.command.UndoManager",
             this.__commandManager.__currentRange = this.__editorInstance.getRange();
           }
 
-          this.__commandManager.__currentRange.select();
-
           var text = this.__commandManager.__currentRange.text;
-
           if (text && text.length > 0)
           {
             undoObject.actionType = "Command";
