@@ -15,6 +15,7 @@
    Authors:
      * Alexander Back (aback)
      * Michael Haitz (mhaitz)
+     * Jonathan Rass (jonathan_rass)
 
 ************************************************************************ */
 
@@ -561,7 +562,6 @@ qx.Class.define("htmlarea.HtmlArea",
       return this.__value;
     },
 
-
     /**
      * Getting the computed value of the editor.
      * This method returns the current value of the editor traversing
@@ -880,7 +880,7 @@ qx.Class.define("htmlarea.HtmlArea",
         body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(this.__doc.body)+'">');
       }
 
-      /* RIGHT IMPLEMENTATION */
+      /* CORRECT IMPLEMENTATION */
       return wrap.html +
              '<head>' + wrap.meta +
              '<style type="text/css">' + wrap.style + geckoOverflow + this.__styleInformation + '</style>' +
@@ -1237,7 +1237,7 @@ qx.Class.define("htmlarea.HtmlArea",
                   * only necessary to have anything AFTER the "br" element to get it work.
                   * Strange hack, I know ;-)
                   */
-                 this.insertHtml("<br/><div id='placeholder'></div>");
+                 this.insertHtml("<br /><div id='placeholder'></div>");
                break;
 
                case "webkit":
@@ -1307,6 +1307,69 @@ qx.Class.define("htmlarea.HtmlArea",
           break;
 
         /*
+         * Firefox 2 needs some extra work to move the cursor
+         * (and optionally select text while moving) to
+         * first position in the first line.
+         */
+        case "home":
+          if (qx.core.Client.getInstance().isGecko() && (qx.core.Client.getInstance().getVersion() < 1.9) )
+          {
+
+            if(isCtrlPressed)
+            {
+              /* Fetch current selection */
+              var sel = this.__getSelection();
+
+              /*
+               * Select text from first position in first line
+               * to actual caret position.
+               * 
+               * NOTE: In Mozilla the start node of a range MUST BE
+               * the previous sibling (or ancestor) of the end node.
+               * Therefore the range is created backwards.  
+               */
+              if (isShiftPressed)
+              {
+                /* Get range */
+                var rng = sel.getRangeAt(0);
+
+                /* Store caret position information */
+                var startContainer = rng.startContainer;
+                var startOffset = rng.startOffset;
+
+                /* Select body to expand range to complete content */
+                rng.selectNodeContents(this.__doc.body);
+
+                /* Start range on first character  */
+                rng.setStart(this.__doc.body.firstChild, 0);
+
+                /* End range on last caret position */
+                rng.setEnd(startContainer, startOffset);
+
+                /* Turn range into highlighted selection */
+                sel.addRange(rng);
+              }
+              else
+              {
+                /*
+                 * Jump to first position in the first line. 
+                 */
+                
+                /* Remove ranges, if present */
+                sel.removeAllRanges();
+
+                /* Collapse at first character */
+                sel.collapse(this.__doc.body, 0);
+              }
+
+            }
+
+          }
+
+          this.__startExamineCursorContext();
+          break;
+          
+        /*
          * For all keys which are able to reposition the cursor
          * start to examine the current cursor context
          */
@@ -1316,7 +1379,6 @@ qx.Class.define("htmlarea.HtmlArea",
         case "down":
         case "pageup":
         case "pagedown":
-        case "home":
         case "delete":
         case "end":
           this.__startExamineCursorContext();
@@ -1618,6 +1680,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleMouseEvent : function(e)
     {
+
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug("handleMouse " + e.type);
       }
@@ -1984,7 +2047,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    undo : function()
+    undo : function(mode)
     {
       /* Only execute this command if undo/redo is activated */
       if (this.getUseUndoRedo())
@@ -2004,7 +2067,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    redo : function()
+    redo : function(mode)
     {
       /* Only execute this command if undo/redo is activated */
       if (this.getUseUndoRedo())
@@ -2098,7 +2161,6 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
     }),
-
 
     /*
       -----------------------------------------------------------------------------
