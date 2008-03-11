@@ -20,6 +20,7 @@
 package org.qooxdoo.toolkit.plugin.binding.java;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.qooxdoo.toolkit.plugin.binding.qx.Doctree;
 import org.xml.sax.SAXException;
 
 /** Arbitrary collection of classes. */ 
-public class Set {
+public class Set implements Serializable {
     public static Set loadAll(Node src, Node output, Node jsroot, Filter undocumented) 
     throws IOException, SAXException, LoaderException, XmlException {
         Set set;
@@ -91,6 +92,25 @@ public class Set {
         return null;
     }
     
+    public Clazz getSimple(String name) {
+        Clazz result;
+        
+        result = null;
+        for (Clazz c : clazzes) {
+            if (c.getFullName().endsWith(name)) {
+                if (result != null) {
+                    throw new IllegalArgumentException("ambiguous: " + name);
+                }
+                result = c;
+            }
+        }
+        if (result == null) {
+            throw new IllegalArgumentException("not found: " + name);
+        }
+        return result;
+    }
+    
+
     public void link() {
         for (Clazz c : clazzes) {
             c.link(this);

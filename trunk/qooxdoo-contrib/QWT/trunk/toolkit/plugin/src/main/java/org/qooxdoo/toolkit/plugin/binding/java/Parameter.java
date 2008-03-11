@@ -19,8 +19,10 @@
 
 package org.qooxdoo.toolkit.plugin.binding.java;
 
+import java.io.Serializable;
 
-public class Parameter {
+
+public class Parameter implements Serializable {
     private final Type type;
     private final String name;
     

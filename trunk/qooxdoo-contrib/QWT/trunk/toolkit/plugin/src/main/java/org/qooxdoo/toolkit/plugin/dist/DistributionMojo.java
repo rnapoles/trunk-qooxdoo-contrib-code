@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.dist;
+package org.qooxdoo.toolkit.plugin.dist;
 
 import java.io.IOException;
 import java.net.URL;

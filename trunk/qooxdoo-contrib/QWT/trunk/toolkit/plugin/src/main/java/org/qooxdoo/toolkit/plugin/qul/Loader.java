@@ -17,21 +17,22 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.metadata.xml;
+package org.qooxdoo.toolkit.plugin.qul;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.metadata.Item;
-import org.qooxdoo.sushi.metadata.Type;
+import org.qooxdoo.sushi.metadata.xml.SAXLoaderException;
 import org.qooxdoo.sushi.xml.Builder;
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.binding.java.Set;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -41,20 +42,17 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Loader extends DefaultHandler {
     private Locator locator;
-    private final Type type;
     private final SAXParser parser;
-    private final List<Element> elements;
-    private Object result;
-    /** map's id's to Objects */
-    private Map<String, Object> storage;
     private List<SAXException> exceptions;
+    private final Set doctree;
+    private String className;
+    private String pkg;
+    private Writer output;
+    private int var;
 
-    public static Loader createValidating(IO io, Type type) {
-        Node xsd;
-        
+    public static Loader create(IO io, Set doctree) {
         try {
-            xsd = io.stringNode(type.createSchema());
-            return new Loader(type, Builder.createValidatingSAXParser(xsd));
+            return new Loader(doctree, Builder.createSAXParser());
         } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -62,18 +60,27 @@ public class Loader extends DefaultHandler {
         }
     }
 
-    public Loader(Type type, SAXParser parser) {
-        this.type = type;
+    public Loader(Set doctree, SAXParser parser) {
+        this.var = 0;
+        this.doctree = doctree;
         this.parser = parser;
-        this.elements = new ArrayList<Element>();
-        this.result = null;
     }
 
-    public Object run(InputSource src) throws IOException, LoaderException {
-        elements.clear();
+    public void run(Node src, Node dest, String pkg) throws IOException {
+        InputStream stream;
 
+        stream = src.createInputStream();
+        run(new InputSource(stream), dest.createWriter(), pkg, dest.getName().replace(".java", ""));
+        output.close();
+        stream.close();
+    }
+
+    /** does not close anything */
+    public void run(InputSource src, Writer output, String pkg, String className) throws IOException {
+        this.className = className;
+        this.pkg = pkg;
+        this.output  = output;
         locator = null;
-        storage = new HashMap<String, Object>();
         exceptions = new ArrayList<SAXException>();
         try {
             parser.parse(src, this);
@@ -82,11 +89,7 @@ public class Loader extends DefaultHandler {
         } catch (SAXException e) {
             exceptions.add(e);
         }
-        LoaderException.check(exceptions, src, result);
-        if (elements.size() != 0) {
-            throw new RuntimeException();
-        }
-        return result;
+        tail();
     }
 
     //-- SAX parser implementation
@@ -98,66 +101,30 @@ public class Loader extends DefaultHandler {
       
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXLoaderException {
-        Element parent;
-        Item<?> child;
-        Element started;
+        Clazz clazz;
+        String v;
+        String fullName;
         
         check(uri, localName);
-        if (elements.size() == 0) {
-            // this is the root element - the element name doesn't matter
-            started = Element.create(null, type);
-        } else {
-            parent = peek();
-            child = parent.lookup(qName);
-            if (child == null) {
-                // cannot recover
-                throw new SAXLoaderException("unknown element '" + qName + "'", locator);
-            }
-            started = Element.create(child, child.getType());
+        clazz = doctree.getSimple(qName);
+        fullName = clazz.getFullName();
+        if (var == 0) {
+            head(fullName);
         }
-        elements.add(started);
-        attributes(attrs, started);
+        v = var();
+        write("        ");
+        write(fullName + " " + v + " = new ");
+        write(fullName);
+        write("();\n");
     }
 
-    private void attributes(Attributes attrs, Element started) {
-        int length;
-        String name;
-        String value;
-        
-        length = attrs.getLength();
-        for (int i = 0; i < length; i++) {
-            name = attrs.getQName(i);
-            value = attrs.getValue(i);
-            if (name.equals("id")) {
-                started.id = value;
-            } else if (name.equals("idref")) {
-                started.idref = value;
-            } else {
-                loaderException("unexected attribute " + name);
-            }
-        }
-        
-    }
     @Override
     public void endElement(String uri, String localName, String qName) {
-        Element child;
-        Object childObject;
-
         check(uri, localName);
-        child = elements.remove(elements.size() - 1);
-        childObject = child.done(storage, exceptions, locator);
-        if (elements.size() == 0) {
-            result = childObject;
-        } else {
-            peek().addChild(child.getOwner(), childObject);
-        }
     }
     
     @Override
     public void characters(char[] ch, int start, int end) {
-        if (!peek().addContent(ch, start, end)) {
-            loaderException("unexpected content");
-        }
     }
 
     @Override
@@ -179,7 +146,7 @@ public class Loader extends DefaultHandler {
         exceptions.add(e);
     }
 
-    /** called if the document is not well-formed. Clears all other exceptions an terminates parsing */
+    /** called if the document is not well-formed. Clears all other exceptions and terminates parsing */
     @Override
     public void fatalError(SAXParseException e) throws SAXParseException {
         // clear all other exceptions an terminate
@@ -200,10 +167,39 @@ public class Loader extends DefaultHandler {
     private void loaderException(String msg) {
         exceptions.add(new SAXLoaderException(msg, locator));
     }
-
+    
     //--
 
-    private Element peek() {
-        return elements.get(elements.size() - 1);
+    private void head(String type) {
+        if (pkg != null) {
+            write("package ");
+            write(pkg);
+            write(";\n\n");
+        }
+        write("public class ");
+        write(className);
+        write(" {\n");
+        write("    public static ");
+        write(type);
+        write(" create() {\n");
     }
+    
+    public void tail() {
+        write("        return v0;\n");
+        write("    }\n");
+        write("}\n");
+    }
+
+    private void write(String str) {
+        try {
+            output.write(str);
+        } catch (IOException e) {
+            throw new RuntimeException("todo", e);
+        }
+    }
+
+    private String var() {
+        return "v" + var++;
+    }
+
 }

@@ -19,6 +19,7 @@
 
 package org.qooxdoo.toolkit.repository;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import org.qooxdoo.sushi.util.Strings;
  * Dependencies to modules. Never contains a module twice.
  * Doesn't use sets internally because I want to keep the ordering.
  */
-public class Dependencies {
+public class Dependencies implements Serializable {
     private static final String DELIM = ",";
     private static final String OPEN = "[";
     private static final String CLOSE = "]";

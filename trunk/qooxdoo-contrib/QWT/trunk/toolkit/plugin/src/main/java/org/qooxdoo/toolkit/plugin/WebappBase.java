@@ -129,19 +129,6 @@ public abstract class WebappBase extends Base {
     }
 
     /**
-     * The directory containing generated classes.
-     *
-     * @parameter expression="${basedir}/src/main/java"
-     * @required
-     * @readonly
-     */
-    private FileNode sourceDirectory;
-
-    public void setSourceDirectory(String dir) {
-        sourceDirectory = io.node(dir);
-    }
-
-    /**
      * Directory where the web application is built.
      *
      * @parameter expression="${project.build.directory}/webapp"
@@ -185,7 +172,7 @@ public abstract class WebappBase extends Base {
             throw new MojoExecutionException("missing " + classesDirectory + " - did you compile?");
         }
         linkOrCopy(classesDirectory, (FileNode) webinf.join(classesDirectory.getName()));
-        linkOrCopy(sourceDirectory, (FileNode) webinf.join("src"));
+        linkSource(webinf);
         for (Artifact artifact : projectDependencies) {
             name = getLibName(artifact);
             if (name != null) {
@@ -214,6 +201,19 @@ public abstract class WebappBase extends Base {
         }
     }
 
+    private void linkSource(FileNode webinf) throws IOException {
+        Node webinfSrc;
+        
+        webinfSrc = webinf.join("src");
+        webinfSrc.mkdir();
+        int srcNo = 1;
+        for (Object obj : project.getCompileSourceRoots()) {
+            debug("source link " + obj);
+            linkOrCopy(io.node((String) obj), (FileNode) webinfSrc.join("" + srcNo));
+            srcNo++;
+        }
+    }
+    
     private static boolean contains(List<Artifact> lst, Artifact artifact) throws MojoExecutionException {
         for (Artifact ele : lst) {
             if (ele.getGroupId().equals(artifact.getGroupId()) && ele.getArtifactId().equals(artifact.getArtifactId())) {

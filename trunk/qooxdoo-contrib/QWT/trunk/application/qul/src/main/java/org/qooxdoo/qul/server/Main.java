@@ -17,10 +17,18 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin.binding.java;
+package org.qooxdoo.qul.server;
 
-import java.io.Serializable;
+import org.qooxdoo.toolkit.qooxdoo.Server;
 
-public interface Type extends Serializable {
-    String getJavaName();
+public class Main extends Server {
+    @Override
+    public void stop() {
+        System.out.println("stop");
+    }
+    
+    @Override
+    public void clientStop() {
+        System.out.println("client stop");
+    }
 }
