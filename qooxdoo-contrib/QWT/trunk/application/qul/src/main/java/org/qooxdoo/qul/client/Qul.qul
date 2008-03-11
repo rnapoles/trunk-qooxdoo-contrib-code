@@ -1,1 +1,4 @@
-<form.Button label="Hello, World"/>
+<HorizontalBoxLayout>
+  <form.Button label="First"/>
+  <form.Button label="Second"/>
+</HorizontalBoxLayout>
