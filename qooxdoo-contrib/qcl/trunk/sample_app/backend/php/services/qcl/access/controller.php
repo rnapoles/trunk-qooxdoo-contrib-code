@@ -360,16 +360,16 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 			$label 		= $name ? $name : $namedId;			    			 
 			
 		  $result[] = array(
-	    	'parentNode'	=> 0,
-	    	'isBranch'		=> true,
-				'label'			  => $label,
-				'bOpened'		  => true,
-				'data'			  => array (
-      										type	=> "qcl.auth.types.Role",
-      										id		=> $roleId,
-      										namedId	=> $namedId,
-      										name	=> $name
-      									)
+	    	'parentNodeId' => 0,
+	    	'isBranch'		 => true,
+				'label'			   => $label,
+				'bOpened'		   => true,
+				'data'			   => array (
+        										type	=> "qcl.auth.types.Role",
+        										id		=> $roleId,
+        										namedId	=> $namedId,
+        										name	=> $name
+      									  )
 			);				
 			// parent node id to which the following nodes will be added
 			$parentNodeIds[$roleId]=$index+1;
@@ -471,16 +471,16 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 			$label 		= "$name ($namedId)";			    			 
 			
 	    $result[] = array(
-	    	'parentNode'	=> 0,
-	    	'isBranch'		=> true,
-				'label'			=> $label,
-				'bOpened'		=> true,				
-				'data'			=> array (
-      									type	=> "qcl.auth.types.Role",
-      									id		=> $roleId,
-      									namedId	=> $namedId,
-      									name	=> $name
-      								)
+	    	'parentNodeId'	=> 0,
+	    	'isBranch'		  => true,
+				'label'			    => $label,
+				'bOpened'		    => true,				
+    		'data'			    => array (
+          									type	=> "qcl.auth.types.Role",
+          									id		=> $roleId,
+          									namedId	=> $namedId,
+          									name	=> $name
+          								)
 			);				
 			// parent node id to which the following nodes will be added
 			$parentNodeIds[$roleId]=$index+1;
