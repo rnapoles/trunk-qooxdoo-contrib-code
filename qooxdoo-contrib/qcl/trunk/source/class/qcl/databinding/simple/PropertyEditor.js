@@ -169,8 +169,8 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
      * cell renderer factory method.
      * assumes the following row data structure: 
      * [ string id, string label, string value, object metadata ] 
-     * @param {Object} cellInfo
-     * @return {Object} new instance of a cell renderer 
+     * @param  cellInfo {Object}
+     * @return new instance of a cell renderer {Object} 
      */
     createCellRenderer : function (cellInfo)
     {
@@ -213,8 +213,8 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
      * cell editor factory method
      * assumes the following row data structure: 
      * [ string id, string label, string value, object metadata ] 
-     * @param {Object} cellInfo
-     * @return {Object} new instance of a cell renderer 
+     * @param cellInfo {Object} 
+     * @return new instance of a cell renderer {Object} 
      */
 		createCellEditor : function (cellInfo) 
 		{
