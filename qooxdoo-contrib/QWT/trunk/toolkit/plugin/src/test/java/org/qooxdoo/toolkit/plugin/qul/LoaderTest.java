@@ -1,16 +1,20 @@
 package org.qooxdoo.toolkit.plugin.qul;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
 import org.qooxdoo.toolkit.plugin.binding.java.ClazzType;
+import org.qooxdoo.toolkit.plugin.binding.java.Method;
+import org.qooxdoo.toolkit.plugin.binding.java.Modifier;
+import org.qooxdoo.toolkit.plugin.binding.java.Parameter;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
+import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
 
 public class LoaderTest {
     private IO io;
@@ -18,14 +22,29 @@ public class LoaderTest {
     
     @Before
     public void setUp() {
+        Clazz c;
+        Method m;
+        
         io = new IO();
         doctree = new Set();
-        doctree.add(new Clazz(ClazzType.CLASS, "foo.Bar", null, null));
+        c = new Clazz(ClazzType.CLASS, "foo.Bar", null, null);
+        m = new Method(Modifier.PUBLIC, false, false, false, false, 
+                SimpleType.VOID, "setXx", null, null, null, null);
+        m.add(new Parameter(SimpleType.STRING, "foo"));
+        c.add(m);
+        doctree.add(c);
     }
     
     @Test
     public void one() throws IOException {
         run("        foo.Bar v0 = new foo.Bar();\n", "<Bar/>");
+    }
+    
+    @Test
+    public void property() throws IOException {
+        run("        foo.Bar v0 = new foo.Bar();\n" +
+        		"        v0.setXx(\"abc\");\n", 
+        		"<Bar xx='abc'/>");
     }
     
     //--

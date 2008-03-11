@@ -44,7 +44,7 @@ public class Clazz extends Item {
     public final Dependencies loadtime;
     public final Dependencies runtime;
     
-    public final List<Field> properties;
+    public final List<Field> fields;
 
     private String nativ;
     
@@ -66,7 +66,7 @@ public class Clazz extends Item {
         this.methods = new ArrayList<Method>();
         this.loadtime = new Dependencies();
         this.runtime = new Dependencies();
-        this.properties = new ArrayList<Field>();
+        this.fields = new ArrayList<Field>();
         this.nativ = null;
         setExtra("@augment " + fullName);
     }
@@ -181,7 +181,7 @@ public class Clazz extends Item {
     }
 
     public List<Field> fields() {
-        return Collections.unmodifiableList(properties);
+        return Collections.unmodifiableList(fields);
     }
 
     public void add(Method method) {
@@ -191,8 +191,8 @@ public class Clazz extends Item {
         methods.add(method);
     }
     
-    public Field findProperty(String name) {
-        for (Field p : properties) {
+    public Field findField(String name) {
+        for (Field p : fields) {
             if (p.getName().equals(name)) {
                 return p;
             }
@@ -210,7 +210,7 @@ public class Clazz extends Item {
     }
     
     public void add(Field property) {
-        properties.add(property);
+        fields.add(property);
     }
 
     public void addWithMethods(Field property) {
@@ -298,7 +298,7 @@ public class Clazz extends Item {
         }
         builder.append(" {\n");
         if (!ifc) {
-            for (Field prop : properties) {
+            for (Field prop : fields) {
                 if (prop.getOverriddenFrom() == null) {
                     prop.toJava(builder);
                     builder.append('\n');
