@@ -53,7 +53,8 @@ public class Loader extends DefaultHandler {
     private String pkg;
     private Writer output;
     private int var;
-
+    private List<String> stack;
+    
     public static Loader create(IO io, Set doctree) {
         try {
             return new Loader(doctree, Builder.createSAXParser());
@@ -68,6 +69,7 @@ public class Loader extends DefaultHandler {
         this.var = 0;
         this.doctree = doctree;
         this.parser = parser;
+        this.stack = new ArrayList<String>();
     }
 
     public void run(Node src, Node dest, String pkg) throws IOException {
@@ -93,7 +95,9 @@ public class Loader extends DefaultHandler {
         } catch (SAXException e) {
             exceptions.add(e);
         }
-        tail();
+        if (stack.size() != 0) {
+            throw new IllegalStateException(stack.toString());
+        }
     }
 
     //-- SAX parser implementation
@@ -112,12 +116,13 @@ public class Loader extends DefaultHandler {
         check(uri, localName);
         clazz = doctree.getSimple(qName);
         fullName = clazz.getFullName();
-        if (var == 0) {
+        if (stack.size() == 0) {
             head(fullName);
         }
         v = var();
         line(fullName, " ", v, " = new ", fullName, "();");
         attributes(attrs, v, clazz);
+        stack.add(v);
     }
     
     private void attributes(Attributes attrs, String v, Clazz clazz) {
@@ -165,7 +170,16 @@ public class Loader extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) {
+        String v;
+        
         check(uri, localName);
+        
+        v = stack.remove(stack.size() - 1);
+        if (stack.size() == 0) {
+            tail();
+        } else {
+            line(stack.get(stack.size() - 1), ".add(", v, ");");
+        }
     }
     
     @Override

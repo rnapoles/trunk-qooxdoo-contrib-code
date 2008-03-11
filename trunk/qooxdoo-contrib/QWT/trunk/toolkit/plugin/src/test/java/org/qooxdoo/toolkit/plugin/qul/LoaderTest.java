@@ -32,6 +32,7 @@ public class LoaderTest {
                 SimpleType.VOID, "setXx", null, null, null, null);
         m.add(new Parameter(SimpleType.STRING, "foo"));
         c.add(m);
+        doctree.add(new Clazz(ClazzType.CLASS, "foo.Baz", null, null));
         doctree.add(c);
     }
     
@@ -47,6 +48,15 @@ public class LoaderTest {
         		"<Bar xx='abc'/>");
     }
     
+    @Test
+    public void nested() throws IOException {
+        run("        foo.Bar v0 = new foo.Bar();\n" + 
+                "        foo.Baz v1 = new foo.Baz();\n" +
+                "        v0.add(v1);\n" +
+                "        foo.Baz v2 = new foo.Baz();\n" +
+                "        v0.add(v2);\n",
+                "<Bar><Baz/><Baz/></Bar>");
+    }
     //--
     
     private static final String HEAD = 
