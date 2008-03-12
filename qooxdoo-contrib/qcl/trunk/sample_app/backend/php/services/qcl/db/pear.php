@@ -377,8 +377,19 @@ class qcl_db_pear extends qcl_db
   function getFullTextSql( $table, $indexName, $expr )
   {
     $fullSql = $this->getCreateTableSql( $table );
+    
+    $searchWords = explode(" ",$expr);
+    foreach($searchWords as $index => $word)
+    {
+      if ( $word{0} != "-" )
+      {
+        $searchWords[$index] = "+" . $word;
+      }
+    }
+    $expr = str_replace("++","+", implode(" ",$searchWords) );
+
     preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
-    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ($expr) . "' IN BOOLEAN MODE)" ;
+    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
   }
 
   /**
