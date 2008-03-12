@@ -19,11 +19,10 @@
 
 package org.qooxdoo.toolkit.plugin;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
+import org.apache.maven.project.MavenProjectHelper;
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.io.FileNode;
 
@@ -46,6 +45,13 @@ public class WarMojo extends WebappBase {
         war = io.node(path);
     }
 
+    /**
+     * Used for attaching the source jar to the project.
+     *
+     * @component
+     */
+    private MavenProjectHelper projectHelper;
+
     //--
 
     @Override
@@ -53,14 +59,14 @@ public class WarMojo extends WebappBase {
         webapp();
         war();
     }
-
+    
     private void war() throws IOException {
         Archive archive;
-
+        
         info("Generating war " + war.getPath());
         archive = Archive.createJar(io);
         webapp.copyDirectory(archive.data);
         archive.save(war);
-        project.getArtifact().setFile(new File(war.getAbsolute()));
+        projectHelper.attachArtifact(project, "war", war.getFile());
     }
 }

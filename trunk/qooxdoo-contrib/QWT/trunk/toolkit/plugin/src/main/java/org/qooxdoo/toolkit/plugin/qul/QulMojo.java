@@ -29,7 +29,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.io.HttpNode;
 import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.Base;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
