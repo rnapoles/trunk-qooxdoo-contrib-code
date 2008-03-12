@@ -27,25 +27,18 @@
         <version>${toolkit.version}</version>
         <executions>
           <execution>
-            <id>war</id>
-            <goals>
-              <goal>war</goal>
-            </goals>
-          </execution>
-          <execution>
             <id>qul</id>
             <goals>
               <goal>qul</goal>
             </goals>
           </execution>
+          <execution>
+            <id>war</id>
+            <goals>
+              <goal>war</goal>
+            </goals>
+          </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.qooxdoo.toolkit</groupId>
-            <artifactId>qooxdoo</artifactId>
-            <version>${toolkit.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
