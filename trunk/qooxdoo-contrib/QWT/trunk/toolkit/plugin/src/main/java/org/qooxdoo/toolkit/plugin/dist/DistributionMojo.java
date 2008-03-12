@@ -182,7 +182,7 @@ public class DistributionMojo extends Base {
             info("downloading " + download);
             download.copyFile(src);
         } else {
-            info("reusing download: " + src);
+            info("re-using download: " + src);
         }
         Archive.loadZip(src).data.copy(unzipped);
     }
@@ -298,14 +298,7 @@ public class DistributionMojo extends Base {
     }
 
     private String getName() {
-        String name;
-        
-        name = getVersion();
-        if (name.endsWith("-SNAPSHOT")) {
-            name = name.substring(0, name.length() - 8)
-                    + new SimpleDateFormat("yyMMdd").format(new Date());
-        }
-        return "qwt-" + name;
+        return "qwt-" + getVersion();
     }
 
     // --
