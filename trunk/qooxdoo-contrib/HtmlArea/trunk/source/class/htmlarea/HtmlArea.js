@@ -49,6 +49,8 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isEditable = false;
     this.__isReady = false;
 
+		this.__firstLineSelected = false;
+
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
     this.setHideFocus(true);
@@ -1182,6 +1184,49 @@ qx.Class.define("htmlarea.HtmlArea",
 
       switch(keyIdentifier)
       {
+  
+  			case "up":
+  			  /*
+  			   * Firefox 2 needs some additional work to select the
+  			   first line completly in case the selection is already
+  			   on the first line and "key up" is pressed.
+  			   */
+  				if(isShiftPressed)
+  				{
+  				  /* Fetch selection and range */
+  				  var sel = this.__getSelection();
+  				  var rng = sel.getRangeAt(0);
+  				  
+  				  /* First line is selected */
+						if(rng.startContainer == this.__doc.body.firstChild)
+						{
+						  /*
+						   * Check if the first line has been selected before.
+						   * If it has, select the complete line:
+						   */
+						  if(this.__firstLineSelected)
+						  {
+						    /* Extend range to first character */
+						  	rng.setStart(rng.startContainer, 0);
+						  	
+						  	/* Convert range to highlighted selection */
+						  	sel.addRange(rng);
+						  }
+						  else
+						  {
+						    /*
+						     * Set flag to, that first line has been (maby only partly)
+						     * selected.
+						     */
+							  this.__firstLineSelected = true;
+						  }
+						}
+
+  				}
+          this.__startExamineCursorContext();
+		    break;
+      
+      
         case "control":
           /*
            * Set a flag if the control key was pressed. It is used to insert a
@@ -1375,12 +1420,12 @@ qx.Class.define("htmlarea.HtmlArea",
          */
         case "left":
         case "right":
-        case "up":
         case "down":
         case "pageup":
         case "pagedown":
         case "delete":
         case "end":
+	        this.__firstLineSelected = true;
           this.__startExamineCursorContext();
           break;
 
