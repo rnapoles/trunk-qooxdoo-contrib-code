@@ -1150,6 +1150,30 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
       
+      /* Check if the first line is (partly) selected. */
+      else if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        var sel = this.__getSelection();
+
+				/* These keys can change the selection */
+				switch(keyIdentifier)
+				{
+          case "left":
+          case "right":
+          case "up":
+          case "down":
+          case "pageup":
+          case "pagedown":
+          case "delete":
+          case "end":
+          
+          /* Set flag indicating if first line is selected */
+          this.__firstLineSelected = (sel.focusNode == this.__doc.body.firstChild);
+          
+          break;
+        }
+
+      }
     },
 
 
@@ -1184,45 +1208,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       switch(keyIdentifier)
       {
-  
-  			case "up":
-  			  /*
-  			   * Firefox 2 needs some additional work to select the
-  			   first line completely in case the selection is already
-  			   on the first line and "key up" is pressed.
-  			   */
-  			  if (qx.core.Client.getInstance().isGecko() && (qx.core.Client.getInstance().getVersion() < 1.9) && isShiftPressed )
-  				{
-  				  /* Fetch selection */
-  				  var sel = this.__getSelection();
-  				  
-  				  /* First line is selected */
-						if(sel.focusNode == this.__doc.body.firstChild)
-						{
-						  /* Check if the first line has been (partly) selected before. */
-						  if(this.__firstLineSelected)
-						  {
-						    /* Check if selection does not enclose the complete line already */
-						    if (sel.focusOffset != 0)
-						    {
-						      /* Select the complete line. */
-						      sel.extend(sel.focusNode, 0);
-						    }
-						  }
-						  else
-						  {
-						    /*
-						     * Set flag to, that first line has been (maybe only partly)
-						     * selected.
-						     */
-							  this.__firstLineSelected = true;
-						  }
-						}
-
-  				}
-          this.__startExamineCursorContext();
-		    break;
-      
       
         case "control":
           /*
@@ -1349,6 +1334,40 @@ qx.Class.define("htmlarea.HtmlArea",
             }
           }
           break;
+
+
+				case "up" :
+        /*
+         * Firefox 2 needs some additional work to select the
+         first line completely in case the selection is already
+         on the first line and "key up" is pressed.
+         */
+        if (
+              qx.core.Client.getInstance().isGecko() &&
+              (qx.core.Client.getInstance().getVersion() < 1.9) &&
+              isShiftPressed
+            )
+        {
+          /* Fetch selection */
+          var sel = this.__getSelection();
+
+          /* First line is selected */
+          if(sel.focusNode == this.__doc.body.firstChild)
+          {
+            /* Check if the first line has been (partly) selected before. */
+            if(this.__firstLineSelected)
+            {
+              /* Check if selection does not enclose the complete line already */
+              if (sel.focusOffset != 0)
+              {
+                /* Select the complete line. */
+                sel.extend(sel.focusNode, 0);
+              }
+            }
+          }
+        }
+        break;
+
 
         /*
          * Firefox 2 needs some extra work to move the cursor
