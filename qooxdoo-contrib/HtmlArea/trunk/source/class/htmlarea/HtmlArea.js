@@ -1176,11 +1176,11 @@ qx.Class.define("htmlarea.HtmlArea",
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
-
+/*
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
       }
-
+*/
 
       switch(keyIdentifier)
       {
@@ -1188,34 +1188,31 @@ qx.Class.define("htmlarea.HtmlArea",
   			case "up":
   			  /*
   			   * Firefox 2 needs some additional work to select the
-  			   first line completly in case the selection is already
+  			   first line completely in case the selection is already
   			   on the first line and "key up" is pressed.
   			   */
-  				if(isShiftPressed)
+  			  if (qx.core.Client.getInstance().isGecko() && (qx.core.Client.getInstance().getVersion() < 1.9) && isShiftPressed )
   				{
-  				  /* Fetch selection and range */
+  				  /* Fetch selection */
   				  var sel = this.__getSelection();
-  				  var rng = sel.getRangeAt(0);
   				  
   				  /* First line is selected */
-						if(rng.startContainer == this.__doc.body.firstChild)
+						if(sel.focusNode == this.__doc.body.firstChild)
 						{
-						  /*
-						   * Check if the first line has been selected before.
-						   * If it has, select the complete line:
-						   */
+						  /* Check if the first line has been (partly) selected before. */
 						  if(this.__firstLineSelected)
 						  {
-						    /* Extend range to first character */
-						  	rng.setStart(rng.startContainer, 0);
-						  	
-						  	/* Convert range to highlighted selection */
-						  	sel.addRange(rng);
+						    /* Check if selection does not enclose the complete line already */
+						    if (sel.focusOffset != 0)
+						    {
+						      /* Select the complete line. */
+						      sel.extend(sel.focusNode, 0);
+						    }
 						  }
 						  else
 						  {
 						    /*
-						     * Set flag to, that first line has been (maby only partly)
+						     * Set flag to, that first line has been (maybe only partly)
 						     * selected.
 						     */
 							  this.__firstLineSelected = true;
@@ -1283,6 +1280,8 @@ qx.Class.define("htmlarea.HtmlArea",
                   * Strange hack, I know ;-)
                   */
                  this.insertHtml("<br /><div id='placeholder'></div>");
+                 //this.insertHtml("<br _moz_dirty=\"\"/><div id='placeholder'></div>");
+                 //this.insertHtml('<p><br type="_moz" /></p>');
                break;
 
                case "webkit":
@@ -1366,33 +1365,17 @@ qx.Class.define("htmlarea.HtmlArea",
               var sel = this.__getSelection();
 
               /*
-               * Select text from first position in first line
-               * to actual caret position.
-               * 
-               * NOTE: In Mozilla the start node of a range MUST BE
-               * the previous sibling (or ancestor) of the end node.
-               * Therefore the range is created backwards.  
+               * Select text from current position to first
+               * character on the first line
                */
               if (isShiftPressed)
               {
-                /* Get range */
-                var rng = sel.getRangeAt(0);
-
-                /* Store caret position information */
-                var startContainer = rng.startContainer;
-                var startOffset = rng.startOffset;
-
-                /* Select body to expand range to complete content */
-                rng.selectNodeContents(this.__doc.body);
-
-                /* Start range on first character  */
-                rng.setStart(this.__doc.body.firstChild, 0);
-
-                /* End range on last caret position */
-                rng.setEnd(startContainer, startOffset);
-
-                /* Turn range into highlighted selection */
-                sel.addRange(rng);
+                /* Check if target position is not yet selected */
+                if ( (sel.focusOffset != 0) || (sel.focusNode != this.__doc.body.firstChild) )
+                {
+                  /* Extend selection to first child at position 0. */
+                  sel.extend(this.__doc.body.firstChild, 0);
+                }
               }
               else
               {
@@ -1412,7 +1395,7 @@ qx.Class.define("htmlarea.HtmlArea",
           }
 
           this.__startExamineCursorContext();
-          break;
+        break;
           
         /*
          * For all keys which are able to reposition the cursor
@@ -1425,27 +1408,29 @@ qx.Class.define("htmlarea.HtmlArea",
         case "pagedown":
         case "delete":
         case "end":
-	        this.__firstLineSelected = true;
           this.__startExamineCursorContext();
-          break;
+        break;
 
         /* Special shortcuts */
         case "b":
           if (isCtrlPressed) {
             this.__executeHotkey('setBold', true);
           }
-          break;
+        break;
+
         case "i":
         case "k":
           if (isCtrlPressed) {
             this.__executeHotkey('setItalic', true);
           }
-          break;
+        break;
+
         case "u":
           if (isCtrlPressed) {
             this.__executeHotkey('setUnderline', true);
           }
-          break;
+        break;
+
         case "z":
           if (isCtrlPressed && !isShiftPressed) {
             this.__executeHotkey('undo', true);
@@ -1454,7 +1439,8 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             this.__executeHotkey('redo', true);
           }
-          break;
+        break;
+
         case "y":
           if (isCtrlPressed) {
             this.__executeHotkey('redo', true);
@@ -1475,6 +1461,7 @@ qx.Class.define("htmlarea.HtmlArea",
             this.selectAll();
           }
         break;
+
        }
 
        this.__currentEvent = null;
@@ -1725,11 +1712,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleMouseEvent : function(e)
     {
-
+/*
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug("handleMouse " + e.type);
       }
-
+*/
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
     },
