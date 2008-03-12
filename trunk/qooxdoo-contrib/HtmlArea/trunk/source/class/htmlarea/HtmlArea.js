@@ -1754,7 +1754,8 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     isLoaded : function ()
     {
-      return this.__isLoaded;
+      var loaded = this.base(arguments);
+      return this.__isLoaded && loaded;
     },
 
 
