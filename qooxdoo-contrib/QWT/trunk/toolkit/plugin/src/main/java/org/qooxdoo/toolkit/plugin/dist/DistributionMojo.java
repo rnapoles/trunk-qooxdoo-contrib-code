@@ -21,9 +21,7 @@ package org.qooxdoo.toolkit.plugin.dist;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
