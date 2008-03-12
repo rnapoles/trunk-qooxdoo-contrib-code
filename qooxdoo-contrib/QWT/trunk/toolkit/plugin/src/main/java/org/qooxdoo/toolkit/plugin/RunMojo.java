@@ -22,6 +22,8 @@ package org.qooxdoo.toolkit.plugin;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -31,6 +33,10 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Embedded;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.Node;
 
@@ -155,7 +161,7 @@ public class RunMojo extends WebappBase {
         return name.substring(0, idx);
     }
     
-    private synchronized void run(final Embedded tomcat) throws MojoExecutionException {
+    private synchronized void run(final Embedded tomcat) throws MojoExecutionException, IOException {
         try {
             tomcat.start();
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -172,8 +178,30 @@ public class RunMojo extends WebappBase {
         } catch (LifecycleException exception) {
             throw new MojoExecutionException("tomcat startup failed", exception);
         }
+
+        List<Node> files;
+        long started;
+        long modified;
+        
+        files = io.getWorking().find("src/main/java/**/*.qul");
+        started = Long.MIN_VALUE;
+        for (Node file : files) {
+            info("watching " + file);
+            started = Math.max(started, file.lastModified());
+        }
         try {
-            wait();
+            while (true) {
+                Thread.sleep(2000);
+                
+                modified = Long.MIN_VALUE;
+                for (Node file : files) {
+                    modified = Math.max(modified, file.lastModified());
+                }
+                if (modified > started) {
+                    started = modified;
+                    qulUpdate();
+                }
+            }
         } catch (InterruptedException exception) {
             throw new MojoExecutionException("interrupted", exception);
         }
@@ -214,5 +242,32 @@ public class RunMojo extends WebappBase {
             }
             return false;
         }
+    }
+    
+    //--
+    
+    /**
+     * @component
+     */
+    private Invoker invoker;
+
+    private void qulUpdate() throws MojoExecutionException {
+        DefaultInvocationRequest request;
+        InvocationResult result;
+        List<String> goals;
+        
+        info("rebuild qul ...");
+        request = new DefaultInvocationRequest();
+        goals = new ArrayList<String>();
+        goals.add("qx:qul");
+        goals.add("compile");
+        request.setGoals(goals);
+        request.setInteractive(false);
+        try {
+            result = invoker.execute(request);
+        } catch (MavenInvocationException e) {
+            throw new MojoExecutionException("cannot build qul file", e);
+        }
+        info("done: exit code=" + result.getExitCode());
     }
 }
