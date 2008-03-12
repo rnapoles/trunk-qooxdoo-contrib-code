@@ -21,8 +21,13 @@ package org.qooxdoo.toolkit.plugin.qul;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.qooxdoo.sushi.io.HttpNode;
 import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.ResourceNode;
 import org.qooxdoo.sushi.xml.XmlException;
@@ -35,6 +40,7 @@ import org.xml.sax.SAXException;
  * 
  * @goal qul
  * @phase generate-sources
+ * @requiresDependencyResolution runtime
  */
 public class QulMojo extends Base {
     /**
@@ -70,14 +76,12 @@ public class QulMojo extends Base {
     private MavenProject project;
    
     @Override
-    public void doExecute() throws IOException, SAXException, XmlException {
+    public void doExecute() throws IOException, SAXException, XmlException, MojoExecutionException {
         Set doctree;
         Loader loader;
         Node out;
-        
-        debug("loading doctree ...");
-        doctree = (Set) new ResourceNode(io, "doctree.ser").readObject();
-        debug("done: " + doctree.size() + " classes");
+
+        doctree = loadDoctree();
         loader = Loader.create(io, doctree);
         for (Node in : src.find("**/*.qul")) {
             out = dest.join(in.getRelative(src).replace(".qul", ".java")); 
@@ -86,5 +90,28 @@ public class QulMojo extends Base {
             loader.run(in, out, out.getParent().getRelative(dest).replace(File.separator, "."));
         }
         project.addCompileSourceRoot(dest.getAbsolute());
+    }
+    
+    private static final String DOCTREE_SER ="doctree.ser";
+    
+    private Set loadDoctree() throws IOException, MojoExecutionException {
+        List<?> lst;
+        Set result;
+        Artifact artifact;
+        HttpNode node;
+        
+        debug("loading doctree ...");
+        lst = project.getRuntimeArtifacts();
+        for (Object obj : lst) {
+            artifact = (Artifact) obj;
+            debug("checking " + artifact.getFile());
+            node = new HttpNode(io, new URL("jar:file:" + artifact.getFile().getAbsolutePath() +"!/" + DOCTREE_SER));
+            if (node.exists()) {
+                result = (Set) node.readObject();
+                debug("done: " + result.size() + " classes, loaded from " + node.getUrl());
+                return result;
+            }
+        }
+        throw new MojoExecutionException("cannot load " + DOCTREE_SER);
     }
 }
