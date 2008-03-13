@@ -111,7 +111,7 @@ qx.Class.define("htmlarea.command.Manager",
     _handleFocusOut : qx.core.Variant.select("qx.client", {
       "mshtml" : function(e)
       {
-        this.__currentRange     = this.__editorInstance.getRange();
+        this.__currentRange = this.__editorInstance.getRange();
       },
       "default" : function() {}
     }),
@@ -374,10 +374,15 @@ qx.Class.define("htmlarea.command.Manager",
          else
          {
            this.__editorInstance._visualizeFocus();
-  
-           var currentRange = this.__editorInstance.getRange();
-           currentRange.pasteHTML(value);
-  
+           
+           var range = this.getCurrentRange();
+           if(range)
+           {
+             range.pasteHTML(value);
+             range.collapse(false);
+             range.select();
+           }
+           
            ret = true;
          }
        }
