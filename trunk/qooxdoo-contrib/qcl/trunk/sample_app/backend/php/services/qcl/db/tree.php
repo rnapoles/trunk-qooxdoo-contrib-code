@@ -53,11 +53,13 @@ class qcl_db_tree extends qcl_db_model
 	/**
 	 * gets child node ids of a branch ordered by the order field
 	 * @param int $parentId
+	 * @param string|null $orderBy
 	 */
-	function getChildIds ( $parentId )
+	function getChildIds ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
-		return $this->getValues($this->key_id, "{$this->key_parentId} = $parentId", $this->key_position );
+    $orderBy  = either( $orderBy, $this->key_position );
+		return $this->getValues($this->key_id, "{$this->key_parentId} = $parentId", $orderBy );
 	}	
 	
 	/**
@@ -78,11 +80,12 @@ class qcl_db_tree extends qcl_db_model
 	/**
 	 * reorders childrens positions
 	 * @param int $parentId parent folder id
+	 * @param string|null $orderBy
 	 */
-	function reorder ( $parentId )
+	function reorder ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
-		$childIds = $this->getChildIds ( $parentId );
+		$childIds = $this->getChildIds ( $parentId, $orderBy );
 		$index = 0;
 		foreach ( $childIds as $id )
 		{
