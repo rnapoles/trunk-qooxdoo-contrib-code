@@ -181,7 +181,7 @@ qx.Class.define("htmlarea.command.Manager",
         inserthorizontalrule  : { useBuiltin : true, identifier : "InsertHorizontalRule", method : null },
         insertimage           : { useBuiltin : true, identifier : "InsertImage", method : null },
 
-        selectall             : { useBuiltin : true, identifier : "SelectAll", method : null },
+        selectall             : { useBuiltin : false, identifier : "SelectAll", method : "__selectAll" },
         selectedtext          : { useBuiltin : false, identifier : null, method : "__getSelectedText" },
         selectedhtml          : { useBuiltin : false, identifier : null, method : "__getSelectedHtml" },
 
@@ -569,9 +569,32 @@ qx.Class.define("htmlarea.command.Manager",
 
        return true;
      },
-
-
+     
+     
      /**
+      * Selects the whole text.
+      * IE uses an own implementation because the execCommand is not reliable.
+      * 
+      * @type member
+      * @return {Boolean} Success of operation
+      */
+     __selectAll : qx.core.Variant.select("qx.client", {
+       "mshtml" : function(value, commandObject)
+       {
+         var rng = this.__doc.body.createTextRange();
+         rng.select();
+         
+         return true;
+       },
+      
+       "default" : function(value, commandObject)
+       {
+         return this.__executeCommand(commandObject.identifier, false, value);
+       }
+     }),
+
+
+    /**
      * Returns the content of the actual range as text
      *
      * @type member
