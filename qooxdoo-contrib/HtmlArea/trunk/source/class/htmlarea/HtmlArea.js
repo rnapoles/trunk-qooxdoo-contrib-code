@@ -2244,7 +2244,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * buttons so you can e.g. visualize that the cursor is currently over bold text.
      *
      * The possible values are
-     * -1 = command is not possible at the moment. Used to disable the corresponding buttons (e.g. undo/redo are perfect candidates for this
+     * -1 = command is not possible at the moment. Used to disable the corresponding buttons
      *  0 = command is possible at the moment. Used to enable the corresponding buttons (e.g. bold/italic/underline etc.)
      *  1 = cursor is over content which already received that command. Used to to activate the corresponding buttons (e.g. bold/italic/underline etc.)
      *
@@ -2366,11 +2366,9 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyLeft         : justifyLeft ? 1 : 0,
         justifyCenter       : justifyCenter ? 1 : 0,
         justifyRight        : justifyRight ? 1 : 0,
-        justifyFull         : justifyFull ? 1 : 0,
-        undo                : this.getUseUndoRedo() && this.__commandManager.isUndoPossible() ? 0 : -1,
-        redo                : this.getUseUndoRedo() && this.__commandManager.isRedoPossible() ? 0 : -1
+        justifyFull         : justifyFull ? 1 : 0
       };
-
+      
       this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
 
       this._processingExamineCursorContext = false;
