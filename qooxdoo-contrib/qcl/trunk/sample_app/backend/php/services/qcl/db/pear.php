@@ -378,6 +378,7 @@ class qcl_db_pear extends qcl_db
   {
     $fullSql = $this->getCreateTableSql( $table );
     
+    // add a plus sign ( AND operator) to each search word
     $searchWords = explode(" ",$expr);
     foreach($searchWords as $index => $word)
     {
@@ -386,6 +387,8 @@ class qcl_db_pear extends qcl_db
         $searchWords[$index] = "+" . $word;
       }
     }
+    
+    // remove dupliate plus signs (in case the user has added them)
     $expr = str_replace("++","+", implode(" ",$searchWords) );
 
     preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
