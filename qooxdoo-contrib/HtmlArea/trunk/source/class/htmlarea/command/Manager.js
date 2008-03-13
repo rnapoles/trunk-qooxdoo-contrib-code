@@ -178,7 +178,7 @@ qx.Class.define("htmlarea.command.Manager",
         insertorderedlist     : { useBuiltin : true, identifier : "InsertOrderedList", method : null },
         insertunorderedlist   : { useBuiltin : true, identifier : "InsertUnorderedList", method : null },
 
-        inserthorizontalrule  : { useBuiltin : true, identifier : "InsertHorizontalRule", method : null },
+        inserthorizontalrule  : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHr" },
         insertimage           : { useBuiltin : true, identifier : "InsertImage", method : null },
 
         selectall             : { useBuiltin : false, identifier : "SelectAll", method : "__selectAll" },
@@ -422,6 +422,106 @@ qx.Class.define("htmlarea.command.Manager",
        return ret;
      },
      
+     
+     __insertHr : qx.core.Variant.select("qx.client",
+     {
+
+       "gecko" : function(value, commandObject)
+       {
+         /* Current selection */
+         var sel = this.__editorInstance.__getSelection();
+         
+         /* Selected node is a text node without style information, so select it's parent. */
+         var elem = sel.focusNode.parentNode;
+         
+         /*
+          * Name of styles, which apply on the element, will be saved here.
+          * font-size is stored here as default, because <font size="xy"> does not
+          * appear as style property.
+          */
+         var usedStyles = { "font-size" : true };
+         
+         /* This string will be build to save the style settings over the <hr> element. */
+         var styleSettings = "";
+
+         /* Retrieve element's computed style. */
+         var decoration = window.getComputedStyle(elem, null);
+
+         /* Get element's ancestors to fetch all style attributes, which apply on element. */
+         var parents = qx.dom.Hierarchy.getAncestors(elem);
+
+         /* Helper vars */
+         var styleAttribute;
+         var styleValue;
+         var parentStyleValue;
+         var parentDecoration;
+         var i, j;
+
+         /* 
+          * NOTE that element's own styles are read first!
+          * Afterwards, cycle through parents.
+          */
+         for(i=0; i<=parents.length; i++)
+         {
+           /* Cycle though style properties */
+           for (j=0; j<=elem.style.length; j++)
+           {
+             styleAttribute = elem.style[j];
+             if (styleAttribute.length > 0)
+             {
+               /* We only need the names of the attributes */
+               usedStyles[styleAttribute] = true;
+             }
+           }
+           /* Set pointer to element's next parent. */
+           elem = parents[i];
+         }
+
+         /* Cycle through saved style names and fetch computed value for each of it. */
+         for(style in usedStyles)
+         {
+           styleValue = decoration.getPropertyValue(style);
+           
+           /*
+            * Elements inside a parent element with a background color, automatically get a
+            * "transparent" background color. We can not use this information and have to
+            * find the background color of it's parent, since we need the color value.
+            */
+           if ( (style == "background-color") && (styleValue == "transparent") )
+           {
+             /* Cycle through parents */
+             for(i=0; i<parents.length; i++)
+             {
+               elem = parents[i];
+
+               /* Retrieve computed style*/
+               parentDecoration = window.getComputedStyle(elem, null);
+               parentStyleValue = parentDecoration.getPropertyValue(style);
+
+               /* Check background color for color information */
+               if(parentStyleValue != "transparent")
+               {
+                 /* Use parent's background color */
+                 styleSettings += style + ":" + parentStyleValue + "; ";
+
+                 /* Stop here, because only the value of the nearest parent is applied on element. */
+                 break ;
+               }
+             }
+           }else{
+             /* Store style settings */
+             styleSettings += style + ":" + styleValue + "; ";
+           }
+         }
+
+         return this.__insertHtml('<hr /><span style="' + styleSettings + '">', commandObject);
+       },
+
+       "default" : function(value, commandObject)
+       {
+         return this.__insertHtml("<hr />", commandObject);
+       }
+     }),
      
      /**
       * ONLY IE
