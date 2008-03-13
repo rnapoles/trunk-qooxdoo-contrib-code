@@ -26,7 +26,7 @@
  */
 qx.Class.define("htmlarea.command.UndoManager",
 {
-  extend : qx.core.Object,
+  extend : qx.core.Target,
 
   construct : function(commandManager, editorInstance)
   {
@@ -43,6 +43,18 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     this.__populateCommandList();
     editorInstance.addEventListener("keypress", this._handleKeyPress, this);
+  },
+  
+  events : 
+  {
+    /** 
+      * Holds information about the state of undo/redo
+      * Keys are "undo" and "redo".
+      * Possible values are 0 and -1 to stay in sync with
+      * the kind the "cursorContext" event works.
+      * (1 = active/pressed, 0 = possible/not pressed, -1 = disabled)
+      */
+    "undoRedoState" : "qx.event.type.DataEvent"
   },
 
 
@@ -154,7 +166,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     isUndoPossible : function()
     {
       /* If no undo history entry is available but content was edited */
-      return this.__undoStack.length > 0 || this.__startTyping;
+      return this.__undoPossible;
     },
     
     
@@ -199,10 +211,10 @@ qx.Class.define("htmlarea.command.UndoManager",
 
          /* A redo operation is now possible */
          this.__redoPossible = true;
-
-         /* Need to inform the toolbar, because context has changed */
-         this.__editorInstance.__startExamineCursorContext();
-
+         
+         /* Fire an update event  */
+         this.__updateUndoRedoState();
+         
          return result;
        }
      },
@@ -231,8 +243,8 @@ qx.Class.define("htmlarea.command.UndoManager",
 
         case "backgroundimage":
           this.redoAction.parameter = [ qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
-                                          qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
-                                          qx.bom.element.Style.get(this.__doc.body, "backgroundPosition") ];
+                                        qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
+                                        qx.bom.element.Style.get(this.__doc.body, "backgroundPosition") ];
         break;
       }
 
@@ -348,7 +360,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     isRedoPossible : function()
     {
-      return (this.__redoStack.length > 0) && (!this.__startTyping);
+      return this.__redoPossible;
     },
     
     
@@ -383,8 +395,8 @@ qx.Class.define("htmlarea.command.UndoManager",
            /* A redo operation is now possible */
            this.__undoPossible = true;
 
-           /* Need to inform the toolbar, because context has changed */
-           this.__editorInstance.__startExamineCursorContext();
+           /* Fire an update event  */
+           this.__updateUndoRedoState();
          }
 
          return result;
@@ -665,6 +677,9 @@ qx.Class.define("htmlarea.command.UndoManager",
 
        /* After a command (other than "undo") no redo is possible */
        this.__redoPossible = false;
+       
+       /* Fire an update event  */
+       this.__updateUndoRedoState();
      },
 
 
@@ -758,7 +773,19 @@ qx.Class.define("htmlarea.command.UndoManager",
         case "home":
         case "end":
           /* Indicate end of typing */
-          this.__startTyping = false;
+          this.__startTyping  = false;
+          this.__undoPossible = true;
+          
+          /* Fire an update event  */
+          this.__updateUndoRedoState();
+        break;
+        
+        case "enter":
+        case "space":
+          this.__undoPossible = true;
+          
+          /* Fire an update event  */
+          this.__updateUndoRedoState();
         break;
 
         default:
@@ -798,8 +825,32 @@ qx.Class.define("htmlarea.command.UndoManager",
 
             /* Mark the beginning of typing */
             this.__startTyping = true;
+            
+            /* undo is now possible */
+            this.__undoPossible = true;
+            
+            /* Fire an update event  */
+            this.__updateUndoRedoState();
           }
        }
+    },
+    
+    
+    /**
+     * Fires the "undoRedoState" event to inform external components (like a toolbar)
+     * about the current state of the undo/redo.
+     * The event itself it fired with a timeout to not interfere with the current key event.
+     * 
+     * @type member
+     * @return {void} 
+     */
+    __updateUndoRedoState : function() 
+    {
+      var self = this;      
+      window.setTimeout(function(e) {
+        self.dispatchEvent(new qx.event.type.DataEvent("undoRedoState", { undo : self.isUndoPossible() ? 0 : -1,
+                                                                        redo : self.isRedoPossible() ? 0 : -1 }));
+      }, 200);
     },
     
     
