@@ -261,10 +261,13 @@ qx.Class.define("htmlarea.command.Manager",
       {
         /* The document object is the default target for all execCommands */
         var execCommandTarget = this.__doc;
+        
+        /* Flag indicating if range was empty before executing command. Needed for IE bug. */
+        var emptyRange = false;
 
         /* Body element must have focus before executing command */
         this.__doc.body.focus();
-
+        
         /*
          * IE looses the selection if the user clicks on any other element e.g. a toolbar item
          * To manipulate the selected text correctly IE has to execute the command on the previously
@@ -272,26 +275,51 @@ qx.Class.define("htmlarea.command.Manager",
          *
          * Ignore the "SelectAll" command otherwise the range handling would interfere with it.
          */
-        if (qx.core.Variant.isSet("qx.client", "mshtml") && command != "selectall")
+        if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          /*
-           * Select the content of the Text Range object to set the cursor at the right position
-           * and to give user feedback. Otherwise IE will set the cursor at the first position of the
-           * editor area
-           */
-          this.__currentRange.select();
+          
+          if(command != "selectall")
+          {
+            /*
+             * Select the content of the Text Range object to set the cursor at the right position
+             * and to give user feedback. Otherwise IE will set the cursor at the first position of the
+             * editor area
+             */
+            this.__currentRange.select();
+  
+            /*
+             * If the saved Text Range object contains no text
+             * collapse it and execute the command at the document object
+             */
+            execCommandTarget = this.__currentRange.text.length > 0 ? this.__currentRange : this.__doc;
+          }
 
-          /*
-           * If the saved Text Range object contains no text
-           * collapse it and execute the command at the document object
+          /* 
+           * IE has the unwanted behavior to select text after setting font weight to bold.
+           * If this happens, we have to collapse the range afterwards.    
            */
-          execCommandTarget = this.__currentRange.text.length > 0 ? this.__currentRange : this.__doc;
+          if(command == "Bold")
+          {
+            var range = this.getCurrentRange();
+            /* Check if range is empty */
+            if (range.text == "") {
+              emptyRange = true;
+            }
+          }
+
         }
-
-
 
         var result = execCommandTarget.execCommand(command, ui, value);
 
+        /* If range has been empty before executing command, collapse range */
+        if (emptyRange)
+        {
+          if (range.text != "") {
+            range.collapse();
+          }
+        }
+
+        
         /* Debug info */
         if (qx.core.Variant.isSet("qx.debug", "on"))
         {
