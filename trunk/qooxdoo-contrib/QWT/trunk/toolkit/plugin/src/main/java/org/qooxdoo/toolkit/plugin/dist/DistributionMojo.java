@@ -135,7 +135,7 @@ public class DistributionMojo extends Base {
         }
     }
     
-    public void doDoExecute() throws IOException, SVNException, JSchException {
+    public void doDoExecute() throws IOException, SVNException, JSchException, MojoExecutionException {
         Node zip;
         
         if (reuse) {
@@ -187,7 +187,7 @@ public class DistributionMojo extends Base {
 
     //--
     
-    private void qwt() throws IOException, SVNException {
+    private void qwt() throws IOException, SVNException, MojoExecutionException {
         Node qwt;
         
         // Fetch qwt source code from svn. Get from svn, don't copy source:
@@ -201,6 +201,7 @@ public class DistributionMojo extends Base {
         } else {
             qwtSvn(qwt);
         }
+        svninfo(qwtSource, qwt.join("svninfo").mkdir());
     }
 
     private void qwtCopy(Node dest) throws IOException {

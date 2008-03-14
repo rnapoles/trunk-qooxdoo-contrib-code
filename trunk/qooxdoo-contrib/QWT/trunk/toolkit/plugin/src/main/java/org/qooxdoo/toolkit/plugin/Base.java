@@ -20,14 +20,17 @@
 package org.qooxdoo.toolkit.plugin;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
 import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.xml.sax.SAXException;
@@ -104,6 +107,34 @@ public abstract class Base extends AbstractMojo {
         } else {
             src.link(dest);
         }
+    }
+    
+    //--
+    
+    public static final String NON_INTERACTIVE = "--non-interactive";
+    
+    public Program svn(FileNode dir, String ... args) {
+        Program p;
+        
+        p = new Program((FileNode) dir);
+        // force output in english:
+        p.builder.environment().put("LANG", "C");
+        p.builder.environment().put("LC_ALL", "C");
+        p.add("svn");
+        p.addAll(Arrays.asList(args));
+        debug("svn command: " + p.toString());
+        return p;
+    }
+    
+    public void svninfo(FileNode dir, Node log) throws MojoExecutionException, IOException {
+        log.mkdirsOpt();
+        svnlog(dir, log.join("info.log"), "info", NON_INTERACTIVE);
+        svnlog(dir, log.join("status.log"), "status", NON_INTERACTIVE, "-v", "-N");
+        svnlog(dir, log.join("diff.log"), "diff", NON_INTERACTIVE);
+    }
+
+    private void svnlog(FileNode dir, Node file, String ... cmd) throws IOException {
+        file.writeString(svn(dir, cmd).exec());
     }
 }
 

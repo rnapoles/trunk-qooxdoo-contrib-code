@@ -31,7 +31,6 @@ import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
-import org.qooxdoo.toolkit.plugin.FrameworkBase;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
 import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 import org.xml.sax.SAXException;
