@@ -421,6 +421,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     {
       $msg = "<script> message('" . addslashes($i)  . "');</script>";
       $msg .= $i . "<br/>";
+      if ($i) $this->info($i);
     }
     
     // output to log file
