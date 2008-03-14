@@ -299,16 +299,23 @@ qx.Class.define("htmlarea.HtmlArea",
 
               if (name != "style")
               {
-                if (qx.core.Client.getInstance().isMshtml() && !isNaN(value))
+                if (qx.core.Client.getInstance().isMshtml())
                 {
-                  // IE5: buggy on number values
-                  // XXX: IE: String, Object, Number, Boolean, ... !!!
-                  // XXX: Moz: String only
-                  value = root.getAttribute(name);
-                }
-                else
-                {
-                  value = a.nodeValue;
+                  if (name == "id" && root.getAttribute("old_id"))
+                  {
+                    value = root.getAttribute("old_id");
+                  }
+                  else if (!isNaN(value))
+                  {
+                    // IE5: buggy on number values
+                    // XXX: IE: String, Object, Number, Boolean, ... !!!
+                    // XXX: Moz: String only
+                    value = root.getAttribute(name);
+                  }
+                  else
+                  {
+                    value = a.nodeValue;
+                  }
                 }
               }
               else
@@ -322,6 +329,11 @@ qx.Class.define("htmlarea.HtmlArea",
               {
                 // Mozilla reports some special tags
                 // here; we don't need them.
+                continue;
+              }
+              
+              if (name == "old_id")
+              {
                 continue;
               }
 
@@ -1114,8 +1126,9 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleKeyUp : function(e)
     {
-      var keyIdentifier = e.getKeyIdentifier().toLowerCase();
-
+      var keyIdentifier  = e.getKeyIdentifier().toLowerCase();
+      var isShiftPressed = e.isShiftPressed();
+      
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -1142,11 +1155,37 @@ qx.Class.define("htmlarea.HtmlArea",
           this.__controlPressed = false;
         }
         /*
-         * execute the "selectAll" command identifier whenever the shortcut "Ctrl+A" is pressed
+         * Execute the "selectAll" command identifier whenever the shortcut "Ctrl+A" is pressed
          */
         else if(keyIdentifier == "a" && this.__controlPressed)
         {
           this.selectAll();
+        }
+        
+        /*
+         * Execute "undo" and "redo" commands
+         * Ctrl+Z -> Undo
+         * Ctrl+Y -> Redo
+         * Ctrl+Shift+Z -> Redo
+         * 
+         * It is needed to implement this at the keyUp event handler for IE 
+         * because one does not get the keyIdentifier at the keyPress event in IE.
+         * (Only "Ctrl" is returned)
+         * 
+         * DO NOT stop this event by passing "true" to the executeHotkey method.
+         * The browser handling of undo/redo is already suppressed at the "keyDown" handler.
+         */
+        else if(keyIdentifier == "z" && this.__controlPressed && !isShiftPressed)
+        {
+          this.__executeHotkey('undo', false);
+        }
+        else if(keyIdentifier == "z" && this.__controlPressed && isShiftPressed)
+        {
+          this.__executeHotkey('redo', false);
+        }
+        else if(keyIdentifier == "y" && this.__controlPressed)
+        {
+          this.__executeHotkey('redo', false);
         }
       }
       
@@ -1172,7 +1211,6 @@ qx.Class.define("htmlarea.HtmlArea",
           
           break;
         }
-
       }
     },
 
@@ -1184,7 +1222,37 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      * @return {void}
      */
-    _handleKeyDown : function(e) {},
+    _handleKeyDown : qx.core.Variant.select("qx.client",
+    { 
+      "mshtml" : function(e)
+      {
+        var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
+        
+        /*if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase() + " | " + e.getCharCode());
+        }*/
+        
+        /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
+        if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y"))
+        {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        
+        /* 
+         * Only set the flag to true
+         * Setting it to false is handled in the "keyUp" handler
+         * otherwise holding the "Ctrl" key and hitting e.g. "z"
+         * will start the browser shortcut at the second time.
+         */
+        if(keyIdentifier == "control")
+        {
+          this.__controlPressed = true;
+        }
+      },
+      
+      "default" : function(e) {}
+    }),
 
 
     /**
@@ -1208,19 +1276,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       switch(keyIdentifier)
       {
-      
-        case "control":
-          /*
-           * Set a flag if the control key was pressed. It is used to insert a
-           * linebreak when pressing the "Ctrl+Enter" combination. The linebreak
-           * gets inserted at the keyUp event at the "_handleKeyUp" method.
-           */
-          if (qx.core.Client.getInstance().isMshtml())
-          {
-             this.__controlPressed = true;
-          }
-        break;
-
         case "tab":
           if (qx.core.Client.getInstance().isGecko())
           {
