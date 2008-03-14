@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin;
+package org.qooxdoo.toolkit.plugin.binding;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ public class ResourcesMojo extends FrameworkBase {
     @Override
     public void doExecuteWithOrig() throws MojoExecutionException, IOException {
         resource();
-        log();
+        svninfo();
     }
 
     private void resource() throws IOException {
@@ -79,17 +79,7 @@ public class ResourcesMojo extends FrameworkBase {
         return io.node(project.getBuild().getDirectory() + "/classes");
     }
 
-    private void log() throws MojoExecutionException, IOException {
-        Node log;
-        
-        log = classes().join("log");
-        log.mkdirOpt();
-        log(log.join("info.log"), "info", NON_INTERACTIVE);
-        log(log.join("status.log"), "status", NON_INTERACTIVE, "-v", "-N");
-        log(log.join("diff.log"), "diff", NON_INTERACTIVE);
-    }
-
-    private void log(Node file, String ... cmd) throws IOException {
-        file.writeString(svn(cmd).exec());
+    private void svninfo() throws MojoExecutionException, IOException {
+        svninfo(frameworkDir, classes().join("log"));
     }
 }

@@ -17,16 +17,15 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.toolkit.plugin;
+package org.qooxdoo.toolkit.plugin.binding;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.qooxdoo.toolkit.plugin.Base;
 import org.xml.sax.SAXException;
 
 public abstract class FrameworkBase extends Base {
@@ -48,7 +47,7 @@ public abstract class FrameworkBase extends Base {
      * 
      * @parameter expression="${basedir}/src/framework"
      */
-    protected Node frameworkDir;
+    protected FileNode frameworkDir;
     
     public void setFrameworkDir(String path) {
         frameworkDir = io.node(path);
@@ -104,25 +103,10 @@ public abstract class FrameworkBase extends Base {
         return str.substring(start, end).trim();
     }
 
-    public static final String NON_INTERACTIVE = "--non-interactive";
-    
     public Program svn(String ... args) {
-        return svn((FileNode) frameworkDir, args);
+        return svn(frameworkDir, args);
     }
     
-    public Program svn(FileNode dir, String ... args) {
-        Program p;
-        
-        p = new Program((FileNode) dir);
-        // force output in english:
-        p.builder.environment().put("LANG", "C");
-        p.builder.environment().put("LC_ALL", "C");
-        p.add("svn");
-        p.addAll(Arrays.asList(args));
-        debug("svn command: " + p.toString());
-        return p;
-    }
-
     public abstract void doExecuteWithOrig() throws MojoExecutionException, IOException, SAXException, XmlException;
 }
 
