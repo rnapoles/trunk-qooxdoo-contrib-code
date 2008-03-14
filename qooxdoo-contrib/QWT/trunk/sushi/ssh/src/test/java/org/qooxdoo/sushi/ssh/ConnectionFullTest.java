@@ -88,8 +88,9 @@ public class ConnectionFullTest {
     
     @Test
     public void normal() throws Exception {
-        assertEquals("hello\n", connection.exec("echo", "hello"));
-        assertEquals("again\n", connection.exec("echo", "again"));
+        assertEquals("\r\n", connection.exec("echo"));
+        assertEquals("hello\r\n", connection.exec("echo", "hello"));
+        assertEquals("again\r\n", connection.exec("echo", "again"));
         try {
             connection.exec("commandnotfound");
             fail();
@@ -97,14 +98,14 @@ public class ConnectionFullTest {
             assertTrue(e.output.contains("commandnotfound"));
         }
 
-        assertEquals("alive\n", connection.exec("echo", "alive"));
+        assertEquals("alive\r\n", connection.exec("echo", "alive"));
     }
 
     @Test
     public void variablesLost() throws Exception {
-        assertEquals("\n", connection.exec("echo", "$FOO"));
+        assertEquals("\r\n", connection.exec("echo", "$FOO"));
         connection.exec("export", "FOO=bar");
-        assertEquals("\n", connection.exec("echo", "$FOO"));
+        assertEquals("\r\n", connection.exec("echo", "$FOO"));
     }
 
     @Test
@@ -112,20 +113,22 @@ public class ConnectionFullTest {
         String start;
         
         start = connection.exec("pwd");
-        assertEquals("/usr\n", connection.exec("cd", "/usr", "&&", "pwd"));
+        assertEquals("/usr\r\n", connection.exec("cd", "/usr", "&&", "pwd"));
         assertEquals(start, connection.exec("pwd"));
     }
 
     @Test
     public void shell() throws Exception {
+        connection.exec("echo", "-e", "\\003320l");
+
         assertEquals("", connection.exec("exit", "0", "||", "echo", "dontprintthis"));
-        assertEquals("a\nb\n", connection.exec("echo", "a", "&&", "echo", "b"));
-        assertEquals("a\n", connection.exec("echo", "a", "||", "echo", "b"));
-        assertEquals("file\n", connection.exec(
+        assertEquals("a\r\nb\r\n", connection.exec("echo", "a", "&&", "echo", "b"));
+        assertEquals("a\r\n", connection.exec("echo", "a", "||", "echo", "b"));
+        assertEquals("file\r\n", connection.exec(
                 "if", "test", "-a", "/etc/profile;", 
                 "then", "echo", "file;",
                 "else", "echo", "nofile;", "fi"));
-        assertEquals("nofile\n", connection.exec(
+        assertEquals("nofile\r\n", connection.exec(
                 "if", "test", "-a", "nosuchfile;", 
                 "then", "echo", "file;",
                 "else", "echo", "nofile;", "fi"));
@@ -145,13 +148,46 @@ public class ConnectionFullTest {
     }
 
     @Test
+    public void longline() throws Exception {
+        String longline = "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890" +
+            "1234567890";
+        assertEquals(longline + "\r\n", connection.exec("echo", longline));
+    }
+
+    @Test
+    public void cancel() throws Exception {
+        String tmp = "/tmp/cancel-sushi";
+
+        connection.exec("rm", "-f", tmp);
+        connection.begin("sleep", "2", "&&", "echo", "hi", ">" + tmp);
+        Thread.sleep(500);
+        tearDown();
+        Thread.sleep(3000);
+        setUp();
+        try {            
+            connection.exec("ls", tmp);
+            fail();
+        } catch (ExitCode e) {
+            assertTrue(e.getMessage().contains("No such file"));
+        }
+    }
+
+    @Test
     public void erroroutput() throws Exception {
         try {
         	connection.exec("echo", "foo", "&&", "exit", "1");
         	fail();
         } catch (ExitCode e) {
         	assertEquals(1, e.code);
-        	assertEquals("foo\n", e.output);
+        	assertEquals("foo\r\n", e.output);
         }
     }
 
