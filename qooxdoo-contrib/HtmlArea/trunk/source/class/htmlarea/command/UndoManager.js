@@ -68,6 +68,9 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     /* Flag for the undo-mechanism to monitor the content changes */
     __startTyping : false,
+    
+    /* Internal id to mark elements for IE which are inserted via "insertHtml" command */
+    __undoId : 0,
 
     
     /* *******************************************************
@@ -139,8 +142,23 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
       else
       {
+        /*
+         * Manipulate the HTML string to insert to easily undo the command in IE
+         */
+        if (qx.core.Client.getInstance().isMshtml() && command == "inserthtml")
+        {
+          /* Backup an existing id and add the undo info to the id attribute */
+          value = value.replace(/(id=)/, 'old_$1');
+          value = value.replace(/^(<[a-z]*)\s(.*)/, '$1 id="undo_' + this.__undoId + '" $2');
+        }
+        
         /* Collect undo info */
         this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
+        
+        if (qx.core.Client.getInstance().isMshtml() && command == "inserthtml")
+        {
+          this.__undoId++;
+        }
 
         /* Execute the command */
         result = this.__commandManager.execute(command, value);
@@ -250,8 +268,30 @@ qx.Class.define("htmlarea.command.UndoManager",
 
       this.__redoStack.push(redoAction);
 
-      /* Undo changes by applying the corresponding command */
-      return this.__commandManager.execute(undoInfo.command, undoInfo.parameter);
+      /* 
+       * Special undo handling for "insertHtml" in IE
+       * Instead of working with ranges just remove the inserted html node
+       * with the special id value.
+       */
+      if (qx.core.Client.getInstance().isMshtml() && undoInfo.command == "inserthtml")
+      { 
+        var undoId   = undoInfo.parameter[0];
+        var undoNode = this.__doc.getElementById(undoId); 
+        
+        /* User *could* already removed the node e.g. an image */
+        if (undoNode)
+        {
+          undoNode.parentNode.removeChild(undoNode);
+        }        
+        
+        /*undoInfo.range.collapse(false);
+        undoInfo.range.select();*/
+      }
+      else
+      {
+        /* Undo changes by applying the corresponding command */
+        return this.__commandManager.execute(undoInfo.command, undoInfo.parameter);        
+      }
     },
 
 
@@ -555,6 +595,7 @@ qx.Class.define("htmlarea.command.UndoManager",
        */
       this.__commandManager.__commands["backgroundcolor"].customUndo = true;
       this.__commandManager.__commands["backgroundimage"].customUndo = true;
+      this.__commandManager.__commands["inserthtml"].customUndo = true;
     },
     
 
@@ -588,6 +629,10 @@ qx.Class.define("htmlarea.command.UndoManager",
             parameters.push(qx.bom.element.Style.get(this.__doc.body, "backgroundImage"),
                             qx.bom.element.Style.get(this.__doc.body, "backgroundRepeat"),
                             qx.bom.element.Style.get(this.__doc.body, "backgroundPosition"));
+          break;
+          
+          case "inserthtml":
+            parameters.push("undo_" + this.__undoId);
           break;
         }
 
