@@ -769,8 +769,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 			}
 		}
     
-    // modified timestamp
-    if ( $this->key_modified )
+    // set modified timestamp if the timestamp is not part of the data
+    if ( $this->key_modified && empty( $data[$this->key_modified] ) )
     {
       $data[$this->key_modified] = strftime("%Y-%m-%d %T");
     }    
