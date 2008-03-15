@@ -205,6 +205,77 @@ class qcl_jsonrpc_object extends qcl_object {
     return isset( $persistentVars[$name] );
  	}
 
+  /*
+   * jsonrpc error and message handling 
+   * 
+   */
+
+	/**
+	 * raises a server error and exits
+	 */
+	function raiseError( $message, $number=null, $file=null, $line=null )
+	{
+		if ( $file and $line )
+		{
+			$message .= " in $file, line $line.";
+		}
+		$this->log( 
+      "### Error in " . get_class($this) . " ###\n" . 
+      $message . "\n" . 
+      "Stack Trace:\n" . 
+      $this->getStackTrace(), 
+      QCL_LOG_ERROR
+    );
+    // pass error to jsonrpc error object ( or end gracefully)
+    global $error;
+    if ( is_object($error) )
+    {
+  		$error->setError( $number, stripslashes( $message ) );
+   		$error->SendAndExit();
+      // never gets here
+      exit;
+    }
+    echo $message;
+    exit;
+	}
+
+	/**
+	 * alerts a message on the client 
+	 */
+	function alert( $message )
+	{
+    // pass message as error to jsonrpc error object ( or end gracefully)
+    global $error;
+    if ( is_object($error) )
+    {
+  		$error->setError( $number, stripslashes( $message ) );
+   		$error->SendAndExit();
+      // never gets here
+      exit;
+    }
+    echo $message;
+    exit;
+	}
+  
+  
+	/**
+	* debug a variable 
+	* @todo: debug to file
+	*/
+	function debug($var,$html=false)
+	{
+		if ( ! $html )
+		{
+			// we are in a jsonrpc request, send debug output as error message
+      // todo
+			$this->altert( print_r ( $var, true ) );
+		}
+		else
+		{
+			// we can happily output as a html response
+			echo "<pre>" . htmlentities(var_export( $var, true )) . "</pre>";	
+		}
+  }
 
 }
 

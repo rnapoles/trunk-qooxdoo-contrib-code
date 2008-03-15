@@ -1,12 +1,12 @@
 <?php
 
-require_once ("qcl/jsonrpc/model.php"); 
+require_once ("qcl/jsonrpc/object.php"); 
  
 /**
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_db extends qcl_object
+class qcl_db extends qcl_jsonrpc_object
 {
 
 	/**
