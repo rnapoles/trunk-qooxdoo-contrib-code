@@ -138,7 +138,7 @@ public class ConnectionFullTest {
     public void timeout() throws Exception {
         Exec exec;
         
-        exec = connection.begin("sleep", "5");
+        exec = connection.begin(true, "sleep", "5");
         try {
             exec.end(1000);
             fail();
@@ -167,7 +167,7 @@ public class ConnectionFullTest {
         String tmp = "/tmp/cancel-sushi";
 
         connection.exec("rm", "-f", tmp);
-        connection.begin("sleep", "2", "&&", "echo", "hi", ">" + tmp);
+        connection.begin(true, "sleep", "2", "&&", "echo", "hi", ">" + tmp);
         Thread.sleep(500);
         tearDown();
         Thread.sleep(3000);
@@ -195,7 +195,7 @@ public class ConnectionFullTest {
     public void duration() throws Exception {
         Exec exec;
         
-        exec = connection.begin("sleep", "2");
+        exec = connection.begin(true, "sleep", "2");
         exec.end();
         assertTrue(exec.duration() >= 2000);
         assertTrue(exec.duration() <= 2200);

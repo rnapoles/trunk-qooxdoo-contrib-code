@@ -64,20 +64,24 @@ public class Connection {
         return channel;
     }
 
-    public Exec begin(String ... command) throws JSchException {
-        return begin(MultiOutputStream.createNullStream(), command);
+    public Exec begin(boolean tty, String ... command) throws JSchException {
+        return begin(tty, MultiOutputStream.createNullStream(), command);
     }
     
-    public Exec begin(OutputStream out, String ... command) throws JSchException {
-        return Exec.begin(this, (ChannelExec) session.openChannel("exec"), out, command);
+    public Exec begin(boolean tty, OutputStream out, String ... command) throws JSchException {
+        return Exec.begin(this, tty, (ChannelExec) session.openChannel("exec"), out, command);
     }
     
     public String exec(String ... command) throws JSchException, ExitCode {
+        return exec(true, command);
+    }
+    
+    public String exec(boolean tty, String ... command) throws JSchException, ExitCode {
         ByteArrayOutputStream out;
 
         out = new ByteArrayOutputStream();
         try {
-            begin(out, command).end();
+            begin(tty, out, command).end();
         } catch (ExitCode e) {
             throw new ExitCode(e.call, e.code, settings.string(out));
         }
