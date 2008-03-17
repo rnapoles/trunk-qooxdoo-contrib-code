@@ -15,11 +15,6 @@
     Requirements: 1) show main QWT features; 2) code explainable in a single presentation 3) use advanced Qooxdoo Widgets
   </description>
 
-  <properties>
-    <!-- This is the place to adjust the QWT version you're using: -->
-    <toolkit.version>0.3.0</toolkit.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>
@@ -29,7 +24,7 @@
     <dependency>
       <groupId>org.qooxdoo.sushi</groupId>
       <artifactId>core</artifactId>
-      <version>1.2.1</version>
+      <version>${sushi.version}</version>
     </dependency>
   </dependencies>
  
