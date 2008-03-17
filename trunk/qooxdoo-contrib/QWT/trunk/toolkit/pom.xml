@@ -18,6 +18,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <tomcat.version>6.0.14</tomcat.version>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.6R7</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <modules>
     <module>compiler</module>
     <module>plugin</module>

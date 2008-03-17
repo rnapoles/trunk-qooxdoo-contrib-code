@@ -218,11 +218,14 @@ public class DependencyGraph {
     }
 
     public static class Node {
+        private static int HASH_NO = 0;
+        private final int hash;
         public final String name;
         public int from;
         public final List<Node> tos;
         
         public Node(String name) {
+            this.hash = ++HASH_NO;
             this.name = name;
             this.from = 0;
             this.tos = new ArrayList<Node>();
@@ -231,6 +234,14 @@ public class DependencyGraph {
         @Override
         public String toString() {
             return from + "-" + name + "-" + tos.size();
+        }
+        
+        public int hashCode() {
+            return hash;
+        }
+
+        public boolean equals(Object obj) {
+            return this == obj;
         }
     }
 }

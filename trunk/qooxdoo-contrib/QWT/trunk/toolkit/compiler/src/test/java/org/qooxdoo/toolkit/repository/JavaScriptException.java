@@ -19,55 +19,14 @@
 
 package org.qooxdoo.toolkit.repository;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
-import javax.script.ScriptException;
-
+import org.mozilla.javascript.RhinoException;
 import org.qooxdoo.sushi.util.Strings;
 
 public class JavaScriptException extends Exception {
-    public static JavaScriptException create(ScriptException e, String message, String script) {
-        return create(e.getFileName(), e.getLineNumber(), e.getColumnNumber(), message, script, e, null);
-    }
-
-    public static JavaScriptException create(ScriptException e, Throwable cause, String script) {
-        final String HEAD = "script(";
-        StringWriter dest;
-        int idx;
-        StringBuilder stack;
-        Integer no;
-        String file;
-        int tmp;
-        
-        dest = new StringWriter();
-        cause.printStackTrace(new PrintWriter(dest));
-        stack = new StringBuilder();
-        no = null;
-        file = null;
-        for (String line : Strings.split("\n", dest.toString())) {
-            idx = line.indexOf(HEAD);
-            if (idx != -1) {
-                line = line.substring(idx + HEAD.length(), line.indexOf(')', idx));
-                idx = line.lastIndexOf(':');
-                if (idx == -1) {
-                    throw new IllegalArgumentException(line);
-                }
-                tmp = Integer.parseInt(line.substring(idx + 1));
-                if (no == null) {
-                    no = tmp;
-                    file = line.substring(0, idx);
-                }
-                stack.append(line);
-                stack.append('\n');
-            }
-        }
-        if (no == null) {
-            no = e.getLineNumber();
-            file = e.getFileName();
-        }
-        return create(file, no, e.getColumnNumber(), cause.getMessage(), script, e, stack.toString());
+    public static JavaScriptException create(RhinoException e, String message, String script) {
+        return create(e.sourceName(), e.lineNumber(), e.columnNumber(), message, script, e, null);
     }
 
     public static JavaScriptException create(String file, int no, int col, String message, String script, Throwable cause, String stack) {

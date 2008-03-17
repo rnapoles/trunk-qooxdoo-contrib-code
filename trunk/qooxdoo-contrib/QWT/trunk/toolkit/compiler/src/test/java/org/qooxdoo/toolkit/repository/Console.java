@@ -22,9 +22,7 @@ package org.qooxdoo.toolkit.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.ScriptException;
-
-/** fake firebug console */
+/** fake Firebug console */
 public class Console {
     public final List<String> messages;
     public final boolean firebug = true;
@@ -33,19 +31,19 @@ public class Console {
         messages = new ArrayList<String>();
     }
     
-    public void info(String message) throws ScriptException {
+    public void info(String message) {
         log(message);
     }
     
-    public void debug(String message) throws ScriptException {
+    public void debug(String message) {
         log(message);
     }
 
-    public void error(String message) throws ScriptException {
+    public void error(String message) {
         log(message);
     }
 
-    public void log(String message) throws ScriptException {
+    public void log(String message) {
         // System.out.println(message);
         messages.add(message);
     }

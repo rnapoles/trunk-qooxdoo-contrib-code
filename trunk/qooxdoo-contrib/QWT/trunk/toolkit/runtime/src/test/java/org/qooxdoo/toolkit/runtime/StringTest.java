@@ -87,7 +87,7 @@ public class StringTest extends Base2 {
 
     @Test
     public void hashCodE() {
-        expr("\"a\".hashCode()", ANY, 2.0);
+        expr("\"a\".hashCode()", ANY, 2);
     }
 
     @Test

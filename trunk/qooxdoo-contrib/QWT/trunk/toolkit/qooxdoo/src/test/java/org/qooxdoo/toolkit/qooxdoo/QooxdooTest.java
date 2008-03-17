@@ -48,6 +48,8 @@ import qx.ui.tree.AbstractTreeElement;
 import qx.ui.tree.Tree;
 import qx.ui.tree.TreeFile;
 import qx.ui.tree.TreeFolder;
+
+import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.JavaScriptException;
 import org.qooxdoo.toolkit.rhino.QooxdooEngine;
 import org.qooxdoo.sushi.io.IO;
@@ -63,15 +65,14 @@ public class QooxdooTest {
 
     @Test
     public void global() throws Exception {
-        assertNull(engine.eval("window.qx"));
+        assertEquals(JavaScriptEngine.UNDEFINED, engine.eval("window.qx"));
         engine.eval("window.qx = 2");
-        assertEquals(2.0, engine.eval("window.qx"));
+        assertEquals(2, engine.eval("window.qx"));
         assertEquals(true, engine.eval("qx === window.qx"));
     }
     
     @Test
     public void bootstrap() throws Exception {
-        assertNull(engine.eval("window.qx"));
         engine.eval(engine.getRepository().get("toolkit.root").getCode());
         engine.eval(engine.getRepository().get("qx.core.Bootstrap").getCode());
         assertNotNull(engine.eval("window.qx"));

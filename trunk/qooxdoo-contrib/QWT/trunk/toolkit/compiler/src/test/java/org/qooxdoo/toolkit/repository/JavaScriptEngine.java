@@ -22,35 +22,41 @@ package org.qooxdoo.toolkit.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.ScriptableObject;
 
+/** 
+ * I use Rhino directly, not via javax.script from Java 6 because I want:
+ * o tight control about the version I use
+ * o more error details than exposed java javax.script
+ */
 public class JavaScriptEngine {
-    private static final ScriptEngineManager FACTORY = new ScriptEngineManager();
-    
+    public static final Object UNDEFINED = Context.getUndefinedValue();
+
     private final Repository repository;
     /** not a set because I want sequence information */
     private final List<Module> loaded;
-    private final ScriptEngine engine;
+    private final Context context;
+    private final ScriptableObject scope;
 
     public final Console console;
 
     public JavaScriptEngine(Repository repository) {
         this.repository = repository;
         this.loaded = new ArrayList<Module>();
-        this.engine = FACTORY.getEngineByName("JavaScript");
+        this.context = Context.enter();
+        this.scope = context.initStandardObjects();
         this.console = new Console();
         put("console", console);
     }
-
+    
     public Repository getRepository() {
         return repository;
     }
     
     protected void put(String name, Object obj) {
-        engine.getBindings(ScriptContext.GLOBAL_SCOPE).put(name, obj);
+        ScriptableObject.putProperty(scope, name, Context.javaToJS(obj, scope));
     }
 
     /** load once */
@@ -81,35 +87,11 @@ public class JavaScriptEngine {
         return eval("noname", script);
     }
     
-    // see http://blogs.sun.com/sundararajan/entry/more_javascript_debugging_tips_mustang
-    // CAUTION: no line breaks to leave line numbers unchanged
-    private static final String HEAD = "try { "; 
-    private static final String TAIL = 
-        "} catch (e) {" +
-        "  if (typeof e.rhinoException != 'undefined') {" +
-        "    rhinoException = e.rhinoException;" + 
-        "  } else {" +
-        "    /* for (a in e) { println(a + ':' + e[a]); } */" +
-        "    rhinoMessage = e.message;" +
-        "  } " +
-        "  throw e;" +
-        "}";
-    
     public Object eval(String filename, String script) throws JavaScriptException {
-        Throwable rhinoException;
-        
-        engine.getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptEngine.FILENAME, filename);
         try {
-            return engine.eval(HEAD + script + TAIL);
-        } catch (ScriptException e) {
-            rhinoException = (Throwable) engine.getBindings(ScriptContext.ENGINE_SCOPE).get("rhinoException");
-            if (rhinoException != null) {
-                throw JavaScriptException.create(e, rhinoException, script);
-            } else {
-                throw JavaScriptException.create(e,
-                        (String) engine.getBindings(ScriptContext.ENGINE_SCOPE).get("rhinoMessage"),
-                        script);
-            }
+            return context.evaluateString(scope, script, filename, 1, null);
+        } catch (RhinoException e) {
+            throw JavaScriptException.create(filename, e.lineNumber(), e.columnNumber(), e.getMessage(), script, e, "");
         }
     }
 }
