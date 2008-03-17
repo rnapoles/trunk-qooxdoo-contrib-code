@@ -13,11 +13,6 @@
   <description>QWT Application to demonstrate client-server communication.</description>
   <version>${toolkit.version}</version>
 
-  <properties>
-    <!-- This is the place to adjust the QWT version you're using: -->
-    <toolkit.version>0.3.0</toolkit.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.qooxdoo.toolkit</groupId>

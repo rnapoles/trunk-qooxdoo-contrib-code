@@ -100,7 +100,6 @@ public class Skeleton {
         str = replace1(str, PARENT, MARK);
         str = replaceTag(str, "artifactId", application.getName(), ARTIFACT);
         str = replaceTag(str, "groupId", "org.qooxdoo", GROUP);
-        str = replaceTag(str, "toolkit.version", Base.getVersion(application.io), TOOLKIT_VERSION);
         str = replace1(str, MARK, PARENT);
         pom.writeString(str);
     }

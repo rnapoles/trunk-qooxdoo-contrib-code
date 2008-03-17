@@ -14,11 +14,6 @@
   <description>Smallest QWT application possible.</description>
   <packaging>jar</packaging>
 
-  <properties>
-    <!-- This is the place to adjust the QWT Version you're using: -->
-    <toolkit.version>0.3.0</toolkit.version>
-  </properties>
-  
   <build>
     <plugins>
       <plugin>
