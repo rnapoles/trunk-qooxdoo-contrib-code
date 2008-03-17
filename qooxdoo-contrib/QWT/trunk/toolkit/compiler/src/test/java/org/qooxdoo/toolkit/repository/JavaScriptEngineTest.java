@@ -21,7 +21,6 @@ package org.qooxdoo.toolkit.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -54,7 +53,7 @@ public class JavaScriptEngineTest {
 
     @Test
     public void obj() throws Exception {
-        assertEquals(2.0, run("obj=new Object(); obj[\"a\"] = 2; obj.a"));
+        assertEquals(2, run("obj=new Object(); obj[\"a\"] = 2; obj.a"));
     }
 
     @Test
@@ -80,22 +79,6 @@ public class JavaScriptEngineTest {
         assertEquals("function", run("a = function() { return 2; }; typeof a"));
     }
 
-    @Test
-    public void map() throws Exception {
-        assertNull(engine.eval("var foo = {\n" +
-                "  'i' : 1," +
-                "  'b' : 2," +
-                "  'c' : 3," +
-                "  'd' : 4," +
-                "  'e' : 5," +
-                "  'f' : 6," +
-                "  'g' : 7," +
-                "  'h' : 8," +
-                "  'a' : 9" +
-                "};"));
-        engine.eval("for (item in foo) { print(item); }");
-    }
-    
     @Test
     public void stringHasPredefinedEquals() throws Exception {
         // TODO: Rhino has a predefined equals method - firefox doesnt!

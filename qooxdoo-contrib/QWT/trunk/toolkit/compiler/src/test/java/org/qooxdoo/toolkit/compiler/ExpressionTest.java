@@ -38,7 +38,7 @@ public class ExpressionTest extends Base {
     @Test
     public void numberLiteral() {
         expr("0", "0", 0.0);
-        expr("0xffff", "65535", 65535.0);
+        expr("0xffff", "65535", 65535);
         expr("-1", "-1", -1.0);
         expr("1L", "1", 1.0);
         expr("1.23D", "1.23", 1.23);
@@ -51,7 +51,7 @@ public class ExpressionTest extends Base {
 
     @Test
     public void charLiteral() {
-        expr("'a'", "97", 97.0);
+        expr("'a'", "97", 97);
     }
 
     @Test
@@ -135,23 +135,23 @@ public class ExpressionTest extends Base {
     }
     @Test
     public void methodNormal() {
-        expr("this.normalMethod()", "this.normalMethod()", 4.0);
+        expr("this.normalMethod()", "this.normalMethod()", 4);
     }
     @Test
     public void methodNormalNoThis() {
-        expr("normalMethod()", "this.normalMethod()", 4.0);
+        expr("normalMethod()", "this.normalMethod()", 4);
     }
     @Test
     public void methodStatic() {
-        expr("Foo.staticMethod()", "Foo.staticMethod()", 3.0);
+        expr("Foo.staticMethod()", "Foo.staticMethod()", 3);
     }
     @Test
     public void methodStaticOnObject() {
-        expr("this.staticMethod()", "Foo.staticMethod()", 3.0);
+        expr("this.staticMethod()", "Foo.staticMethod()", 3);
     }
     @Test
     public void methodStaticNoClass() {
-        expr("staticMethod()", "Foo.staticMethod()", 3.0);
+        expr("staticMethod()", "Foo.staticMethod()", 3);
     }
 
     @Test
@@ -164,20 +164,20 @@ public class ExpressionTest extends Base {
     }
     @Test
     public void fieldStaticAccess() {
-        expr("Foo.staticField", "Foo.staticField", 2.0);
+        expr("Foo.staticField", "Foo.staticField", 2);
     }
     @Test
     public void fieldStaticAccessNoClass() {
-        expr("staticField", "Foo.staticField", 2.0);
+        expr("staticField", "Foo.staticField", 2);
     }
     @Test
     public void fieldStaticAccessOnObject() {
-        expr("this.staticField", "Foo.staticField", 2.0);
+        expr("this.staticField", "Foo.staticField", 2);
     }
     @Test
     public void cast() {
-        expr("(int) 5", "5", 5.0);
-        expr("(char) 5", "5", 5.0);
+        expr("(int) 5", "5", 5);
+        expr("(char) 5", "5", 5);
     }
     @Test
     public void thiS() {
@@ -197,10 +197,10 @@ public class ExpressionTest extends Base {
     
     @Test
     public void infixExpression() {
-        expr("1+2", "1 + 2", 3.0);
-        expr("1+2+3", "1 + 2 + 3", 6.0);
+        expr("1+2", "1 + 2", 3);
+        expr("1+2+3", "1 + 2 + 3", 6);
         expr("1+2-3", "1 + 2 - 3", 0.0);
-        expr("'A'-5", "65 - 5", 60.0);
+        expr("'A'-5", "65 - 5", 60);
         expr("\"A\"+\"B\"", "stringConcat(\"A\",\"B\")", "AB");
     }
 
@@ -222,6 +222,6 @@ public class ExpressionTest extends Base {
     @Test
     public void paranthesizedExpression() {
         expr("(1)", "(1)", 1.0);
-        expr("2*(3+4)", "2 * (3 + 4)", 14.0);
+        expr("2*(3+4)", "2 * (3 + 4)", 14);
     }
 }

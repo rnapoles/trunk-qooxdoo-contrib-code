@@ -24,7 +24,7 @@ import org.junit.Test;
 public class NumberTest extends Base2 {
     @Test
     public void integer() throws Exception {
-        expr("new Integer(3).intValue()", ANY, 3.0);
+        expr("new Integer(3).intValue()", ANY, 3);
         expr("Integer.parseInt(\"2\")", ANY, 2.0);
         // TODO: autoboxing
         expr("new Integer(Integer.parseInt(\"0\")).toString()", ANY, "0");

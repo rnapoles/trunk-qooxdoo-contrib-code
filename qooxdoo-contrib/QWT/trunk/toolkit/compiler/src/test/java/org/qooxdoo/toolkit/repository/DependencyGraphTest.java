@@ -55,6 +55,7 @@ public class DependencyGraphTest {
     public void fork() {
         g.add("a", "b");
         g.add("a", "c");
+        g.add("b", "c");
         sort("a", "b", "c");
     }
 
