@@ -31,14 +31,14 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
 public class Exec {
-    public static Exec begin(Connection connection, ChannelExec channel, OutputStream out, String ... command) throws JSchException {
+    public static Exec begin(Connection connection, boolean tty, ChannelExec channel, OutputStream out, String ... command) throws JSchException {
         TimedOutputStream dest;
         
         dest = new TimedOutputStream(out);
-        // propagates ctrl-c to the host machine:
+        // tty=true propagates ctrl-c to the host machine:
         // (unfortuneatly, this causes ssh servers to send cr/lf, and I didn't find
         // a way to stop this - try setTerminalMode and also sending special character sequences)
-        channel.setPty(true);
+        channel.setPty(tty);
         channel.setCommand(Strings.join(" ", command));
         channel.setInputStream(null);
         channel.setOutputStream(dest);
