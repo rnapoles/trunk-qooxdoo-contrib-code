@@ -997,6 +997,31 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * sets the designMode of the document
+     * 
+     * @type member
+     * @param onOrOff {Boolean}
+     * @return {void}
+     */
+    __setDesignMode : function (onOrOff)
+    {
+      this.__doc = this.getContentDocument();
+
+      if (this.__isLoaded)
+      {
+        try
+        {
+          // FF Bug (Backspace etc. doesnt work if we dont set it twice)
+          this.__doc.designMode = (onOrOff !== false) ? 'Off' : 'On';
+          this.__doc.designMode = (onOrOff !== false) ? 'On' : 'Off';
+        }
+        catch (e)
+        {
+          // Fails if the element is not shown actually
+        }
+      }
+    },
 
 
     /*
@@ -1021,38 +1046,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (this.__isLoaded)
       {
-        if ( this.__designModeCounter == null)
-        {
-          this.__designModeCounter = 0;
-        }
-
-        /* Setting the designMode - works for all browser engines? */
-        try
-        {
-          this.__doc.designMode = propValue ? "On" : "Off";
-        }
-        catch (e)
-        {
-          if (this.__designModeCounter < 5)
-          {
-            this.__designModeCounter++;
-            var self = this;
-            window.setTimeout( function ()
-            {
-              self.debug("cant set designMode, try again...");
-              self._applyEditable(propValue, propOldValue, propData);
-            }, 0);
-          }
-          else
-          {
-            if (!this.__isReady) {
-              this.error("Failed to set designMode");
-              this.createDispatchDataEvent("loadingError", e);
-            } else {
-              throw new Error("Failed to set designMode");
-            }
-          }
-        }
+        this.__setDesignMode(true);
 
         /*
          * For Gecko set additionally "styleWithCSS" and as fallback for older
@@ -1088,7 +1082,7 @@ qx.Class.define("htmlarea.HtmlArea",
             }
           }
         }
-        
+
         this.__isEditable = propValue;
       }
     },
@@ -1557,6 +1551,18 @@ qx.Class.define("htmlarea.HtmlArea",
        }
 
        this.__currentEvent = null;
+    },
+
+
+    /**
+     * overridden
+     */
+    _afterAppear : function ()
+    {
+      this.base(arguments);
+
+      // we need to set the designMode every time we toggle visibility back to "visible"
+      this.__setDesignMode(true);
     },
 
 
