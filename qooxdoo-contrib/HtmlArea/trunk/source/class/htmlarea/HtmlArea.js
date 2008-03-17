@@ -642,10 +642,10 @@ qx.Class.define("htmlarea.HtmlArea",
         var self = this;
         window.setTimeout(function() {
           if (qx.core.Variant.isSet("qx.debug", "on")) {
-            this.debug('document not available, try again...');
+            self.debug('document not available, try again...');
           }
 
-          this.__loadCounter++;
+          self.__loadCounter++;
           self.__waitForDocumentReady(handler);
         },0);
       }
@@ -1021,6 +1021,11 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (this.__isLoaded)
       {
+        if ( this.__designModeCounter == null)
+        {
+          this.__designModeCounter = 0;
+        }
+
         /* Setting the designMode - works for all browser engines? */
         try
         {
@@ -1028,11 +1033,24 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         catch (e)
         {
-          if (!this.__isReady) {
-            this.error("Failed to set designMode");
-            this.createDispatchDataEvent("loadingError", e);
-          } else {
-            throw new Error("Failed to set designMode");
+          if (this.__designModeCounter < 5)
+          {
+            this.__designModeCounter++;
+            var self = this;
+            window.setTimeout( function ()
+            {
+              self.debug("cant set designMode, try again...");
+              self._applyEditable(propValue, propOldValue, propData);
+            }, 0);
+          }
+          else
+          {
+            if (!this.__isReady) {
+              this.error("Failed to set designMode");
+              this.createDispatchDataEvent("loadingError", e);
+            } else {
+              throw new Error("Failed to set designMode");
+            }
           }
         }
 
