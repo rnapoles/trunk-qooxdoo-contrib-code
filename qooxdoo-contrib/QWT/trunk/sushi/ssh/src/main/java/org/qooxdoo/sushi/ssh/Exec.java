@@ -31,7 +31,8 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
 public class Exec {
-    public static Exec begin(Connection connection, boolean tty, ChannelExec channel, OutputStream out, String ... command) throws JSchException {
+    public static Exec begin(Connection connection, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
+    throws JSchException {
         TimedOutputStream dest;
         
         dest = new TimedOutputStream(out);
