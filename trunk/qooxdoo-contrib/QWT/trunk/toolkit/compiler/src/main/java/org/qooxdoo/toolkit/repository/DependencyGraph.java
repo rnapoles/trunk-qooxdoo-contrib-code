@@ -218,14 +218,14 @@ public class DependencyGraph {
     }
 
     public static class Node {
-        private static int HASH_NO = 0;
+        private static int hashNo = 0;
         private final int hash;
         public final String name;
         public int from;
         public final List<Node> tos;
         
         public Node(String name) {
-            this.hash = ++HASH_NO;
+            this.hash = ++hashNo;
             this.name = name;
             this.from = 0;
             this.tos = new ArrayList<Node>();
