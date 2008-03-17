@@ -129,7 +129,7 @@ public abstract class Base extends AbstractMojo {
     public void svninfo(FileNode dir, Node log) throws MojoExecutionException, IOException {
         log.mkdirsOpt();
         svnlog(dir, log.join("info.log"), "info", NON_INTERACTIVE);
-        svnlog(dir, log.join("status.log"), "status", NON_INTERACTIVE, "-v", "-N");
+        svnlog(dir, log.join("status.log"), "status", NON_INTERACTIVE);
         svnlog(dir, log.join("diff.log"), "diff", NON_INTERACTIVE);
     }
 

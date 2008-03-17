@@ -222,6 +222,9 @@ public class DistributionMojo extends Base {
         filter.exclude("**/nbproject/**/*");
         filter.exclude("**/toolkit/qooxdoo/src/framework");
         filter.exclude("**/toolkit/qooxdoo/src/framework/**/*");
+        
+        // because I cash sf pages here:
+        filter.exclude("sourceforge/**/*");
 
         // because I ask Hudson to place the local repository here
         filter.exclude("repository");
