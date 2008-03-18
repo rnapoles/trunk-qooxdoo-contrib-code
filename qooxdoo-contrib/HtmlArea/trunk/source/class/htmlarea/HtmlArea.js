@@ -641,9 +641,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
         var self = this;
         window.setTimeout(function() {
-          if (qx.core.Variant.isSet("qx.debug", "on")) {
+          //if (qx.core.Variant.isSet("qx.debug", "on")) {
             self.debug('document not available, try again...');
-          }
+          //}
 
           self.__loadCounter++;
           self.__waitForDocumentReady(handler);
@@ -674,9 +674,9 @@ qx.Class.define("htmlarea.HtmlArea",
         }
         else
         {
-          if (qx.core.Variant.isSet("qx.debug", "on")) {
+          //if (qx.core.Variant.isSet("qx.debug", "on")) {
             this.debug("document cant opened, try again...");
-          }
+          //}
 
           var self = this;
           window.setTimeout( function()
