@@ -38,6 +38,23 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals><goal>install-file</goal></goals>
+            <configuration>
+              <file>${basedir}/src/de.mlhartme.mork+core-0.6.jar</file>
+              <groupId>de.mlhartme.mork</groupId>
+              <artifactId>core</artifactId>
+              <version>0.6</version>
+              <generatorPom>true</generatorPom>
+              <packaging>jar</packaging>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>

@@ -1,0 +1,12 @@
+mapper org.qooxdoo.toolkit.plugin.qul.css.Mapper;
+
+grm = "css.grm";
+
+import org.qooxdoo.toolkit.plugin.qul.css:
+    Css, Ruleset, Selector, Declaration;
+
+stylesheet  => Css;
+ruleset     => Ruleset;
+selector    => Selector;
+declaration => Declaration;
+IDENT       => [text];

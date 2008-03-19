@@ -8,13 +8,13 @@ public class ParserTest {
     
     @Test
     public void empty() {
-        css = Parser.loadString("");
+        css = Css.loadString("");
         assertEquals(0, css.rules.size());
     }
 
     @Test
     public void one() {
-        css = Parser.loadString("abc { a : 1; }");
+        css = Css.loadString("abc { a : bc }");
         assertEquals(1, css.rules.size());
     }
 }
