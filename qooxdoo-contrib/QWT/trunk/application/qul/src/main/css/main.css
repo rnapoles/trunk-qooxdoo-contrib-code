@@ -1,0 +1,7 @@
+abc {
+  label : "hello";
+}
+xyz {
+  label : "abc";
+  left : 1;
+}

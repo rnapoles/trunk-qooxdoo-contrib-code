@@ -87,6 +87,11 @@
       <artifactId>maven-invoker</artifactId>
       <version>2.0.7</version><!-- TODO: 2.0.8 is not yet available --> 
     </dependency>
+    <dependency>
+      <groupId>net.sourceforge.cssparser</groupId>
+      <artifactId>cssparser</artifactId>
+      <version>0.9.4</version>
+    </dependency>
 
   </dependencies>
   <build>
