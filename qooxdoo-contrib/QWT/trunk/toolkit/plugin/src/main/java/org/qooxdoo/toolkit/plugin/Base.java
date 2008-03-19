@@ -38,16 +38,6 @@ import org.xml.sax.SAXException;
 public abstract class Base extends AbstractMojo {
     protected final IO io = new IO();
     
-    
-        
-    /**
-     * TODO: Internal parameter to work-around http://jira.codehaus.org/browse/MPLUGIN-31 
-     * @parameter expression="foo"
-     * @required
-     * @readonly
-     */
-    private String workaround;
-
     public void execute() throws MojoExecutionException {
         try {
             doExecute();
