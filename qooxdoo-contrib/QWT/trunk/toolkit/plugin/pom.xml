@@ -125,7 +125,6 @@
                   <classpath>
                     <path refid="maven.compile.classpath" />                  
                   </classpath>
-                  <arg value="-lst"/>
                   <arg value="-d"/>
                   <arg path="${basedir}/target/classes" />
                   <arg line="${mapper}"/>
