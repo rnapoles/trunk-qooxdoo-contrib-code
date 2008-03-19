@@ -290,7 +290,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       else
       {
         /* Undo changes by applying the corresponding command */
-        return this.__commandManager.execute(undoInfo.command, undoInfo.parameter);        
+        return this.__commandManager.execute(undoInfo.command, undoInfo.value);
       }
     },
 
