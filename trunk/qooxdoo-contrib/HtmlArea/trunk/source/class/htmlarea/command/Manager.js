@@ -416,7 +416,13 @@ qx.Class.define("htmlarea.command.Manager",
        }
        else
        {
+         /* Body element must have focus before executing command */
+         this.__doc.body.focus();
+
          ret = this.__doc.execCommand(commandObject.identifier, false, value);
+
+         /* (re)-focus the editor after the execCommand */
+         this.__focusAfterExecCommand();
        }
 
        return ret;
