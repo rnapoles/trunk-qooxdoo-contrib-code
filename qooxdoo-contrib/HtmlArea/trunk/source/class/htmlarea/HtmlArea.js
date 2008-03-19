@@ -531,7 +531,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
         html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
-        meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>',
+        meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />',
         style   : 'html { width:100%; height:100%; margin:0px; padding:5px; overflow-y: auto; } body { background-color:transparent; overflow:show; background-image:none; margin:0px; padding:0px; padding-right: 5px; }',
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
@@ -1562,8 +1562,11 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       this.base(arguments);
 
-      // we need to set the designMode every time we toggle visibility back to "visible"
-      this.__setDesignMode(true);
+      if (qx.core.Client.getInstance().isGecko())
+      {
+        // we need to set the designMode every time we toggle visibility back to "visible"
+        this.__setDesignMode(true);
+      }
     },
 
 
