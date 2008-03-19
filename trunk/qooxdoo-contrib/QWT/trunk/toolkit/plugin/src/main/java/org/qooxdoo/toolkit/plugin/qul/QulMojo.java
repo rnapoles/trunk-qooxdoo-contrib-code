@@ -32,6 +32,7 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.Base;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
+import org.qooxdoo.toolkit.plugin.qul.css.Parser;
 import org.xml.sax.SAXException;
 
 /**
@@ -52,6 +53,18 @@ public class QulMojo extends Base {
     
     public void setSrc(String path) {
         src = io.node(path);
+    }
+
+    /**
+     * Css file.
+     * 
+     * @parameter expression="${basedir}/src/main/css/main.css"
+     * @required
+     */
+    private Node css;
+    
+    public void setCss(String path) {
+        css = io.node(path);
     }
 
     /**
@@ -79,9 +92,10 @@ public class QulMojo extends Base {
         Set doctree;
         Loader loader;
         Node out;
-
+        
         doctree = loadDoctree();
         loader = Loader.create(io, doctree);
+        info("style:\n" + Parser.load(css).toString());
         for (Node in : src.find("**/*.qul")) {
             out = dest.join(in.getRelative(src).replace(".qul", ".java")); 
             info("qul: " + in + " -> " + out);
