@@ -8,17 +8,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <version>2-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.eclipse</groupId>
-  <artifactId>base</artifactId>
-  <version>3.2.2</version>
-  <packaging>jar</packaging>
-  <name>Eclipse Base</name>
- 
-  <scm>
-    <connection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/eclipse</connection>
-    <developerConnection>scm:svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/eclipse</developerConnection>
-    <url>http://qooxdoo-contrib.svn.sourceforge.net/viewvc/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk/eclipse</url>
-  </scm>
+  <groupId>org.qooxdoo</groupId>
+  <artifactId>libs</artifactId>
+  <version>${toolkit.version}</version>
+  <packaging>pom</packaging>
+  <name>External Libraries</name>
  
   <dependencies>
     <dependency>
@@ -41,6 +35,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <artifactId>maven-install-plugin</artifactId>
         <executions>
           <execution>
+            <id>eclipse</id>
+            <phase>install</phase>
+            <goals><goal>install-file</goal></goals>
+            <configuration>
+              <file>${basedir}/org.eclipse-base-3.2.2.jar</file>
+              <groupId>org.eclipse</groupId>
+              <artifactId>base</artifactId>
+              <version>3.2.2</version>
+              <generatorPom>true</generatorPom>
+              <packaging>jar</packaging>
+            </configuration>
+          </execution>
+           <execution>
+            <id>mork</id>
             <phase>install</phase>
             <goals><goal>install-file</goal></goals>
             <configuration>
@@ -50,26 +58,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
               <version>0.6</version>
               <generatorPom>true</generatorPom>
               <packaging>jar</packaging>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals><goal>run</goal></goals>
-            <configuration>
-              <tasks>
-                <!-- overwriting the maven-generated jar with the pre-build-jar in the 
-                     package phase failed when executed as part of a multi-module build.
-                     So I pretend it's resources: -->
-                <unzip src="${basedir}/${pom.groupId}-${pom.artifactId}-${pom.version}.jar"
-                       dest="${project.build.directory}/classes">
-                </unzip>
-              </tasks>
             </configuration>
           </execution>
         </executions>
