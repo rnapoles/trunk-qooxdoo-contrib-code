@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.Base;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
-import org.qooxdoo.toolkit.plugin.qul.css.Parser;
+import org.qooxdoo.toolkit.plugin.qul.css.Css;
 import org.xml.sax.SAXException;
 
 /**
@@ -95,7 +95,7 @@ public class QulMojo extends Base {
         
         doctree = loadDoctree();
         loader = Loader.create(io, doctree);
-        info("style:\n" + Parser.load(css).toString());
+        info("style:\n" + Css.load(css).toString());
         for (Node in : src.find("**/*.qul")) {
             out = dest.join(in.getRelative(src).replace(".qul", ".java")); 
             info("qul: " + in + " -> " + out);

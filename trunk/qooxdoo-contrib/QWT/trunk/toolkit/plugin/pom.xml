@@ -88,11 +88,10 @@
       <version>2.0.7</version><!-- TODO: 2.0.8 is not yet available --> 
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.cssparser</groupId>
-      <artifactId>cssparser</artifactId>
-      <version>0.9.4</version>
+      <groupId>de.mlhartme.mork</groupId>
+      <artifactId>core</artifactId>
+      <version>0.6</version>
     </dependency>
-
   </dependencies>
   <build>
     <plugins>
@@ -113,6 +112,30 @@
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <execution>
+            <id>mork</id>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <fileset id="mapper" dir="${basedir}">
+                   <include name="src/main/java/**/*.map"/>
+                </fileset>
+                <pathconvert property="mapper" refid="mapper" pathsep=" "/>
+                <java classname="de.mlhartme.mork.compiler.Main" failonerror="true">
+                  <classpath>
+                    <path refid="maven.compile.classpath" />                  
+                  </classpath>
+                  <arg value="-lst"/>
+                  <arg value="-d"/>
+                  <arg path="${basedir}/target/classes" />
+                  <arg line="${mapper}"/>
+                </java>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
           <execution>
             <id>skel</id>
             <phase>compile</phase>
