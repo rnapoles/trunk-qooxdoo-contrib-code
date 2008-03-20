@@ -628,27 +628,23 @@ qx.Class.define("htmlarea.HtmlArea",
       // first we try to get the document
       if (!doc)
       {
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug('document:' + this.__doc);
-        }
+        this.__loadCounter++;
 
-        if (this.__loadCounter >= 5) {
-          this.__loadCounter = 0;
-
+        if (this.__loadCounter > 5)
+        {
           this.error('cant load HtmlArea. Document is not available. ' + doc, exc);
           this.createDispatchDataEvent("loadingError", exc);
         }
 
-        this.__loadCounter++;
+        //if (qx.core.Variant.isSet("qx.debug", "on")) {
+          this.debug('document not available, try again...');
+        //}
 
         var self = this;
-        window.setTimeout(function() {
-          //if (qx.core.Variant.isSet("qx.debug", "on")) {
-            self.debug('document not available, try again...');
-          //}
-
+        window.setTimeout( function ()
+        {
           self.__waitForDocumentReady(handler);
-        },0);
+        }, 0);
       }
 
       // reset counter, now we try to open the document
@@ -682,8 +678,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
         if (this.__loadCounter > 5)
         {
-          this.__loadCounter = 0;
-
           this.error("document cant opened", exc);
           this.createDispatchDataEvent("loadingError", exc);
         }
