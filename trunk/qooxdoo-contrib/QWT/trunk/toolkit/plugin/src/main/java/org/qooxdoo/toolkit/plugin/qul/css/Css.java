@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.qul.Loader;
 
 import de.mlhartme.mork.mapping.Mapper;
 import de.mlhartme.mork.scanner.Position;
@@ -63,6 +65,20 @@ public class Css {
     
     public Css(Ruleset[] ruleset) {
         rules = new ArrayList<Ruleset>(Arrays.asList(ruleset));
+    }
+    
+    public void run(String element, Clazz clazz, String v, Loader dest) {
+        Ruleset ruleset;
+        
+        ruleset = null;
+        for (Ruleset r : rules) {
+            if (r.matches(element)) {
+                ruleset = r;
+            }
+        }
+        if (ruleset != null) {
+            ruleset.apply(clazz, v, dest);
+        }
     }
     
     @Override

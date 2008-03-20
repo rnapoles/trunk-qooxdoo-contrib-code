@@ -25,4 +25,8 @@ public class Selector {
     public Selector(String element) {
         this.element = element;
     }
+    
+    public boolean matches(String element) {
+        return this.element.equals(element);
+    }
 }

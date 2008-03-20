@@ -92,15 +92,16 @@ public class QulMojo extends Base {
         Set doctree;
         Loader loader;
         Node out;
+        Css css;
         
         doctree = loadDoctree();
         loader = Loader.create(io, doctree);
-        info("style:\n" + Css.load(css).toString());
+        css = Css.load(this.css);
         for (Node in : src.find("**/*.qul")) {
             out = dest.join(in.getRelative(src).replace(".qul", ".java")); 
             info("qul: " + in + " -> " + out);
             out.getParent().mkdirsOpt();
-            loader.run(in, out, out.getParent().getRelative(dest).replace(File.separator, "."));
+            loader.run(in, out, out.getParent().getRelative(dest).replace(File.separator, "."), css);
         }
         project.addCompileSourceRoot(dest.getAbsolute());
     }
