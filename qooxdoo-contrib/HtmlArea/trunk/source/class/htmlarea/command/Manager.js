@@ -429,141 +429,156 @@ qx.Class.define("htmlarea.command.Manager",
      },
      
      
-     __insertHr : qx.core.Variant.select("qx.client",
+     /**
+      * Internal method to insert an horizontal ruler in the document
+      *
+      * @type member
+      * @param value {String} empty value
+      * @param commandObject {Object} command infos
+      * @return {Boolean} Success of operation
+      */
+     __insertHr : function(value, commandObject)
      {
+       var htmlText = "<hr />";
+  
+       /*
+        * Gecko needs some extra HTML elements to keep
+        * the current style setting after inserint the
+        * <hr> tag.
+        */
 
-       "gecko" : function(value, commandObject)
+       if (qx.core.Variant.isSet("qx.client", "gecko")) {
+         htmlText += this.__keepStyleAfterBlockElement();
+       }
+  
+       return this.__insertHtml(htmlText, commandObject);
+     },
+
+
+     /**
+      * Internal helper function which retrieves all style settings, which are set
+      * on the focus node and saves them on a span element.
+      *
+      * @type member
+      * @return {String} the span element.
+      */
+     __keepStyleAfterBlockElement : function()
+     {
+       /* Current selection */
+       var sel = this.__editorInstance.__getSelection();
+       
+       /* Get HTML element on which the selection has ended */
+       var elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
+
+       /*
+        * Name of styles, which apply on the element, will be saved here.
+        * font-size is stored here as default, because <font size="xy"> does not
+        * appear as style property.
+        */
+       var usedStyles = { "font-size" : true };
+       
+       /* This string will be build to save the style settings over the <hr> element. */
+       var styleSettings = '<span style="';
+  
+       /* Retrieve element's computed style. */
+       var decoration = window.getComputedStyle(elem, null);
+  
+       /* Get element's ancestors to fetch all style attributes, which apply on element. */
+       var parents = qx.dom.Hierarchy.getAncestors(elem);
+  
+       /* Helper vars */
+       var styleAttribute;
+       var styleValue;
+       var parentStyleValue;
+       var parentDecoration;
+       var i, j;
+       
+       /* These style properties have to be handled specially */
+       var specialStyles = {
+         "background-color" : "transparent",
+         "text-decoration"  : "none"
+       };
+  
+       /* 
+        * NOTE that element's own styles are read first!
+        * Afterwards, cycle through parents.
+        */
+       for(i=0; i<=parents.length; i++)
        {
-         /* Current selection */
-         var sel = this.__editorInstance.__getSelection();
-         
-         /* Selected node is a text node without style information, so select it's parent. */
-         var elem = sel.focusNode.parentNode;
+         /* Cycle though style properties */
+         for (j=0; j<=elem.style.length; j++)
+         {
+           styleAttribute = elem.style[j];
+           if (styleAttribute.length > 0)
+           {
+             /* We only need the names of the attributes */
+             usedStyles[styleAttribute] = true;
+           }
+         }
+         /* Set pointer to element's next parent. */
+         elem = parents[i];
+       }
+  
+       /* Cycle through saved style names and fetch computed value for each of it. */
+       for(style in usedStyles)
+       {
+         styleValue = decoration.getPropertyValue(style);
          
          /*
-          * Name of styles, which apply on the element, will be saved here.
-          * font-size is stored here as default, because <font size="xy"> does not
-          * appear as style property.
+          * For some style properties the element's parents properties
+          * have to be examined.
           */
-         var usedStyles = { "font-size" : true };
-         
-         /* This string will be build to save the style settings over the <hr> element. */
-         var styleSettings = "";
-
-         /* Retrieve element's computed style. */
-         var decoration = window.getComputedStyle(elem, null);
-
-         /* Get element's ancestors to fetch all style attributes, which apply on element. */
-         var parents = qx.dom.Hierarchy.getAncestors(elem);
-
-         /* Helper vars */
-         var styleAttribute;
-         var styleValue;
-         var parentStyleValue;
-         var parentDecoration;
-         var i, j;
-
-         /* 
-          * NOTE that element's own styles are read first!
-          * Afterwards, cycle through parents.
-          */
-         for(i=0; i<=parents.length; i++)
-         {
-           /* Cycle though style properties */
-           for (j=0; j<=elem.style.length; j++)
-           {
-             styleAttribute = elem.style[j];
-             if (styleAttribute.length > 0)
-             {
-               /* We only need the names of the attributes */
-               usedStyles[styleAttribute] = true;
-             }
-           }
-           /* Set pointer to element's next parent. */
-           elem = parents[i];
+         if( specialStyles[style] && (specialStyles[style] == styleValue) ){
+           styleValue = this.__getSpecialStyle(parents, style, styleValue);
          }
 
-         /* Cycle through saved style names and fetch computed value for each of it. */
-         for(style in usedStyles)
-         {
-           styleValue = decoration.getPropertyValue(style);
-           
-           /*
-            * Elements inside a parent element with a background color, automatically get a
-            * "transparent" background color. We can not use this information and have to
-            * find the background color of it's parent, since we need the color value.
-            */
-           if ( (style == "background-color") && (styleValue == "transparent") )
-           {
-             /* Cycle through parents */
-             for(i=0; i<parents.length; i++)
-             {
-               elem = parents[i];
-
-               /* Retrieve computed style*/
-               parentDecoration = window.getComputedStyle(elem, null);
-               parentStyleValue = parentDecoration.getPropertyValue(style);
-
-               /* Check background color for color information */
-               if(parentStyleValue != "transparent")
-               {
-                 /* Use parent's background color */
-                 styleSettings += style + ":" + parentStyleValue + "; ";
-
-                 /* Stop here, because only the value of the nearest parent is applied on element. */
-                 break ;
-               }
-             }
-           }else{
-             /* Store style settings */
-             styleSettings += style + ":" + styleValue + "; ";
-           }
-         }
-
-         return this.__insertHtml('<hr /><span style="' + styleSettings + '">', commandObject);
-       },
-
-       "default" : function(value, commandObject)
-       {
-         return this.__insertHtml("<hr />", commandObject);
+         /* Store style settings */
+         styleSettings += style + ":" + styleValue + "; ";
        }
-     }),
-     
-     /**
-      * ONLY IE
-      * Inserts a simple linebreak ('<br>') at the current position.
-      * 
-      * @type member
-      * @return {Boolean} Returns true if an br element is inserted
-      */
-     __insertBrOnLinebreak : qx.core.Variant.select("qx.client", 
-     {
-       "mshtml" : function()
-       {
-         var rng = this.__editorInstance.getRange();
-         var parentElement = rng.parentElement().nodeName.toLowerCase();
-         
-         /* 
-          * Only insert the "br" element if we are currently NOT inside a list.
-          * If we are return "false" to let the browser handle this (event is not stopped).
-          */
-         if (parentElement != "li")
-         {
-           rng.pasteHTML(htmlarea.HtmlArea.simpleLinebreak);
-           rng.collapse(false);
-           rng.select();
-           
-           return true;
-         }
-                
-         return false;
-       },
+
+       styleSettings += '">';
        
-       "default" : function()
+       return styleSettings;
+     },
+
+
+     /**
+      * Helper function which walks over all given parent
+      * elements and compares the computed value of the selected
+      * style property with the given one.
+      * 
+      * Returns the computed value of a parent element 
+      * if it differs in the given on (that means, that the value is usable).
+      *
+      * @type member
+      * @param value {Array} List with element's parents.
+      * @param value {String} Style property name.
+      * @param value {String} Style value, which can not be used.
+      * @return {String} Computed value. 
+      */
+     __getSpecialStyle : function(parents, styleName, invalidValue)
+     {
+       var elem, parentDecoration, parentStyleValue;
+       var styleSettings = "";
+
+       /* Cycle through parents */
+       for(var i=0; i<parents.length; i++)
        {
-         return false;
+         elem = parents[i];
+
+         /* Retrieve computed style*/
+         parentDecoration = window.getComputedStyle(elem, null);
+         parentStyleValue = parentDecoration.getPropertyValue(styleName);
+
+         /* Check if computed value is valid */
+         if (parentStyleValue != invalidValue)
+         {
+           /* Return computed value */
+           return parentStyleValue;
+         }
+
        }
-     }),
+     },
 
 
      /**
