@@ -37,6 +37,7 @@ import org.qooxdoo.toolkit.plugin.binding.java.Field;
 import org.qooxdoo.toolkit.plugin.binding.java.Method;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
 import org.qooxdoo.toolkit.plugin.binding.java.Type;
+import org.qooxdoo.toolkit.plugin.qul.css.Css;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -54,6 +55,7 @@ public class Loader extends DefaultHandler {
     private Writer output;
     private int var;
     private List<String> stack;
+    private Css css;
     
     public static Loader create(IO io, Set doctree) {
         try {
@@ -72,10 +74,11 @@ public class Loader extends DefaultHandler {
         this.stack = new ArrayList<String>();
     }
 
-    public void run(Node src, Node dest, String pkg) throws IOException {
+    public void run(Node src, Node dest, String pkg, Css css) throws IOException {
         InputStream stream;
 
         stream = src.createInputStream();
+        this.css = css;
         run(new InputSource(stream), dest.createWriter(), pkg, dest.getName().replace(".java", ""));
         output.close();
         stream.close();
@@ -114,34 +117,36 @@ public class Loader extends DefaultHandler {
         String fullName;
         
         check(uri, localName);
-        clazz = doctree.getSimple(qName);
+        clazz = doctree.getSimple(qName.replace('_', '.'));
         fullName = clazz.getFullName();
         if (stack.size() == 0) {
             head(fullName);
         }
         v = var();
         line(fullName, " ", v, " = new ", fullName, "();");
-        attributes(attrs, v, clazz);
+        if (css != null) {
+            css.run(qName, clazz, v, this);
+        }
+        for (int i = 0, max = attrs.getLength(); i < max; i++) {
+            setter(clazz, v, attrs.getQName(i), attrs.getValue(i));
+        }
         stack.add(v);
     }
     
-    private void attributes(Attributes attrs, String v, Clazz clazz) {
-        String name;
+    public void setter(Clazz clazz, String v, String name, String value) {
         String methodName;
         Type type;
         
-        for (int i = 0, max = attrs.getLength(); i < max; i++) {
-            name = attrs.getQName(i);
-            methodName = "set" + Strings.capitalize(name);
-            type = lookup(clazz, name, methodName);
-            if (type == null) {
-                throw new RuntimeException("unkown property: " + name);
-            }
-            // TODO: property types
-            line(v, ".", methodName, "(", quote(attrs.getValue(i)), ");");
+        methodName = "set" + Strings.capitalize(name);
+        type = lookup(clazz, name, methodName);
+        if (type == null) {
+            throw new RuntimeException("unkown property: " + name);
         }
+        // TODO: property types
+        line(v, ".", methodName, "(", quote(value), ");");
+        
     }
-    
+
     private Type lookup(Clazz clazz, String name, String methodName) {
         Field field;
         Method method;

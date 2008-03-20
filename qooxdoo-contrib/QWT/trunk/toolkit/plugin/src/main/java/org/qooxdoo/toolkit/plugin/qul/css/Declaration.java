@@ -19,6 +19,9 @@
 
 package org.qooxdoo.toolkit.plugin.qul.css;
 
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.qul.Loader;
+
 public class Declaration {
     private final String property;
     private final String expr;
@@ -26,5 +29,9 @@ public class Declaration {
     public Declaration(String property, String expr) {
         this.property = property;
         this.expr = expr;
+    }
+    
+    public void apply(Clazz clazz, String v, Loader dest) {
+        dest.setter(clazz, v, property, expr);
     }
 }

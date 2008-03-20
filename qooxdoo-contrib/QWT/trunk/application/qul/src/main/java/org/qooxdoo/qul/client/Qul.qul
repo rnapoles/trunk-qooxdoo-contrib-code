@@ -1,4 +1,4 @@
 <HorizontalBoxLayout>
-  <form.Button label="First"/>
-  <form.Button label="Second"/>
+  <form_Button label="First"/>
+  <form_Button label="Second"/>
 </HorizontalBoxLayout>

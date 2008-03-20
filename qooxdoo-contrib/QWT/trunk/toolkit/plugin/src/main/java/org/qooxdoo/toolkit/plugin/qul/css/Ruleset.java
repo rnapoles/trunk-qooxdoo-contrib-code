@@ -19,6 +19,9 @@
 
 package org.qooxdoo.toolkit.plugin.qul.css;
 
+import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
+import org.qooxdoo.toolkit.plugin.qul.Loader;
+
 public class Ruleset {
     private final Selector[] selectors;
     private final Declaration[] declarations;
@@ -26,5 +29,20 @@ public class Ruleset {
     public Ruleset(Selector[] selectors, Declaration[] declarations) {
         this.selectors = selectors;
         this.declarations = declarations;
+    }
+    
+    public boolean matches(String element) {
+        for (Selector selector : selectors) {
+            if (selector.matches(element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void apply(Clazz clazz, String v, Loader dest) {
+        for (Declaration declaration : declarations) {
+            declaration.apply(clazz, v, dest);
+        }
     }
 }

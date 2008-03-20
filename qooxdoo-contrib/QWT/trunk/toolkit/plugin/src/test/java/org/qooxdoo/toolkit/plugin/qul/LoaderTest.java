@@ -74,7 +74,7 @@ public class LoaderTest {
         
         loader = Loader.create(io, doctree);
         result = io.stringNode("");
-        loader.run(io.stringNode(xml), result, null);
+        loader.run(io.stringNode(xml), result, null, null);
         assertEquals(HEAD + java + TAIL, result.readString());
     }
 }

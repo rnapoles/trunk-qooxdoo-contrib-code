@@ -184,6 +184,7 @@ public class RunMojo extends WebappBase {
         long modified;
         
         files = io.getWorking().find("src/main/java/**/*.qul");
+        files.addAll(io.getWorking().find("src/main/**/*.css"));
         started = Long.MIN_VALUE;
         for (Node file : files) {
             info("watching " + file);
