@@ -639,26 +639,41 @@ qx.Class.define("htmlarea.HtmlArea",
           this.createDispatchDataEvent("loadingError", exc);
         }
 
+        this.__loadCounter++;
+
         var self = this;
         window.setTimeout(function() {
           //if (qx.core.Variant.isSet("qx.debug", "on")) {
             self.debug('document not available, try again...');
           //}
 
-          self.__loadCounter++;
           self.__waitForDocumentReady(handler);
         },0);
       }
 
       // reset counter, now we try to open the document
       this.__loadCounter = 0;
+      this.__waitForDocumentCanOpened(handler);
+    },
 
-      try {
+
+    /**
+     * should be removed if someone find a better way to ensure that the document
+     * can opened in IE6
+     * 
+     * @type member
+     * @param handler {Object}
+     * @return {void}
+     */
+    __waitForDocumentCanOpened : function (handler)
+    {
+      var doc = this.getContentDocument();
+
+      try
+      {
         doc.open();
         doc.close();
 
-        this.__loadCounter = 0;
-        
         handler.call(this);
       }
       catch (exc)
@@ -681,11 +696,12 @@ qx.Class.define("htmlarea.HtmlArea",
           var self = this;
           window.setTimeout( function()
           {
-            self.__waitForDocumentReady(handler);
+            self.__waitForDocumentCanOpened(handler);
           }, 0);
         }
       }
     },
+
 
     /**
      * Is executed when event "load" is fired
