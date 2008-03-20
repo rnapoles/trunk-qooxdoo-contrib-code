@@ -43,7 +43,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
               <groupId>org.eclipse</groupId>
               <artifactId>base</artifactId>
               <version>3.2.2</version>
-              <generatorPom>true</generatorPom>
+              <generatePom>true</generatePom>
               <packaging>jar</packaging>
             </configuration>
           </execution>
@@ -56,7 +56,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
               <groupId>de.mlhartme.mork</groupId>
               <artifactId>core</artifactId>
               <version>0.6</version>
-              <generatorPom>true</generatorPom>
+              <generatePom>true</generatePom>
               <packaging>jar</packaging>
             </configuration>
           </execution>
