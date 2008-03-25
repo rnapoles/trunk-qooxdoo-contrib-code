@@ -50,7 +50,7 @@ public class ResourceNode extends Node {
     }
 
     @Override 
-    public long lastModified() {
+    public long getLastModified() {
         return 0;
     }
     

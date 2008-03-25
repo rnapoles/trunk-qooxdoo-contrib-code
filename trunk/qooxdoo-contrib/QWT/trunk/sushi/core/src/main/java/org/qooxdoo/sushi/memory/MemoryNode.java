@@ -101,7 +101,7 @@ public class MemoryNode extends Node {
     }
     
     @Override 
-    public long lastModified() {
+    public long getLastModified() {
         return lastModified;
     }
     

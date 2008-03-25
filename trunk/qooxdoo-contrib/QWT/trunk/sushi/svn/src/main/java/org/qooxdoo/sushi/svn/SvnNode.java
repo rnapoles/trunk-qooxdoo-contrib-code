@@ -355,7 +355,7 @@ public class SvnNode extends Node {
     }
 
     @Override
-    public long lastModified() throws LastModifiedException {
+    public long getLastModified() throws LastModifiedException {
         try {
             return repository.info(path, -1).getDate().getTime();
         } catch (SVNException e) {

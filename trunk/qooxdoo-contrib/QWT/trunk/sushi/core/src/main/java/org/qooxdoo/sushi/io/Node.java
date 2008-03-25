@@ -87,7 +87,7 @@ public abstract class Node {
     public abstract boolean isFile() throws ExistsException;
     public abstract boolean isDirectory() throws ExistsException;
     
-    public abstract long lastModified() throws LastModifiedException;
+    public abstract long getLastModified() throws LastModifiedException;
     public abstract void setLastModified(long millis) throws SetLastModifiedException;
     
     //-- path functionality
