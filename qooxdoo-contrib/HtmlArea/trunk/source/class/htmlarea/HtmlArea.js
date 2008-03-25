@@ -724,9 +724,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
     _onDocumentIsReady : function ()
     {
-      /* Setting a shortcut for the content document */
-      var doc = this.getContentDocument();
-
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
        * ******************************************* */
@@ -799,7 +796,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
 
       /* Inform the commandManager on which document he should operate */
-      cm.setContentDocument(doc);
+      cm.setContentDocument(this.getContentDocument());
 
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
