@@ -120,7 +120,8 @@ public class BindingMojo extends FrameworkBase {
         OutputStream dest;
         Program p;
         
-        if (!all && doctree.isFile() && output.isFile() && isFrameworkOlder(Math.min(doctree.getLastModified(), output.getLastModified()))) {
+        if (!all && doctree.isFile() && output.isFile() 
+                && isFrameworkOlder(Math.min(doctree.getLastModified(), output.getLastModified()))) {
             info(doctree + " and " + output + " up-to-date, generation skipped.");
         } else {
             frameworkDir.checkDirectory();
