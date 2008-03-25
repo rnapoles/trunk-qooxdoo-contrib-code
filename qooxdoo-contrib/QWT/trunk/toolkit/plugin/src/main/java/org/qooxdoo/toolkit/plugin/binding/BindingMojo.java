@@ -120,7 +120,7 @@ public class BindingMojo extends FrameworkBase {
         OutputStream dest;
         Program p;
         
-        if (!all && doctree.isFile() && output.isFile() && isFrameworkOlder(Math.min(doctree.lastModified(), output.lastModified()))) {
+        if (!all && doctree.isFile() && output.isFile() && isFrameworkOlder(Math.min(doctree.getLastModified(), output.getLastModified()))) {
             info(doctree + " and " + output + " up-to-date, generation skipped.");
         } else {
             frameworkDir.checkDirectory();
@@ -147,7 +147,7 @@ public class BindingMojo extends FrameworkBase {
     private boolean isFrameworkOlder(long modified) throws IOException {
         debug("check modified");
         for (Node node : frameworkDir.join(CLASS).find("**/*.js")) {
-            if (modified <= node.lastModified()) {
+            if (modified <= node.getLastModified()) {
                 debug("modified: " + node);
                 return false;
             }

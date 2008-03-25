@@ -160,7 +160,7 @@ public class Client implements ClientMBean {
     }
     
     public Date getCreated() {
-        return new Date(index.lastModified());
+        return new Date(index.getLastModified());
     }
 
     public long getSize() {

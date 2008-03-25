@@ -41,7 +41,7 @@ public class Resource {
     }
 
     public long getLastModified() throws LastModifiedException {
-        return normal.lastModified();
+        return normal.getLastModified();
     }
     
     public void copy(Buffer buffer, boolean compress, HttpServletResponse dest) throws IOException {
@@ -53,7 +53,7 @@ public class Resource {
         } else {
             node = normal;
         }
-        dest.setDateHeader("Last-Modified", node.lastModified());
+        dest.setDateHeader("Last-Modified", node.getLastModified());
         dest.setContentType(type.code);
         copy(buffer, node, dest.getOutputStream());
         // do not flush/close dest: response would be committed
