@@ -89,7 +89,7 @@ public class ConsoleNode extends Node {
     }
 
     @Override
-    public long lastModified() {
+    public long getLastModified() {
         return System.currentTimeMillis();
     }
 

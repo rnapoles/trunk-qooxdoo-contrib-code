@@ -195,7 +195,7 @@ public abstract class NodeTest {
         
         file = work.join("file");
         file.writeBytes();
-        sameTime(file.lastModified(), System.currentTimeMillis());
+        sameTime(file.getLastModified(), System.currentTimeMillis());
         modified = System.currentTimeMillis() - 1000 * 60 * 5;
         try {
             file.setLastModified(modified);
@@ -203,7 +203,7 @@ public abstract class NodeTest {
             // setLastModified is not supported - ignore
             return;
         }
-        sameTime(modified, file.lastModified());
+        sameTime(modified, file.getLastModified());
     }
     private static void sameTime(long left, long right) {
         if (Math.abs(left - right) > 2000) {
@@ -545,13 +545,13 @@ public abstract class NodeTest {
         Node node;
         
         node = work.join("foo").writeString("ab");
-        last = node.lastModified();
+        last = node.getLastModified();
         assertTrue(last <= System.currentTimeMillis());
         node.readString();
-        assertEquals(last, node.lastModified());
+        assertEquals(last, node.getLastModified());
         node.writeString("");
-        assertTrue(node.lastModified() >= last);
-        assertTrue(node.lastModified() <= System.currentTimeMillis());
+        assertTrue(node.getLastModified() >= last);
+        assertTrue(node.getLastModified() <= System.currentTimeMillis());
     }
     
     //-- Object methods

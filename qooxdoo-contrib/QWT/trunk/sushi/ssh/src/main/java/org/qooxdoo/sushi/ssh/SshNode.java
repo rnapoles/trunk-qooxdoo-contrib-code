@@ -189,7 +189,7 @@ public class SshNode extends Node {
     }
 
     @Override
-    public long lastModified() throws LastModifiedException {
+    public long getLastModified() throws LastModifiedException {
         try {
             return 1000L * channel.stat(slashPath).getMTime();
         } catch (SftpException e) {

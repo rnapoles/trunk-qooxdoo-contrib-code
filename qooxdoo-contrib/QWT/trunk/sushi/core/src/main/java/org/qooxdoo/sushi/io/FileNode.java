@@ -165,7 +165,7 @@ public class FileNode extends Node {
     }
 
     @Override
-    public long lastModified() {
+    public long getLastModified() {
         return file.lastModified();
     }
     
