@@ -188,7 +188,7 @@ public class RunMojo extends WebappBase {
         started = Long.MIN_VALUE;
         for (Node file : files) {
             info("watching " + file);
-            started = Math.max(started, file.lastModified());
+            started = Math.max(started, file.getLastModified());
         }
         try {
             while (true) {
@@ -196,7 +196,7 @@ public class RunMojo extends WebappBase {
                 
                 modified = Long.MIN_VALUE;
                 for (Node file : files) {
-                    modified = Math.max(modified, file.lastModified());
+                    modified = Math.max(modified, file.getLastModified());
                 }
                 if (modified > started) {
                     started = modified;
@@ -232,7 +232,7 @@ public class RunMojo extends WebappBase {
             try {
                 modified = Long.MIN_VALUE;
                 for (Node file : classes.find("**/*.class")) {
-                    modified = Math.max(modified, file.lastModified());
+                    modified = Math.max(modified, file.getLastModified());
                 }
                 if (modified > started) {
                     started = modified;
