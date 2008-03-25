@@ -49,7 +49,7 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isEditable = false;
     this.__isReady = false;
 
-		this.__firstLineSelected = false;
+    this.__firstLineSelected = false;
 
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
@@ -88,8 +88,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * at the editor instance. This is the point to which the qooxdoo key event handler
      * dispatches all his events.
      */
-    this.addEventListener("keyup", this._handleKeyUp, this);
-    this.addEventListener("keydown", this._handleKeyDown, this);
+    this.addEventListener("keyup",    this._handleKeyUp,    this);
+    this.addEventListener("keydown",  this._handleKeyDown,  this);
     this.addEventListener("keypress", this._handleKeyPress, this);
 
     if (qx.core.Variant.isSet("qx.client", "mshtml"))
@@ -530,7 +530,7 @@ qx.Class.define("htmlarea.HtmlArea",
       "xhtml" :
       {
         doctype : '<!' + 'DOCTYPE html PUBLIC "-/' + '/W3C/' + '/DTD XHTML 1.0 Transitional/' + '/EN" "http:/' + '/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-        html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en">',
+        html    : '<html xmlns="http:/' + '/www.w3.org/1999/xhtml" xml:lang="en" lang="en"><title></title>',
         meta    : '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />',
         style   : 'html { width:100%; height:100%; margin:0px; padding:5px; overflow-y: auto; } body { background-color:transparent; overflow:show; background-image:none; margin:0px; padding:0px; padding-right: 5px; }',
         body    : '<body id="bodyElement">\n',
@@ -553,9 +553,11 @@ qx.Class.define("htmlarea.HtmlArea",
     setValue : function(value)
     {
        if (typeof value == "string")
-       {
+       { 
+         var doc = this.getContentDocument();
+
          this.__value = value;
-         this.__doc.body.innerHTML = value;
+         doc.body.innerHTML = value;
        }
     },
 
@@ -604,6 +606,21 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+    /**
+     * returns the body of the document
+     *
+     * @type member
+     * @return {Object}
+     */
+    getContentBody : function ()
+    {
+      if (this.__isReady)
+      {
+        return this.getContentDocument().body;
+      }
+    },
+
+
     /*
     ---------------------------------------------------------------------------
       INITIALIZATION
@@ -614,6 +631,20 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * overridden
+     * 
+     * @see qx.ui.core.Widget#_afterAppear
+     */
+    _afterAppear : function ()
+    {
+      this.base(arguments);
+
+      // we need to set the designMode every time we toggle visibility back to "visible"
+      this.__setDesignMode(true);
+    },
+
+
+    /**
      * should be removed if someone find a better way to ensure that the document
      * is ready in IE6
      * 
@@ -621,7 +652,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param handler {Object}
      * @return {void}
      */
-    __waitForDocumentReady : function (handler)
+    __waitForDocumentReady : function ()
     {
       var doc = this.getContentDocument();
 
@@ -635,64 +666,24 @@ qx.Class.define("htmlarea.HtmlArea",
           this.error('cant load HtmlArea. Document is not available. ' + doc, exc);
           this.createDispatchDataEvent("loadingError", exc);
         }
-
-        //if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug('document not available, try again...');
-        //}
-
-        var self = this;
-        window.setTimeout( function ()
-        {
-          self.__waitForDocumentReady(handler);
-        }, 0);
-      }
-
-      // reset counter, now we try to open the document
-      this.__loadCounter = 0;
-      this.__waitForDocumentCanOpened(handler);
-    },
-
-
-    /**
-     * should be removed if someone find a better way to ensure that the document
-     * can opened in IE6
-     * 
-     * @type member
-     * @param handler {Object}
-     * @return {void}
-     */
-    __waitForDocumentCanOpened : function (handler)
-    {
-      var doc = this.getContentDocument();
-
-      try
-      {
-        doc.open();
-        doc.close();
-
-        handler.call(this);
-      }
-      catch (exc)
-      {
-        this.__loadCounter++;
-
-        if (this.__loadCounter > 5)
-        {
-          this.error("document cant opened", exc);
-          this.createDispatchDataEvent("loadingError", exc);
-        }
         else
         {
-          //if (qx.core.Variant.isSet("qx.debug", "on")) {
-            this.debug("document cant opened, try again...");
-          //}
-
+          if (qx.core.Variant.isSet("qx.debug", "on")) {
+            this.debug('document not available, try again...');
+          }
+  
           var self = this;
-          window.setTimeout( function()
+          window.setTimeout( function ()
           {
-            self.__waitForDocumentCanOpened(handler);
+            self.__waitForDocumentReady();
           }, 0);
         }
+      }
+      else
+      {
+        // reset counter, now we try to open the document
+        this.__loadCounter = 0;
+        this._onDocumentIsReady();
       }
     },
 
@@ -723,7 +714,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         // sometimes IE does some strange things and the document is not available
         // so we wait for it
-        this.__waitForDocumentReady(this._onDocumentIsReady);
+        this.__waitForDocumentReady();
       }
       else
       {
@@ -734,7 +725,7 @@ qx.Class.define("htmlarea.HtmlArea",
     _onDocumentIsReady : function ()
     {
       /* Setting a shortcut for the content document */
-      this.__doc = this.getContentDocument();
+      var doc = this.getContentDocument();
 
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
@@ -748,9 +739,6 @@ qx.Class.define("htmlarea.HtmlArea",
       {
        cm = new htmlarea.command.UndoManager(cm, this);
       }
-
-      /* Inform the commandManager on which document he should operate */
-      cm.setContentDocument(this.__doc);
 
       /* Set the "isLoaded" flag */
       this.__isLoaded = true;
@@ -810,6 +798,9 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Look out for any queued commands which are execute BEFORE this commandManager was available */
       var commandStack = this.__commandManager.stackedCommands ?  this.__commandManager.commandStack : null;
 
+      /* Inform the commandManager on which document he should operate */
+      cm.setContentDocument(doc);
+
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
       {
@@ -823,7 +814,7 @@ qx.Class.define("htmlarea.HtmlArea",
       this.__commandManager = cm;
 
       /* dispatch the "ready" event at the end of the initialization */
-      this.dispatchEvent(new qx.event.type.Event("ready"), true);
+      this.createDispatchEvent("ready");
     },
 
 
@@ -879,6 +870,7 @@ qx.Class.define("htmlarea.HtmlArea",
     __getWrappedContent : function (value, useCurrentBodyStyle)
     {
       var value = (typeof value == "string") ? value : "";
+      var doc = this.getContentDocument();
 
       /**
        * To hide the horizontal scrollbars in gecko browsers set the "overflow-x" explicit to "hidden"
@@ -901,7 +893,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var body = "";
       if (useCurrentBodyStyle === true)
       {
-        body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(this.__doc.body)+'">');
+        body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(doc.body)+'">');
       }
 
       /* CORRECT IMPLEMENTATION */
@@ -924,17 +916,19 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (typeof value == "string")
       {
-         try
-         {
-           this.__doc.open(qx.util.Mime.HTML, true)
-           this.__doc.writeln(this.__getWrappedContent(value));
-           this.__doc.close();
-         }
-         catch (e)
-         {
-           this.error("cant open document on source '"+this.getSource()+"'", e);
-           this.createDispatchDataEvent("loadingError", e);
-         }
+        var doc = this.getContentDocument();
+
+        try
+        {
+          doc.open(qx.util.Mime.HTML, true);
+          doc.write(this.__getWrappedContent(value));
+          doc.close();
+        }
+        catch (e)
+        {
+          this.error("cant open document on source '"+this.getSource()+"'", e);
+          this.createDispatchDataEvent("loadingError", e);
+        }
       }
     },
 
@@ -947,15 +941,17 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __addEventListeners : function()
     {
+      var doc = this.getContentDocument();
+
       /*
        * IMPORTANT
        * route all key events directly to the KeyEventHandler to transform DOM events to full-featured qooxdoo events.
        * Doing so the editor has not to deal with DOM events anymore.
        */
 
-      qx.html.EventRegistration.addEventListener(this.__doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
-      qx.html.EventRegistration.addEventListener(this.__doc, "keyup", qx.event.handler.KeyEventHandler.getInstance().__onkeyupdown);
-      qx.html.EventRegistration.addEventListener(this.__doc, "keydown", qx.event.handler.KeyEventHandler.getInstance().__onkeyupdown);
+      qx.html.EventRegistration.addEventListener(doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
+      qx.html.EventRegistration.addEventListener(doc, "keyup",    qx.event.handler.KeyEventHandler.getInstance().__onkeyupdown);
+      qx.html.EventRegistration.addEventListener(doc, "keydown",  qx.event.handler.KeyEventHandler.getInstance().__onkeyupdown);
 
       /*
        * Register event handler for focus/blur events
@@ -964,18 +960,18 @@ qx.Class.define("htmlarea.HtmlArea",
        * Webkit is listening to the contentWindow and all others catch them at the document directly
        */
 
-      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? this.__doc.body :
-                            qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : this.__doc;
+      var focusBlurTarget = qx.core.Client.getInstance().isMshtml() ? doc.body :
+                            qx.core.Client.getInstance().isWebkit() ? this.getContentWindow() : doc;
 
       qx.html.EventRegistration.addEventListener(focusBlurTarget, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur", this.__handleFocusEvent);
+      qx.html.EventRegistration.addEventListener(focusBlurTarget, "blur",  this.__handleFocusEvent);
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
-      qx.html.EventRegistration.addEventListener(this.__doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
+      qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
-        qx.html.EventRegistration.addEventListener(this.__doc, "focusout", this.__handleFocusOut);
+        qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
       }
     },
 
@@ -1016,19 +1012,24 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __setDesignMode : function (onOrOff)
     {
-      this.__doc = this.getContentDocument();
+      var doc = this.getContentDocument();
 
       if (this.__isLoaded)
       {
         try
         {
-          // FF Bug (Backspace etc. doesnt work if we dont set it twice)
-          this.__doc.designMode = (onOrOff !== false) ? 'Off' : 'On';
-          this.__doc.designMode = (onOrOff !== false) ? 'On' : 'Off';
+          if (qx.core.Variant.isSet("qx.client", "gecko"))
+          {
+            // FF Bug (Backspace etc. doesnt work if we dont set it twice)
+            doc.designMode = (onOrOff !== false) ? 'Off' : 'On';
+          }
+
+          doc.designMode = (onOrOff !== false) ? 'On' : 'Off';
         }
         catch (e)
         {
           // Fails if the element is not shown actually
+          // we set it aggain in _afterAppear
         }
       }
     },
@@ -1052,11 +1053,16 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyEditable : function(propValue, propOldValue, propData)
     {
-      this.__doc = this.getContentDocument();
+      var doc = this.getContentDocument();
 
       if (this.__isLoaded)
       {
-        this.__doc.body.contentEditable = true;
+
+        if (qx.core.Variant.isSet("qx.client", "gecko"))
+        {
+          doc.body.contentEditable = true;
+        }
+
         this.__setDesignMode(true);
 
         /*
@@ -1077,7 +1083,7 @@ qx.Class.define("htmlarea.HtmlArea",
              * this command only works when the cursor is inside a paragraph. Then
              * it is needed to press the Enter key twice to get paragraphs.
              */
-            //this.__doc.execCommand("insertbronreturn", false, false);
+            //doc.execCommand("insertbronreturn", false, false);
           }
           catch(ex)
           {
@@ -1217,9 +1223,9 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var sel = this.__getSelection();
 
-				/* These keys can change the selection */
-				switch(keyIdentifier)
-				{
+        /* These keys can change the selection */
+        switch(keyIdentifier)
+        {
           case "left":
           case "right":
           case "up":
@@ -1228,10 +1234,9 @@ qx.Class.define("htmlarea.HtmlArea",
           case "pagedown":
           case "delete":
           case "end":
-          
-          /* Set flag indicating if first line is selected */
-          this.__firstLineSelected = (sel.focusNode == this.__doc.body.firstChild);
-          
+            var doc = this.getContentDocument();
+            /* Set flag indicating if first line is selected */
+            this.__firstLineSelected = (sel.focusNode == doc.body.firstChild);
           break;
         }
       }
@@ -1287,15 +1292,16 @@ qx.Class.define("htmlarea.HtmlArea",
      */
    _handleKeyPress : function(e)
    {
+      var doc = this.getContentDocument();
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
-/*
+      /*
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
       }
-*/
+      */
 
       switch(keyIdentifier)
       {
@@ -1366,7 +1372,7 @@ qx.Class.define("htmlarea.HtmlArea",
                  var sel    = this.__getSelection();
                  var rng    = this.__createRange(sel);
 
-                 var brNode = this.__doc.createElement("br");
+                 var brNode = doc.createElement("br");
                  rng.collapse(true);
                  rng.insertNode(brNode);
                  rng.collapse(true);
@@ -1414,7 +1420,7 @@ qx.Class.define("htmlarea.HtmlArea",
           break;
 
 
-				case "up" :
+        case "up" :
         /*
          * Firefox 2 needs some additional work to select the
          first line completely in case the selection is already
@@ -1430,7 +1436,7 @@ qx.Class.define("htmlarea.HtmlArea",
           var sel = this.__getSelection();
 
           /* First line is selected */
-          if(sel.focusNode == this.__doc.body.firstChild)
+          if(sel.focusNode == doc.body.firstChild)
           {
             /* Check if the first line has been (partly) selected before. */
             if(this.__firstLineSelected)
@@ -1468,10 +1474,10 @@ qx.Class.define("htmlarea.HtmlArea",
               if (isShiftPressed)
               {
                 /* Check if target position is not yet selected */
-                if ( (sel.focusOffset != 0) || (sel.focusNode != this.__doc.body.firstChild) )
+                if ( (sel.focusOffset != 0) || (sel.focusNode != doc.body.firstChild) )
                 {
                   /* Extend selection to first child at position 0. */
-                  sel.extend(this.__doc.body.firstChild, 0);
+                  sel.extend(doc.body.firstChild, 0);
                 }
               }
               else
@@ -1484,7 +1490,7 @@ qx.Class.define("htmlarea.HtmlArea",
                 sel.removeAllRanges();
 
                 /* Collapse at first character */
-                sel.collapse(this.__doc.body, 0);
+                sel.collapse(doc.body, 0);
               }
 
             }
@@ -1565,19 +1571,7 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
-    /**
-     * overridden
-     */
-    _afterAppear : function ()
-    {
-      this.base(arguments);
 
-      if (qx.core.Client.getInstance().isGecko())
-      {
-        // we need to set the designMode every time we toggle visibility back to "visible"
-        this.__setDesignMode(true);
-      }
-    },
 
 
     /**
@@ -1590,6 +1584,7 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       /* Current selection and range */
       var range     = this.getRange();
+      var doc       = this.getContentDocument();
 
       /* Delete any content which is currently selected */
       if (!range.collapsed)
@@ -1601,10 +1596,10 @@ qx.Class.define("htmlarea.HtmlArea",
        * SPECIAL CASE
        * The user is at the beginning of the document -> insert an empty text node
        */
-      if (range.startContainer == range.endContainer && range.startContainer == this.__doc.body &&
+      if (range.startContainer == range.endContainer && range.startContainer == doc.body &&
           !range.startOffset && !range.endOffset)
       {
-        range.selectNodeContents(this.__doc.body.insertBefore(this.__doc.createTextNode(" "), this.__doc.body.firstChild));
+        range.selectNodeContents(doc.body.insertBefore(doc.createTextNode(" "), doc.body.firstChild));
       }
 
       /*
@@ -1700,7 +1695,7 @@ qx.Class.define("htmlarea.HtmlArea",
         range.setEndAfter(end);
 
         /* Surround the current range with a paragraph element */
-        var paragraph = this.__doc.createElement("p");
+        var paragraph = doc.createElement("p");
         range.surroundContents(paragraph);
 
         /*
@@ -1710,7 +1705,7 @@ qx.Class.define("htmlarea.HtmlArea",
          */
         if (paragraph.childNodes.length > 0 && paragraph.lastChild.nodeName.toLowerCase() != "br")
         {
-          paragraph.appendChild(this.__doc.createElement("br"));
+          paragraph.appendChild(doc.createElement("br"));
         }
 
         /*
@@ -1720,9 +1715,9 @@ qx.Class.define("htmlarea.HtmlArea",
          */
         if (paragraph.parentNode.nextSibling == null)
         {
-          var newPara  = this.__doc.createElement("p");
-          var textNode = this.__doc.createTextNode(" ");
-          var brNode   = this.__doc.createElement("br");
+          var newPara  = doc.createElement("p");
+          var textNode = doc.createTextNode(" ");
+          var brNode   = doc.createElement("br");
           newPara.appendChild(textNode);
           newPara.appendChild(brNode);
 
@@ -2240,9 +2235,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     resetHtml : function()
     {
+      var doc = this.getContentDocument();
+
       /* clearing the editor */
-      while (this.__doc.body.firstChild) {
-        this.__doc.body.removeChild(this.__doc.body.firstChild);
+      while (doc.body.firstChild) {
+        doc.body.removeChild(doc.body.firstChild);
       }
 
       /*
@@ -2252,7 +2249,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * caret is not visible (-> cursor does not blink)
        */
       if (qx.core.Client.getInstance().isGecko()) {
-        this.__doc.body.innerHTML = "<p>&nbsp;</p>";
+        doc.body.innerHTML = "<p>&nbsp;</p>";
       }
 
       /*
@@ -2262,7 +2259,7 @@ qx.Class.define("htmlarea.HtmlArea",
       else if (qx.core.Client.getInstance().isWebkit())
       {
         var sel = this.__getSelection();
-        var rng = this.__doc.createRange();
+        var rng = doc.createRange();
 
         sel.addRange(rng);
       }
@@ -2277,11 +2274,13 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     getHtml : function()
     {
-      if (this.__doc == null) {
+      var doc = this.getContentDocument();
+
+      if (doc == null) {
         return null;
       }
 
-      return htmlarea.HtmlArea.__getHtml(this.__doc.body, false);
+      return htmlarea.HtmlArea.__getHtml(doc.body, false);
     },
 
     
@@ -2297,7 +2296,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       "mshtml" : function()
       {
-        return (this.__doc.body.innerHTML == "<P>&nbsp;</P>");
+        var doc = this.getContentDocument();
+        return (doc.body.innerHTML == "<P>&nbsp;</P>");
       },
 
       "default" : function()
@@ -2351,6 +2351,7 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
       this._processingExamineCursorContext = true;
+      var doc = this.getContentDocument();
 
 
       /*
@@ -2359,7 +2360,7 @@ qx.Class.define("htmlarea.HtmlArea",
         ----------
       */
       var focusNode      = this.getFocusNode();
-      var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : this.__doc.defaultView.getComputedStyle(focusNode, null);
+      var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : doc.defaultView.getComputedStyle(focusNode, null);
 
       /*
        * BOLD
@@ -2483,7 +2484,7 @@ qx.Class.define("htmlarea.HtmlArea",
     {
        "mshtml" : function()
        {
-         return this.__doc.selection;
+         return this.getContentDocument().selection;
        },
 
        "default" : function()
@@ -2579,22 +2580,25 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       "mshtml" : function(sel)
       {
+        var doc = this.getContentDocument();
+
         if (qx.util.Validation.isValid(sel))
         {
           try {
             return sel.createRange();
           } catch(ex) {
-            return this.__doc.createTextRange();
+            return doc.createTextRange();
           }
         }
         else
         {
-          return this.__doc.createTextRange();
+          return doc.createTextRange();
         }
        },
 
        "default" : function(sel)
        {
+         var doc = this.getContentDocument();
          this.setFocused(true);
 
          if (qx.util.Validation.isValid(sel))
@@ -2602,12 +2606,12 @@ qx.Class.define("htmlarea.HtmlArea",
            try {
              return sel.getRangeAt(0);
            } catch(ex) {
-             return this.__doc.createRange();
+             return doc.createRange();
            }
          }
          else
          {
-           return this.__doc.createRange();
+           return doc.createRange();
          }
        }
     }),
@@ -2650,7 +2654,7 @@ qx.Class.define("htmlarea.HtmlArea",
              return rng.item(0);
 
            default:
-             return this.__doc.body;
+             return this.getContentDocument().body;
          }
        },
 
@@ -2663,7 +2667,7 @@ qx.Class.define("htmlarea.HtmlArea",
            return sel.focusNode.parentNode;
          }
 
-         return this.__doc.body;
+         return this.getContentDocument().body;
        }
     })
   },
@@ -2690,26 +2694,28 @@ qx.Class.define("htmlarea.HtmlArea",
     /* TODO: complete disposing */
     try
     {
+      var doc = this.getContentDocument();
+
       // ************************************************************************
       //   WIDGET KEY EVENTS
       // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(this.__doc, "keydown", qx.event.handler.KeyEventHandler.getInstance().__onkeydown);
-      qx.html.EventRegistration.removeEventListener(this.__doc, "keyup", qx.event.handler.KeyEventHandler.getInstance().__onkeyup);
-      qx.html.EventRegistration.removeEventListener(this.__doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
+      qx.html.EventRegistration.removeEventListener(doc, "keydown",  qx.event.handler.KeyEventHandler.getInstance().__onkeydown);
+      qx.html.EventRegistration.removeEventListener(doc, "keyup",    qx.event.handler.KeyEventHandler.getInstance().__onkeyup);
+      qx.html.EventRegistration.removeEventListener(doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
 
       // ************************************************************************
       //   WIDGET FOCUS/BLUR EVENTS
       // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(this.__doc, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.removeEventListener(this.__doc, "blur", this.__handleFocusEvent);
+      qx.html.EventRegistration.removeEventListener(doc, "focus", this.__handleFocusEvent);
+      qx.html.EventRegistration.removeEventListener(doc, "blur",  this.__handleFocusEvent);
 
       // ************************************************************************
       //   WIDGET MOUSE EVENTS
       // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(this.__doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
+      qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
     }
     catch(ex) {}
 
-    this._disposeFields("__handleFocusEvent", "handleMouseEvent", "__doc", "__contentWrap");
+    this._disposeFields("__handleFocusEvent", "handleMouseEvent", "__contentWrap");
   }
 });
