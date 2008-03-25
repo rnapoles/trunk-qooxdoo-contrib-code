@@ -148,7 +148,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         if (qx.core.Client.getInstance().isMshtml() && command == "inserthtml")
         {
           /* Backup an existing id and add the undo info to the id attribute */
-          value = value.replace(/(id=)/, 'old_$1');
+          value = value.replace(/\s(id=['|"])/, 'old_$1');
           value = value.replace(/^(<[a-z]*)\s(.*)/, '$1 id="undo_' + this.__undoId + '" $2');
         }
         
