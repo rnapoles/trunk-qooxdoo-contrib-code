@@ -2,20 +2,20 @@
    <!--
      -- Iframe html content for Drag & Drop Java Applet
      -- for inclusion into qooxdoo applications (www.qooxdoo.org)
-     -- This is Public Domain, you can use, modify or distribute this 
+     -- This is Public Domain, you can use, modify or distribute this
      -- in any way you wish, but please report improvements to
      -- info@bibliograph.org
      -->
     <body>
-        <applet  
+        <applet
           name="uploadApplet"
-        	code="dndapplet/applet/DNDApplet" 
+        	code="dndapplet/applet/DNDApplet"
           archive="signed_dndapplet.jar"
           mayscript="true"
           scriptable="true"
-          type="application/x-java-applet" 
+          type="application/x-java-applet"
           width="100%" height="100%">
-            
+
           <param name="uploadPath"                      value="../../../backend/php/services/uploader.php">
           <param name="funcNameHandleError"             value="handleError">
           <param name="funcNameHandleStartUpload"       value="handleStartUpload">
@@ -23,14 +23,23 @@
           <param name="funcNameHandleEndUpload"         value="handleEndUpload">
           <param name="funcNameHandleStringMimeType"    value="handleStringMimeType">
           <param name="funcNameHandleUnknownMimeType"   value="handleUnkownMimeType">
-          
+
           <!-- the form will be displayed if the browser cannot display applets -->
-   	      <form enctype="multipart/form-data" action="../../../backend/php/services/uploader.php" method="post">
-  	        Datei: <input name="uploadfile" type="file" size="25"> <input type="submit" value="senden">
+   	      <form
+            name="uploadForm"
+            enctype="multipart/form-data"
+            action="../../../backend/php/services/uploader.php"
+            method="post">
+  	        <div style="font-size:small;font-family:Arial">
+              Select file to upload: <br/>
+              <input name="uploadfile" type="file" size="10"><br/>
+              <input type="submit" value="Send">
+              <input name="metadata" type="hidden">
+            </div>
   	      </form>
-          
+
        </applet>
-       
+
        <!-- handle drop data that is not a file -->
        <script>
         /**
@@ -41,7 +50,7 @@
          {
            window._container = container;
          }
-         
+
          /**
           * Gets the container object
           */
@@ -49,23 +58,25 @@
          {
            return window._container;
          }
-         
+
          /**
           * sets the prefix of the files to be uploaded
           * @param {String} prefix
           */
          function setPrefix( prefix )
          {
-           document.uploadApplet.setPrefix( prefix );
+           if (document.uploadApplet)
+            document.uploadApplet.setPrefix( prefix );
          }
-         
+
          /**
           * sets the username for basic http authentication
           * @param {String} prefix
           */
          function setUsername( username )
          {
-           document.uploadApplet.setUsername( username );
+           if (document.uploadApplet)
+            document.uploadApplet.setUsername( username );
          }
 
          /**
@@ -74,7 +85,8 @@
           */
          function setPassword( password )
          {
-           document.uploadApplet.setUsername( password );
+           if (document.uploadApplet)
+            document.uploadApplet.setUsername( password );
          }
 
          /**
@@ -85,44 +97,51 @@
           */
          function setMetadata( metadata )
          {
-           document.uploadApplet.setMetadata( metadata );
+           if (document.uploadApplet)
+           {
+             document.uploadApplet.setMetadata( metadata );
+           }
+           else
+           {
+             document.uploadForm.metadata.value = metadata;
+           }
          }
-         
+
          /**
           * called when upload starts with number of files to transmit
           * @param {int} number
           */
          function handleStartUpload ( number )
          {
-           getContainer().createDispatchDataEvent( "startUpload", number );  
+           getContainer().createDispatchDataEvent( "startUpload", number );
          }
-         
+
          /**
           * called when a file is uploaded
           * @param {String} filename
           */
          function handleCurrentUpload ( filename )
          {
-           getContainer().createDispatchDataEvent( "currentUpload", filename );  
+           getContainer().createDispatchDataEvent( "currentUpload", filename );
          }
-         
+
          /**
           * called when upload is finished
           */
          function handleEndUpload()
          {
-            getContainer().createDispatchDataEvent( "endUpload" );  
+            getContainer().createDispatchDataEvent( "endUpload" );
          }
-        
+
         /**
           * handle errors
           * @param {String} error message
           */
          function handleError( message )
          {
-           getContainer().createDispatchDataEvent( "error", message ); 
+           getContainer().createDispatchDataEvent( "error", message );
          }
-           
+
          /**
           * handle mime types that can be represented as a string
           * @param {Object} mimeType
@@ -133,9 +152,9 @@
            // make copies of passed data
            mimeType = "" + mimeType;
            string   = "" + string;
-           getContainer().createDispatchDataEvent( "dropStringMimeType", [mimeType,string] ); 
+           getContainer().createDispatchDataEvent( "dropStringMimeType", [mimeType,string] );
          }
-         
+
          /**
           * handle mime types that cannot be represented as string data
           * @param {Object} mimeType
@@ -143,7 +162,7 @@
           */
          function handleUnkownMimeType(mimeType,data)
          {
-           getContainer().createDispatchDataEvent( "dropUnknownMimeType", [mimeType,data] ); 
+           getContainer().createDispatchDataEvent( "dropUnknownMimeType", [mimeType,data] );
          }
        </script>
     </body>
