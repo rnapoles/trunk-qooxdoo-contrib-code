@@ -778,46 +778,6 @@ qx.Class.define("htmlarea.command.Manager",
          return this.__doc.execCommand("FontSize", false, value);
        }
 
-       
-
-     },
-     
-     /**
-      * Helper function which walks over all given parent
-      * elements and compares the computed value of the selected
-      * style property with the given one.
-      * 
-      * Returns the computed value of a parent element 
-      * if it differs in the given on (that means, that the value is usable).
-      *
-      * @type member
-      * @param value {Array} List with element's parents.
-      * @param value {String} Style property name.
-      * @param value {String} Style value, which can not be used.
-      * @return {String} Computed value. 
-      */
-     __getSpecialStyle : function(parents, styleName, invalidValue)
-     {
-       var elem, parentDecoration, parentStyleValue;
-       var styleSettings = "";
-
-       /* Cycle through parents */
-       for(var i=0; i<parents.length; i++)
-       {
-         elem = parents[i];
-
-         /* Retrieve computed style*/
-         parentDecoration = window.getComputedStyle(elem, null);
-         parentStyleValue = parentDecoration.getPropertyValue(styleName);
-
-         /* Check if computed value is valid */
-         if (parentStyleValue != invalidValue)
-         {
-           /* Return computed value */
-           return parentStyleValue;
-         }
-
-       }
      },
 
 
