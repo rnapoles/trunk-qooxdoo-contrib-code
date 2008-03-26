@@ -29,18 +29,20 @@
             name="uploadForm"
             enctype="multipart/form-data"
             action="../../../backend/php/services/uploader.php"
-            method="post">
+            method="post"
+            onSubmit="handleStartUpload(1);">
   	        <div style="font-size:small;font-family:Arial">
               Select file to upload: <br/>
               <input name="uploadfile" type="file" size="10"><br/>
               <input type="submit" value="Send">
               <input name="metadata" type="hidden">
+              <input name="isFormUpload" type="hidden" value="yes">
             </div>
   	      </form>
 
        </applet>
 
-       <!-- handle drop data that is not a file -->
+       <!-- scripts -->
        <script>
         /**
          * Sets the container object
@@ -65,7 +67,7 @@
           */
          function setPrefix( prefix )
          {
-           if (document.uploadApplet)
+           if (document.uploadApplet && document.uploadApplet.setPrefix )
             document.uploadApplet.setPrefix( prefix );
          }
 
@@ -75,7 +77,7 @@
           */
          function setUsername( username )
          {
-           if (document.uploadApplet)
+           if (document.uploadApplet && document.uploadApplet.setUsername )
             document.uploadApplet.setUsername( username );
          }
 
@@ -85,8 +87,8 @@
           */
          function setPassword( password )
          {
-           if (document.uploadApplet)
-            document.uploadApplet.setUsername( password );
+           if (document.uploadApplet && document.uploadApplet.setPassword )
+            document.uploadApplet.setPassword( password );
          }
 
          /**
@@ -97,7 +99,7 @@
           */
          function setMetadata( metadata )
          {
-           if (document.uploadApplet)
+           if (document.uploadApplet && document.uploadApplet.setMetadata )
            {
              document.uploadApplet.setMetadata( metadata );
            }
