@@ -51,6 +51,7 @@ qx.Class.define("htmlarea.command.Manager",
      * Possible values for the style property background-repeat
      */
     __backgroundRepeat : "repeat repeat-x repeat-y no-repeat"
+    
   },
 
   members :
@@ -80,6 +81,11 @@ qx.Class.define("htmlarea.command.Manager",
      * has to be stored in order to perform the desired execCommand correctly.
      */
     __currentRange    : null,
+
+    /**
+     * Computed pixel sizes for values size attribute in <font> tag
+     */
+    __fontSizeNames : [ 10, 12, 16, 18, 24, 32, 48 ],
 
 
     /**
@@ -155,7 +161,7 @@ qx.Class.define("htmlarea.command.Manager",
         strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null },
 
         fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
-        fontsize              : { useBuiltin : true, identifier : "FontSize", method : null },
+        fontsize              : { useBuiltin : false, identifier : "FontSize", method : "__setFontSize" },
 
         textcolor             : { useBuiltin : true, identifier : "ForeColor", method : null },
         textbackgroundcolor   : { useBuiltin : true, identifier : qx.core.Variant.isSet("qx.client", "gecko|opera") ? "Hilitecolor" : "BackColor", method : null },
@@ -427,8 +433,8 @@ qx.Class.define("htmlarea.command.Manager",
 
        return ret;
      },
-     
-     
+
+
      /**
       * Internal method to insert an horizontal ruler in the document
       *
@@ -542,6 +548,240 @@ qx.Class.define("htmlarea.command.Manager",
      },
 
 
+     /**
+      * Helper function which walks over all given parent
+      * elements and compares the computed value of the selected
+      * style property with the given one.
+      * 
+      * Returns the computed value of a parent element 
+      * if it differs in the given on (that means, that the value is usable).
+      *
+      * @type member
+      * @param value {Array} List with element's parents.
+      * @param value {String} Style property name.
+      * @param value {String} Style value, which can not be used.
+      * @return {String} Computed value. 
+      */
+     __getSpecialStyle : function(parents, styleName, invalidValue)
+     {
+       var elem, parentDecoration, parentStyleValue;
+       var styleSettings = "";
+
+       /* Cycle through parents */
+       for(var i=0; i<parents.length; i++)
+       {
+         elem = parents[i];
+
+         /* Retrieve computed style*/
+         parentDecoration = window.getComputedStyle(elem, null);
+         parentStyleValue = parentDecoration.getPropertyValue(styleName);
+
+         /* Check if computed value is valid */
+         if (parentStyleValue != invalidValue)
+         {
+           /* Return computed value */
+           return parentStyleValue;
+         }
+
+       }
+     },
+
+     /**
+      * Internal method to change the font size of the selection.
+      * Most of the code is used to change the size of the bullet points
+      * synchronous to it's content.
+      *
+      * @type member
+      * @param value {String} font size number (as used for <font> tags)
+      * @param commandObject {Object} command infos
+      * @return {Boolean} Success of operation
+      */
+     __setFontSize : function(value, commandObject)
+     {
+     
+       /* Current selection and range */
+       var sel = this.__editorInstance.__getSelection();
+
+       var rng = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
+           this.getCurrentRange() :
+           rng = sel.getRangeAt(0);
+       
+       /* <ol> or <ul> tags, which are selected, will be saved here */
+       var lists = [];
+
+       /* Flag indicating whether a whole <li> tag is selected  */
+       var listEntrySelected;
+       
+       /* Helper vars */
+       var listTypes = ["OL", "UL"];
+       var tmp, i, j, element;
+
+       /*
+        * At first the selection is examined to figure out
+        * a) whether several lists or
+        * b) one single <ol> or <li> tag is selected 
+        */
+
+       /* Fetch selected element node to examine what is inside the selection */
+       element = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
+           rng.parentElement() :
+           rng.commonAncestorContainer; 
+
+       /* If it is the <body> tag, a whole bunch of elements has been selected */
+       if (element.tagName == "BODY")
+       {
+         for (i=0; i<listTypes.length; i++)
+         {
+           /* Search for list elements... */
+           tmp = element.getElementsByTagName(listTypes[i]);
+           for (j=0; j<tmp.length; j++)
+           {
+             if (tmp[j]) {
+               /* ... and add them to list */
+               lists.push(tmp[j]);
+             }
+           }
+         }
+       }
+       /* A list tag has been (possibly only partly) selected */
+       else if(qx.lang.Array.contains(listTypes, element.tagName))
+       {
+         lists.push(element);
+       }
+
+       /* We have found some list elements */
+       if(lists.length > 0)
+       {
+         /* Walk through all list elements and check if they are selected */
+         for(i=0; i<lists.length; i++)
+         {
+           listElement = lists[i];
+  
+           /* 
+            * Check if the entire list element has been selected.
+            * 
+            * Note: If more than one element is selected in IE,
+            * they are all selected completely. This is a good thing, since
+            * IE does not support anchorOffset or nodeOffset. :-)
+            */
+           listEntrySelected = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
+               /*
+                * Element is selected or <body> tag is selected
+                * (in this case, the list item inside the selection is selected, too)
+                */
+               ( (listElement == element) || (element.tagName == "BODY") ) :
+
+               /* In other browsers, we can test more preciously */
+               sel.containsNode(listElement, false);
+  
+           /* Walk through all list entries in list element: */
+           for(j=0; j<listElement.childNodes.length; j++)
+           {
+             listEntryElement = listElement.childNodes[j];
+  
+             /*
+              * Anchor node and focus nodes are special:
+              * 1. they are always text nodes
+              * 2. the selection "stops" on the text nodes, so that it's parent element is not completely selected
+              * 
+              * For these reasons, focus node and anchor node are checked separately 
+              */
+             if(
+               /*
+                * Whole list is selected
+                * Note: IE will never come further than this line
+                */
+               listEntrySelected ||
+
+               /* Check if the complete focus text node selected */
+               (
+                   sel.focusNode.nodeValue &&
+                   qx.dom.Hierarchy.contains(listEntryElement, sel.focusNode) &&
+                   (sel.focusOffset == sel.focusNode.nodeValue.length)
+               ) ||
+
+               /* Check if the complete anchor text node selected */
+               (
+                   qx.dom.Hierarchy.contains(listEntryElement, sel.anchorNode) &&
+                   (sel.anchorOffset == 0)
+               ) ||
+
+               /* Otherwise, check if the actual <li> tag is completely(!) selected */
+               (sel.containsNode(listEntryElement, false))
+             )
+             {
+               /* Set font size on <li> tag */
+               listEntryElement.style.fontSize = (this.__fontSizeNames[value] || value) + "px";
+             } // if
+
+           } // for
+         } // for
+
+       /* No lists are selected */
+       }else{
+
+         /* Check if element is inside a list entry */
+         
+         /* Retrieve selected element node */
+         var parentElement = (qx.core.Variant.isSet("qx.client", "mshtml")) ? element : sel.focusNode;
+
+         /* Get all parents */
+         var parents = qx.dom.Hierarchy.getAncestors(parentElement);
+         for(i=0; i<parents.length; i++)
+         {
+
+           /* Element is a list entry */
+           if(parents[i].tagName == "LI") {
+             
+             if
+             (
+               (
+                 (qx.core.Variant.isSet("qx.client", "gecko"))
+                 &&
+                 (
+                   /* Selection starts at the beginning... */
+                   (sel.anchorOffset == 0) &&
+    
+                   /* ... and ends at the end of list entry's content*/
+                   (sel.focusNode.nodeValue && (sel.focusOffset == sel.focusNode.nodeValue.length) ) &&
+    
+                   /* Selection starts inside the list entry's first child... */
+                   qx.dom.Hierarchy.contains(parents[i].firstChild, sel.anchorNode) &&
+    
+                   /* ... and ends inside the last child */
+                   qx.dom.Hierarchy.contains(parents[i].lastChild, sel.focusNode)
+                  )
+               )
+               ||
+               (
+                 /* In IE just check if the HTML of the range is equal to the actual list entry */
+                 (qx.core.Variant.isSet("qx.client", "mshtml")) &&
+                 (rng.htmlText == parents[i].innerHTML)
+               )
+             ){
+               /* Set font size on <li> tag */
+               parents[i].style.fontSize = (this.__fontSizeNames[value] || value) + "px";
+             }
+
+             /* We only need to modify the nearest <li> tag */
+             break;
+
+           } // if
+         } // for
+           
+       }
+
+       /* Execute command on selection */
+       if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+         return rng.execCommand("FontSize", false, value);
+       } else {
+         return this.__doc.execCommand("FontSize", false, value);
+       }
+
+       
+
+     },
+     
      /**
       * Helper function which walks over all given parent
       * elements and compares the computed value of the selected
