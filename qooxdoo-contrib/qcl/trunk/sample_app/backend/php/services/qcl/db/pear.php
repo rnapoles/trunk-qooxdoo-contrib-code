@@ -7,7 +7,7 @@
 
 require_once ("qcl/db/db.php");
 
-class qcl_db_pear extends qcl_db 
+class qcl_db_pear extends qcl_db
 {
 
 	//-------------------------------------------------------------
@@ -27,39 +27,39 @@ class qcl_db_pear extends qcl_db
 	//-------------------------------------------------------------
   // public non-rpc methods
   //-------------------------------------------------------------
-	
+
 	/**
-	 * connects to database 
+	 * connects to database
 	 */
 	function &connect($dsn=null)
 	{
 		require_once ("DB.php"); // load pear DB library
-		
+
 		if ( ! $dsn )
 		{
 			$dsn = $this->getDsn();
 		}
     $this->log("Connecting to $dsn.");
-    
+
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
     {
-      $db =& DB::connect( $dsn );  
+      $db =& DB::connect( $dsn );
     }
 		else
     {
       $this->raiseError("Invalid DSN $dsn");
     }
-    
-    if (PEAR::isError($db)) 
+
+    if (PEAR::isError($db))
 		{
 			$this->raiseError( $db->getMessage() . ": " . $db->getUserInfo() );
 		}
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
-		
+
 		// set encoding to do: this needs to be a property of the datasource model
 		if ( $this->controller )
 		{
-			$encoding = $this->controller->getIniValue("database.encoding");	
+			$encoding = $this->controller->getIniValue("database.encoding");
 		}
 		else
 		{
@@ -67,13 +67,13 @@ class qcl_db_pear extends qcl_db
 		}
 		$db->query("SET NAMES $encoding");
 		$db->query("SET CHARACTER_SET $encoding");
-		
+
 		$this->db =& $db;
-		
+
  		return $db;
 	}
-	
-	
+
+
 	/**
 	 * queries database
 	 * @param string $sql
@@ -85,18 +85,18 @@ class qcl_db_pear extends qcl_db
 		global $error;
 		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->query( $sql );
-		if ( PEAR::isError($res) ) 
+		if ( PEAR::isError($res) )
     {
 			$this->error = $res->getMessage() . ": " . $res->getUserInfo();
       if ( $abortOnError )
       {
-        $this->raiseError( $this->error );  
+        $this->raiseError( $this->error );
       }
       return false;
 		}
 		return $res;
 	}
-	
+
 	/**
 	 * executes a query, alias of $this->query
 	 * @param string $sql
@@ -105,7 +105,7 @@ class qcl_db_pear extends qcl_db
 	 */
 	function execute ( $sql, $abortOnError=true )
 	{
-		return $this->query ( $sql, $abortOnError );	
+		return $this->query ( $sql, $abortOnError );
 	}
 
 	/**
@@ -120,21 +120,21 @@ class qcl_db_pear extends qcl_db
     {
       $this->raiseError ( "qcl_db_pear::getRow : No database connection. Aborting.");
     }
-    
+
     $this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
 		if ( PEAR::isError ( $res ) ) {
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
 		}
-		return $res;		
-	}	
+		return $res;
+	}
 
 	/**
 	 * gets the value of the first cell of the first row of the result set
 	 * useful for example for "SELECT count(*) ... " queries
 	 * return mixed
 	 */
-	function getValue ( $sql ) 
+	function getValue ( $sql )
 	{
 		$row = $this->getRow ( $sql, false );
 		return $row[0];
@@ -144,14 +144,14 @@ class qcl_db_pear extends qcl_db
 	 * gets the values of the first cell of each row of the result set
 	 * return mixed
 	 */
-	function getValues ( $sql ) 
+	function getValues ( $sql )
 	{
 		$rows = $this->getAllRows ( $sql, false );
 		$result= array();
 		foreach($rows as $row) $result[] = $row[0];
 		return $result;
-	}	
-	
+	}
+
 	/**
 	 * gets full resultset
 	 * @param string 	$sql 				sql query
@@ -161,20 +161,20 @@ class qcl_db_pear extends qcl_db
 	{
 		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
-		if ( PEAR::isError ( $res ) ) 
+		if ( PEAR::isError ( $res ) )
 		{
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
 		}
 		return $res;
 	}
-	
+
 	/**
 	 * inserts a record into a table and returns last_insert_id()
 	 * @param string $table table name
 	 * @param array $data associative array with the column names as keys and the column data as values
 	 * @return int the id of the inserted row (only if auto_incremnt-key)
 	 */
-	function insert ( $table, $data ) 
+	function insert ( $table, $data )
 	{
 		// inserting several rows at once
     if ( is_array($data[0]) )
@@ -186,11 +186,11 @@ class qcl_db_pear extends qcl_db
       }
       return $ids;
     }
-    
+
     // construct query
 		$columns = array();
     $values	 = array();
-    
+
 		foreach ( $data as $key => $value )
 		{
 			if ( ! trim($key) )
@@ -201,22 +201,22 @@ class qcl_db_pear extends qcl_db
       {
         $columns[] = $key;
       }
-      
+
       if ( is_numeric($value) )
 			{
 				$values[] = $value;
-			}	
+			}
 			else
 			{
-				$values[] = "'" . $this->escape( $value ) . "'";	
+				$values[] = "'" . $this->escape( $value ) . "'";
 			}
 		}
     $columns = implode("`,`", $columns );
 		$values  = implode (",", $values );
-		
+
 		$this->execute ("
-			INSERT IGNORE INTO 
-				`$table` (`$columns`) 
+			INSERT IGNORE INTO
+				`$table` (`$columns`)
 			VALUES ($values)
 		");
 		return $this->getLastInsertId();
@@ -226,22 +226,33 @@ class qcl_db_pear extends qcl_db
 	 * updates a record in a table identified by id
 	 * @param string $table table name
 	 * @param array $data associative array with the column names as keys and the column data as values
-	 * @param string $idColumn name of column containing the record id 
+	 * @param string $idColumn name of column containing the record id
 	 */
 	function update ( $table, $data, $idColumn="id" )
 	{
 		$id		 = $data[$idColumn];
 		unset($data[$idColumn]);
 		$pairs   = array();
-		
+
 		foreach ( $data as $key => $value )
 		{
-			$pairs[] = "`$key` = '" . $this->escape( $value ) . "'";
+			if ( is_null ( $value ) )
+      {
+        $pairs[] = "`$key` = NULL";
+      }
+      elseif ( is_numeric ( $value ) )
+      {
+        $pairs[] = "`$key` = $value";
+      }
+      else
+      {
+        $pairs[] = "`$key` = '" . $this->escape( $value ) . "'";
+      }
 		}
 		$pairs = implode ("," , $pairs );
-		
+
 		$this->query ( "
-			UPDATE `$table` 
+			UPDATE `$table`
 			SET $pairs
 			WHERE `$idColumn` = '$id'
 		");
@@ -251,13 +262,13 @@ class qcl_db_pear extends qcl_db
 	 * deletes a record in a table identified by id
 	 * @param string $table table name
 	 * @param mixed $ids (array of) record id(s)
-	 * @param string $idColumn name of column containing the record id 
+	 * @param string $idColumn name of column containing the record id
 	 */
-	function delete ( $table, $ids, $idColumn="id" ) 
-	{		
+	function delete ( $table, $ids, $idColumn="id" )
+	{
 		$id_list = implode(",", (array) $ids );
 		$this->query ("
-			DELETE FROM `$table` 
+			DELETE FROM `$table`
 			WHERE `$idColumn` IN ($id_list)
 		");
 	}
@@ -269,11 +280,11 @@ class qcl_db_pear extends qcl_db
 	function deleteWhere ( $table, $where )
 	{
 		$this->query ("
-			DELETE FROM `$table` 
+			DELETE FROM `$table`
 			WHERE $where
 		");
-	} 
-	
+	}
+
 	/**
 	 * escapes strings for use in sql queries
 	 */
@@ -281,7 +292,7 @@ class qcl_db_pear extends qcl_db
 	{
 		return $this->db->escapeSimple( $string );
 	}
-	
+
 	/**
 	 * gets last inserted primary key
 	 * @return int
@@ -291,7 +302,7 @@ class qcl_db_pear extends qcl_db
 		$id = $this->getValue( "SELECT last_insert_id()" );
     return $id;
 	}
-	
+
 	/**
 	 * disconnects from database
 	 * @return void
@@ -307,7 +318,7 @@ class qcl_db_pear extends qcl_db
       $this->warn("Trying to close a database handler that is not open.");
     }
 	}
-  
+
   /**
    * retrieves information on the structure of a given table
    * @param string $table
@@ -317,17 +328,17 @@ class qcl_db_pear extends qcl_db
   {
     $schema = substr($this->dsn,strrpos($this->dsn,"/")+1);
     return $this->getAllRows("
-      SELECT 
-        COLUMN_NAME as name, 
-        COLUMN_DEFAULT as `default`, 
-        IS_NULLABLE as nullable, 
-        COLUMN_TYPE as `type`, 
+      SELECT
+        COLUMN_NAME as name,
+        COLUMN_DEFAULT as `default`,
+        IS_NULLABLE as nullable,
+        COLUMN_TYPE as `type`,
         COLUMN_KEY as `key`
       FROM INFORMATION_SCHEMA.COLUMNS
       WHERE TABLE_SCHEMA = '$schema' AND TABLE_NAME = '$table'
     ");
   }
-  
+
   /**
    * gets table structure as sql create statement
    * @param string $table table name
@@ -338,7 +349,7 @@ class qcl_db_pear extends qcl_db
     $row = $this->db->getRow("SHOW CREATE TABLE $table");
     return $row['Create Table'];
   }
-  
+
   /**
    * extracts column data from a sql create table statemnet
    * @return array
@@ -357,7 +368,7 @@ class qcl_db_pear extends qcl_db
      $l = trim($lines[$i]);
      if ( substr($l,-1,1) == "," )
      {
-       $l= substr($l,0,-1); 
+       $l= substr($l,0,-1);
      }
      preg_match("/(`[^`]+`|.*KEY)(.+)$/",$l,$line);
      $columnName = $line[1];
@@ -377,7 +388,7 @@ class qcl_db_pear extends qcl_db
   function getFullTextSql( $table, $indexName, $expr )
   {
     $fullSql = $this->getCreateTableSql( $table );
-    
+
     // add a plus sign ( AND operator) to each search word
     $searchWords = explode(" ",$expr);
     foreach($searchWords as $index => $word)
@@ -387,7 +398,7 @@ class qcl_db_pear extends qcl_db
         $searchWords[$index] = "+" . $word;
       }
     }
-    
+
     // remove dupliate plus signs (in case the user has added them)
     $expr = str_replace("++","+", implode(" ",$searchWords) );
 
@@ -406,7 +417,7 @@ class qcl_db_pear extends qcl_db
     $currentColumns   = $this->extractColumnData($this->getCreateTableSql($table));
     $normativeColumns = $this->extractColumnData($sql);
     $after = "FIRST";
-    
+
     foreach($normativeColumns as $columnName => $columnDef )
     {
       $currentDef = $currentColumns[$columnName];
@@ -421,11 +432,11 @@ class qcl_db_pear extends qcl_db
              if ( $indexName)
              {
                $this->execute ("
-                ALTER TABLE `$table` DROP INDEX `$indexName` 
-              ");           
+                ALTER TABLE `$table` DROP INDEX `$indexName`
+              ");
               $this->execute ("
-                ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef 
-              ");                   
+                ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef
+              ");
              }
              else
              {
@@ -433,7 +444,7 @@ class qcl_db_pear extends qcl_db
              }
           }
           else
-          {         
+          {
             $this->execute ("
               ALTER TABLE `$table` MODIFY COLUMN $columnName $columnDef
             ");
@@ -450,8 +461,8 @@ class qcl_db_pear extends qcl_db
         {
 
           $this->execute ("
-            ALTER TABLE `$table` CHANGE COLUMN $oldColumnName $columnName $columnDef $after 
-          ");    
+            ALTER TABLE `$table` CHANGE COLUMN $oldColumnName $columnName $columnDef $after
+          ");
           $this->info("Renamed $table.$oldColumnName to $table.$columnName.");
         }
         else
@@ -463,30 +474,30 @@ class qcl_db_pear extends qcl_db
              if ( $indexName)
              {
                $this->execute ("
-                ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef 
-              ");                    
+                ALTER TABLE `$table` ADD FULLTEXT INDEX `$indexName` $columnDef
+              ");
              }
              else
              {
                $this->warn("Column name part '$columnName' contains no index name!");
-             }             
-      
+             }
+
           }
           else
           {
             $this->execute ("
-              ALTER TABLE `$table` ADD COLUMN $columnName $columnDef $after 
-            ");            
+              ALTER TABLE `$table` ADD COLUMN $columnName $columnDef $after
+            ");
           }
-          $this->info("Added $table.$columnName."); 
-        }     
+          $this->info("Added $table.$columnName.");
+        }
       }
-      $after = "AFTER $columnName"; 
-    }   
-     
+      $after = "AFTER $columnName";
+    }
+
   }
-  
-  
+
+
   /**
    * checks if table exists
    * @return boolean
@@ -496,34 +507,34 @@ class qcl_db_pear extends qcl_db
   {
     $database = $this->getDatabase();
     return $this->getValue("
-      SELECT 
-        count(*) 
-      FROM 
+      SELECT
+        count(*)
+      FROM
         INFORMATION_SCHEMA.TABLES
-      WHERE 
+      WHERE
         TABLE_NAME='$table'
       AND
         TABLE_SCHEMA='$database'
     ");
   }
-  
+
   /**
    * checks if a function or stored procedure of this name exists in the database
-   * @return 
-   * @param $routine 
+   * @return
+   * @param $routine
    */
   function routineExists($routine)
   {
     return $this->getValue("
-      SELECT 
-        count(*) 
-      FROM 
+      SELECT
+        count(*)
+      FROM
         INFORMATION_SCHEMA.ROUTINES
-      WHERE 
+      WHERE
         ROUTINE_NAME='$routine'
     ");
   }
-  
+
   /**
    * creates a temporary table and fills it with data
    * @return array of citekeys
@@ -533,21 +544,21 @@ class qcl_db_pear extends qcl_db
    */
   function createTemporaryTable ( $name, $columnData, $data )
   {
-    
+
     // create table
     $columnDefinition = array();
     foreach ( $columnData as $columnName => $columnDef )
     {
-      $columnDefinition[] = "`$columnName` $columnDef";  
+      $columnDefinition[] = "`$columnName` $columnDef";
     }
     $columnDefinition = implode(",",$columnDefinition);
-    
+
     $this->db->execute("
       CREATE TEMPORARY TABLE `$name` (
         $columnDefinition
       )
     ");
-    
+
     // insert values
     $columns = array_keys($columnData);
     foreach( $data as $row )
@@ -558,7 +569,7 @@ class qcl_db_pear extends qcl_db
         $values[] = "'" . addslashes($value) . "'";
       }
       $values = implode("'",$values);
-      $this->db->execute("INSERT INTO `$name` ($columns) VALUES($values)");   
+      $this->db->execute("INSERT INTO `$name` ($columns) VALUES($values)");
     }
   }
 }
