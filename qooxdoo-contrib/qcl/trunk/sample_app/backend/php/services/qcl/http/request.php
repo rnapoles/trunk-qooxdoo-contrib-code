@@ -6,16 +6,16 @@
 
 require_once("qcl/jsonrpc/model.php");
 
-class qcl_encoding_converter extends qcl_jsonrpc_model 
+class qcl_encoding_converter extends qcl_jsonrpc_model
 {
 
   var $method   = "POST";  // only post is implemented so far
   var $data     = null;
   var $headers  = array();
- 
+
  /**
   * constructor
-  * @return 
+  * @return
   * @param $controller Object
   * @param $method Object[optional]
   * @param $data Object[optional]
@@ -26,7 +26,7 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
     $this->setData($data);
     $this->setMethod($method);
   }
-  
+
   function setMethod( $method )
   {
     if ( $method != "POST" )
@@ -35,17 +35,17 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
     }
     $this->method = $method;
   }
-  
+
   function getMethod()
   {
     return $this->method;
   }
-  
+
   function setData( $data )
   {
     $this->data = $data;
   }
-  
+
   function getData()
   {
     return $this->data;
@@ -55,45 +55,45 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
   {
     $this->url = $url;
   }
-  
+
   function getUrl()
   {
     return $this->url;
   }
-  
-  
+
+
   function addHeader ( $header )
   {
     $this->headers[] = $header;
   }
-  
+
   /**
    * sends the request depending on method and PHP version
-   * @return 
+   * @return
    */
   function send()
   {
     $headers = implode( "\n", $this->headers );
     if ( ! count( $headers ) ) $headers = null;
-    
-    if ( $method == "POST" )
+
+    if ( $this->method == "POST" )
     {
       if ( PHP_VERSION >= 5 )
       {
         $this->post_request_php5( $this->url, $this->data, $headers );
-      } 
+      }
       else
       {
         $this->post_request_php4( $this->url, $this->data, $headers );
-      } 
+      }
     }
-    
+
   }
-  
+
   /**
-   * post request using php5 functions 
+   * post request using php5 functions
    * taken from http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
-   * @return 
+   * @return
    * @param $url Object
    * @param $data Object
    * @param $optional_headers Object[optional]
@@ -124,12 +124,12 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
   /**
    * post request using php4 functions
    * taken from http://www.enyem.com/wiki/index.php/Send_POST_request_(PHP)
-   * @return 
+   * @return
    * @param $url Object
    * @param $data Object
    * @param $optional_headers Object[optional]
    */
-  function do_post_request_php4($url, $data, $optional_headers = null) 
+  function do_post_request_php4($url, $data, $optional_headers = null)
   {
   	$start = strpos($url,'//')+2;
   	$end = strpos($url,'/',$start);
@@ -151,8 +151,8 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
   	}
   	fclose ($fp);
   	return $response;
-  } 
-  
+  }
+
 }
 
 ?>
