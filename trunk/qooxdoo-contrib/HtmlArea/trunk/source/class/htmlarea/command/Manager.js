@@ -169,10 +169,10 @@ qx.Class.define("htmlarea.command.Manager",
         backgroundcolor       : { useBuiltin : false, identifier : null, method : "__setBackgroundColor" },
         backgroundimage       : { useBuiltin : false, identifier : null, method : "__setBackgroundImage" },
 
-        justifyleft           : { useBuiltin : true, identifier : "JustifyLeft", method : null },
-        justifyright          : { useBuiltin : true, identifier : "JustifyRight", method : null },
-        justifycenter         : { useBuiltin : true, identifier : "JustifyCenter", method : null },
-        justifyfull           : { useBuiltin : true, identifier : "JustifyFull", method : null },
+        justifyleft           : { useBuiltin : false, identifier : "JustifyLeft", method : "__setTextAlign" },
+        justifyright          : { useBuiltin : false, identifier : "JustifyRight", method : "__setTextAlign" },
+        justifycenter         : { useBuiltin : false, identifier : "JustifyCenter", method : "__setTextAlign" },
+        justifyfull           : { useBuiltin : false, identifier : "JustifyFull", method : "__setTextAlign" },
 
         indent                : { useBuiltin : true, identifier : "Indent", method : null },
         outdent               : { useBuiltin : true, identifier : "Outdent", method : null },
@@ -434,6 +434,25 @@ qx.Class.define("htmlarea.command.Manager",
        return ret;
      },
 
+     /**
+      * Helper function to set a text align on a range.
+      * We need to explicitly get the current range before executing
+      * the font size command on it.
+      *
+      * @type member
+      * @param value {String} text align value
+      * @param commandObject {Object} command object
+      * @return {Boolean} Success of operation
+      */
+     __setTextAlign : function(value, commandObject)
+     {
+       /* Get current range */
+       var currentRange = this.getCurrentRange();
+
+       /* Execute command on it */
+       return currentRange.execCommand(commandObject.identifier, false, value);
+     },
+     
 
      /**
       * Internal method to insert an horizontal ruler in the document

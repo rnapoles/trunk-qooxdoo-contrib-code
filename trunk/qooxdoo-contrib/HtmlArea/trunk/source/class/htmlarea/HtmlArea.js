@@ -1881,7 +1881,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param value {String} html content
      * @return {Boolean} Success of operation
      */
-    insertHtml : function (value) {
+    insertHtml : function (value)
+    {
       return this.__commandManager.execute("inserthtml", value);
     },
 
@@ -1892,7 +1893,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Boolean} Success of operation
      */
-    removeFormat : function() {
+    removeFormat : function()
+    {
       return this.__commandManager.execute("removeformat");
     },
 
@@ -1903,7 +1905,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Boolean} Success of operation
      */
-    setBold : function() {
+    setBold : function()
+    {
       return this.__commandManager.execute("bold");
     },
 
@@ -1914,7 +1917,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Boolean} Success of operation
      */
-    setItalic : function() {
+    setItalic : function()
+    {
       return this.__commandManager.execute("italic");
     },
 
@@ -1925,7 +1929,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {Boolean} Success of operation
      */
-    setUnderline : function() {
+    setUnderline : function()
+    {
       return this.__commandManager.execute("underline");
     },
 
