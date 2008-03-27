@@ -544,6 +544,27 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * replaces some content
+     * 
+     * @param search {Object} can be a string or regexp
+     * @param replace {String} content which should be set
+     * @return {Boolean}
+     */
+    replaceContent : function (search, replace)
+    {
+      if (this.__isReady)
+      {
+        var body = this.getContentBody();
+        body.innerHTML = body.innerHTML.replace(search, replace);
+
+        return true;
+      }
+
+      return false;
+    },
+
+
+    /**
      * Setting the value of the editor
      *
      * @type member
@@ -1816,11 +1837,10 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleMouseEvent : function(e)
     {
-/*
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug("handleMouse " + e.type);
       }
-*/
+
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
     },
@@ -2393,6 +2413,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * FONT SIZE
        */
       var fontSize = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.fontSize : focusNodeStyle.getPropertyValue("font-size");
+      var computedFontSize = null;
 
       /*
        * FONT FAMILY
@@ -2428,6 +2449,11 @@ qx.Class.define("htmlarea.HtmlArea",
             break;
           }
 
+          if (computedFontSize == null || computedFontSize == "")
+          {
+            computedFontSize = this._getAttribute(node, 'size');
+          }
+
           node = node.parentNode;
         }
       }
@@ -2455,7 +2481,7 @@ qx.Class.define("htmlarea.HtmlArea",
         italic              : isItalic ? 1 : 0,
         underline           : isUnderline ? 1 : 0,
         strikethrough       : isStrikeThrough ? 1 : 0,
-        fontSize            : fontSize,
+        fontSize            : (computedFontSize == null) ? fontSize : computedFontSize,
         fontFamily          : fontFamily,
         insertUnorderedList : unorderedList ? 1 : 0,
         insertOrderedList   : orderedList ? 1 : 0,
@@ -2469,6 +2495,33 @@ qx.Class.define("htmlarea.HtmlArea",
 
       this._processingExamineCursorContext = false;
     },
+
+
+    /**
+     * returns the attribute value of a given element
+     * 
+     * @param element {Object}
+     * @param attribute {String}
+     * @return {String}
+     */
+    _getAttribute : qx.core.Variant.select("qx.client",
+    {
+      "mshtml" : function(element, attribute) {
+        try {
+          return element[attribute];
+        } catch (e) {
+          return null;
+        }
+      },
+
+      "default" : function(element, attribute) {
+        try {
+          return element.getAttribute(attribute);
+        } catch (e) {
+          return null;
+        }
+      }
+    }),
 
 
     /*
