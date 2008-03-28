@@ -1119,5 +1119,14 @@ class qcl_db_model extends qcl_jsonrpc_model
     ");
   }
   
+  /**
+   * gets the current timestamp from the database
+   * @return string
+   */
+  function getTimestamp()
+  {
+  	return $this->db->getValue("SELECT NOW()");
+  }
+  
 }	
 ?>

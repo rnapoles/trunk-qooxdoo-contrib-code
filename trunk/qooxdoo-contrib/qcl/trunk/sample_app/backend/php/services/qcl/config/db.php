@@ -98,7 +98,18 @@ class qcl_config_db extends qcl_db_model
 
 		return $this->db->getLastInsertId();
 	} 
-  
+
+	/**
+	 * checks if config property exists
+	 * @param string $key
+	 * @return boolean
+	 */
+	function exists($key) 
+	{
+		$value = $this->get( $key );
+		return ! empty( $value );
+	}	
+	
 	/**
 	 * deletes a config property completely or only its user variant 
 	 * requires permission qcl.config.permissions.manage
@@ -394,7 +405,6 @@ class qcl_config_db extends qcl_db_model
 		// create if key doesn't exist - todo: this is a security problem!
 		if ( ! count($row) )
 		{
-		
       // type
       if ( is_bool ( $value) ) $type = "boolean";
       elseif ( is_numeric( $value ) ) $type = "number";
@@ -455,6 +465,7 @@ class qcl_config_db extends qcl_db_model
     $row[$this->key_value]=$value;
 		$this->update($row);
     $this->log("'$name' set to '$value' for user '$owner'.");
+    
 		return true;
 	}
 

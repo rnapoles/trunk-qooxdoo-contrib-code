@@ -31,7 +31,18 @@ class qcl_config_session extends qcl_config_db
 	{
 	  $this->raiseError("Deleting config key not supported in this config model"); 
 	} 
-	 
+
+	/**
+	 * checks if config property exists
+	 * @param string $key
+	 * @return boolean
+	 */
+	function exists($key) 
+	{
+		$value = $this->get( $key);
+		return ! empty( $value );
+	}	
+	
 	/**
 	 * gets config property value
 	 * @param string $name The name of the property (i.e., myapplication.config.locale) 

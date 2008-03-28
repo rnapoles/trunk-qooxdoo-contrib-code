@@ -44,6 +44,8 @@ class qcl_config extends qcl_jsonrpc_model
 	/**
 	 * get config object based on initial configuration.
 	 * at the moment, a qcl_config_db object is used by default.
+	 * @deprecated
+	 * @todo replace by ::getInstance()
 	 */
 	function &getSubclass($controller)
 	{
@@ -71,7 +73,14 @@ class qcl_config extends qcl_jsonrpc_model
 	 * @return id of created config entry
 	 */
 	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false ){}
-
+	
+	/**
+	 * checks if config property exists
+	 * @param string $key
+	 * @return boolean
+	 */
+	function exists($key) {}
+	
 	/**
 	 * updates a config property
 	 * requires permission "qcl.config.permissions.manage"
