@@ -408,15 +408,24 @@ qx.Class.define("htmlarea.command.Manager",
          else
          {
            this.__editorInstance._visualizeFocus();
-           
-           var range = this.getCurrentRange();
+
+           /* 
+            * If an image should be inserted, "__currentRange" is set it!
+            * Here is the hotfix to avoid an error.
+            * TODO/BUG: Retrieve the correct range and use it, to insert the
+            *           image at the correct position.
+            */
+           var range = (value.search(/^<img/) === 0) ?
+             this.__editorInstance.getRange() :
+             this.getCurrentRange();
+
            if(range)
            {
              range.pasteHTML(value);
              range.collapse(false);
              range.select();
            }
-           
+
            ret = true;
          }
        }
