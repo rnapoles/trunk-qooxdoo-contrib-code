@@ -236,10 +236,12 @@ public class DependencyGraph {
             return from + "-" + name + "-" + tos.size();
         }
         
+        @Override
         public int hashCode() {
             return hash;
         }
 
+        @Override
         public boolean equals(Object obj) {
             return this == obj;
         }
