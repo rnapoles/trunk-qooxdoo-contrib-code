@@ -265,6 +265,7 @@ public class StatementCompiler extends ExpressionCompiler {
     private void trY(TryStatement t) {
         String name;
         boolean first;
+        ITypeBinding type;
         
         js.append("try ");
         block(t.getBody());
@@ -285,8 +286,10 @@ public class StatementCompiler extends ExpressionCompiler {
                 }
                 js.append(name);
                 js.append(" instanceof ");
-                // no need to think care about interfaces - type always extends Exception
-                js.append(Naming.type(cc.getException().getType().resolveBinding()));
+                type = cc.getException().getType().resolveBinding();
+                referType(type);
+                // no need to take care about interfaces - type always extends Exception
+                js.append(Naming.type(type));
                 js.append(") ");
                 js.open();
                 js.append("var ");
