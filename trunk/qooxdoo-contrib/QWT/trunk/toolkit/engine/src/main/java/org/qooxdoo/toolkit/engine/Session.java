@@ -101,7 +101,7 @@ public class Session implements SessionMBean, CallListener {
         writer.print(str);
         writer.close();
         event.close();
-        System.out.println("session " + this + ",event(" + event.hashCode() + "): notified and event removed");
+        System.out.println("session " + this + ",event(" + event.hashCode() + "): notified and event removed: " + str);
     }
  
     @Override
