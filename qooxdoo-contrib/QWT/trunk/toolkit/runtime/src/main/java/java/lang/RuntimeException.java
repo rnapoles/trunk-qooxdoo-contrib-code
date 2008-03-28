@@ -29,4 +29,7 @@ public class RuntimeException extends Exception {
     public RuntimeException(Throwable cause) {
         super(cause);
     }
+    public RuntimeException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

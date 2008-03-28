@@ -36,6 +36,11 @@ public class Throwable {
         initCause(cause);
     }
     
+    public Throwable(String msg, Throwable cause)  {
+        this.msg = msg;
+        initCause(cause);
+    }
+    
     public void initCause(Throwable cause) {
         this.cause = cause;
     }
