@@ -436,7 +436,7 @@ qx.Class.define("htmlarea.command.Manager",
 
      /**
       * Helper function to set a text align on a range.
-      * We need to explicitly get the current range before executing
+      * In IE we need to explicitly get the current range before executing
       * the font size command on it.
       *
       * @type member
@@ -446,11 +446,11 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __setTextAlign : function(value, commandObject)
      {
-       /* Get current range */
-       var currentRange = this.getCurrentRange();
+       /* Get Range for IE, or document in other browsers */
+       var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.getCurrentRange() : this.__doc; 
 
        /* Execute command on it */
-       return currentRange.execCommand(commandObject.identifier, false, value);
+       return commandTarget.execCommand(commandObject.identifier, false, value);
      },
      
 
