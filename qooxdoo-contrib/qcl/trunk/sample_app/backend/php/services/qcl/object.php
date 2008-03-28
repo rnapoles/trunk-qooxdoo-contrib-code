@@ -394,3 +394,47 @@ if(!function_exists('array_diff_key'))
     return $result;
    }
 }
+
+/**
+ * php4 equivalent of json_encode
+ */
+if ( ! function_exists("json_encode")	)
+{
+	function json_encode( $string )
+	{
+		require_once ("JSON.phps");
+		$json = new JSON();
+		return $json->encode( $string );
+	}
+}
+
+/**
+ * php4 equivalent of json_decode
+ */
+if ( ! function_exists("json_decode")	)
+{
+	function json_decode( $string, $tranformToArray=false )
+	{
+		require_once ("JSON.phps");
+		$json = new JSON();
+		$var = $json->decode( $string );
+		if ( is_object( $var ) and $tranformToArray );
+		{
+			return object2array($var);
+		}
+		return $var;
+	}
+}
+
+/**
+ * transform an object structure into an associative array
+ */
+function object2array($obj)
+{
+	if (! is_object($obj)) return (array) $obj;
+	$arr=array();
+	foreach (get_object_vars($obj) as $key => $val) {
+        $arr[$key]= is_object($val) ? object2array($val) : $val;
+    }
+    return $arr;
+}
