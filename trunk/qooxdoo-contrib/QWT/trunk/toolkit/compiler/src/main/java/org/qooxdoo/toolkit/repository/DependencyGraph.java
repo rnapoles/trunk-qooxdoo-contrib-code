@@ -120,7 +120,7 @@ public class DependencyGraph {
             name = result.get(i);
             node = nodes.get(name);
             if (node == null) {
-                throw new IllegalArgumentException(name);
+                throw new IllegalArgumentException("unkown module: " + name);
             }
             for (Node to : node.tos) {
                 if (!result.contains(to.name)) {
