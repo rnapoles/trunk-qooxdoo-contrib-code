@@ -108,6 +108,8 @@ public class Transport {
         if (status == 200) {
             invokeCall(registry, text);
             requestEvent(SESSION_RAW, sessionNo);
+        } else {
+            System.out.println("call skipped - status " + status);
         }
     }
 
@@ -163,7 +165,8 @@ public class Transport {
       return req.responseText;    
     */
     private static native String post(String url, String body);
-    
+
+    // Client-to-server calls
     private static String argumentsString(Registry registry, Object[] args) {
         boolean first;
         StringBuilder builder;
@@ -183,6 +186,9 @@ public class Transport {
         return builder.toString();
     }
 
+    // TODO: something that cannot collide with serialized objects ...
+    public static final String DELIM = "|";
+    
     private static void invokeCall(Registry registry, String str) {
         int idx;
         int prev;
@@ -191,20 +197,20 @@ public class Transport {
         String method;
         
         args = new ArrayList<Object>();
-        idx = str.indexOf(",");
+        idx = str.indexOf(DELIM);
         if (idx == -1) {
             throw new IllegalArgumentException(str);
         }
         obj = registry.get(Integer.parseInt(str.substring(0, idx)));
         prev = idx + 1;
-        idx = str.indexOf(",", prev);
+        idx = str.indexOf(DELIM, prev);
         if (idx == -1) {
             method = str.substring(prev);
         } else {
             method = str.substring(prev, idx);
             prev = idx + 1;
             while (true) {
-                idx = str.indexOf(",", prev);
+                idx = str.indexOf(DELIM, prev);
                 if (idx == -1) {
                     args.add(Parser.run(registry, null, str.substring(prev)));
                     break;

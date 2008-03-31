@@ -83,17 +83,18 @@ public class Proxy implements InvocationHandler {
     
     //--
     
+    /** server-to-client calls */
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         StringBuilder builder;
         String str;
 
         builder = new StringBuilder();
         builder.append(id);
-        builder.append(',');
+        builder.append(Transport.DELIM);
         builder.append(method.getName());
         if (args != null) { // Java passes null if method takes no arguments
             for (Object arg : args) {
-                builder.append(',');
+                builder.append(Transport.DELIM);
                 builder.append(Serializer.run(registry, arg));
             }
         }

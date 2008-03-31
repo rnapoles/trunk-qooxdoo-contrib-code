@@ -126,45 +126,67 @@ public class SerializationTest {
     }
     
     @Test
-    public void listRefFields() {
-        List<Fox> lst;
+    public void listWithTwoItems() {
+        List<Site> lst;
         
-        lst = new ArrayList<Fox>();
-        lst.add(new Fox("a"));
-        lst.add(new Fox("b"));
-        check("[<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Fox',('a':@2)>,<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Fox',(@2:'b')>]", lst);
+        lst = new ArrayList<Site>();
+        lst.add(new Site("a", "b", "c", null, null));
+        lst.add(new Site("x", "y", "z", null, null));
+        check("[<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Site',('svnurl':'c','path':null,'lastUpdate':null,'name':'b','id':'a')>,<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Site',(@2:'z',@4:null,@5:null,@6:'y',@8:'x')>]", lst);
     }
 
-    public static class Fox {
-        public String a;
-        
-        public Fox() {
-        }
-        
-        public Fox(String a) {
-            this.a = a;
-        }
+    public static class Site {
+        public final String id;
 
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof Fox) {
-                return a.equals(((Fox) obj).a);
-            }
-            return false;
-            
-        }
+        // null if not yet available
+        public final String name;
 
-        @Override
-        public int hashCode() {
-            return a.hashCode();
+        public final String svnurl;
+        
+        // null if not yet available
+        public final String path;
+        
+        // null if not available
+        public final String lastUpdate;
+        
+        public Site() { // TODO: needed for serialize
+            this("TODO", "name", "svurl", null, null);
+        }
+        
+        public Site(String id, String name, String svnurl, String path, String lastUpdate) {
+            this.id = id;
+            this.name = name;
+            this.svnurl = svnurl;
+            this.path = path;
+            this.lastUpdate = lastUpdate;
         }
         
         @Override
         public String toString() {
-            return a;
+            return name == null ? id : name;
+        }
+        
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            Site site;
+            
+            if (obj instanceof Site) {
+                site = (Site) obj;
+                return id.equals(site.id) && eq(name, site.name) && eq(svnurl, site.svnurl) && eq(path, site.path)
+                  && eq(lastUpdate, site.lastUpdate);
+            }
+            return false;
+        }
+        
+        private static boolean eq(String a, String b) {
+            return a == null ? (b == null) : a.equals(b);
         }
     }
-
     @Test
     public void serviceToProxy() {
         Foo service;
