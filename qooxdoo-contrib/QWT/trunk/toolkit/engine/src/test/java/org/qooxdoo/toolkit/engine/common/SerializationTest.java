@@ -124,6 +124,46 @@ public class SerializationTest {
         lst.add(a);
         check("['eq',@1]", lst);
     }
+    
+    @Test
+    public void listRefFields() {
+        List<Fox> lst;
+        
+        lst = new ArrayList<Fox>();
+        lst.add(new Fox("a"));
+        lst.add(new Fox("b"));
+        check("[<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Fox',('a':@2)>,<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Fox',(@2:'b')>]", lst);
+    }
+
+    public static class Fox {
+        public String a;
+        
+        public Fox() {
+        }
+        
+        public Fox(String a) {
+            this.a = a;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Fox) {
+                return a.equals(((Fox) obj).a);
+            }
+            return false;
+            
+        }
+
+        @Override
+        public int hashCode() {
+            return a.hashCode();
+        }
+        
+        @Override
+        public String toString() {
+            return a;
+        }
+    }
 
     @Test
     public void serviceToProxy() {
