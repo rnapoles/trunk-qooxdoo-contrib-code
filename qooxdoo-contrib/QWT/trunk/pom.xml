@@ -11,6 +11,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <properties>
     <toolkit.version>0.3.0</toolkit.version>
     <sushi.version>1.3.0</sushi.version>
+
+    <!-- TODO: http://jira.codehaus.org/browse/MCHECKSTYLE-42 proxy settings ignored -->
+    <!--   use http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml -->
+    <checkstyle.xml>http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml</checkstyle.xml>
   </properties>
 
   <organization>
@@ -158,7 +162,24 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>2.5</version>
-        <configuration><downloadSources>true</downloadSources></configuration>
+        <configuration>
+          <additionalConfig>
+            <file>
+              <name>.checkstyle</name>
+              <content><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<fileset-config file-format-version="1.2.0" simple-config="true">
+    <local-check-config name="qooxdoo" location="${checkstyle.xml}" type="remote" description="">
+        <additional-data name="cache-file" value="true"/>
+    </local-check-config>
+    <fileset name="all" enabled="true" check-config-name="qooxdoo" local="true">
+        <file-match-pattern match-pattern="." include-pattern="true"/>
+    </fileset>
+</fileset-config>
+]]></content>
+            </file>
+          </additionalConfig>
+          <downloadSources>true</downloadSources>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
