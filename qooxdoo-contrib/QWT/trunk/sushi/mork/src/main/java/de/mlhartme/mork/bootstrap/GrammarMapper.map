@@ -1,0 +1,76 @@
+# §{{header}}:
+#
+# This is file src/de/mlhartme/mork/bootstrap/GrammarMapper.map,
+# Mork version 0.6 Copyright (c) 1998-2002  Michael Hartmeier
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+mapper de.mlhartme.mork.bootstrap.GrammarMapper;
+
+grm = "grammar.grm";
+
+import de.mlhartme.mork.regexpr:
+    Choice, Loop, Sequence, Symbol, Range, Without;
+import de.mlhartme.mork.grammar:
+    Rule;
+import de.mlhartme.mork.compiler:
+    GrammarSyntax, Stubs;
+import de.mlhartme.mork.semantics:
+    BuiltIn;
+import java.lang:
+    Boolean, Integer, String;
+
+
+#
+# overall structure
+Grammar             => Stubs.grammarSyntax ;
+ :grammarSymbolTable   => Stubs.symbolTable:
+                         > Grammar
+                         > //StringSymbol
+                         > //IdentifierSymbol;
+SymbolSet           => Stubs.symbolSet;
+UsePriorities       => Boolean.TRUE;
+NoPriorities        => Boolean.FALSE;
+
+#
+# symbols
+
+StringSymbol        => Stubs.symbolRef:
+                         > \\*
+                         > Keyword ;
+ :Keyword           => Stubs.keyword: > \\Grammar;
+IdentifierSymbol    => Stubs.symbolRef;
+
+#
+# regular expressions
+
+Rule                => Rule: >\\Parser\\Grammar > \\Scanner\\Grammar;  # TODO
+Choice              => Choice.createLeftOptional;
+Sequence            => Sequence;
+Restriction         => Without;
+Star                => Loop.createStar;
+Plus                => Loop;
+Option              => Choice.createOption;
+Times               => Sequence.createTimes;
+Not                 => Choice.createNot;
+Reference           => Symbol;
+Range               => Stubs.range;
+Code                => Stubs.toChar;
+
+#
+# lexical elements
+
+IntegerLiteral      => Integer.decode;
+                    => [text] : > IntegerLiteral;
+CharacterLiteral    => BuiltIn.parseChar;
+                    => [text] : > CharacterLiteral;
+StringLiteral       => [text] :
+                         > \\Keyword > \\StringSymbol
+                         > \\StringSymbol\\grammarSymbolTable;
+Identifier          => [text]:
+                         > \\*
+                         > \\Subject\\grammarSymbolTable;

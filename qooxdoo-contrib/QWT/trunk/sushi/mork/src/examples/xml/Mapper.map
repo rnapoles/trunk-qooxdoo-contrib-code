@@ -1,0 +1,24 @@
+# §{{header}}:
+#
+# This is file examples/xml/Mapper.map,
+# Mork version 0.6  Copyright § 1998-2002  Michael Hartmeier
+#
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+mapper xml.Mapper;
+
+# The grammar referenced below specifies the xml syntax as defined in the XML specification.
+# Note that neither well-formed constraints nor validation constraints are checked. Thus,
+# a document accepted by this mapper does not necessarily have properly nested elements and
+# none of the external entities are processed.
+
+# TODO: make sure that the document rule is matched
+
+grm = "../../src/de/mlhartme/mork/xml/xml.grm";
+
+# empty

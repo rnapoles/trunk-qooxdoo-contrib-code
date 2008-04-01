@@ -1,0 +1,67 @@
+# §{{header}}:
+#
+# This is file examples/interpreter/script.grm,
+# Mork version 0.6  Copyright § 1998-2002  Michael Hartmeier
+#
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+[PARSER]
+
+Script          ::= "script" Declarations Block;
+
+Declarations    ::= ( Variable ";" )* ;
+Variable        ::= Type Identifier ;
+Type            ::= "bool" | "int" ;
+Type            ::= "string" ;
+
+Stmt            ::= Block | Print | Input | If | While | Assign ;
+
+Block           ::= "{" Stmt* "}";
+Print           ::= "print" Expr ";";
+Input           ::= "input" Reference ";";
+If              ::= "if" "(" Expr ")" Block ("else" Block )? ;
+While           ::= "while" "(" Expr ")" Stmt ;
+Assign          ::= Reference "=" Expr ";";
+
+Expr            ::= Or | And ;
+Or              ::= Expr "||" And ;
+
+And             ::= And2 | Equation ;
+And2            ::= And "&&" Equation ;
+
+Equation        ::= Equation2 | Relation ;
+Equation2       ::= Equation ("==" | "!=") Relation ;
+
+Relation        ::= Relation2 | Sum ;
+Relation2       ::= Relation ("<" | ">" | "<=" | ">=") Sum ;
+
+Sum             ::= Sum2 | Prod  ;
+Sum2            ::= Sum ("+"|"-") Prod ;
+Prod            ::= Prod2 | Unary ;
+Prod2           ::= Prod ("*"|"/"|"%") Unary ;
+Unary           ::= Unary1 | Atom ;
+Unary1          ::= ("+"|"-"|"!") Unary;
+
+Atom            ::= Const | Reference | "(" Expr ")";
+Reference       ::= Identifier ;
+
+Const           ::= String | Integer | Boolean ;
+Boolean         ::= "true" | "false" ;
+
+
+[SCANNER]
+    white = Space, Comment;
+
+String     ::= '"' '"'!* '"' ;
+Integer    ::= Digit+ ;
+Identifier ::= Letter (Letter | Digit | '_')* ;
+Letter     ::= 'A'..'Z' | 'a'..'z' ;
+Digit      ::= '0'..'9';
+
+Space      ::= (' ' | '\b' | '\t' | '\n' | '\f' | '\r' )+ ;
+Comment    ::= '#' ('\n'|'\r')!* ;

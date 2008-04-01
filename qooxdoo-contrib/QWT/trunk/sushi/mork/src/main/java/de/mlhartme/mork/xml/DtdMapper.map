@@ -1,0 +1,65 @@
+# §{{header}}:
+#
+# This is file src/de/mlhartme/mork/xml/DtdMapper.map,
+# Mork version 0.6 Copyright (c) 1998-2002  Michael Hartmeier
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+mapper de.mlhartme.mork.xml.DtdMapper;
+
+grm = "xml.grm";
+
+import de.mlhartme.mork.regexpr:
+    Sequence, Choice;
+import de.mlhartme.mork.xml:
+    Attribute, Stubs, XmlSyntax;
+import de.mlhartme.mork.semantics:
+    BuiltIn;
+import java.lang:
+    String;
+
+start         => XmlSyntax ;
+ :SymbolTable => Stubs.symbolTable:
+                  > start
+                  > //AttDef
+                  > //ElementName;
+
+elementdecl   => Stubs.rule;
+children      => Stubs.unary;
+cp            => Stubs.unary;
+choice        => Choice;
+seq           => Sequence;
+
+Mixed         => Stubs.mixed;
+
+AttDef        => Attribute;
+
+StringType    => BuiltIn.NULL;
+TokenizedType => BuiltIn.NULL; # TODO
+NotationType  => BuiltIn.NULL;
+Enumeration   => BuiltIn.NULL;
+
+ElementNameDef => String: > \\* > \\SymbolTable;
+ElementNameA   => String: > \\AttlistDecl//AttDef;
+ElementName    => Stubs.lookup;
+
+"EMPTY"        => Sequence;
+
+"?"            => Stubs.OPTION;
+"*"            => Stubs.STAR;
+"+"            => Stubs.PLUS;
+
+"#REQUIRED"    => Attribute.REQUIRED;
+"#IMPLIED"     => Attribute.IMPLIED;
+"#FIXED"       => Attribute.FIXED;
+None           => Attribute.NONE;
+
+Name           => [text]: >\ElementNameDef >\ElementNameA >\ElementName >\AttDef;
+AttValue       => [text]: >withoutQuotes;
+:withoutQuotes => Stubs.removeQuotes: > \\AttDef;
+Comment        => BuiltIn.NULL;
+PI             => BuiltIn.NULL;
