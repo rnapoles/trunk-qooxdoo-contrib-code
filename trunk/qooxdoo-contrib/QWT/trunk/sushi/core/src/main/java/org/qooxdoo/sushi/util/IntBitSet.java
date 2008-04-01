@@ -1,4 +1,21 @@
-/* Copyright (c) 1&1. All Rights Reserved. */
+/* ************************************************************************
+   
+   qooxdoo - the new era of web development
+   
+   http://qooxdoo.org
+   
+   Copyright:
+     2006-2007 1&1 Internet AG, Germany, http://www.1and1.org
+   
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+   
+   Authors:
+     * Michael Hartmeier (mlhartme)
+   
+ ************************************************************************ */
 
 package org.qooxdoo.sushi.util;
 
@@ -125,7 +142,9 @@ public class IntBitSet implements IntCollection, Serializable {
             bit++;
             if (val == 0) {
                 idx++;
-                if (idx == data.length) return -1;
+                if (idx == data.length) {
+                    return -1;
+                }
                 val = data[idx];
                 bit = 0;
             }
@@ -259,7 +278,9 @@ public class IntBitSet implements IntCollection, Serializable {
         int[] x;
         int[] y;
 
-        if (!(obj instanceof IntBitSet)) return false;
+        if (!(obj instanceof IntBitSet)) {
+            return false;
+        }
 
         set = (IntBitSet) obj;
         if (data.length < set.data.length) {
@@ -271,10 +292,14 @@ public class IntBitSet implements IntCollection, Serializable {
         }
 
         for (i = 0; i < x.length; i++) {
-            if (x[i] != y[i]) return false;
+            if (x[i] != y[i]) {
+                return false;
+            }
         }
         for ( ; i < y.length; i++) {
-            if (y[i] != 0) return false;
+            if (y[i] != 0) {
+                return false;
+            }
         }
 
         return true;
@@ -291,7 +316,9 @@ public class IntBitSet implements IntCollection, Serializable {
         if (data.length < set.data.length) {
             end = data.length;
             for (i = end; i < set.data.length; i++) {
-                if (set.data[i] != 0) return false;
+                if (set.data[i] != 0) {
+                    return false;
+                }
             }
         } else {
             end = set.data.length;
@@ -299,7 +326,9 @@ public class IntBitSet implements IntCollection, Serializable {
 
         for (i = 0; i < end; i++) {
             // any bits in set where this has none?  -> false
-            if ( (set.data[i] & ~data[i])!= 0) return false;
+            if ((set.data[i] & ~data[i])!= 0) {
+                return false;
+            }
         }
         return true;
     }
@@ -413,7 +442,7 @@ public class IntBitSet implements IntCollection, Serializable {
 
         n = new int[s];
         count = (s < data.length)? s : data.length;
-        System.arraycopy(data,0, n,0, count);
+        System.arraycopy(data, 0, n, 0, count);
         data = n;
     }
 

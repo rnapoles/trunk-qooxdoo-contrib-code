@@ -29,8 +29,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class SerializerTest {
-	private static final String LF = OS.CURRENT.lineSeparator;
-	
+    private static final String LF = OS.CURRENT.lineSeparator;
+
     private static final Builder BUILDER = new Builder();
     private static final Selector SELECTOR = new Selector();
     private static final Serializer SERIALIZER = new Serializer();

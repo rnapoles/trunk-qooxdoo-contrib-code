@@ -1,4 +1,21 @@
-/* Copyright (c) 1&1. All Rights Reserved. */
+/* ************************************************************************
+   
+   qooxdoo - the new era of web development
+   
+   http://qooxdoo.org
+   
+   Copyright:
+     2006-2007 1&1 Internet AG, Germany, http://www.1and1.org
+   
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+   
+   Authors:
+     * Michael Hartmeier (mlhartme)
+   
+ ************************************************************************ */
 
 package org.qooxdoo.sushi.util;
 
@@ -13,8 +30,8 @@ public class Arrays {
         Object[] result;
 
         result = (Object[]) Array.newInstance(cl, left.length + right.length);
-        System.arraycopy(left,0, result,0, left.length);
-        System.arraycopy(right,0, result,left.length, right.length);
+        System.arraycopy(left, 0, result, 0, left.length);
+        System.arraycopy(right, 0, result, left.length, right.length);
         return result;
     }
 
@@ -23,7 +40,7 @@ public class Arrays {
 
         result = (Object[]) Array.newInstance(cl, 1 + right.length);
         result[0] = left;
-        System.arraycopy(right,0, result,1, right.length);
+        System.arraycopy(right, 0, result, 1, right.length);
         return result;
     }
 

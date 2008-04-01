@@ -310,7 +310,7 @@ public class LoaderTest extends ModelBase {
         return e.causes().get(0);
     }
 
-    private static IO IO_OBJ = new IO();
+    private static final IO IO_OBJ = new IO();
     
     private static Instance<?> loadXml(Type type, String str) throws LoaderException {
         try {
