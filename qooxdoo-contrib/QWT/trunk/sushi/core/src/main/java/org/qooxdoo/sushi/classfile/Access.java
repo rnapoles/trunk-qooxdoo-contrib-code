@@ -49,6 +49,10 @@ public enum Access {
         return result;
     }
     
+    public static Set<Access> fromArray(Access ... flags) {
+        return new HashSet<Access>(java.util.Arrays.asList(flags));
+    }
+    
     public static char toFlags(Set<Access> lst) {
         char flags;
         

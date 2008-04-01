@@ -11,7 +11,8 @@
 
 package de.mlhartme.mork.compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
+
 import de.mlhartme.mork.reflect.Function;
 
 public abstract class CompiledFunctionBase extends Function {

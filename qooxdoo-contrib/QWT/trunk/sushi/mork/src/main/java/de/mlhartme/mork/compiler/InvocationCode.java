@@ -16,20 +16,20 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.qooxdoo.sushi.classfile.Access;
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassDef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.ExceptionInfo;
+import org.qooxdoo.sushi.classfile.FieldRef;
+import org.qooxdoo.sushi.classfile.MethodDef;
+import org.qooxdoo.sushi.classfile.MethodRef;
+import org.qooxdoo.sushi.classfile.Output;
+import org.qooxdoo.sushi.classfile.attribute.Exceptions;
 import org.qooxdoo.sushi.util.IntArrayList;
 
-import de.mlhartme.mork.classfile.Access;
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.ClassDef;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.ExceptionInfo;
-import de.mlhartme.mork.classfile.Exceptions;
-import de.mlhartme.mork.classfile.FieldRef;
-import de.mlhartme.mork.classfile.MethodDef;
-import de.mlhartme.mork.classfile.MethodRef;
 import de.mlhartme.mork.classfile.ObjectCompiler;
-import de.mlhartme.mork.classfile.Output;
 import de.mlhartme.mork.classfile.Util;
 import de.mlhartme.mork.reflect.Function;
 
@@ -199,9 +199,9 @@ public class InvocationCode implements Bytecodes {
         Exceptions e;
 
         c = new ClassDef(destRef, new ClassRef(CompiledFunctionBase.class));
-        c.addField(Access.PRIVATE | Access.FINAL, ClassRef.INT, "id");
+        c.addField(Access.fromArray(Access.PRIVATE, Access.FINAL), ClassRef.INT, "id");
         addConstr(c);
-        m = c.addMethod(Access.PUBLIC, ClassRef.OBJECT, "invoke",
+        m = c.addMethod(Access.fromArray(Access.PUBLIC), ClassRef.OBJECT, "invoke",
                     new ClassRef[] { new ClassRef("java.lang.Object", 1) }, code);
         e = new Exceptions();
         e.exceptions.add(EXCEPT_REF);
@@ -222,6 +222,6 @@ public class InvocationCode implements Bytecodes {
         code.emit(RETURN);
         code.locals = 2; // this + idInit
 
-        c.addConstructor(Access.PUBLIC, new ClassRef[] { ClassRef.INT }, code);
+        c.addConstructor(Access.fromArray(Access.PUBLIC), new ClassRef[] { ClassRef.INT }, code);
     }
 }

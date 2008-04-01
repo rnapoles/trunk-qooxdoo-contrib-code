@@ -12,12 +12,14 @@
 
 package de.mlhartme.mork.reflect;
 
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.FieldRef;
-import de.mlhartme.mork.classfile.Util;
 import java.lang.reflect.InvocationTargetException;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.FieldRef;
+
+import de.mlhartme.mork.classfile.Util;
 
 /**
  * I can't implement Option by feeding an Option-Value because I want to offer explicit definitions

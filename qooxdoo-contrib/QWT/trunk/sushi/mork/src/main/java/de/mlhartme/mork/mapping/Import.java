@@ -11,7 +11,8 @@
 
 package de.mlhartme.mork.mapping;
 
-import de.mlhartme.mork.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+
 import de.mlhartme.mork.reflect.Constructor;
 import de.mlhartme.mork.reflect.Field;
 import de.mlhartme.mork.reflect.Method;

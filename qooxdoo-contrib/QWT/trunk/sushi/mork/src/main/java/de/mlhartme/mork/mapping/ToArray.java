@@ -11,18 +11,20 @@
 
 package de.mlhartme.mork.mapping;
 
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.MethodRef;
-import de.mlhartme.mork.classfile.Util;
-import de.mlhartme.mork.reflect.Arrays;
-import de.mlhartme.mork.reflect.Function;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.List;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
+
+import de.mlhartme.mork.classfile.Util;
+import de.mlhartme.mork.reflect.Arrays;
+import de.mlhartme.mork.reflect.Function;
 
 /**
  * Invokation creates an array initialized with the List passed as an
