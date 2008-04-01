@@ -391,7 +391,7 @@ qx.Class.define("htmlarea.command.Manager",
       *
       * @type member
       * @param value {String} HTML code to insert
-      * @param commandObject {Object} command infos
+      * @param commandObject {Object} command information
       * @return {Boolean} Success of the operation
       */
      __insertHtml : function(value, commandObject)
@@ -409,15 +409,8 @@ qx.Class.define("htmlarea.command.Manager",
          {
            this.__editorInstance._visualizeFocus();
 
-           /* 
-            * If an image should be inserted, "__currentRange" is set it!
-            * Here is the hotfix to avoid an error.
-            * TODO/BUG: Retrieve the correct range and use it, to insert the
-            *           image at the correct position.
-            */
-           var range = (value.search(/^<img/) === 0) ?
-             this.__editorInstance.getRange() :
-             this.getCurrentRange();
+           /* Exec command on saved range object */
+           var range = this.__editorInstance.getStoredRange();
 
            if(range)
            {
