@@ -11,10 +11,12 @@
 
 package de.mlhartme.mork.scanner;
 
-import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.util.IntBitSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.regexpr.Range;
 
 /** Create determinitic automatons. */
 

@@ -11,6 +11,8 @@
 
 package de.mlhartme.mork.compiler;
 
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.grammar.Grammar;
 import de.mlhartme.mork.grammar.GrammarBuilder;
 import de.mlhartme.mork.grammar.Rule;
@@ -19,11 +21,9 @@ import de.mlhartme.mork.parser.PDA;
 import de.mlhartme.mork.parser.Parser;
 import de.mlhartme.mork.parser.ParserTable;
 import de.mlhartme.mork.scanner.FABuilder;
-import de.mlhartme.mork.scanner.GrammarScanner;
-import de.mlhartme.mork.scanner.Modes;
 import de.mlhartme.mork.scanner.GrammarScannerFactory;
+import de.mlhartme.mork.scanner.Modes;
 import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
 import de.mlhartme.mork.util.StringArrayList;
 
 /**
@@ -134,7 +134,7 @@ public class GrammarSyntax extends Syntax {
 
         usedSymbols = new IntBitSet(whiteSymbols);
         usedSymbols.addAll(builder.getInlines());
-        grammar.check(grammar.getStart(), usedSymbols, symbolTable);
+        grammar.check(grammar.getStart(), usedSymbols, symbolTable.toList());
 
         return new Parser(parserTable, scannerFactory);
     }

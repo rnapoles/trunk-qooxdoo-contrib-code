@@ -11,9 +11,10 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.util.IntArrayList;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntArrayList;
 
 // TODO: public final
 public class Alternative implements Compare {

@@ -11,10 +11,12 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.IntBitSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Grammar;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.

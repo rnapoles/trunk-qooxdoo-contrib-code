@@ -11,9 +11,6 @@
 
 package de.mlhartme.mork.parser;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.IntBitSet;
-import de.mlhartme.mork.util.StringArrayList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +20,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Grammar;
+import de.mlhartme.mork.util.StringArrayList;
 
 /** LR-PDAs are generated using these states */
 

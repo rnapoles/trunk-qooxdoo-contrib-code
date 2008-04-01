@@ -11,7 +11,7 @@
 
 package de.mlhartme.mork.scanner;
 
-import de.mlhartme.mork.util.IntBitSet;
+import org.qooxdoo.sushi.util.IntBitSet;
 
 /**
  * Finite automaton, deteministic or non-deterministic. Has at

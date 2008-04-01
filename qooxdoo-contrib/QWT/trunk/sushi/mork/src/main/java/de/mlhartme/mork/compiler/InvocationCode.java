@@ -11,6 +11,13 @@
 
 package de.mlhartme.mork.compiler;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+
 import de.mlhartme.mork.classfile.Access;
 import de.mlhartme.mork.classfile.Bytecodes;
 import de.mlhartme.mork.classfile.ClassDef;
@@ -25,11 +32,6 @@ import de.mlhartme.mork.classfile.ObjectCompiler;
 import de.mlhartme.mork.classfile.Output;
 import de.mlhartme.mork.classfile.Util;
 import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.util.IntArrayList;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 /**
  * Generates bytecode for invoke methods. Must not be saved without functions.

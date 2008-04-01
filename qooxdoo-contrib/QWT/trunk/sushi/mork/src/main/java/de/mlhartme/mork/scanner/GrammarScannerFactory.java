@@ -11,16 +11,17 @@
 
 package de.mlhartme.mork.scanner;
 
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Rule;
+import de.mlhartme.mork.parser.ParserTable;
+import de.mlhartme.mork.regexpr.Range;
+import de.mlhartme.mork.util.GenericException;
 
 /**
  * <p>An immutable FA. Instances are used for acual scanning. I would call

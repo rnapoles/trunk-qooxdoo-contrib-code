@@ -11,15 +11,17 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
-import de.mlhartme.mork.util.Relation;
-import de.mlhartme.mork.util.RelationIterator;
-import de.mlhartme.mork.util.StringArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Grammar;
+import de.mlhartme.mork.util.GenericException;
+import de.mlhartme.mork.util.Relation;
+import de.mlhartme.mork.util.RelationIterator;
+import de.mlhartme.mork.util.StringArrayList;
 
 /**
  * Build visit sequence for ordered attribute grammar. Based on the paper

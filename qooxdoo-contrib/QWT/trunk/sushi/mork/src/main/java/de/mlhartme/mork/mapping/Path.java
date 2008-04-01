@@ -11,6 +11,11 @@
 
 package de.mlhartme.mork.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.compiler.Syntax;
 import de.mlhartme.mork.grammar.Grammar;
 import de.mlhartme.mork.semantics.Attribute;
@@ -19,9 +24,6 @@ import de.mlhartme.mork.semantics.Occurrence;
 import de.mlhartme.mork.semantics.Pusher;
 import de.mlhartme.mork.semantics.Type;
 import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Visibility of some Definition, kind of an Argument builder.

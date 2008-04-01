@@ -11,13 +11,15 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.mapping.Transport;
-import de.mlhartme.mork.util.IntArrayList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+
+import de.mlhartme.mork.mapping.Transport;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.

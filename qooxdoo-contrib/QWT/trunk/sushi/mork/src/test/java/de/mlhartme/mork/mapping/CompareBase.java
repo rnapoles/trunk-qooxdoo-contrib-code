@@ -12,14 +12,16 @@
 
 package de.mlhartme.mork.mapping;
 
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.AttributionBuffer;
-import de.mlhartme.mork.semantics.Compare;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.IntArrayList;
 import java.util.ArrayList;
 import java.util.List;
+
 import junit.framework.TestCase;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+
+import de.mlhartme.mork.semantics.Attribute;
+import de.mlhartme.mork.semantics.Compare;
+import de.mlhartme.mork.semantics.Type;
 
 public abstract class CompareBase extends TestCase implements Compare {
     protected Attribute attr;
