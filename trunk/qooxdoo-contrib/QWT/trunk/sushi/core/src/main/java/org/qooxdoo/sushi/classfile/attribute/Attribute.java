@@ -1,0 +1,55 @@
+/* Copyright (c) 1&1. All Rights Reserved. */
+
+package org.qooxdoo.sushi.classfile.attribute;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.Input;
+import org.qooxdoo.sushi.classfile.Output;
+
+public abstract class Attribute {
+    public final String name;
+
+    protected Attribute(String nameInit) {
+        name = nameInit;
+    }
+
+    private static final List<String> blackboxed = Arrays.asList(
+            "RuntimeVisibleAnnotations", "Signature", "LocalVariableTypeTable", 
+            "AnnotationDefault", "EnclosingMethod"
+    );
+
+    public static Attribute create(Input src) throws IOException {
+        String name;
+
+        name = src.readUtf8();
+        if (name.equals("Code")) {
+            return new Code(src);
+        } else if (name.equals("ConstantValue")) {
+            return new ConstantValue(src);
+        } else if (name.equals("Exceptions")) {
+            return new Exceptions(src);
+        } else if (name.equals("InnerClasses")) {
+            return new InnerClasses(src);
+        } else if (name.equals("Synthetic")) {
+            return new Synthetic(src);
+        } else if (name.equals("SourceFile")) {
+            return new SourceFile(src);
+        } else if (name.equals("LineNumberTable")) {
+            return new LineNumberTable(src);
+        } else if (name.equals("LocalVariableTable")) {
+            return new LocalVariableTable(src);
+        } else if (name.equals("Deprecated")) {
+            return new Deprecated(src);
+        } else if (blackboxed.contains(name)) {
+            return new Blackbox(name, src);
+        } else {
+            throw new RuntimeException("unkown attribute: " + name);
+        }
+    }
+
+    public abstract void write(Output dest) throws IOException;
+}
