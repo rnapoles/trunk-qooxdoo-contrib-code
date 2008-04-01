@@ -80,10 +80,10 @@ public class Sequence extends RegExpr {
     }
 
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append('(');
         for (i = 0; i < body.length; i++) {
             buf.append(' ');

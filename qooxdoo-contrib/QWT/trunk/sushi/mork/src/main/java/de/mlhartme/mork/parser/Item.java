@@ -102,10 +102,10 @@ public class Item implements Comparable {
     //-------------------------------------------------------------------
 
     public String toString(PDA env, StringArrayList symbolTable) {
-        StringBuffer result;
+        StringBuilder result;
         int ofs, len;
 
-        result = new StringBuffer();
+        result = new StringBuilder();
         result.append(symbolTable.getOrIndex(env.grm.getLeft(production)));
         result.append("\t::=");
         len = env.grm.getLength(production);

@@ -101,11 +101,11 @@ public class OagBuilder {
     }
 
     private static String as(StringArrayList symbolTable, Relation relation) {
-        StringBuffer buffer;
+        StringBuilder buffer;
         RelationIterator iter;
         Attribute a;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         buffer.append('{');
         iter = relation.iterate();
         while (iter.step()) {
@@ -122,11 +122,11 @@ public class OagBuilder {
     }
 
     private static String aos(StringArrayList symbolTable, Relation relation) {
-        StringBuffer buffer;
+        StringBuilder buffer;
         RelationIterator iter;
         AttributeOccurrence ao;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         buffer.append('{');
         iter = relation.iterate();
         while (iter.step()) {

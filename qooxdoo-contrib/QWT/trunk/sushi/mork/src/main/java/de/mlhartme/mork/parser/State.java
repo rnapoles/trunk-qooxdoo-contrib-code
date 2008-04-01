@@ -331,7 +331,7 @@ public class State {
     //---------------------------------------------------------------------
 
     public String toString(PDA env, Grammar grammar) {
-        StringBuffer result;
+        StringBuilder result;
         Item item;
         Iterator pos;
         Shift sh;
@@ -339,7 +339,7 @@ public class State {
         StringArrayList symbolTable;
 
         symbolTable = grammar.getSymbolTable();
-        result = new StringBuffer();
+        result = new StringBuilder();
         result.append("\n------------------------------\n");
         result.append("[state " + id + "]\n");
         pos = core.iterator();

@@ -240,10 +240,10 @@ public class Stubs {
     }
 
     public static String name(String[] lst) {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         for (i = 0; i < lst.length; i++) {
             if (i > 0) {
                 buf.append('.');

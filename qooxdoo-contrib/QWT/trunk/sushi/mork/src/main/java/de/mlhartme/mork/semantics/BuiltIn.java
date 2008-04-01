@@ -59,13 +59,13 @@ public class BuiltIn {
         throws IllegalLiteral
     {
         char c;
-        StringBuffer result;
+        StringBuilder result;
 
         try {
             text = textInit;
             len = text.length();
             ofs = 1;
-            result = new StringBuffer();
+            result = new StringBuilder();
 
             if ((len >= 2) && (text.charAt(0) == '"') && (text.charAt(len - 1) == '"')) {
                 while (ofs + 1 < len) {

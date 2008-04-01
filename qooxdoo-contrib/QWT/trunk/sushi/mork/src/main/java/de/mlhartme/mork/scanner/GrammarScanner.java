@@ -47,9 +47,9 @@ public class GrammarScanner implements Scanner {
     // TODO: expensive; not in interface
     public String getRemainingInput() throws IOException {
         int c;
-        StringBuffer buffer;
+        StringBuilder buffer;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         for (c = src.readOrEof(); c != -1; c = src.readOrEof()) {
             buffer.append((char) c);
         }

@@ -31,11 +31,11 @@ public class Conflicts extends Exception {
     }
 
     public String toString(StringArrayList symbolTable) {
-        StringBuffer result;
+        StringBuilder result;
         int i, max;
         int[] c;
 
-        result = new StringBuffer();
+        result = new StringBuilder();
         max = conflicts.size();
         for (i = 0; i < max; i++) {
             c = (int[]) conflicts.get(i);

@@ -238,10 +238,10 @@ public class IntBitRelation {
      * @return  string representation
      */
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         for (i = 0; i < line.length; i++) {
             if (line[i] != null) {
                 buf.append(i + ": " + line[i].toString() + "\n");

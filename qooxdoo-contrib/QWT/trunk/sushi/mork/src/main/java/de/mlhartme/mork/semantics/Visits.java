@@ -136,14 +136,14 @@ public class Visits {
     }
 
     public String toString() {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int i;
         int max;
         Object obj;
         int no;
         int ofs;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         max = visits.length;
         for (i = 0; i < max; i++) {
             if (i > 0) {

@@ -176,15 +176,15 @@ public class ParserTable implements Serializable {
     private static final int COUNT_MARK = Parser.SKIP + 4;
     
     public String[] packValues() {
-        StringBuffer difs;
-        StringBuffer vals;
+        StringBuilder difs;
+        StringBuilder vals;
         int i;
         int prev;
         int count;
         int v;
         
-        difs = new StringBuffer();
-        vals = new StringBuffer();
+        difs = new StringBuilder();
+        vals = new StringBuilder();
         prev = 0;
         for (i = 0; i < values.length; i++) {
             v = values[i];
@@ -207,7 +207,7 @@ public class ParserTable implements Serializable {
     
     private static final int MAX_UTF8_LENGTH = 0xffff - 2 / 3;
     
-    public String[] packValue(StringBuffer difs, StringBuffer vals) {
+    public String[] packValue(StringBuilder difs, StringBuilder vals) {
         List lst = new ArrayList();
         String[] array;
         
@@ -222,7 +222,7 @@ public class ParserTable implements Serializable {
         return array;
     }
     
-    private static void split(StringBuffer str, int chunkLength, List result) {
+    private static void split(StringBuilder str, int chunkLength, List result) {
         int i;
         int max;
         
@@ -396,12 +396,12 @@ public class ParserTable implements Serializable {
         int state;
         int stateCount;
         int symbolCount;
-        StringBuffer result;
+        StringBuilder result;
         int value;
         
         stateCount = getStateCount();
         symbolCount = getSymbolCount();
-        result = new StringBuffer();
+        result = new StringBuilder();
         result.append('\t');
         for (symbol = 0; symbol < symbolCount; symbol++) {
             result.append(symbolTable.getOrIndex(symbol));

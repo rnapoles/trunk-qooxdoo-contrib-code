@@ -150,12 +150,12 @@ public class Argument implements Compare {
     }
 
     public String getSourcesString() {
-        StringBuffer result;
+        StringBuilder result;
         int i;
         int max;
         Definition def;
 
-        result = new StringBuffer("(source attributes:");
+        result = new StringBuilder("(source attributes:");
         max = sources.size();
         for (i = 0; i < max; i++) {
             result.append(' ');

@@ -98,11 +98,11 @@ public class Buffer {
     }
 
     public String toString() {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int i;
         int max;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         max = terminals.size();
         for (i = 0; i < max; i++) {
             buffer.append("[" + terminals.get(i) + "," + texts.get(i) + "]");
@@ -111,11 +111,11 @@ public class Buffer {
     }
 
     public String getAllText() {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int i;
         int max;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         max = terminals.size();
         for (i = 0; i < max; i++) {
             buffer.append(texts.get(i));

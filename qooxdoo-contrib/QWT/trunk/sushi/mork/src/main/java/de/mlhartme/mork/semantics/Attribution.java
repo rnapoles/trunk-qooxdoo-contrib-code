@@ -124,9 +124,9 @@ public class Attribution implements Serializable {
 
     public String toString() {
         int i;
-        StringBuffer buf;
+        StringBuilder buf;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append(function.toString());
         buf.append(resultAttr);
         buf.append('$');
@@ -143,10 +143,10 @@ public class Attribution implements Serializable {
     }
 
     public String toString(StringArrayList symTab, Grammar grm) {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append('\t');
         buf.append("" + function);
         buf.append("\n\t\t");

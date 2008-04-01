@@ -147,7 +147,7 @@ public class Ag {
     }
 
     public String toString() {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int prod;
         int maxProds;
         int i;
@@ -155,7 +155,7 @@ public class Ag {
         AttributionBuffer ab;
         List tmp;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         maxProds = grammar.getProductionCount();
         tmp = new ArrayList();
         for (prod = 0; prod < maxProds; prod++) {

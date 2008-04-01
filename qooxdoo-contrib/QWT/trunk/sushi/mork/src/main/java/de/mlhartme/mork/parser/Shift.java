@@ -164,16 +164,16 @@ public class Shift {
     //--------------------------------------------------------------
 
     public String toString(PDA env, StringArrayList symbolTable) {
-        StringBuffer result;
+        StringBuilder result;
 
-        result = new StringBuffer();
+        result = new StringBuilder();
         result.append("shift ");
         result.append(symbolTable.getOrIndex(symbol));
         result.append(" -> " + end.id + '\n');
         return result.toString();
     }
 
-    public static void toStringShiftSet(StringArrayList symbolTable, Set set, StringBuffer result) {
+    public static void toStringShiftSet(StringArrayList symbolTable, Set set, StringBuilder result) {
         Iterator pos;
         Shift sh;
 

@@ -324,10 +324,10 @@ public class FA {
     // toString
 
     public String toString() {
-        StringBuffer result;
+        StringBuilder result;
         int idx;
 
-        result = new StringBuffer();
+        result = new StringBuilder();
         result.append("start = " + start + " end = " + ends.toString() + "\n");
         for (idx = 0; idx < used; idx++) {
             result.append("  " + idx + " ");

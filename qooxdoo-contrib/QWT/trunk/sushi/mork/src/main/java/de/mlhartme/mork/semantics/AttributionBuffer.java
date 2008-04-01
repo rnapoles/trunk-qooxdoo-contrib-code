@@ -80,11 +80,11 @@ public class AttributionBuffer {
 
     public String toString() {
         int a;
-        StringBuffer buf;
+        StringBuilder buf;
         int max;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("prod ");
         buf.append(production);
         buf.append(':');
@@ -106,7 +106,7 @@ public class AttributionBuffer {
         return buf.toString();
     }
 
-    public void attrsToString(StringBuffer buffer, StringArrayList symbolTable) {
+    public void attrsToString(StringBuilder buffer, StringArrayList symbolTable) {
         int max;
         int i;
 

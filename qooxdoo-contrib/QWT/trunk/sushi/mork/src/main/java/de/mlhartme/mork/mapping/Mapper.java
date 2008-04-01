@@ -275,9 +275,9 @@ public class Mapper implements Serializable {
     }
 
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("Parser:\n");
         buf.append(parser.toString());
         buf.append("Semantics:\n");

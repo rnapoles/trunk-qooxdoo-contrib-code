@@ -118,11 +118,11 @@ public abstract class Function implements Serializable {
      * @return the String representation
      */
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
         Class[] paras;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append(getReturnType().getName());
         buf.append(' ');
         buf.append(getName());
