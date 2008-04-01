@@ -11,10 +11,12 @@
 
 package de.mlhartme.mork.xml;
 
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.util.IntArrayList;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+
+import de.mlhartme.mork.scanner.Position;
 
 /**
  * Stores grammar token.

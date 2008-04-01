@@ -11,9 +11,11 @@
 
 package de.mlhartme.mork.mapping;
 
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.util.IntBitSet;
 import java.io.IOException;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.scanner.Position;
 
 /**
  * <code>Mapper.run()</code> reports errors by taking the registered error handler and

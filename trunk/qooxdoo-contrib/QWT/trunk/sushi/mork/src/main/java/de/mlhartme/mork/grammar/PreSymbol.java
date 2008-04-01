@@ -11,9 +11,10 @@
 
 package de.mlhartme.mork.grammar;
 
-import de.mlhartme.mork.util.IntArrayList;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntArrayList;
 
 /**
  * Helper class to instantiate symbols.

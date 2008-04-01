@@ -11,13 +11,15 @@
 
 package de.mlhartme.mork.parser;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
-import de.mlhartme.mork.util.StringArrayList;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Grammar;
+import de.mlhartme.mork.util.GenericException;
+import de.mlhartme.mork.util.StringArrayList;
 
 /**
  * Shift-Reduce-Table realized by an (expensive) array.

@@ -1,20 +1,24 @@
-// §{header}:
+// ï¿½{header}:
 // 
 // This is file src/de/mlhartme/mork/util/StringArrayList.java,
-// Mork version 0.6  Copyright © 1998-2002  Michael Hartmeier
+// Mork version 0.6  Copyright ï¿½ 1998-2002  Michael Hartmeier
 // 
 // Mork is licensed under the terms of the GNU Lesser General Public License.
 // It is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the file license.txt for details.
 // 
-// §.
+// ï¿½.
 
 package de.mlhartme.mork.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * TODO: dump
+ * 
  * List of Strings. Similar to java.util.List or java.util.ArrayList,
  * but elements are Strings. Generic collections for Java would remove
  * the need for StringArrayList. I chose to name the class StringArrayList
@@ -162,6 +166,17 @@ public class StringArrayList implements Serializable {
 
     //---------------------------------------------------------------------
 
+
+    // TODO
+    public List<String> toList() {
+        List<String> result;
+        
+        result = new ArrayList<String>();
+        for (int i = 0; i < size; i++) {
+            result.add(data[i]);
+        }
+        return result;
+    }
 
     /**
      * Returns the string representation.

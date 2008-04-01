@@ -11,13 +11,15 @@
 
 package de.mlhartme.mork.mapping;
 
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.scanner.Position;
+import de.mlhartme.mork.util.GenericException;
 
 /**
  * ErrorHandler that prints messages to the PrintStream specified in the constructor.

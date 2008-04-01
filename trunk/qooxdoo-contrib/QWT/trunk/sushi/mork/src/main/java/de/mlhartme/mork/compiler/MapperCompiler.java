@@ -11,6 +11,12 @@
 
 package de.mlhartme.mork.compiler;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import de.mlhartme.mork.classfile.Access;
 import de.mlhartme.mork.classfile.Bytecodes;
 import de.mlhartme.mork.classfile.ClassDef;
@@ -22,11 +28,6 @@ import de.mlhartme.mork.classfile.ObjectCompiler;
 import de.mlhartme.mork.classfile.Output;
 import de.mlhartme.mork.mapping.Mapper;
 import de.mlhartme.mork.util.GenericException;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 
 public class MapperCompiler implements Bytecodes {
@@ -171,9 +172,9 @@ public class MapperCompiler implements Bytecodes {
             new String[] { "symbolTable", "eofSymbol", "attrs"}),
         new GenericCompiler(de.mlhartme.mork.xml.Attribute.class,
             new String[] { "element", "attributeName", "terminal", "defaultMode", "defaultValue" }),
-        new GenericCompiler(de.mlhartme.mork.util.IntBitSet.class,
+        new GenericCompiler(org.qooxdoo.sushi.util.IntBitSet.class,
             new String[] { "data" }),
-        new GenericCompiler(de.mlhartme.mork.util.IntArrayList.class,
+        new GenericCompiler(org.qooxdoo.sushi.util.IntArrayList.class,
             new String[] { "size", "data" }),
         new GenericCompiler(de.mlhartme.mork.util.StringArrayList.class,
             new String[] { "size", "data" }),

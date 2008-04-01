@@ -11,11 +11,13 @@
 
 package de.mlhartme.mork.parser;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.IntBitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Grammar;
 
 public class Reduce {
     public final int production;
@@ -50,7 +52,7 @@ public class Reduce {
         buffer.append("reduce ");
         grammar.prodToString(buffer, production);
         buffer.append(" on ");
-        buffer.append(lookahead.toString(grammar.getSymbolTable()));
+        buffer.append(lookahead.toString(grammar.getSymbolTable().toList()));
         buffer.append('\n');
 
         return buffer.toString();

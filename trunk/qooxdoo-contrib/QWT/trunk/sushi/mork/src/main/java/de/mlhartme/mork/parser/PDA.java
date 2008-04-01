@@ -11,12 +11,14 @@
 
 package de.mlhartme.mork.parser;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Grammar;
+import de.mlhartme.mork.util.GenericException;
 
 public class PDA {
     /** start symbol */

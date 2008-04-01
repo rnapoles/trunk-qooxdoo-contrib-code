@@ -13,13 +13,6 @@
 package de.mlhartme.mork.mapping;
 
 import de.mlhartme.mork.semantics.Alternative;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Compare;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.IntArrayList;
-import java.util.ArrayList;
-import java.util.List;
-import junit.framework.TestCase;
 
 public class AlternativeCompareTest extends CompareBase {
     private Alternative a;

@@ -11,14 +11,16 @@
 
 package de.mlhartme.mork.grammar;
 
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntArrayList;
-import de.mlhartme.mork.util.IntBitRelation;
-import de.mlhartme.mork.util.IntBitSet;
-import de.mlhartme.mork.util.StringArrayList;
-import de.mlhartme.mork.util.Util;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.util.GenericException;
+import de.mlhartme.mork.util.IntBitRelation;
+import de.mlhartme.mork.util.StringArrayList;
+import de.mlhartme.mork.util.Util;
 
 /**
  * Context free grammar. Symbols are coded as ints. Preferred variable name for symbols is sym.
@@ -97,7 +99,7 @@ public class Grammar extends GrammarCore {
     /**
      * @param usedSymbols are always considered reachable
      */
-    public void check(int startSym, IntBitSet usedSymbols, StringArrayList symbolTable)
+    public void check(int startSym, IntBitSet usedSymbols, List<String> symbolTable)
         throws GenericException
     {
         IntBitSet all, tmp;

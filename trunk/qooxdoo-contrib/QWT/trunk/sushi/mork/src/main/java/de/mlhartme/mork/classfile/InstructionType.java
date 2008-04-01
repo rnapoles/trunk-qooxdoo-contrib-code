@@ -12,9 +12,9 @@
 
 package de.mlhartme.mork.classfile;
 
-import de.mlhartme.mork.util.IntArrayList;
 import java.io.IOException;
-import java.lang.reflect.Field;
+
+import org.qooxdoo.sushi.util.IntArrayList;
 
 /**
  * Type of an instruction.

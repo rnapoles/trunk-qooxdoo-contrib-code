@@ -11,8 +11,10 @@
 
 package de.mlhartme.mork.scanner;
 
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.util.IntBitSet;/**
+/**
  * State in a NFA. A state is a label and a sequence of transitions.
  */
 

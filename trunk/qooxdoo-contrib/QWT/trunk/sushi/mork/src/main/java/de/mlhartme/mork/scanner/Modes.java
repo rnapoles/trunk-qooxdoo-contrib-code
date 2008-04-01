@@ -11,13 +11,15 @@
 
 package de.mlhartme.mork.scanner;
 
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
+import de.mlhartme.mork.grammar.Rule;
+import de.mlhartme.mork.parser.ParserTable;
+import de.mlhartme.mork.util.GenericException;
 
 public class Modes {
     public static void setNone(ParserTable table) throws GenericException {

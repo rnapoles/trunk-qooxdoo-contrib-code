@@ -12,20 +12,14 @@
 
 package de.mlhartme.mork.mapping;
 
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.grammar.Grammar;
 import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.AttributionBuffer;
-import de.mlhartme.mork.semantics.Compare;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.semantics.Oag;
-import de.mlhartme.mork.semantics.State;
 import de.mlhartme.mork.semantics.CopyBuffer;
-import de.mlhartme.mork.util.IntArrayList;
-import de.mlhartme.mork.util.IntBitSet;
+import de.mlhartme.mork.semantics.State;
+import de.mlhartme.mork.semantics.Type;
 import de.mlhartme.mork.util.StringArrayList;
-import java.util.ArrayList;
-import java.util.List;
-import junit.framework.TestCase;
 
 public class CopyBufferCompareTest extends CompareBase {
     private Attribute a;

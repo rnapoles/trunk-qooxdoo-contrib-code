@@ -11,6 +11,11 @@
 
 package de.mlhartme.mork.compiler;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.grammar.Grammar;
 import de.mlhartme.mork.grammar.IllegalSymbols;
 import de.mlhartme.mork.grammar.Rule;
@@ -24,10 +29,7 @@ import de.mlhartme.mork.regexpr.Sequence;
 import de.mlhartme.mork.semantics.BuiltIn;
 import de.mlhartme.mork.semantics.IllegalLiteral;
 import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
 import de.mlhartme.mork.util.StringArrayList;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Helper functions referred by MappingMapper.map. These methods brigde gaps

@@ -12,6 +12,11 @@
 package de.mlhartme.mork.xml;
 
 // TODO
+import java.util.ArrayList;
+import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.compiler.Output;
 import de.mlhartme.mork.compiler.Syntax;
 import de.mlhartme.mork.grammar.Grammar;
@@ -27,10 +32,7 @@ import de.mlhartme.mork.regexpr.Sequence;
 import de.mlhartme.mork.regexpr.Symbol;
 import de.mlhartme.mork.scanner.Modes;
 import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitSet;
 import de.mlhartme.mork.util.StringArrayList;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a DTD file. The translate method results in a Parser and an XmlScanner,
@@ -55,7 +57,7 @@ public class XmlSyntax extends Syntax {
             throw new GenericException("DTD must define at least one element");
         }
         this.grammar = GrammarBuilder.createGrammar(rules, symbolTable);
-        grammar.check(grammar.getStart(), new IntBitSet(), symbolTable);
+        grammar.check(grammar.getStart(), new IntBitSet(), symbolTable.toList());
     }
 
     private static Object[] separate(StringArrayList symbolTable, Object[] ruleOrAttribute) {

@@ -12,18 +12,11 @@
 
 package de.mlhartme.mork.mapping;
 
+import junit.framework.TestCase;
 import de.mlhartme.mork.grammar.Grammar;
 import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.AttributionBuffer;
-import de.mlhartme.mork.semantics.Occurrence;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.semantics.Oag;
 import de.mlhartme.mork.semantics.CopyBuffer;
-import de.mlhartme.mork.util.IntArrayList;
-import de.mlhartme.mork.util.StringArrayList;
-import java.util.ArrayList;
-import java.util.List;
-import junit.framework.TestCase;
+import de.mlhartme.mork.semantics.Occurrence;
 
 public class CopyBufferOccurrenceTest extends TestCase {
     private Attribute start;

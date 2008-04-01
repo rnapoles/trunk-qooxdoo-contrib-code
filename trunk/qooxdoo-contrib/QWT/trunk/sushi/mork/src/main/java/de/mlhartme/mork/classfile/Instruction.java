@@ -12,10 +12,11 @@
 
 package de.mlhartme.mork.classfile;
 
-import de.mlhartme.mork.util.IntArrayList;
-import de.mlhartme.mork.util.IntCollection;
 import java.io.IOException;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+import org.qooxdoo.sushi.util.IntCollection;
 
 /**
  * Stupid data container.

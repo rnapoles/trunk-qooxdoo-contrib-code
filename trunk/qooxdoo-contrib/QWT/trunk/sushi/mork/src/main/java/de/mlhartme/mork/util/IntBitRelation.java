@@ -1,16 +1,18 @@
-// §{header}:
+// ï¿½{header}:
 // 
 // This is file src/de/mlhartme/mork/util/IntBitRelation.java,
-// Mork version 0.6  Copyright © 1998-2002  Michael Hartmeier
+// Mork version 0.6  Copyright ï¿½ 1998-2002  Michael Hartmeier
 // 
 // Mork is licensed under the terms of the GNU Lesser General Public License.
 // It is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the file license.txt for details.
 // 
-// §.
+// ï¿½.
 
 package de.mlhartme.mork.util;
+
+import org.qooxdoo.sushi.util.IntBitSet;
 
 /**
  * <p> Set of pairs of ints. </p>

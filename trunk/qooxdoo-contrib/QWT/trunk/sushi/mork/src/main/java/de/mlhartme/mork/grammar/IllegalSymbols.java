@@ -11,7 +11,7 @@
 
 package de.mlhartme.mork.grammar;
 
-import de.mlhartme.mork.util.IntBitSet;
+import org.qooxdoo.sushi.util.IntBitSet;
 
 /**
  * Indicate exceptions concering symbols.

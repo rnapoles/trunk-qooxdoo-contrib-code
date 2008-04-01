@@ -11,6 +11,11 @@
 
 package de.mlhartme.mork.scanner;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.grammar.IllegalSymbols;
 import de.mlhartme.mork.grammar.Rule;
 import de.mlhartme.mork.regexpr.Action;
@@ -21,9 +26,6 @@ import de.mlhartme.mork.regexpr.RegExpr;
 import de.mlhartme.mork.regexpr.Sequence;
 import de.mlhartme.mork.regexpr.Symbol;
 import de.mlhartme.mork.regexpr.Without;
-import de.mlhartme.mork.util.IntBitSet;
-import java.util.ArrayList;
-import java.util.List;
 
 /** stores the result from visiting a node */
 

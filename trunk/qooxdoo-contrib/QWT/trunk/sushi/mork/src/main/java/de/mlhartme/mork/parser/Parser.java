@@ -11,14 +11,15 @@
 
 package de.mlhartme.mork.parser;
 
-import de.mlhartme.mork.mapping.ErrorHandler;
-import de.mlhartme.mork.semantics.SemanticError;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
-import de.mlhartme.mork.scanner.ScannerFactory;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
+
+import de.mlhartme.mork.mapping.ErrorHandler;
+import de.mlhartme.mork.scanner.Position;
+import de.mlhartme.mork.scanner.Scanner;
+import de.mlhartme.mork.scanner.ScannerFactory;
+import de.mlhartme.mork.semantics.SemanticError;
 
 /**
  * Push down automaton, performing LR parsing

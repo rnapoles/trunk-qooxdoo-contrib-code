@@ -11,9 +11,10 @@
 
 package de.mlhartme.mork.scanner;
 
+import org.qooxdoo.sushi.util.IntArrayList;
+import org.qooxdoo.sushi.util.IntBitSet;
+
 import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.util.IntArrayList;
-import de.mlhartme.mork.util.IntBitSet;
 
 /**
  * Minimization of a finite automaton. Requires a complete depterministic

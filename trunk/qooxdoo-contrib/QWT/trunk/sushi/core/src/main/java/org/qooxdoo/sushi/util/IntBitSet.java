@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.util;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>A set of non-negative int values. IntBitSet is particularly usefull
@@ -464,5 +465,32 @@ public class IntBitSet implements IntCollection, Serializable {
         }
         buf.append(" }");
         return buf.toString();
+    }
+
+    /**
+     * Returns a String representation with each element
+     * represented by a String taken from a Symboltable.
+     * @param   symbols  supplies the symbols to represent the elements
+     *                   of the set; a RuntimeException is thrown if an
+     *                   element is not found here
+     * @return  a String listing all elements of the set
+     */
+    public String toString(List<?> symbols) {
+         StringBuilder buf;
+         int ele;
+         int max;
+         
+         max = symbols.size();
+         buf = new StringBuilder("{");
+         for (ele = first(); ele != -1; ele = next(ele)) {
+             buf.append(" ");
+             if (ele < max) {
+                 buf.append(symbols.get(ele));
+             } else {
+                 buf.append('<').append(ele).append('>');
+             }
+         }
+         buf.append(" }");
+         return buf.toString();
     }
 }

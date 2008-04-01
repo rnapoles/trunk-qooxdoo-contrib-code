@@ -12,11 +12,12 @@
 
 package de.mlhartme.mork.classfile;
 
-import de.mlhartme.mork.util.IntBitSet;
-import de.mlhartme.mork.util.IntArrayList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.util.IntArrayList;
+import org.qooxdoo.sushi.util.IntBitSet;
 
 public class Code extends Attribute implements Constants {
     public int locals;
