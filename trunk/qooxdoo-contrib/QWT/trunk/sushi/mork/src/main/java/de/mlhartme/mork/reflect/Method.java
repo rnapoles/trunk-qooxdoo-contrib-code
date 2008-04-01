@@ -12,19 +12,20 @@
 
 package de.mlhartme.mork.reflect;
 
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.MethodRef;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
 
 /**
  * Wraps a Java Method to make it useable as a Function. Both static

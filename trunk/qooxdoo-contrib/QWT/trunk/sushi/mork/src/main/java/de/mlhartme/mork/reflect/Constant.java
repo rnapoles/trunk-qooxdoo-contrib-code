@@ -12,15 +12,14 @@
 
 package de.mlhartme.mork.reflect;
 
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
 
 /**
  * Wraps an Object to make is useable as a constant Function, i.e.

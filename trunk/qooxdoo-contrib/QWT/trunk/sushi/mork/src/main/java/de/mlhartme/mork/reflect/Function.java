@@ -12,9 +12,10 @@
 
 package de.mlhartme.mork.reflect;
 
-import de.mlhartme.mork.classfile.Code;
-import java.lang.reflect.InvocationTargetException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+
+import org.qooxdoo.sushi.classfile.Code;
 
 /**
  * <p> Interface for anything that can be invoked. Every function

@@ -12,11 +12,12 @@
 
 package de.mlhartme.mork.reflect;
 
-import de.mlhartme.mork.classfile.ClassRef;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+
+import org.qooxdoo.sushi.classfile.ClassRef;
 
 /**
  * A collection of functions. Immutable. Argument- and return-types

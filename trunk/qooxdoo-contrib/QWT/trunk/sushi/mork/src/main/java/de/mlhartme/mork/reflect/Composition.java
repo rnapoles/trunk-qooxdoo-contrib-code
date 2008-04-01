@@ -12,9 +12,10 @@
 
 package de.mlhartme.mork.reflect;
 
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
 import java.lang.reflect.InvocationTargetException;
+
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
 
 /**
   * Composition of two functions. Invokation first invokes the

@@ -17,15 +17,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import de.mlhartme.mork.classfile.Access;
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.ClassDef;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Access;
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassDef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.Output;
+
 import de.mlhartme.mork.classfile.CustomCompiler;
 import de.mlhartme.mork.classfile.GenericCompiler;
 import de.mlhartme.mork.classfile.ObjectCompiler;
-import de.mlhartme.mork.classfile.Output;
 import de.mlhartme.mork.mapping.Mapper;
 import de.mlhartme.mork.util.GenericException;
 
@@ -143,7 +144,7 @@ public class MapperCompiler implements Bytecodes {
         ClassDef result;
 
         result = new ClassDef(new ClassRef(className), ClassRef.OBJECT);
-        result.addMethod(Access.PUBLIC | Access.STATIC,
+        result.addMethod(Access.fromArray(Access.PUBLIC, Access.STATIC),
                          ClassRef.OBJECT, "load", ClassRef.NONE, code);
         return result;
     }

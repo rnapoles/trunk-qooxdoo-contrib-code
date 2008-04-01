@@ -12,10 +12,20 @@
 
 package de.mlhartme.mork.classfile;
 
-import de.mlhartme.mork.reflect.Arrays;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+
+import org.qooxdoo.sushi.classfile.Access;
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassDef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodDef;
+import org.qooxdoo.sushi.classfile.MethodRef;
+
+import de.mlhartme.mork.reflect.Arrays;
 
 /**
  * Turn object into bytecode to create the object. Serializes an object into a class.
@@ -384,7 +394,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
         helperMethods++;
         nextDest = new Code();
         nextDest.locals = buffer + 1;  // TODO
-        def = destClass.addMethod(Access.PRIVATE | Access.STATIC, returnType, name,
+        def = destClass.addMethod(new HashSet<Access>(java.util.Arrays.asList(Access.PRIVATE, Access.STATIC)), returnType, name,
                                   ClassRef.NONE, nextDest);
         ref = new MethodRef(destClass.thisClass, false, returnType, name, ClassRef.NONE);
         dest.emit(INVOKESTATIC, ref);

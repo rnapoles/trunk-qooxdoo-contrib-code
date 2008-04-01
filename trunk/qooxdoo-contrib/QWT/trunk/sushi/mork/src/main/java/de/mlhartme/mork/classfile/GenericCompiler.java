@@ -12,11 +12,17 @@
 
 package de.mlhartme.mork.classfile;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
+
 import de.mlhartme.mork.reflect.Field;
 import de.mlhartme.mork.reflect.Function;
 import de.mlhartme.mork.reflect.Method;
 import de.mlhartme.mork.reflect.Selection;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Compiling an object compiles it fields. The reverse process

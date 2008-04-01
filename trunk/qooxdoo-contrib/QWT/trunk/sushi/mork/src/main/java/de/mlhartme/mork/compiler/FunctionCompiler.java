@@ -11,16 +11,18 @@
 
 package de.mlhartme.mork.compiler;
 
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.CustomCompiler;
-import de.mlhartme.mork.reflect.Function;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.Code;
+
+import de.mlhartme.mork.classfile.CustomCompiler;
+import de.mlhartme.mork.reflect.Function;
 
 /**
  * Generates classes derived from CompiledFunctionBase classes. Generates zero, one (or multiple

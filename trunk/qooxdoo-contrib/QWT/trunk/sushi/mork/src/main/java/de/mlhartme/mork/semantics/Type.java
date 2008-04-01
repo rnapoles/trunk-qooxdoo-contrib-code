@@ -11,7 +11,7 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.ClassRef;
 
 /**
  * Type of an attribute. Immutable, can safely be shared.
