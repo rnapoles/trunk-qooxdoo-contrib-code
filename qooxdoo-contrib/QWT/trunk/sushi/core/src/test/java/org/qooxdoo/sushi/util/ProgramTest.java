@@ -34,7 +34,7 @@ public class ProgramTest {
 
     @Test
     public void normal() throws IOException {
-  		p("hostname").exec();
+        p("hostname").exec();
     }
 
     @Test
@@ -44,21 +44,21 @@ public class ProgramTest {
 
     @Test
     public void variableSubstitution() throws IOException {
-    	String var;
-    	String output;
-    	
-    	var = OS.CURRENT.variable("PATH");
-    	output = p("echo", var).exec().trim();
+        String var;
+        String output;
+
+        var = OS.CURRENT.variable("PATH");
+        output = p("echo", var).exec().trim();
         assertTrue(output + " vs " + var, OS.CURRENT != OS.WINDOWS == var.equals(output));
     }
 
     @Test
     public void noRedirect() throws IOException {
-    	if (OS.CURRENT != OS.WINDOWS) {
+        if (OS.CURRENT != OS.WINDOWS) {
             assertEquals("foo >file\n", p("echo", "foo", ">file").exec());
-    	} else {
-    		// TODO
-    	}
+        } else {
+            // TODO
+        }
     }
 
     @Test
@@ -81,11 +81,11 @@ public class ProgramTest {
     }
     
     private String environ() {
-    	if (OS.CURRENT == OS.WINDOWS) {
-    		return "set";
-    	} else {
-    		return "env";
-    	}
+        if (OS.CURRENT == OS.WINDOWS) {
+            return "set";
+        } else {
+            return "env";
+        }
     }
     
     public void failure() throws IOException {
@@ -110,13 +110,13 @@ public class ProgramTest {
     }
     
     private Program p(String ... args) {
-    	Program p;
-    	
-    	p = new Program(IO_OBJ.getHome());
-    	if (OS.CURRENT == OS.WINDOWS) {
-    		p.add("cmd", "/C");
-    	}
-    	p.add(args);
-    	return p;
+        Program p;
+        
+        p = new Program(IO_OBJ.getHome());
+        if (OS.CURRENT == OS.WINDOWS) {
+            p.add("cmd", "/C");
+        }
+        p.add(args);
+        return p;
     }
 }

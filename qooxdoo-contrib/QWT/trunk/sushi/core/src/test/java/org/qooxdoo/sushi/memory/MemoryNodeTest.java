@@ -20,7 +20,6 @@
 package org.qooxdoo.sushi.memory;
 
 import org.qooxdoo.sushi.io.NodeTest;
-import org.qooxdoo.sushi.memory.MemoryNode;
 
 public class MemoryNodeTest extends NodeTest {
     @Override

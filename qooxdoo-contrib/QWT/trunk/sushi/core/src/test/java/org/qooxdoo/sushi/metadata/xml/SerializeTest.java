@@ -91,7 +91,7 @@ public class SerializeTest extends ModelBase {
                 "</vendor>\n" , run(vendor));
     }
 
-    private final String LF = OS.CURRENT.lineSeparator;
+    private static final String LF = OS.CURRENT.lineSeparator;
     
     @Test
     public void carDom() throws IOException {
