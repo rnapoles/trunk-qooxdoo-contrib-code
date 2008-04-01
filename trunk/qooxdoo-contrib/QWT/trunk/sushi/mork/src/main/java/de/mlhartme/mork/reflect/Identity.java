@@ -59,6 +59,7 @@ public class Identity extends Function {
      * Gets the Function name.
      * @return  the Function name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -67,14 +68,17 @@ public class Identity extends Function {
      * Gets the result type.
      * @return  the result type
      */
+    @Override
     public Class getReturnType() {
         return result;
     }
 
+    @Override
     public Class[] getParameterTypes() {
         return new Class[] { arg };
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return NO_CLASSES;
     }
@@ -86,6 +90,7 @@ public class Identity extends Function {
      * @param   paras  array of length 1
      * @return  the array element supplied
      */
+    @Override
     public Object invoke(Object[] paras) {
         return paras[0];
     }
@@ -116,6 +121,7 @@ public class Identity extends Function {
         name = in.readUTF();
     }
 
+    @Override
     public void translate(Code code) {
         // do nothing
     }

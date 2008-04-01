@@ -59,6 +59,7 @@ public class Range extends RegExpr {
     }
 
 
+    @Override
     public boolean equals(Object obj) {
         Range range;
 
@@ -70,6 +71,7 @@ public class Range extends RegExpr {
         }
     }
 
+    @Override
     public Object visit(Action action) {
         return action.range(first, last);
     }
@@ -184,6 +186,7 @@ public class Range extends RegExpr {
 
     //-----------------------------------------------------------------
 
+    @Override
     public String toString() {
         if (first == last) {
             return "[" + charString(first) + "]";

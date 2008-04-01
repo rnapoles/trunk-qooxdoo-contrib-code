@@ -102,6 +102,7 @@ public class Occurrence {
         }
     }
 
+    @Override
     public String toString() {
         return min + ":" + max;
     }

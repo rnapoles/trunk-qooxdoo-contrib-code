@@ -232,6 +232,7 @@ public class Buffer {
 
     //-----------------------------------------------------------------------
 
+    @Override
     public String toString() {
         StringBuilder buf;
 

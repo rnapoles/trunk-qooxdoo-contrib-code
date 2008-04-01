@@ -58,6 +58,7 @@ public class GrammarSyntax extends Syntax {
         this.scannerRules = scannerRules;
     }
 
+    @Override
     public Grammar getGrammar() {
         return grammar;
     }
@@ -67,6 +68,7 @@ public class GrammarSyntax extends Syntax {
      *
      * @return null for errors.
      */
+    @Override
     public Parser translate(Output output) throws GenericException {
         FABuilder builder;
         Conflicts conflicts;

@@ -46,6 +46,7 @@ public class ToArray extends Function implements Bytecodes {
      * Gets the Function name.
      * @return  the function name
      */
+    @Override
     public String getName() {
         return "To" + componentType.getName() + "Array";
     }
@@ -54,6 +55,7 @@ public class ToArray extends Function implements Bytecodes {
      * Gets the result type of this Function.
      * @return  the result type
      */
+    @Override
     public Class getReturnType() {
         return Arrays.getArrayClass(componentType);
     }
@@ -62,14 +64,17 @@ public class ToArray extends Function implements Bytecodes {
      * Gets the argument count of this Function.
      * @return  the argument count
      */
+    @Override
     public Class[] getParameterTypes() {
         return new Class[] { List.class };
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return NO_CLASSES;
     }
 
+    @Override
     public Object invoke(Object[] vals) {
         int i, max;
         Object result; // not Object[] because of arrays of primitive types
@@ -106,6 +111,7 @@ public class ToArray extends Function implements Bytecodes {
         componentType = ClassRef.read(in);
     }
 
+    @Override
     public void translate(Code dest) {
         int lstVar; // the list, which is turned into an array
         int maxVar; // local variable for upper bound

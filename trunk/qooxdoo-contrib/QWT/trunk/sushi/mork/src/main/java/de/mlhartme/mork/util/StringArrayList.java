@@ -182,6 +182,7 @@ public class StringArrayList implements Serializable {
      * Returns the string representation.
      * @return  string representation
      */
+    @Override
     public String toString() {
         StringBuilder buf;
         int i;

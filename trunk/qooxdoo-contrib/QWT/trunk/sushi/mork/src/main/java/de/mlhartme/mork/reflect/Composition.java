@@ -73,6 +73,7 @@ public class Composition extends Function {
      * Gets the Function name.
      * @return the Function name
      */
+    @Override
     public String getName() {
         return base.getName() + idx + para.getName();
     }
@@ -82,6 +83,7 @@ public class Composition extends Function {
      * base Function.
      * @return the result type
      */
+    @Override
     public Class getReturnType() {
         return base.getReturnType();
     }
@@ -91,6 +93,7 @@ public class Composition extends Function {
      * argument from the base function, but it adds its own arguments.
      * @return  the argument count
      */
+    @Override
     public Class[] getParameterTypes() {
         Class[] a, b, result;
 
@@ -104,6 +107,7 @@ public class Composition extends Function {
         return result;
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return (Class[]) Arrays.append(Class.class,
                                        base.getExceptionTypes(),
@@ -116,6 +120,7 @@ public class Composition extends Function {
      * @param   arguments for base and parameter Functions.
      * @return  the result returned by the base Function.
      */
+    @Override
     public Object invoke(Object[] allVals) throws InvocationTargetException {
         Object[] vals;
         Object tmp;
@@ -133,6 +138,7 @@ public class Composition extends Function {
         return base.invoke(vals);
     }
 
+    @Override
     public void translate(Code dest) {
         int max;
         int ofs;

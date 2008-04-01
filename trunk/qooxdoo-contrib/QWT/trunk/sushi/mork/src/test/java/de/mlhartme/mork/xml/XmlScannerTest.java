@@ -31,6 +31,7 @@ public class XmlScannerTest extends TestCase {
 
     private URL dataDir;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

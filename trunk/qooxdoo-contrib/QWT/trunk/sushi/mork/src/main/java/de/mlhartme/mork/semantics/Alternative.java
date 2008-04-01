@@ -190,6 +190,7 @@ public class Alternative implements Compare {
         return buf.toString();
     }
 
+    @Override
     public String toString() {
         StringBuilder buf;
         int max;

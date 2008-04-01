@@ -84,6 +84,7 @@ public class State {
 
     //-------------------------------------------------------------------
 
+    @Override
     public boolean equals(Object obj) {
         State state;
 

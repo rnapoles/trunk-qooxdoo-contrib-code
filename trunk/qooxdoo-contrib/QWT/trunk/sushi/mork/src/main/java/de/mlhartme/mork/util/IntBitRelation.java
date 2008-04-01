@@ -167,6 +167,7 @@ public class IntBitRelation {
      * @return true, if obj is a relation with exaclty the
      *         the same elements as this relation
      */
+    @Override
     public boolean equals(Object obj) {
         IntBitRelation rel;
         int i;
@@ -237,6 +238,7 @@ public class IntBitRelation {
      * Returns a String representation.
      * @return  string representation
      */
+    @Override
     public String toString() {
         StringBuilder buf;
         int i;

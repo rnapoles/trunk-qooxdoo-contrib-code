@@ -27,6 +27,7 @@ public class Without extends RegExpr {
         this.right = right;
     }
 
+    @Override
     public Object visit(Action action) {
         Object a;
         Object b;
@@ -36,6 +37,7 @@ public class Without extends RegExpr {
         return action.without(a, b);
     }
 
+    @Override
     public String toString() {
         return left + " - " + right;
     }

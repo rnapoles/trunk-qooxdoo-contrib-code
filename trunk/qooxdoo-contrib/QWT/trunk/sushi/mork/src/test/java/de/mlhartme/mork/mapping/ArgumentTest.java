@@ -23,6 +23,7 @@ public class ArgumentTest extends CompareBase {
     private List args;
     private List expected;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

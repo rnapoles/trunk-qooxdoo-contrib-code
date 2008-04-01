@@ -316,6 +316,7 @@ public class CopyBuffer implements Compare {
         return toString(true);
     }
 
+    @Override
     public String toString() {
         return toString(false);
     }

@@ -100,6 +100,7 @@ public class Constructor extends Function implements Bytecodes {
      * Gets the Function name.
      * @return  the function name
      */
+    @Override
     public String getName() {
         return constr.getName();
     }
@@ -108,6 +109,7 @@ public class Constructor extends Function implements Bytecodes {
      * Gets the result type of this Function.
      * @return  the result type
      */
+    @Override
     public Class getReturnType() {
         return constr.getDeclaringClass();
     }
@@ -116,10 +118,12 @@ public class Constructor extends Function implements Bytecodes {
      * Gets the argument count of this Function.
      * @return  the argument count
      */
+    @Override
     public Class[] getParameterTypes() {
         return constr.getParameterTypes();
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return constr.getExceptionTypes();
     }
@@ -129,6 +133,7 @@ public class Constructor extends Function implements Bytecodes {
      * @param   vals  arguments to the Java constructor
      * @return  the Object returned by the Java constructor
      */
+    @Override
     public Object invoke(Object[] vals) throws InvocationTargetException {
         try {
             return constr.newInstance(vals);
@@ -211,6 +216,7 @@ public class Constructor extends Function implements Bytecodes {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         int max;
         int ofs;

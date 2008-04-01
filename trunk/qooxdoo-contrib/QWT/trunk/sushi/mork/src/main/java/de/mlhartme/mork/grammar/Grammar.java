@@ -586,6 +586,7 @@ public class Grammar extends GrammarCore {
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder buffer;
         int p;

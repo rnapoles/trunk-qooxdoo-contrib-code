@@ -38,6 +38,7 @@ public class MainFunctionalTest extends TestCase {
 
     private Output output;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -77,6 +78,7 @@ public class MainFunctionalTest extends TestCase {
         }
     }
 
+    @Override
     protected void tearDown() throws Exception {
         // do not delete tmp directory, it might help to locate problems
     }

@@ -16,15 +16,19 @@ import org.qooxdoo.sushi.classfile.Code;
 import de.mlhartme.mork.reflect.Function;
 
 public abstract class CompiledFunctionBase extends Function {
+    @Override
     public String getName() {
         return "fn" + hashCode();
     }
+    @Override
     public Class getReturnType() {
         throw new UnsupportedOperationException();
     }
+    @Override
     public Class[] getParameterTypes() {
         throw new UnsupportedOperationException();
     }
+    @Override
     public Class[] getExceptionTypes() {
         throw new UnsupportedOperationException();
     }
@@ -34,6 +38,7 @@ public abstract class CompiledFunctionBase extends Function {
     // causes javap (sun jdk 1.3.1 and 1.4 beta 2) to fail with a NullPointerException
     // when called for a class derived from this class!?
 
+    @Override
     public void translate(Code dest) {
         throw new UnsupportedOperationException();
     }

@@ -52,6 +52,7 @@ public class Type {
         return VALUE;
     }
 
+    @Override
     public boolean equals(Object obj) {
         Type operand;
 
@@ -83,6 +84,7 @@ public class Type {
         return new Type(tmp, Math.max(card, operand.card));
     }
 
+    @Override
     public String toString() {
         return type.getName() + cardString();
     }

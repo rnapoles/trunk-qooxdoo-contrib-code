@@ -172,6 +172,7 @@ public class State {
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder result;
         int transition;

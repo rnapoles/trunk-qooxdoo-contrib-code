@@ -323,6 +323,7 @@ public class FA {
     //-------------------------------------------------------------------
     // toString
 
+    @Override
     public String toString() {
         StringBuilder result;
         int idx;

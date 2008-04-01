@@ -87,14 +87,17 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
         }
     }
 
+    @Override
     public boolean matches(Class c) {
         return type.equals(c);
     }
 
+    @Override
     public Class[] getFieldTypes() {
         return fieldTypes;
     }
 
+    @Override
     public Object[] getFieldObjects(Object obj) {
         Object[] result;
         int i;
@@ -162,6 +165,7 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
     }
 
     /** called before prepareing the arguments. **/
+    @Override
     public void beginTranslation(Object obj, Code dest) {
         if (constrType == INVOKESPECIAL) {
             dest.emit(NEW, new ClassRef(type));
@@ -172,6 +176,7 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
     }
 
     /** actually invoke. **/
+    @Override
     public void endTranslation(Object obj, Code dest) {
         dest.emit(constrType, constr);
     }

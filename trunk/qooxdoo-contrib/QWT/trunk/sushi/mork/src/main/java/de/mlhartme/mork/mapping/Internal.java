@@ -51,6 +51,7 @@ public class Internal {
         sems.add(attr, no);
     }
 
+    @Override
     public String toString() {
         return "internal constructor " + no;
     }

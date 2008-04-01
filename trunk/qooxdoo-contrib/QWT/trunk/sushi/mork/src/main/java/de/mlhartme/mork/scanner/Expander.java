@@ -62,6 +62,7 @@ public class Expander extends Action {
 
     //-----------------------------------------------------------------
 
+    @Override
     public Object symbol(int symbol) {
         List lst;
         int i;
@@ -99,10 +100,12 @@ public class Expander extends Action {
         return re;
     }
 
+    @Override
     public Object range(char first, char last) {
         return new Range(first, last);
     }
 
+    @Override
     public Object choice(Object[] body) {
         RegExpr[] args;
 
@@ -111,6 +114,7 @@ public class Expander extends Action {
         return new Choice(args);
     }
 
+    @Override
     public Object sequence(Object[] body) {
         RegExpr[] args;
 
@@ -119,10 +123,12 @@ public class Expander extends Action {
         return new Sequence(args);
     }
 
+    @Override
     public Object loop(Object rawBody) {
         return new Loop((RegExpr) rawBody);
     }
 
+    @Override
     public Object without(Object left, Object right) {
         return new Without((RegExpr) left, (RegExpr) right);
     }

@@ -24,10 +24,12 @@ public class Symbol extends RegExpr {
         symbol = symbolInit;
     }
 
+    @Override
     public Object visit(Action action) {
         return action.symbol(symbol);
     }
 
+    @Override
     public String toString() {
         return "" + symbol;
     }

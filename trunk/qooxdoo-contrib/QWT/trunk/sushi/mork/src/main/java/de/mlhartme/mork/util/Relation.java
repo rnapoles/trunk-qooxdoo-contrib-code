@@ -245,6 +245,7 @@ public class Relation {
         return new RelationIterator(this);
     }
 
+    @Override
     public String toString() {
         StringBuilder result;
         RelationIterator iter;

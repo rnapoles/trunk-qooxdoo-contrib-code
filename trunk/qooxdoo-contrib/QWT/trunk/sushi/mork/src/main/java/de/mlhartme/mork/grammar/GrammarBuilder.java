@@ -41,6 +41,7 @@ public class GrammarBuilder extends Action {
         return helper;
     }
 
+    @Override
     public Object choice(Object[] body) {
         Grammar result;
         Grammar tmp;
@@ -58,6 +59,7 @@ public class GrammarBuilder extends Action {
         return result;
     }
 
+    @Override
     public Object sequence(Object[] body) {
         Grammar result;
         Grammar tmp;
@@ -82,6 +84,7 @@ public class GrammarBuilder extends Action {
         return result;
     }
 
+    @Override
     public Object loop(Object rawBody) {
         Grammar result;
         Grammar body;
@@ -103,6 +106,7 @@ public class GrammarBuilder extends Action {
         return result;
     }
 
+    @Override
     public Object symbol(int symbol) {
         Grammar result;
 
@@ -112,6 +116,7 @@ public class GrammarBuilder extends Action {
         return result;
     }
 
+    @Override
     public Object range(char first, char last) {
         if (first == last) {
             exception = new GenericException("illegal character literal in parser section: " +
@@ -126,6 +131,7 @@ public class GrammarBuilder extends Action {
         return new Grammar(helper);
     }
 
+    @Override
     public Object without(Object left, Object right) {
         exception = new GenericException("illegal without operator");
         return new Grammar(helper);

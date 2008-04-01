@@ -35,6 +35,7 @@ public class Loop extends RegExpr {
         return Choice.createOption(new Loop(bodyInit));
     }
 
+    @Override
     public Object visit(Action action) {
         Object tmp;
 
@@ -42,6 +43,7 @@ public class Loop extends RegExpr {
         return action.loop(tmp);
     }
 
+    @Override
     public String toString() {
         return "{" + body.toString() + "}";
     }
