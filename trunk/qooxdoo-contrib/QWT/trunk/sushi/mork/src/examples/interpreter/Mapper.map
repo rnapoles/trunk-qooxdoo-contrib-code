@@ -1,0 +1,76 @@
+# §{{header}}:
+#
+# This is file examples/interpreter/Mapper.map,
+# Mork version 0.6  Copyright § 1998-2002  Michael Hartmeier
+#
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+mapper interpreter.Mapper;
+
+grm = "script.grm";
+
+import interpreter:
+    Assign, Binary, Block, Const, Declarations, Expression, If, Input,
+    Print, Reference, Script, Unary, Variable, While;
+import de.mlhartme.mork.semantics:
+    BuiltIn;
+import java.lang:
+    Boolean, Integer, String;
+
+Script              => Script;
+Declarations        => Declarations : >\\Script  > \\Script//Reference;
+Variable            => Variable;
+"int"               => Expression.INT;
+"bool"              => Expression.BOOL;
+"string"            => Expression.STR;
+
+# Statements
+Block               => Block;
+While               => While;
+If                  => If;
+Input               => Input;
+Print               => Print;
+Assign              => Assign;
+
+# Expressions
+Const               => Const;
+Reference           => Reference;
+Or                  => Binary;
+And2                => Binary;
+Equation2           => Binary;
+Relation2           => Binary;
+Sum2                => Binary;
+Prod2               => Binary;
+Unary1              => Unary;
+
+# Operators
+"+"                 => Expression.ADD;
+"-"                 => Expression.SUB;
+"*"                 => Expression.MUL;
+"/"                 => Expression.DIV;
+"%"                 => Expression.REM;
+"&&"                => Expression.AND;
+"||"                => Expression.OR;
+"!"                 => Expression.NOT;
+"=="                => Expression.EQ;
+"!="                => Expression.NE;
+"<"                 => Expression.LT;
+">"                 => Expression.GT;
+"<="                => Expression.LE;
+">="                => Expression.GE;
+
+# misc
+Boolean             => Boolean;
+"true"              => Boolean.TRUE;
+"false"             => Boolean.FALSE;
+Identifier          => String;
+                    => [text]: > Identifier;
+String              => BuiltIn.parseString;
+                    => [text]: > String;
+Integer             => Integer.parseInt;
+                    => [text]: > Integer;

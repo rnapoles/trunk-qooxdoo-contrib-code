@@ -1,0 +1,52 @@
+# §{{header}}:
+#
+# This is file examples/compiler/program.grm,
+# Mork version 0.6  Copyright § 1998-2002  Michael Hartmeier
+#
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+[PARSER]
+
+Program             ::= "program" Block ;
+
+Declarations        ::= Variable* ;
+Variable            ::= Type id ";" ;
+Type                ::= IntType | StrType;
+IntType             ::= "int" ;
+StrType             ::= "String" ;
+
+Stmt                ::= Block | Assign | Print | Input | If | While ;
+
+Block               ::= "{" Declarations Stmt* "}" ;
+Assign              ::= LValue "=" Expr ";" ;
+Print               ::= "print" Expr ";" ;
+Input               ::= "input" LValue ";" ;
+If                  ::= "if" "(" Expr ")" Block ("else" Block)?;
+While               ::= "while" "(" Expr ")" Block ;
+
+Expr                ::= Compare ;
+Compare             ::= Sum | Sum ("==" | "!=" | "<" | "<=" | ">" | ">=") Sum ;
+Sum                 ::= Prod | Sum ("+"|"-") Prod ;
+Prod                ::= Atom | Prod ("*" | "/") Atom ;
+Atom                ::= LValue | str | num | "(" Expr ")" ;
+
+LValue              ::= VariableReference ;
+VariableReference   ::= id ;
+
+
+[SCANNER]
+    white = space, comment;
+
+str     ::= '"' '"'!* '"' ;
+id      ::= letter (letter | digit | '_')* ;
+num     ::= digit+ ;
+letter  ::= 'A'..'Z' | 'a'..'z' ;
+digit   ::= '0'..'9' ;
+
+space   ::= (' ' | '\b' | '\t' | '\n' | '\f' | '\r' )+ ;
+comment ::= "/*" ('*'! | '*' '/'!)* "*/" ;

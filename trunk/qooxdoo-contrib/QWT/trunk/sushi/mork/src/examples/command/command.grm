@@ -1,0 +1,32 @@
+# §{{header}}:
+#
+# This is file examples/command/command.grm,
+# Mork version 0.6  Copyright § 1998-2002  Michael Hartmeier
+#
+# Mork is licensed under the terms of the GNU Lesser General Public License.
+# It is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the file license.txt for details.
+#
+# §.
+
+[PARSER]
+
+Command      ::= "command" String ":" String Declarations "{" Line "}" ;
+Declarations ::= Variable* ;
+Variable     ::= Identifier ":" String ";" ;
+Line         ::= "run" Expression ("+" Expression)* ";" ;
+Expression   ::= Constant | Reference;
+Constant     ::= String ;
+String       ::= Literal ;
+Reference    ::= Identifier ;
+
+[SCANNER]
+    white = Space, Comment ;
+
+Letter       ::= 'A'..'Z' | 'a'..'z';
+Digit        ::= '0'..'9';
+Space        ::= ('\u0020' | '\b' | '\t' | '\n' | '\f' | '\r' )+;
+Comment      ::= '#' '\u0020'..'\u007f'* ('\n'|'\r');
+Literal      ::= '"' ( ('\\' 0..65535) | ('\\' | '"' | '\n' | '\r')!)+ '"';
+Identifier   ::= Letter (Letter | Digit)* ;
