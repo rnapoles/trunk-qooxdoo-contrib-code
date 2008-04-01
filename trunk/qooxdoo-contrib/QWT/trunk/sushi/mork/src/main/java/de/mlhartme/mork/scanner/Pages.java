@@ -154,11 +154,11 @@ public class Pages {
     }
 
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
         int i, p;
         char[] pg;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("pages {");
         for (p = 0; p <= lastNo; p++) {
             pg = get(p);

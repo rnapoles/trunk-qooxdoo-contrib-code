@@ -37,12 +37,12 @@ public class Conversion {
         String kind, Selection selection, Definition def, List args)
         throws GenericException
     {
-        StringBuffer msg;
+        StringBuilder msg;
         int max;
         int i;
         Argument arg;
 
-        msg = new StringBuffer();
+        msg = new StringBuilder();
         msg.append("for attribute ");
         msg.append(def.getName());
         msg.append(":\n");

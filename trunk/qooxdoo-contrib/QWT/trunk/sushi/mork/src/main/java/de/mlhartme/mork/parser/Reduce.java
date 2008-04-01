@@ -46,9 +46,9 @@ public class Reduce {
     //----------------------------------------------------------
 
     public String toString(Grammar grammar) {
-        StringBuffer buffer;
+        StringBuilder buffer;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         buffer.append("reduce ");
         grammar.prodToString(buffer, production);
         buffer.append(" on ");

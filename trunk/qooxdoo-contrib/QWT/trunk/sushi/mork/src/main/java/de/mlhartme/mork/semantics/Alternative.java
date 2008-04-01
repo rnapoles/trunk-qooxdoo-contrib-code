@@ -165,13 +165,13 @@ public class Alternative implements Compare {
     }
 
     public String toRawString() {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
         int max;
         int idx;
         int prevIdx;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("prod " + production + "$" + resultOfs);
         buf.append("\n\t");
         max = argsOfs.size();
@@ -191,12 +191,11 @@ public class Alternative implements Compare {
     }
 
     public String toString() {
-        int a;
-        StringBuffer buf;
+        StringBuilder buf;
         int max;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("prod " + production + "$" + resultOfs);
         buf.append("  <==  (");
         max = argsOfs.size();

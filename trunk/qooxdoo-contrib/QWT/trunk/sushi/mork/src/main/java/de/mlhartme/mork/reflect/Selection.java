@@ -153,10 +153,10 @@ public class Selection {
     //-------------------------------------------------------------------
 
     public String toString() {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int i;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         buffer.append("selection " + "{\n");
         for (i = 0; i < functions.length; i++) {
             buffer.append("  ");

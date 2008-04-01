@@ -17,7 +17,7 @@ import java.io.Reader;
 
 /**
  * Connection between Scanner and Reader. This class is kind of a
- * StringBuffer optimized for deleting at the beginning and appending at the
+ * StringBuilder optimized for deleting at the beginning and appending at the
  * end. In addition, appending is done buffered from a Reader. The buffer
  * behaves as if the reader is filled in completely at the beginning, but
  * this is done in steps.
@@ -233,9 +233,9 @@ public class Buffer {
     //-----------------------------------------------------------------------
 
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("buffer {");
         buf.append("\n  srcEof   = " + srcEof);
         buf.append("\n  mark     = " + mark);

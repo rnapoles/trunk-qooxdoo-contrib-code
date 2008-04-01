@@ -321,12 +321,12 @@ public class CopyBuffer implements Compare {
     }
 
     public String toString(boolean raw) {
-        StringBuffer buf;
+        StringBuilder buf;
         Iterator iter;
         State state;
         Attribute attr;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         iter = states.iterator();
         while (iter.hasNext()) {
             state = (State) iter.next();

@@ -475,14 +475,13 @@ public class State implements Compare {
     }
 
     public String toString(boolean raw) {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
         int max;
 
         Alternative ab;
-        Attribute attr;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         max = attributions.size();
         for (i = 0; i < max; i++) {
             ab = (Alternative) attributions.get(i);

@@ -183,10 +183,10 @@ public class StringArrayList implements Serializable {
      * @return  string representation
      */
     public String toString() {
-        StringBuffer buf;
+        StringBuilder buf;
         int i;
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         buf.append("StringArrayList {\n");
         for (i = 0; i < size; i++) {
             if (data[i] != null) {

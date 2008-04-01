@@ -173,12 +173,12 @@ public class State {
     }
 
     public String toString() {
-        StringBuffer result;
+        StringBuilder result;
         int transition;
         int i;
         int[] intLabel;
 
-        result = new StringBuffer();
+        result = new StringBuilder();
         if (label == null) {
             result.append("<null>");
         } else {

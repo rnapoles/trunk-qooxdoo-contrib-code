@@ -587,11 +587,11 @@ public class Grammar extends GrammarCore {
     }
 
     public String toString() {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int p;
         int max;
 
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         max = getProductionCount();
         for (p = 0; p < max; p++) {
             prodToString(buffer, p);
@@ -600,9 +600,8 @@ public class Grammar extends GrammarCore {
         return buffer.toString();
     }
 
-    public void prodToString(StringBuffer buffer, int prod) {
+    public void prodToString(StringBuilder buffer, int prod) {
         int i, max;
-        String name;
 
         buffer.append(symbolTable.getOrIndex(getLeft(prod)));
         buffer.append("\t::=");
