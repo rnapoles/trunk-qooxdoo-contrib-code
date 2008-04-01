@@ -3,12 +3,10 @@
 package org.qooxdoo.sushi.classfile;
 
 /**
- * Constants for this implementations. This interface is not public;
- * constants of public interest can be found in Bytecodes and Access.
+ * Constants for this implementations.  TODO: remove public
  */
 
-// not public
-interface Constants {
+public interface Constants {
     //-----------------------------------------------------------
     // constants that originate from JVM spec
 
