@@ -48,6 +48,8 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isLoaded = false;
     this.__isEditable = false;
     this.__isReady = false;
+    
+    this.__range;
 
     this.__firstLineSelected = false;
 
@@ -814,6 +816,9 @@ qx.Class.define("htmlarea.HtmlArea",
         if (focusRoot) {
           focusRoot.setFocusedChild(this);
         }
+
+        /* Initially save current range */
+        this._storeRange();
       }
 
       // now we can set the ready state
@@ -1863,8 +1868,15 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleFocusOut : qx.core.Variant.select("qx.client", {
       "mshtml" : function(e)
       {
-        this.__storedSelectedHtml = null;
-        this.__storedSelectedHtml = this.getSelectedHtml();
+
+        /* Save range object */
+        this._storeRange();
+
+        /* Save range text */
+        if (this.__storedSelectedHtml == null){
+          this.__storedSelectedHtml = this.getSelectedHtml();
+        }
+
         this.createDispatchEvent("focusOut");
       },
       "default" : function(e) {}
@@ -2215,7 +2227,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    undo : function(mode)
+    undo : function()
     {
       /* Only execute this command if undo/redo is activated */
       if (this.getUseUndoRedo())
@@ -2235,7 +2247,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-    redo : function(mode)
+    redo : function()
     {
       /* Only execute this command if undo/redo is activated */
       if (this.getUseUndoRedo())
@@ -2612,6 +2624,24 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
+    /**
+     * Saves the current active range object
+     * @type member
+     */
+    _storeRange : function()
+    {
+      this.__range = this.getRange();
+    },
+    
+    /**
+     * Returns the range object saved by _storeRange()
+     * @type member
+     * @return {Object} Stored range object
+     */
+    getStoredRange : function()
+    {
+      return this.__range;
+    },
 
     /*
      -----------------------------------------------------------------------------
