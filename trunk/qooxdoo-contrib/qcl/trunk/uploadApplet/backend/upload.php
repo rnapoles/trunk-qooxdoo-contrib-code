@@ -76,18 +76,6 @@ if ( strstr($file_name, ".." ) )
 }
 
 /*
- * do we have to create a subdirectory?
- */
-if ( strstr($file_name, "/") )
-{
-  $basedir = dirname($file_name);
-  if ( ! mkdir ( $basedir ) )
-  {
-    die ("<FONT COLOR=RED>Could not create '$basedir'.</FONT>");
-  }
-}
-
-/*
  * target path
  */
 $tgt_path  = "$uploadPath/$file_name";
