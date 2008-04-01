@@ -23,6 +23,7 @@ public class MainTest extends TestCase {
     private Job[] jobs;
     private Output output;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

@@ -123,6 +123,7 @@ public class Method extends Function implements Bytecodes {
      * Gets the name of this Function.
      * @return  the Function name
      */
+    @Override
     public String getName() {
         return meth.getName();
     }
@@ -134,10 +135,12 @@ public class Method extends Function implements Bytecodes {
      * discarded.
      * @return  the result type
      */
+    @Override
     public Class getReturnType() {
         return meth.getReturnType();
     }
 
+    @Override
     public Class[] getParameterTypes() {
         Class[] tmp, result;
 
@@ -152,6 +155,7 @@ public class Method extends Function implements Bytecodes {
         }
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return meth.getExceptionTypes();
     }
@@ -165,6 +169,7 @@ public class Method extends Function implements Bytecodes {
      * @return  Object returned be the Java Method or the Object the method
      *          is invoked on.
      */
+    @Override
     public Object invoke(Object[] vals) throws InvocationTargetException {
         Object[] tmp;
         int i;
@@ -261,6 +266,7 @@ public class Method extends Function implements Bytecodes {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         Class[] tmp;
         int first;

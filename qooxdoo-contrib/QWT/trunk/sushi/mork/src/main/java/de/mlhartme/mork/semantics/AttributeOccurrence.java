@@ -24,6 +24,7 @@ public class AttributeOccurrence {
         this.ofs = ofs;
     }
 
+    @Override
     public String toString() {
         return attr.toString() + '[' + ofs + ']';
     }
@@ -40,6 +41,7 @@ public class AttributeOccurrence {
         return attr.symbol == ao.attr.symbol && ofs == ao.ofs;
     }
 
+    @Override
     public boolean equals(Object obj) {
         AttributeOccurrence ao;
 

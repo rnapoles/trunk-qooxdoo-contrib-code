@@ -103,6 +103,7 @@ public class Choice extends RegExpr {
         }
     }
 
+    @Override
     public Object visit(Action action) {
         Object[] tmps;
         int i;
@@ -114,6 +115,7 @@ public class Choice extends RegExpr {
         return action.choice(tmps);
     }
 
+    @Override
     public String toString() {
         StringBuilder buf;
         int i;

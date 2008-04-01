@@ -60,10 +60,12 @@ public class FunctionCompiler extends CustomCompiler implements Bytecodes {
         this.done = new HashMap();
     }
 
+    @Override
     public boolean matches(Class type) {
         return Function.class.isAssignableFrom(type);
     }
 
+    @Override
     public void beginTranslation(Object obj, Code dest) {
         Function fn;
         Class[] tmp;
@@ -84,14 +86,17 @@ public class FunctionCompiler extends CustomCompiler implements Bytecodes {
         }
     }
 
+    @Override
     public void endTranslation(Object obj, Code dest) {
         // do nothing
     }
 
+    @Override
     public Class[] getFieldTypes() {
         return new Class[] {};
     }
 
+    @Override
     public Object[] getFieldObjects(Object obj) {
         return new Object[0];
     }

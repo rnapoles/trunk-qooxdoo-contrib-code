@@ -68,6 +68,7 @@ public class Sequence extends RegExpr {
         return Choice.getRanges(body[0], result);
     }
 
+    @Override
     public Object visit(Action action) {
         Object[] tmps;
         int i;
@@ -79,6 +80,7 @@ public class Sequence extends RegExpr {
         return action.sequence(tmps);
     }
 
+    @Override
     public String toString() {
         StringBuilder buf;
         int i;

@@ -56,24 +56,29 @@ public class Option extends Function implements Bytecodes {
 
     //----------------------------------------------------------------------
 
+    @Override
     public String getName() {
         return with.getName();
     }
 
+    @Override
     public Class getReturnType() {
         return with.getReturnType();
     }
 
+    @Override
     public Class[] getParameterTypes() {
         return parameterTypes;
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return with.getExceptionTypes();
     }
 
     //-----------------------------------------------------------------------
 
+    @Override
     public Object invoke(Object[] vals) throws InvocationTargetException {
         if (vals[optional] == TAG) {
             // TODO: primitive types!!
@@ -85,6 +90,7 @@ public class Option extends Function implements Bytecodes {
     }
 
     // TODO: drop the parameter wrapping?
+    @Override
     public void translate(Code dest) {
         int max;
         int ofs;

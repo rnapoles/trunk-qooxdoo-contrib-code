@@ -27,10 +27,12 @@ public class Item implements Comparable {
 
     //---------------------------------------------------------------
 
+    @Override
     public int hashCode() {
         return production * dot;
     }
 
+    @Override
     public boolean equals(Object obj) {
         Item item;
 

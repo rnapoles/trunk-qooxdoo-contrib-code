@@ -470,6 +470,7 @@ public class State implements Compare {
         return toString(true);
     }
 
+    @Override
     public String toString() {
         return toString(false);
     }

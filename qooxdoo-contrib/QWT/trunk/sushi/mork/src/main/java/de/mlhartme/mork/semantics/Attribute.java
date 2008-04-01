@@ -63,6 +63,7 @@ public class Attribute {
         return null;
     }
 
+    @Override
     public String toString() {
         return "symbol=" + symbol + ", name=" + name + ", " + type;
     }

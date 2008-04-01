@@ -188,6 +188,7 @@ public class Definition {
         }
     }
 
+    @Override
     public String toString() {
         return "Definition " + name + " " + attribute;
     }

@@ -78,6 +78,7 @@ public class AttributionBuffer {
         return (AttributeOccurrence) args.get(i);
     }
 
+    @Override
     public String toString() {
         int a;
         StringBuilder buf;

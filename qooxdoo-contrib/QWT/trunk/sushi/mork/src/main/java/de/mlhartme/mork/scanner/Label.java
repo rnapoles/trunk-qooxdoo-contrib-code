@@ -130,6 +130,7 @@ public class Label {
         return result;
     }
 
+    @Override
     public String toString() {
         return symbols.toString();
     }

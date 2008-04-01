@@ -105,6 +105,7 @@ public class Field extends Function implements Bytecodes {
      * Gets the Function name.
      * @return the Function name
      */
+    @Override
     public String getName() {
         return field.getName();
     }
@@ -113,10 +114,12 @@ public class Field extends Function implements Bytecodes {
      * Gets the result type.
      * @return  the result type
      */
+    @Override
     public Class getReturnType() {
         return field.getType();
     }
 
+    @Override
     public Class[] getParameterTypes() {
         if (isStatic()) {
             return NO_CLASSES;
@@ -125,6 +128,7 @@ public class Field extends Function implements Bytecodes {
         }
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return NO_CLASSES;
     }
@@ -137,6 +141,7 @@ public class Field extends Function implements Bytecodes {
      *           containing this Java Field
      * @return   the Object stored in the Java Field
      */
+    @Override
     public Object invoke(Object[] vals) {
         try {
             if (isStatic()) {
@@ -212,7 +217,7 @@ public class Field extends Function implements Bytecodes {
         }
     }
 
-
+    @Override
     public void translate(Code dest) {
         ClassRef type;
 

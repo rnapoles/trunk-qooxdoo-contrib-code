@@ -69,6 +69,7 @@ public class Job {
         }
     }
 
+    @Override
     public boolean equals(Object obj) {
         Job job;
 
@@ -90,6 +91,7 @@ public class Job {
         }
     }
 
+    @Override
     public String toString() {
         return "source=" + source + " listing=" + listing + " output=" + outputPath;
     }

@@ -33,6 +33,7 @@ public class PartitionTest extends TestCase {
     private Set synthesized;
     private Relation relation;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

@@ -132,11 +132,13 @@ public class FABuilder extends Action {
     //-----------------------------------------------------------------
     // implement action interface
 
+    @Override
     public Object symbol(int symbol) {
         exception = new IllegalSymbols("illegal symbol in scanner section", symbol);
         return new FA();
     }
 
+    @Override
     public Object range(char first, char last) {
         int start, end;  // state indexes
         FA fa;
@@ -151,6 +153,7 @@ public class FABuilder extends Action {
         return fa;
     }
 
+    @Override
     public Object choice(Object[] body) {
         FA result;
         FA tmp;
@@ -167,6 +170,7 @@ public class FABuilder extends Action {
         return result;
     }
 
+    @Override
     public Object sequence(Object[] body) {
         FA result;
         FA tmp;
@@ -183,6 +187,7 @@ public class FABuilder extends Action {
         return result;
     }
 
+    @Override
     public Object loop(Object rawBody) {
         FA body;
 
@@ -191,6 +196,7 @@ public class FABuilder extends Action {
         return body;
     }
 
+    @Override
     public Object without(Object a, Object b) {
         FA result;
 

@@ -97,6 +97,7 @@ public class Buffer {
         return (Position) positions.get(idx);
     }
 
+    @Override
     public String toString() {
         StringBuilder buffer;
         int i;

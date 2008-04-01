@@ -184,6 +184,7 @@ public class XmlSyntax extends Syntax {
         return symbolTable.indexOf(toAttribute(element, attr));
     }
 
+    @Override
     public Grammar getGrammar() {
         return grammar;
     }
@@ -193,6 +194,7 @@ public class XmlSyntax extends Syntax {
      *
      * @return != null.
      */
+    @Override
     public Parser translate(Output output) throws GenericException {
         Conflicts conflicts;
         PDA pda;

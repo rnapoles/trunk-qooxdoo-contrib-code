@@ -86,6 +86,7 @@ public class Constant extends Function implements Bytecodes {
      * Gets the Function name.
      * @return  the Function name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -94,14 +95,17 @@ public class Constant extends Function implements Bytecodes {
      * Gets the result type.
      * @return  the result type.
      */
+    @Override
     public Class getReturnType() {
         return type;
     }
 
+    @Override
     public Class[] getParameterTypes() {
         return NO_CLASSES;
     }
 
+    @Override
     public Class[] getExceptionTypes() {
         return NO_CLASSES;
     }
@@ -111,6 +115,7 @@ public class Constant extends Function implements Bytecodes {
      * @param   paras   an Array of length 0
      * @return  the constant
      */
+    @Override
     public Object invoke(Object[] paras) {
         return val;
     }
@@ -141,6 +146,7 @@ public class Constant extends Function implements Bytecodes {
         val = in.readObject();
     }
 
+    @Override
     public void translate(Code dest) {
         dest.emitGeneric(LDC, new Object[] { val });
     }

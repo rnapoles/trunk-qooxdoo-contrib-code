@@ -152,6 +152,7 @@ public class Selection {
 
     //-------------------------------------------------------------------
 
+    @Override
     public String toString() {
         StringBuilder buffer;
         int i;
