@@ -433,8 +433,7 @@ qx.Class.define("htmlarea.command.Manager",
          {
            this.__editorInstance._visualizeFocus();
 
-           /* Exec command on saved range object */
-           var range = this.__editorInstance.getStoredRange();
+           var range = this.getCurrentRange();
 
            if(range)
            {
