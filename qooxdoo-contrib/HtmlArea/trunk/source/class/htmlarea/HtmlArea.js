@@ -49,8 +49,6 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isEditable = false;
     this.__isReady = false;
     
-    this.__range;
-
     this.__firstLineSelected = false;
 
     this.setTabIndex(1);
@@ -816,9 +814,6 @@ qx.Class.define("htmlarea.HtmlArea",
         if (focusRoot) {
           focusRoot.setFocusedChild(this);
         }
-
-        /* Initially save current range */
-        this._storeRange();
       }
 
       // now we can set the ready state
@@ -1869,9 +1864,6 @@ qx.Class.define("htmlarea.HtmlArea",
       "mshtml" : function(e)
       {
 
-        /* Save range object */
-        this._storeRange();
-
         /* Save range text */
         if (this.__storedSelectedHtml == null){
           this.__storedSelectedHtml = this.getSelectedHtml();
@@ -2634,25 +2626,6 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         return range.toString();
       }
-    },
-
-    /**
-     * Saves the current active range object
-     * @type member
-     */
-    _storeRange : function()
-    {
-      this.__range = this.getRange();
-    },
-    
-    /**
-     * Returns the range object saved by _storeRange()
-     * @type member
-     * @return {Object} Stored range object
-     */
-    getStoredRange : function()
-    {
-      return this.__range;
     },
 
     /*
