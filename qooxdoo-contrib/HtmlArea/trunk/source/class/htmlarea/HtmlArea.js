@@ -676,7 +676,7 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyFocused : function (value, old)
     {
-      if (this._isReady)
+      if (this.__isReady)
       {
         this.base(arguments, value, old);
   
@@ -701,7 +701,8 @@ qx.Class.define("htmlarea.HtmlArea",
           }
   
           /* Initially save current range */
-          this._storeRange();
+          // not implemented yet
+          //this._storeRange();
         }
       }
     },
