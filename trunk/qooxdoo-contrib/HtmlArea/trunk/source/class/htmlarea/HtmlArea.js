@@ -672,6 +672,42 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
+     * overridden
+     */
+    _applyFocused : function (value, old)
+    {
+      if (this._isReady)
+      {
+        this.base(arguments, value, old);
+  
+        /*
+         * If "focused" property is set make editor
+         * ready to use after startup -> user can type ahead immediately
+         *
+         * TODO: Webkit is not able to set the cursor at startup
+         * Tried to append textNode and make new selection/range -> not worked
+         * 
+         * TODO: this functionality is already implemented in Widget, why we do it
+         *       twice?
+         */
+        if (value === true)
+        {
+          this._visualizeFocus();
+  
+          var focusRoot = this.getFocusRoot();
+  
+          if (focusRoot) {
+            focusRoot.setFocusedChild(this);
+          }
+  
+          /* Initially save current range */
+          this._storeRange();
+        }
+      }
+    },
+
+
+    /**
      * should be removed if someone find a better way to ensure that the document
      * is ready in IE6
      * 
@@ -796,26 +832,6 @@ qx.Class.define("htmlarea.HtmlArea",
         this.setEditable(true);
       }
 
-
-      /*
-       * If "focused" property is set make editor
-       * ready to use after startup -> user can type ahead immediately
-       *
-       * TODO: Webkit is not able to set the cursor at startup
-       * Tried to append textNode and make new selection/range -> not worked
-       */
-
-      if (this.getFocused())
-      {
-        this._visualizeFocus();
-
-        var focusRoot = this.getFocusRoot();
-
-        if (focusRoot) {
-          focusRoot.setFocusedChild(this);
-        }
-      }
-
       // now we can set the ready state
       this.__isReady = true;
 
@@ -828,6 +844,9 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Execute the stacked commmands - if any */
       if (commandStack != null)
       {
+        // only focus if 
+        this.setFocused(true);
+        
         for (var i=0, j=commandStack.length; i<j; i++)
         {
           cm.execute(commandStack[i].command, commandStack[i].value);
