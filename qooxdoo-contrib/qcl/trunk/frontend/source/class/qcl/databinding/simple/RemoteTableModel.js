@@ -20,7 +20,7 @@
 /* ************************************************************************
 
 ************************************************************************ */
- 
+
 /**
  * An implementation of the abstract class qx.ui.table.model.Remote that uses
  * qcl.databinding.simple package

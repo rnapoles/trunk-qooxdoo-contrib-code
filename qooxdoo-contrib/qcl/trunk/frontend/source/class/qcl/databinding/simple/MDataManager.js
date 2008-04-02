@@ -16,7 +16,7 @@
      * Christian Boulanger (cboulanger)
 
 ************************************************************************ */
- 
+
 /* ************************************************************************
  
 #module(qcl.databinding)
@@ -302,20 +302,19 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 
         if (ex == null) 
         {  
-
-           // handle received data	              
-           if ( data.result )
-           {
-             _this.__handleDataReceived (data.result);
-           }
-
            // handle messages and events
            if (data.messages || data.events) 
            {
              _this.__handleEventsAndMessages(_this,data)
            }
-                  
-           // finally notify that data has been received
+           
+           // handle received data	              
+           if ( data.result )
+           {
+             _this.__handleDataReceived (data.result);
+           }
+                    
+           // notify that data has been received
            _this.createDispatchDataEvent("dataReceived",data.result);
            
          } 
@@ -500,14 +499,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             var dataModel = this.getDataModel();
             var data = data.treedatamodel;
 						var pruneParent = true; // prune parent node once
-						
-            if ( ! this.__idIndex )
-            {
-              this.__idIndex = {};
-            }
             
             if ( data && typeof data == "object" && data.length )
             {
+						  
+              // prune parent of first node, this assumes that all nodes 
+              // sent have the same parent.
+              var parentNodeId = data[0].parentNodeId || 0; 
+              dataModel.prune(parentNodeId);  
+              dataModel.setState(parentNodeId,{bOpened:true});
+              
               for (var i=0; i<data.length;i++)
 						  {
 						    var node = data[i];
@@ -524,41 +525,15 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 										continue;
 								}
 								
-                
-						    // get parent node id
-                if ( node.parentNodeId != null )
-                {
-                  parentNodeId = node.parentNodeId;
-                } 
-                else if ( node.data.parentId != null )
-                {
-                  if ( this.__idIndex[node.data.parentId] )
-                  {
-                    parentNodeId = this.__idIndex[node.data.parentId];
-                  }
-                  else
-                  {
-                    this.warn ( "No node id available for parent id " + node.data.parentId );
-                    parentNodeId = 0;
-                  }
-                }
-                
-                // create child node
+						    // create node
 						    if( node.isBranch )
 						    {
-						      var nodeId = dataModel.addBranch( parentNodeId );
+						      var nodeId = dataModel.addBranch( node.parentNodeId || 0 );
 						    }
 						    else
 						    {
-						      var nodeId = dataModel.addLeaf( parentNodeId );								      
+						      var nodeId = dataModel.addLeaf( node.parentNodeId || 0 );								      
 						    }
-                
-                // todo: document this!
-                this.__idIndex[node.data.id] = nodeId;
-                dataModel.setData();  
-                
-                // set the parent to opened
-                dataModel.setState(parentNodeId,{bOpened:true});
 						    
                 // index node id to data properties put into user data
                 if ( node.index )
