@@ -1,4 +1,4 @@
- <html>
+<html>
    <!--
      -- Iframe html content for Drag & Drop Java Applet
      -- for inclusion into qooxdoo applications (www.qooxdoo.org)
@@ -30,8 +30,8 @@
             enctype="multipart/form-data"
             action="../../../backend/php/services/uploader.php"
             method="post"
-            onSubmit="handleStartUpload(1);">
-  	        <div style="font-size:small;font-family:Arial">
+            onSubmit="return handleStartUpload(1);">
+  	        <div style="font-size:small;font-family:Arial;padding:10px">
               Select file to upload: <br/>
               <input name="uploadfile" type="file" size="10"><br/>
               <input type="submit" value="Send">
@@ -116,6 +116,7 @@
          function handleStartUpload ( number )
          {
            getContainer().createDispatchDataEvent( "startUpload", number );
+           return true;
          }
 
          /**
