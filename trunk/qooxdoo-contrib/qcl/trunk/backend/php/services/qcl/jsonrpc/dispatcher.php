@@ -30,11 +30,11 @@
  */
 if ( !isset($_GET["_ScriptTransport_id"]) and function_exists("json_encode") )
 {
-	require "json_wrapper.php";
+	require dirname(__FILE__) . "/json_wrapper.php";
 }
 else
 {
-	require "JSON.phps";	
+	require dirname(__FILE__) . "/JSON.phps";	
 }
 
 
