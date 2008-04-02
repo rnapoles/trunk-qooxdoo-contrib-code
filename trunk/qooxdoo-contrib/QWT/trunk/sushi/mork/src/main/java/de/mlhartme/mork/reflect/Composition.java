@@ -60,9 +60,7 @@ public class Composition extends Function {
         paraParaCount = para.getParameterTypes().length;
     }
 
-    public static Composition create
-        (Function baseInit, int idxInit, Function paraInit)
-    {
+    public static Composition create(Function baseInit, int idxInit, Function paraInit) {
         Class[] tmp;
 
         tmp = baseInit.getParameterTypes();
@@ -133,14 +131,13 @@ public class Composition extends Function {
         Object tmp;
 
         vals = new Object[paraParaCount];
-        System.arraycopy(allVals,idx, vals,0, vals.length);
+        System.arraycopy(allVals, idx, vals, 0, vals.length);
         tmp = para.invoke(vals);
 
         vals = new Object[baseParaCount];
-        System.arraycopy(allVals,0, vals,0, idx);
+        System.arraycopy(allVals, 0, vals, 0, idx);
         vals[idx] = tmp;
-        System.arraycopy(allVals,idx + paraParaCount,
-                         vals, idx + 1, vals.length - (idx + 1));
+        System.arraycopy(allVals, idx + paraParaCount, vals, idx + 1, vals.length - (idx + 1));
 
         return base.invoke(vals);
     }

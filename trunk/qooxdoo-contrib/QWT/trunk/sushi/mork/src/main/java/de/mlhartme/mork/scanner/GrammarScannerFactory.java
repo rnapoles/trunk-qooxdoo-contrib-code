@@ -78,11 +78,9 @@ public class GrammarScannerFactory implements ScannerFactory {
     public static GrammarScannerFactory create(
         FA fa, int errorSi, ParserTable parserTable, Rule[] all, IntBitSet whites,
         PrintStream verbose, PrintStream listing, int eofSymbol)
-        throws GenericException
-    {
+            throws GenericException {
         List modes;  // list of IntSets
         char[] data;
-        int i;
 
         if (listing != null) {
             listing.println("Scanner\n");
@@ -103,10 +101,8 @@ public class GrammarScannerFactory implements ScannerFactory {
      * @param inlineSymbols   all symbols that became expanded
      */
     public static GrammarScannerFactory createSimple(FA fa, int errorSi, IntBitSet terminals, int eofSymbol)
-        throws GenericException
-    {
+        throws GenericException {
         char[] data;
-        int i;
         List modes;  // list of IntSets
 
         modes = new ArrayList();

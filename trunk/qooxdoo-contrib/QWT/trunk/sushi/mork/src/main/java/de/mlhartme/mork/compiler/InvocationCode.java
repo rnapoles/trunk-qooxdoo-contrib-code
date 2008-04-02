@@ -60,11 +60,11 @@ public class InvocationCode implements Bytecodes {
     private ClassRef destRef;
     private MethodRef destConstr;
 
-    private final ClassRef THROWABLE_REF = new ClassRef(Throwable.class);
-    private final ClassRef EXCEPT_REF = new ClassRef(InvocationTargetException.class);
+    private static final ClassRef THROWABLE_REF = new ClassRef(Throwable.class);
+    private static final ClassRef EXCEPT_REF = new ClassRef(InvocationTargetException.class);
 
-    private final int LV_ARGS = 1;
-    private final int LV_THROWABLE = 2;
+    private static final int LV_ARGS = 1;
+    private static final int LV_THROWABLE = 2;
 
     public InvocationCode(String className) {
         destRef = new ClassRef(className);
@@ -153,7 +153,7 @@ public class InvocationCode implements Bytecodes {
         code.emit(DUP);
         code.emit(LDC, "illegal function id");
         code.emit(INVOKESPECIAL,
-                        MethodRef.constr(except, new ClassRef[] { ClassRef.STRING } ));
+                        MethodRef.constr(except, new ClassRef[] { ClassRef.STRING }));
         code.emit(ATHROW);
     }
 
@@ -223,7 +223,7 @@ public class InvocationCode implements Bytecodes {
         code = new Code();
         code.emit(ALOAD, 0);
         code.emit(INVOKESPECIAL,
-             MethodRef.constr(new ClassRef(CompiledFunctionBase.class), ClassRef.NONE ));
+             MethodRef.constr(new ClassRef(CompiledFunctionBase.class), ClassRef.NONE));
         code.emit(ALOAD, 0);
         code.emit(ILOAD, 1); // idInit
         code.emit(PUTFIELD, new FieldRef(destRef, "id", ClassRef.INT));

@@ -19,18 +19,18 @@
 
 package de.mlhartme.mork.xml;
 
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.parser.TreeBuilder;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
-import de.mlhartme.mork.semantics.SemanticError;  // TODO: ugly reference
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import de.mlhartme.mork.parser.Parser;
+import de.mlhartme.mork.parser.ParserTable;
+import de.mlhartme.mork.parser.TreeBuilder;
+import de.mlhartme.mork.scanner.Position;
+import de.mlhartme.mork.scanner.Scanner;
 
 /**
  * Build buffer for a given entity, feeds grammar token obtained from
@@ -88,9 +88,7 @@ public class EntityBuilder implements Symbols, TreeBuilder {
         this.lastEntityValuePosition = null;
     }
 
-    public static Buffer runDTD(DocumentBuilder context, Position position, Reader src)
-        throws IOException
-    {
+    public static Buffer runDTD(DocumentBuilder context, Position position, Reader src) throws IOException {
         Buffer buffer;
 
         buffer = runMagic(MAGIC_PARAMETER, context, null, position, src, false);
@@ -98,24 +96,19 @@ public class EntityBuilder implements Symbols, TreeBuilder {
         return buffer;
     }
 
-    public static Buffer runPE(DocumentBuilder context, URL url)
-        throws IOException
-    {
+    public static Buffer runPE(DocumentBuilder context, URL url) throws IOException {
         return runMagic(MAGIC_PARAMETER, context, url, new Position(url),
                         new InputStreamReader(url.openStream()), false);
     }
 
     public static Buffer runGeneral(
-        DocumentBuilder context, URL url, Position pos, Reader src, boolean expandGE)
-        throws IOException
-    {
+        DocumentBuilder context, URL url, Position pos, Reader src, boolean expandGE) throws IOException {
         return runMagic(MAGIC_GENERAL, context, url, pos, src, expandGE);
     }
 
     private static Buffer runMagic(
-        char magic, DocumentBuilder context, URL baseUrl, Position pos, Reader src, boolean expandGE)
-        throws IOException
-    {
+        char magic, DocumentBuilder context, URL baseUrl, Position pos, Reader src, boolean expandGE) 
+    throws IOException {
         PushbackReader pushback;
 
         pushback = new PushbackReader(src);
@@ -126,8 +119,7 @@ public class EntityBuilder implements Symbols, TreeBuilder {
     /** @param baseUrl may be null **/
     public static Buffer run(
         DocumentBuilder context, URL baseUrl, Position position, Reader src, boolean expandGE)
-        throws IOException
-    {
+            throws IOException {
         EntityBuilder builder;
         Parser parser;
         Buffer buffer;
@@ -202,6 +194,8 @@ public class EntityBuilder implements Symbols, TreeBuilder {
             case PARSED_ENT_TEXT_DECL:
                 // magic numbers with textdecl - ignore
                 return null;
+            default:
+                throw new RuntimeException("unexpected: " + terminal);
         }
         buffer.add(terminal, text, pos);
         return null;
@@ -246,6 +240,8 @@ public class EntityBuilder implements Symbols, TreeBuilder {
                 lastEntityValuePosition = null;
                 lastSystemLiteral = null;
                 break;
+            default:
+                throw new RuntimeException("unexpected " + nonterminal);
         }
         return null;
     }

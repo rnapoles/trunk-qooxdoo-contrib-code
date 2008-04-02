@@ -39,9 +39,7 @@ public class Modes {
         table.setModes(parserModes);
     }
 
-    public static List generate(FA fa, ParserTable table, IntBitSet whites, PrintStream listing)
-        throws GenericException
-    {
+    public static List generate(FA fa, ParserTable table, IntBitSet whites, PrintStream listing) throws GenericException {
         int i;
         int max;
         IntBitSet shifts;
@@ -50,7 +48,6 @@ public class Modes {
         char[] parserModes;
 
         modes = new ArrayList();
-
         if (hasConflicts(fa, whites) != null) {
             throw new GenericException("scanner conflict in whitespace");
         }

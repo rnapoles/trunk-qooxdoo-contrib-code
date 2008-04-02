@@ -52,9 +52,7 @@ public class XmlSyntax extends Syntax {
     /** [element (==symbol)][] */
     private Attribute[][] attrs;
 
-    public XmlSyntax(Object[] ruleOrAttribute, StringArrayList symbolTable)
-        throws GenericException
-    {
+    public XmlSyntax(Object[] ruleOrAttribute, StringArrayList symbolTable) throws GenericException {
         Object[] obj;
         Rule[] rules;
 
@@ -117,9 +115,7 @@ public class XmlSyntax extends Syntax {
         lst.add(a);
     }
 
-    private static Rule createRule(
-        StringArrayList symbolTable, Object[] ruleRaw, Attribute[][] allAttrs)
-    {
+    private static Rule createRule(StringArrayList symbolTable, Object[] ruleRaw, Attribute[][] allAttrs) {
         RegExpr content;
         String name;
         int element;

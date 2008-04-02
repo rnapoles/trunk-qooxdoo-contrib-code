@@ -51,8 +51,7 @@ public class GrammarSyntax extends Syntax {
     public GrammarSyntax(
         StringArrayList symbolTable, Rule[] parserRules,
         boolean priorities, IntBitSet whiteSymbols, Rule[] scannerRules)
-        throws GenericException
-    {
+        throws GenericException {
         if (parserRules.length == 0) {
             throw new GenericException("empty parser section, at least one rule is needed");
         }

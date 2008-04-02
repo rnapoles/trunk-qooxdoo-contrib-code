@@ -37,10 +37,12 @@ public class Const extends Expression {
         }
     }
 
+    @Override
     public int getType() {
         return type;
     }
 
+    @Override
     public Object eval() {
         return val;
     }

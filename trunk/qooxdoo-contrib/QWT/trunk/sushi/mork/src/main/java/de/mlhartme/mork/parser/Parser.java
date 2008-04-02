@@ -121,7 +121,7 @@ public class Parser {
                             case SHIFT:
                                 if (verbose != null) {
                                     verbose.print("[" + state + "] ");
-                                    verbose.println("shift " +  table.getOperand(value) );
+                                    verbose.println("shift " +  table.getOperand(value));
                                 }
                                 state = table.getOperand(value);
                                 push(state, treeBuilder.createTerminal(terminal));

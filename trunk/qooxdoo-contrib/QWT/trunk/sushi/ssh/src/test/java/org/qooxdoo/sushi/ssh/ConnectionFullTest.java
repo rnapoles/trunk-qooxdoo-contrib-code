@@ -183,11 +183,11 @@ public class ConnectionFullTest {
     @Test
     public void erroroutput() throws Exception {
         try {
-        	connection.exec("echo", "foo", "&&", "exit", "1");
-        	fail();
+            connection.exec("echo", "foo", "&&", "exit", "1");
+            fail();
         } catch (ExitCode e) {
-        	assertEquals(1, e.code);
-        	assertEquals("foo\r\n", e.output);
+            assertEquals(1, e.code);
+            assertEquals("foo\r\n", e.output);
         }
     }
 

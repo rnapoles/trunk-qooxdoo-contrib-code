@@ -19,7 +19,7 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class Block extends Statement {
     private Statement[] body;
@@ -32,6 +32,7 @@ public class Block extends Statement {
         this.body = body;
     }
 
+    @Override
     public void translate(Code dest) {
         int i;
 

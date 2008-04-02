@@ -145,9 +145,7 @@ public class Constant extends Function implements Bytecodes {
      * Reads this Function.
      * @param   in  source to read from
      */
-    private void readObject(ObjectInputStream in)
-        throws ClassNotFoundException, NoSuchMethodException, IOException
-    {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, NoSuchMethodException, IOException {
         type = ClassRef.read(in);
         name = in.readUTF();
         val = in.readObject();

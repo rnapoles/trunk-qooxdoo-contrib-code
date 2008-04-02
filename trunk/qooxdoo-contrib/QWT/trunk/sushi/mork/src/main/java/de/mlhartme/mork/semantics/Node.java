@@ -19,10 +19,9 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
-import de.mlhartme.mork.parser.Parser;
 import java.io.PrintStream;
+
+import de.mlhartme.mork.scanner.Position;
 
 /**
  * Node of the syntax tree. A stupid data contained for Semantics.
@@ -32,7 +31,7 @@ public class Node {
     private final NodeFactory pool;
 
     public final Position position;
-    public final Node children[]; // always != null
+    public final Node[] children; // always != null
     public final Object[] attrs;  // always != null
     private final Visits visits;  // always != null
 

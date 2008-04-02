@@ -19,14 +19,16 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Access;
-import de.mlhartme.mork.classfile.ClassDef;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.MethodDef;
-import de.mlhartme.mork.classfile.Output;
-import de.mlhartme.mork.mapping.Mapper;
 import java.io.File;
 import java.io.IOException;
+
+import org.qooxdoo.sushi.classfile.Access;
+import org.qooxdoo.sushi.classfile.ClassDef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.MethodDef;
+import org.qooxdoo.sushi.classfile.Output;
+
+import de.mlhartme.mork.mapping.Mapper;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -74,7 +76,7 @@ public class Main {
         c = new ClassDef(new ClassRef(getClassName(fileName)), ClassRef.OBJECT);
         m = new MethodDef();
         m.name = "main";
-        m.accessFlags = Access.PUBLIC | Access.STATIC;
+        m.accessFlags = Access.fromArray(Access.PUBLIC, Access.STATIC);
         m.attributes.add(program.translate());
         m.argumentTypes =
             new ClassRef[] { new ClassRef("java.lang.String", 1) };

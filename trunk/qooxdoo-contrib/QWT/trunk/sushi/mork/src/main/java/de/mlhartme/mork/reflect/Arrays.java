@@ -30,8 +30,8 @@ public class Arrays {
         Object[] result;
 
         result = (Object[]) Array.newInstance(cl, left.length + right.length);
-        System.arraycopy(left,0, result,0, left.length);
-        System.arraycopy(right,0, result,left.length, right.length);
+        System.arraycopy(left, 0, result, 0, left.length);
+        System.arraycopy(right, 0, result, left.length, right.length);
         return result;
     }
 
@@ -40,7 +40,7 @@ public class Arrays {
 
         result = (Object[]) Array.newInstance(cl, 1 + right.length);
         result[0] = left;
-        System.arraycopy(right,0, result,1, right.length);
+        System.arraycopy(right, 0, result, 1, right.length);
         return result;
     }
 

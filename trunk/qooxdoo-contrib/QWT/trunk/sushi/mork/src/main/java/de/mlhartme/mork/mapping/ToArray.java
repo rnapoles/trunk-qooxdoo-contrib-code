@@ -114,8 +114,7 @@ public class ToArray extends Function implements Bytecodes {
      * @param  in  source to read from
      */
     private void readObject(ObjectInputStream in)
-        throws IOException, ClassNotFoundException, NoSuchMethodException
-    {
+        throws IOException, ClassNotFoundException, NoSuchMethodException {
         componentType = ClassRef.read(in);
     }
 

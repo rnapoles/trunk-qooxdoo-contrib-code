@@ -20,9 +20,7 @@
 package de.mlhartme.mork.parser;
 
 import junit.framework.TestCase;
-
 import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.parser.PDA;
 import de.mlhartme.mork.util.GenericException;
 import de.mlhartme.mork.util.StringArrayList;
 

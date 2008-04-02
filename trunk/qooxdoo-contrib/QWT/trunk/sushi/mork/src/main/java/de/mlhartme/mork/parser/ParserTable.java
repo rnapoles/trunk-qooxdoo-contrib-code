@@ -84,9 +84,8 @@ public class ParserTable implements Serializable {
     }
     
     public ParserTable(
-        char startState, int symbolCount, int stateCount,
-        String[] packedValues, int[] lengths, int[] lefts, char[] modes)
-    {
+            char startState, int symbolCount, int stateCount,
+            String[] packedValues, int[] lengths, int[] lefts, char[] modes) {
         this(startState, symbolCount, new char[stateCount * symbolCount], lengths, lefts, modes);
         unpackValues(packedValues);
     }
@@ -98,10 +97,7 @@ public class ParserTable implements Serializable {
     //-----------------------------------------------------------------------
     // table creation
     
-    public ParserTable(
-        int startState, int stateCount, int symbolCount, Grammar grm, char[] modes)
-        throws GenericException
-    {
+    public ParserTable(int startState, int stateCount, int symbolCount, Grammar grm, char[] modes) throws GenericException {
         int i;
         int max;
         

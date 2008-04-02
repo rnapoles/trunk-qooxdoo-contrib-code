@@ -29,7 +29,7 @@ public class BuiltIn {
     /**
      * Eat java comments and white space
      */
-    public static int WHITE(Buffer r) throws IOException {
+    public static int white(Buffer r) throws IOException {
         int c, c2;
         int prev;
         int count;
@@ -44,18 +44,24 @@ public class BuiltIn {
                     prev = c;
                     c = r.readOrEof();
                     count++;
-                    if (c == -1) return -1;
+                    if (c == -1) {
+                        return -1;
+                    }
                 } while (prev != '*' || c != '/');
                 return count;
             } else if (c2 == '/') {   // comment / /
                 count = 2;
                 while (c != '\n') { // '/' at the first time - doesn't matter
                     c = r.readOrEof();
-                    if (c == -1) break;
+                    if (c == -1) {
+                        break;
+                    }
                     count++;
                 }
                 return count;
-            } else return -1;
+            } else {
+                return -1;
+            }
         } else {
             count = 0;
             while (Character.isWhitespace((char) c)) {
@@ -69,7 +75,7 @@ public class BuiltIn {
     /**
      * Test for integer token (Java IntegerLiterals without type suffix.
      */
-    public static int IntegerLiteral(Buffer r) throws IOException {
+    public static int integerLiteral(Buffer r) throws IOException {
         int count;
         int c;
 
@@ -82,8 +88,7 @@ public class BuiltIn {
                 // hexadecimal
                 while (((c >= '0') && (c <= '9'))
                        || ((c >= 'a') && (c <= 'f'))
-                       || ((c >= 'A') && (c <= 'F')))
-                {
+                       || ((c >= 'A') && (c <= 'F'))) {
                     count++;
                     c = r.readOrEof();
                 }
@@ -114,7 +119,7 @@ public class BuiltIn {
     /**
      * Test for Java identifier token
      */
-    public static int Identifier(Buffer r) throws IOException {
+    public static int identifier(Buffer r) throws IOException {
         int c;
         int count;
 
@@ -134,11 +139,13 @@ public class BuiltIn {
     /**
      * Test for a string token. Character escapes are allowed.
      */
-    public static int StringLiteral(Buffer src) throws IOException {
+    public static int stringLiteral(Buffer src) throws IOException {
         int c, count;
 
         c = src.readOrEof();
-        if (c != '"') return -1;
+        if (c != '"') {
+            return -1;
+        }
         count = 1;
         do {
             c = src.readOrEof();
@@ -162,11 +169,13 @@ public class BuiltIn {
      * Test for a character token. Character escapes are allowed.
      */
 
-    public static int CharacterLiteral(Buffer src) throws IOException {
+    public static int characterLiteral(Buffer src) throws IOException {
         int c, count;
 
         c = src.readOrEof();
-        if (c != '\'') return -1;
+        if (c != '\'') {
+            return -1;
+        }
         count = 1;
         do {
             c = src.readOrEof();

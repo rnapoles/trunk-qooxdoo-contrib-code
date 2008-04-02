@@ -118,10 +118,7 @@ public class Mork {
         return loadSyntax(fileName, dtdMapper);
     }
 
-    private Syntax loadSyntax(String fileName, MorkMapper mapper)
-        throws GenericException, IllegalLiteral
-    {
-        File base;
+    private Syntax loadSyntax(String fileName, MorkMapper mapper) throws GenericException, IllegalLiteral {
         File file;
         Syntax syntax;
 

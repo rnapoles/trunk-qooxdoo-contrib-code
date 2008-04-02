@@ -115,9 +115,8 @@ public class Selection {
             return operand;
         } else {
             fns = new Function[size() + operand.size()];
-            System.arraycopy(functions,0, fns,0, size());
-            System.arraycopy(operand.functions,0, fns,size(),
-                             operand.size());
+            System.arraycopy(functions, 0, fns, 0, size());
+            System.arraycopy(operand.functions, 0, fns, size(), operand.size());
             return new Selection(fns);
         }
     }

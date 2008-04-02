@@ -86,9 +86,7 @@ public class Entities implements Symbols {
     }
 
     /** inserts recursively. @param ref includes &..; */
-    private void insertGeneralEntity(String ref, Position pos, Buffer dest, List stack)
-        throws IllegalToken
-    {
+    private void insertGeneralEntity(String ref, Position pos, Buffer dest, List stack) throws IllegalToken {
         Buffer entity;
         int terminal;
 

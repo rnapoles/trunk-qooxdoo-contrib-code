@@ -20,7 +20,6 @@
 package de.mlhartme.mork.scanner;
 
 import java.io.IOException;
-import java.io.Reader;
 
 /**
  * A token stream, input for parsers.

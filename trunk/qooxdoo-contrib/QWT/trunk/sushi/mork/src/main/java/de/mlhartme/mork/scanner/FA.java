@@ -54,7 +54,7 @@ public class FA {
     }
 
     public FA(FA orig) {
-        int i, max;
+        int i;
 
         states = new State[orig.states.length];
         used = orig.used;
@@ -88,7 +88,7 @@ public class FA {
         }
     }
 
-    private void CHECK_STATE(int state) {
+    private void checkState(int state) {
         if ((state > used) || (state < 0)) {
             throw new IllegalArgumentException();
         }
@@ -156,19 +156,19 @@ public class FA {
     }
 
     public void setEnd(int state) {
-        CHECK_STATE(state);
+        checkState(state);
 
         ends.add(state);
     }
 
     public void resetEnd(int state) {
-        CHECK_STATE(state);
+        checkState(state);
 
         ends.remove(state);
     }
 
     public boolean isEnd(int state) {
-        CHECK_STATE(state);
+        checkState(state);
 
         return ends.contains(state);
     }

@@ -56,7 +56,7 @@ public class XmlScannerTest extends TestCase {
     }
 
     public void testSimple() throws IOException {
-        create(new String[] { "a" }, "<a></a>" );
+        create(new String[] { "a" }, "<a></a>");
         start("a");
         end("a");
         eof();
@@ -135,7 +135,7 @@ public class XmlScannerTest extends TestCase {
     public void testEmptyTag() throws IOException {
         String element = "tag";
 
-        create(new String[] { element }, "<" + element + "/>" );
+        create(new String[] { element }, "<" + element + "/>");
         start(element);
         end(element);
         eof();
@@ -297,7 +297,7 @@ public class XmlScannerTest extends TestCase {
     }
 
     public void testInternalPEEmbedded() throws IOException {
-        System.out.println("TODO: embedded PE");/*
+        System.out.println("TODO: embedded PE"); /*
         create(new String[] { "root" },
           "<!DOCTYPE root [\n" +
           " <!ENTITY % A 'B'>\n" +
@@ -323,7 +323,7 @@ public class XmlScannerTest extends TestCase {
     }
 
     public void testInternalPEwithQuotes() throws IOException {
-        System.out.println("PE with quotes");/*
+        System.out.println("PE with quotes"); /*
         create(new String[] { "root" },
           "<!DOCTYPE root [\n" +
           " <!ENTITY % YN '\"YES\"'>\n" +
@@ -439,7 +439,7 @@ public class XmlScannerTest extends TestCase {
     }
 
     public void testAttributeWithTailingSpace() throws IOException {
-        createAttr(Attribute.IMPLIED, null, "<a b='1' ></a>" );
+        createAttr(Attribute.IMPLIED, null, "<a b='1' ></a>");
         start("a");
         attribute("a", "b", "1");
         end("a");
@@ -447,7 +447,7 @@ public class XmlScannerTest extends TestCase {
     }
 
     public void testAttributeWithEqSpace() throws IOException {
-        createAttr(Attribute.IMPLIED, null, "<a b = '1'></a>" );
+        createAttr(Attribute.IMPLIED, null, "<a b = '1'></a>");
         start("a");
         attribute("a", "b", "1");
         end("a");
@@ -533,15 +533,11 @@ public class XmlScannerTest extends TestCase {
 
     //-------------------------------------------------------------------------------------------
 
-    private void validCharData(String text)
-        throws IOException
-    {
+    private void validCharData(String text) throws IOException {
         validCharData(text, text);
     }
 
-    private void validCharData(String text, String cmp)
-        throws IOException
-    {
+    private void validCharData(String text, String cmp) throws IOException {
         String element;
 
         element = "E";
@@ -591,9 +587,7 @@ public class XmlScannerTest extends TestCase {
         }
     }
 
-    private XmlScanner create(String[] elements, String input)
-        throws IOException
-    {
+    private XmlScanner create(String[] elements, String input) throws IOException {
         int len;
 
         len = elements.length;
@@ -601,9 +595,7 @@ public class XmlScannerTest extends TestCase {
                       new String[len][], input);
     }
 
-    private void createAttr(int defaultMode, String defaultValue, String input)
-        throws IOException
-    {
+    private void createAttr(int defaultMode, String defaultValue, String input) throws IOException {
         create(new String[] { "a" },
                new String[][] {{ "b" }},
                new int[][] {{ defaultMode }},
@@ -614,8 +606,7 @@ public class XmlScannerTest extends TestCase {
     private XmlScanner create(
         String[] elements, String[][] attrNames, int[][] defaultMode,
         String[][] defaultValues, String input)
-        throws IOException
-    {
+    throws IOException {
         Attribute[][] attrs;
         String[] line;
         int i;

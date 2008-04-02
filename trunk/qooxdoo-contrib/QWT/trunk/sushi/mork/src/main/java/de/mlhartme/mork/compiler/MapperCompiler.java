@@ -51,9 +51,7 @@ public class MapperCompiler implements Bytecodes {
      * @param specFile        file that specified the mapper
      * @param outputDir       "-d", points to a directory or null.
      */
-    public void run(Mapper mapper, String mapperName, File src, File explicitOutputDir)
-        throws GenericException
-    {
+    public void run(Mapper mapper, String mapperName, File src, File explicitOutputDir) throws GenericException {
         String baseName;
         File outputDir;  // directory to write all class files to
 
@@ -94,9 +92,7 @@ public class MapperCompiler implements Bytecodes {
     }
 
     /** creates new directory if necessary. */
-    public File outputDir(File src, File explicitOutputDir, String mapperName)
-        throws GenericException
-    {
+    public File outputDir(File src, File explicitOutputDir, String mapperName) throws GenericException {
         File outputDir;
         int prev;
         int idx;
@@ -127,8 +123,6 @@ public class MapperCompiler implements Bytecodes {
         ClassDef result;
         ObjectCompiler compiler;
         Code code;
-        Object[] fields;
-        Class[] fieldTypes;
 
         code = new Code();
         code.locals = 1; // this
@@ -225,21 +219,15 @@ public class MapperCompiler implements Bytecodes {
         return ClassRef.forFieldDescriptor(name).lookup();
     }
 
-    public static Field loadField(Class type, String name)
-        throws NoSuchFieldException
-    {
+    public static Field loadField(Class type, String name) throws NoSuchFieldException {
         return type.getDeclaredField(name);
     }
 
-    public static Constructor loadConstructor(Class type, Class[] args)
-        throws NoSuchMethodException
-    {
+    public static Constructor loadConstructor(Class type, Class[] args) throws NoSuchMethodException {
         return type.getDeclaredConstructor(args);
     }
 
-    public static Method loadMethod(Class type, String name, Class[] args)
-        throws NoSuchMethodException
-    {
+    public static Method loadMethod(Class type, String name, Class[] args) throws NoSuchMethodException {
         return type.getDeclaredMethod(name, args);
     }
 }

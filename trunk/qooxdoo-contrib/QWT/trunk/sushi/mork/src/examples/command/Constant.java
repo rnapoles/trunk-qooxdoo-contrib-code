@@ -26,6 +26,7 @@ public class Constant extends Expression {
         this.str = str;
     }
 
+    @Override
     public String eval() {
         return str;
     }

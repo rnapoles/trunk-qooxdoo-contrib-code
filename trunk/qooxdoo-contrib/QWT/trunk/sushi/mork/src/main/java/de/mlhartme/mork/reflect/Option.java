@@ -124,7 +124,7 @@ public class Option extends Function implements Bytecodes {
             vars[i] = var;
             type.emitStore(dest, var);
         }
-        optType = with.getParameterTypes()[optional];// ask "with", not tmp!
+        optType = with.getParameterTypes()[optional]; // ask "with", not tmp!
 
         unwrapOptionLabel = dest.declareLabel();
         pushTailingLabel = dest.declareLabel();

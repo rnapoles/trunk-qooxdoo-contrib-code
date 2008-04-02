@@ -19,10 +19,9 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.Instruction;
-import de.mlhartme.mork.classfile.MethodRef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
 
 public class Str extends Type {
     public static final Str TYPE = new Str();
@@ -37,14 +36,17 @@ public class Str extends Type {
         super("string");
     }
 
+    @Override
     public boolean isAssignableFrom(Type from) {
         return from == this;
     }
 
+    @Override
     public Type getUnaryType(int op) throws SemanticError {
         throw new SemanticError("no such operator for type string");
     }
 
+    @Override
     public Type getBinaryType(int op, Type second) throws SemanticError {
         switch (op) {
         case Operator.EQ:
@@ -63,6 +65,7 @@ public class Str extends Type {
         }
     }
 
+    @Override
     public void translateBinary(int op, Code dest) {
         switch (op) {
         case Operator.ADD:
@@ -81,6 +84,7 @@ public class Str extends Type {
         }
     }
 
+    @Override
     public void translateUnary(int op, Code dest) {
         throw new UnsupportedOperationException();
     }

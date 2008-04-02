@@ -101,12 +101,10 @@ public class Main {
         String opt;
         Job[] jobs;
         // global options propagated into all jobs:
-        boolean touch;
         String outputPath;
         boolean listing;
-        String ERROR_POS = "mork";
+        String errorPos = "mork";
 
-        touch = false;
         outputPath = null;
         listing = false;
         for (i = 0; i < args.length; i++) {
@@ -130,24 +128,24 @@ public class Main {
                 output.statistics = System.out;
             } else if (opt.equals("-d")) {
                 if (i + 1 >= args.length) {
-                    output.error(ERROR_POS, "missing directory name");
+                    output.error(errorPos, "missing directory name");
                     return null;
                 }
                 i++;
                 outputPath = args[i];
             } else if (opt.equals("-mapper")) {
                 if (i + 1 >= args.length) {
-                    output.error(ERROR_POS, "missing function mapper name");
+                    output.error(errorPos, "missing function mapper name");
                     return null;
                 }
                 i++;
                 try {
                     mapperFn = MorkMapper.lookupMapperFn(args[i], Specification.class);
                 } catch (GenericException e) {
-                    output.error(ERROR_POS, e);
+                    output.error(errorPos, e);
                 }
             } else if (opt.startsWith("-")) {
-                output.error(ERROR_POS, "unkown option: " + opt);
+                output.error(errorPos, "unkown option: " + opt);
                 return null;
             } else {
                 break;
@@ -159,7 +157,7 @@ public class Main {
             try {
                 jobs[j - i] = new Job(outputPath, listing, args[j]);
             } catch (GenericException e) {
-                output.error(ERROR_POS, e);
+                output.error(errorPos, e);
                 return null;
             }
         }

@@ -19,8 +19,8 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Bytecodes;
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.Code;
 
 public abstract class Statement implements Bytecodes {
     public abstract void translate(Code dest);

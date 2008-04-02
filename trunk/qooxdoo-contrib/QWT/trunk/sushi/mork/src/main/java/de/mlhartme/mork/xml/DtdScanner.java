@@ -44,7 +44,8 @@ public class DtdScanner implements Scanner, Symbols {
         DtdScanner dtdScanner;
         Scanner grammarScanner;
 
-        throw new RuntimeException("TODO");/*
+        throw new RuntimeException("TODO");
+        /*
         parser = mapper.getParser();
         grammarScanner = parser.getScanner();
         dtdScanner = new DtdScanner(grammarScanner.getEofSymbol(), parser.newInstance());

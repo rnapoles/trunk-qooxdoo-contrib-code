@@ -75,9 +75,7 @@ public class Stubs {
         return Choice.createOption(new Symbol(XmlScanner.PCTEXT));
     }
 
-    public static Symbol lookup(StringArrayList symbolTable, String name)
-        throws GenericException
-    {
+    public static Symbol lookup(StringArrayList symbolTable, String name) throws GenericException {
         int idx;
 
         idx = symbolTable.indexOf(name);

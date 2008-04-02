@@ -184,7 +184,6 @@ public class CopyBufferCompareTest extends CompareBase {
      */
     private void create(String[] prods, String as, String bs) {
         Grammar grm;
-        String start;
 
         grm = Grammar.forProductions(prods);
         sa = new CopyBuffer((Attribute) null);
@@ -195,9 +194,7 @@ public class CopyBufferCompareTest extends CompareBase {
         sb.setStart(b);
     }
 
-    public static Attribute addTransport(
-        CopyBuffer sems, String attrName, String as, Grammar grammar)
-    {
+    public static Attribute addTransport(CopyBuffer sems, String attrName, String as, Grammar grammar) {
         Attribute[] attrs;
         StringArrayList symbolTable;
         IntBitSet symbols;
@@ -250,9 +247,7 @@ public class CopyBufferCompareTest extends CompareBase {
     }
 
     /** every character is a symbol name */
-    private static Attribute[] createAttributes(
-        String attrName, String symbols, StringArrayList symbolTable)
-    {
+    private static Attribute[] createAttributes(String attrName, String symbols, StringArrayList symbolTable) {
         Attribute[] attrs;
         String name;
         int i;

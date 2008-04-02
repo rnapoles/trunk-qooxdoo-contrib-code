@@ -19,11 +19,6 @@
 
 package de.mlhartme.mork.mapping;
 
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.semantics.Node;
-import de.mlhartme.mork.semantics.Oag;
-import de.mlhartme.mork.semantics.SemanticError;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +33,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import de.mlhartme.mork.parser.Parser;
+import de.mlhartme.mork.scanner.Position;
+import de.mlhartme.mork.semantics.Node;
+import de.mlhartme.mork.semantics.Oag;
 
 /**
  * Wraps a stream to add mapping functionality. Implements the

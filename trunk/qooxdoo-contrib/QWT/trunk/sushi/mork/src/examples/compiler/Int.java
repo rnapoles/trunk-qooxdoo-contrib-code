@@ -19,7 +19,7 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class Int extends Type {
     public static final Int TYPE = new Int();
@@ -28,10 +28,12 @@ public class Int extends Type {
         super("int");
     }
 
+    @Override
     public boolean isAssignableFrom(Type from) {
         return from == this;
     }
 
+    @Override
     public Type getUnaryType(int op) throws SemanticError {
         switch (op) {
         case Operator.SUB:
@@ -41,6 +43,7 @@ public class Int extends Type {
         }
     }
 
+    @Override
     public Type getBinaryType(int op, Type second) throws SemanticError {
         switch (op) {
         case Operator.ADD:
@@ -64,10 +67,8 @@ public class Int extends Type {
         }
     }
 
+    @Override
     public void translateBinary(int op, Code dest) {
-        int oneLabel;
-        int endLabel;
-
         switch (op) {
         case Operator.ADD:
             dest.emit(IADD);
@@ -114,6 +115,7 @@ public class Int extends Type {
         dest.emit(LDC, 1);
     }
 
+    @Override
     public void translateUnary(int op, Code dest) {
         throw new UnsupportedOperationException();
     }

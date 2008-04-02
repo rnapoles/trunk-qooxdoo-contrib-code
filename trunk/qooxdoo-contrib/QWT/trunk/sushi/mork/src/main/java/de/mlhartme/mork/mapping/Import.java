@@ -46,9 +46,7 @@ public class Import {
     /**
      * @param name may be null
      */
-    public static Import create(String packageName, String className, String name)
-        throws GenericException
-    {
+    public static Import create(String packageName, String className, String name) throws GenericException {
         String fullName;
         Class cls;
 

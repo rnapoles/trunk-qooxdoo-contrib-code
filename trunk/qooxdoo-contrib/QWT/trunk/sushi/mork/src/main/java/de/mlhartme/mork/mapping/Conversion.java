@@ -42,9 +42,7 @@ public class Conversion {
         "Ambiguous constructor name";
 
     private static void throwIllegalCall(
-        String kind, Selection selection, Definition def, List args)
-        throws GenericException
-    {
+        String kind, Selection selection, Definition def, List args) throws GenericException {
         StringBuilder msg;
         int max;
         int i;
@@ -68,9 +66,7 @@ public class Conversion {
         throw new GenericException(kind, msg.toString());
     }
 
-    public static Function find(Selection selection, Definition def, List args, List outAttrs)
-        throws GenericException
-    {
+    public static Function find(Selection selection, Definition def, List args, List outAttrs) throws GenericException {
         int i;
         int max;
         Function tmp;

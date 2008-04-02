@@ -19,9 +19,9 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.MethodRef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
 
 public class Print extends Statement {
     private Expression expr;
@@ -47,6 +47,7 @@ public class Print extends Statement {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         expr.translate(dest);
         dest.emit(INVOKESTATIC, printMethod);

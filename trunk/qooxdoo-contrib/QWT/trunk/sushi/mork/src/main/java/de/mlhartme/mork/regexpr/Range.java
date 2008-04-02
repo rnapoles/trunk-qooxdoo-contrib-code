@@ -80,6 +80,11 @@ public class Range extends RegExpr {
     }
 
     @Override
+    public int hashCode() {
+        return first;
+    }
+    
+    @Override
     public Object visit(Action action) {
         return action.range(first, last);
     }
