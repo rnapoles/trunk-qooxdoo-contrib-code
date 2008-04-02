@@ -2157,6 +2157,19 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
+
+    /**
+     * Inserts a hyperlink
+     *
+     * @type member
+     * @param url {String} url for the image to be inserted
+     * @return {Boolean} Success of operation
+     */
+    insertHyperLink : function(url)
+    {
+      return this.__commandManager.execute("inserthyperlink", url);
+    },
+
     /**
      * Alias for setBackgroundColor("transparent");
      *
@@ -2323,7 +2336,6 @@ qx.Class.define("htmlarea.HtmlArea",
       return htmlarea.HtmlArea.__getHtml(doc.body, false);
     },
 
-    
     /**
      * Helper function to examine if HTMLArea is empty, except for
      * place holder(s) needed by some browsers.

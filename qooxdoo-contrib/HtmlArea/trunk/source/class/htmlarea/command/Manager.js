@@ -187,6 +187,8 @@ qx.Class.define("htmlarea.command.Manager",
         inserthorizontalrule  : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHr" },
         insertimage           : { useBuiltin : true, identifier : "InsertImage", method : null },
 
+        inserthyperlink       : { useBuiltin : true, identifier : "CreateLink", method : null },
+
         selectall             : { useBuiltin : false, identifier : "SelectAll", method : "__selectAll" },
         selectedtext          : { useBuiltin : false, identifier : null, method : "__getSelectedText" },
         selectedhtml          : { useBuiltin : false, identifier : null, method : "__getSelectedHtml" },
@@ -292,12 +294,34 @@ qx.Class.define("htmlarea.command.Manager",
              * editor area
              */
             this.__currentRange.select();
-  
-            /*
-             * If the saved Text Range object contains no text
-             * collapse it and execute the command at the document object
-             */
-            execCommandTarget = this.__currentRange.text.length > 0 ? this.__currentRange : this.__doc;
+
+            if(
+                /*
+                 * If the saved Text Range object contains no text
+                 * collapse it and execute the command at the document object
+                 */
+                (
+                  (this.__currentRange.text) &&
+                  (this.__currentRange.text.length > 0)
+                )
+                ||
+                /*
+                 * Selected range is a control range with an image inside.
+                 */
+                (
+                  (this.__currentRange.length == 1) &&
+                  (this.__currentRange.item(0)) &&
+                  (this.__currentRange.item(0).tagName == "IMG")
+                )
+              )
+            {
+              execCommandTarget = this.__currentRange; 
+            }
+            else
+            {
+              execCommandTarget = this.__doc;
+            }
+            
           }
 
           /* 
