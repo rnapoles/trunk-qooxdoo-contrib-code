@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding='ISO-8859-1' standalone="yes" ?>
-<!--
-§{{header}}:
-
-This is file doc/src/passing.svg,
-Mork version 0.6  Copyright § 1998-2002  Michael Hartmeier
-
-Mork is licensed under the terms of the GNU Lesser General Public License.
-It is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the file license.txt for details.
-
-§.
--->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000802//EN"
                      "http://www.w3.org/TR/2000/CR-SVG-20000802/DTD/svg-20000802.dtd">
 <svg width="150mm" height="50mm" viewBox="0 0 360 120" >

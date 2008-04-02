@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding='ISO-8859-1'?>
-<!-- §{{header}}: -->
-<!-- Mork Compiler Tool, -->
-<!-- Copyright (c) 1998-2003  Michael Hartmeier -->
-<!-- Mork is licensed under the terms of the GNU Lesser General Public License. -->
-<!-- It is distributed in the hope that it will be useful, but WITHOUT ANY -->
-<!-- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS -->
-<!-- FOR A PARTICULAR PURPOSE. See the file license.txt for details. -->
-<!-- §. -->
 
 <appendix>
 <title>Mork syntax files</title>
