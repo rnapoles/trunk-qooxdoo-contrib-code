@@ -103,9 +103,7 @@ public class Pool implements Constants {
 
     // if could determin id via obj.getClass(), but the caller known
     // the id and and int id is easier to handle than a reference.
-    public int write(OutputStream dest, int id, Object obj)
-        throws IOException
-    {
+    public int write(OutputStream dest, int id, Object obj) throws IOException {
         int idx;
 
         if (obj == null) {
@@ -118,9 +116,7 @@ public class Pool implements Constants {
 
     // if could determin id via obj.getClass(), but the caller known
     // the id and and int id is easier to handle than a reference.
-    public int writeShort(OutputStream dest, int id, Object obj)
-        throws IOException
-    {
+    public int writeShort(OutputStream dest, int id, Object obj) throws IOException {
         int idx;
 
         idx = addIfNew(id, obj);
@@ -185,30 +181,27 @@ public class Pool implements Constants {
 
     // dispatch method
     private byte[] createBytes(int id, Object obj) {
-        byte[] l;
-        int i;
-
         switch (id) {
-        case CONSTANT_Class:
+        case CONSTANT_CLASS:
             return createClassRefBytes((ClassRef) obj);
-        case CONSTANT_Fieldref:
+        case CONSTANT_FIELDREF:
             return createFieldRefBytes((FieldRef) obj);
-        case CONSTANT_Methodref:
-        case CONSTANT_InterfaceMethodref:
+        case CONSTANT_METHODREF:
+        case CONSTANT_INTERFACEMETHODREF:
             return createMethodRefBytes((MethodRef) obj);
-        case CONSTANT_String:
+        case CONSTANT_STRING:
             return createStringBytes((String) obj);
-        case CONSTANT_Integer:
+        case CONSTANT_INTEGER:
             return createIntegerBytes((Integer) obj);
-        case CONSTANT_Float:
+        case CONSTANT_FLOAT:
             return createFloatBytes((Float) obj);
-        case CONSTANT_Long:
+        case CONSTANT_LONG:
             return createLongBytes((Long) obj);
-        case CONSTANT_Double:
+        case CONSTANT_DOUBLE:
             return createDoubleBytes((Double) obj);
-        case CONSTANT_NameAndType:
+        case CONSTANT_NAMEANDTYPE:
             return createNameAndTypeBytes((NameAndType) obj);
-        case CONSTANT_Utf8:
+        case CONSTANT_UTF8:
             return createUtf8Bytes((String) obj);
         default:
             throw new RuntimeException();
@@ -218,8 +211,8 @@ public class Pool implements Constants {
     private byte[] createClassRefBytes(ClassRef ref) {
         int i;
 
-        i = addIfNew(CONSTANT_Utf8, ref.toDescriptor());
-        return new byte[] { CONSTANT_Class,
+        i = addIfNew(CONSTANT_UTF8, ref.toDescriptor());
+        return new byte[] { CONSTANT_CLASS,
                                 (byte) (i >> 8), (byte) i };
     }
 
@@ -228,9 +221,9 @@ public class Pool implements Constants {
         NameAndType tmp;
 
         tmp = new NameAndType(ref.name, ref);
-        a = addIfNew(CONSTANT_Class, ref.owner);
-        b = addIfNew(CONSTANT_NameAndType, tmp);
-        return new byte[] { CONSTANT_Fieldref,
+        a = addIfNew(CONSTANT_CLASS, ref.owner);
+        b = addIfNew(CONSTANT_NAMEANDTYPE, tmp);
+        return new byte[] { CONSTANT_FIELDREF,
                                 (byte) (a >> 8), (byte) a,
                                 (byte) (b >> 8), (byte) b };
     }
@@ -240,27 +233,26 @@ public class Pool implements Constants {
         NameAndType tmp;
 
         tmp = new NameAndType(ref.name, ref);
-        a = addIfNew(CONSTANT_Class, ref.owner);
-        b = addIfNew(CONSTANT_NameAndType, tmp);
+        a = addIfNew(CONSTANT_CLASS, ref.owner);
+        b = addIfNew(CONSTANT_NAMEANDTYPE, tmp);
         return new byte[] { ref.ifc?
-                            CONSTANT_InterfaceMethodref : CONSTANT_Methodref,
+                            CONSTANT_INTERFACEMETHODREF : CONSTANT_METHODREF,
                             (byte) (a >> 8), (byte) a,
                             (byte) (b >> 8), (byte) b };
     }
 
     private byte[] createStringBytes(String value) {
-        byte[] result;
         int a;
 
-        a = addIfNew(CONSTANT_Utf8, value);
-        return new byte[] { CONSTANT_String, (byte) (a >> 8), (byte) a };
+        a = addIfNew(CONSTANT_UTF8, value);
+        return new byte[] { CONSTANT_STRING, (byte) (a >> 8), (byte) a };
     }
 
     private byte[] createIntegerBytes(Integer value) {
         int i;
 
         i = value.intValue();
-        return new byte[] { CONSTANT_Integer,
+        return new byte[] { CONSTANT_INTEGER,
                                 (byte) (i >> 24), (byte) (i >> 16),
                                 (byte) (i >>  8), (byte) (i >>  0) };
     }
@@ -269,7 +261,7 @@ public class Pool implements Constants {
         int i;
 
         i = Float.floatToIntBits(value.floatValue());
-        return new byte[] { CONSTANT_Float,
+        return new byte[] { CONSTANT_FLOAT,
                                 (byte) (i >> 24), (byte) (i >> 16),
                                 (byte) (i >>  8), (byte) (i >>  0) };
     }
@@ -278,7 +270,7 @@ public class Pool implements Constants {
         long l;
 
         l = value.longValue();
-        return new byte[] { CONSTANT_Long,
+        return new byte[] { CONSTANT_LONG,
                                 (byte) (l >> 56), (byte) (l >> 48),
                                 (byte) (l >> 40), (byte) (l >> 32),
                                 (byte) (l >> 24), (byte) (l >> 16),
@@ -289,7 +281,7 @@ public class Pool implements Constants {
         long l;
 
         l = Double.doubleToLongBits(value.doubleValue());
-        return new byte[] { CONSTANT_Double,
+        return new byte[] { CONSTANT_DOUBLE,
                                 (byte) (l >> 56), (byte) (l >> 48),
                                 (byte) (l >> 40), (byte) (l >> 32),
                                 (byte) (l >> 24), (byte) (l >> 16),
@@ -299,9 +291,9 @@ public class Pool implements Constants {
     private byte[] createNameAndTypeBytes(NameAndType nt) {
         int a, b;
 
-        a = addIfNew(CONSTANT_Utf8, nt.name);
-        b = addIfNew(CONSTANT_Utf8, nt.descriptor);
-        return new byte[] { CONSTANT_NameAndType,
+        a = addIfNew(CONSTANT_UTF8, nt.name);
+        b = addIfNew(CONSTANT_UTF8, nt.descriptor);
+        return new byte[] { CONSTANT_NAMEANDTYPE,
                                 (byte) (a >> 8), (byte) a,
                                 (byte) (b >> 8), (byte) b };
     }
@@ -331,7 +323,7 @@ public class Pool implements Constants {
             }
         }
         result = new byte[1 + 2 + len];
-        result[0] = CONSTANT_Utf8;
+        result[0] = CONSTANT_UTF8;
         result[1] = (byte) (len >> 8);
         result[2] = (byte) (len >> 0);
         len = 3;  // used for current position
@@ -393,42 +385,42 @@ public class Pool implements Constants {
         info = (byte[]) bytes.get(no);
 
         switch (info[0]) {
-        case CONSTANT_Class:
+        case CONSTANT_CLASS:
             str = (String) createObject(bytesToU2(info, 1));
             return ClassRef.forDescriptor(str);
-        case CONSTANT_String:
+        case CONSTANT_STRING:
             return createObject(bytesToU2(info, 1));
-        case CONSTANT_Integer:
+        case CONSTANT_INTEGER:
             return new Integer(bytesToU4(info, 1));
-        case CONSTANT_Long:
+        case CONSTANT_LONG:
             return new Long(bytesToU8(info, 1));
-        case CONSTANT_Float:
+        case CONSTANT_FLOAT:
             return new Float(Float.intBitsToFloat(bytesToU4(info, 1)));
-        case CONSTANT_Double:
+        case CONSTANT_DOUBLE:
             return new Double(Double.longBitsToDouble(bytesToU8(info, 1)));
-        case CONSTANT_Fieldref:
+        case CONSTANT_FIELDREF:
             o1 = createObject(bytesToU2(info, 1));
             nt = (NameAndType) createObject(bytesToU2(info, 3));
             return new FieldRef((ClassRef) o1, nt.name,
                                 ClassRef.forFieldDescriptor(nt.descriptor));
-        case CONSTANT_Methodref:
+        case CONSTANT_METHODREF:
             o1 = createObject(bytesToU2(info, 1));
             nt = (NameAndType) createObject(bytesToU2(info, 3));
             return new MethodRef((ClassRef) o1, false,
                  MethodRef.forReturnType(nt.descriptor), nt.name,
                  MethodRef.forArgumentTypes(nt.descriptor));
 
-        case CONSTANT_InterfaceMethodref:
+        case CONSTANT_INTERFACEMETHODREF:
             o1 = createObject(bytesToU2(info, 1));
             nt = (NameAndType) createObject(bytesToU2(info, 3));
             return new MethodRef((ClassRef) o1, true,
                  MethodRef.forReturnType(nt.descriptor), nt.name,
                  MethodRef.forArgumentTypes(nt.descriptor));
-        case CONSTANT_NameAndType:
+        case CONSTANT_NAMEANDTYPE:
             o1 = createObject(bytesToU2(info, 1));
             o2 = createObject(bytesToU2(info, 3));
             return new NameAndType((String) o1, (String) o2);
-        case CONSTANT_Utf8:
+        case CONSTANT_UTF8:
             return bytesToChars(info, 3, bytesToU2(info, 1));
         default:
             throw new RuntimeException("unkown id: " + info[0]);
@@ -455,20 +447,20 @@ public class Pool implements Constants {
 
     private static int getData(int id) {
         switch (id) {
-        case CONSTANT_Class:
-        case CONSTANT_String:
+        case CONSTANT_CLASS:
+        case CONSTANT_STRING:
             return 2;
-        case CONSTANT_Integer:
-        case CONSTANT_Float:
-        case CONSTANT_Fieldref:
-        case CONSTANT_Methodref:
-        case CONSTANT_InterfaceMethodref:
-        case CONSTANT_NameAndType:
+        case CONSTANT_INTEGER:
+        case CONSTANT_FLOAT:
+        case CONSTANT_FIELDREF:
+        case CONSTANT_METHODREF:
+        case CONSTANT_INTERFACEMETHODREF:
+        case CONSTANT_NAMEANDTYPE:
             return 4;
-        case CONSTANT_Long:
-        case CONSTANT_Double:
+        case CONSTANT_LONG:
+        case CONSTANT_DOUBLE:
             return 8;
-        case CONSTANT_Utf8:
+        case CONSTANT_UTF8:
             return -1;
         default:
             throw new RuntimeException("unkown id: " + id);
@@ -477,18 +469,18 @@ public class Pool implements Constants {
 
     private static boolean isFat(int id) {
         switch (id) {
-        case CONSTANT_Class:
-        case CONSTANT_String:
-        case CONSTANT_Integer:
-        case CONSTANT_Float:
-        case CONSTANT_Fieldref:
-        case CONSTANT_Methodref:
-        case CONSTANT_InterfaceMethodref:
-        case CONSTANT_NameAndType:
-        case CONSTANT_Utf8:
+        case CONSTANT_CLASS:
+        case CONSTANT_STRING:
+        case CONSTANT_INTEGER:
+        case CONSTANT_FLOAT:
+        case CONSTANT_FIELDREF:
+        case CONSTANT_METHODREF:
+        case CONSTANT_INTERFACEMETHODREF:
+        case CONSTANT_NAMEANDTYPE:
+        case CONSTANT_UTF8:
             return false;
-        case CONSTANT_Long:
-        case CONSTANT_Double:
+        case CONSTANT_LONG:
+        case CONSTANT_DOUBLE:
             return true;
         default:
             throw new RuntimeException("unkown id: " + id);

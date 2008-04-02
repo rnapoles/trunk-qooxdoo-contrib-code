@@ -40,8 +40,7 @@ public class Type implements Bytecodes, Constants {
     private Type(int id, String name, char descriptor,
                  Class<?> type, Class<?> wrapper,
                  Object zero, Object zeroLdc, int size,
-                 int load, int store, int arrayLoad, int arrayStore)
-    {
+                 int load, int store, int arrayLoad, int arrayStore) {
         this.id = id;
         this.name = name;
         this.descriptor = descriptor;
@@ -58,7 +57,7 @@ public class Type implements Bytecodes, Constants {
 
     private static final Integer ZERO = new Integer(0);
 
-    public static final Type PRIMITIVES[] = {
+    public static final Type[] PRIMITIVES = {
         // primitive types
         new Type(T_VOID,      "void",    'V', Void.TYPE,      Void.class,
             null,                    null,          0,

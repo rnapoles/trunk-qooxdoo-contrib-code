@@ -52,6 +52,11 @@ public class FieldRef extends Reference {
     }
 
     @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
     public String toString() {
         return type + " " + owner + "." + name;
     }

@@ -110,9 +110,7 @@ public class IO {
     //---------------------------------------------------------------------
 
     // no added functionality, just for symmetry reasons
-    public static void write(OutputStream dest, byte[] data, int ofs, int len)
-        throws IOException
-    {
+    public static void write(OutputStream dest, byte[] data, int ofs, int len) throws IOException {
         dest.write(data, ofs, len);
     }
 

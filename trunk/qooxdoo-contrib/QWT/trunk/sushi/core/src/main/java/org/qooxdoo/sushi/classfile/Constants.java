@@ -41,17 +41,17 @@ public interface Constants {
     byte T_INT = 10;
     byte T_LONG = 11;
 
-    byte CONSTANT_Class              = 7;
-    byte CONSTANT_Fieldref           = 9;
-    byte CONSTANT_Methodref          = 10;
-    byte CONSTANT_InterfaceMethodref = 11;
-    byte CONSTANT_String             = 8;
-    byte CONSTANT_Integer            = 3;
-    byte CONSTANT_Float              = 4;
-    byte CONSTANT_Long               = 5;
-    byte CONSTANT_Double             = 6;
-    byte CONSTANT_NameAndType        = 12;
-    byte CONSTANT_Utf8               = 1;
+    byte CONSTANT_CLASS              = 7;
+    byte CONSTANT_FIELDREF           = 9;
+    byte CONSTANT_METHODREF          = 10;
+    byte CONSTANT_INTERFACEMETHODREF = 11;
+    byte CONSTANT_STRING             = 8;
+    byte CONSTANT_INTEGER            = 3;
+    byte CONSTANT_FLOAT              = 4;
+    byte CONSTANT_LONG               = 5;
+    byte CONSTANT_DOUBLE             = 6;
+    byte CONSTANT_NAMEANDTYPE        = 12;
+    byte CONSTANT_UTF8               = 1;
 
     //---------------------------------------------------------------
     // InstructionType encoding.
@@ -104,7 +104,7 @@ public interface Constants {
 
     // implicit argumtents; they come first. _I_ stands for implicit
     int AE_I_NULL =  0;
-    int AE_I_Im1  =  1;
+    int AE_I_IML  =  1;
     int AE_I_I0   =  2;
     int AE_I_I1   =  3;
     int AE_I_I2   =  4;
@@ -155,7 +155,7 @@ public interface Constants {
     int AE_CNST2_W = 26;
 
     // values for implicit physical arguments
-    Object[] implicit = {
+    Object[] IMPLICIT = {
         null,
         new Integer(-1),
         new Integer(0),

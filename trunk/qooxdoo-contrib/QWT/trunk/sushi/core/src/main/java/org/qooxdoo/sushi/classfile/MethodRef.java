@@ -71,8 +71,7 @@ public class MethodRef extends Reference {
 
 
     public MethodRef(ClassRef owner, boolean ifc, ClassRef returnType,
-        String name, ClassRef[] argumentTypes)
-    {
+        String name, ClassRef[] argumentTypes) {
         this.owner = owner;
         this.ifc = ifc;
         this.name = name;
@@ -83,66 +82,52 @@ public class MethodRef extends Reference {
     //------------------------------------------------------------------
     // convinience methods to create references
 
-    public static MethodRef meth(ClassRef owner, ClassRef returnType,
-        String name)
-    {
+    public static MethodRef meth(ClassRef owner, ClassRef returnType, String name) {
         return new MethodRef(owner, false, returnType, name,
             ClassRef.NONE);
     }
-    public static MethodRef meth(ClassRef owner, ClassRef returnType,
-        String name, ClassRef arg0)
-    {
+    public static MethodRef meth(ClassRef owner, ClassRef returnType, String name, ClassRef arg0) {
         return new MethodRef(owner, false, returnType, name,
             new ClassRef[] { arg0 });
     }
     public static MethodRef meth(ClassRef owner, ClassRef returnType,
-        String name, ClassRef arg0, ClassRef arg1)
-    {
+            String name, ClassRef arg0, ClassRef arg1) {
         return new MethodRef(owner, false, returnType, name,
             new ClassRef[] { arg0, arg1 });
     }
     public static MethodRef meth(ClassRef owner, ClassRef returnType,
-        String name, ClassRef arg0, ClassRef arg1, ClassRef arg2)
-    {
+            String name, ClassRef arg0, ClassRef arg1, ClassRef arg2) {
         return new MethodRef(owner, false, returnType, name,
             new ClassRef[] { arg0, arg1, arg2 });
     }
     public static MethodRef meth(ClassRef owner, ClassRef returnType,
         String name,
-        ClassRef arg0, ClassRef arg1, ClassRef arg2, ClassRef arg3)
-    {
+        ClassRef arg0, ClassRef arg1, ClassRef arg2, ClassRef arg3) {
         return new MethodRef(owner, false, returnType, name,
             new ClassRef[] { arg0, arg1, arg2, arg3 });
     }
 
-    public static MethodRef ifc(ClassRef owner, ClassRef returnType,
-        String name)
-    {
+    public static MethodRef ifc(ClassRef owner, ClassRef returnType, String name) {
         return new MethodRef(owner, true, returnType, name,
             ClassRef.NONE);
     }
-    public static MethodRef ifc(ClassRef owner, ClassRef returnType,
-        String name, ClassRef arg0)
-    {
+    public static MethodRef ifc(ClassRef owner, ClassRef returnType, String name, ClassRef arg0) {
         return new MethodRef(owner, true, returnType, name,
             new ClassRef[] { arg0 });
     }
     public static MethodRef ifc(ClassRef owner, ClassRef returnType,
-        String name, ClassRef arg0, ClassRef arg1)
-    {
+        String name, ClassRef arg0, ClassRef arg1) {
         return new MethodRef(owner, true, returnType, name,
             new ClassRef[] { arg0, arg1 });
     }
     public static MethodRef ifc(ClassRef owner, ClassRef returnType,
-        String name, ClassRef arg0, ClassRef arg1, ClassRef arg2)
-    {
+        String name, ClassRef arg0, ClassRef arg1, ClassRef arg2) {
         return new MethodRef(owner, true, returnType, name,
             new ClassRef[] { arg0, arg1, arg2 });
     }
     public static MethodRef ifc(ClassRef owner, ClassRef returnType,
         String name,
-        ClassRef arg0, ClassRef arg1, ClassRef arg2, ClassRef arg3)
-    {
+        ClassRef arg0, ClassRef arg1, ClassRef arg2, ClassRef arg3) {
         return new MethodRef(owner, true, returnType, name,
             new ClassRef[] { arg0, arg1, arg2, arg3 });
     }
@@ -156,18 +141,13 @@ public class MethodRef extends Reference {
     public static MethodRef constr(ClassRef cl, ClassRef arg0) {
         return constr(cl, new ClassRef[] { arg0 });
     }
-    public static MethodRef constr(ClassRef cl, ClassRef arg0, ClassRef arg1)
-    {
+    public static MethodRef constr(ClassRef cl, ClassRef arg0, ClassRef arg1) {
         return constr(cl, new ClassRef[] { arg0, arg1 });
     }
-    public static MethodRef constr(ClassRef cl,
-        ClassRef arg0, ClassRef arg1, ClassRef arg2)
-    {
+    public static MethodRef constr(ClassRef cl, ClassRef arg0, ClassRef arg1, ClassRef arg2) {
         return constr(cl, new ClassRef[] { arg0, arg1, arg2 });
     }
-    public static MethodRef constr(ClassRef cl,
-        ClassRef arg0, ClassRef arg1, ClassRef arg2, ClassRef arg3)
-    {
+    public static MethodRef constr(ClassRef cl, ClassRef arg0, ClassRef arg1, ClassRef arg2, ClassRef arg3) {
         return constr(cl, new ClassRef[] { arg0, arg1, arg2, arg3 });
     }
 
@@ -197,8 +177,7 @@ public class MethodRef extends Reference {
               && (ifc == ref.ifc)
               && name.equals(ref.name)
               && returnType.equals(ref.returnType)
-              && (argumentTypes.length == ref.argumentTypes.length)))
-        {
+              && (argumentTypes.length == ref.argumentTypes.length))) {
             return false;
         }
         for (i = 0; i < argumentTypes.length; i++) {
@@ -207,6 +186,11 @@ public class MethodRef extends Reference {
             }
         }
         return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 
     public String toDescriptor() {

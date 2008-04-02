@@ -126,6 +126,11 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
             return false;
         }
     }
+    
+    @Override
+    public int hashCode() {
+        return name.hashCode(); 
+    }
 
     public Class<?> lookup() {
         Class<?> result;
@@ -181,9 +186,7 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
     /**
      * uses nextOfs to return additional result.
      */
-    public static ClassRef forFieldDescriptor(
-        String descriptor, int ofs, int length)
-    {
+    public static ClassRef forFieldDescriptor(String descriptor, int ofs, int length) {
         int i, dimensions;
         char c;
         Type typeCode;
@@ -363,7 +366,7 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
             if (c == null) {
                 return null; // primitive type
             } else {
-                return commonBaseRaw(a,c);
+                return commonBaseRaw(a, c);
             }
         }
     }
@@ -373,9 +376,7 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
      * @param  out target to write to
      * @param  cl  class to be written
      */
-    public static void write(ObjectOutput out, Class<?> cl)
-        throws IOException
-    {
+    public static void write(ObjectOutput out, Class<?> cl) throws IOException {
         int dim;
 
         if (cl == null) {

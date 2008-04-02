@@ -57,7 +57,7 @@ public class Instruction implements Constants {
 
         tmp = src.getOfs();
         opcode = src.readU1();
-        encoding = Set.encoding[opcode];
+        encoding = Set.ENCODING[opcode];
         if (encoding == null) {
             throw new RuntimeException("illegal opcode: " + opcode);
         } else {

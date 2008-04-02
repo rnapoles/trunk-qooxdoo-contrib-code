@@ -27,7 +27,7 @@ public class ExceptionInfo {
     public int handler; // a pc
     public ClassRef type;
 
-    public static final int size = 8;
+    public static final int SIZE = 8;
 
     public ExceptionInfo(int start, int end, int handler, ClassRef type) {
         this.start = start;
@@ -49,8 +49,6 @@ public class ExceptionInfo {
     }
 
     public void write(Output dest) throws IOException {
-        int tmp;
-
         dest.requireCode();
         dest.writeIdx(start);
         dest.writeIdxOrLast(end);
