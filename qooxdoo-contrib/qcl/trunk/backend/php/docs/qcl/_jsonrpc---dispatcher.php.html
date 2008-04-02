@@ -1,0 +1,576 @@
+<html>
+<head>
+<title>Docs for page dispatcher.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                              		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../qcl/_plugin---abstract.php.html">		abstract.php
+		</a><br>
+			<a href="../qcl/_access---common.php.html">		common.php
+		</a><br>
+			<a href="../qcl/_config---config.php.html">		config.php
+		</a><br>
+			<a href="../qcl/_config---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_access---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_locale---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_session---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_encoding---converter.php.html">		converter.php
+		</a><br>
+			<a href="../qcl/_config---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_plugin---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_db---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---dispatcher.php.html">		dispatcher.php
+		</a><br>
+			<a href="../qcl/_session---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_db---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_locale---model_qooxdoo.php.html">		model_qooxdoo.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_db---pear.php.html">		pear.php
+		</a><br>
+			<a href="../qcl/_access---permission.php.html">		permission.php
+		</a><br>
+			<a href="../qcl/_xml---reader.php.html">		reader.php
+		</a><br>
+			<a href="../qcl/_http---request.php.html">		request.php
+		</a><br>
+			<a href="../qcl/_access---role.php.html">		role.php
+		</a><br>
+			<a href="../qcl/_config---session.php.html">		session.php
+		</a><br>
+			<a href="../qcl/_system---shell.php.html">		shell.php
+		</a><br>
+			<a href="../qcl/_xml---transformer.php.html">		transformer.php
+		</a><br>
+			<a href="../qcl/_db---tree.php.html">		tree.php
+		</a><br>
+			<a href="../qcl/_access---user.php.html">		user.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../qcl/JsonRpcError.html">JsonRpcError</a><br />
+	    		<a href="../qcl/patched_object.html">patched_object</a><br />
+	    		<a href="../qcl/qcl_access_common.html">qcl_access_common</a><br />
+	    		<a href="../qcl/qcl_access_controller.html">qcl_access_controller</a><br />
+	    		<a href="../qcl/qcl_access_permission.html">qcl_access_permission</a><br />
+	    		<a href="../qcl/qcl_access_role.html">qcl_access_role</a><br />
+	    		<a href="../qcl/qcl_access_user.html">qcl_access_user</a><br />
+	    		<a href="../qcl/qcl_config.html">qcl_config</a><br />
+	    		<a href="../qcl/qcl_config_controller.html">qcl_config_controller</a><br />
+	    		<a href="../qcl/qcl_config_db.html">qcl_config_db</a><br />
+	    		<a href="../qcl/qcl_config_session.html">qcl_config_session</a><br />
+	    		<a href="../qcl/qcl_db.html">qcl_db</a><br />
+	    		<a href="../qcl/qcl_db_model.html">qcl_db_model</a><br />
+	    		<a href="../qcl/qcl_db_pear.html">qcl_db_pear</a><br />
+	    		<a href="../qcl/qcl_db_tree.html">qcl_db_tree</a><br />
+	    		<a href="../qcl/qcl_encoding_converter.html">qcl_encoding_converter</a><br />
+	    		<a href="../qcl/qcl_http_request.html">qcl_http_request</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a><br />
+	    		<a href="../qcl/qcl_locale_controller.html">qcl_locale_controller</a><br />
+	    		<a href="../qcl/qcl_locale_model_qooxdoo.html">qcl_locale_model_qooxdoo</a><br />
+	    		<a href="../qcl/qcl_object.html">qcl_object</a><br />
+	    		<a href="../qcl/qcl_plugin_abstract.html">qcl_plugin_abstract</a><br />
+	    		<a href="../qcl/qcl_plugin_db.html">qcl_plugin_db</a><br />
+	    		<a href="../qcl/qcl_session_controller.html">qcl_session_controller</a><br />
+	    		<a href="../qcl/qcl_session_model.html">qcl_session_model</a><br />
+	    		<a href="../qcl/qcl_system_shell.html">qcl_system_shell</a><br />
+	    		<a href="../qcl/qcl_xml_reader.html">qcl_xml_reader</a><br />
+	    		<a href="../qcl/qcl_xml_transformer.html">qcl_xml_transformer</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Procedural File: dispatcher.php</h1>
+Source Location: /jsonrpc/dispatcher.php<br /><br />
+
+<br>
+<br>
+
+<div class="contents">
+<h2>Classes:</h2>
+<dt><a href="../qcl/JsonRpcError.html">JsonRpcError</a></dt>
+	<dd></dd>
+</div><br /><br />
+
+<h2>Page Details:</h2>
+<br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>filesource:</b>&nbsp;&nbsp;</td><td><a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html">Source Code for this file</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+<h4>Includes:</h4>
+<div class="tags">
+require("global_settings.php") [line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a56">56</a>]<br />
+require("json_wrapper.php") [line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a33">33</a>]<br />
+require(servicePathPrefix.$servicePath.".php") [line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a607">607</a>]<br />
+main error handling code<br /><br />require("JSON.phps") [line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a37">37</a>]<br />
+</div>
+<br /><br />
+<br /><br />
+  <hr />
+	<a name="defineAccessibility_Domain"></a>
+	<h3>Accessibility_Domain <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a107">107</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Accessibility_Domain = &quot;domain&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineAccessibility_Fail"></a>
+	<h3>Accessibility_Fail <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a109">109</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Accessibility_Fail = &quot;fail&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineAccessibility_Public"></a>
+	<h3>Accessibility_Public <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a106">106</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Accessibility_Public = &quot;public&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineAccessibility_Session"></a>
+	<h3>Accessibility_Session <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a108">108</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>Accessibility_Session = &quot;session&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="definedefaultAccessibility"></a>
+	<h3>defaultAccessibility <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a114">114</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>defaultAccessibility = Accessibility_Domain</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Default accessibility for methods when not overridden by the service class.<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcClassPrefix"></a>
+	<h3>JsonRpcClassPrefix <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a77">77</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcClassPrefix = &quot;class_&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Prefixes for RPC classes and methods<br /><br /><p>Since you do not want to expose all classes or all methods that are  present in the files accessible to the server, a prefix is needed  for classes and methods. By default, this is &quot;class_&quot; for classes  and &quot;method_&quot; for methods. You might want to keep those prefixes if  you want to share backend class code with others (otherwise, a simple  search &amp; replace takes care of quickly, too) - otherwise define the  following constants in global_settings.php</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcErrorHandling"></a>
+	<h3>JsonRpcErrorHandling <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a319">319</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcErrorHandling = &quot;on&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    switches error handling on or off. Override in global_settings.php<br /><br /><p>default: on</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_ClassNotFound"></a>
+	<h3>JsonRpcError_ClassNotFound <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a181">181</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_ClassNotFound = 3</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 3: Class Not Found<br /><br /><p>If the JSON-RPC server divides service methods into subsets (classes), this  indicates that the specified class was not found.  This is slightly more  detailed than &quot;Method Not Found&quot;, but that error would always also be legal  (and true) whenever this one is returned.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_IllegalService"></a>
+	<h3>JsonRpcError_IllegalService <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a164">164</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_IllegalService = 1</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 1: Illegal Service<br /><br /><p>The service name contains illegal characters or is otherwise deemed  unacceptable to the JSON-RPC server.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_MethodNotFound"></a>
+	<h3>JsonRpcError_MethodNotFound <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a188">188</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_MethodNotFound = 4</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 4: Method Not Found<br /><br /><p>The method specified in the request is not found in the requested service.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_Origin_Application"></a>
+	<h3>JsonRpcError_Origin_Application <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a122">122</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_Origin_Application = 2</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_Origin_Client"></a>
+	<h3>JsonRpcError_Origin_Client <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a124">124</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_Origin_Client = 4</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_Origin_Server"></a>
+	<h3>JsonRpcError_Origin_Server <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a121">121</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_Origin_Server = 1</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    JSON-RPC error origins<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_Origin_Transport"></a>
+	<h3>JsonRpcError_Origin_Transport <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a123">123</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_Origin_Transport = 3</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_ParameterMismatch"></a>
+	<h3>JsonRpcError_ParameterMismatch <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a197">197</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_ParameterMismatch = 5</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 5: Parameter Mismatch<br /><br /><p>If a method discovers that the parameters (arguments) provided to it do not  match the requisite types for the method's parameters, it should return  this error code to indicate so to the caller.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_PermissionDenied"></a>
+	<h3>JsonRpcError_PermissionDenied <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a208">208</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_PermissionDenied = 6</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 6: Permission Denied<br /><br /><p>A JSON-RPC service provider can require authentication, and that  authentication can be implemented such the method takes authentication  parameters, or such that a method or class of methods requires prior  authentication.  If the caller has not properly authenticated to use the  requested method, this error code is returned.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_ScriptError"></a>
+	<h3>JsonRpcError_ScriptError <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a148">148</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_ScriptError = -1</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_ServiceNotFound"></a>
+	<h3>JsonRpcError_ServiceNotFound <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a171">171</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_ServiceNotFound = 2</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 2: Service Not Found<br /><br /><p>The requested service does not exist at the JSON-RPC server.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcError_Unknown"></a>
+	<h3>JsonRpcError_Unknown <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a156">156</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcError_Unknown = 0</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Error code, value 0: Unknown Error<br /><br /><p>The default error code, used only when no specific error code is passed to  the JsonRpcError constructor.  This code should generally not be used.</p><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineJsonRpcMethodPrefix"></a>
+	<h3>JsonRpcMethodPrefix <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a82">82</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>JsonRpcMethodPrefix = &quot;method_&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineScriptTransport_NotInUse"></a>
+	<h3>ScriptTransport_NotInUse <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a210">210</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>ScriptTransport_NotInUse = -1</code>
+    </td></tr></table>
+    </td></tr></table>
+
+        <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+  <hr />
+	<a name="defineservicePathPrefix"></a>
+	<h3>servicePathPrefix <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a62">62</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>servicePathPrefix = &quot;&quot;</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    The location of the service class directories.<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+<br />
+  <hr />
+	<a name="functiondebug"></a>
+	<h3>debug <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a292">292</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void debug(
+ $str)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$str</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+  <hr />
+	<a name="functionjsonRpcErrorHandler"></a>
+	<h3>jsonRpcErrorHandler <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a359">359</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void jsonRpcErrorHandler(
+ $errno,  $errstr,  $errfile,  $errline)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		jsonrpc error handler to output json error response messages<br /><br />    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$errno</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$errstr</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$errfile</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$errline</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+  <hr />
+	<a name="functionjsonrpc_catch_errors"></a>
+	<h3>jsonrpc_catch_errors <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a329">329</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void jsonrpc_catch_errors(
+ $buffer)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		error handling callback function<br /><br /><p>php4 cannot handle all errors, that's why we have to use a  workaround using output buffering (see post by  smp at ncoastsoft dot com at    http://www.php.net/manual/en/function.set-error-handler.php</p><br />    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$buffer</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+  <hr />
+	<a name="functionSendReply"></a>
+	<h3>SendReply <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__jsonrpcdispatcher.php.html#a213">213</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void SendReply(
+ $reply,  $scriptTransportId)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$reply</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+		      <tr>
+        <td class="type">&nbsp;&nbsp;</td>
+        <td><b>$scriptTransportId</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Wed, 02 Apr 2008 23:40:32 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

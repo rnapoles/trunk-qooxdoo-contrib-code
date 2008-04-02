@@ -1,0 +1,511 @@
+<html>
+<head>
+<title>File Source for object.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                              		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+            <br /><br />
+                  
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1 align="center">Source for file object.php</h1>
+<p>Documentation is available at <a href="../qcl/_object.php.html">object.php</a></p>
+<div class="src-code">
+<ol><li><div class="src-line"><a name="a1"></a><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line"><a name="a2"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a3"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a4"></a><span class="src-comm">&nbsp;*&nbsp;base&nbsp;class&nbsp;providing&nbsp;__construct&nbsp;and&nbsp;&amp;&nbsp;__destruct&nbsp;compatibility&nbsp;to&nbsp;php4&nbsp;objects</span></div></li>
+<li><div class="src-line"><a name="a5"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a6"></a><span class="src-key">class&nbsp;</span><a href="../qcl/patched_object.html">patched_object</a>&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a7"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a8"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a9"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;PHP4&nbsp;__construct()&nbsp;hack&nbsp;taken&nbsp;from&nbsp;cakephp</span></div></li>
+<li><div class="src-line"><a name="a10"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;taken&nbsp;from&nbsp;https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php</span></div></li>
+<li><div class="src-line"><a name="a11"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a12"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;CakePHP(tm)&nbsp;:&nbsp;&nbsp;Rapid&nbsp;Development&nbsp;Framework&nbsp;&lt;http://www.cakephp.org/&gt;</span></div></li>
+<li><div class="src-line"><a name="a13"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Copyright&nbsp;2005-2007,&nbsp;Cake&nbsp;Software&nbsp;Foundation,&nbsp;Inc.</span></div></li>
+<li><div class="src-line"><a name="a14"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1785&nbsp;E.&nbsp;Sahara&nbsp;Avenue,&nbsp;Suite&nbsp;490-204</span></div></li>
+<li><div class="src-line"><a name="a15"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Las&nbsp;Vegas,&nbsp;Nevada&nbsp;89104</span></div></li>
+<li><div class="src-line"><a name="a16"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a17"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Licensed&nbsp;under&nbsp;The&nbsp;MIT&nbsp;License</span></div></li>
+<li><div class="src-line"><a name="a18"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;of&nbsp;files&nbsp;must&nbsp;retain&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice.</span></div></li>
+<li><div class="src-line"><a name="a19"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a20"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;A&nbsp;hack&nbsp;to&nbsp;support&nbsp;__construct()&nbsp;on&nbsp;PHP&nbsp;4</span></div></li>
+<li><div class="src-line"><a name="a21"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Hint:&nbsp;descendant&nbsp;classes&nbsp;have&nbsp;no&nbsp;PHP4&nbsp;class_name()&nbsp;constructors,</span></div></li>
+<li><div class="src-line"><a name="a22"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;so&nbsp;this&nbsp;constructor&nbsp;gets&nbsp;called&nbsp;first&nbsp;and&nbsp;calls&nbsp;the&nbsp;top-layer&nbsp;__construct()</span></div></li>
+<li><div class="src-line"><a name="a23"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;which&nbsp;(if&nbsp;present)&nbsp;should&nbsp;call&nbsp;parent::__construct()</span></div></li>
+<li><div class="src-line"><a name="a24"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a25"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;Object</span></div></li>
+<li><div class="src-line"><a name="a26"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a27"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/patched_object.html#methodpatched_object">patched_object</a><span class="src-sym">(</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a28"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a29"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//trigger_error(&quot;qcl_object&nbsp;constructor&nbsp;called&quot;);</span></div></li>
+<li><div class="src-line"><a name="a30"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$args&nbsp;</span>=&nbsp;<a href="http://www.php.net/func_get_args">func_get_args</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a31"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(</span><a href="http://www.php.net/method_exists">method_exists</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">'__destruct'</span><span class="src-sym">))&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a32"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a33"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/register_shutdown_function">register_shutdown_function</a>&nbsp;<span class="src-sym">(</span><span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">&amp;</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">'__destruct'</span><span class="src-sym">))</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a34"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a35"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(</span><a href="http://www.php.net/method_exists">method_exists</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">'__construct'</span><span class="src-sym">))&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a36"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a37"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/call_user_func_array">call_user_func_array</a><span class="src-sym">(</span><span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">&amp;</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">'__construct'</span><span class="src-sym">)</span><span class="src-sym">,&nbsp;</span><span class="src-var">$args</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a38"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a40"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a41"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/patched_object.html#method__construct">__construct</a><span class="src-sym">(</span><span class="src-sym">)&nbsp;</span><span class="src-sym">{</span><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a42"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a43"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a44"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a45"></a><span class="src-comm">//&nbsp;log&nbsp;constants</span></div></li>
+<li><div class="src-line"><a name="a46"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;QCL_LOG_FILE&quot;&nbsp;</span><span class="src-sym">,&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="src-id">QCL_LOG_PATH&nbsp;</span>.&nbsp;<span class="src-str">&quot;bibliograph.log&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span><span class="src-comm">//&nbsp;todo:&nbsp;make&nbsp;application-specific!</span></div></li>
+<li><div class="src-line"><a name="a47"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;QCL_LOG_OFF&quot;</span><span class="src-sym">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="src-num">0&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a48"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;QCL_LOG_DEBUG&quot;</span><span class="src-sym">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="src-num">1&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a49"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;QCL_LOG_INFO&quot;</span><span class="src-sym">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="src-num">2&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a50"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;QCL_LOG_WARN&quot;</span><span class="src-sym">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="src-num">3&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a51"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;QCL_LOG_ERROR&quot;</span><span class="src-sym">,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="src-num">4&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a52"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a53"></a><span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/defined">defined</a><span class="src-sym">(</span><span class="src-str">&quot;QCL_LOG_LEVEL&quot;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a54"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a55"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/define">define</a><span class="src-sym">(</span><span class="src-str">&quot;QCL_LOG_LEVEL&quot;</span><span class="src-sym">,</span><span class="src-id">QCL_LOG_ERROR</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a56"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a57"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a58"></a><span class="src-comm">//&nbsp;Stack&nbsp;Trace</span></div></li>
+<li><div class="src-line"><a name="a59"></a><span class="src-var">$GLOBALS</span><span class="src-sym">[</span><span class="src-str">'_stackTrace'</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a60"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a61"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a62"></a><span class="src-comm">&nbsp;*&nbsp;base&nbsp;class&nbsp;of&nbsp;all&nbsp;json&nbsp;rpc&nbsp;service&nbsp;classes</span></div></li>
+<li><div class="src-line"><a name="a63"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a64"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a65"></a><span class="src-key">class&nbsp;</span><a href="../qcl/qcl_object.html">qcl_object</a>&nbsp;<span class="src-key">extends&nbsp;</span><a href="../qcl/patched_object.html#methodpatched_object">patched_object</a>&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a66"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a67"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a68"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;instance&nbsp;variables</span></div></li>
+<li><div class="src-line"><a name="a69"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a70"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a71"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a72"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@var&nbsp;JsonRpcError&nbsp;$error</span></div></li>
+<li><div class="src-line"><a name="a73"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a74"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_object.html#var$error">$error</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a75"></a>&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a76"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a77"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;internal&nbsp;methods</span></div></li>
+<li><div class="src-line"><a name="a78"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a79"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a80"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a81"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Class&nbsp;constructor</span></div></li>
+<li><div class="src-line"><a name="a82"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a83"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#method__construct">__construct</a><span class="src-sym">(</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a84"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a85"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-id">parent</span><span class="src-sym">::</span><a href="../qcl/patched_object.html#method__construct">__construct</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a86"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$GLOBALS</span><span class="src-sym">[</span><span class="src-str">'_stackTrace'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-sym">]&nbsp;</span>=&nbsp;<a href="http://www.php.net/get_class">get_class</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span><span class="src-comm">//&nbsp;save&nbsp;class&nbsp;method&nbsp;for&nbsp;stack&nbsp;trace</span></div></li>
+<li><div class="src-line"><a name="a87"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a88"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a89"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a90"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;public&nbsp;methods</span></div></li>
+<li><div class="src-line"><a name="a91"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a92"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a93"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a94"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;getter&nbsp;for&nbsp;error&nbsp;message</span></div></li>
+<li><div class="src-line"><a name="a95"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a96"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a97"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodgetError">getError</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a98"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a99"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#var$error">error</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a100"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a101"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a102"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a103"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;setter&nbsp;for&nbsp;error&nbsp;message</span></div></li>
+<li><div class="src-line"><a name="a104"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a105"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a106"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodsetError">setError</a><span class="src-sym">(&nbsp;</span><span class="src-var">$error&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a107"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a108"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#var$error">error</a>&nbsp;=&nbsp;<span class="src-var">$error</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a109"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a110"></a>&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a111"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a112"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;get&nbsp;include&nbsp;path&nbsp;for&nbsp;a&nbsp;class&nbsp;name</span></div></li>
+<li><div class="src-line"><a name="a113"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a114"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;$classname</span></div></li>
+<li><div class="src-line"><a name="a115"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a116"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodgetClassPath">getClassPath</a><span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a117"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a118"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;delete&nbsp;JsonRpcClassPrefix</span></div></li>
+<li><div class="src-line"><a name="a119"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/substr">substr</a><span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">,</span><span class="src-num">0</span><span class="src-sym">,</span><a href="http://www.php.net/strlen">strlen</a><span class="src-sym">(</span><span class="src-id"><a href="../qcl/_jsonrpc---dispatcher.php.html#defineJsonRpcClassPrefix">JsonRpcClassPrefix</a></span><span class="src-sym">))&nbsp;</span>==&nbsp;<span class="src-id"><a href="../qcl/_jsonrpc---dispatcher.php.html#defineJsonRpcClassPrefix">JsonRpcClassPrefix</a>&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a120"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a121"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$pathname&nbsp;</span>=&nbsp;<a href="http://www.php.net/substr">substr</a><span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">,</span><a href="http://www.php.net/strlen">strlen</a><span class="src-sym">(</span><span class="src-id"><a href="../qcl/_jsonrpc---dispatcher.php.html#defineJsonRpcClassPrefix">JsonRpcClassPrefix</a></span><span class="src-sym">))</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a122"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a123"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a124"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a125"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$pathname&nbsp;</span>=&nbsp;<span class="src-var">$classname</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a126"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a127"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a128"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;determine&nbsp;path&nbsp;name</span></div></li>
+<li><div class="src-line"><a name="a129"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">SERVICE_PATH&nbsp;</span>.&nbsp;<a href="http://www.php.net/implode">implode</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;/&quot;</span><span class="src-sym">,&nbsp;</span><a href="http://www.php.net/explode">explode</a><span class="src-sym">(</span><span class="src-str">&quot;_&quot;</span><span class="src-sym">,</span><span class="src-var">$pathname&nbsp;</span><span class="src-sym">)&nbsp;)&nbsp;</span>.&nbsp;<span class="src-str">&quot;.php&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a130"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a131"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a132"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a133"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;load&nbsp;file&nbsp;for&nbsp;class</span></div></li>
+<li><div class="src-line"><a name="a134"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;file&nbsp;path</span></div></li>
+<li><div class="src-line"><a name="a135"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;$classname&nbsp;Object</span></div></li>
+<li><div class="src-line"><a name="a136"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a137"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodincludeClassfile">includeClassfile</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$classname&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a138"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a139"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$path&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodgetClassPath">getClassPath</a><span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a140"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/file_exists">file_exists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$path&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a141"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a142"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">raiseError&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">Class</span>&nbsp;'<span class="src-var">$classname</span>'&nbsp;<span class="src-id">cannot</span>&nbsp;<span class="src-id">be</span>&nbsp;<span class="src-id">loaded</span>:&nbsp;<span class="src-id">file</span>&nbsp;'</span><span class="src-str">&quot;&nbsp;</span>.&nbsp;<a href="http://www.php.net/addslashes">addslashes</a><span class="src-sym">(</span><span class="src-var">$path</span><span class="src-sym">)&nbsp;</span>.&nbsp;&nbsp;<span class="src-str">&quot;'&nbsp;does&nbsp;not&nbsp;exist.&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a143"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a144"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a145"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;load&nbsp;class&nbsp;file</span></div></li>
+<li><div class="src-line"><a name="a146"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-inc">require_once&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$path&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a147"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a148"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$path</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a149"></a>&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a150"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a151"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a152"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a153"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;mixing&nbsp;in&nbsp;methods&nbsp;of&nbsp;another&nbsp;class</span></div></li>
+<li><div class="src-line"><a name="a154"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@todo:&nbsp;adapt&nbsp;for&nbsp;PHP5</span></div></li>
+<li><div class="src-line"><a name="a155"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a156"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;$classname&nbsp;class&nbsp;name</span></div></li>
+<li><div class="src-line"><a name="a157"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a158"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodmixin">mixin</a>&nbsp;<span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a159"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a160"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodincludeClassfile">includeClassfile</a><span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a161"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/aggregate">aggregate</a><span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-var">$classname</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a162"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a163"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a164"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a165"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;set&nbsp;(non-persistent)&nbsp;singleton&nbsp;instance&nbsp;of&nbsp;a&nbsp;class</span></div></li>
+<li><div class="src-line"><a name="a166"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;object&nbsp;$instance&nbsp;reference&nbsp;to&nbsp;be&nbsp;set&nbsp;as&nbsp;singleton</span></div></li>
+<li><div class="src-line"><a name="a167"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a168"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_object.html#methodsetSingleton">setSingleton</a><span class="src-sym">(&nbsp;</span><span class="src-var">$instance&nbsp;</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a169"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a170"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$classname&nbsp;</span>=&nbsp;<a href="http://www.php.net/get_class">get_class</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$instance&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a171"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$GLOBALS</span><span class="src-sym">[</span><span class="src-str">'qcl_jsonrpc_singletons'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$classname</span><span class="src-sym">]&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$instance</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a172"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$instance</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a173"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a174"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a175"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a176"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;singleton&nbsp;instance&nbsp;when&nbsp;dealing&nbsp;with&nbsp;object&nbsp;copy</span></div></li>
+<li><div class="src-line"><a name="a177"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a178"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_object.html#methodgetInstance">getInstance</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a179"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a180"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodgetSingleton">getSingleton</a><span class="src-sym">(</span><a href="http://www.php.net/get_class">get_class</a><span class="src-sym">(</span><span class="src-sym">&amp;</span><span class="src-var">$this</span><span class="src-sym">))</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a181"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a182"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a183"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a184"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;get&nbsp;(non-persistent)&nbsp;singleton&nbsp;instance&nbsp;of&nbsp;class.</span></div></li>
+<li><div class="src-line"><a name="a185"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;if&nbsp;singleton&nbsp;already&nbsp;exists,&nbsp;return&nbsp;instance,&nbsp;otherwise</span></div></li>
+<li><div class="src-line"><a name="a186"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;automatically&nbsp;load&nbsp;class&nbsp;file,&nbsp;create&nbsp;new&nbsp;instance&nbsp;and,&nbsp;if&nbsp;object&nbsp;is&nbsp;a&nbsp;controller,&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a187"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;pass&nbsp;a&nbsp;reference&nbsp;to&nbsp;the&nbsp;instantiating&nbsp;object&nbsp;or,&nbsp;in&nbsp;other&nbsp;cases,&nbsp;an&nbsp;optional&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a188"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;parameter&nbsp;to&nbsp;the&nbsp;constructor.</span></div></li>
+<li><div class="src-line"><a name="a189"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a190"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$classname</span></div></li>
+<li><div class="src-line"><a name="a191"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;object&nbsp;reference&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$controller&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional)&nbsp;controller&nbsp;object&nbsp;to&nbsp;be&nbsp;passed</span></div></li>
+<li><div class="src-line"><a name="a192"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;singleton&nbsp;constructor&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a193"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;object&nbsp;reference&nbsp;to&nbsp;singleton&nbsp;instance</span></div></li>
+<li><div class="src-line"><a name="a194"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a195"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_object.html#methodgetSingleton">getSingleton</a><span class="src-sym">(&nbsp;</span><span class="src-var">$classname</span><span class="src-sym">,&nbsp;</span><span class="src-var">$controller&nbsp;</span>=&nbsp;<span class="src-id">null&nbsp;</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a196"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a197"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$instance&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$GLOBALS</span><span class="src-sym">[</span><span class="src-str">'qcl_jsonrpc_singletons'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$classname</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a198"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-var">$instance&nbsp;</span><span class="src-sym">)&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a199"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a200"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$instance&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodgetNew">getNew</a><span class="src-sym">(&nbsp;</span><span class="src-var">$classname</span><span class="src-sym">,&nbsp;</span><span class="src-sym">&amp;</span><span class="src-var">$controller&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a201"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a202"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$instance</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a203"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a204"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a205"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a206"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;new&nbsp;instance&nbsp;of&nbsp;classname</span></div></li>
+<li><div class="src-line"><a name="a207"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;if&nbsp;object&nbsp;is&nbsp;a&nbsp;subclass&nbsp;of&nbsp;qx_jsonrpc_controller,&nbsp;pass&nbsp;the&nbsp;object&nbsp;as&nbsp;constructor&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a208"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;to&nbsp;the&nbsp;model&nbsp;class,&nbsp;otherwise&nbsp;pass&nbsp;optional&nbsp;parameter</span></div></li>
+<li><div class="src-line"><a name="a209"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$classname</span></div></li>
+<li><div class="src-line"><a name="a210"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;reference&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$controller&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional)&nbsp;controller&nbsp;object&nbsp;to&nbsp;be&nbsp;passed</span></div></li>
+<li><div class="src-line"><a name="a211"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;singleton&nbsp;constructor&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a212"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;object&nbsp;reference&nbsp;to&nbsp;singleton&nbsp;instance</span></div></li>
+<li><div class="src-line"><a name="a213"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a214"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_object.html#methodgetNew">getNew</a><span class="src-sym">(&nbsp;</span><span class="src-var">$classname</span><span class="src-sym">,&nbsp;</span><span class="src-var">$controller&nbsp;</span>=&nbsp;<span class="src-id">null&nbsp;</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a215"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a216"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;check&nbsp;for&nbsp;class&nbsp;existence</span></div></li>
+<li><div class="src-line"><a name="a217"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/class_exists">class_exists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$classname&nbsp;</span><span class="src-sym">)&nbsp;)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a218"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a219"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$path&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">includeClassFile</span><span class="src-sym">(</span><span class="src-var">$classname</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a220"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a221"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;check&nbsp;class</span></div></li>
+<li><div class="src-line"><a name="a222"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/class_exists">class_exists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$classname</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a223"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a224"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">raiseError&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/get_class">get_class</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">)&nbsp;</span>.&nbsp;<span class="src-str">&quot;</span><span class="src-str">::<span class="src-id">getNew</span>&nbsp;:&nbsp;<span class="src-id">Cannot</span>&nbsp;<span class="src-id">instantiate</span>&nbsp;<span class="src-id">class</span>&nbsp;'<span class="src-var">$classname</span>':&nbsp;<span class="src-id">file</span>&nbsp;'</span><span class="src-str">&quot;&nbsp;</span>.&nbsp;<a href="http://www.php.net/addslashes">addslashes</a><span class="src-sym">(</span><span class="src-var">$path</span><span class="src-sym">)&nbsp;</span>.&nbsp;&nbsp;<span class="src-str">&quot;'&nbsp;does&nbsp;not&nbsp;contain&nbsp;class&nbsp;definition.&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a225"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a226"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a227"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a228"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;instantiate&nbsp;object</span></div></li>
+<li><div class="src-line"><a name="a229"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-var">$controller&nbsp;</span><span class="src-key">and&nbsp;</span><a href="http://www.php.net/is_a">is_a</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">&quot;qcl_jsonrpc_controller&quot;&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a230"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a231"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$controller&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$this</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a232"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a233"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$instance&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-key">new&nbsp;</span><span class="src-var">$classname</span><span class="src-sym">(</span><span class="src-sym">&amp;</span><span class="src-var">$controller</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a234"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$instance</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a235"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a236"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a237"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a238"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;log&nbsp;to&nbsp;file&nbsp;on&nbsp;server</span></div></li>
+<li><div class="src-line"><a name="a239"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$message</span></div></li>
+<li><div class="src-line"><a name="a240"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;$logLevel&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a241"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;message&nbsp;written&nbsp;to&nbsp;file</span></div></li>
+<li><div class="src-line"><a name="a242"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a243"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodlog">log</a><span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-var">$logLevel</span>=<span class="src-id">QCL_LOG_DEBUG&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a244"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a245"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_array">is_array</a><span class="src-sym">(</span><span class="src-var">$msg</span><span class="src-sym">)&nbsp;</span><span class="src-key">or&nbsp;</span><a href="http://www.php.net/is_object">is_object</a><span class="src-sym">(</span><span class="src-var">$msg</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a246"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a247"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$msg&nbsp;</span>=&nbsp;<a href="http://www.php.net/var_export">var_export</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-id">true&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a248"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a249"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a250"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$message&nbsp;</span>=&nbsp;<a href="http://www.php.net/date">date</a><span class="src-sym">(</span><span class="src-str">&quot;y-m-j&nbsp;H:i:s&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a251"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-id">QCL_LOG_SHOW_CLASS_NAME&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a252"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a253"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$message&nbsp;</span>.=&nbsp;<span class="src-str">&quot;&nbsp;[&quot;&nbsp;</span>.&nbsp;<a href="http://www.php.net/get_class">get_class</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">)&nbsp;</span>.<span class="src-str">&quot;]&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a254"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a255"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$message&nbsp;</span>.=&nbsp;<span class="src-str">&quot;:&nbsp;&quot;&nbsp;</span>.&nbsp;<span class="src-var">$msg&nbsp;</span>.&nbsp;<span class="src-str">&quot;\n&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a256"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodwriteLog">writeLog</a><span class="src-sym">(</span><span class="src-var">$message</span><span class="src-sym">,</span><span class="src-var">$logLevel</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a257"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$message</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a258"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a259"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a260"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a261"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;write&nbsp;to&nbsp;log&nbsp;file</span></div></li>
+<li><div class="src-line"><a name="a262"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$message</span></div></li>
+<li><div class="src-line"><a name="a263"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;$logLevel&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a264"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a265"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodwriteLog">writeLog</a><span class="src-sym">(&nbsp;</span><span class="src-var">$message</span><span class="src-sym">,&nbsp;</span><span class="src-var">$logLevel</span>=<span class="src-id">QCL_LOG_DEBUG&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a266"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a267"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-id"><a href="../qcl/_object.php.html#defineQCL_LOG_LEVEL">QCL_LOG_LEVEL</a>&nbsp;</span><span class="src-key">and&nbsp;</span><span class="src-id"><a href="../qcl/_object.php.html#defineQCL_LOG_LEVEL">QCL_LOG_LEVEL</a>&nbsp;</span>&lt;=&nbsp;<span class="src-var">$logLevel</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a268"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a269"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">@</span><a href="http://www.php.net/error_log">error_log</a><span class="src-sym">(</span><span class="src-var">$message</span><span class="src-sym">,</span><span class="src-num">3</span><span class="src-sym">,</span><span class="src-id"><a href="../qcl/_object.php.html#defineQCL_LOG_FILE">QCL_LOG_FILE</a></span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a270"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a271"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a272"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a273"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a274"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;log&nbsp;a&nbsp;debug&nbsp;message&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a275"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a276"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$msg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a277"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a278"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methoddebug">debug</a><span class="src-sym">(</span><span class="src-var">$msg</span><span class="src-sym">,</span><span class="src-var">$html</span>=<span class="src-id">false</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a279"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a280"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodlog">log</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-id"><a href="../qcl/_object.php.html#defineQCL_LOG_DEBUG">QCL_LOG_DEBUG</a>&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a281"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a282"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a283"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a284"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;logs&nbsp;a&nbsp;message&nbsp;with&nbsp;of&nbsp;level&nbsp;&quot;info&quot;</span></div></li>
+<li><div class="src-line"><a name="a285"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a286"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$msg&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a287"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a288"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodinfo">info</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$msg&nbsp;</span><span class="src-sym">)&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a289"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a290"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodlog">log</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-id"><a href="../qcl/_object.php.html#defineQCL_LOG_INFO">QCL_LOG_INFO</a>&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a291"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a292"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a293"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a294"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;logs&nbsp;a&nbsp;message&nbsp;with&nbsp;of&nbsp;level&nbsp;&quot;warn&quot;</span></div></li>
+<li><div class="src-line"><a name="a295"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a296"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;$msg&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a297"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a298"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodwarn">warn</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$msg&nbsp;</span><span class="src-sym">)&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a299"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a300"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodlog">log</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-id"><a href="../qcl/_object.php.html#defineQCL_LOG_WARN">QCL_LOG_WARN</a>&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a301"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a302"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a303"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a304"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;the&nbsp;stack&nbsp;trace&nbsp;of&nbsp;invoked&nbsp;objects</span></div></li>
+<li><div class="src-line"><a name="a305"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;list</span></div></li>
+<li><div class="src-line"><a name="a306"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a307"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_object.html#methodgetStackTrace">getStackTrace</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a308"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a309"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><a href="http://www.php.net/implode">implode</a><span class="src-sym">(</span><span class="src-str">&quot;\n&quot;</span><span class="src-sym">,</span><a href="http://www.php.net/array_reverse">array_reverse</a><span class="src-sym">(</span><span class="src-var">$GLOBALS</span><span class="src-sym">[</span><span class="src-str">'_stackTrace'</span><span class="src-sym">]</span><span class="src-sym">))&nbsp;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a310"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a311"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a312"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a313"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a314"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a315"></a><span class="src-comm">//&nbsp;convenience&nbsp;functions,&nbsp;may&nbsp;be&nbsp;already&nbsp;defined</span></div></li>
+<li><div class="src-line"><a name="a316"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a317"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a318"></a><span class="src-comm">&nbsp;*&nbsp;PHP5&nbsp;file_put_contents&nbsp;emulation</span></div></li>
+<li><div class="src-line"><a name="a319"></a><span class="src-comm">&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a320"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a321"></a><span class="src-key">if</span><span class="src-sym">(</span><span class="src-sym">!</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(</span><span class="src-str">&quot;file_put_contents&quot;</span><span class="src-sym">))</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a322"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionfile_put_contents">file_put_contents</a><span class="src-sym">(</span><span class="src-var">$file</span><span class="src-sym">,</span><span class="src-var">$data</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a323"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a324"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">@</span><a href="http://www.php.net/unlink">unlink</a><span class="src-sym">(</span><span class="src-var">$file</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a325"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/error_log">error_log</a><span class="src-sym">(</span><span class="src-var">$data</span><span class="src-sym">,</span><span class="src-num">3</span><span class="src-sym">,</span><span class="src-var">$file</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a326"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a327"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a328"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a329"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a330"></a><span class="src-comm">&nbsp;*&nbsp;avoids&nbsp;if&nbsp;statements&nbsp;such&nbsp;as&nbsp;if($a)&nbsp;$c=$a;&nbsp;else&nbsp;$c=$b;</span></div></li>
+<li><div class="src-line"><a name="a331"></a><span class="src-comm">&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a332"></a><span class="src-comm">&nbsp;*&nbsp;@argument&nbsp;mixed&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a333"></a><span class="src-comm">&nbsp;*&nbsp;@argument&nbsp;mixed&nbsp;...</span></div></li>
+<li><div class="src-line"><a name="a334"></a><span class="src-comm">&nbsp;*&nbsp;@return&nbsp;first&nbsp;non-null&nbsp;argument,&nbsp;otherwise&nbsp;false</span></div></li>
+<li><div class="src-line"><a name="a335"></a><span class="src-comm">&nbsp;*/&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a336"></a><span class="src-key">if</span><span class="src-sym">(</span><span class="src-sym">!</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(</span><span class="src-str">&quot;either&quot;</span><span class="src-sym">))</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a337"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functioneither">either</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a338"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a339"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$arg_list&nbsp;</span>=&nbsp;<a href="http://www.php.net/func_get_args">func_get_args</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a340"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">foreach</span><span class="src-sym">(</span><span class="src-var">$arg_list&nbsp;</span><span class="src-key">as&nbsp;</span><span class="src-var">$arg</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a341"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if</span><span class="src-sym">(</span><span class="src-var">$arg</span><span class="src-sym">)&nbsp;</span><span class="src-key">return&nbsp;</span><span class="src-var">$arg</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a342"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">false</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a343"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a344"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a345"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a346"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a347"></a><span class="src-comm">&nbsp;*&nbsp;php4&nbsp;equivalent&nbsp;of&nbsp;stream_get_contents</span></div></li>
+<li><div class="src-line"><a name="a348"></a><span class="src-comm">&nbsp;*&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a349"></a><span class="src-comm">&nbsp;*&nbsp;@param&nbsp;resource&nbsp;$resource&nbsp;resource&nbsp;handle</span></div></li>
+<li><div class="src-line"><a name="a350"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a351"></a><span class="src-key">if</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;stream_get_contents&quot;&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a352"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a353"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionstream_get_contents">stream_get_contents</a><span class="src-sym">(</span><span class="src-var">$resource</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a354"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a355"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$stream&nbsp;</span>=&nbsp;<span class="src-str">&quot;&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a356"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">while&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/feof">feof</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$resource&nbsp;</span><span class="src-sym">)&nbsp;)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a357"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a358"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$stream&nbsp;</span>.=&nbsp;<a href="http://www.php.net/fread">fread</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$resource&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a359"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a360"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$stream</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a361"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a362"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a363"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a364"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a365"></a><span class="src-comm">&nbsp;*&nbsp;php4&nbsp;equivalent&nbsp;of&nbsp;scandir</span></div></li>
+<li><div class="src-line"><a name="a366"></a><span class="src-comm">&nbsp;*&nbsp;from&nbsp;http://www.php.net/manual/en/function.scandir.php</span></div></li>
+<li><div class="src-line"><a name="a367"></a><span class="src-comm">&nbsp;*&nbsp;@return&nbsp;array&nbsp;list&nbsp;of&nbsp;files</span></div></li>
+<li><div class="src-line"><a name="a368"></a><span class="src-comm">&nbsp;*&nbsp;@param&nbsp;string&nbsp;$dir</span></div></li>
+<li><div class="src-line"><a name="a369"></a><span class="src-comm">&nbsp;*&nbsp;@param&nbsp;boolean&nbsp;$sortorder&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a370"></a><span class="src-comm">&nbsp;*/&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a371"></a><span class="src-key">if</span><span class="src-sym">(</span><span class="src-sym">!</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(</span><span class="src-str">'scandir'</span><span class="src-sym">))&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a372"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a373"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionscandir">scandir</a><span class="src-sym">(</span><span class="src-var">$dir</span><span class="src-sym">,&nbsp;</span><span class="src-var">$sortorder&nbsp;</span>=&nbsp;<span class="src-num">0</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a374"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a375"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if</span><span class="src-sym">(</span><a href="http://www.php.net/is_dir">is_dir</a><span class="src-sym">(</span><span class="src-var">$dir</span><span class="src-sym">)&nbsp;</span>&amp;&amp;&nbsp;<span class="src-var">$dirlist&nbsp;</span>=&nbsp;<span class="src-sym">@</span><a href="http://www.php.net/opendir">opendir</a><span class="src-sym">(</span><span class="src-var">$dir</span><span class="src-sym">))&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a376"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a377"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">while</span><span class="src-sym">((</span><span class="src-var">$file&nbsp;</span>=&nbsp;<a href="http://www.php.net/readdir">readdir</a><span class="src-sym">(</span><span class="src-var">$dirlist</span><span class="src-sym">))&nbsp;</span>!==&nbsp;<span class="src-id">false</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a378"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a379"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$files</span><span class="src-sym">[</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-var">$file</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a380"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a381"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/closedir">closedir</a><span class="src-sym">(</span><span class="src-var">$dirlist</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a382"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">(</span><span class="src-var">$sortorder&nbsp;</span>==&nbsp;<span class="src-num">0</span><span class="src-sym">)&nbsp;</span>?&nbsp;<a href="http://www.php.net/asort">asort</a><span class="src-sym">(</span><span class="src-var">$files</span><span class="src-sym">)&nbsp;</span>:&nbsp;<a href="http://www.php.net/rsort">rsort</a><span class="src-sym">(</span><span class="src-var">$files</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span><span class="src-comm">//&nbsp;arsort&nbsp;was&nbsp;replaced&nbsp;with&nbsp;rsort</span></div></li>
+<li><div class="src-line"><a name="a383"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$files</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a384"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a385"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a386"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a387"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">false</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a388"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a389"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a390"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a391"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a392"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a393"></a><span class="src-comm">&nbsp;*&nbsp;php4&nbsp;equivalent&nbsp;of&nbsp;array_diff_key</span></div></li>
+<li><div class="src-line"><a name="a394"></a><span class="src-comm">&nbsp;*&nbsp;from&nbsp;http://de3.php.net/manual/en/function.array-diff-key.php</span></div></li>
+<li><div class="src-line"><a name="a395"></a><span class="src-comm">&nbsp;*&nbsp;@return&nbsp;array&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a396"></a><span class="src-comm">&nbsp;*/&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a397"></a><span class="src-key">if</span><span class="src-sym">(</span><span class="src-sym">!</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(</span><span class="src-str">'array_diff_key'</span><span class="src-sym">))&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a398"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a399"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionarray_diff_key">array_diff_key</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a400"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a401"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$arrs&nbsp;</span>=&nbsp;<a href="http://www.php.net/func_get_args">func_get_args</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a402"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$result&nbsp;</span>=&nbsp;<a href="http://www.php.net/array_shift">array_shift</a><span class="src-sym">(</span><span class="src-var">$arrs</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a403"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">foreach&nbsp;</span><span class="src-sym">(</span><span class="src-var">$arrs&nbsp;</span><span class="src-key">as&nbsp;</span><span class="src-var">$array</span><span class="src-sym">)&nbsp;</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a404"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">foreach&nbsp;</span><span class="src-sym">(</span><span class="src-var">$result&nbsp;</span><span class="src-key">as&nbsp;</span><span class="src-var">$key&nbsp;</span>=&gt;&nbsp;<span class="src-var">$v</span><span class="src-sym">)&nbsp;</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a405"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(</span><a href="http://www.php.net/array_key_exists">array_key_exists</a><span class="src-sym">(</span><span class="src-var">$key</span><span class="src-sym">,&nbsp;</span><span class="src-var">$array</span><span class="src-sym">))&nbsp;</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a406"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unset<span class="src-sym">(</span><span class="src-var">$result</span><span class="src-sym">[</span><span class="src-var">$key</span><span class="src-sym">]</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a407"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a408"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a409"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a410"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$result</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a411"></a>&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a412"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a413"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a414"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a415"></a><span class="src-comm">&nbsp;*&nbsp;php4&nbsp;equivalent&nbsp;of&nbsp;json_encode</span></div></li>
+<li><div class="src-line"><a name="a416"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a417"></a><span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(</span><span class="src-str">&quot;json_encode&quot;</span><span class="src-sym">)&nbsp;&nbsp;&nbsp;&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a418"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a419"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionjson_encode">json_encode</a><span class="src-sym">(&nbsp;</span><span class="src-var">$string&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a420"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a421"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-inc">require_once&nbsp;</span><span class="src-sym">(</span><span class="src-str">&quot;JSON.phps&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a422"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$json&nbsp;</span>=&nbsp;<span class="src-key">new&nbsp;</span><span class="src-id">JSON</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a423"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$json</span><span class="src-sym">-&gt;</span><span class="src-id">encode</span><span class="src-sym">(&nbsp;</span><span class="src-var">$string&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a424"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a425"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a426"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a427"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a428"></a><span class="src-comm">&nbsp;*&nbsp;php4&nbsp;equivalent&nbsp;of&nbsp;json_decode</span></div></li>
+<li><div class="src-line"><a name="a429"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a430"></a><span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/function_exists">function_exists</a><span class="src-sym">(</span><span class="src-str">&quot;json_decode&quot;</span><span class="src-sym">)&nbsp;&nbsp;&nbsp;&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a431"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a432"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionjson_decode">json_decode</a><span class="src-sym">(&nbsp;</span><span class="src-var">$string</span><span class="src-sym">,&nbsp;</span><span class="src-var">$tranformToArray</span>=<span class="src-id">false&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a433"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a434"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-inc">require_once&nbsp;</span><span class="src-sym">(</span><span class="src-str">&quot;JSON.phps&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a435"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$json&nbsp;</span>=&nbsp;<span class="src-key">new&nbsp;</span><span class="src-id">JSON</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a436"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$var&nbsp;</span>=&nbsp;<span class="src-var">$json</span><span class="src-sym">-&gt;</span><span class="src-id">decode</span><span class="src-sym">(&nbsp;</span><span class="src-var">$string&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a437"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_object">is_object</a><span class="src-sym">(&nbsp;</span><span class="src-var">$var&nbsp;</span><span class="src-sym">)&nbsp;</span><span class="src-key">and&nbsp;</span><span class="src-var">$tranformToArray&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a438"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a439"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><a href="../qcl/_object.php.html#functionobject2array">object2array</a><span class="src-sym">(</span><span class="src-var">$var</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a440"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a441"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$var</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a442"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a443"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a444"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a445"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a446"></a><span class="src-comm">&nbsp;*&nbsp;transform&nbsp;an&nbsp;object&nbsp;structure&nbsp;into&nbsp;an&nbsp;associative&nbsp;array</span></div></li>
+<li><div class="src-line"><a name="a447"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a448"></a><span class="src-key">function&nbsp;</span><a href="../qcl/_object.php.html#functionobject2array">object2array</a><span class="src-sym">(</span><span class="src-var">$obj</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a449"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a450"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/is_object">is_object</a><span class="src-sym">(</span><span class="src-var">$obj</span><span class="src-sym">))&nbsp;</span><span class="src-key">return&nbsp;</span>(array)&nbsp;<span class="src-var">$obj</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a451"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$arr</span>=<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a452"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">foreach&nbsp;</span><span class="src-sym">(</span><a href="http://www.php.net/get_object_vars">get_object_vars</a><span class="src-sym">(</span><span class="src-var">$obj</span><span class="src-sym">)&nbsp;</span><span class="src-key">as&nbsp;</span><span class="src-var">$key&nbsp;</span>=&gt;&nbsp;<span class="src-var">$val</span><span class="src-sym">)&nbsp;</span><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a453"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$arr</span><span class="src-sym">[</span><span class="src-var">$key</span><span class="src-sym">]</span>=&nbsp;<a href="http://www.php.net/is_object">is_object</a><span class="src-sym">(</span><span class="src-var">$val</span><span class="src-sym">)&nbsp;</span>?&nbsp;<a href="../qcl/_object.php.html#functionobject2array">object2array</a><span class="src-sym">(</span><span class="src-var">$val</span><span class="src-sym">)&nbsp;</span>:&nbsp;<span class="src-var">$val</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a454"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a455"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$arr</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a456"></a><span class="src-sym">}</span></div></li>
+</ol>
+</div>
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Wed, 02 Apr 2008 23:40:40 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
