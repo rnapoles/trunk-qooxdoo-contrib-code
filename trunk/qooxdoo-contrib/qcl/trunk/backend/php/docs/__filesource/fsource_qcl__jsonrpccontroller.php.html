@@ -1,0 +1,507 @@
+<html>
+<head>
+<title>File Source for controller.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                              		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+            <br /><br />
+                  
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1 align="center">Source for file controller.php</h1>
+<p>Documentation is available at <a href="../qcl/_jsonrpc---controller.php.html">controller.php</a></p>
+<div class="src-code">
+<ol><li><div class="src-line"><a name="a1"></a><span class="src-php">&lt;?php</span></div></li>
+<li><div class="src-line"><a name="a2"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a3"></a><span class="src-comm">//&nbsp;dependencies</span></div></li>
+<li><div class="src-line"><a name="a4"></a><span class="src-inc">require_once&nbsp;</span><span class="src-sym">(</span><span class="src-str">&quot;qcl/jsonrpc/object.php&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a5"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a6"></a><span class="src-comm">//&nbsp;constants</span></div></li>
+<li><div class="src-line"><a name="a7"></a><a href="http://www.php.net/define">define</a><span class="src-sym">(</span><span class="src-str">&quot;QCL_SERVICE_CONFIG_FILE&quot;</span><span class="src-sym">,&nbsp;</span><span class="src-str">&quot;service.ini.php&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a8"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a9"></a><span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a10"></a><span class="src-comm">&nbsp;*&nbsp;simple&nbsp;controller-model&nbsp;architecture&nbsp;for&nbsp;jsonrpc</span></div></li>
+<li><div class="src-line"><a name="a11"></a><span class="src-comm">&nbsp;*&nbsp;common&nbsp;base&nbsp;class&nbsp;for&nbsp;controllers</span></div></li>
+<li><div class="src-line"><a name="a12"></a><span class="src-comm">&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a13"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a14"></a><span class="src-key">class&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a>&nbsp;<span class="src-key">extends&nbsp;</span><a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></div></li>
+<li><div class="src-line"><a name="a15"></a><span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a16"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a17"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a18"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;inistance&nbsp;variables</span></div></li>
+<li><div class="src-line"><a name="a19"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a20"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a21"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a22"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a23"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;initial&nbsp;configuration&nbsp;contained&nbsp;in&nbsp;ini.php-files&nbsp;in&nbsp;the&nbsp;#</span></div></li>
+<li><div class="src-line"><a name="a24"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;service&nbsp;class&nbsp;folders</span></div></li>
+<li><div class="src-line"><a name="a25"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@see&nbsp;qcl_object::configureServie()</span></div></li>
+<li><div class="src-line"><a name="a26"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a27"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$ini">$ini</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a28"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a29"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a30"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;response&nbsp;data&nbsp;to&nbsp;be&nbsp;serialized&nbsp;and&nbsp;returned&nbsp;to&nbsp;server</span></div></li>
+<li><div class="src-line"><a name="a31"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a32"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">$_response</a>&nbsp;=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span></div></li>
+<li><div class="src-line"><a name="a33"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'result'&nbsp;&nbsp;&nbsp;&nbsp;</span>=&gt;&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">,</span></div></li>
+<li><div class="src-line"><a name="a34"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'messages'&nbsp;&nbsp;</span>=&gt;&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">,</span></div></li>
+<li><div class="src-line"><a name="a35"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'events'&nbsp;&nbsp;&nbsp;&nbsp;</span>=&gt;&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a36"></a>&nbsp;&nbsp;<span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a37"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a38"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a40"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;models&nbsp;attached&nbsp;to&nbsp;this&nbsp;controller</span></div></li>
+<li><div class="src-line"><a name="a41"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a42"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_models">$_models</a>&nbsp;=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a43"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a44"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a45"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;internal&nbsp;methods</span></div></li>
+<li><div class="src-line"><a name="a46"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a47"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a48"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a49"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;constructor&nbsp;,&nbsp;configures&nbsp;the&nbsp;service</span></div></li>
+<li><div class="src-line"><a name="a50"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a51"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#method__construct">__construct</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a52"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a53"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-id">parent</span><span class="src-sym">::</span><a href="../qcl/qcl_jsonrpc_object.html#method__construct">__construct</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a54"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodconfigureService">configureService</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a55"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodsetSingleton">setSingleton</a><span class="src-sym">(</span><span class="src-sym">&amp;</span><span class="src-var">$this</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a56"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a57"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a58"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a59"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;service&nbsp;configuration</span></div></li>
+<li><div class="src-line"><a name="a60"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a61"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a62"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a63"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;reads&nbsp;initial&nbsp;configuration.&nbsp;looks&nbsp;for&nbsp;service.ini.php&nbsp;files,&nbsp;starting&nbsp;at&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a64"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;the&nbsp;top-level&nbsp;service&nbsp;directory.&nbsp;lower-level&nbsp;service.ini.php&nbsp;files&nbsp;can&nbsp;override&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a65"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;config&nbsp;directives&nbsp;selectively,&nbsp;inheriting&nbsp;the&nbsp;rest&nbsp;of&nbsp;the&nbsp;settings&nbsp;from&nbsp;the&nbsp;upper</span></div></li>
+<li><div class="src-line"><a name="a66"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;level&nbsp;config&nbsp;files.</span></div></li>
+<li><div class="src-line"><a name="a67"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**/</span></div></li>
+<li><div class="src-line"><a name="a68"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodconfigureService">configureService</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a69"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a70"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">global&nbsp;</span><span class="src-var">$serviceComponents</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a71"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$currPath&nbsp;</span>=&nbsp;<a href="http://www.php.net/defined">defined</a><span class="src-sym">(</span><span class="src-id"><a href="../qcl/_jsonrpc---dispatcher.php.html#defineservicePathPrefix">servicePathPrefix</a></span><span class="src-sym">)&nbsp;</span>?&nbsp;<span class="src-id"><a href="../qcl/_jsonrpc---dispatcher.php.html#defineservicePathPrefix">servicePathPrefix</a>&nbsp;</span>:&nbsp;<span class="src-str">&quot;&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a72"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$ini">ini</a>&nbsp;=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a73"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$found&nbsp;</span>=&nbsp;<span class="src-id">false</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a74"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a75"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;traverse&nbsp;service&nbsp;path&nbsp;and&nbsp;look&nbsp;for&nbsp;service.ini.php&nbsp;files&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a76"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a77"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">for&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$i</span>=<span class="src-num">0</span><span class="src-sym">;&nbsp;</span><span class="src-var">$i</span>&lt;<a href="http://www.php.net/count">count</a><span class="src-sym">(</span><span class="src-var">$serviceComponents</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span><span class="src-var">$i</span>++&nbsp;<span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a78"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a79"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$currPath&nbsp;</span>.=&nbsp;<span class="src-var">$serviceComponents</span><span class="src-sym">[</span><span class="src-var">$i</span><span class="src-sym">]&nbsp;</span>.&nbsp;<span class="src-str">&quot;/&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a80"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a81"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;if&nbsp;config&nbsp;file&nbsp;exists,&nbsp;parse&nbsp;it&nbsp;and&nbsp;add/override&nbsp;config&nbsp;directives</span></div></li>
+<li><div class="src-line"><a name="a82"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/file_exists">file_exists</a>&nbsp;<span class="src-sym">(</span><span class="src-var">$currPath&nbsp;</span>.&nbsp;<span class="src-str">&quot;/&quot;&nbsp;</span>.&nbsp;<span class="src-id"><a href="../qcl/_jsonrpc---controller.php.html#defineQCL_SERVICE_CONFIG_FILE">QCL_SERVICE_CONFIG_FILE</a></span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a83"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a84"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$found&nbsp;</span>=&nbsp;<span class="src-id">true</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a85"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$config&nbsp;</span>=&nbsp;<a href="http://www.php.net/parse_ini_file">parse_ini_file</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$currPath&nbsp;</span>.&nbsp;<span class="src-str">&quot;/&quot;&nbsp;</span>.&nbsp;<span class="src-id"><a href="../qcl/_jsonrpc---controller.php.html#defineQCL_SERVICE_CONFIG_FILE">QCL_SERVICE_CONFIG_FILE</a></span><span class="src-sym">,&nbsp;</span><span class="src-id">true</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a86"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$ini">ini</a>&nbsp;=&nbsp;<a href="http://www.php.net/array_merge">array_merge</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$ini">ini</a><span class="src-sym">,&nbsp;</span><span class="src-var">$config&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a87"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a88"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a89"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a90"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-var">$found&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a91"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a92"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;No&nbsp;&quot;&nbsp;</span>.&nbsp;<span class="src-id"><a href="../qcl/_jsonrpc---controller.php.html#defineQCL_SERVICE_CONFIG_FILE">QCL_SERVICE_CONFIG_FILE</a>&nbsp;</span>.&nbsp;<span class="src-str">&quot;&nbsp;file&nbsp;found&nbsp;for&nbsp;&quot;&nbsp;</span>.&nbsp;<a href="http://www.php.net/get_class">get_class</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">)&nbsp;</span>.&nbsp;<span class="src-str">&quot;&nbsp;.&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a93"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a94"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a95"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a96"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a97"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;get&nbsp;service&nbsp;directory&nbsp;url</span></div></li>
+<li><div class="src-line"><a name="a98"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a99"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetServiceDirUrl">getServiceDirUrl</a><span class="src-sym">(</span><span class="src-var">$append</span>=<span class="src-str">&quot;&quot;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a100"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a101"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">global&nbsp;</span><span class="src-var">$serviceComponents</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a102"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$serverDirUrl&nbsp;</span>=&nbsp;<span class="src-str">&quot;http://&quot;&nbsp;</span>.&nbsp;<a href="http://www.php.net/getenv">getenv</a>&nbsp;<span class="src-sym">(</span><span class="src-id">HTTP_HOST</span><span class="src-sym">)&nbsp;</span>.&nbsp;<a href="http://www.php.net/dirname">dirname</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$_SERVER</span><span class="src-sym">[</span><span class="src-str">'PHP_SELF'</span><span class="src-sym">]&nbsp;</span><span class="src-sym">)&nbsp;</span>.&nbsp;<span class="src-str">&quot;/&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a103"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$serverDirUrl&nbsp;</span>.&nbsp;<span class="src-var">$serviceComponents</span><span class="src-sym">[</span><span class="src-num">0</span><span class="src-sym">]&nbsp;</span>.&nbsp;<span class="src-str">&quot;/&quot;&nbsp;</span>.&nbsp;<span class="src-var">$append</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a104"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a105"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a106"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a107"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;a&nbsp;configuration&nbsp;value&nbsp;of&nbsp;the&nbsp;pattern&nbsp;&quot;foo.bar.baz&quot;</span></div></li>
+<li><div class="src-line"><a name="a108"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;retrieves&nbsp;the&nbsp;values&nbsp;set&nbsp;in&nbsp;the&nbsp;service.ini.php&nbsp;file.</span></div></li>
+<li><div class="src-line"><a name="a109"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a110"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetIniValue">getIniValue</a><span class="src-sym">(</span><span class="src-var">$path</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a111"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a112"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$parts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>=&nbsp;<a href="http://www.php.net/explode">explode</a><span class="src-sym">(</span><span class="src-str">&quot;.&quot;</span><span class="src-sym">,</span><span class="src-var">$path</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a113"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$ini">ini</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a114"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">while</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_array">is_array</a><span class="src-sym">(</span><span class="src-var">$value</span><span class="src-sym">)&nbsp;</span><span class="src-key">and&nbsp;</span><span class="src-var">$part&nbsp;</span>=&nbsp;<a href="http://www.php.net/array_shift">array_shift</a><span class="src-sym">(</span><span class="src-var">$parts</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a115"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a116"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$value&nbsp;</span>=&nbsp;<span class="src-var">$value</span><span class="src-sym">[</span><span class="src-var">$part</span><span class="src-sym">]</span><span class="src-sym">;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a117"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a118"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$value</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a119"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a120"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a121"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a122"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;models</span></div></li>
+<li><div class="src-line"><a name="a123"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a124"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a125"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a126"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;a&nbsp;model</span></div></li>
+<li><div class="src-line"><a name="a127"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;object</span></div></li>
+<li><div class="src-line"><a name="a128"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$name&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a129"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a130"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetModel">getModel</a><span class="src-sym">(</span><span class="src-var">$name</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a131"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a132"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_models">_models</a><span class="src-sym">[</span><span class="src-var">$name</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a133"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a134"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a135"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a136"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;saves&nbsp;a&nbsp;model</span></div></li>
+<li><div class="src-line"><a name="a137"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a138"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$name&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a139"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;object&nbsp;$object&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a140"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a141"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodsetModel">setModel</a><span class="src-sym">(</span><span class="src-var">$name</span><span class="src-sym">,</span><span class="src-var">$object</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a142"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a143"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_models">_models</a><span class="src-sym">[</span><span class="src-var">$name</span><span class="src-sym">]&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$object</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a144"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a145"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a146"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a147"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;translation&nbsp;(modeled&nbsp;after&nbsp;qooxdoo&nbsp;syntax)</span></div></li>
+<li><div class="src-line"><a name="a148"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a149"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a150"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a151"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;the&nbsp;locale&nbsp;controller&nbsp;and&nbsp;sets&nbsp;the&nbsp;default&nbsp;locale.&nbsp;default&nbsp;is</span></div></li>
+<li><div class="src-line"><a name="a152"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;a&nbsp;qcl_locale_controller&nbsp;(see&nbsp;there).&nbsp;if&nbsp;you&nbsp;want&nbsp;to&nbsp;use&nbsp;a&nbsp;different</span></div></li>
+<li><div class="src-line"><a name="a153"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;controller,&nbsp;override&nbsp;this&nbsp;method</span></div></li>
+<li><div class="src-line"><a name="a154"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;return&nbsp;Object</span></div></li>
+<li><div class="src-line"><a name="a155"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a156"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetLocaleController">getLocaleController</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a157"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a158"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">static&nbsp;</span><span class="src-var">$localeController&nbsp;</span>=&nbsp;<span class="src-id">null</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a159"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-var">$localeController&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a160"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a161"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$localeController&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">getSingleton</span><span class="src-sym">(</span><span class="src-str">&quot;qcl_locale_controller&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a162"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a163"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$localeController</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a164"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a165"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a166"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a167"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;translates&nbsp;a&nbsp;message</span></div></li>
+<li><div class="src-line"><a name="a168"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;&nbsp;String</span></div></li>
+<li><div class="src-line"><a name="a169"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;String&nbsp;&nbsp;$msgId&nbsp;&nbsp;&nbsp;&nbsp;Message&nbsp;id&nbsp;of&nbsp;the&nbsp;string&nbsp;to&nbsp;be&nbsp;translated&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a170"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;&nbsp;&nbsp;Array&nbsp;&nbsp;&nbsp;$varargs&nbsp;&nbsp;(optional)&nbsp;Variable&nbsp;number&nbsp;of&nbsp;arguments&nbsp;for&nbsp;the&nbsp;sprintf&nbsp;formatting</span></div></li>
+<li><div class="src-line"><a name="a171"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a172"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodtr">tr</a><span class="src-sym">(&nbsp;</span><span class="src-var">$msgId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$varargs</span>=<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a173"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a174"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$localeController&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetLocaleController">getLocaleController</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a175"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$localeController</span><span class="src-sym">-&gt;</span><span class="src-id">tr</span><span class="src-sym">(</span><span class="src-var">$msgId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$varargs</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a176"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a177"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a178"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a179"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Translate&nbsp;a&nbsp;plural&nbsp;message.Depending&nbsp;on&nbsp;the&nbsp;third&nbsp;argument&nbsp;the&nbsp;plursl&nbsp;or&nbsp;the&nbsp;singular&nbsp;form&nbsp;is&nbsp;chosen.</span></div></li>
+<li><div class="src-line"><a name="a180"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*</span></div></li>
+<li><div class="src-line"><a name="a181"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;$singularMessageId&nbsp;Message&nbsp;id&nbsp;of&nbsp;the&nbsp;singular&nbsp;form&nbsp;(may&nbsp;contain&nbsp;format&nbsp;strings)</span></div></li>
+<li><div class="src-line"><a name="a182"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;$pluralMessageId&nbsp;&nbsp;&nbsp;Message&nbsp;id&nbsp;of&nbsp;the&nbsp;plural&nbsp;form&nbsp;(may&nbsp;contain&nbsp;format&nbsp;strings)</span></div></li>
+<li><div class="src-line"><a name="a183"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$count&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;greater&nbsp;than&nbsp;1&nbsp;the&nbsp;plural&nbsp;form&nbsp;otherwhise&nbsp;the&nbsp;singular&nbsp;form&nbsp;is&nbsp;returned.</span></div></li>
+<li><div class="src-line"><a name="a184"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;Array&nbsp;&nbsp;&nbsp;&nbsp;$varargs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(optional)&nbsp;Variable&nbsp;number&nbsp;of&nbsp;arguments&nbsp;for&nbsp;the&nbsp;sprintf&nbsp;formatting</span></div></li>
+<li><div class="src-line"><a name="a185"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a186"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a187"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodtrn">trn</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$singularMessageId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$pluralMessageId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$count</span><span class="src-sym">,&nbsp;</span><span class="src-var">$varargs</span>=<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a188"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a189"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$localeController&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetLocaleController">getLocaleController</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a190"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$localeController</span><span class="src-sym">-&gt;</span><span class="src-id">trn</span><span class="src-sym">(&nbsp;</span><span class="src-var">$singularMessageId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$pluralMessageId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$count</span><span class="src-sym">,&nbsp;</span><span class="src-var">$varargs&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a191"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a192"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a193"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a194"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;response&nbsp;data</span></div></li>
+<li><div class="src-line"><a name="a195"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a196"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a197"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a198"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;assemble&nbsp;a&nbsp;result&nbsp;array&nbsp;for&nbsp;the&nbsp;json&nbsp;response</span></div></li>
+<li><div class="src-line"><a name="a199"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$first&nbsp;&nbsp;key&nbsp;or&nbsp;hash&nbsp;map&nbsp;of&nbsp;key-value&nbsp;pairs</span></div></li>
+<li><div class="src-line"><a name="a200"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$value</span></div></li>
+<li><div class="src-line"><a name="a201"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a202"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodset">set</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$first</span><span class="src-sym">,&nbsp;</span><span class="src-var">$value</span>=<span class="src-id">null&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a203"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a204"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_array">is_array</a><span class="src-sym">(&nbsp;</span><span class="src-var">$first&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a205"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a206"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">foreach</span><span class="src-sym">(&nbsp;</span><span class="src-var">$first&nbsp;</span><span class="src-key">as&nbsp;</span><span class="src-var">$key&nbsp;</span>=&gt;&nbsp;<span class="src-var">$value&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a207"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a208"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodset">set</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$key</span><span class="src-sym">,&nbsp;</span><span class="src-var">$value&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a209"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a210"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a211"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a212"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a213"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">[</span><span class="src-str">'result'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$first</span><span class="src-sym">]&nbsp;</span>=<span class="src-sym">&amp;&nbsp;</span><span class="src-var">$value</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a214"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a215"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a216"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a217"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a218"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;value&nbsp;for&nbsp;particular&nbsp;result&nbsp;key</span></div></li>
+<li><div class="src-line"><a name="a219"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a220"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a221"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><span class="src-sym">&amp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodget">get</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$key&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a222"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a223"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">[</span><span class="src-str">'result'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-var">$key</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a224"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a225"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a226"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a227"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;result&nbsp;for&nbsp;json&nbsp;response&nbsp;inclusing&nbsp;result&nbsp;data,&nbsp;events,&nbsp;and&nbsp;messages</span></div></li>
+<li><div class="src-line"><a name="a228"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array</span></div></li>
+<li><div class="src-line"><a name="a229"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a230"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetResponseData">getResponseData</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a231"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a232"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a233"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a234"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a235"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a236"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;messages&nbsp;and&nbsp;events</span></div></li>
+<li><div class="src-line"><a name="a237"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a238"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a239"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a240"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;dispatches&nbsp;a&nbsp;server&nbsp;message</span></div></li>
+<li><div class="src-line"><a name="a241"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$message&nbsp;Message&nbsp;name&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a242"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$data&nbsp;Data&nbsp;dispatched&nbsp;with&nbsp;message</span></div></li>
+<li><div class="src-line"><a name="a243"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a244"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchMessage">dispatchMessage</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$message</span><span class="src-sym">,&nbsp;</span><span class="src-var">$data</span>=<span class="src-id">true&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a245"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a246"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodaddMessage">addMessage</a><span class="src-sym">(&nbsp;</span><span class="src-var">$message</span><span class="src-sym">,&nbsp;</span><span class="src-var">$data&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a247"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a248"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a249"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a250"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;adds&nbsp;a&nbsp;message&nbsp;to&nbsp;the&nbsp;message&nbsp;stack</span></div></li>
+<li><div class="src-line"><a name="a251"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$message&nbsp;Message&nbsp;name</span></div></li>
+<li><div class="src-line"><a name="a252"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$data&nbsp;Message&nbsp;Data</span></div></li>
+<li><div class="src-line"><a name="a253"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;void</span></div></li>
+<li><div class="src-line"><a name="a254"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a255"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodaddMessage">addMessage</a><span class="src-sym">(&nbsp;</span><span class="src-var">$message</span><span class="src-sym">,&nbsp;</span><span class="src-var">$data&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a256"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a257"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_string">is_string</a>&nbsp;<span class="src-sym">(</span><span class="src-var">$message</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a258"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a259"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">[</span><span class="src-str">'messages'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span></div></li>
+<li><div class="src-line"><a name="a260"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'name'&nbsp;</span>=&gt;&nbsp;<span class="src-var">$message</span><span class="src-sym">,&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a261"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'data'&nbsp;</span>=&gt;&nbsp;<span class="src-var">$data</span></div></li>
+<li><div class="src-line"><a name="a262"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a263"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a264"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a265"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a266"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/trigger_error">trigger_error</a>&nbsp;<span class="src-sym">(</span><span class="src-str">&quot;Invalid&nbsp;message&nbsp;parameter&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a267"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a268"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a269"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a270"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a271"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;get&nbsp;messages&nbsp;on&nbsp;message&nbsp;stack</span></div></li>
+<li><div class="src-line"><a name="a272"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array</span></div></li>
+<li><div class="src-line"><a name="a273"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a274"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetMessages">getMessages</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a275"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a276"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">[</span><span class="src-str">'messages'</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a277"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a278"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a279"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a280"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a281"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;dispatches&nbsp;a&nbsp;server&nbsp;event</span></div></li>
+<li><div class="src-line"><a name="a282"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$event&nbsp;Message&nbsp;Event&nbsp;type</span></div></li>
+<li><div class="src-line"><a name="a283"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$data&nbsp;Data&nbsp;dispatched&nbsp;with&nbsp;event</span></div></li>
+<li><div class="src-line"><a name="a284"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a285"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchEvent">dispatchEvent</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$event</span><span class="src-sym">,&nbsp;</span><span class="src-var">$data</span>=<span class="src-id">true&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a286"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a287"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodlog">log</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">Event</span>&nbsp;<span class="src-var">$event</span></span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span><span class="src-comm">//&nbsp;debug</span></div></li>
+<li><div class="src-line"><a name="a288"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodaddEvent">addEvent</a><span class="src-sym">(&nbsp;</span><span class="src-var">$event</span><span class="src-sym">,&nbsp;</span><span class="src-var">$data&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a289"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a290"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a291"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a292"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;adds&nbsp;an&nbsp;event&nbsp;to&nbsp;the&nbsp;event&nbsp;stack</span></div></li>
+<li><div class="src-line"><a name="a293"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$event&nbsp;Message&nbsp;Event&nbsp;type</span></div></li>
+<li><div class="src-line"><a name="a294"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$data&nbsp;Data&nbsp;dispatched&nbsp;with&nbsp;event</span></div></li>
+<li><div class="src-line"><a name="a295"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a296"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodaddEvent">addEvent</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$event</span><span class="src-sym">,&nbsp;</span><span class="src-var">$data&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a297"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a298"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_string">is_string</a>&nbsp;<span class="src-sym">(</span><span class="src-var">$event</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a299"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a300"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">[</span><span class="src-str">'events'</span><span class="src-sym">]</span><span class="src-sym">[</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span></div></li>
+<li><div class="src-line"><a name="a301"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'type'&nbsp;</span>=&gt;&nbsp;<span class="src-var">$event</span><span class="src-sym">,&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a302"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-str">'data'&nbsp;</span>=&gt;&nbsp;<span class="src-var">$data</span></div></li>
+<li><div class="src-line"><a name="a303"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a304"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a305"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a306"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a307"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/trigger_error">trigger_error</a>&nbsp;<span class="src-sym">(</span><span class="src-str">&quot;Invalid&nbsp;event&nbsp;parameter&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a308"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a309"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a310"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a311"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a312"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;get&nbsp;messages&nbsp;on&nbsp;message&nbsp;stack</span></div></li>
+<li><div class="src-line"><a name="a313"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array</span></div></li>
+<li><div class="src-line"><a name="a314"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a315"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetEvents">getEvents</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a316"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a317"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#var$_response">_response</a><span class="src-sym">[</span><span class="src-str">'events'</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a318"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a319"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a320"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a321"></a>&nbsp;&nbsp;<span class="src-comm">//&nbsp;request&nbsp;id&nbsp;&amp;&nbsp;process&nbsp;management</span></div></li>
+<li><div class="src-line"><a name="a322"></a>&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
+<li><div class="src-line"><a name="a323"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a324"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a325"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;the&nbsp;unique&nbsp;id&nbsp;of&nbsp;the&nbsp;current&nbsp;request,&nbsp;if&nbsp;any</span></div></li>
+<li><div class="src-line"><a name="a326"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a327"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a328"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetRequestId">getRequestId</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a329"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a330"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">_requestId</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a331"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a332"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a333"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a334"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;sets&nbsp;the&nbsp;unique&nbsp;id&nbsp;of&nbsp;the&nbsp;current&nbsp;request</span></div></li>
+<li><div class="src-line"><a name="a335"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a336"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;$requestId&nbsp;Object</span></div></li>
+<li><div class="src-line"><a name="a337"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a338"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodsetRequestId">setRequestId</a><span class="src-sym">(&nbsp;</span><span class="src-var">$requestId&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a339"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a340"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">_requestId&nbsp;</span>=&nbsp;<span class="src-var">$requestId</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a341"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a342"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a343"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a344"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;aborts&nbsp;a&nbsp;long-running&nbsp;process.&nbsp;call&nbsp;with&nbsp;updateServer()</span></div></li>
+<li><div class="src-line"><a name="a345"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$params[1]&nbsp;request&nbsp;id</span></div></li>
+<li><div class="src-line"><a name="a346"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;bool&nbsp;&nbsp;&nbsp;$params[2]&nbsp;if&nbsp;true,&nbsp;remove&nbsp;killfile&nbsp;only</span></div></li>
+<li><div class="src-line"><a name="a347"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a348"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodmethod_abortRequest">method_abortRequest</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$params&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a349"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a350"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$requestId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>=&nbsp;<span class="src-var">$params</span><span class="src-sym">[</span><span class="src-num">1</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a351"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$removeKillFile&nbsp;</span>=&nbsp;<span class="src-var">$params</span><span class="src-sym">[</span><span class="src-num">2</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a352"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$messagefile&nbsp;&nbsp;&nbsp;&nbsp;</span>=&nbsp;<span class="src-id">QCL_TMP_PATH&nbsp;</span>.&nbsp;<span class="src-var">$requestId</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a353"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$killfile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>=&nbsp;<span class="src-var">$messagefile&nbsp;</span>.&nbsp;<span class="src-str">&quot;.kill&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a354"></a>&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a355"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$removeKillFile&nbsp;</span><span class="src-sym">)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a356"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a357"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/unlink">unlink</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$killfile&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a358"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a359"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">qcl_jsonrpc_controller</span>::<span class="src-id">method_abortRequest</span>&nbsp;:&nbsp;<span class="src-id">Cannot</span>&nbsp;<span class="src-id">remove</span>&nbsp;<span class="src-id">kill</span>&nbsp;<span class="src-id">file</span>&nbsp;'<span class="src-var">$killfile</span>'.</span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a360"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a361"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchEvent">dispatchEvent</a><span class="src-sym">(</span><span class="src-str">&quot;requestAbortCompleted&quot;</span><span class="src-sym">,</span><span class="src-var">$requestId</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a362"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetResponseData">getResponseData</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a363"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a364"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/file_exists">file_exists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$messagefile&nbsp;</span><span class="src-sym">)&nbsp;)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a365"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a366"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/touch">touch</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$killfile&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a367"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a368"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">qcl_jsonrpc_controller</span>::<span class="src-id">method_abortRequest</span>&nbsp;:&nbsp;<span class="src-id">Cannot</span>&nbsp;<span class="src-id">create</span>&nbsp;<span class="src-id">kill</span>&nbsp;<span class="src-id">file</span>&nbsp;'<span class="src-var">$killfile</span>'.</span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a369"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a370"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/unlink">unlink</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$messagefile&nbsp;</span><span class="src-sym">)&nbsp;)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a371"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a372"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">qcl_jsonrpc_controller</span>::<span class="src-id">method_abortRequest</span>&nbsp;:&nbsp;<span class="src-id">Cannot</span>&nbsp;<span class="src-id">remove</span>&nbsp;<span class="src-id">message</span>&nbsp;<span class="src-id">file</span>&nbsp;'<span class="src-var">$messagefile</span>'.</span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a373"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a374"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a375"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchEvent">dispatchEvent</a><span class="src-sym">(</span><span class="src-str">&quot;requestAborted&quot;</span><span class="src-sym">,</span><span class="src-var">$requestId</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a376"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetResponseData">getResponseData</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a377"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a378"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a379"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a380"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a381"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;communicates&nbsp;with&nbsp;progress.php&nbsp;through&nbsp;message&nbsp;file&nbsp;to&nbsp;output&nbsp;a&nbsp;simple&nbsp;progress&nbsp;meter&nbsp;or&nbsp;log</span></div></li>
+<li><div class="src-line"><a name="a382"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a383"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;&nbsp;$i&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;message,&nbsp;int&nbsp;percent&nbsp;of&nbsp;progress&nbsp;or&nbsp;current&nbsp;index&nbsp;variable&nbsp;(if&nbsp;$count&nbsp;is&nbsp;given)</span></div></li>
+<li><div class="src-line"><a name="a384"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;$count&nbsp;(optional)&nbsp;maximal&nbsp;number</span></div></li>
+<li><div class="src-line"><a name="a385"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a386"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodprogress">progress</a><span class="src-sym">(&nbsp;</span><span class="src-var">$i</span>=<span class="src-str">&quot;&quot;</span><span class="src-sym">,&nbsp;</span><span class="src-var">$count</span>=<span class="src-id">null&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a387"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a388"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$messagefile&nbsp;</span>=&nbsp;<span class="src-id">QCL_TMP_PATH&nbsp;</span>.&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodgetRequestId">getRequestId</a><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a389"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$killfile&nbsp;&nbsp;&nbsp;&nbsp;</span>=&nbsp;<span class="src-var">$messagefile&nbsp;</span>.&nbsp;<span class="src-str">&quot;.kill&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a390"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a391"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;abort&nbsp;process&nbsp;if&nbsp;kill&nbsp;file&nbsp;is&nbsp;found</span></div></li>
+<li><div class="src-line"><a name="a392"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/file_exists">file_exists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$killfile&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a393"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a394"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">@</span><a href="http://www.php.net/unlink">unlink</a><span class="src-sym">(&nbsp;</span><span class="src-var">$messagefile&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a395"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">@</span><a href="http://www.php.net/unlink">unlink</a><span class="src-sym">(&nbsp;</span><span class="src-var">$killfile&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a396"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(&nbsp;</span><span class="src-str">&quot;Request&nbsp;Aborted&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a397"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a398"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a399"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><a href="http://www.php.net/touch">touch</a><span class="src-sym">(&nbsp;</span><span class="src-var">$messagefile&nbsp;</span><span class="src-sym">)&nbsp;)&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a400"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a401"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-str">&quot;</span><span class="src-str"><span class="src-id">bibliograph_controller</span>::<span class="src-id">progress</span>&nbsp;:&nbsp;<span class="src-id">Cannot</span>&nbsp;<span class="src-id">write</span>&nbsp;<span class="src-id">to</span>&nbsp;<span class="src-var">$messagefile</span>.</span><span class="src-str">&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a402"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a403"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a404"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$i&nbsp;</span>===&nbsp;<span class="src-id">null&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a405"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a406"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;delete&nbsp;messagefile&nbsp;on&nbsp;a&nbsp;null&nbsp;value&nbsp;to&nbsp;terminate&nbsp;progress.php</span></div></li>
+<li><div class="src-line"><a name="a407"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">@</span><a href="http://www.php.net/unlink">unlink</a><span class="src-sym">(&nbsp;</span><span class="src-var">$messagefile&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a408"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a409"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a410"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a411"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_numeric">is_numeric</a><span class="src-sym">(</span><span class="src-var">$i</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a412"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a413"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_numeric">is_numeric</a><span class="src-sym">(&nbsp;</span><span class="src-var">$count</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a414"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a415"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$i&nbsp;</span>=&nbsp;<span class="src-sym">(</span><span class="src-var">$i</span>/<span class="src-var">$count</span><span class="src-sym">)&nbsp;</span>*&nbsp;<span class="src-num">100</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a416"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a417"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$msg&nbsp;</span>=&nbsp;<span class="src-str">&quot;</span><span class="src-str">&lt;<span class="src-id">script</span>&gt;&nbsp;<span class="src-id">progress</span>(<span class="src-var">$i</span>);&lt;/<span class="src-id">script</span>&gt;</span><span class="src-str">&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a418"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a419"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">else</span></div></li>
+<li><div class="src-line"><a name="a420"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a421"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$msg&nbsp;</span>=&nbsp;<span class="src-str">&quot;&lt;script&gt;&nbsp;message('&quot;&nbsp;</span>.&nbsp;<a href="http://www.php.net/addslashes">addslashes</a><span class="src-sym">(</span><span class="src-var">$i</span><span class="src-sym">)&nbsp;&nbsp;</span>.&nbsp;<span class="src-str">&quot;');&lt;/script&gt;&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a422"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$msg&nbsp;</span>.=&nbsp;<span class="src-var">$i&nbsp;</span>.&nbsp;<span class="src-str">&quot;&lt;br/&gt;&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a423"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(</span><span class="src-var">$i</span><span class="src-sym">)&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_object.html#methodinfo">info</a><span class="src-sym">(</span><span class="src-var">$i</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a424"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a425"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a426"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;output&nbsp;to&nbsp;log&nbsp;file</span></div></li>
+<li><div class="src-line"><a name="a427"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.php.net/error_log">error_log</a><span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-num">3</span><span class="src-sym">,&nbsp;</span><span class="src-var">$messagefile&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a428"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-id">true</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a429"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a430"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a431"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a432"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;log&nbsp;a&nbsp;message&nbsp;to&nbsp;a&nbsp;file&nbsp;on&nbsp;server&nbsp;and&nbsp;as&nbsp;a&nbsp;message&nbsp;to&nbsp;the&nbsp;client,&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a433"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;depending&nbsp;on&nbsp;the&nbsp;log&nbsp;level&nbsp;on&nbsp;the&nbsp;server&nbsp;and&nbsp;on&nbsp;the&nbsp;client</span></div></li>
+<li><div class="src-line"><a name="a434"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@override</span></div></li>
+<li><div class="src-line"><a name="a435"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;$msg</span></div></li>
+<li><div class="src-line"><a name="a436"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;$logLevel&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a437"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string&nbsp;message&nbsp;that&nbsp;was&nbsp;written&nbsp;to&nbsp;the&nbsp;logfile</span></div></li>
+<li><div class="src-line"><a name="a438"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a439"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_jsonrpc_controller.html#methodlog">log</a><span class="src-sym">(&nbsp;</span><span class="src-var">$msg</span><span class="src-sym">,&nbsp;</span><span class="src-var">$logLevel</span>=<span class="src-id">QCL_LOG_DEBUG&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a440"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a441"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$message&nbsp;</span>=&nbsp;<span class="src-id">parent</span><span class="src-sym">::</span><span class="src-id">log</span><span class="src-sym">(</span><span class="src-var">$msg</span><span class="src-sym">,</span><span class="src-var">$logLevel</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a442"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$clientLogLevel&nbsp;</span>=&nbsp;(int)&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodgetSessionVar">getSessionVar</a><span class="src-sym">(</span><span class="src-str">&quot;qcl.logLevel.client&quot;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a443"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$clientLogLevel&nbsp;</span><span class="src-key">and&nbsp;</span><span class="src-var">$clientLogLevel&nbsp;</span>&lt;=&nbsp;<span class="src-var">$logLevel</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a444"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a445"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchMessage">dispatchMessage</a><span class="src-sym">(</span><span class="src-str">&quot;qcl.messages.log.server&quot;</span><span class="src-sym">,</span><span class="src-var">$message</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a446"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a447"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$message</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a448"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a449"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a450"></a><span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a451"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a452"></a><span class="src-php">?&gt;</span></div></li>
+</ol>
+</div>
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Wed, 02 Apr 2008 23:40:22 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

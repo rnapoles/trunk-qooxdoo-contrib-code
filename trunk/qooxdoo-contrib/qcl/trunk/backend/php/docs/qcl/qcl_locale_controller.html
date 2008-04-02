@@ -1,0 +1,815 @@
+<html>
+<head>
+<title>Docs For Class qcl_locale_controller</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">qcl</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                    
+                              		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../qcl/_plugin---abstract.php.html">		abstract.php
+		</a><br>
+			<a href="../qcl/_access---common.php.html">		common.php
+		</a><br>
+			<a href="../qcl/_config---config.php.html">		config.php
+		</a><br>
+			<a href="../qcl/_config---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_access---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_locale---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_session---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---controller.php.html">		controller.php
+		</a><br>
+			<a href="../qcl/_encoding---converter.php.html">		converter.php
+		</a><br>
+			<a href="../qcl/_config---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_plugin---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_db---db.php.html">		db.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---dispatcher.php.html">		dispatcher.php
+		</a><br>
+			<a href="../qcl/_session---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_db---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---model.php.html">		model.php
+		</a><br>
+			<a href="../qcl/_locale---model_qooxdoo.php.html">		model_qooxdoo.php
+		</a><br>
+			<a href="../qcl/_jsonrpc---object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_object.php.html">		object.php
+		</a><br>
+			<a href="../qcl/_db---pear.php.html">		pear.php
+		</a><br>
+			<a href="../qcl/_access---permission.php.html">		permission.php
+		</a><br>
+			<a href="../qcl/_xml---reader.php.html">		reader.php
+		</a><br>
+			<a href="../qcl/_http---request.php.html">		request.php
+		</a><br>
+			<a href="../qcl/_access---role.php.html">		role.php
+		</a><br>
+			<a href="../qcl/_config---session.php.html">		session.php
+		</a><br>
+			<a href="../qcl/_system---shell.php.html">		shell.php
+		</a><br>
+			<a href="../qcl/_xml---transformer.php.html">		transformer.php
+		</a><br>
+			<a href="../qcl/_db---tree.php.html">		tree.php
+		</a><br>
+			<a href="../qcl/_access---user.php.html">		user.php
+		</a><br>
+	  </div><br />
+      
+      
+            <b>Classes:</b><br />
+        <div class="package">
+		    		<a href="../qcl/JsonRpcError.html">JsonRpcError</a><br />
+	    		<a href="../qcl/patched_object.html">patched_object</a><br />
+	    		<a href="../qcl/qcl_access_common.html">qcl_access_common</a><br />
+	    		<a href="../qcl/qcl_access_controller.html">qcl_access_controller</a><br />
+	    		<a href="../qcl/qcl_access_permission.html">qcl_access_permission</a><br />
+	    		<a href="../qcl/qcl_access_role.html">qcl_access_role</a><br />
+	    		<a href="../qcl/qcl_access_user.html">qcl_access_user</a><br />
+	    		<a href="../qcl/qcl_config.html">qcl_config</a><br />
+	    		<a href="../qcl/qcl_config_controller.html">qcl_config_controller</a><br />
+	    		<a href="../qcl/qcl_config_db.html">qcl_config_db</a><br />
+	    		<a href="../qcl/qcl_config_session.html">qcl_config_session</a><br />
+	    		<a href="../qcl/qcl_db.html">qcl_db</a><br />
+	    		<a href="../qcl/qcl_db_model.html">qcl_db_model</a><br />
+	    		<a href="../qcl/qcl_db_pear.html">qcl_db_pear</a><br />
+	    		<a href="../qcl/qcl_db_tree.html">qcl_db_tree</a><br />
+	    		<a href="../qcl/qcl_encoding_converter.html">qcl_encoding_converter</a><br />
+	    		<a href="../qcl/qcl_http_request.html">qcl_http_request</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_model.html">qcl_jsonrpc_model</a><br />
+	    		<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a><br />
+	    		<a href="../qcl/qcl_locale_controller.html">qcl_locale_controller</a><br />
+	    		<a href="../qcl/qcl_locale_model_qooxdoo.html">qcl_locale_model_qooxdoo</a><br />
+	    		<a href="../qcl/qcl_object.html">qcl_object</a><br />
+	    		<a href="../qcl/qcl_plugin_abstract.html">qcl_plugin_abstract</a><br />
+	    		<a href="../qcl/qcl_plugin_db.html">qcl_plugin_db</a><br />
+	    		<a href="../qcl/qcl_session_controller.html">qcl_session_controller</a><br />
+	    		<a href="../qcl/qcl_session_model.html">qcl_session_model</a><br />
+	    		<a href="../qcl/qcl_system_shell.html">qcl_system_shell</a><br />
+	    		<a href="../qcl/qcl_xml_reader.html">qcl_xml_reader</a><br />
+	    		<a href="../qcl/qcl_xml_transformer.html">qcl_xml_transformer</a><br />
+	  </div>
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Class: qcl_locale_controller</h1>
+Source Location: /locale/controller.php<br /><br />
+
+
+<table width="100%" border="0">
+<tr><td valign="top">
+
+<h3><a href="#class_details">Class Overview</a></h3>
+<pre><a href="../qcl/patched_object.html">patched_object</a>
+   |
+   --<a href="../qcl/qcl_object.html">qcl_object</a>
+      |
+      --<a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a>
+         |
+         --<a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a>
+            |
+            --qcl_locale_controller</pre><br />
+<div class="description">manages locales and translations. uses a gettext model by default  extending controllers should set the &quot;locale&quot; model before calling the  parent constructor if they want to use a different locale model.</div><br /><br />
+
+
+
+
+
+
+        
+</td>
+
+<td valign="top">
+<h3><a href="#class_vars">Variables</a></h3>
+<ul>
+    <li><a href="../qcl/qcl_locale_controller.html#var$default_locale">$default_locale</a></li>
+  </ul>
+</td>
+
+
+<td valign="top">
+<h3><a href="#class_methods">Methods</a></h3>
+<ul>
+    <li><a href="../qcl/qcl_locale_controller.html#method__construct">__construct</a></li>
+    <li><a href="../qcl/qcl_locale_controller.html#methodgetAvailableLocales">getAvailableLocales</a></li>
+    <li><a href="../qcl/qcl_locale_controller.html#methodgetUserLocale">getUserLocale</a></li>
+    <li><a href="../qcl/qcl_locale_controller.html#methodmethod_logLocaleInfo">method_logLocaleInfo</a></li>
+    <li><a href="../qcl/qcl_locale_controller.html#methodsetLocale">setLocale</a></li>
+    <li><a href="../qcl/qcl_locale_controller.html#methodtr">tr</a></li>
+    <li><a href="../qcl/qcl_locale_controller.html#methodtrn">trn</a></li>
+  </ul>
+</td>
+
+</tr></table>
+<hr />
+
+<table width="100%" border="0"><tr>
+
+
+
+
+<td valign="top">
+<h3>Inherited Variables</h3>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_controller.html#var$ini">qcl_jsonrpc_controller::$ini</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_controller.html#var$_models">qcl_jsonrpc_controller::$_models</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_controller.html#var$_response">qcl_jsonrpc_controller::$_response</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></h4>
+<dl>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_object.html#var$bin_path">qcl_jsonrpc_object::$bin_path</a>
+  </dt>
+<dd>
+   
+</dd>
+<dt>
+  <a href="../qcl/qcl_jsonrpc_object.html#var$error">qcl_jsonrpc_object::$error</a>
+  </dt>
+<dd>
+   
+</dd>
+</dl>
+</div>
+</td>
+
+<td valign="top">
+<h3>Inherited Methods</h3>
+<div class="tags">
+<h4>Class: <a href="../qcl/qcl_jsonrpc_controller.html">qcl_jsonrpc_controller</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#method__construct">qcl_jsonrpc_controller::__construct()</a>
+  </dt>
+  <dd>
+    constructor , configures the service
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodaddEvent">qcl_jsonrpc_controller::addEvent()</a>
+  </dt>
+  <dd>
+    adds an event to the event stack
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodaddMessage">qcl_jsonrpc_controller::addMessage()</a>
+  </dt>
+  <dd>
+    adds a message to the message stack
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodconfigureService">qcl_jsonrpc_controller::configureService()</a>
+  </dt>
+  <dd>
+    reads initial configuration. looks for service.ini.php files, starting at  the top-level service directory. lower-level service.ini.php files can override  config directives selectively, inheriting the rest of the settings from the upper  level config files.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchEvent">qcl_jsonrpc_controller::dispatchEvent()</a>
+  </dt>
+  <dd>
+    dispatches a server event
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methoddispatchMessage">qcl_jsonrpc_controller::dispatchMessage()</a>
+  </dt>
+  <dd>
+    dispatches a server message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodget">qcl_jsonrpc_controller::get()</a>
+  </dt>
+  <dd>
+    gets value for particular result key
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetEvents">qcl_jsonrpc_controller::getEvents()</a>
+  </dt>
+  <dd>
+    get messages on message stack
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetIniValue">qcl_jsonrpc_controller::getIniValue()</a>
+  </dt>
+  <dd>
+    gets a configuration value of the pattern &quot;foo.bar.baz&quot;  This retrieves the values set in the service.ini.php file.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetLocaleController">qcl_jsonrpc_controller::getLocaleController()</a>
+  </dt>
+  <dd>
+    gets the locale controller and sets the default locale. default is
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetMessages">qcl_jsonrpc_controller::getMessages()</a>
+  </dt>
+  <dd>
+    get messages on message stack
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetModel">qcl_jsonrpc_controller::getModel()</a>
+  </dt>
+  <dd>
+    gets a model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetRequestId">qcl_jsonrpc_controller::getRequestId()</a>
+  </dt>
+  <dd>
+    gets the unique id of the current request, if any
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetResponseData">qcl_jsonrpc_controller::getResponseData()</a>
+  </dt>
+  <dd>
+    gets result for json response inclusing result data, events, and messages
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodgetServiceDirUrl">qcl_jsonrpc_controller::getServiceDirUrl()</a>
+  </dt>
+  <dd>
+    get service directory url
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodlog">qcl_jsonrpc_controller::log()</a>
+  </dt>
+  <dd>
+    log a message to a file on server and as a message to the client,
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodmethod_abortRequest">qcl_jsonrpc_controller::method_abortRequest()</a>
+  </dt>
+  <dd>
+    aborts a long-running process. call with updateServer()
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodprogress">qcl_jsonrpc_controller::progress()</a>
+  </dt>
+  <dd>
+    communicates with progress.php through message file to output a simple progress meter or log
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodset">qcl_jsonrpc_controller::set()</a>
+  </dt>
+  <dd>
+    assemble a result array for the json response
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodsetModel">qcl_jsonrpc_controller::setModel()</a>
+  </dt>
+  <dd>
+    saves a model
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodsetRequestId">qcl_jsonrpc_controller::setRequestId()</a>
+  </dt>
+  <dd>
+    sets the unique id of the current request
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodtr">qcl_jsonrpc_controller::tr()</a>
+  </dt>
+  <dd>
+    translates a message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_controller.html#methodtrn">qcl_jsonrpc_controller::trn()</a>
+  </dt>
+  <dd>
+    Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_jsonrpc_object.html">qcl_jsonrpc_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#method__construct">qcl_jsonrpc_object::__construct()</a>
+  </dt>
+  <dd>
+    Class constructor
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodalert">qcl_jsonrpc_object::alert()</a>
+  </dt>
+  <dd>
+    alerts a message on the client
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methoddebugVarHtml">qcl_jsonrpc_object::debugVarHtml()</a>
+  </dt>
+  <dd>
+    debug a variable as html and exit
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetClassPath">qcl_jsonrpc_object::getClassPath()</a>
+  </dt>
+  <dd>
+    get include path for a class name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetOsBinDir">qcl_jsonrpc_object::getOsBinDir()</a>
+  </dt>
+  <dd>
+    gets file path to binary executables depending on operating system
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetPersistentVar">qcl_jsonrpc_object::getPersistentVar()</a>
+  </dt>
+  <dd>
+    get a variable from the session  the variables are available on a class basis, the namespace of the  variables is the class name.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodgetSessionVar">qcl_jsonrpc_object::getSessionVar()</a>
+  </dt>
+  <dd>
+    get a variable from the session  the variables are available on a class basis, the namespace of the  variables is the class name.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodhasPersistentVar">qcl_jsonrpc_object::hasPersistentVar()</a>
+  </dt>
+  <dd>
+    checks if persistent variable exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodhasSessionVar">qcl_jsonrpc_object::hasSessionVar()</a>
+  </dt>
+  <dd>
+    checks if sesion variable exists
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">qcl_jsonrpc_object::raiseError()</a>
+  </dt>
+  <dd>
+    raises a server error and exits
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodremove">qcl_jsonrpc_object::remove()</a>
+  </dt>
+  <dd>
+    remove stored object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodretrieve">qcl_jsonrpc_object::retrieve()</a>
+  </dt>
+  <dd>
+    retrieve stored object
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodsetPersistentVar">qcl_jsonrpc_object::setPersistentVar()</a>
+  </dt>
+  <dd>
+    save a persistent variable; todo: make this thread-safe!
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodsetSessionVar">qcl_jsonrpc_object::setSessionVar()</a>
+  </dt>
+  <dd>
+    save a variable in the session
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_jsonrpc_object.html#methodstore">qcl_jsonrpc_object::store()</a>
+  </dt>
+  <dd>
+    stores the object or arbitrary data in the filesystem.
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/qcl_object.html">qcl_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/qcl_object.html#method__construct">qcl_object::__construct()</a>
+  </dt>
+  <dd>
+    Class constructor
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methoddebug">qcl_object::debug()</a>
+  </dt>
+  <dd>
+    log a debug message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodgetClassPath">qcl_object::getClassPath()</a>
+  </dt>
+  <dd>
+    get include path for a class name
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodgetError">qcl_object::getError()</a>
+  </dt>
+  <dd>
+    getter for error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodgetInstance">qcl_object::getInstance()</a>
+  </dt>
+  <dd>
+    gets singleton instance when dealing with object copy
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodgetNew">qcl_object::getNew()</a>
+  </dt>
+  <dd>
+    gets new instance of classname
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodgetSingleton">qcl_object::getSingleton()</a>
+  </dt>
+  <dd>
+    get (non-persistent) singleton instance of class.
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodgetStackTrace">qcl_object::getStackTrace()</a>
+  </dt>
+  <dd>
+    gets the stack trace of invoked objects
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodincludeClassfile">qcl_object::includeClassfile()</a>
+  </dt>
+  <dd>
+    load file for class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodinfo">qcl_object::info()</a>
+  </dt>
+  <dd>
+    logs a message with of level &quot;info&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodlog">qcl_object::log()</a>
+  </dt>
+  <dd>
+    log to file on server
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodmixin">qcl_object::mixin()</a>
+  </dt>
+  <dd>
+    mixing in methods of another class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodsetError">qcl_object::setError()</a>
+  </dt>
+  <dd>
+    setter for error message
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodsetSingleton">qcl_object::setSingleton()</a>
+  </dt>
+  <dd>
+    set (non-persistent) singleton instance of a class
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodwarn">qcl_object::warn()</a>
+  </dt>
+  <dd>
+    logs a message with of level &quot;warn&quot;
+  </dd>
+    <dt>
+    <a href="../qcl/qcl_object.html#methodwriteLog">qcl_object::writeLog()</a>
+  </dt>
+  <dd>
+    write to log file
+  </dd>
+  </dl>
+<h4>Class: <a href="../qcl/patched_object.html">patched_object</a></h4>
+<dl>
+    <dt>
+    <a href="../qcl/patched_object.html#method__construct">patched_object::__construct()</a>
+  </dt>
+  <dd>
+    
+  </dd>
+    <dt>
+    <a href="../qcl/patched_object.html#methodpatched_object">patched_object::patched_object()</a>
+  </dt>
+  <dd>
+    PHP4 __construct() hack taken from cakephp  taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
+  </dd>
+  </dl>
+</div>
+</td>
+
+</tr></table>
+<hr />
+
+<a name="class_details"></a>
+<h3>Class Details</h3>
+<div class="tags">
+[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a11">11</a>]<br />
+manages locales and translations. uses a gettext model by default  extending controllers should set the &quot;locale&quot; model before calling the  parent constructor if they want to use a different locale model.<br /><br /></div><br /><br />
+<div class="top">[ <a href="#top">Top</a> ]</div><br />
+
+<hr />
+<a name="class_vars"></a>
+<h3>Class Variables</h3>
+<div class="tags">
+	<a name="var$default_locale"></a>
+	<p></p>
+	<h4>$default_locale = <span class="value">&nbsp;&quot;en&quot;</span></h4>
+	<p>[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a18">18</a>]</p>
+  
+  <br />
+	<div class="tags">
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><b>Type:</b>&nbsp;&nbsp;</td>
+      <td>mixed</td>
+    </tr>
+      </table>
+	</div><br /><br />
+	<div class="top">[ <a href="#top">Top</a> ]</div><br />
+</div><br />
+
+<hr />
+<a name="class_methods"></a>
+<h3>Class Methods</h3>
+<div class="tags">
+
+  <hr />
+	<a name="method__construct"></a>
+	<h3>constructor __construct <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a27">27</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>qcl_locale_controller __construct(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		constructor<br /><br /><br /><br />
+
+	Overrides <a href="../qcl/qcl_jsonrpc_controller.html#method__construct">qcl_jsonrpc_controller::__construct()</a> (constructor , configures the service)<br /><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetAvailableLocales"></a>
+	<h3>method getAvailableLocales <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a98">98</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>{String[]} getAvailableLocales(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Return the available application locales<br /><br /><p>This corresponds to the Makefile APPLICATION_LOCALES setting</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>array of available locales</td>
+  </tr>
+</table>
+</div>
+<br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodgetUserLocale"></a>
+	<h3>method getUserLocale <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a60">60</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void getUserLocale(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		determines the user locale from the system or browser<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodmethod_logLocaleInfo"></a>
+	<h3>method method_logLocaleInfo <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a145">145</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void method_logLocaleInfo(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		dumps information on the translation engine to the log<br /><br /><br /><br />
+
+	
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodsetLocale"></a>
+	<h3>method setLocale <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a50">50</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>void setLocale(
+[$locale
+$locale = null])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		sets the default locale. if no value is given, the locale is determined on  system and browser settings.<br /><br /><br /><br />
+
+	
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">$locale&nbsp;&nbsp;</td>
+        <td><b>$locale</b>&nbsp;&nbsp;</td>
+        <td>Mixed Locale string or null if locale should be automatically be determined</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtr"></a>
+	<h3>method tr <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a111">111</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string tr(
+String
+$messageId, [Array
+$varargs = array()])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Translates a message and applies sprintf formatting to it.<br /><br /><br /><br />
+
+	Overrides <a href="../qcl/qcl_jsonrpc_controller.html#methodtr">qcl_jsonrpc_controller::tr()</a> (translates a message)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">String&nbsp;&nbsp;</td>
+        <td><b>$messageId</b>&nbsp;&nbsp;</td>
+        <td>message id (may contain format strings)</td>
+      </tr>
+          <tr>
+        <td class="type">Array&nbsp;&nbsp;</td>
+        <td><b>$varargs</b>&nbsp;&nbsp;</td>
+        <td>(optional) variable number of argumes applied to the format string</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+  <hr />
+	<a name="methodtrn"></a>
+	<h3>method trn <span class="smalllinenumber">[line <a href="../__filesource/fsource_qcl__localecontroller.php.html#a129">129</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>string trn(
+string
+$singularMessageId, string
+$pluralMessageId, int
+$count, [Array
+$varargs = array()])</code>
+    </td></tr></table>
+    </td></tr></table><br />
+	
+		Translate a plural message.Depending on the third argument the plural or the singular form is chosen.<br /><br /><p>sprintf formatting is applied to the result string</p><br /><br /><br />
+
+	Overrides <a href="../qcl/qcl_jsonrpc_controller.html#methodtrn">qcl_jsonrpc_controller::trn()</a> (Translate a plural message.Depending on the third argument the plursl or the singular form is chosen.)<br /><br />
+        <h4>Parameters:</h4>
+    <div class="tags">
+    <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$singularMessageId</b>&nbsp;&nbsp;</td>
+        <td>Message id of the singular form (may contain format strings)</td>
+      </tr>
+          <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>$pluralMessageId</b>&nbsp;&nbsp;</td>
+        <td>Message id of the plural form (may contain format strings)</td>
+      </tr>
+          <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$count</b>&nbsp;&nbsp;</td>
+        <td>If greater than 1 the plural form otherwhise the singular form is returned.</td>
+      </tr>
+          <tr>
+        <td class="type">Array&nbsp;&nbsp;</td>
+        <td><b>$varargs</b>&nbsp;&nbsp;</td>
+        <td>(optional) Variable number of arguments for the sprintf formatting</td>
+      </tr>
+        </table>
+    </div><br />
+        <div class="top">[ <a href="#top">Top</a> ]</div>
+  </div>
+</div><br />
+
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Wed, 02 Apr 2008 23:40:24 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
