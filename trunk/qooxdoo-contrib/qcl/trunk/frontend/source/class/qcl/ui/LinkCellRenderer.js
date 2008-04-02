@@ -40,6 +40,21 @@ qx.Class.define("qcl.ui.LinkCellRenderer",
   construct : function()
   {
     this.base(arguments);
+    this.IMG_LINK = qx.io.Alias.getInstance().resolve("icon/16/places/folder-remote.png");
+ 
+     /**   
+    // the following doesn't work
+    var clazz = this.self(arguments);
+
+    if (!clazz.stylesheet)
+    {
+      clazz.stylesheet = qx.html.StyleSheet.createElement(
+        ".qooxdoo-table-cell-link {" +
+        "  padding-left: 20px;" +
+        "  background: url(" + this.IMG_LINK + ") top left no-repeat;" +
+        "}"
+      );
+    }**/
   },
 
   /*
@@ -60,8 +75,32 @@ qx.Class.define("qcl.ui.LinkCellRenderer",
     // overridden
     _getContentHtml : function(cellInfo)
     {
+      /**
+      var content = [];
+      if ( cellInfo.value )
+      {
+        
+        // because the stylesheet/class stuff doesn't work, do it manually
+        content.push('<div style="padding-left: 20px; background: url(' );  
+        content.push(this.IMG_LINK);
+        content.push(') top left no-repeat;">');
+        
+        // however, clicking on the link won't trigger the window.open command
+        content.push('<a href="javascript:void()" ');
+        content.push('onclick="window.open(\'' + cellInfo.value + '\');";');
+        content.push(">");
+        content.push(cellInfo.value)
+        content.push("</a>");  
+        
+        content.push("</div>");
+       
+       
+      }
+      return content.join("");
+      **/
       content = cellInfo.value || "";
       return content.replace(/(http:\/\/[\w\-\.]+)([^\s;]*)/g, '<a target="_blank" href="$1$2">$1/...<\/a>');
+   
     }
   }
 });
