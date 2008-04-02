@@ -236,6 +236,9 @@ class qcl_object extends patched_object {
  
 	/**
 	 * log to file on server
+	 * @param string $message
+	 * @param int $logLevel  
+	 * @return message written to file
 	 */
 	function log( $msg, $logLevel=QCL_LOG_DEBUG )
 	{
@@ -250,11 +253,14 @@ class qcl_object extends patched_object {
 			$message .= " [" . get_class($this) ."]";
 		}
 		$message .= ": " . $msg . "\n";
-		$this->writeLog($message,$logLevel);			
+		$this->writeLog($message,$logLevel);	
+		return $message;		
 	}
 
 	/**
 	 * write to log file
+	 * @param string $message
+	 * @param int $logLevel 
 	 */
 	function writeLog( $message, $logLevel=QCL_LOG_DEBUG )
 	{
@@ -263,11 +269,21 @@ class qcl_object extends patched_object {
 			@error_log($message,3,QCL_LOG_FILE);			
 		}			
 	}
+
+	/**
+	 * log a debug message 
+   * @return void
+   * @param mixed $msg 	
+   */
+	function debug($msg,$html=false)
+	{
+    $this->log ( $msg, QCL_LOG_DEBUG );
+  }	
 	
   /**
    * logs a message with of level "info"
    * @return void
-   * @param $msg string
+   * @param mixed $msg 
    */
   function info ( $msg )	
   {
@@ -282,7 +298,7 @@ class qcl_object extends patched_object {
   function warn ( $msg )	
   {
     $this->log ( $msg, QCL_LOG_WARN );
-  }
+  }  
   
   /**
    * gets the stack trace of invoked objects
