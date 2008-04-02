@@ -243,7 +243,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
 	function dispatchMessage ( $message, $data=true )
 	{
-		$this->log("Message $message"); 
     $this->addMessage( $message, $data );
 	}
 
@@ -428,8 +427,26 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     error_log( $msg, 3, $messagefile );
     return true;
   }  
+  
+	/**
+	 * log a message to a file on server and as a message to the client, 
+	 * depending on the log level on the server and on the client
+	 * @override
+	 * @param string $msg
+	 * @param int $logLevel  
+	 * @return string message that was written to the logfile
+	 */
+	function log( $msg, $logLevel=QCL_LOG_DEBUG )
+	{
+		$message = parent::log($msg,$logLevel);
+		$clientLogLevel = (int) $this->getSessionVar("qcl.logLevel.client");
+		if ( $clientLogLevel and $clientLogLevel <= $logLevel)
+		{
+			$this->dispatchMessage("qcl.messages.log.server",$message);			
+		}	
+		return $message;
+	}	  
 	 
 }	
-
 
 ?>

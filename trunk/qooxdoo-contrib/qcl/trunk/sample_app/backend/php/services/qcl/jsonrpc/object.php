@@ -256,26 +256,15 @@ class qcl_jsonrpc_object extends qcl_object {
     echo $message;
     exit;
 	}
-  
-  
+
 	/**
-	* debug a variable 
-	* @todo: debug to file
-	*/
-	function debug($var,$html=false)
+	 * debug a variable as html and exit 
+	 */
+	function debugVarHtml($var)
 	{
-		if ( ! $html )
-		{
-			// we are in a jsonrpc request, send debug output as error message
-      // todo
-			$this->altert( print_r ( $var, true ) );
-		}
-		else
-		{
-			// we can happily output as a html response
 			echo "<pre>" . htmlentities(var_export( $var, true )) . "</pre>";	
-		}
-  }
+			exit;
+	}
 
 }
 
