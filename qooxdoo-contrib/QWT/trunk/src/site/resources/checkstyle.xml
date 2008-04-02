@@ -69,7 +69,7 @@
         <module name="TypeName"/>
 
         <module name="Header">
-            <property name="header" value="/* ************************************************************************\n   \n   qooxdoo - the new era of web development\n   \n   http://qooxdoo.org\n   \n   Copyright:\n     2006-2007 1&amp;1 Internet AG, Germany, http://www.1and1.org\n   \n   License:\n     LGPL: http://www.gnu.org/licenses/lgpl.html\n     EPL: http://www.eclipse.org/org/documents/epl-v10.php\n     See the LICENSE file in the project's top-level directory for details.\n   \n   Authors:\n     * Michael Hartmeier (mlhartme)\n   \n ************************************************************************ */"/>
+            <property name="header" value="/* ************************************************************************\n   \n   qooxdoo - the new era of web development\n   \n   http://qooxdoo.org\n   \n   Copyright:\n     2006-2008 1&amp;1 Internet AG, Germany, http://www.1and1.org\n   \n   License:\n     LGPL: http://www.gnu.org/licenses/lgpl.html\n     EPL: http://www.eclipse.org/org/documents/epl-v10.php\n     See the LICENSE file in the project's top-level directory for details.\n   \n   Authors:\n     * Michael Hartmeier (mlhartme)\n   \n ************************************************************************ */"/>
         </module>
 
         <!-- Following interprets the header file as regular expressions. -->

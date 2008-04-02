@@ -7,11 +7,11 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.mlhartme.mork</groupId>
-  <artifactId>core</artifactId>
-  <name>Mork</name>
+  <groupId>org.qooxdoo.sushi</groupId>
+  <artifactId>mork</artifactId>
+  <name>Sushi Mork</name>
   <packaging>jar</packaging>
-  <version>0.6</version>
+  <version>${sushi.version}</version>
 
   <inceptionYear>1998</inceptionYear>
 
