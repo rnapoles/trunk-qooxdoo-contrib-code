@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <qxt:include-definition
-	xmlns:qx="http://www.qooxdoo.org"
-	xmlns:qxt="http://www.qxtransformer.sourceforge.net/extension">
+  xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+  >
 	
 	<!-- loading indicator -->
   <!-- todo: cancel requests selectively -->
@@ -28,7 +29,7 @@
 					    break;
 					  
 					  case "qcl.databinding.messages.rpc.end":
-					    for (var i=0; i<queue.length; i++)
+					    for ( var i=0; i < queue.length; i++)
 					    {
 					      if (queue[i]==timestamp)
 					      {
