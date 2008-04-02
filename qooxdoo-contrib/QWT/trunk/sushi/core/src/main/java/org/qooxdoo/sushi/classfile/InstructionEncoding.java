@@ -38,9 +38,7 @@ public class InstructionEncoding implements Bytecodes, Constants {
     public final int[] args;          // argument types for normal opcodes
     public final InstructionType type;
 
-    public InstructionEncoding(
-        String name, int opcode, int[] args, InstructionType type)
-    {
+    public InstructionEncoding(String name, int opcode, int[] args, InstructionType type) {
         this.name = name;
         this.opcode = opcode;
         this.args = args;
@@ -62,9 +60,7 @@ public class InstructionEncoding implements Bytecodes, Constants {
         }
     }
 
-    private Instruction readTableSwitch(Input src, int ofs)
-        throws IOException
-    {
+    private Instruction readTableSwitch(Input src, int ofs) throws IOException {
         Object[] args;
         IntArrayList branches;
         int deflt, low, high;
@@ -92,9 +88,7 @@ public class InstructionEncoding implements Bytecodes, Constants {
         return new Instruction(ofs, type, args);
     }
 
-    private Instruction readLookupSwitch(Input src, int ofs)
-        throws IOException
-    {
+    private Instruction readLookupSwitch(Input src, int ofs) throws IOException {
         int i;
         int count;
         int deflt;
@@ -120,9 +114,7 @@ public class InstructionEncoding implements Bytecodes, Constants {
         return new Instruction(ofs, type, args);
     }
 
-    private static Instruction readWide(Input src, int ofs)
-        throws IOException
-    {
+    private static Instruction readWide(Input src, int ofs) throws IOException {
         int b;
         Object[] args;
 
@@ -150,7 +142,7 @@ public class InstructionEncoding implements Bytecodes, Constants {
         default:
             throw new RuntimeException("illegal iinc");
         }
-        return new Instruction(ofs, Set.types[b], args);
+        return new Instruction(ofs, Set.TYPES[b], args);
     }
 
     private Instruction readNormal(Input src, int ofs) throws IOException {
@@ -206,7 +198,7 @@ public class InstructionEncoding implements Bytecodes, Constants {
             return src.readConstant();
         default:
             if (argType <= AE_I_LAST) {
-                return implicit[argType];
+                return IMPLICIT[argType];
             } else {
                 throw new IllegalArgumentException("illegal arg type: " + argType);
             }

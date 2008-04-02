@@ -47,7 +47,7 @@ public class InnerClasses extends Attribute {
 
         len = src.readU4();
         count = src.readU2();
-        if (2 + count * InnerClassesInfo.size != len) {
+        if (2 + count * InnerClassesInfo.SIZE != len) {
             throw new RuntimeException(NAME + ": illegal length: " +
                                        "count=" + count + " len=" + len);
         }

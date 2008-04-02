@@ -48,7 +48,7 @@ public class LocalVariableTable extends Attribute {
         src.requireCode();
         len = src.readU4();
         count = src.readU2();
-        if (2 + count * LocalVariableInfo.size != len) {
+        if (2 + count * LocalVariableInfo.SIZE != len) {
             throw new RuntimeException(NAME + ": illegal length: " +
                                        "count=" + count + " len=" + len);
         }

@@ -27,7 +27,7 @@ public class InnerClassesInfo {
     public String name;
     public int flags;
 
-    public static final int size = 8;
+    public static final int SIZE = 8;
 
     public InnerClassesInfo(Input src) throws IOException {
         try {

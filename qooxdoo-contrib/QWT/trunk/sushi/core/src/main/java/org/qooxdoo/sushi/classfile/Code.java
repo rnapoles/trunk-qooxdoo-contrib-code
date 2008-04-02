@@ -334,7 +334,7 @@ public class Code extends Attribute implements Constants {
         Instruction instr;
         InstructionType type;
 
-        type = Set.types[opcode];
+        type = Set.TYPES[opcode];
         instr = new Instruction(-1, type, args);
         instructions.add(instr);
     }
@@ -388,7 +388,7 @@ public class Code extends Attribute implements Constants {
         Instruction instr;
         InstructionType type;
 
-        type = Set.types[opcode];
+        type = Set.TYPES[opcode];
         instr = new Instruction(-1, type, args);
         instructions.set(fixup, instr);
     }

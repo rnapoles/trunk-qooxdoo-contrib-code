@@ -106,7 +106,8 @@ public class ClassDef {
         return lookupMethod(lm.accessFlags, lm.name, lm.argumentTypes, lm.returnType, lm.getExceptions());
     }
 
-    public MethodDef lookupMethod(Set<Access> accessFlags, String name, ClassRef[] argumentTypes, ClassRef returnType, List<ClassRef> exceptions) {
+    public MethodDef lookupMethod(Set<Access> accessFlags, String name, ClassRef[] argumentTypes, ClassRef returnType, 
+            List<ClassRef> exceptions) {
         for (MethodDef m : methods) {
             if (m.accessFlags.equals(accessFlags) && m.name.equals(name) 
                     && Arrays.equals(m.argumentTypes, argumentTypes)

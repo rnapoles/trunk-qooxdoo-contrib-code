@@ -28,7 +28,7 @@ public class LocalVariableInfo {
     public String descriptor;  // a field descriptor
     public int index;
 
-    public static final int size = 10;
+    public static final int SIZE = 10;
 
     public LocalVariableInfo(Input src) throws IOException {
         start = src.readIdx();

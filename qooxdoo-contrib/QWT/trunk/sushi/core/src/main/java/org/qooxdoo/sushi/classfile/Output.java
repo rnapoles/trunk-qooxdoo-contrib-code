@@ -200,49 +200,47 @@ public class Output implements Constants {
     }
 
     public void writeClassRef(ClassRef ref) throws IOException {
-        constants.write(dest, CONSTANT_Class, ref);
+        constants.write(dest, CONSTANT_CLASS, ref);
     }
     public void writeFieldRef(FieldRef ref) throws IOException {
-        constants.write(dest, CONSTANT_Fieldref, ref);
+        constants.write(dest, CONSTANT_FIELDREF, ref);
     }
     public void writeClassMethodRef(MethodRef ref) throws IOException {
-        constants.write(dest, CONSTANT_Methodref, ref);
+        constants.write(dest, CONSTANT_METHODREF, ref);
     }
-    public void writeInterfaceMethodRef(MethodRef ref)
-        throws IOException
-    {
-        constants.write(dest, CONSTANT_InterfaceMethodref, ref);
+    public void writeInterfaceMethodRef(MethodRef ref) throws IOException {
+        constants.write(dest, CONSTANT_INTERFACEMETHODREF, ref);
     }
     public void writeString(String value) throws IOException {
-        constants.write(dest, CONSTANT_String, value);
+        constants.write(dest, CONSTANT_STRING, value);
     }
     public void writeInt(int value) throws IOException {
-        constants.write(dest, CONSTANT_Integer, new Integer(value));
+        constants.write(dest, CONSTANT_INTEGER, new Integer(value));
     }
     public void writeFloat(float value) throws IOException {
-        constants.write(dest, CONSTANT_Float, new Float(value));
+        constants.write(dest, CONSTANT_FLOAT, new Float(value));
     }
     public void writeLong(long value) throws IOException {
-        constants.write(dest, CONSTANT_Long, new Long(value));
+        constants.write(dest, CONSTANT_LONG, new Long(value));
     }
     public void writeDouble(double value) throws IOException {
-        constants.write(dest, CONSTANT_Double, new Double(value));
+        constants.write(dest, CONSTANT_DOUBLE, new Double(value));
     }
 
     public void writeShortString(String value) throws IOException {
-        constants.writeShort(dest, CONSTANT_String, value);
+        constants.writeShort(dest, CONSTANT_STRING, value);
     }
     public void writeShortInt(int value) throws IOException {
-        constants.writeShort(dest, CONSTANT_Integer, new Integer(value));
+        constants.writeShort(dest, CONSTANT_INTEGER, new Integer(value));
     }
     public void writeShortFloat(float value) throws IOException {
-        constants.writeShort(dest, CONSTANT_Float, new Float(value));
+        constants.writeShort(dest, CONSTANT_FLOAT, new Float(value));
     }
 
     // note: no writeNameAndTyp
 
     public void writeUtf8(String value) throws IOException {
-        constants.write(dest, CONSTANT_Utf8, value);
+        constants.write(dest, CONSTANT_UTF8, value);
     }
 
     public void writePad() throws IOException {

@@ -34,7 +34,7 @@ public abstract class Attribute {
         name = nameInit;
     }
 
-    private static final List<String> blackboxed = Arrays.asList(
+    private static final List<String> BLACKBOXED = Arrays.asList(
             "RuntimeVisibleAnnotations", "Signature", "LocalVariableTypeTable", 
             "AnnotationDefault", "EnclosingMethod"
     );
@@ -61,7 +61,7 @@ public abstract class Attribute {
             return new LocalVariableTable(src);
         } else if (name.equals("Deprecated")) {
             return new Deprecated(src);
-        } else if (blackboxed.contains(name)) {
+        } else if (BLACKBOXED.contains(name)) {
             return new Blackbox(name, src);
         } else {
             throw new RuntimeException("unkown attribute: " + name);

@@ -48,8 +48,7 @@ public class InstructionType implements Bytecodes, Constants {
 
     public InstructionType(
         String nameInit, int opcodeInit, int[] argsInit,
-        int encodingInit, int stackDiffInit, int succTypeInit)
-    {
+        int encodingInit, int stackDiffInit, int succTypeInit) {
         name = nameInit;
         opcode = opcodeInit;
         args = argsInit;
@@ -278,9 +277,7 @@ public class InstructionType implements Bytecodes, Constants {
         return context.getCode().findOfs(destIdx) - srcOfs;
     }
 
-    public void write(Output dest, Object[] values)
-        throws IOException
-    {
+    public void write(Output dest, Object[] values) throws IOException {
         int i, i2;
         IntArrayList ofss;
         IntArrayList keys;
@@ -372,8 +369,7 @@ public class InstructionType implements Bytecodes, Constants {
             i = ((Integer) values[0]).intValue();
             i2 = ((Integer) values[1]).intValue();
             if ((i <= 255) &&
-                (Byte.MIN_VALUE <= i2) && (i2 <= Byte.MAX_VALUE))
-            {
+                (Byte.MIN_VALUE <= i2) && (i2 <= Byte.MAX_VALUE)) {
                 dest.writeU1(opcode);
                 dest.writeU1(i);
                 dest.writeS1(i2);
@@ -390,8 +386,7 @@ public class InstructionType implements Bytecodes, Constants {
     }
 
 
-    private void writeSimple(Output dest, Object[] values) throws IOException
-    {
+    private void writeSimple(Output dest, Object[] values) throws IOException {
         int i;
         Object val;
         MethodRef ifc;
@@ -430,7 +425,7 @@ public class InstructionType implements Bytecodes, Constants {
 
         e = findConstEncoding(dest, val);
         dest.writeU1(e);
-        ae = Set.encoding[e].args[0];
+        ae = Set.ENCODING[e].args[0];
         switch (ae) {
         case AE_U1:
             dest.writeU1(((Integer) val).intValue());
@@ -567,8 +562,7 @@ public class InstructionType implements Bytecodes, Constants {
             i = ((Integer) argValues[0]).intValue();
             i2 = ((Integer) argValues[1]).intValue();
             if ((i <= 255) &&
-                (Byte.MIN_VALUE <= i2) && (i2 <= Byte.MAX_VALUE))
-            {
+                (Byte.MIN_VALUE <= i2) && (i2 <= Byte.MAX_VALUE)) {
                 return 3;
             } else {
                 return 6;
@@ -641,41 +635,41 @@ public class InstructionType implements Bytecodes, Constants {
                     return SIPUSH;
                 } else {
                     twice = false;
-                    idx = dest.addIfNew(CONSTANT_Integer, cnst);
+                    idx = dest.addIfNew(CONSTANT_INTEGER, cnst);
                     // don't return
                 }
             }
         } else if (cnst instanceof String) {
             twice = false;
-            idx = dest.addIfNew(CONSTANT_String, cnst);
+            idx = dest.addIfNew(CONSTANT_STRING, cnst);
             // don't return
         } else if (cnst instanceof Long) {
-            if (implicit[AE_I_L0].equals(cnst)) {
+            if (IMPLICIT[AE_I_L0].equals(cnst)) {
                 return LCONST_0;
-            } else if (implicit[AE_I_L1].equals(cnst)) {
+            } else if (IMPLICIT[AE_I_L1].equals(cnst)) {
                 return LCONST_1;
             } else {
                 twice = true;
-                idx = dest.addIfNew(CONSTANT_Long, cnst);
+                idx = dest.addIfNew(CONSTANT_LONG, cnst);
                 // don't return
             }
         } else if (cnst instanceof Float) {
-            if (implicit[AE_I_F0].equals(cnst)) {
+            if (IMPLICIT[AE_I_F0].equals(cnst)) {
                 return FCONST_0;
-            } else if (implicit[AE_I_F1].equals(cnst)) {
+            } else if (IMPLICIT[AE_I_F1].equals(cnst)) {
                 return FCONST_1;
             } else {
                 twice = false;
-                idx = dest.addIfNew(CONSTANT_Float, cnst);
+                idx = dest.addIfNew(CONSTANT_FLOAT, cnst);
             }
         } else if (cnst instanceof Double) {
-            if (implicit[AE_I_D0].equals(cnst)) {
+            if (IMPLICIT[AE_I_D0].equals(cnst)) {
                 return DCONST_0;
-            } else if (implicit[AE_I_D1].equals(cnst)) {
+            } else if (IMPLICIT[AE_I_D1].equals(cnst)) {
                 return DCONST_1;
             } else {
                 twice = true;
-                idx = dest.addIfNew(CONSTANT_Double, cnst);
+                idx = dest.addIfNew(CONSTANT_DOUBLE, cnst);
                 // don't return;
             }
         } else {

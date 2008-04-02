@@ -50,4 +50,9 @@ class NameAndType {
         nt = (NameAndType) obj;
         return name.equals(nt.name) && descriptor.equals(nt.descriptor);
     }
+    
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }
