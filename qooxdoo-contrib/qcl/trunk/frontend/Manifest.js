@@ -18,5 +18,5 @@
   "namespace" : "qcl",
   
   "version" : "trunk",
-  "qooxdoo-versions": ["0.7.1","0.7.2-pre"]
+  "qooxdoo-versions": ["0.7"]
 }
