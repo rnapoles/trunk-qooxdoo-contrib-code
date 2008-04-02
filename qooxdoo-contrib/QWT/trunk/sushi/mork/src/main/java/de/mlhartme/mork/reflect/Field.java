@@ -92,8 +92,7 @@ public class Field extends Function implements Bytecodes {
     public static Field create(java.lang.reflect.Field fieldInit) {
         try {
             return new Field(fieldInit);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
@@ -194,9 +193,7 @@ public class Field extends Function implements Bytecodes {
      * @param  out    target to write to
      * @param  field  Java Field to be written
      */
-    public static void write(ObjectOutput out, java.lang.reflect.Field field)
-        throws IOException
-    {
+    public static void write(ObjectOutput out, java.lang.reflect.Field field) throws IOException {
         if (field == null) {
             ClassRef.write(out, null);
         } else {

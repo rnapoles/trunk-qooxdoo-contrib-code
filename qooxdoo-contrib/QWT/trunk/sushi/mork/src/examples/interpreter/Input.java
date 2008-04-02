@@ -29,6 +29,7 @@ public class Input extends Statement {
         var = ref.getVar();
     }
 
+    @Override
     public void execute() {
         try {
             BufferedReader input;

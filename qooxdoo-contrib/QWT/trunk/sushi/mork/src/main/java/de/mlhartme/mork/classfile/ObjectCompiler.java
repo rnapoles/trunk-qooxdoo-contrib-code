@@ -183,7 +183,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
         Object comp;
         ClassRef compTypeRef;
         int nonNulls;
-        int INSTRS_PER_ELEMENT = 4;
+        int instrPerElement = 4;
         int oldSize;
         int used;
         int localLimit;
@@ -206,10 +206,10 @@ public class ObjectCompiler implements Bytecodes, Constants {
             }
         }
 
-        maxLen = 2 + nonNulls * INSTRS_PER_ELEMENT;
+        maxLen = 2 + nonNulls * instrPerElement;
         if (limit < maxLen) {
             pushMethod(Arrays.getArrayClass(compType));
-            if (1 + nonNulls * INSTRS_PER_ELEMENT > MAX_INSTRUCTIONS) {
+            if (1 + nonNulls * instrPerElement > MAX_INSTRUCTIONS) {
                 throw new IllegalStateException("array size ...");
             }
             nonCharArray(compType, ar, MAX_INSTRUCTIONS);
@@ -229,7 +229,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
                 limit -= 2;
 
                 oldSize = dest.getSize();
-                localLimit = limit - 1 - nonNulls * INSTRS_PER_ELEMENT;
+                localLimit = limit - 1 - nonNulls * instrPerElement;
                 run(compType, comp, localLimit);
                 used = dest.getSize() - oldSize;
                 if (used > localLimit) {
@@ -258,25 +258,25 @@ public class ObjectCompiler implements Bytecodes, Constants {
     // to 3 bytes. So 16k is a save bet.
     private static final int CHUNK = 16384;
 
-    private static final MethodRef getChars = MethodRef.meth(
+    private static final MethodRef GET_CHARS = MethodRef.meth(
         ClassRef.STRING, ClassRef.VOID, "getChars",
         ClassRef.INT, ClassRef.INT, new ClassRef("char", 1), ClassRef.INT);
 
     // expects array reference on operand stack; returns with this
     // reference on the operand stack
     private void charArray(char[] vals, int limit) {
-        int i, len;
+        int len;
         char c;
         int left, right;
         String str;
-        int INSTRS_PER_CHUNK = 6;
+        int instrsPerChunk = 6;
         int maxLen;
         int used;
 
         left = 0;
         len = vals.length;
         // len/CHUNK + 1 is conservative because len % CHUNK may be 0
-        maxLen = 3 + (len / CHUNK + 1) * INSTRS_PER_CHUNK + 1;
+        maxLen = 3 + (len / CHUNK + 1) * instrsPerChunk + 1;
         if (limit < maxLen) {
             pushMethod(char.class);
             if (limit < maxLen) {
@@ -305,7 +305,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
                     dest.emit(LDC, used);
                     dest.emit(ALOAD, buffer);
                     dest.emit(LDC, left);
-                    dest.emit(INVOKEVIRTUAL, getChars);
+                    dest.emit(INVOKEVIRTUAL, GET_CHARS);
                     left = right;
                 } else {
                     // empty chunk, don't save it

@@ -55,9 +55,7 @@ public class Definition {
     /**
      * @param constructor  Internal or Selection
      */
-    public Definition(boolean main, Grammar grm, int symbol, String name, Object constructor)
-        throws GenericException
-    {
+    public Definition(boolean main, Grammar grm, int symbol, String name, Object constructor) throws GenericException {
         Internal var;
         Type type;
         Selection sel;
@@ -118,9 +116,7 @@ public class Definition {
     /**
      * @param args  list of Arguments
      */
-    public void translate(Ag semantics, Transport transport, Grammar grammar)
-        throws GenericException
-    {
+    public void translate(Ag semantics, Transport transport, Grammar grammar) throws GenericException {
         Selection selection;
         Function fn;
         int prod, alt, maxAlt;
@@ -159,9 +155,7 @@ public class Definition {
         }
     }
 
-    private static AttributionBuffer createAB(
-        Attribute result, int prod, int ofs, Function fn, List argAttrs)
-    {
+    private static AttributionBuffer createAB(Attribute result, int prod, int ofs, Function fn, List argAttrs) {
         AttributionBuffer ab;
         int i;
 
@@ -172,9 +166,7 @@ public class Definition {
         return ab;
     }
 
-    private void translateArguments(Transport transport, Ag semantics, List args)
-        throws GenericException
-    {
+    private void translateArguments(Transport transport, Ag semantics, List args) throws GenericException {
         List sorted;
         int i;
         int max;

@@ -283,9 +283,7 @@ public class XmlScanner implements Symbols, Scanner {
         insertDefaults(buffer.getPosition(), attributes);
     }
 
-    private void insertData(Position position, Attribute[] attributes, String name, String value)
-        throws IllegalToken
-    {
+    private void insertData(Position position, Attribute[] attributes, String name, String value) throws IllegalToken {
         int i;
 
         for (i = 0; i < attributes.length; i++) {
@@ -301,9 +299,8 @@ public class XmlScanner implements Symbols, Scanner {
         }
         throw new IllegalToken(position, "undefined attribute: " + name);
     }
-    private void insertDefaults(Position pos, Attribute[] attributes)
-        throws IllegalToken
-    {
+
+    private void insertDefaults(Position pos, Attribute[] attributes) throws IllegalToken {
         int i;
 
         for (i = 0; i < attributes.length; i++) {

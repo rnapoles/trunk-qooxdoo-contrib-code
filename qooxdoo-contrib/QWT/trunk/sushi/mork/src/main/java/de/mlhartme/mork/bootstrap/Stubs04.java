@@ -28,9 +28,7 @@ import de.mlhartme.mork.util.GenericException;
  * Helper functions referred by bootstrap mappers.
  */
 public class Stubs04 {
-    public static Syntax loadGrammar(String fileName)
-        throws GenericException, IllegalLiteral
-    {
+    public static Syntax loadGrammar(String fileName) throws GenericException, IllegalLiteral {
         return Loader.loadGrammar(BuiltIn.parseString(fileName));
     }
 

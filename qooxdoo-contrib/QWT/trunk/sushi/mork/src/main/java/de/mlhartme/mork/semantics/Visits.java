@@ -36,10 +36,7 @@ public class Visits {
     /** Attributions or Integer objects. */
     private final Object[] visits;
 
-    public static Visits forEDP(
-        int prod, Relation edp, Ag sems, List[][] as, Layout layout)
-        throws GenericException
-    {
+    public static Visits forEDP(int prod, Relation edp, Ag sems, List[][] as, Layout layout) throws GenericException {
         RelationIterator iter;
         AttributeOccurrence left;
         AttributeOccurrence right;

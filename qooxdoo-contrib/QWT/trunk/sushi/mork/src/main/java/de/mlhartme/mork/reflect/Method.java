@@ -105,8 +105,7 @@ public class Method extends Function implements Bytecodes {
     public static Method create(java.lang.reflect.Method meth) {
         try {
             return new Method(meth);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
@@ -257,8 +256,7 @@ public class Method extends Function implements Bytecodes {
      * @return  Java Method read
      */
     public static java.lang.reflect.Method read(ObjectInput in)
-        throws ClassNotFoundException, NoSuchMethodException, IOException
-    {
+            throws ClassNotFoundException, NoSuchMethodException, IOException {
         Class cl;
         Class[] types;
         String name;

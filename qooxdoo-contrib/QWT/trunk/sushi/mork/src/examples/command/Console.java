@@ -60,7 +60,7 @@ public class Console extends JDialog implements ActionListener {
         pane.add(new JScrollPane(area));
 
         pack();
-        setSize(300,300);
+        setSize(300, 300);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -88,9 +88,9 @@ public class Console extends JDialog implements ActionListener {
      */
     private static Thread createRunner(
         final String cmd, final JTextArea dest,
-        final JDialog dialog, final JButton okButton)
-    {
+        final JDialog dialog, final JButton okButton) {
         return new Thread() {
+            @Override
             public void run() {
                 Process p;
                 StringBuffer exit;
@@ -131,6 +131,7 @@ public class Console extends JDialog implements ActionListener {
 
     private static Thread createLogger(final InputStream src, final JTextArea dest) {
         return new Thread() {
+            @Override
             public void run() {
                 int len;
                 byte[] buffer;

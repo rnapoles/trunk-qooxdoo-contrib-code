@@ -120,9 +120,7 @@ public class Identity extends Function {
      * Reads this Function.
      * @param   in  source to read from
      */
-    private void readObject(ObjectInputStream in)
-        throws ClassNotFoundException, NoSuchMethodException, IOException
-    {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, NoSuchMethodException, IOException {
         result = ClassRef.read(in);
         arg = ClassRef.read(in);
         name = in.readUTF();

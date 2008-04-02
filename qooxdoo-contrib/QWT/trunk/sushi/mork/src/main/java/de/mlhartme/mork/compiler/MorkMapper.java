@@ -157,9 +157,7 @@ public class MorkMapper extends Mapper {
         }
         tmp = fn.getExceptionTypes();
         for (int i = 0; i < tmp.length; i++) {
-            if (!(RuntimeException.class.isAssignableFrom(tmp[i])
-                       || Error.class.isAssignableFrom(tmp[i])))
-            {
+            if (!(RuntimeException.class.isAssignableFrom(tmp[i]) || Error.class.isAssignableFrom(tmp[i]))) {
                 throw new GenericException("mapper method must not throw checked exception: " +
                                                tmp[i]);
             } else {

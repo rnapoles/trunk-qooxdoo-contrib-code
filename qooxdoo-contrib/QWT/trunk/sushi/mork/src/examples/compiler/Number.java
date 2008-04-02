@@ -19,7 +19,7 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class Number extends Expression {
     private int num;
@@ -34,14 +34,17 @@ public class Number extends Expression {
         this.num = num;
     }
 
+    @Override
     public Type getType() {
         return Int.TYPE;
     }
 
+    @Override
     public String toString() {
         return "" + num;
     }
 
+    @Override
     public void translate(Code code) {
         code.emit(LDC, num);
     }

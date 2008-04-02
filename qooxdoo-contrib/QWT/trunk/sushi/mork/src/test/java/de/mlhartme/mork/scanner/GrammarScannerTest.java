@@ -141,14 +141,12 @@ public class GrammarScannerTest extends TestCase {
     }
 
     private static RegExpr any() {
-        return new Range((char) 0,(char) 65535);
+        return new Range((char) 0, (char) 65535);
     }
 
     private static final int EOF = 2;
 
-    private void scan(String what, int terminal, String text)
-        throws IOException
-    {
+    private void scan(String what, int terminal, String text) throws IOException {
         int currentTerminal;
 
         currentTerminal = scanner.eat(0);
@@ -182,8 +180,6 @@ public class GrammarScannerTest extends TestCase {
     private static void resolveConflicts(FA fa, RegExpr[] token) {
         int[] prios;
         int i;
-        int max;
-        Label label;
 
         prios = new int[token.length];
         for (i = 0; i < prios.length; i++) {
@@ -206,18 +202,18 @@ public class GrammarScannerTest extends TestCase {
     private static RegExpr createIdentifier() {
         RegExpr first, follow;
 
-        first = new Choice(new Range('A','Z'), new Range('a','z'));
-        follow = new Choice(new Choice(new Range('A','Z'), new Range('a','z')),
-                            new Range('0','9'));
+        first = new Choice(new Range('A', 'Z'), new Range('a', 'z'));
+        follow = new Choice(new Choice(new Range('A', 'Z'), new Range('a', 'z')),
+                            new Range('0', '9'));
         return new Sequence(first, new Loop(follow));
     }
 
     private static RegExpr createString() {
-        RegExpr a,b,c;
+        RegExpr a, b, c;
 
         a = new Range('"');
         b = new Range('"');
-        c = new Loop(new Choice(new Range((char) 0,(char) ('"'-1)),
+        c = new Loop(new Choice(new Range((char) 0, (char) ('"'-1)),
                                      new Range((char) ('"' + 1), (char) -1)));
         c = new Sequence(a, c);
         c = new Sequence(c, b);
@@ -230,7 +226,7 @@ public class GrammarScannerTest extends TestCase {
 
         a = keyword("//");
         b = new Loop(new Range(' ', (char) 0x7f));
-        c = new Sequence(a,b);
+        c = new Sequence(a, b);
         c = new Sequence(c, new Range('\n'));
         return c;
     }

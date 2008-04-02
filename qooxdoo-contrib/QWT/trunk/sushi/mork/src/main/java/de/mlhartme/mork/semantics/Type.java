@@ -73,6 +73,11 @@ public class Type {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return type.hashCode();
+    }
+    
     public Type option() {
         if (card >= OPTION) {
             return this;

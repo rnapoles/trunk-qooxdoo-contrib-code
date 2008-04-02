@@ -19,22 +19,21 @@
 
 package de.mlhartme.mork.semantics;
 
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.Relation;
-import de.mlhartme.mork.util.RelationIterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import de.mlhartme.mork.util.GenericException;
+import de.mlhartme.mork.util.Relation;
+import de.mlhartme.mork.util.RelationIterator;
+
 /**
  * Helper class for OagBuilder
  */
 public class Partition {
-    public static List[] createA(Set synthesized, Set inherited, Relation ids_x)
-        throws GenericException
-    {
+    public static List[] createA(Set synthesized, Set inherited, Relation idsX) throws GenericException {
         Relation closure;
         List done;
         List partitions;
@@ -43,7 +42,7 @@ public class Partition {
         int initialSize;
 
         closure = new Relation();
-        closure.addAll(ids_x);
+        closure.addAll(idsX);
 
         partitions = new ArrayList();
         done = new ArrayList();

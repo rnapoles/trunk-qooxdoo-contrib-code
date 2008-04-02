@@ -60,4 +60,9 @@ public class AttributeOccurrence {
             return false;
         }
     }
+    
+    @Override
+    public int hashCode() {
+        return ofs;
+    }
 }

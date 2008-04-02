@@ -19,7 +19,7 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class Unary extends Expression {
     private Type type;
@@ -32,10 +32,12 @@ public class Unary extends Expression {
         this.type = body.getType().getUnaryType(op);
     }
 
+    @Override
     public Type getType() {
         return type;
     }
 
+    @Override
     public void translate(Code code) {
         body.translate(code);
         body.getType().translateUnary(op, code);

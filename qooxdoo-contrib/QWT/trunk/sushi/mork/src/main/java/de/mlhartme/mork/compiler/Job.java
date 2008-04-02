@@ -50,9 +50,7 @@ public class Job {
         this(null, false, srcName);
     }
 
-    public Job(String outputPathName, boolean listing, String srcName)
-        throws GenericException
-    {
+    public Job(String outputPathName, boolean listing, String srcName) throws GenericException {
         String baseName;
 
         if (outputPathName == null) {
@@ -91,6 +89,11 @@ public class Job {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return source.hashCode();
+    }
+    
     private static boolean eq(File a, File b) {
         if (a != null) {
             return a.equals(b);

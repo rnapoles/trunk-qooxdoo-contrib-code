@@ -25,7 +25,7 @@ public class Binary extends Expression {
     private Expression left;
     private Expression right;
 
-    public static final int[][] ops = {
+    public static final int[][] OPS = {
         { NONE, INT, STR },  // add
         { NONE, INT, NONE }, // sub
         { NONE, INT, NONE }, // mul
@@ -45,13 +45,11 @@ public class Binary extends Expression {
         { NONE, BOOL, BOOL }  // GE
     };
 
-    public Binary(Expression left, int op, Expression right)
-        throws SemanticError
-    {
+    public Binary(Expression left, int op, Expression right) throws SemanticError {
         this.op = op;
         this.left = left;
         this.right = right;
-        this.type = ops[op][left.getType()];
+        this.type = OPS[op][left.getType()];
 
         if (type == NONE) {
             throw new SemanticError("type missmatch");
@@ -61,10 +59,12 @@ public class Binary extends Expression {
         }
     }
 
+    @Override
     public int getType() {
         return type;
     }
 
+    @Override
     public Object eval() {
         switch (type) {
         case BOOL:

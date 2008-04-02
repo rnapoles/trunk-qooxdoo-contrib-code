@@ -19,7 +19,7 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class Assign extends Statement {
     private LValue left;
@@ -33,6 +33,7 @@ public class Assign extends Statement {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         expr.translate(dest);
         left.translateAssign(dest);

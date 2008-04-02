@@ -40,9 +40,7 @@ public class BuiltIn {
     private static int ofs;
     private static int len;
 
-    public static char parseChar(String textInit)
-        throws IllegalLiteral
-    {
+    public static char parseChar(String textInit) throws IllegalLiteral {
         char result;
 
         text = textInit;
@@ -57,16 +55,12 @@ public class BuiltIn {
                 }
             }
             throw new IllegalLiteral("illegal character literal: " + textInit);
-        }
-        finally {
+        } finally {
             text = null;
         }
     }
 
-    public static String parseString(String textInit)
-        throws IllegalLiteral
-    {
-        char c;
+    public static String parseString(String textInit) throws IllegalLiteral {
         StringBuilder result;
 
         try {
@@ -83,8 +77,7 @@ public class BuiltIn {
                 throw new IllegalLiteral("illegal string literal: " + textInit);
             }
             return result.toString();
-        }
-        finally {
+        } finally {
             text = null;
         }
     }

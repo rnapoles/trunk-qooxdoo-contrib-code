@@ -35,9 +35,8 @@ import java.util.List;
  */
 
 public class StringArrayList implements Serializable {
-    /** The amount by which the capacity of data is increased when
-        necessary. */
-    private static int GROW = 256;
+    /** The amount by which the capacity of data is increased when necessary. */
+    private static final int GROW = 256;
 
     /** Storage for elements. May contain null, even at indexes < size. */
     private String[] data;
@@ -117,7 +116,9 @@ public class StringArrayList implements Serializable {
         int i;
 
         for (i = 0; i < size; i++) {
-            if (data[i].equals(str)) return i;
+            if (data[i].equals(str)) {
+                return i;
+            }
         }
         return -1;
     }

@@ -52,9 +52,7 @@ public class Path {
      * @param targets   list of Definitions
      */
     public static void translate(Syntax syntax,
-              Definition source, int move, IntBitSet stopper, List targets, int modifier)
-        throws GenericException
-    {
+              Definition source, int move, IntBitSet stopper, List targets, int modifier) throws GenericException {
         translate(syntax, modifier, source, targets,
                   new int[] { move }, new IntBitSet[] { new IntBitSet(stopper) });
     }
@@ -62,9 +60,7 @@ public class Path {
     /**
      * Creates a path with no steps
      */
-    public static void translate(Syntax syntax, Definition source, Definition target)
-        throws GenericException
-    {
+    public static void translate(Syntax syntax, Definition source, Definition target) throws GenericException {
         List targets;
         IntBitSet stopper;
 
@@ -79,9 +75,7 @@ public class Path {
      * Creates a path with 1+ steps
      */
     public static void translate(Syntax syntax,
-            Definition source, int[] moves, int[] symbols, Definition target, int modifier)
-        throws GenericException
-    {
+            Definition source, int[] moves, int[] symbols, Definition target, int modifier) throws GenericException {
         IntBitSet[] stoppers;
         List targets;
         int i;
@@ -107,9 +101,7 @@ public class Path {
      * The method actually doing the work
      */
     private static void translate(Syntax syntax,
-            int modifier, Definition source, List targets, int[] moves, IntBitSet[] stoppers)
-        throws GenericException
-    {
+            int modifier, Definition source, List targets, int[] moves, IntBitSet[] stoppers) throws GenericException {
         Path path;
         int count;
 
@@ -264,8 +256,7 @@ public class Path {
     //----------------------------
 
     private static void transport(Grammar grammar, Attribute seed, int move, IntBitSet rawBorder,
-                                  IntBitSet targetSymbols, List resultBuffers)
-    {
+                                  IntBitSet targetSymbols, List resultBuffers) {
         CopyBuffer commulated;
         IntBitSet border;
         boolean down;
@@ -321,11 +312,9 @@ public class Path {
     }
 
     private static void createSplitted(CopyBuffer orig, Class cls, Occurrence occ,
-                                       Attribute origDest, List resultBuffers)
-    {
+                                       Attribute origDest, List resultBuffers) {
         int seq;
         CopyBuffer tmp;
-        int max;
         CopyBuffer buffer;
         Attribute attr;
         Type type;

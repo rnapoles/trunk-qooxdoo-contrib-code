@@ -19,7 +19,8 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
+
 import de.mlhartme.mork.semantics.BuiltIn;
 import de.mlhartme.mork.semantics.IllegalLiteral;
 
@@ -30,10 +31,12 @@ public class StringLiteral extends Expression {
         this.str = BuiltIn.parseString(str);
     }
 
+    @Override
     public Type getType() {
         return Str.TYPE;
     }
 
+    @Override
     public void translate(Code dest) {
         dest.emit(LDC, str);
     }

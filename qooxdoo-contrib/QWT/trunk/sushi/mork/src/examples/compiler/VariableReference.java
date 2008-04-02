@@ -19,12 +19,11 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 /**
  * Local variable reference.
  */
-
 public class VariableReference extends LValue {
     private Variable var;
     private int store;  // store opcode
@@ -44,13 +43,17 @@ public class VariableReference extends LValue {
         }
     }
 
+    @Override
     public Type getType() {
         return var.getType();
     }
 
+    @Override
     public void translateAssign(Code dest) {
         dest.emit(store, var.getAddress());
     }
+
+    @Override
     public void translate(Code dest) {
         dest.emit(load, var.getAddress());
     }

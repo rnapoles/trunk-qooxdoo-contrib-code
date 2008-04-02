@@ -41,7 +41,7 @@ public class Attribution implements Serializable {
     private final int[] argsOfs;
     private final int[] argsAttr;
 
-    private final transient Object args[];
+    private final transient Object[] args;
 
     /**
      * Nonterminal attribution.

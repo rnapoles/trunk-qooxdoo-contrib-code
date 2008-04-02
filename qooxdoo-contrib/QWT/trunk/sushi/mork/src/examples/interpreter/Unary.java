@@ -24,7 +24,7 @@ public class Unary extends Expression {
     private int op;
     private Expression body;
 
-    public static final int[][] ops = {
+    public static final int[][] OPS = {
         { NONE, INT, NONE },  // add   <=
         { NONE, INT, NONE },  // sub   <=
         { NONE, NONE, NONE }, // mul
@@ -47,21 +47,21 @@ public class Unary extends Expression {
         { NONE, NONE, NONE }
     };
 
-    public Unary(int opInit, Expression bodyInit)
-        throws SemanticError
-    {
+    public Unary(int opInit, Expression bodyInit) throws SemanticError {
         op = opInit;
         body = bodyInit;
-        type = ops[op][body.getType()];
+        type = OPS[op][body.getType()];
         if (type == NONE) {
             throw new SemanticError("type missmatch");
         }
     }
 
+    @Override
     public int getType() {
         return type;
     }
 
+    @Override
     public Object eval() {
         switch (op) {
         case ADD:

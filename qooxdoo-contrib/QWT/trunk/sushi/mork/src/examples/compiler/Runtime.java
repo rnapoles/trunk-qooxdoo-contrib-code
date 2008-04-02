@@ -28,18 +28,17 @@ import java.io.IOException;
  */
 
 public class Runtime {
-    private static final BufferedReader
-        input = new BufferedReader(new InputStreamReader(System.in));
+    private static final BufferedReader INPUT = new BufferedReader(new InputStreamReader(System.in));
 
     public static int inputInt() throws IOException {
         String str;
 
-        str = input.readLine();
+        str = INPUT.readLine();
         return Integer.parseInt(str);
     }
 
     public static String inputString() throws IOException {
-        return input.readLine();
+        return INPUT.readLine();
     }
 
     public static void printInt(int a) {

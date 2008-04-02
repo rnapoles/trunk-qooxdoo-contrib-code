@@ -19,9 +19,9 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.ClassRef;
-import de.mlhartme.mork.classfile.Code;
-import de.mlhartme.mork.classfile.MethodRef;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
 
 public class Input extends Statement {
     private LValue left;
@@ -49,6 +49,7 @@ public class Input extends Statement {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         dest.emit(INVOKESTATIC, inputMethod);
         left.translateAssign(dest);

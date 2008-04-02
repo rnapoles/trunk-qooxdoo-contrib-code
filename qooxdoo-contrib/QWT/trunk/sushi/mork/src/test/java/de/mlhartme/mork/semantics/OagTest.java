@@ -176,9 +176,7 @@ public class OagTest extends TestCase {
         return sems;
     }
 
-    public static void addCalls(
-        Ag sems, List attrs, Grammar grm, int prod, String[][] prodCalls)
-    {
+    public static void addCalls(Ag sems, List attrs, Grammar grm, int prod, String[][] prodCalls) {
         int i;
         int j;
         AttributionBuffer ab;
@@ -226,9 +224,7 @@ public class OagTest extends TestCase {
         return attrs;
     }
 
-    public static AttributeOccurrence getOccurrence(
-        List attrs, Grammar grm, String occurrence, int prod)
-    {
+    public static AttributeOccurrence getOccurrence(List attrs, Grammar grm, String occurrence, int prod) {
         Object[] tmp;
         Attribute attr;
 

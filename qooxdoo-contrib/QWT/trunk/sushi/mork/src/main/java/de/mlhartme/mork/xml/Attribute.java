@@ -54,9 +54,7 @@ public class Attribute {
         return (defaultMode == IMPLIED);
     }
 
-    public String setDefault(Position pos, String supplied)
-        throws IllegalToken
-    {
+    public String setDefault(Position pos, String supplied) throws IllegalToken {
         switch (defaultMode) {
             case REQUIRED:
                 if (supplied == null) {
@@ -82,11 +80,9 @@ public class Attribute {
         }
     }
 
-    public Attribute(String elementName,
-                     String attributeName,
+    public Attribute(String elementName, String attributeName,
                      String defaultValue, StringArrayList symbolTable, Object type, int defaultMode)
-        throws GenericException
-    {
+        throws GenericException {
         String tmp;
 
         this.attributeName = attributeName;

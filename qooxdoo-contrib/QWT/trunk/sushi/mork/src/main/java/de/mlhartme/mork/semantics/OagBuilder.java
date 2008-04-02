@@ -51,9 +51,7 @@ public class OagBuilder {
 
     //--------
 
-    public static Visits[] run(Ag ag, Layout layout, boolean verbose)
-        throws GenericException
-    {
+    public static Visits[] run(Ag ag, Layout layout, boolean verbose) throws GenericException {
         OagBuilder builder;
         Relation[] dp;
         Relation[] idp;
@@ -315,12 +313,12 @@ public class OagBuilder {
 
         ds = new Relation[ids.length];
         for (i = 0; i < ds.length; i++) {
-            ds[i] = createDS_x(ids[i], a[i]);
+            ds[i] = createDSx(ids[i], a[i]);
         }
         return ds;
     }
 
-    private Relation createDS_x(Relation ids, List[] a) {
+    private Relation createDSx(Relation ids, List[] a) {
         Relation ds;
         int i;
         List leftList;
@@ -352,30 +350,30 @@ public class OagBuilder {
 
         eds = new Relation[dp.length];
         for (i = 0; i < eds.length; i++) {
-            eds[i] = createEDP_x(i, dp[i], ds);
+            eds[i] = createEDPx(i, dp[i], ds);
         }
         return eds;
     }
 
-    private Relation createEDP_x(int p, Relation dp, Relation[] ds) {
-        Relation eds_p;
+    private Relation createEDPx(int p, Relation dp, Relation[] ds) {
+        Relation edsP;
         int ofs;
         int maxOfs;
         int symbol;
         RelationIterator iter;
 
-        eds_p = new Relation();
-        eds_p.addAll(dp);
+        edsP = new Relation();
+        edsP.addAll(dp);
         maxOfs = semantics.getGrammar().getLength(p);
         for (ofs = 0; ofs <= maxOfs; ofs++) {
             symbol = semantics.getGrammar().getSymbol(p, ofs);
             iter = ds[symbol].iterate();
             while (iter.step()) {
-                eds_p.add(new AttributeOccurrence((Attribute) iter.left(), ofs - 1),
+                edsP.add(new AttributeOccurrence((Attribute) iter.left(), ofs - 1),
                           new AttributeOccurrence((Attribute) iter.right(), ofs - 1));
             }
         }
-        return eds_p;
+        return edsP;
     }
 
     public Visits[] createVisits(Relation[] edp, List[][] as) throws GenericException {

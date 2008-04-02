@@ -51,7 +51,7 @@ public class Frontend extends JDialog implements ActionListener {
 
         setTitle(title);
         container = new JPanel();
-        container.setLayout(new BorderLayout(5,5));
+        container.setLayout(new BorderLayout(5, 5));
 
         container.add(BorderLayout.NORTH, new JLabel(desc, SwingConstants.CENTER));
 

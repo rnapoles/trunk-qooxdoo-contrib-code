@@ -54,8 +54,7 @@ public class FABuilder extends Action {
      */
     public static FABuilder run(
         Rule[] rules, IntBitSet terminals, StringArrayList symbolTable, PrintStream verbose)
-        throws GenericException
-    {
+            throws GenericException {
         String str;
         FA alt;
         int i;

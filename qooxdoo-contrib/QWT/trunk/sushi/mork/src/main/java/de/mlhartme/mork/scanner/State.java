@@ -95,7 +95,7 @@ public class State {
         }
     }
 
-    private void CHECK_TRANSITION(int transition) {
+    private void checkTransition(int transition) {
         if ((transition >= used) || (transition < 0)) {
             throw new IllegalArgumentException();
         }
@@ -161,12 +161,12 @@ public class State {
     }
 
     public int getEnd(int transition) {
-        CHECK_TRANSITION(transition);
+        checkTransition(transition);
         return ends[transition];
     }
 
     public Object getInput(int transition) {
-        CHECK_TRANSITION(transition);
+        checkTransition(transition);
         return inputs[transition];
     }
 

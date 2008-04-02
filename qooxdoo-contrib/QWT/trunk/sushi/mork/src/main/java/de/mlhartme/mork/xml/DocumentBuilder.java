@@ -84,7 +84,8 @@ public class DocumentBuilder {
     public static DocumentBuilder create(PrintStream log, Parser parser) throws IOException {
         GrammarScanner scanner;
 
-        throw new RuntimeException("TODO");/*
+        throw new RuntimeException("TODO"); 
+        /*
         scanner = (GrammarScanner) parser.getScanner();
         return
          new DocumentBuilder(parser.getTable(), scanner.getTable(), scanner.getEofSymbol(), log);*/
@@ -107,7 +108,8 @@ public class DocumentBuilder {
     public Parser createParser() {
         PEScanner scanner;
 
-        throw new RuntimeException("TODO");/*
+        throw new RuntimeException("TODO");
+        /*
         scanner = new PEScanner(this, scannerTable, eofSymbol, false);
          return new Parser(parserTable, scanner);*/
     }
@@ -119,8 +121,7 @@ public class DocumentBuilder {
     public void defineEntity(
         String name, String entityValue, Position entityValuePosition,
         URL systemLiteral, URL baseUrl, boolean generalEntity)
-        throws IOException
-    {
+            throws IOException {
         Object replacement;
 
         if (entityValue != null) {
@@ -139,8 +140,7 @@ public class DocumentBuilder {
 
     private Object internalReplacement(
         String entityValue, Position entityValuePosition, URL baseUrl, boolean generalEntity)
-        throws IOException
-    {
+            throws IOException {
         String literalStr;
         Object replacement;
         Position pos;
@@ -158,9 +158,7 @@ public class DocumentBuilder {
         return replacement;
     }
 
-    private Buffer externalReplacement(URL systemLiteral, boolean generalEntity)
-        throws IOException
-    {
+    private Buffer externalReplacement(URL systemLiteral, boolean generalEntity) throws IOException {
         Buffer replacement;
 
         if (log != null) {

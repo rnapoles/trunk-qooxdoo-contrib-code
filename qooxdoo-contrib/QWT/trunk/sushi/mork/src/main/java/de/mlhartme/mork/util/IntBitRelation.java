@@ -86,12 +86,12 @@ public class IntBitRelation {
      * @param  right   relation to add.
      */
     public void addAll(IntBitRelation right) {
-        int i,max;
+        int i, max;
 
         max = right.line.length;
         for (i = 0; i < max; i++) {
             if (right.line[i] != null) {
-                add(i,right.line[i]);
+                add(i, right.line[i]);
             }
         }
     }
@@ -128,10 +128,9 @@ public class IntBitRelation {
      * @param left  left relation
      * @param right right relation
      */
-    public void composeLeftLeftInv(IntBitRelation left, IntBitRelation right)
-    {
-        int i,a,b;
-        IntBitSet li,ri;
+    public void composeLeftLeftInv(IntBitRelation left, IntBitRelation right) {
+        int i, a, b;
+        IntBitSet li, ri;
 
         for (i = 0; i < line.length; i++) {
             li = left.line[i];
@@ -153,7 +152,7 @@ public class IntBitRelation {
      * @param  right right relation.
      */
     public void composeRightLeft(IntBitRelation left, IntBitRelation right) {
-        int i,ele;
+        int i, ele;
         IntBitSet li;
 
         for (i = 0; i < left.line.length; i++) {
@@ -183,7 +182,9 @@ public class IntBitRelation {
             return false;
         }
         rel = (IntBitRelation) obj;
-        if (line.length != rel.line.length) return false;
+        if (line.length != rel.line.length) {
+            return false;
+        }
         for (i = 0; i < line.length; i++) {
             if ((line[i] != null) && (rel.line[i] != null)) {
                 if (!line[i].equals(rel.line[i])) {
@@ -196,6 +197,11 @@ public class IntBitRelation {
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return line.length;
     }
 
     /**

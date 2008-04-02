@@ -19,13 +19,13 @@
 
 package de.mlhartme.mork.semantics;
 
+import java.io.PrintStream;
+import java.io.Serializable;
+
 import de.mlhartme.mork.parser.Parser;
 import de.mlhartme.mork.parser.ParserTable;
 import de.mlhartme.mork.parser.TreeBuilder;
-import de.mlhartme.mork.scanner.Position;
 import de.mlhartme.mork.scanner.Scanner;
-import java.io.PrintStream;
-import java.io.Serializable;
 
 /**
  * Ordered attribute grammar.

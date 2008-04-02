@@ -19,7 +19,7 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class Binary extends Expression {
     private Type type;
@@ -27,9 +27,7 @@ public class Binary extends Expression {
     private Expression left;
     private Expression right;
 
-    public static Expression createRightOptional(Expression left, int op, Expression right)
-        throws SemanticError
-    {
+    public static Expression createRightOptional(Expression left, int op, Expression right) throws SemanticError {
         if (right == null) {
             return left;
         } else {
@@ -37,9 +35,7 @@ public class Binary extends Expression {
         }
     }
 
-    public static Expression createLeftOptional(Expression left, int op, Expression right)
-        throws SemanticError
-    {
+    public static Expression createLeftOptional(Expression left, int op, Expression right) throws SemanticError {
         if (left == null) {
             return right;
         } else {
@@ -54,10 +50,12 @@ public class Binary extends Expression {
         type = left.getType().getBinaryType(op, right.getType());
     }
 
+    @Override
     public Type getType() {
         return type;
     }
 
+    @Override
     public void translate(Code code) {
         left.translate(code);
         right.translate(code);

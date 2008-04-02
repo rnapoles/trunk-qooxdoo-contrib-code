@@ -19,14 +19,13 @@
 
 package de.mlhartme.mork.xml;
 
-import de.mlhartme.mork.scanner.GrammarScanner;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
-import de.mlhartme.mork.scanner.GrammarScannerFactory;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
+
+import de.mlhartme.mork.scanner.GrammarScanner;
+import de.mlhartme.mork.scanner.GrammarScannerFactory;
+import de.mlhartme.mork.scanner.Position;
+import de.mlhartme.mork.scanner.Scanner;
 
 /**
  * Wraps a GrammarScanner to recognize PEReferences. Used internally by the DocumentBuilder.
@@ -61,7 +60,8 @@ public class PEScanner implements Symbols, Scanner {
     }
 
     public void open(Position position, Reader src) throws IOException {
-        throw new RuntimeException("TODO");/*
+        throw new RuntimeException("TODO");
+        /*
         this.scanner = null; // new GrammarScanner(table, eofSymbol);
          this.scanner.open(position, src);*/
     }
@@ -92,7 +92,6 @@ public class PEScanner implements Symbols, Scanner {
         int terminal;
         String name;
         Object replacement;
-        URL url;
         Position pos;
 
         while (true) {
@@ -140,7 +139,8 @@ public class PEScanner implements Symbols, Scanner {
         pos = new Position();
         scanner.getPosition(pos);  // TODO: wrong position
         remaining = scanner.getRemainingInput();
-        throw new RuntimeException("TODO");/*
+        throw new RuntimeException("TODO");
+        /*
         scanner.close();
         scanner = new GrammarScanner(table, eofSymbol);
          scanner.open(pos, new StringReader(replacement + remaining));*/

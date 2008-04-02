@@ -107,9 +107,7 @@ public class Grammar extends GrammarCore {
     /**
      * @param usedSymbols are always considered reachable
      */
-    public void check(int startSym, IntBitSet usedSymbols, List<String> symbolTable)
-        throws GenericException
-    {
+    public void check(int startSym, IntBitSet usedSymbols, List<String> symbolTable) throws GenericException {
         IntBitSet all, tmp;
 
         // check for unproductive symbols
@@ -276,7 +274,7 @@ public class Grammar extends GrammarCore {
      */
     public void addTerminable(IntBitSet result) {
         int max;
-        int i,p;
+        int p;
         IntBitSet finished;  // processed Productions
         IntBitSet[] rightSet;
         boolean progress;
@@ -466,9 +464,7 @@ public class Grammar extends GrammarCore {
         }
         for (ofs = 0; ofs < prod1.length; ofs++) {
             if (prod1[ofs] != prod2[ofs]) {
-                if (!((prod1[ofs] == prod1[0])
-                          && (prod2[ofs] == prod2[0])))
-                {
+                if (!((prod1[ofs] == prod1[0]) && (prod2[ofs] == prod2[0]))) {
                     return false;
                 }
             }
@@ -624,8 +620,8 @@ public class Grammar extends GrammarCore {
     /** compute the relation "left can directly end with right" */
     public void addEndsRelation(IntBitSet removeable, IntBitRelation result) {
         int count;
-        int left,right;
-        int i,j,max;
+        int left, right;
+        int i, j, max;
 
         count = getProductionCount();
         for (i = 0; i < count; i++) {
@@ -633,8 +629,10 @@ public class Grammar extends GrammarCore {
             max = getLength(i);
             for (j = max - 1; j >= 0; j--) {
                 right = getRight(i, j);
-                result.add(left,right);
-                if (!removeable.contains(right)) break;
+                result.add(left, right);
+                if (!removeable.contains(right)) {
+                    break;
+                }
             }
         }
     }
@@ -656,7 +654,7 @@ public class Grammar extends GrammarCore {
                 left = getRight(p, i);
                 for (j = i + 1; j < length; j++) {
                     right = getRight(p, j);
-                    result.add(left,right);
+                    result.add(left, right);
                     if (!removeable.contains(right)) {
                         break;
                     }
@@ -666,8 +664,7 @@ public class Grammar extends GrammarCore {
     }
 
     /** compute the relation "left can directly start with right" */
-    public void addStartsRelation(IntBitSet removeable, IntBitRelation result)
-    {
+    public void addStartsRelation(IntBitSet removeable, IntBitRelation result) {
         int max;
         int i;
         int j;

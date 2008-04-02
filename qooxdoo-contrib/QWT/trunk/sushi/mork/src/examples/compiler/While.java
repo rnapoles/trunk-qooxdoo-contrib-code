@@ -19,15 +19,13 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class While extends Statement {
     private Expression test;
     private Statement body;
 
-    public While(Expression test, Statement body)
-        throws SemanticError
-    {
+    public While(Expression test, Statement body) throws SemanticError {
         this.test = test;
         this.body = body;
         if (test.getType() != Int.TYPE) {
@@ -35,6 +33,7 @@ public class While extends Statement {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         int startLabel;
         int testLabel;

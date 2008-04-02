@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 public class Pages {
-    private final int PAGE_SIZE;
+    private final int pageSize;
 
     private Reader src;
 
@@ -43,9 +43,9 @@ public class Pages {
         if (pageSize == 0) {
             throw new IllegalArgumentException();
         }
-        this.PAGE_SIZE = pageSize;
+        this.pageSize = pageSize;
         this.pages = new char[2][];
-        this.pages[0] = new char[PAGE_SIZE];
+        this.pages[0] = new char[pageSize];
         this.newPage = null;
     }
 
@@ -64,7 +64,7 @@ public class Pages {
         if (no == lastNo) {
             return lastUsed;
         } else {
-            return PAGE_SIZE;
+            return pageSize;
         }
     }
 
@@ -74,14 +74,14 @@ public class Pages {
     }
 
     public int getSize() {
-        return PAGE_SIZE * lastNo + lastUsed;
+        return pageSize * lastNo + lastUsed;
     }
 
     /**
      * @return -1  eof   0: current page grown   1: new page
      */
     public int read(int pageNo, int pageUsed) throws IOException {
-        if (pageUsed < PAGE_SIZE) {
+        if (pageUsed < pageSize) {
             // assert pageNo == lastNo
             if (!fill()) {
                 return -1;
@@ -105,10 +105,10 @@ public class Pages {
     private boolean fill() throws IOException {
         int count;
 
-        if (lastUsed == PAGE_SIZE) {
+        if (lastUsed == pageSize) {
             throw new IllegalStateException();
         }
-        count = src.read(pages[lastNo], lastUsed, PAGE_SIZE - lastUsed);
+        count = src.read(pages[lastNo], lastUsed, pageSize - lastUsed);
         if (count <= 0) {
             if (count == 0) {
                 throw new RuntimeException();
@@ -124,7 +124,7 @@ public class Pages {
         int count;
         char[][] newPages;
 
-        if (lastUsed != PAGE_SIZE) {
+        if (lastUsed != pageSize) {
             throw new IllegalStateException();
         }
         lastNo++;
@@ -134,13 +134,13 @@ public class Pages {
             pages = newPages;
         }
         if (newPage == null) {
-            p = new char[PAGE_SIZE];
+            p = new char[pageSize];
         } else {
             p = newPage;
             newPage = null;
         }
         pages[lastNo] = p;
-        count = src.read(p, 0, PAGE_SIZE);
+        count = src.read(p, 0, pageSize);
         if (count <= 0) {
             if (count == 0) {
                 throw new RuntimeException();
@@ -172,11 +172,11 @@ public class Pages {
         for (p = 0; p <= lastNo; p++) {
             pg = get(p);
             buf.append("\n  page " + p + ":");
-            for (i = 0; i < PAGE_SIZE; i++) {
+            for (i = 0; i < pageSize; i++) {
                 buf.append(pg[i]);
             }
             buf.append("\n    ");
-            for (i = 0; i < PAGE_SIZE; i++) {
+            for (i = 0; i < pageSize; i++) {
                 buf.append(" " + ((int) pg[i]));
             }
         }

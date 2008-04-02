@@ -103,6 +103,11 @@ public class State {
             return false;
         }
     }
+    
+    @Override
+    public int hashCode() {
+        return core.size();
+    }
 
     //-----------------------------------------------------------------
 
@@ -316,9 +321,7 @@ public class State {
         pos = reduces.iterator();
         while (pos.hasNext()) {
             r = (Reduce) pos.next();
-            for (term = r.lookahead.first(); term != -1;
-                 term = r.lookahead.next(term))
-            {
+            for (term = r.lookahead.first(); term != -1; term = r.lookahead.next(term)) {
                 result.addReduce(id, term, r.production, conflicts);
             }
         }

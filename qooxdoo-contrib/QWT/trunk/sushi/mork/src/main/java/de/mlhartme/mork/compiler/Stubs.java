@@ -75,16 +75,12 @@ public class Stubs {
     }
 
     // TODO: as long as the context has no type I need this helper
-    public static Syntax loadGrammar(Object mork, String fileName)
-        throws GenericException, IllegalLiteral
-    {
+    public static Syntax loadGrammar(Object mork, String fileName) throws GenericException, IllegalLiteral {
         return ((Mork) mork).loadGrammar(fileName);
     }
 
     // TODO: as long as the context has no type I need this helper
-    public static Syntax loadDtd(Object mork, String fileName)
-        throws GenericException, IllegalLiteral
-    {
+    public static Syntax loadDtd(Object mork, String fileName) throws GenericException, IllegalLiteral {
         return ((Mork) mork).loadDtd(fileName);
     }
 
@@ -95,9 +91,7 @@ public class Stubs {
         return (char) num;
     }
 
-    public static int symbolRef(StringArrayList table, String name)
-        throws GenericException
-    {
+    public static int symbolRef(StringArrayList table, String name) throws GenericException {
         int result;
 
         result = table.indexOf(name);
@@ -129,8 +123,7 @@ public class Stubs {
 
     public static Definition createDefinition(
         Grammar grm, StringArrayList symbolTable, int symbol, String name, Object constr)
-        throws GenericException
-    {
+        throws GenericException {
         boolean main;
         IntBitSet terminals;
 
@@ -183,10 +176,8 @@ public class Stubs {
     }
 
     public static Object localPath(Specification spec, Definition srcDef, int symbol, String name)
-        throws GenericException
-    {
+        throws GenericException {
         Definition user;
-        Path path;
 
         user = spec.lookup(symbol, name);
         if (user == null) {
@@ -196,9 +187,7 @@ public class Stubs {
         return null; // TODO
     }
 
-    public static Object normalPath(Definition source, Specification spec, Object[] steps)
-        throws GenericException
-    {
+    public static Object normalPath(Definition source, Specification spec, Object[] steps) throws GenericException {
         int[] moves;
         int[] symbols;
         int i;
@@ -206,7 +195,6 @@ public class Stubs {
         Definition target;
         String[] symbolsOrAttributes;
         StringArrayList symbolTable;
-        Path path;
 
         symbolTable = spec.getSyntax().getGrammar().getSymbolTable();
         moves = getMoves(steps);
@@ -234,9 +222,7 @@ public class Stubs {
         return null; // TODO
     }
 
-    public static Selection copyFunctionRef(Library lib, String name)
-        throws GenericException
-    {
+    public static Selection copyFunctionRef(Library lib, String name) throws GenericException {
         Selection sel;
         Class type;
         Identity id;
@@ -294,8 +280,7 @@ public class Stubs {
 
     public static GrammarSyntax grammarSyntax(StringArrayList symbolTable, Rule[] parserRules,
             boolean prio, IntBitSet whiteSymbols, Rule[] explScannerRules, List rawKeywords)
-        throws GenericException
-    {
+        throws GenericException {
         return new GrammarSyntax(symbolTable, parserRules, prio,
                 whiteSymbols, scannerRules(rawKeywords, explScannerRules));
     }
@@ -340,9 +325,7 @@ public class Stubs {
         return all;
     }
 
-    public static String attributeName(
-        StringArrayList symbolTable, int recordSymbol, String attributeName)
-    {
+    public static String attributeName(StringArrayList symbolTable, int recordSymbol, String attributeName) {
         if (attributeName != null) {
             return attributeName;
         } else {

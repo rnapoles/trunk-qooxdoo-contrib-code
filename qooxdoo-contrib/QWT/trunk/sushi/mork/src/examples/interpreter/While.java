@@ -23,9 +23,7 @@ public class While extends Statement {
     private Expression test;
     private Statement body;
 
-    public While(Expression testInit, Statement bodyInit)
-        throws SemanticError
-    {
+    public While(Expression testInit, Statement bodyInit) throws SemanticError {
         test = testInit;
         body = bodyInit;
         if (test.getType() != Expression.BOOL) {
@@ -33,6 +31,7 @@ public class While extends Statement {
         }
     }
 
+    @Override
     public void execute() {
         boolean ok;
 

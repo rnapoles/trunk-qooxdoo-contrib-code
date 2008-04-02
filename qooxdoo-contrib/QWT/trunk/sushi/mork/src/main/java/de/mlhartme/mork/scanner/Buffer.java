@@ -67,17 +67,17 @@ public class Buffer {
     /** Size of the current page. pageData[pageOfs] is valid if pageOfs < pageUsed */
     private int pageUsed;
 
-    private final int PAGE_SIZE;
+    private final int pageSize;
 
     public Buffer() {
         this(8192);
     }
 
     public Buffer(int pageSize) {
-        PAGE_SIZE = pageSize;
         if (pageSize == 0) {
             throw new IllegalArgumentException();
         }
+        this.pageSize = pageSize;
         this.pages = new Pages(pageSize);
     }
 
@@ -99,7 +99,7 @@ public class Buffer {
         if (mark > pages.getSize()) {
             throw new IllegalStateException();
         }
-        if (mark > PAGE_SIZE) {
+        if (mark > pageSize) {
             throw new IllegalStateException();
         }
         if (mark > getOfs()) {
@@ -114,7 +114,7 @@ public class Buffer {
     }
 
     public int getOfs() {
-        return pageNo * PAGE_SIZE + pageOfs;
+        return pageNo * pageSize + pageOfs;
     }
 
     /**
@@ -130,11 +130,11 @@ public class Buffer {
             // current position
             pageOfs = ofs;
         } else {
-            pageNo = ofs / PAGE_SIZE;
-            pageOfs = ofs % PAGE_SIZE;
+            pageNo = ofs / pageSize;
+            pageOfs = ofs % pageSize;
             if (pageOfs == 0 && pages.getLastNo() == pageNo) {
                 // this happens if getOfs() was called after the last character of a page was read
-                pageOfs += PAGE_SIZE;
+                pageOfs += pageSize;
                 pageNo--;
             }
             pageData = pages.get(pageNo);
@@ -197,9 +197,9 @@ public class Buffer {
             position.update(pageData, mark, pageOfs);
             mark = pageOfs;
         } else {
-            position.update(pages.get(0), mark, PAGE_SIZE);
+            position.update(pages.get(0), mark, pageSize);
             for (i = 1; i < pageNo; i++) {
-                position.update(pages.get(i), 0, PAGE_SIZE);
+                position.update(pages.get(i), 0, pageSize);
             }
             pages.remove(pageNo);
             pageNo = 0;
@@ -222,12 +222,12 @@ public class Buffer {
         } else {
             char[] buffer;
 
-            buffer = new char[pageNo * PAGE_SIZE + pageOfs - mark];
-            count = PAGE_SIZE - mark;
+            buffer = new char[pageNo * pageSize + pageOfs - mark];
+            count = pageSize - mark;
             System.arraycopy(pages.get(0), mark, buffer, 0, count);
             for (i = 1; i < pageNo; i++) {
-                System.arraycopy(pages.get(i), 0, buffer, count, PAGE_SIZE);
-                count += PAGE_SIZE;
+                System.arraycopy(pages.get(i), 0, buffer, count, pageSize);
+                count += pageSize;
             }
             System.arraycopy(pages.get(pageNo), 0, buffer, count, pageOfs);
             return new String(buffer);

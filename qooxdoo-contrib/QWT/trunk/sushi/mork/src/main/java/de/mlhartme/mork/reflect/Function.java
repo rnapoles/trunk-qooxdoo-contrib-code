@@ -83,14 +83,10 @@ public abstract class Function implements Serializable {
     public Object invokeN(Object a) throws InvocationTargetException {
         return invoke(new Object[] { a });
     }
-    public Object invokeN(Object a, Object b)
-        throws InvocationTargetException
-    {
+    public Object invokeN(Object a, Object b) throws InvocationTargetException {
         return invoke(new Object[] { a, b });
     }
-    public Object invokeN(Object a, Object b, Object c)
-        throws InvocationTargetException
-    {
+    public Object invokeN(Object a, Object b, Object c) throws InvocationTargetException {
         return invoke(new Object[] { a, b, c });
     }
 

@@ -89,13 +89,10 @@ public class Constructor extends Function implements Bytecodes {
         constr = constrInit;
     }
 
-    public static Constructor create
-        (  java.lang.reflect.Constructor constr  )
-    {
+    public static Constructor create(java.lang.reflect.Constructor constr) {
         try {
             return new Constructor(constr);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
@@ -174,9 +171,7 @@ public class Constructor extends Function implements Bytecodes {
      * Reads this Constructor.
      * @param  in  source to read from
      */
-    private void readObject(ObjectInputStream in)
-        throws IOException, ClassNotFoundException, NoSuchMethodException
-    {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException, NoSuchMethodException {
         constr = read(in);
     }
 
@@ -188,10 +183,7 @@ public class Constructor extends Function implements Bytecodes {
      * @param  out     target to write to
      * @param  constr  the Java Construtor to be written
      */
-    public static void write
-        (  ObjectOutput out, java.lang.reflect.Constructor constr  )
-        throws IOException
-    {
+    public static void write(ObjectOutput out, java.lang.reflect.Constructor constr) throws IOException {
         Class cl;
 
         if (constr == null) {
@@ -208,9 +200,7 @@ public class Constructor extends Function implements Bytecodes {
      * @param   in  source to read from
      * @return  the Java Constructor read
      */
-    public static java.lang.reflect.Constructor read(ObjectInput in)
-        throws ClassNotFoundException, IOException, NoSuchMethodException
-    {
+    public static java.lang.reflect.Constructor read(ObjectInput in) throws ClassNotFoundException, IOException, NoSuchMethodException {
         Class cl;
         Class[] types;
 
@@ -226,7 +216,6 @@ public class Constructor extends Function implements Bytecodes {
     @Override
     public void translate(Code dest) {
         int max;
-        int ofs;
         int var;
         int[] vars;
         ClassRef type;

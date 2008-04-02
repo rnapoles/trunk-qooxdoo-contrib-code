@@ -19,16 +19,14 @@
 
 package compiler;
 
-import de.mlhartme.mork.classfile.Code;
+import org.qooxdoo.sushi.classfile.Code;
 
 public class If extends Statement {
     private Expression test;
     private Statement yes;
     private Statement no;
 
-    public If(Expression test, Statement yes, Statement no)
-        throws SemanticError
-    {
+    public If(Expression test, Statement yes, Statement no) throws SemanticError {
         if (test.getType() != Int.TYPE) {
             throw new SemanticError("int expression expected");
         }
@@ -41,6 +39,7 @@ public class If extends Statement {
         }
     }
 
+    @Override
     public void translate(Code dest) {
         int noLabel;
         int endLabel;

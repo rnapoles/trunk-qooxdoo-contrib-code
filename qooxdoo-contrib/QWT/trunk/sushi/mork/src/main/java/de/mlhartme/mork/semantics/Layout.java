@@ -55,7 +55,7 @@ public class Layout {
     }
 
     public int getLocationCount(int symbol) {
-        if (symbol < attrs.size() ) {
+        if (symbol < attrs.size()) {
             return ((List) attrs.get(symbol)).size();
         } else {
             return 0;

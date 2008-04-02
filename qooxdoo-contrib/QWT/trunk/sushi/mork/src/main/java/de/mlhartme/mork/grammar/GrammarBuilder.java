@@ -148,9 +148,7 @@ public class GrammarBuilder extends Action {
     //-----------------------------------------------------------------------
 
     /** helper symbols are added without gaps, starting with freeHelper. */
-    public static Grammar createGrammar(Rule[] rules, StringArrayList symbolTable)
-        throws GenericException
-    {
+    public static Grammar createGrammar(Rule[] rules, StringArrayList symbolTable) throws GenericException {
         int i;
         GrammarBuilder builder;
         Grammar tmp;

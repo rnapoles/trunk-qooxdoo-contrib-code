@@ -19,11 +19,10 @@
 
 package de.mlhartme.mork.compiler;
 
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.mapping.Mapper;
 import java.io.File;
 import java.io.IOException;
-import junit.framework.TestCase;
+
+import de.mlhartme.mork.mapping.Mapper;
 
 public class Benchmark {
     public static void main(String[] args) {
@@ -59,9 +58,7 @@ public class Benchmark {
         run(false, num, mapper, files);
     }
 
-    public static void run(boolean verbose, int count, Mapper mapper, String[] files)
-        throws IOException
-    {
+    public static void run(boolean verbose, int count, Mapper mapper, String[] files) throws IOException {
         int i;
         int j;
         Object[] result;
