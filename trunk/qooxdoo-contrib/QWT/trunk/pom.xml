@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
     <!-- TODO: http://jira.codehaus.org/browse/MCHECKSTYLE-42 proxy settings ignored -->
     <!--   use http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml -->
-    <checkstyle.xml>http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml</checkstyle.xml>
+    <checkstyle.xml>http://billy.devel.schlund.de/sites/qooxdoo/checkstyle.xml</checkstyle.xml>
   </properties>
 
   <organization>
@@ -170,6 +170,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 <fileset-config file-format-version="1.2.0" simple-config="true">
     <local-check-config name="qooxdoo" location="${checkstyle.xml}" type="remote" description="">
         <additional-data name="cache-file" value="true"/>
+        <additional-data name="cache-props-file-location" value="null_1207126772315_cache.properties"/>
+        <additional-data name="cache-file-location" value="null_1207126772315_cache.xml"/>
     </local-check-config>
     <fileset name="all" enabled="true" check-config-name="qooxdoo" local="true">
         <file-match-pattern match-pattern="." include-pattern="true"/>
