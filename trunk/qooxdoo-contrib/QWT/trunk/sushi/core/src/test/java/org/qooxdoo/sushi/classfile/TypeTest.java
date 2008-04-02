@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.classfile;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
@@ -27,5 +28,7 @@ public class TypeTest {
     @Test
     public void normal() {
         assertEquals("void", Type.PRIMITIVES[0].name);
+        assertSame(Void.class, Type.PRIMITIVES[0].wrapper);
+        assertSame(Void.TYPE, Type.PRIMITIVES[0].type);
     }
 }
