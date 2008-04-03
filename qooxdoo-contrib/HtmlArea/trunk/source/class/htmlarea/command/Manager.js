@@ -441,13 +441,28 @@ qx.Class.define("htmlarea.command.Manager",
          {
            this.__editorInstance._visualizeFocus();
 
-           var range = this.getCurrentRange();
+           /* this.__currentRange can be a wrong range!*/
+           var storedRange = this.getCurrentRange();
+           
+           /* in this case, get the range again (we lose the cursor position by doing that) */
+           var actualRange = this.__editorInstance.getRange();
 
-           if(range)
+           if(storedRange)
            {
-             range.pasteHTML(value);
-             range.collapse(false);
-             range.select();
+             /* Try to pasteHTML on the stored range */
+             try
+             {
+               storedRange.pasteHTML(value);
+               storedRange.collapse(false);
+               storedRange.select();
+             }
+             catch(e)
+             {
+               /* If this fails, use the range we read explicitly */
+               actualRange.pasteHTML(value);
+               actualRange.collapse(false);
+               actualRange.select();
+             }
            }
 
            ret = true;
