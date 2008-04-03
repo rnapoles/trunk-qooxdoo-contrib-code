@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests Fragment
+Bundle-SymbolicName: org.eclipse.wst.jsdt.qooxdoo.validation.tests
+Bundle-Version: 1.0.0
+Fragment-Host: org.eclipse.wst.jsdt.qooxdoo.validation;bundle-version="1.0.0"
+Require-Bundle: org.junit4,
+ abbot.swt,
+ de.mkempka.sammy,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors,
+ org.eclipse.jface.text,
+ org.eclipse.wst.jsdt.ui,
+ abbot.swt.eclipse,
+ de.mkempka.sammy.ide
