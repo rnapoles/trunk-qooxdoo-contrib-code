@@ -233,6 +233,21 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     },
 
     /**
+     * public API function to execute a method on the server.
+     * Can have a variable number of arguments.
+     * Actually exactly the same function as updateClient, but 
+     * doesn't expect any data response and added for the purpose
+     * of clearer code.
+     * 
+     * @type member
+     * @return {void}
+     */
+    executeOnServer : function()
+    {
+      this._updateClient.apply(this,arguments);
+    },
+
+    /**
      * private function doing the actual work of updating the widget
      * from the server
      *
