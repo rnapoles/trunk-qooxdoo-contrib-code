@@ -57,7 +57,7 @@ public class MemoryNode extends Node {
     
     /** Do not call - use create instead. */
     public MemoryNode(Context context, String path, Type type, byte[] data) {
-        super(context.io, FS);
+        super(context.io, FS, null);
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
@@ -69,11 +69,6 @@ public class MemoryNode extends Node {
 
     public Context getContext() {
         return context;
-    }
-    
-    @Override
-    public Node getBase() {
-        return null;
     }
     
     public Type getType() {

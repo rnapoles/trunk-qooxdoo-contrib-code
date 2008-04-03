@@ -127,7 +127,7 @@ public class SvnNode extends Node {
     private String comment;
     
     public SvnNode(IO io, SVNRepository repository, boolean directory, String path) {
-        super(io, FS);
+        super(io, FS, null);
         if (path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }
@@ -147,11 +147,6 @@ public class SvnNode extends Node {
     
     public SVNRepository getRepository() {
         return repository;
-    }
-    
-    @Override
-    public Node getBase() {
-        return null;
     }
     
     @Override

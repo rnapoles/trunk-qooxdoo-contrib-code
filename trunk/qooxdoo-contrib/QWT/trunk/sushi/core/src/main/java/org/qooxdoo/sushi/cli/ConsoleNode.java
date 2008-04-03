@@ -35,7 +35,7 @@ public class ConsoleNode extends Node {
     public static final Filesystem FS = new Filesystem("console:/", '/');
     
     public ConsoleNode(IO io) {
-        super(io, FS);
+        super(io, FS, null);
     }
 
     @Override
@@ -66,11 +66,6 @@ public class ConsoleNode extends Node {
     @Override
     public boolean exists() {
         return true;
-    }
-
-    @Override
-    public Node getBase() {
-        return null;
     }
 
     @Override

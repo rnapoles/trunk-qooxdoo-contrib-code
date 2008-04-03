@@ -52,7 +52,7 @@ public class SshNode extends Node {
     private final String slashPath;
     
     public SshNode(IO io, ChannelSftp channel, String path) {
-        super(io, FS);
+        super(io, FS, null);
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
@@ -76,11 +76,6 @@ public class SshNode extends Node {
         }
     }
 
-    @Override
-    public Node getBase() {
-        return null;
-    }
-    
     @Override
     public SshNode newInstance(String path) {
         return new SshNode(io, channel, path);
