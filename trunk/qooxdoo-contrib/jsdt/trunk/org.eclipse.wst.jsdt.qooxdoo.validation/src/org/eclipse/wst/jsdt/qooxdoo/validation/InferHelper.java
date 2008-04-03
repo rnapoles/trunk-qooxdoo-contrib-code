@@ -1,16 +1,3 @@
-/******************************************************************************
- * Deutsche Post Com GmbH
- * Tulpenfeld 9
- * 53113 Bonn
- * Germany
- *
- * (c) Copyright 2008 by Deutsche Post Com GmbH
- * ALL RIGHTS RESERVED
- *
- * -----------------------------------------------------------------------------
- *
- * $Id: InferHelpers.java,v 1.0 Feb 12, 2008 user Exp $
- ******************************************************************************/
 package org.eclipse.wst.jsdt.qooxdoo.validation;
 
 import org.eclipse.wst.jsdt.core.ast.IFunctionDeclaration;
@@ -35,8 +22,3 @@ public class InferHelper {
   }
   
 }
-
-/******************************************************************************
- * $Log: InferHelpers.java,v $
- *
- ******************************************************************************/
