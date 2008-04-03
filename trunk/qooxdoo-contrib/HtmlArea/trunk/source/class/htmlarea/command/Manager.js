@@ -126,7 +126,6 @@ qx.Class.define("htmlarea.command.Manager",
       {
         this.__currentRange = this.__editorInstance.getRange();
         this.__lastSelectionType = this.__editorInstance.__getSelection().type;
-        this.debug(this.__lastSelectionType)
       },
       "default" : function() {}
     }),
@@ -651,7 +650,6 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __setFontSize : function(value, commandObject)
      {
-     
        /* Current selection and range */
        var sel = this.__editorInstance.__getSelection();
 
@@ -689,7 +687,8 @@ qx.Class.define("htmlarea.command.Manager",
            tmp = element.getElementsByTagName(listTypes[i]);
            for (j=0; j<tmp.length; j++)
            {
-             if (tmp[j]) {
+             if (tmp[j])
+             {
                /* ... and add them to list */
                lists.push(tmp[j]);
              }
