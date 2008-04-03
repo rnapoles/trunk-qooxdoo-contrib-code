@@ -30,7 +30,7 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.MethodRef;
 
-import org.qooxdoo.sushi.classfile.Util;
+import org.qooxdoo.sushi.compiler.Util;
 import org.qooxdoo.sushi.reflect.Arrays;
 import org.qooxdoo.sushi.reflect.Function;
 

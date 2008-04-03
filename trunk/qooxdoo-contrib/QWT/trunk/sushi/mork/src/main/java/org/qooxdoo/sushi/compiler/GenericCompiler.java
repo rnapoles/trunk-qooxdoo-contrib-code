@@ -17,10 +17,14 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.classfile;
+package org.qooxdoo.sushi.compiler;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
 import org.qooxdoo.sushi.reflect.Field;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.reflect.Method;

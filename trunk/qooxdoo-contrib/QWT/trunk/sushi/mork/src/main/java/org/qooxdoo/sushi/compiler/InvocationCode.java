@@ -35,11 +35,8 @@ import org.qooxdoo.sushi.classfile.MethodDef;
 import org.qooxdoo.sushi.classfile.MethodRef;
 import org.qooxdoo.sushi.classfile.Output;
 import org.qooxdoo.sushi.classfile.attribute.Exceptions;
-import org.qooxdoo.sushi.util.IntArrayList;
-
-import org.qooxdoo.sushi.classfile.ObjectCompiler;
-import org.qooxdoo.sushi.classfile.Util;
 import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.util.IntArrayList;
 
 /**
  * Generates bytecode for invoke methods. Must not be saved without functions.

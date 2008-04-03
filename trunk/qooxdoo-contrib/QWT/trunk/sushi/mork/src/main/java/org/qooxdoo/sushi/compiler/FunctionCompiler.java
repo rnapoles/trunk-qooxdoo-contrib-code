@@ -29,7 +29,6 @@ import java.util.Map;
 import org.qooxdoo.sushi.classfile.Bytecodes;
 import org.qooxdoo.sushi.classfile.Code;
 
-import org.qooxdoo.sushi.classfile.CustomCompiler;
 import org.qooxdoo.sushi.reflect.Function;
 
 /**

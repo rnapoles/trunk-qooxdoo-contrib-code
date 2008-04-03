@@ -17,7 +17,9 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.classfile;
+package org.qooxdoo.sushi.compiler;
+
+import org.qooxdoo.sushi.classfile.Code;
 
 public abstract class CustomCompiler {
     public abstract boolean matches(Class type);
