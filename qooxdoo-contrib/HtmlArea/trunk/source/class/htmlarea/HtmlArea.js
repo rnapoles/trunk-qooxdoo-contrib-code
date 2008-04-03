@@ -2169,18 +2169,65 @@ qx.Class.define("htmlarea.HtmlArea",
     },
 
 
-
     /**
      * Inserts a hyperlink
      *
      * @type member
-     * @param url {String} url for the image to be inserted
+     * @param url {String} URL for the image to be inserted
      * @return {Boolean} Success of operation
      */
-    insertHyperLink : function(url)
+    insertHyperLink : qx.core.Variant.select("qx.client",
     {
-      return this.__commandManager.execute("inserthyperlink", url);
-    },
+
+      "mshtml" : function(url)
+      {
+        /* 
+         * Last selection was _not_ an image and current selection is empty:
+         * Insert URL as text with a link on it.
+         */
+        if
+        (
+          (this.__commandManager.__commandManager.__currentRange.text == "") &&
+          (this.__commandManager.__commandManager.__lastSelectionType != "Control")
+        )
+        {
+          return this.__commandManager.execute("inserthtml", '<a href="' + url + '">' + url + '</a> ');
+        }
+        else
+        {
+          /* Otherwise just execute command on selection */
+          return this.__commandManager.execute("inserthyperlink", url);
+        }
+      },
+
+      "default" : function(url)
+      {
+        var sel = this.__getSelection();
+        var rng = this.__createRange(sel);
+
+        /* 
+         * Selection does not contain content:
+         * Insert URL as text with a link on it.
+         */
+        if(sel.isCollapsed)
+        {
+          var textNode = document.createTextNode(url);
+          rng.insertNode(textNode);
+          rng.selectNode(textNode);
+
+          var retVal = this.__commandManager.execute("inserthyperlink", url);
+          sel.collapseToEnd();
+
+          return retVal;
+        }
+        else
+        {
+          /* Otherwise just execute command on selection */
+          return this.__commandManager.execute("inserthyperlink", url);
+        }
+      }
+
+    }), 
 
     /**
      * Alias for setBackgroundColor("transparent");
