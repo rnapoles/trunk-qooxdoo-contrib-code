@@ -418,7 +418,7 @@ if ( ! function_exists("json_encode")	)
 {
 	function json_encode( $string )
 	{
-		require_once ("JSON.phps");
+		require_once ("qcl/jsonrpc/JSON.phps");
 		$json = new JSON();
 		return $json->encode( $string );
 	}
@@ -431,7 +431,7 @@ if ( ! function_exists("json_decode")	)
 {
 	function json_decode( $string, $tranformToArray=false )
 	{
-		require_once ("JSON.phps");
+		require_once ("qcl/jsonrpc/JSON.phps");
 		$json = new JSON();
 		$var = $json->decode( $string );
 		if ( is_object( $var ) and $tranformToArray );
