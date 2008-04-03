@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.parser;
+package org.qooxdoo.sushi.parser;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.util.GenericException;
 
 public class PDA {
     /** start symbol */

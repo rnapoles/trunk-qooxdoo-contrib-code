@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.grammar;
+package org.qooxdoo.sushi.grammar;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 

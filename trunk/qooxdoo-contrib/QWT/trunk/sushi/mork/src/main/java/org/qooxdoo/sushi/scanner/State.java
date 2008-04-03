@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.Range;
 /**
  * State in a NFA. A state is a label and a sequence of transitions.
  */

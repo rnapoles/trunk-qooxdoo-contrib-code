@@ -17,23 +17,23 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.IllegalSymbols;
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.regexpr.Action;
-import de.mlhartme.mork.regexpr.Choice;
-import de.mlhartme.mork.regexpr.Loop;
-import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.regexpr.RegExpr;
-import de.mlhartme.mork.regexpr.Sequence;
-import de.mlhartme.mork.regexpr.Symbol;
-import de.mlhartme.mork.regexpr.Without;
+import org.qooxdoo.sushi.grammar.IllegalSymbols;
+import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.regexpr.Action;
+import org.qooxdoo.sushi.regexpr.Choice;
+import org.qooxdoo.sushi.regexpr.Loop;
+import org.qooxdoo.sushi.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.RegExpr;
+import org.qooxdoo.sushi.regexpr.Sequence;
+import org.qooxdoo.sushi.regexpr.Symbol;
+import org.qooxdoo.sushi.regexpr.Without;
 
 /** stores the result from visiting a node */
 

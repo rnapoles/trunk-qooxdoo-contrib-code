@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.reflect;
+package org.qooxdoo.sushi.reflect;
 
 import java.io.IOException;
 import java.io.ObjectInput;

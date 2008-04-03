@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,9 +25,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.Relation;
-import de.mlhartme.mork.util.RelationIterator;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.Relation;
+import org.qooxdoo.sushi.util.RelationIterator;
 
 /**
  * Helper class for OagBuilder

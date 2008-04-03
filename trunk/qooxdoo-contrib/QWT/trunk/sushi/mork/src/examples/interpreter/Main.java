@@ -19,7 +19,7 @@
 
 package interpreter;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 
 /** Command line invokation. */
 

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -26,15 +26,15 @@ import junit.framework.TestCase;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.regexpr.Choice;
-import de.mlhartme.mork.regexpr.Loop;
-import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.regexpr.RegExpr;
-import de.mlhartme.mork.regexpr.Sequence;
-import de.mlhartme.mork.regexpr.Without;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.regexpr.Choice;
+import org.qooxdoo.sushi.regexpr.Loop;
+import org.qooxdoo.sushi.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.RegExpr;
+import org.qooxdoo.sushi.regexpr.Sequence;
+import org.qooxdoo.sushi.regexpr.Without;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Test GrammarScanner.

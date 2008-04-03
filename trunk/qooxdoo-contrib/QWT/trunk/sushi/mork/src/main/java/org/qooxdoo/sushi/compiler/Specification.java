@@ -17,22 +17,22 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.mapping.Definition;
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.mapping.Path;
-import de.mlhartme.mork.mapping.Transport;
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.semantics.Ag;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Oag;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.mapping.Definition;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Path;
+import org.qooxdoo.sushi.mapping.Transport;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.semantics.Ag;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.Oag;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Specifies a mapper, thus, a Mapping object is a Mapper before translation.

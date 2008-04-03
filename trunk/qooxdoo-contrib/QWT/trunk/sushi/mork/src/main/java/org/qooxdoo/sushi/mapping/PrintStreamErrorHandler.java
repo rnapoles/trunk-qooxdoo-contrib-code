@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * ErrorHandler that prints messages to the PrintStream specified in the constructor.

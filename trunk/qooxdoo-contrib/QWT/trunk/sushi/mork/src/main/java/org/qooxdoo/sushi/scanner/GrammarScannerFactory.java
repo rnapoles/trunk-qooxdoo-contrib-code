@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import java.io.PrintStream;
 import java.io.Reader;
@@ -26,10 +26,10 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.parser.ParserTable;
+import org.qooxdoo.sushi.regexpr.Range;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * <p>An immutable FA. Instances are used for acual scanning. I would call

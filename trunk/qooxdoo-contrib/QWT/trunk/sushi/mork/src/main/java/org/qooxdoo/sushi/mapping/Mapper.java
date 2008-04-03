@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,10 +34,10 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.semantics.Node;
-import de.mlhartme.mork.semantics.Oag;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.semantics.Node;
+import org.qooxdoo.sushi.semantics.Oag;
 
 /**
  * Wraps a stream to add mapping functionality. Implements the

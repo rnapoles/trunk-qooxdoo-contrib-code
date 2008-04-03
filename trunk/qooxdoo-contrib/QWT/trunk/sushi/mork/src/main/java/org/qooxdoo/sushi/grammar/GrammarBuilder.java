@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.grammar;
+package org.qooxdoo.sushi.grammar;
 
-import de.mlhartme.mork.regexpr.Action;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.regexpr.Action;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * <p>Translate regular expressions to context free grammars.

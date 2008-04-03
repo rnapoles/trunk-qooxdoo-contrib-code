@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.util;
+package org.qooxdoo.sushi.util;
 
 /**
  * Exception with a type. Using this class avoids defining may exceptions

@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.IntArrayList;
 
-import de.mlhartme.mork.scanner.Position;
+import org.qooxdoo.sushi.scanner.Position;
 
 /**
  * Stores grammar token.

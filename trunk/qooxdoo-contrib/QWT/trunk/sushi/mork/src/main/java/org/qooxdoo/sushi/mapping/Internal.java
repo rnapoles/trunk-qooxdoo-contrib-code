@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Ag;
-import de.mlhartme.mork.semantics.NodeFactory;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.Ag;
+import org.qooxdoo.sushi.semantics.NodeFactory;
+import org.qooxdoo.sushi.semantics.Type;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Reference to internal constructor.

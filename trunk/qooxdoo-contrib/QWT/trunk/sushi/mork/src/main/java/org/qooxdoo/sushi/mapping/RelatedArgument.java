@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.semantics.Compare;
+import org.qooxdoo.sushi.semantics.Compare;
 import java.util.ArrayList;
 import java.util.List;
 

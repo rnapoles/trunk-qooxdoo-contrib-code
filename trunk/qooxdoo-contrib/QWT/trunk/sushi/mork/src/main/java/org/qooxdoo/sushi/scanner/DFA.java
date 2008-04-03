@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.Range;
 
 /** Create determinitic automatons. */
 

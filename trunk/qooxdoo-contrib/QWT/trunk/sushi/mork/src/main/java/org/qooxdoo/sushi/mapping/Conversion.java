@@ -17,20 +17,20 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.classfile.ClassRef;
 
-import de.mlhartme.mork.reflect.Composition;
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.reflect.Option;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.reflect.Composition;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.reflect.Option;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.Type;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Convert, wrap/unwrap, re-arrange.

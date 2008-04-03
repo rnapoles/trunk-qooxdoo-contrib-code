@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Compare;
-import de.mlhartme.mork.semantics.CopyBuffer;
-import de.mlhartme.mork.semantics.Ag;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.Compare;
+import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.Ag;
+import org.qooxdoo.sushi.semantics.Type;
+import org.qooxdoo.sushi.util.GenericException;
 import java.util.ArrayList;
 import java.util.List;
 

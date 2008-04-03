@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.Relation;
-import de.mlhartme.mork.util.RelationIterator;
-import de.mlhartme.mork.util.Util;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.Relation;
+import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.Util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

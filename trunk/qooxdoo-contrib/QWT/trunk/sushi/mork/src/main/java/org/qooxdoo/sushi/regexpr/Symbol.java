@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.regexpr;
+package org.qooxdoo.sushi.regexpr;
 
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Symbol constant for a regular expression.

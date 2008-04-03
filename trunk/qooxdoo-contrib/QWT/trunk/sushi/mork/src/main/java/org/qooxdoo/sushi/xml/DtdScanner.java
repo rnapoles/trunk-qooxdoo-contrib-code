@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.scanner.Scanner;
 import java.io.IOException;
 import java.io.Reader;
 

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.parser;
+package org.qooxdoo.sushi.parser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +31,8 @@ import java.util.TreeSet;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /** LR-PDAs are generated using these states */
 

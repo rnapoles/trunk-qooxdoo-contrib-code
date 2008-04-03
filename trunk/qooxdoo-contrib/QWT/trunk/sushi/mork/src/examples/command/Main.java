@@ -19,7 +19,7 @@
 
 package command;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 
 public class Main {
     public static void main(String[] args) {

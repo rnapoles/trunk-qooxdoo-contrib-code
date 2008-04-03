@@ -17,10 +17,10 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.parser;
+package org.qooxdoo.sushi.parser;
 
-import de.mlhartme.mork.scanner.Scanner;
-import de.mlhartme.mork.semantics.SemanticError; // TODO: ugly dependency
+import org.qooxdoo.sushi.scanner.Scanner;
+import org.qooxdoo.sushi.semantics.SemanticError; // TODO: ugly dependency
 import java.io.IOException;
 
 /**

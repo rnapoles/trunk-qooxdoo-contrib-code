@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
-import de.mlhartme.mork.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.Range;
 
 /**
  * Adds tranisitions to a specified state for all input not defined

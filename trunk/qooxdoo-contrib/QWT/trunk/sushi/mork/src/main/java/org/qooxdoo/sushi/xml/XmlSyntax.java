@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
 // TODO
 import java.util.ArrayList;
@@ -25,22 +25,22 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.compiler.Output;
-import de.mlhartme.mork.compiler.Syntax;
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.grammar.GrammarBuilder;
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.parser.Conflicts;
-import de.mlhartme.mork.parser.PDA;
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.regexpr.Choice;
-import de.mlhartme.mork.regexpr.RegExpr;
-import de.mlhartme.mork.regexpr.Sequence;
-import de.mlhartme.mork.regexpr.Symbol;
-import de.mlhartme.mork.scanner.Modes;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.compiler.Output;
+import org.qooxdoo.sushi.compiler.Syntax;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.grammar.GrammarBuilder;
+import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.parser.Conflicts;
+import org.qooxdoo.sushi.parser.PDA;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.parser.ParserTable;
+import org.qooxdoo.sushi.regexpr.Choice;
+import org.qooxdoo.sushi.regexpr.RegExpr;
+import org.qooxdoo.sushi.regexpr.Sequence;
+import org.qooxdoo.sushi.regexpr.Symbol;
+import org.qooxdoo.sushi.scanner.Modes;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Represents a DTD file. The translate method results in a Parser and an XmlScanner,

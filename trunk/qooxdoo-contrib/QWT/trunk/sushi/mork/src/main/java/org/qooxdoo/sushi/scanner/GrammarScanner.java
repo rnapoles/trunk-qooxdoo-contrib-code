@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import java.io.IOException;
 import java.io.Reader;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.util.GenericException;
 /**
  * A token stream, input for parsers. Adds filter functionality to
  * regular expressions.

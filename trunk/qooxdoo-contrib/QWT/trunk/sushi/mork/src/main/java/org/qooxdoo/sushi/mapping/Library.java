@@ -17,10 +17,10 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * A set of types.

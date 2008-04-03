@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
 import org.qooxdoo.sushi.classfile.Code;
 
-import de.mlhartme.mork.reflect.Function;
+import org.qooxdoo.sushi.reflect.Function;
 
 public abstract class CompiledFunctionBase extends Function {
     @Override

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.classfile;
+package org.qooxdoo.sushi.classfile;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import org.qooxdoo.sushi.classfile.Constants;
 import org.qooxdoo.sushi.classfile.MethodDef;
 import org.qooxdoo.sushi.classfile.MethodRef;
 
-import de.mlhartme.mork.reflect.Arrays;
+import org.qooxdoo.sushi.reflect.Arrays;
 
 /**
  * Turn object into bytecode to create the object. Serializes an object into a class.

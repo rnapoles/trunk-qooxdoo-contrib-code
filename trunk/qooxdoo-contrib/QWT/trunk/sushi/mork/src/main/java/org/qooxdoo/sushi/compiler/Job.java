@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.util.GenericException;
 import java.io.File;
 
 /**

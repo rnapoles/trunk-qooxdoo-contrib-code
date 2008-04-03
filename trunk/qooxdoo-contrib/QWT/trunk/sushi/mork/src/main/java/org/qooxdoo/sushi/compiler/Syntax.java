@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.util.GenericException;
 
 /** Scanner and parser specification. **/
 public abstract class Syntax {

@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
-import de.mlhartme.mork.mapping.Conversion;
-import de.mlhartme.mork.mapping.Definition;
-import de.mlhartme.mork.semantics.SemanticError;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.mapping.Conversion;
+import org.qooxdoo.sushi.mapping.Definition;
+import org.qooxdoo.sushi.semantics.SemanticError;
+import org.qooxdoo.sushi.util.GenericException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;

@@ -17,17 +17,17 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.AttributeOccurrence;
-import de.mlhartme.mork.semantics.AttributionBuffer;
-import de.mlhartme.mork.semantics.Ag;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.AttributeOccurrence;
+import org.qooxdoo.sushi.semantics.AttributionBuffer;
+import org.qooxdoo.sushi.semantics.Ag;
+import org.qooxdoo.sushi.semantics.Type;
+import org.qooxdoo.sushi.util.GenericException;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -17,10 +17,10 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.grammar;
+package org.qooxdoo.sushi.grammar;
 
-import de.mlhartme.mork.regexpr.RegExpr;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.regexpr.RegExpr;
+import org.qooxdoo.sushi.util.StringArrayList;
 import java.io.Serializable;
 
 /**

@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import org.qooxdoo.sushi.util.IntArrayList;
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.Range;
 
 /**
  * Minimization of a finite automaton. Requires a complete depterministic

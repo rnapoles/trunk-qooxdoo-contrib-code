@@ -16,7 +16,7 @@
      * Michael Hartmeier (mlhartme)
    
  ************************************************************************ */
-package de.mlhartme.mork.regexpr;
+package org.qooxdoo.sushi.regexpr;
 
 import java.io.Serializable;
 

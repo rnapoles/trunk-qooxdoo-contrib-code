@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.regexpr;
+package org.qooxdoo.sushi.regexpr;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +29,8 @@ import java.util.Map;
 import org.qooxdoo.sushi.classfile.Bytecodes;
 import org.qooxdoo.sushi.classfile.Code;
 
-import de.mlhartme.mork.classfile.CustomCompiler;
-import de.mlhartme.mork.reflect.Function;
+import org.qooxdoo.sushi.classfile.CustomCompiler;
+import org.qooxdoo.sushi.reflect.Function;
 
 /**
  * Generates classes derived from CompiledFunctionBase classes. Generates zero, one (or multiple

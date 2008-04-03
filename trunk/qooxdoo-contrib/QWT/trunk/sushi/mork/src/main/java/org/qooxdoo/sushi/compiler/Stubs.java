@@ -17,27 +17,27 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.grammar.IllegalSymbols;
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.mapping.Definition;
-import de.mlhartme.mork.mapping.Library;
-import de.mlhartme.mork.mapping.Path;
-import de.mlhartme.mork.reflect.Identity;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.regexpr.Range;
-import de.mlhartme.mork.regexpr.Sequence;
-import de.mlhartme.mork.semantics.BuiltIn;
-import de.mlhartme.mork.semantics.IllegalLiteral;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.grammar.IllegalSymbols;
+import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.mapping.Definition;
+import org.qooxdoo.sushi.mapping.Library;
+import org.qooxdoo.sushi.mapping.Path;
+import org.qooxdoo.sushi.reflect.Identity;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.regexpr.Range;
+import org.qooxdoo.sushi.regexpr.Sequence;
+import org.qooxdoo.sushi.semantics.BuiltIn;
+import org.qooxdoo.sushi.semantics.IllegalLiteral;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Helper functions referred by MappingMapper.map. These methods brigde gaps

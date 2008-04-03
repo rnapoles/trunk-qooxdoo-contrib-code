@@ -17,16 +17,16 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.CopyBuffer;
-import de.mlhartme.mork.semantics.State;
-import de.mlhartme.mork.semantics.Type;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.State;
+import org.qooxdoo.sushi.semantics.Type;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 public class CopyBufferCompareTest extends CompareBase {
     private Attribute a;

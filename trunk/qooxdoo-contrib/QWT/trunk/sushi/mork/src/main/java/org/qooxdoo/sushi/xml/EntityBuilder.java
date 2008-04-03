@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,11 +26,11 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.parser.TreeBuilder;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.parser.ParserTable;
+import org.qooxdoo.sushi.parser.TreeBuilder;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.scanner.Scanner;
 
 /**
  * Build buffer for a given entity, feeds grammar token obtained from

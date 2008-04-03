@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.reflect;
+package org.qooxdoo.sushi.reflect;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -26,7 +26,7 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.FieldRef;
 
-import de.mlhartme.mork.classfile.Util;
+import org.qooxdoo.sushi.classfile.Util;
 
 /**
  * I can't implement Option by feeding an Option-Value because I want to offer explicit definitions

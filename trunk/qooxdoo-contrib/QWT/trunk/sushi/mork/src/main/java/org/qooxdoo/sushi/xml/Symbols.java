@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
 /**
  * Symbols recognized by the Xml scanner. The constants here are taken from

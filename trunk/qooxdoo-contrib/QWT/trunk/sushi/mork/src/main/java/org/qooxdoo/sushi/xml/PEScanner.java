@@ -17,15 +17,15 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
 import java.io.IOException;
 import java.io.Reader;
 
-import de.mlhartme.mork.scanner.GrammarScanner;
-import de.mlhartme.mork.scanner.GrammarScannerFactory;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
+import org.qooxdoo.sushi.scanner.GrammarScanner;
+import org.qooxdoo.sushi.scanner.GrammarScannerFactory;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.scanner.Scanner;
 
 /**
  * Wraps a GrammarScanner to recognize PEReferences. Used internally by the DocumentBuilder.
