@@ -23,7 +23,7 @@ grm = "command.grm";
 
 import command:
     Command, Declarations, Line, Constant, Reference, Variable;
-import de.mlhartme.mork.semantics:
+import org.qooxdoo.sushi.semantics:
     BuiltIn;
 
 Command         => Command;

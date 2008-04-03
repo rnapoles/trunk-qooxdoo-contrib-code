@@ -176,7 +176,7 @@ TraditionalComment ::=
 ">
 <!ENTITY MainText "package command;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 
 public class Main {
     public static void main(String[] args) {
@@ -228,7 +228,7 @@ grm = &#34;command.grm&#34;;
 
 import command:
     Command, Declarations, Line, Constant, Reference, Variable;
-import de.mlhartme.mork.semantics:
+import org.qooxdoo.sushi.semantics:
     BuiltIn;
 
 Command         => Command;
@@ -350,13 +350,13 @@ public class Reference extends Expression {
     }
 }
 ">
-<!ENTITY frontFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/front.xml">
-<!ENTITY introductionFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/introduction.xml">
-<!ENTITY setupFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/setup.xml">
-<!ENTITY firststepsFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/firststeps.xml">
-<!ENTITY syntaxFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/syntax.xml">
-<!ENTITY mapperFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/mapper.xml">
-<!ENTITY compilationFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/compilation.xml">
-<!ENTITY usageFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/usage.xml">
-<!ENTITY sourcesFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/sources.xml">
-<!ENTITY backFile SYSTEM "file:/home/mlhartme/java/mork/doc/src/back.xml">
+<!ENTITY frontFile SYSTEM "file:/home/mhm/java/mork/doc/src/front.xml">
+<!ENTITY introductionFile SYSTEM "file:/home/mhm/java/mork/doc/src/introduction.xml">
+<!ENTITY setupFile SYSTEM "file:/home/mhm/java/mork/doc/src/setup.xml">
+<!ENTITY firststepsFile SYSTEM "file:/home/mhm/java/mork/doc/src/firststeps.xml">
+<!ENTITY syntaxFile SYSTEM "file:/home/mhm/java/mork/doc/src/syntax.xml">
+<!ENTITY mapperFile SYSTEM "file:/home/mhm/java/mork/doc/src/mapper.xml">
+<!ENTITY compilationFile SYSTEM "file:/home/mhm/java/mork/doc/src/compilation.xml">
+<!ENTITY usageFile SYSTEM "file:/home/mhm/java/mork/doc/src/usage.xml">
+<!ENTITY sourcesFile SYSTEM "file:/home/mhm/java/mork/doc/src/sources.xml">
+<!ENTITY backFile SYSTEM "file:/home/mhm/java/mork/doc/src/back.xml">
