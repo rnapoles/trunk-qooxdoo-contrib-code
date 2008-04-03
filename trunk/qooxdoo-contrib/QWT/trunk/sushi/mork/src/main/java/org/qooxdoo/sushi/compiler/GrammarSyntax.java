@@ -24,6 +24,8 @@ import org.qooxdoo.sushi.util.IntBitSet;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.grammar.GrammarBuilder;
 import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.parser.Conflicts;
 import org.qooxdoo.sushi.parser.PDA;
 import org.qooxdoo.sushi.parser.Parser;
@@ -31,8 +33,6 @@ import org.qooxdoo.sushi.parser.ParserTable;
 import org.qooxdoo.sushi.scanner.FABuilder;
 import org.qooxdoo.sushi.scanner.GrammarScannerFactory;
 import org.qooxdoo.sushi.scanner.Modes;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Grammar syntax specification. Represents a grammar syntax file with

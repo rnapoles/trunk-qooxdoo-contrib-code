@@ -25,12 +25,12 @@ import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.IllegalSymbols;
 import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.regexpr.Action;
 import org.qooxdoo.sushi.regexpr.Choice;
 import org.qooxdoo.sushi.regexpr.Range;
 import org.qooxdoo.sushi.regexpr.RegExpr;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /** stores the result from visiting a node */
 

@@ -33,7 +33,7 @@ import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.Output;
 
 import org.qooxdoo.sushi.mapping.Mapper;
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
 
 
 public class MapperCompiler implements Bytecodes {
@@ -176,7 +176,7 @@ public class MapperCompiler implements Bytecodes {
             new String[] { "data" }),
         new GenericCompiler(org.qooxdoo.sushi.util.IntArrayList.class,
             new String[] { "size", "data" }),
-        new GenericCompiler(org.qooxdoo.sushi.util.StringArrayList.class,
+        new GenericCompiler(org.qooxdoo.sushi.misc.StringArrayList.class,
             new String[] { "size", "data" }),
         new GenericCompiler(java.lang.Integer.class,
             new String[] {

@@ -19,7 +19,8 @@
 
 package org.qooxdoo.sushi.compiler;
 
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
+
 import java.io.File;
 import junit.framework.TestCase;
 

@@ -26,8 +26,8 @@ import java.util.List;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.parser.ParserTable;
-import org.qooxdoo.sushi.util.GenericException;
 
 public class Modes {
     public static void setNone(ParserTable table) throws GenericException {

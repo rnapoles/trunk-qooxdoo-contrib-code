@@ -30,6 +30,8 @@ import org.qooxdoo.sushi.compiler.Syntax;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.grammar.GrammarBuilder;
 import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.parser.Conflicts;
 import org.qooxdoo.sushi.parser.PDA;
 import org.qooxdoo.sushi.parser.Parser;
@@ -39,8 +41,6 @@ import org.qooxdoo.sushi.regexpr.RegExpr;
 import org.qooxdoo.sushi.regexpr.Sequence;
 import org.qooxdoo.sushi.regexpr.Symbol;
 import org.qooxdoo.sushi.scanner.Modes;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Represents a DTD file. The translate method results in a Parser and an XmlScanner,

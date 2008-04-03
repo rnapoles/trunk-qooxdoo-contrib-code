@@ -19,10 +19,10 @@
 
 package org.qooxdoo.sushi.xml;
 
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.scanner.Position;
 import org.qooxdoo.sushi.scanner.Scanner;
 import org.qooxdoo.sushi.scanner.ScannerFactory;
-import org.qooxdoo.sushi.util.StringArrayList;
 import java.io.IOException;
 import java.io.Reader;
 

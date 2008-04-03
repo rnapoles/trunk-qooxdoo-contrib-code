@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.mapping;
 
 import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.reflect.Selection;
 import org.qooxdoo.sushi.semantics.Attribute;
@@ -27,7 +28,6 @@ import org.qooxdoo.sushi.semantics.AttributeOccurrence;
 import org.qooxdoo.sushi.semantics.AttributionBuffer;
 import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Type;
-import org.qooxdoo.sushi.util.GenericException;
 import java.util.ArrayList;
 import java.util.List;
 

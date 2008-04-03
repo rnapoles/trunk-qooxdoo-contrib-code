@@ -20,8 +20,8 @@
 package org.qooxdoo.sushi.compiler;
 
 import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.parser.Parser;
-import org.qooxdoo.sushi.util.GenericException;
 
 /** Scanner and parser specification. **/
 public abstract class Syntax {

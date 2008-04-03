@@ -24,13 +24,13 @@ import java.util.List;
 
 import org.qooxdoo.sushi.classfile.ClassRef;
 
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Composition;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.reflect.Option;
 import org.qooxdoo.sushi.reflect.Selection;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.Type;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Convert, wrap/unwrap, re-arrange.

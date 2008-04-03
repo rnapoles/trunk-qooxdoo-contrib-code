@@ -20,10 +20,10 @@
 package org.qooxdoo.sushi.compiler;
 
 import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.semantics.BuiltIn;
 import org.qooxdoo.sushi.semantics.IllegalLiteral;
-import org.qooxdoo.sushi.util.GenericException;
 import org.qooxdoo.sushi.util.Util;
 import java.io.File;
 

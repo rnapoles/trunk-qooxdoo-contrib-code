@@ -19,8 +19,8 @@
 
 package org.qooxdoo.sushi.compiler;
 
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Function;
-import org.qooxdoo.sushi.util.GenericException;
 import java.util.Arrays;
 
 /**

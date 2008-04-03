@@ -21,8 +21,8 @@ package org.qooxdoo.sushi.parser;
 
 import junit.framework.TestCase;
 import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 
 /**
  ** Test that pda tables are generated without exceptions.

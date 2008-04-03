@@ -20,9 +20,9 @@
 package org.qooxdoo.sushi.semantics;
 
 import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.scanner.Position;
-import org.qooxdoo.sushi.util.StringArrayList;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;

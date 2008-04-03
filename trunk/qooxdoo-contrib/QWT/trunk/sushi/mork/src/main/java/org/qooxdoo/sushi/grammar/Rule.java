@@ -19,8 +19,8 @@
 
 package org.qooxdoo.sushi.grammar;
 
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.regexpr.RegExpr;
-import org.qooxdoo.sushi.util.StringArrayList;
 import java.io.Serializable;
 
 /**

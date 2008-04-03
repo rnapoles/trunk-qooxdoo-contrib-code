@@ -19,9 +19,9 @@
 
 package org.qooxdoo.sushi.grammar;
 
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.regexpr.Action;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * <p>Translate regular expressions to context free grammars.

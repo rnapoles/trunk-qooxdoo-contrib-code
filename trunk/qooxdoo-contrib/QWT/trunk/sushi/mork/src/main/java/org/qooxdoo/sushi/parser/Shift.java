@@ -28,7 +28,7 @@ import java.util.Set;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.StringArrayList;
 
 public class Shift {
     public final int symbol;

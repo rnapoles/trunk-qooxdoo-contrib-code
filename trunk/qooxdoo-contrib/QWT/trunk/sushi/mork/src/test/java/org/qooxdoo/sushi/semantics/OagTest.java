@@ -20,8 +20,8 @@
 package org.qooxdoo.sushi.semantics;
 
 import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.util.Util;
 import java.util.ArrayList;
 import java.util.List;

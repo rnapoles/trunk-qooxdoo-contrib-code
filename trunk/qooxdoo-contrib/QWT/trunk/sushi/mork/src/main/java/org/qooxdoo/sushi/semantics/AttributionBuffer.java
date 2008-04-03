@@ -19,8 +19,8 @@
 
 package org.qooxdoo.sushi.semantics;
 
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.reflect.Function;
-import org.qooxdoo.sushi.util.StringArrayList;
 import java.util.ArrayList;
 import java.util.List;
 

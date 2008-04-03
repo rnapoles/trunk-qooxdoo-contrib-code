@@ -21,7 +21,8 @@ package org.qooxdoo.sushi.scanner;
 
 import java.io.IOException;
 import java.io.Reader;
-import org.qooxdoo.sushi.util.GenericException;
+
+import org.qooxdoo.sushi.misc.GenericException;
 /**
  * A token stream, input for parsers. Adds filter functionality to
  * regular expressions.

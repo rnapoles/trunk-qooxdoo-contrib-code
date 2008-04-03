@@ -21,8 +21,8 @@ package org.qooxdoo.sushi.compiler;
 
 import org.qooxdoo.sushi.mapping.Conversion;
 import org.qooxdoo.sushi.mapping.Definition;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.SemanticError;
-import org.qooxdoo.sushi.util.GenericException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
