@@ -840,7 +840,9 @@ qx.Class.define("htmlarea.command.Manager",
 
        /* Execute command on selection */
        if (qx.core.Variant.isSet("qx.client", "mshtml")) {
-         return rng.execCommand("FontSize", false, value);
+         this.__doc.body.focus();
+         this.__currentRange.select();
+         return this.__doc.execCommand("FontSize", false, value);
        } else {
          return this.__doc.execCommand("FontSize", false, value);
        }
