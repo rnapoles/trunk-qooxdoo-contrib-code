@@ -20,7 +20,7 @@
 package config;
 
 import org.qooxdoo.sushi.mapping.Mapper;
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
 import java.util.Properties;
 
 /**
