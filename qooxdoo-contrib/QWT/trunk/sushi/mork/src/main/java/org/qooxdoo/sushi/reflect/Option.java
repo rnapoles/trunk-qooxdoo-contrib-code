@@ -26,7 +26,7 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.FieldRef;
 
-import org.qooxdoo.sushi.classfile.Util;
+import org.qooxdoo.sushi.compiler.Util;
 
 /**
  * I can't implement Option by feeding an Option-Value because I want to offer explicit definitions

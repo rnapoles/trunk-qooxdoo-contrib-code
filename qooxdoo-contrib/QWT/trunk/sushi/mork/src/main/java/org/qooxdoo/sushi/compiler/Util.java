@@ -17,7 +17,12 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.classfile;
+package org.qooxdoo.sushi.compiler;
+
+import org.qooxdoo.sushi.classfile.Bytecodes;
+import org.qooxdoo.sushi.classfile.ClassRef;
+import org.qooxdoo.sushi.classfile.Code;
+import org.qooxdoo.sushi.classfile.MethodRef;
 
 public class Util implements Bytecodes {
     public static void unwrap(Class cl, Code dest) {

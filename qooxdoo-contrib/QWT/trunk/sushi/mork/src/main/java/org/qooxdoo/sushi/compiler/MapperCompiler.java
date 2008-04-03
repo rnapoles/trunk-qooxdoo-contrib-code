@@ -32,9 +32,6 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.Output;
 
-import org.qooxdoo.sushi.classfile.CustomCompiler;
-import org.qooxdoo.sushi.classfile.GenericCompiler;
-import org.qooxdoo.sushi.classfile.ObjectCompiler;
 import org.qooxdoo.sushi.mapping.Mapper;
 import org.qooxdoo.sushi.util.GenericException;
 
