@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;

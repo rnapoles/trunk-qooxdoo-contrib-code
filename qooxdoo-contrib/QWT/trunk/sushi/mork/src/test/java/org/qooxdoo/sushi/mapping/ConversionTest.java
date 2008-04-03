@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.reflect.Method;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.semantics.Type;
+import org.qooxdoo.sushi.reflect.Method;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.semantics.Type;
 import java.util.List;
 
 public class ConversionTest extends CompareBase {

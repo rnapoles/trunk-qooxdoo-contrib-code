@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler.tests.env;
+package org.qooxdoo.sushi.compiler.tests.env;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 import java.io.StringReader;
 
 /**
@@ -30,7 +30,7 @@ public class Main {
         Mapper mapper;
         Object[] result;
 
-        mapper = new Mapper("de.mlhartme.mork.compiler.tests.env.Mapper");
+        mapper = new Mapper("org.qooxdoo.sushi.compiler.tests.env.Mapper");
         mapper.setEnvironment(new Integer(3));
         result = mapper.run("<const>", new StringReader("ab"));
         System.out.println("result: " + result[0]);

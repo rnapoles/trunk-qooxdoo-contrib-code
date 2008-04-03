@@ -28,7 +28,7 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.MethodDef;
 import org.qooxdoo.sushi.classfile.Output;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 
 public class Main {
     public static void main(String[] args) throws IOException {

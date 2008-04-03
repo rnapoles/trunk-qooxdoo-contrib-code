@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
-import de.mlhartme.mork.util.Util;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;

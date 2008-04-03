@@ -17,15 +17,15 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.bootstrap;
+package org.qooxdoo.sushi.bootstrap;
 
-import de.mlhartme.mork.compiler.GrammarSyntax;
-import de.mlhartme.mork.compiler.Specification;
-import de.mlhartme.mork.reflect.Constructor;
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.reflect.Method;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.util.Util;
+import org.qooxdoo.sushi.compiler.GrammarSyntax;
+import org.qooxdoo.sushi.compiler.Specification;
+import org.qooxdoo.sushi.reflect.Constructor;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.reflect.Method;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.util.Util;
 import java.io.File;
 
 /**
@@ -39,14 +39,14 @@ public class Loader {
 
     public static Specification loadMapper(String file) {
         mapperFile = file;
-        return (Specification) load("de.mlhartme.mork.bootstrap.MapperMapper", file);
+        return (Specification) load("org.qooxdoo.sushi.bootstrap.MapperMapper", file);
     }
 
     public static GrammarSyntax loadGrammar(String file) {
         File absolute;
 
         absolute = Util.absoluteFile(new File(mapperFile).getParentFile(), file);
-        return (GrammarSyntax) load("de.mlhartme.mork.bootstrap.GrammarMapper", absolute.getPath());
+        return (GrammarSyntax) load("org.qooxdoo.sushi.bootstrap.GrammarMapper", absolute.getPath());
     }
 
     // returns null if an error has been reported

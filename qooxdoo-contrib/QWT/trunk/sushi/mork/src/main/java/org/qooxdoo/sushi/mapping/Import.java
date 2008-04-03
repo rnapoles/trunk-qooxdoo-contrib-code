@@ -17,15 +17,15 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import org.qooxdoo.sushi.classfile.ClassRef;
 
-import de.mlhartme.mork.reflect.Constructor;
-import de.mlhartme.mork.reflect.Field;
-import de.mlhartme.mork.reflect.Method;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.reflect.Constructor;
+import org.qooxdoo.sushi.reflect.Field;
+import org.qooxdoo.sushi.reflect.Method;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Java class with a name.

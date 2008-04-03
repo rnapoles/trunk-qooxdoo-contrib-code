@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.Scanner;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.scanner.Scanner;
 
 public class NodeFactory {
     private final Node[] pool;

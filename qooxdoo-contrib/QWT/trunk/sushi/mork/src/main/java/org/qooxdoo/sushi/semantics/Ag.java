@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +26,8 @@ import java.util.Set;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.

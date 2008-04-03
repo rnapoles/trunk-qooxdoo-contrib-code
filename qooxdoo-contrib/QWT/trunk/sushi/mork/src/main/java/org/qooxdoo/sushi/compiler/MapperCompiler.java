@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,17 +32,17 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.Output;
 
-import de.mlhartme.mork.classfile.CustomCompiler;
-import de.mlhartme.mork.classfile.GenericCompiler;
-import de.mlhartme.mork.classfile.ObjectCompiler;
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.classfile.CustomCompiler;
+import org.qooxdoo.sushi.classfile.GenericCompiler;
+import org.qooxdoo.sushi.classfile.ObjectCompiler;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.util.GenericException;
 
 
 public class MapperCompiler implements Bytecodes {
-    private de.mlhartme.mork.compiler.Output output;
+    private org.qooxdoo.sushi.compiler.Output output;
 
-    public MapperCompiler(de.mlhartme.mork.compiler.Output output) {
+    public MapperCompiler(org.qooxdoo.sushi.compiler.Output output) {
         this.output = output;
     }
 
@@ -156,48 +156,48 @@ public class MapperCompiler implements Bytecodes {
 
     private static CustomCompiler[] customs = {
         null,  // reserved for function compiler
-        new GenericCompiler(de.mlhartme.mork.grammar.Rule.class,
+        new GenericCompiler(org.qooxdoo.sushi.grammar.Rule.class,
             new String[] { "left", "right" }),
-        new GenericCompiler(de.mlhartme.mork.parser.ParserTable.class,
+        new GenericCompiler(org.qooxdoo.sushi.parser.ParserTable.class,
             new String[] { "startState", "symbolCount", "getStateCount",
                            "packValues", "lengths", "lefts", "modes" }),
-        new GenericCompiler(de.mlhartme.mork.semantics.Attribution.class,
+        new GenericCompiler(org.qooxdoo.sushi.semantics.Attribution.class,
             new String[] { "function", "resultOfs", "resultAttr", "argsOfs", "argsAttr"}),
-        new GenericCompiler(de.mlhartme.mork.semantics.Oag.class,
+        new GenericCompiler(org.qooxdoo.sushi.semantics.Oag.class,
             new String[] { "visits", "internalAttrs" }),
-        new GenericCompiler(de.mlhartme.mork.semantics.Visits.class,
+        new GenericCompiler(org.qooxdoo.sushi.semantics.Visits.class,
             new String[] { "visits" }),
-        new GenericCompiler(de.mlhartme.mork.parser.Parser.class,
+        new GenericCompiler(org.qooxdoo.sushi.parser.Parser.class,
             new String[] { "table", "scannerFactory"}),
-        new GenericCompiler(de.mlhartme.mork.scanner.GrammarScannerFactory.class,
+        new GenericCompiler(org.qooxdoo.sushi.scanner.GrammarScannerFactory.class,
             new String[] { "start", "modeCount", "eofSymbol", "data" }),
-        new GenericCompiler(de.mlhartme.mork.xml.XmlScannerFactory.class,
+        new GenericCompiler(org.qooxdoo.sushi.xml.XmlScannerFactory.class,
             new String[] { "symbolTable", "eofSymbol", "attrs"}),
-        new GenericCompiler(de.mlhartme.mork.xml.Attribute.class,
+        new GenericCompiler(org.qooxdoo.sushi.xml.Attribute.class,
             new String[] { "element", "attributeName", "terminal", "defaultMode", "defaultValue" }),
         new GenericCompiler(org.qooxdoo.sushi.util.IntBitSet.class,
             new String[] { "data" }),
         new GenericCompiler(org.qooxdoo.sushi.util.IntArrayList.class,
             new String[] { "size", "data" }),
-        new GenericCompiler(de.mlhartme.mork.util.StringArrayList.class,
+        new GenericCompiler(org.qooxdoo.sushi.util.StringArrayList.class,
             new String[] { "size", "data" }),
         new GenericCompiler(java.lang.Integer.class,
             new String[] {
-                "de.mlhartme.mork.compiler.MapperCompiler.saveInteger" },
-                "de.mlhartme.mork.compiler.MapperCompiler.loadInteger"),
+                "org.qooxdoo.sushi.compiler.MapperCompiler.saveInteger" },
+                "org.qooxdoo.sushi.compiler.MapperCompiler.loadInteger"),
         new GenericCompiler(java.lang.Class.class,
             new String[] {
-                "de.mlhartme.mork.compiler.MapperCompiler.saveClass" },
-                "de.mlhartme.mork.compiler.MapperCompiler.loadClass"),
+                "org.qooxdoo.sushi.compiler.MapperCompiler.saveClass" },
+                "org.qooxdoo.sushi.compiler.MapperCompiler.loadClass"),
         new GenericCompiler(java.lang.reflect.Constructor.class,
             new String[] { "getDeclaringClass", "getParameterTypes" },
-            "de.mlhartme.mork.compiler.MapperCompiler.loadConstructor"),
+            "org.qooxdoo.sushi.compiler.MapperCompiler.loadConstructor"),
         new GenericCompiler(java.lang.reflect.Method.class,
             new String[] { "getDeclaringClass", "getName", "getParameterTypes" },
-            "de.mlhartme.mork.compiler.MapperCompiler.loadMethod"),
+            "org.qooxdoo.sushi.compiler.MapperCompiler.loadMethod"),
         new GenericCompiler(java.lang.reflect.Field.class,
             new String[] { "getDeclaringClass", "getName" },
-            "de.mlhartme.mork.compiler.MapperCompiler.loadField")
+            "org.qooxdoo.sushi.compiler.MapperCompiler.loadField")
     };
 
     //----------------------------------------------------------------

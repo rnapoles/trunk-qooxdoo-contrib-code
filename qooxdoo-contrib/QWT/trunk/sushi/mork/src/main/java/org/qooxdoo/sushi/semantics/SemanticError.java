@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
-import de.mlhartme.mork.scanner.Position;
+import org.qooxdoo.sushi.scanner.Position;
 
 public class SemanticError extends Exception {
     public final Position position;

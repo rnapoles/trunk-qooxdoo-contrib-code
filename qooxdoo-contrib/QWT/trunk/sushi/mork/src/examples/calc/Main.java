@@ -19,8 +19,8 @@
 
 package calc;
 
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Calculate simple expression.

@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler.tests.sideeffect;
+package org.qooxdoo.sushi.compiler.tests.sideeffect;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 import java.io.StringReader;
 
 /**
@@ -30,7 +30,7 @@ public class Main {
         Mapper mapper;
         Object[] result;
 
-        mapper = new Mapper("de.mlhartme.mork.compiler.tests.sideeffect.Mapper");
+        mapper = new Mapper("org.qooxdoo.sushi.compiler.tests.sideeffect.Mapper");
         mapper.setLogging(null, System.out);
         result = mapper.run("<const>", new StringReader("abbb"));
         System.out.println("result: " + result[0]);

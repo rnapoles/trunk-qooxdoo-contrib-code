@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +26,9 @@ import junit.framework.TestCase;
 
 import org.qooxdoo.sushi.util.IntArrayList;
 
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Compare;
-import de.mlhartme.mork.semantics.Type;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.Compare;
+import org.qooxdoo.sushi.semantics.Type;
 
 public abstract class CompareBase extends TestCase implements Compare {
     protected Attribute attr;

@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.util.GenericException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;

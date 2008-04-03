@@ -17,19 +17,19 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import junit.framework.TestCase;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.semantics.Ag;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.CopyBuffer;
-import de.mlhartme.mork.semantics.Oag;
-import de.mlhartme.mork.semantics.Occurrence;
-import de.mlhartme.mork.semantics.Pusher;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.semantics.Ag;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.Oag;
+import org.qooxdoo.sushi.semantics.Occurrence;
+import org.qooxdoo.sushi.semantics.Pusher;
 
 public class CopyBufferPushUpTest extends TestCase {
     private Attribute seed;

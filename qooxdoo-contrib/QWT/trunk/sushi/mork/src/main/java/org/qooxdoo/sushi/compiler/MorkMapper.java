@@ -17,13 +17,13 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.reflect.Method;
-import de.mlhartme.mork.reflect.Selection;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.reflect.Method;
+import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.util.GenericException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

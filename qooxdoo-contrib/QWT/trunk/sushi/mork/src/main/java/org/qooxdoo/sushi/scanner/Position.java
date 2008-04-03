@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 /**
  * <p>Position in a buffer.</p>

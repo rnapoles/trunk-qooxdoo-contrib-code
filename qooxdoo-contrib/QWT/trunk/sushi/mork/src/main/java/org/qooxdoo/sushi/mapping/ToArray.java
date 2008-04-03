@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,9 +30,9 @@ import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.MethodRef;
 
-import de.mlhartme.mork.classfile.Util;
-import de.mlhartme.mork.reflect.Arrays;
-import de.mlhartme.mork.reflect.Function;
+import org.qooxdoo.sushi.classfile.Util;
+import org.qooxdoo.sushi.reflect.Arrays;
+import org.qooxdoo.sushi.reflect.Function;
 
 /**
  * Invokation creates an array initialized with the List passed as an

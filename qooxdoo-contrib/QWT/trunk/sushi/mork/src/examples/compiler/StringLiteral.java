@@ -21,8 +21,8 @@ package compiler;
 
 import org.qooxdoo.sushi.classfile.Code;
 
-import de.mlhartme.mork.semantics.BuiltIn;
-import de.mlhartme.mork.semantics.IllegalLiteral;
+import org.qooxdoo.sushi.semantics.BuiltIn;
+import org.qooxdoo.sushi.semantics.IllegalLiteral;
 
 public class StringLiteral extends Expression {
     private String str;

@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.parser;
+package org.qooxdoo.sushi.parser;
 
 import junit.framework.TestCase;
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  ** Test that pda tables are generated without exceptions.

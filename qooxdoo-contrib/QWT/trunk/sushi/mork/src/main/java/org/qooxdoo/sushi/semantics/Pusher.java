@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
+import org.qooxdoo.sushi.grammar.Grammar;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.

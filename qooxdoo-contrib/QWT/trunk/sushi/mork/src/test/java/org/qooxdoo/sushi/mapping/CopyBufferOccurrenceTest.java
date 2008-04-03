@@ -17,13 +17,13 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import junit.framework.TestCase;
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.CopyBuffer;
-import de.mlhartme.mork.semantics.Occurrence;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.Occurrence;
 
 public class CopyBufferOccurrenceTest extends TestCase {
     private Attribute start;

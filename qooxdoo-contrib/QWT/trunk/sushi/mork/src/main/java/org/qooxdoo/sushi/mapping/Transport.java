@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.reflect.Composition;
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.reflect.Method;
-import de.mlhartme.mork.reflect.Option;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.Type;
+import org.qooxdoo.sushi.reflect.Composition;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.reflect.Method;
+import org.qooxdoo.sushi.reflect.Option;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.Type;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
 import java.io.PrintStream;
 
-import de.mlhartme.mork.scanner.Position;
+import org.qooxdoo.sushi.scanner.Position;
 
 /**
  * Node of the syntax tree. A stupid data contained for Semantics.

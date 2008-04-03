@@ -17,11 +17,11 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.grammar.Grammar;
-import de.mlhartme.mork.semantics.Attribute;
-import de.mlhartme.mork.semantics.CopyBuffer;
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.semantics.Attribute;
+import org.qooxdoo.sushi.semantics.CopyBuffer;
 import java.util.ArrayList;
 import java.util.List;
 

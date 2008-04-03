@@ -17,12 +17,12 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.bootstrap;
+package org.qooxdoo.sushi.bootstrap;
 
-import de.mlhartme.mork.compiler.Syntax;
-import de.mlhartme.mork.semantics.BuiltIn;
-import de.mlhartme.mork.semantics.IllegalLiteral;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.compiler.Syntax;
+import org.qooxdoo.sushi.semantics.BuiltIn;
+import org.qooxdoo.sushi.semantics.IllegalLiteral;
+import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Helper functions referred by bootstrap mappers.

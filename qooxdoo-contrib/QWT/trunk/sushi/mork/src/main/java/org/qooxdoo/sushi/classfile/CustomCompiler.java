@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.classfile;
+package org.qooxdoo.sushi.classfile;
 
 import org.qooxdoo.sushi.classfile.Code;
 

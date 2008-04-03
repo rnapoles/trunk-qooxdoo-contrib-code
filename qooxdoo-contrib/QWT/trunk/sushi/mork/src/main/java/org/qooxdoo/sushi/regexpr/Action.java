@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.regexpr;
+package org.qooxdoo.sushi.regexpr;
 
 /** stores the result from visiting a node */
 

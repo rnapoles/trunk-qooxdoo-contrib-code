@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.util.StringArrayList;
 
 public class AttributeOccurrence {
     public final Attribute attr;

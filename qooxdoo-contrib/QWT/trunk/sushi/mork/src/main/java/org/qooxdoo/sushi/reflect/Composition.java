@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.reflect;
+package org.qooxdoo.sushi.reflect;
 
 import java.lang.reflect.InvocationTargetException;
 

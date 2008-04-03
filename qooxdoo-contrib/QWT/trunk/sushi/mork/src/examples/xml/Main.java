@@ -19,7 +19,7 @@
 
 package xml;
 
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 
 /**
  * This is a kind of XML scanner. It does not read external entities; in fact, entities are

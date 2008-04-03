@@ -17,10 +17,10 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.util.StringArrayList;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
-import de.mlhartme.mork.mapping.PrintStreamErrorHandler;
+import org.qooxdoo.sushi.mapping.PrintStreamErrorHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

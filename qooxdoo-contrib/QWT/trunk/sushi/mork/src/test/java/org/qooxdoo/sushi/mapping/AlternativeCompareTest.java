@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
-import de.mlhartme.mork.semantics.Alternative;
+import org.qooxdoo.sushi.semantics.Alternative;
 
 public class AlternativeCompareTest extends CompareBase {
     private Alternative a;

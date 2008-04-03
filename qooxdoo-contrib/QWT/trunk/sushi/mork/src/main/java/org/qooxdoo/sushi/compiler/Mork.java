@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.reflect.Function;
-import de.mlhartme.mork.semantics.BuiltIn;
-import de.mlhartme.mork.semantics.IllegalLiteral;
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.Util;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.semantics.BuiltIn;
+import org.qooxdoo.sushi.semantics.IllegalLiteral;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.Util;
 import java.io.File;
 
 /**
@@ -65,9 +65,9 @@ public class Mork {
 
     public Mork(Output output, Function mapperFn) {
         this.output = output;
-        this.mapperMapper = new MorkMapper(this, "de.mlhartme.mork.compiler.MapperMapper", mapperFn);
-        this.grammarMapper = new MorkMapper(this, "de.mlhartme.mork.compiler.GrammarMapper");
-        this.dtdMapper = new MorkMapper(this, "de.mlhartme.mork.xml.DtdMapper");
+        this.mapperMapper = new MorkMapper(this, "org.qooxdoo.sushi.compiler.MapperMapper", mapperFn);
+        this.grammarMapper = new MorkMapper(this, "org.qooxdoo.sushi.compiler.GrammarMapper");
+        this.dtdMapper = new MorkMapper(this, "org.qooxdoo.sushi.xml.DtdMapper");
         this.compiler = new MapperCompiler(output);
         this.currentJob = null;
     }

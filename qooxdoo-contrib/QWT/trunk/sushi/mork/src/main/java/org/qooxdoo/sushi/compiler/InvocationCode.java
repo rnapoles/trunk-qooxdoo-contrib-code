@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.compiler;
+package org.qooxdoo.sushi.compiler;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +37,9 @@ import org.qooxdoo.sushi.classfile.Output;
 import org.qooxdoo.sushi.classfile.attribute.Exceptions;
 import org.qooxdoo.sushi.util.IntArrayList;
 
-import de.mlhartme.mork.classfile.ObjectCompiler;
-import de.mlhartme.mork.classfile.Util;
-import de.mlhartme.mork.reflect.Function;
+import org.qooxdoo.sushi.classfile.ObjectCompiler;
+import org.qooxdoo.sushi.classfile.Util;
+import org.qooxdoo.sushi.reflect.Function;
 
 /**
  * Generates bytecode for invoke methods. Must not be saved without functions.

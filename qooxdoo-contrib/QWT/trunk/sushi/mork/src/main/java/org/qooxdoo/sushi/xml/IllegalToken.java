@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
-import de.mlhartme.mork.scanner.Position;
+import org.qooxdoo.sushi.scanner.Position;
 import java.io.IOException;
 
 // TODO

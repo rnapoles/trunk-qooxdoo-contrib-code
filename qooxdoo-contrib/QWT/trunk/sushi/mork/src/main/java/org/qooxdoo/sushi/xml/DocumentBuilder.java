@@ -17,14 +17,14 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.xml;
+package org.qooxdoo.sushi.xml;
 
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.parser.Parser;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.scanner.GrammarScanner;
-import de.mlhartme.mork.scanner.Position;
-import de.mlhartme.mork.scanner.GrammarScannerFactory;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.parser.Parser;
+import org.qooxdoo.sushi.parser.ParserTable;
+import org.qooxdoo.sushi.scanner.GrammarScanner;
+import org.qooxdoo.sushi.scanner.Position;
+import org.qooxdoo.sushi.scanner.GrammarScannerFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -74,7 +74,7 @@ public class DocumentBuilder {
     public static DocumentBuilder create(PrintStream log) throws IOException {
         Mapper mapper;
 
-        mapper = new Mapper("de.mlhartme.mork.xml.DtdMapper");
+        mapper = new Mapper("org.qooxdoo.sushi.xml.DtdMapper");
         return create(log, mapper.getParser());
     }
 

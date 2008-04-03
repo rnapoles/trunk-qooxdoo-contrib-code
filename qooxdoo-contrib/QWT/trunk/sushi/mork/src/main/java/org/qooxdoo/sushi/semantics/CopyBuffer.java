@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.semantics;
+package org.qooxdoo.sushi.semantics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.qooxdoo.sushi.util.IntArrayList;
 
-import de.mlhartme.mork.mapping.Transport;
+import org.qooxdoo.sushi.mapping.Transport;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.

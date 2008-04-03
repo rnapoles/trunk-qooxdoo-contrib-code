@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.grammar;
+package org.qooxdoo.sushi.grammar;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.grammar;
+package org.qooxdoo.sushi.grammar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +25,10 @@ import java.util.List;
 import org.qooxdoo.sushi.util.IntArrayList;
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.util.GenericException;
-import de.mlhartme.mork.util.IntBitRelation;
-import de.mlhartme.mork.util.StringArrayList;
-import de.mlhartme.mork.util.Util;
+import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.util.IntBitRelation;
+import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.util.Util;
 
 /**
  * Context free grammar. Symbols are coded as ints. Preferred variable name for symbols is sym.

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.parser;
+package org.qooxdoo.sushi.parser;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Grammar;
+import org.qooxdoo.sushi.grammar.Grammar;
 
 public class Reduce {
     public final int production;

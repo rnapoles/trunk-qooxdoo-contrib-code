@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.grammar;
+package org.qooxdoo.sushi.grammar;
 
 /**
  * A stupid data container for Grammar.

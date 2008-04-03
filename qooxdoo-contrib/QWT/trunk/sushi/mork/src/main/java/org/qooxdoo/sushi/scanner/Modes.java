@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.scanner;
+package org.qooxdoo.sushi.scanner;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -25,9 +25,9 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.grammar.Rule;
-import de.mlhartme.mork.parser.ParserTable;
-import de.mlhartme.mork.util.GenericException;
+import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.parser.ParserTable;
+import org.qooxdoo.sushi.util.GenericException;
 
 public class Modes {
     public static void setNone(ParserTable table) throws GenericException {

@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.parser;
+package org.qooxdoo.sushi.parser;
 
-import de.mlhartme.mork.util.StringArrayList;
+import org.qooxdoo.sushi.util.StringArrayList;
 import java.util.Collection;
 
 /** Immutable. */

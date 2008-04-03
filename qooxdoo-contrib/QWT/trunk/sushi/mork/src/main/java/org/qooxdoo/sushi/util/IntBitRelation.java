@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.util;
+package org.qooxdoo.sushi.util;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 

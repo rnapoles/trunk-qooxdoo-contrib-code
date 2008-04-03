@@ -17,13 +17,13 @@
    
  ************************************************************************ */
 
-package de.mlhartme.mork.mapping;
+package org.qooxdoo.sushi.mapping;
 
 import java.io.IOException;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import de.mlhartme.mork.scanner.Position;
+import org.qooxdoo.sushi.scanner.Position;
 
 /**
  * <code>Mapper.run()</code> reports errors by taking the registered error handler and
