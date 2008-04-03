@@ -53,7 +53,7 @@
                    <include name="src/main/java/**/compiler/*.map"/>
                 </fileset>
                 <pathconvert property="mapper.bs2" refid="mapper.bs2" pathsep=" "/>
-                <java classname="de.mlhartme.mork.compiler.Main"
+                <java classname="org.qooxdoo.sushi.compiler.Main"
                       failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/src/bsmork.jar" />
@@ -63,7 +63,7 @@
                   <arg value="-d"/>
                   <arg path="${basedir}/target/classes" />
                   <arg value="-mapper"/>
-                  <arg value="de.mlhartme.mork.bootstrap.Loader.loadMapper" />
+                  <arg value="org.qooxdoo.sushi.bootstrap.Loader.loadMapper" />
                   <arg line="${mapper.bs2}" />
                 </java>
                 <echo>Bootstrap Pass 3</echo>
@@ -72,7 +72,7 @@
                    <exclude name="src/main/java/**/bootstrap/*.map"/>
                 </fileset>
                 <pathconvert property="mapper.bs3" refid="mapper.bs3" pathsep=" "/>
-                <java classname="de.mlhartme.mork.compiler.Main" failonerror="true">
+                <java classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/target/classes" />                  
                     <pathelement path="${basedir}/target/test-classes" />
@@ -95,7 +95,7 @@
         <artifactId>launcher</artifactId>
         <configuration>
           <name>mork</name>
-          <main>de.mlhartme.mork.compiler.Main</main>
+          <main>org.qooxdoo.sushi.compiler.Main</main>
         </configuration>
         <executions>
           <execution>
