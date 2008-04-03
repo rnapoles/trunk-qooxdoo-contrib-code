@@ -20,7 +20,7 @@
 package calc;
 
 import org.qooxdoo.sushi.mapping.Mapper;
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
 
 /**
  * Calculate simple expression.
