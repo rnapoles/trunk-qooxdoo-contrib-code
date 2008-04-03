@@ -20,14 +20,14 @@
 package org.qooxdoo.sushi.util;
 
 
-public class RelationIterator {
-    private final Relation relation;
+public class RelationIterator<T> {
+    private final Relation<T> relation;
     private int leftIdx;
     private int rightIdx;
     private Object left;
     private Object right;
 
-    public RelationIterator(Relation relation) {
+    public RelationIterator(Relation<T> relation) {
         this.relation = relation;
         this.leftIdx = 0;
         this.rightIdx = 0;
