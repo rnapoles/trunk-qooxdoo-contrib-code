@@ -66,9 +66,6 @@ public abstract class Node {
     /** @return node with the specified path */
     public abstract Node newInstance(String path);
 
-    public abstract Node getBase();
-    public abstract String getPath();
-    
     public abstract InputStream createInputStream() throws IOException;
     public abstract OutputStream createOutputStream() throws IOException;
 
@@ -80,7 +77,7 @@ public abstract class Node {
     /** @return this */ 
     public abstract Node delete() throws DeleteException;
 
-    // status methods
+    //-- status methods
     
     public abstract long length() throws LengthException;
     public abstract boolean exists() throws ExistsException;
@@ -92,12 +89,79 @@ public abstract class Node {
     
     //-- path functionality
     
+    public abstract Node getBase();
+    public abstract String getPath();
+    
     public String getName() {
         String path;
         
         path = getPath();
         // ok for -1: 
         return path.substring(path.lastIndexOf(fs.separatorChar) + 1);
+    }
+    
+    public Node getParent() {
+        String path;
+        int idx;
+        
+        path = getPath();
+        if ("".equals(path)) {
+            return null;
+        }
+        idx = path.lastIndexOf(fs.separatorChar);
+        if (idx == -1) {
+            return newInstance("");
+        } else {
+            return newInstance(path.substring(0, idx));
+        }
+    }
+
+    public boolean hasAnchestor(Node anchestor) {
+        Node current;
+        
+        current = this;
+        while (true) {
+            current = current.getParent();
+            if (current == null) {
+                return false;
+            }
+            if (current.equals(anchestor)) {
+                return true;
+            }
+        }
+    }
+    
+    public String getRelative(Node base) {
+        String startfilepath;
+        String destpath;
+        String common;
+        StringBuilder result;
+        int len;
+        int ups;
+        int i;
+        
+        if (base.equals(this)) {
+            return ".";
+        }
+        startfilepath = base.join("foo").getPath();
+        destpath = getPath();
+        common = Strings.getCommon(startfilepath, destpath);
+        common = common.substring(0, common.lastIndexOf(fs.separatorChar) + 1);  // ok for idx == -1
+        len = common.length();
+        startfilepath = startfilepath.substring(len);
+        destpath = destpath.substring(len);
+        result = new StringBuilder();
+        ups = Strings.count(startfilepath, fs.separator);
+        for (i = 0; i < ups; i++) {
+            result.append(".." + fs.separator);
+        }
+        result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
+        return result.toString();
+    }
+
+    
+    public String getAbsolute() {
+        return fs.root + getPath();  // TODO: this is ok for FileNodes only ...
     }
     
     public Node join(List<String> paths) {
@@ -288,67 +352,6 @@ public abstract class Node {
         return filter.collect(this);
     }
     
-    //--
-
-    public Node getParent() {
-        String path;
-        int idx;
-        
-        path = getPath();
-        if ("".equals(path)) {
-            return null;
-        }
-        idx = path.lastIndexOf(fs.separatorChar);
-        if (idx == -1) {
-            return newInstance("");
-        } else {
-            return newInstance(path.substring(0, idx));
-        }
-    }
-
-    public boolean hasAnchestor(Node anchestor) {
-        Node current;
-        
-        current = this;
-        while (true) {
-            current = current.getParent();
-            if (current == null) {
-                return false;
-            }
-            if (current.equals(anchestor)) {
-                return true;
-            }
-        }
-    }
-    
-    public String getRelative(Node base) {
-        String startfilepath;
-        String destpath;
-        String common;
-        StringBuilder result;
-        int len;
-        int ups;
-        int i;
-        
-        if (base.equals(this)) {
-            return ".";
-        }
-        startfilepath = base.join("foo").getPath();
-        destpath = getPath();
-        common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(fs.separatorChar) + 1);  // ok for idx == -1
-        len = common.length();
-        startfilepath = startfilepath.substring(len);
-        destpath = destpath.substring(len);
-        result = new StringBuilder();
-        ups = Strings.count(startfilepath, fs.separator);
-        for (i = 0; i < ups; i++) {
-            result.append(".." + fs.separator);
-        }
-        result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
-        return result.toString();
-    }
-
     //--
     
     public Node deleteOpt() throws IOException {
@@ -572,9 +575,5 @@ public abstract class Node {
         } else {
             return getRelative(base);
         }
-    }
-    
-    public String getAbsolute() {
-        return fs.root + getPath();  // TODO: this is ok for FileNodes only ...
     }
 }
