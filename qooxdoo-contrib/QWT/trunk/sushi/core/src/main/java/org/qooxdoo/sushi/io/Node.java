@@ -51,7 +51,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * <p>Node with optional children. Something you can get an input or output stream from.</p> 
+ * <p>Node with optional children. Something you can get an input or output stream from. FileNode is probably
+ * the most prominent example of a node.</p>
+ * 
+ * <p>A node has a filesystem, a path, and a base.</p>
+ * 
+ * <p>The filesystem defines a root and a separator.</p>
+ *
+ * <p>The path is a sequence of names separated by the filesystem separator. It never starts 
+ * or ends with a separator. It does not include the filesystem root, but it always includes the path
+ * of the base. A node with an empty path is called root node.
+ *   
+ * <p>The base is a node this node is relative to. It's optional, a node without base is called absolute.</p> 
  */
 public abstract class Node {
     /** never null */
@@ -93,7 +104,10 @@ public abstract class Node {
 
     /**
      * The node this node is relative to, aka kind of a working directory. Mostly affects toString().
-     * @return null for absolute
+     * There's currently no setBase, although it would generalize "base" handling to arbitrary 
+     * node implementations ...
+     * 
+     * @return null for absolute file
      */
     public final Node getBase() {
         return base;
@@ -140,6 +154,7 @@ public abstract class Node {
         }
     }
     
+    /** @return kind of a path, with . and .. where appropriate. */
     public String getRelative(Node base) {
         String startfilepath;
         String destpath;
@@ -168,9 +183,9 @@ public abstract class Node {
         return result.toString();
     }
 
-    
+    /** @return fs.root + getPath */ 
     public String getAbsolute() {
-        return fs.root + getPath();  // TODO: this is ok for FileNodes only ...
+        return fs.root + getPath();
     }
     
     public Node join(List<String> paths) {
