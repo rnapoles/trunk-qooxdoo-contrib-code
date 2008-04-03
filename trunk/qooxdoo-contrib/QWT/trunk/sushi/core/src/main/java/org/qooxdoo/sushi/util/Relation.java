@@ -28,29 +28,29 @@ import java.util.List;
  * Set of pairs of objects. Method names follow the Set interface (which cannot be implemented
  * because, e.g., the add methods takes two arguments.
  */
-public class Relation {
+public class Relation<T> {
     /** domain objexts */
-    private List leftList;
+    private List<T> leftList;
 
     /** List of List of image objects, corresponding indexes with leftList */
-    private List rightsList;
+    private List<List<T>> rightsList;
 
     public Relation() {
-        leftList = new ArrayList();
-        rightsList = new ArrayList();
+        leftList = new ArrayList<T>();
+        rightsList = new ArrayList<List<T>>();
     }
 
-    public void addDomain(Collection col) {
+    public void addDomain(Collection<T> col) {
         col.addAll(leftList);
     }
 
-    public void addImage(Collection col) {
+    public void addImage(Collection<T> col) {
         int i;
         int max;
 
         max = rightsList.size();
         for (i = 0; i < max; i++) {
-            col.addAll((List) rightsList.get(i));
+            col.addAll(rightsList.get(i));
         }
     }
 
@@ -62,39 +62,39 @@ public class Relation {
         max = rightsList.size();
         count = 0;
         for (i = 0; i < max; i++) {
-            count += ((List) rightsList.get(i)).size();
+            count += rightsList.get(i).size();
         }
         return count;
     }
 
     public boolean contains(Object left, Object right) {
         int i;
-        List lst;
+        List<T> lst;
 
         i = leftList.indexOf(left);
         if (i == -1) {
             return false;
         }
-        lst = (List) rightsList.get(i);
+        lst = rightsList.get(i);
         return lst.indexOf(right) != -1;
     }
 
     /**
      * @return true for new elements
      */
-    public boolean add(Object left, Object right) {
+    public boolean add(T left, T right) {
         int i;
-        List lst;
+        List<T> lst;
 
         i = leftList.indexOf(left);
         if (i == -1) {
             leftList.add(left);
-            lst = new ArrayList();
+            lst = new ArrayList<T>();
             lst.add(right);
             rightsList.add(lst);
             return true;
         }
-        lst = (List) rightsList.get(i);
+        lst = rightsList.get(i);
         if (lst.indexOf(right) == -1) {
             lst.add(right);
             return true;
@@ -105,7 +105,7 @@ public class Relation {
     /**
      * @return true if this Relation has been modified
      */
-    public boolean addAll(Relation toAdd) {
+    public boolean addAll(Relation<T> toAdd) {
         int i;
         int max;
         boolean modified;
@@ -113,7 +113,7 @@ public class Relation {
         modified = false;
         max = toAdd.leftList.size();
         for (i = 0; i < max; i++) {
-            if (addSpecial(toAdd.leftList.get(i), (List) toAdd.rightsList.get(i))) {
+            if (addSpecial(toAdd.leftList.get(i), toAdd.rightsList.get(i))) {
                 modified = true;
             }
         }
@@ -129,19 +129,19 @@ public class Relation {
     }
 
     public int getRightSize(int left) {
-        return ((List) rightsList.get(left)).size();
+        return rightsList.get(left).size();
     }
 
     public Object getRight(int left, int right) {
-        return ((List) rightsList.get(left)).get(right);
+        return rightsList.get(left).get(right);
     }
 
     public void closure() {
         int i;
         int j;
-        List lst;
-        Object left;
-        Object right;
+        List<T> lst;
+        T left;
+        T right;
         int idx;
         boolean modified;
 
@@ -150,12 +150,12 @@ public class Relation {
             modified = false;
             for (i = leftList.size() - 1; i >= 0; i--) {
                 left = leftList.get(i);
-                lst = (List) rightsList.get(i);
+                lst = rightsList.get(i);
                 for (j = lst.size() - 1; j >= 0; j--) {
                     right = lst.get(j);
                     idx = leftList.indexOf(right);
                     if (idx != -1) {
-                        if (addSpecial(left, (List) rightsList.get(idx))) {
+                        if (addSpecial(left, rightsList.get(idx))) {
                             modified = true;
                         }
                     }
@@ -164,22 +164,22 @@ public class Relation {
         } while (modified);
     }
 
-    private boolean addSpecial(Object left, List rights) {
+    private boolean addSpecial(T left, List<T> rights) {
         int i;
         int max;
         boolean modified;
-        Object right;
-        List currentRightsList;
+        T right;
+        List<T> currentRightsList;
         int idx;
 
         idx = leftList.indexOf(left);
         if (idx == -1) {
             leftList.add(left);
-            rightsList.add(new ArrayList(rights));
+            rightsList.add(new ArrayList<T>(rights));
             return true;
         } else {
             modified = false;
-            currentRightsList = (List) rightsList.get(idx);
+            currentRightsList = rightsList.get(idx);
             max = rights.size();
             for (i = 0; i < max; i++) {
                 right = rights.get(i);
@@ -196,14 +196,14 @@ public class Relation {
     /**
      * @return null to indicate a cyclic dependency
      */
-    public List sort(List all) {
-        List unsorted;
-        List sorted;
-        List current;
+    public List<T> sort(List<T> all) {
+        List<T> unsorted;
+        List<T> sorted;
+        List<T> current;
         int size;
 
-        unsorted = new ArrayList(all);
-        sorted = new ArrayList();
+        unsorted = new ArrayList<T>(all);
+        sorted = new ArrayList<T>();
         size = all.size();
         while (sorted.size() < size) {
             current = getNext(sorted, unsorted);
@@ -216,13 +216,13 @@ public class Relation {
         return sorted;
     }
 
-    private List getNext(List leftCollection, Collection rightCollection) {
-        List current;
-        Iterator iter;
-        Object right;
-        RelationIterator relationIter;
+    private List<T> getNext(List<T> leftCollection, Collection<T> rightCollection) {
+        List<T> current;
+        Iterator<T> iter;
+        T right;
+        RelationIterator<T> relationIter;
 
-        current = new ArrayList();
+        current = new ArrayList<T>();
         iter = rightCollection.iterator();
         while (iter.hasNext()) {
             right = iter.next();
@@ -247,14 +247,14 @@ public class Relation {
         return current;
     }
 
-    public RelationIterator iterate() {
-        return new RelationIterator(this);
+    public RelationIterator<T> iterate() {
+        return new RelationIterator<T>(this);
     }
 
     @Override
     public String toString() {
         StringBuilder result;
-        RelationIterator iter;
+        RelationIterator<T> iter;
         boolean first;
 
         result = new StringBuilder();
