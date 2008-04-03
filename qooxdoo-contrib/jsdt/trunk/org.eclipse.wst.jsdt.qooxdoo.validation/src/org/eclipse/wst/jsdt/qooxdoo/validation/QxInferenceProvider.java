@@ -3,6 +3,7 @@ package org.eclipse.wst.jsdt.qooxdoo.validation;
 import org.eclipse.wst.jsdt.core.infer.IInferenceFile;
 import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferrenceProvider;
+import org.eclipse.wst.jsdt.core.infer.RefactoringSupport;
 import org.eclipse.wst.jsdt.core.infer.ResolutionConfiguration;
 
 
@@ -36,5 +37,9 @@ public class QxInferenceProvider implements InferrenceProvider {
 
   public ResolutionConfiguration getResolutionConfiguration() {
     return new ResolutionConfiguration();
+  }
+
+  public RefactoringSupport getRefactoringSupport() {
+    return null;
   }
 }
