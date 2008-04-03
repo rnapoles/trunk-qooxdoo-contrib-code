@@ -27,11 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.scanner.Position;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
 import org.qooxdoo.toolkit.plugin.qul.Loader;
-
-import de.mlhartme.mork.mapping.Mapper;
-import de.mlhartme.mork.scanner.Position;
 
 public class Css {
     public static Css loadString(String str) {

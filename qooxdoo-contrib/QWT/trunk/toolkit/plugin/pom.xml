@@ -121,7 +121,7 @@
                    <include name="src/main/java/**/*.map"/>
                 </fileset>
                 <pathconvert property="mapper" refid="mapper" pathsep=" "/>
-                <java classname="de.mlhartme.mork.compiler.Main" failonerror="true">
+                <java classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
                   <classpath>
                     <path refid="maven.compile.classpath" />                  
                   </classpath>
