@@ -24,15 +24,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.qooxdoo.sushi.classfile.Access;
-import org.qooxdoo.sushi.classfile.Bytecodes;
-import org.qooxdoo.sushi.classfile.ClassDef;
-import org.qooxdoo.sushi.classfile.ClassRef;
-import org.qooxdoo.sushi.classfile.Code;
-import org.qooxdoo.sushi.classfile.Constants;
-import org.qooxdoo.sushi.classfile.MethodDef;
-import org.qooxdoo.sushi.classfile.MethodRef;
-
 import org.qooxdoo.sushi.reflect.Arrays;
 
 /**

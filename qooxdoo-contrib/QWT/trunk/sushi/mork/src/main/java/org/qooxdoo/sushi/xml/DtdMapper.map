@@ -17,15 +17,15 @@
 #   
 # ************************************************************************
 
-mapper de.mlhartme.mork.xml.DtdMapper;
+mapper org.qooxdoo.sushi.xml.DtdMapper;
 
 grm = "xml.grm";
 
-import de.mlhartme.mork.regexpr:
+import org.qooxdoo.sushi.regexpr:
     Sequence, Choice;
-import de.mlhartme.mork.xml:
+import org.qooxdoo.sushi.xml:
     Attribute, Stubs, XmlSyntax;
-import de.mlhartme.mork.semantics:
+import org.qooxdoo.sushi.semantics:
     BuiltIn;
 import java.lang:
     String;

@@ -17,17 +17,17 @@
 #   
 # ************************************************************************
 
-mapper de.mlhartme.mork.compiler.GrammarMapper;
+mapper org.qooxdoo.sushi.compiler.GrammarMapper;
 
 grm = "grammar.grm";
 
-import de.mlhartme.mork.regexpr:
+import org.qooxdoo.sushi.regexpr:
     Choice, Loop, Sequence, Symbol, Range, Without;
-import de.mlhartme.mork.grammar:
+import org.qooxdoo.sushi.grammar:
     Rule;
-import de.mlhartme.mork.compiler:
+import org.qooxdoo.sushi.compiler:
     GrammarSyntax, Stubs;
-import de.mlhartme.mork.semantics:
+import org.qooxdoo.sushi.semantics:
     BuiltIn;
 import java.lang:
     Boolean, Integer, String;

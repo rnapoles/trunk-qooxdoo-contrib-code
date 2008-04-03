@@ -18,7 +18,7 @@ name was <literal>foo.Mapper</literal>. The following code fragment create a
 <example>
 <title>Mapper usage</title>
 <programlisting>
-import de.mlhartme.mork.mapping.Mapper;
+import org.qooxdoo.sushi.mapping.Mapper;
 
 Mapper mapper;
 Object[] result;
@@ -47,7 +47,7 @@ current source position.</para>
 <sect1>
 <title>The <literal>Mapper</literal> class</title>
 
-<para>The class <literal>de.mlhartme.mork.mapping.Mapper</literal> forms the main API
+<para>The class <literal>org.qooxdoo.sushi.mapping.Mapper</literal> forms the main API
 used by applications. The following describes the most important constructors and methods.
 This description is sufficient for normal use. See the API documentation for more details.
 </para>

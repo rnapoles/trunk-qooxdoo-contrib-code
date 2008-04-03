@@ -19,8 +19,6 @@
 
 package org.qooxdoo.sushi.util;
 
-import org.qooxdoo.sushi.util.IntBitSet;
-
 /**
  * <p> Set of pairs of ints. </p>
  *

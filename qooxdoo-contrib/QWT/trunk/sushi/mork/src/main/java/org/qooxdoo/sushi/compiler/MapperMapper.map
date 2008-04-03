@@ -17,15 +17,15 @@
 #   
 # ************************************************************************
 
-mapper de.mlhartme.mork.compiler.MapperMapper;
+mapper org.qooxdoo.sushi.compiler.MapperMapper;
 
 grm = "mapper.grm";
 
-import de.mlhartme.mork.mapping:
+import org.qooxdoo.sushi.mapping:
     Import, Internal, Library, Path;
-import de.mlhartme.mork.compiler:
+import org.qooxdoo.sushi.compiler:
     GrammarSyntax, Specification, Stubs, Syntax;
-import de.mlhartme.mork.semantics:
+import org.qooxdoo.sushi.semantics:
     BuiltIn;
 import java.lang:
     Boolean, Integer, String;
