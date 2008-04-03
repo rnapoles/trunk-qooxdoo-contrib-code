@@ -82,6 +82,13 @@ qx.Class.define("htmlarea.command.Manager",
      */
     __currentRange    : null,
 
+    /*
+     * Save the type of the last selection. IE if blur() was executed on the htmlare and
+     * it gets focused again, still _has_ a selection. But this selection can only be used
+     * to execute commands on it, because we can not get any information about it any longer.
+     */
+    __lastSelectionType : "none",
+    
     /**
      * Computed pixel sizes for values size attribute in <font> tag
      */
@@ -118,6 +125,8 @@ qx.Class.define("htmlarea.command.Manager",
       "mshtml" : function(e)
       {
         this.__currentRange = this.__editorInstance.getRange();
+        this.__lastSelectionType = this.__editorInstance.__getSelection().type;
+        this.debug(this.__lastSelectionType)
       },
       "default" : function() {}
     }),
