@@ -49,7 +49,6 @@ public class Filesystem {
         return Strings.join(separator, names);
     }
     
-    // TODO: move to Node class
     public String join(String head, List<String> paths) {
         StringBuffer buffer;
         
