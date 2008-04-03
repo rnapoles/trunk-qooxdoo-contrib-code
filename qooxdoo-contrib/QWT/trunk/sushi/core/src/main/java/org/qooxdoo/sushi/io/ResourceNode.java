@@ -36,7 +36,7 @@ public class ResourceNode extends Node {
     }
 
     public ResourceNode(IO io, ClassLoader loader, String path) {
-        super(io, FS);
+        super(io, FS, null);
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
@@ -57,11 +57,6 @@ public class ResourceNode extends Node {
     @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
         throw new SetLastModifiedException(this);
-    }
-    
-    @Override
-    public Node getBase() {
-        return null;
     }
     
     public ClassLoader getLoader() {

@@ -62,9 +62,6 @@ public class FileNode extends Node {
 
     //--
     
-    /** null for absolute files */
-    private final FileNode base;
-    
     /** never null, always absolute */
     private final File file;
 
@@ -78,7 +75,7 @@ public class FileNode extends Node {
      * a given path.
      */
     public FileNode(IO io, FileNode base, File file) {
-        super(io, findFs(file));
+        super(io, findFs(file), base);
         
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
@@ -86,18 +83,12 @@ public class FileNode extends Node {
         if (file.getPath().endsWith(File.separator) && file.getParent() != null) {
             throw new IllegalArgumentException("should not happen because java.io.File normalizes paths: " + file.getPath());
         }
-        this.base = base;
         this.file = file;
     }
     
     @Override
-    public Node getBase() {
-        return base;
-    }
-    
-    @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, base, new File(fs.root + path));
+        return new FileNode(io, (FileNode) base, new File(fs.root + path));
     }
     
     public URI toURI() {
@@ -191,7 +182,7 @@ public class FileNode extends Node {
         }
         result = new ArrayList<FileNode>(children.length);
         for (int i = 0; i < children.length; i++) {
-            result.add(new FileNode(io, base, children[i]));
+            result.add(new FileNode(io, (FileNode) base, children[i]));
         }
         return result;
     }

@@ -46,7 +46,7 @@ public class HttpNode extends Node {
     private final URL url;
     
     public HttpNode(IO io, URL url) {
-        super(io, FS);
+        super(io, FS, null);
         this.url = url;
     }
     
@@ -58,11 +58,6 @@ public class HttpNode extends Node {
     @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
         throw new SetLastModifiedException(this);
-    }
-    
-    @Override
-    public Node getBase() {
-        return null;
     }
     
     public URL getUrl() {

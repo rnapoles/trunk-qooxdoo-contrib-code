@@ -57,10 +57,12 @@ public abstract class Node {
     /** never null */
     public final IO io;
     public final Filesystem fs;
+    public final Node base;
     
-    public Node(IO io, Filesystem fs) {
+    public Node(IO io, Filesystem fs, Node base) {
         this.io = io;
         this.fs = fs;
+        this.base = base;
     }
     
     /** @return node with the specified path */
@@ -88,8 +90,15 @@ public abstract class Node {
     public abstract void setLastModified(long millis) throws SetLastModifiedException;
     
     //-- path functionality
-    
-    public abstract Node getBase();
+
+    /**
+     * The node this node is relative to, aka kind of a working directory. Mostly affects toString().
+     * @return null for absolute
+     */
+    public final Node getBase() {
+        return base;
+    }
+
     public abstract String getPath();
     
     public String getName() {
