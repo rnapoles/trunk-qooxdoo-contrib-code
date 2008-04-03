@@ -25,7 +25,7 @@ package org.qooxdoo.sushi.misc;
  */
 
 public class GenericException extends Exception {
-    public final String id;      // != null, used to identigy the exception
+    public final String id;      // != null, used to identify the exception
     public final String details; // != null
     public final Throwable base; // nullable
 
