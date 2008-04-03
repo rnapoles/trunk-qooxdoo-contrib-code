@@ -30,14 +30,14 @@ import org.qooxdoo.sushi.grammar.Rule;
 import org.qooxdoo.sushi.mapping.Definition;
 import org.qooxdoo.sushi.mapping.Library;
 import org.qooxdoo.sushi.mapping.Path;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.reflect.Identity;
 import org.qooxdoo.sushi.reflect.Selection;
 import org.qooxdoo.sushi.regexpr.Range;
 import org.qooxdoo.sushi.regexpr.Sequence;
 import org.qooxdoo.sushi.semantics.BuiltIn;
 import org.qooxdoo.sushi.semantics.IllegalLiteral;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Helper functions referred by MappingMapper.map. These methods brigde gaps

@@ -28,11 +28,11 @@ import org.qooxdoo.sushi.mapping.Definition;
 import org.qooxdoo.sushi.mapping.Mapper;
 import org.qooxdoo.sushi.mapping.Path;
 import org.qooxdoo.sushi.mapping.Transport;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.parser.Parser;
 import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.Oag;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Specifies a mapper, thus, a Mapping object is a Mapper before translation.

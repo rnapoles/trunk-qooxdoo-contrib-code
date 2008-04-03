@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.util;
+package org.qooxdoo.sushi.misc;
 
 import java.io.Serializable;
 import java.util.ArrayList;

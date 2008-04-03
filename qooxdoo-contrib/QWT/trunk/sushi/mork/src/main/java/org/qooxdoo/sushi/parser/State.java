@@ -32,7 +32,7 @@ import java.util.TreeSet;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.StringArrayList;
 
 /** LR-PDAs are generated using these states */
 

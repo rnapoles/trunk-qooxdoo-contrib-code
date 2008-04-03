@@ -27,9 +27,9 @@ import java.util.List;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.parser.ParserTable;
 import org.qooxdoo.sushi.regexpr.Range;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * <p>An immutable FA. Instances are used for acual scanning. I would call

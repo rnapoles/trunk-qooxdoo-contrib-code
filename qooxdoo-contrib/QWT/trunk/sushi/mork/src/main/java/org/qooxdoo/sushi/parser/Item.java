@@ -19,7 +19,8 @@
 
 package org.qooxdoo.sushi.parser;
 
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.StringArrayList;
+
 import java.util.Collection;
 
 /** Immutable. */

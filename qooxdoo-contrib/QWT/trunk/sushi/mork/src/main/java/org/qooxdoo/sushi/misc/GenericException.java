@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.util;
+package org.qooxdoo.sushi.misc;
 
 /**
  * Exception with a type. Using this class avoids defining may exceptions

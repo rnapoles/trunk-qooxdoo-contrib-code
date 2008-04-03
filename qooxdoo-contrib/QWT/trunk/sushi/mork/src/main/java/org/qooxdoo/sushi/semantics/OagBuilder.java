@@ -26,10 +26,10 @@ import java.util.Set;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.util.Relation;
 import org.qooxdoo.sushi.util.RelationIterator;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Build visit sequence for ordered attribute grammar. Based on the paper

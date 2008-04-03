@@ -19,7 +19,7 @@
 
 package org.qooxdoo.sushi.semantics;
 
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.StringArrayList;
 
 public class AttributeOccurrence {
     public final Attribute attr;

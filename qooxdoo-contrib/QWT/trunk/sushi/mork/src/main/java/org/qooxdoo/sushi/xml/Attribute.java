@@ -19,9 +19,9 @@
 
 package org.qooxdoo.sushi.xml;
 
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.scanner.Position;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 public class Attribute {
     // coding for defaultMode

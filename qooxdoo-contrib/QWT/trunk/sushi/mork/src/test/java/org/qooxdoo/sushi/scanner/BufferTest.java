@@ -19,7 +19,8 @@
 
 package org.qooxdoo.sushi.scanner;
 
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;

@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntBitSet;
 
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.scanner.Position;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * ErrorHandler that prints messages to the PrintStream specified in the constructor.

@@ -20,10 +20,10 @@
 package org.qooxdoo.sushi.compiler;
 
 import org.qooxdoo.sushi.mapping.Mapper;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.reflect.Method;
 import org.qooxdoo.sushi.reflect.Selection;
-import org.qooxdoo.sushi.util.GenericException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

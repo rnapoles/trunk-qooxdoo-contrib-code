@@ -20,11 +20,11 @@
 package org.qooxdoo.sushi.mapping;
 
 import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.NodeFactory;
 import org.qooxdoo.sushi.semantics.Type;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Reference to internal constructor.

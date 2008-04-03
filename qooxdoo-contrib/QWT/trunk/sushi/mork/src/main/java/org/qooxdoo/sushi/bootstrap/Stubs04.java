@@ -20,9 +20,9 @@
 package org.qooxdoo.sushi.bootstrap;
 
 import org.qooxdoo.sushi.compiler.Syntax;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.BuiltIn;
 import org.qooxdoo.sushi.semantics.IllegalLiteral;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Helper functions referred by bootstrap mappers.

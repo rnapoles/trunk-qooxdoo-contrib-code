@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.util.Relation;
 import org.qooxdoo.sushi.util.RelationIterator;
 

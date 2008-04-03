@@ -27,14 +27,14 @@ import junit.framework.TestCase;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Rule;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.regexpr.Choice;
 import org.qooxdoo.sushi.regexpr.Loop;
 import org.qooxdoo.sushi.regexpr.Range;
 import org.qooxdoo.sushi.regexpr.RegExpr;
 import org.qooxdoo.sushi.regexpr.Sequence;
 import org.qooxdoo.sushi.regexpr.Without;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /**
  * Test GrammarScanner.

@@ -19,8 +19,8 @@
 
 package org.qooxdoo.sushi.mapping;
 
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Selection;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * A set of types.

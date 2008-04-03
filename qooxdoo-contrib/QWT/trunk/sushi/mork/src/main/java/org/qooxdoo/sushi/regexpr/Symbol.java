@@ -19,7 +19,7 @@
 
 package org.qooxdoo.sushi.regexpr;
 
-import org.qooxdoo.sushi.util.StringArrayList;
+import org.qooxdoo.sushi.misc.StringArrayList;
 
 /**
  * Symbol constant for a regular expression.

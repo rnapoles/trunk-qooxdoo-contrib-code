@@ -22,12 +22,12 @@ package org.qooxdoo.sushi.grammar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.util.IntArrayList;
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import org.qooxdoo.sushi.util.GenericException;
 import org.qooxdoo.sushi.util.IntBitRelation;
-import org.qooxdoo.sushi.util.StringArrayList;
 import org.qooxdoo.sushi.util.Util;
 
 /**

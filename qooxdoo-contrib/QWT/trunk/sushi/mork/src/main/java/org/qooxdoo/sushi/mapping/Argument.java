@@ -19,12 +19,12 @@
 
 package org.qooxdoo.sushi.mapping;
 
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.Compare;
 import org.qooxdoo.sushi.semantics.CopyBuffer;
 import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Type;
-import org.qooxdoo.sushi.util.GenericException;
 import java.util.ArrayList;
 import java.util.List;
 

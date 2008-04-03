@@ -27,7 +27,7 @@ import java.util.Set;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.util.GenericException;
+import org.qooxdoo.sushi.misc.GenericException;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.

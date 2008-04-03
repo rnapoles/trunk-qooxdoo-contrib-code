@@ -26,12 +26,12 @@ import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.compiler.Syntax;
 import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.CopyBuffer;
 import org.qooxdoo.sushi.semantics.Occurrence;
 import org.qooxdoo.sushi.semantics.Pusher;
 import org.qooxdoo.sushi.semantics.Type;
-import org.qooxdoo.sushi.util.GenericException;
 
 /**
  * Visibility of some Definition, kind of an Argument builder.

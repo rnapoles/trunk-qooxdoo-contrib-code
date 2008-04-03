@@ -19,12 +19,12 @@
 
 package org.qooxdoo.sushi.xml;
 
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.regexpr.Choice;
 import org.qooxdoo.sushi.regexpr.Loop;
 import org.qooxdoo.sushi.regexpr.RegExpr;
 import org.qooxdoo.sushi.regexpr.Symbol;
-import org.qooxdoo.sushi.util.GenericException;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 /** Helper methods used by DtdMapper.map. */
 public class Stubs {

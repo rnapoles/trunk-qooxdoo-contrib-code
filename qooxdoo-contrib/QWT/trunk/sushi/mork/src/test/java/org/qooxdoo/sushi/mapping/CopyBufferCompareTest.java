@@ -22,11 +22,11 @@ package org.qooxdoo.sushi.mapping;
 import org.qooxdoo.sushi.util.IntBitSet;
 
 import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.CopyBuffer;
 import org.qooxdoo.sushi.semantics.State;
 import org.qooxdoo.sushi.semantics.Type;
-import org.qooxdoo.sushi.util.StringArrayList;
 
 public class CopyBufferCompareTest extends CompareBase {
     private Attribute a;
