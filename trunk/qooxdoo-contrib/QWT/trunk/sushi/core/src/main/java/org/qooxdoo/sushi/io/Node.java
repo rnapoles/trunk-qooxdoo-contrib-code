@@ -51,10 +51,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * <p>Node with optional children. Something you can get an input or output stream from. FileNode is probably
+ * <p>Abstraction from a file: omething you can get an input or output stream from. FileNode is probably
  * the most prominent example of a node.</p>
  * 
- * <p>A node has a filesystem, a path, and a base.</p>
+ * <p>A node has a filesystem, and a path. A node can have children and a base.</p>
  * 
  * <p>The filesystem defines a root and a separator.</p>
  *
@@ -67,7 +67,11 @@ import org.xml.sax.SAXException;
 public abstract class Node {
     /** never null */
     public final IO io;
+    
+    /** never null */
     public final Filesystem fs;
+    
+    /** may be null */
     public final Node base;
     
     public Node(IO io, Filesystem fs, Node base) {
@@ -82,6 +86,7 @@ public abstract class Node {
     public abstract InputStream createInputStream() throws IOException;
     public abstract OutputStream createOutputStream() throws IOException;
 
+    /** lists child nodes or null if this is not a directory */
     public abstract List<? extends Node> list() throws ListException;
 
     /** @return this */ 
@@ -103,8 +108,8 @@ public abstract class Node {
     //-- path functionality
 
     /**
-     * The node this node is relative to, aka kind of a working directory. Mostly affects toString().
-     * There's currently no setBase, although it would generalize "base" handling to arbitrary 
+     * The node to which this node is relative to, aka kind of a working directory. Mostly affects 
+     * toString(). There's currently no setBase, although it would generalize "base" handling to arbitrary 
      * node implementations ...
      * 
      * @return null for absolute file
@@ -115,6 +120,7 @@ public abstract class Node {
 
     public abstract String getPath();
     
+    /** @return the last path segment (or an empty string for the root node */ 
     public String getName() {
         String path;
         
@@ -341,7 +347,7 @@ public abstract class Node {
         return result;
     }
 
-    //--
+    //-- search for child nodes
     
     /** uses default excludes */
     public List<Node> find(String... includes) throws IOException {
