@@ -17,20 +17,16 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.io;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 
-public class HttpFilesystem extends Filesystem {
-    public static final HttpFilesystem INSTANCE = new HttpFilesystem();
-    
-    private HttpFilesystem() {
-        super("http");
-    }
-
-    @Override
-    public HttpNode parse(IO io, String str) throws ParseException, MalformedURLException {
-        return new HttpNode(io, new URL(str));
+public class Misc {
+    public static IOException exception(String msg, Throwable cause) {
+        IOException e;
+        
+        e = new IOException(msg);
+        e.initCause(cause);
+        return e;
     }
 }

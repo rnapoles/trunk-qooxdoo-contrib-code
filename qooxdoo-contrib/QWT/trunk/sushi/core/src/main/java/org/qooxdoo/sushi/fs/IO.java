@@ -33,6 +33,8 @@ import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.fs.memory.Context;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
+import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Reflect;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Xml;

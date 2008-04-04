@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Strings;
 
 /** Knows the availeable filesystems and how to create them */

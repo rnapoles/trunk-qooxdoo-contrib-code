@@ -29,8 +29,8 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.qooxdoo.sushi.fs.Buffer;
 import org.qooxdoo.sushi.fs.Settings;
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.toolkit.engine.common.CallListener;
 import org.qooxdoo.toolkit.engine.common.Parser;
 import org.qooxdoo.toolkit.engine.common.Registry;

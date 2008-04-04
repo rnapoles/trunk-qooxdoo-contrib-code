@@ -35,6 +35,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.xml.Xml;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

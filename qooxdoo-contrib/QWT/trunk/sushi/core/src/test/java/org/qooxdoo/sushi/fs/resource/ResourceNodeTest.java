@@ -17,31 +17,32 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.IO;
 
 public class ResourceNodeTest {
-    private static final IO IO = new IO();
+    private static final IO IO_OBJ = new IO();
 
     @Test
     public void existing() throws Exception {
-        assertEquals("hello", new ResourceNode(IO, "testresource").readString());
+        assertEquals("hello", new ResourceNode(IO_OBJ, "testresource").readString());
     }
     
     @Test
     public void noneExisting() throws Exception {
-        assertFalse(new ResourceNode(IO, "nosuchresource").exists());
+        assertFalse(new ResourceNode(IO_OBJ, "nosuchresource").exists());
     }
 
     @Test
     public void absolutePath() throws Exception {
         try {
-            new ResourceNode(IO, "/absolute");
+            new ResourceNode(IO_OBJ, "/absolute");
             fail();
         } catch (IllegalArgumentException e) {
             // ok

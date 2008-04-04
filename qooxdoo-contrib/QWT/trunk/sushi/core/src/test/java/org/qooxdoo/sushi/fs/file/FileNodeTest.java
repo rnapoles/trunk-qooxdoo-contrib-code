@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,15 +29,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.NodeTest;
+import org.qooxdoo.sushi.io.OS;
 
 /** TODO: move more tests into NodeTest */
 public class FileNodeTest extends NodeTest {
-    private static final IO IO = new IO();
+    private static final IO IO_OBJ = new IO();
     
     @Override
     protected Node createWork() throws IOException {
-        return IO.createTempDirectory();
+        return IO_OBJ.createTempDirectory();
     }
     
     @Test

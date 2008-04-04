@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.io;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -27,8 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.qooxdoo.sushi.fs.Buffer;
 import org.qooxdoo.sushi.fs.Settings;
+import org.qooxdoo.sushi.io.Buffer;
 
 /** Performs application startup and servers resources. */
 public class ResourceServlet extends Servlet {

@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Strings;
 
 /**

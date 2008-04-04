@@ -25,12 +25,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.qooxdoo.sushi.fs.Buffer;
 import org.qooxdoo.sushi.fs.ExistsException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.ResourceNode;
 import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.fs.resource.ResourceNode;
+import org.qooxdoo.sushi.io.Buffer;
 
 public class ResourceManager {
     public static ResourceManager create(FileNode basedir) {
