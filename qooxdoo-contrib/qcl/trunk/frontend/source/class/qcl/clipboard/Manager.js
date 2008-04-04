@@ -209,9 +209,45 @@ qx.Class.define("qcl.clipboard.Manager",
       }
     },
     
+		/**
+		 * tries to copy text to the clipboard of the underlying operating system
+		 * and alerts if not successful
+		 * @param {Object} text
+		 * @param {Object} flavor
+		 */
+		copyToSystemClipboard : function ( text, flavor )
+		{
+			try
+			{
+				_copyToSystemClipboard( text, flavor );
+			} 
+			catch (e)
+			{
+				alert(e);
+			}
+		},
+
+		/**
+		 * tries to copy text to the clipboard of the underlying operating system
+		 * and issues a warning if not successful
+		 * @param {Object} text
+		 * @param {Object} flavor
+		 */
+		tryCopyToSystemClipboard : function ( text, flavor )
+		{
+			try
+			{
+				_copyToSystemClipboard( text, flavor );
+			} 
+			catch (e)
+			{
+				this.warn(e);
+			}
+		},
+		
     /**
-     * tries to copy text to the clipboard of the underlying operating system
-     * 
+     * copy text to the clipboard of the underlying operating system
+     * and throws an error if not successful
      * sources: http://www.krikkit.net/howto_javascript_copy_clipboard.html
      *          http://www.xulplanet.com/tutorials/xultu/clipboard.html
      *          http://www.codebase.nl/index.php/command/viewcode/id/174
@@ -221,7 +257,7 @@ qx.Class.define("qcl.clipboard.Manager",
      *    user_pref("signed.applets.codebase_principal_support", true);
      * or change the setting from within the browser with calling the "about:config" page
      **/
-    copyToSystemClipboard : function ( text, flavor )
+    _copyToSystemClipboard : function ( text, flavor )
     {
       if ( ! flavor )
       {
@@ -243,12 +279,11 @@ qx.Class.define("qcl.clipboard.Manager",
     		} 
         catch(e) 
         {
-    			alert(
+    			throw new Error(
     		   	"Because of tight security settings in Mozilla / Firefox you cannot copy "+
     				"to the system clipboard at the moment. Please open the 'about:config' page "+
     				"in your browser and change the preference 'signed.applets.codebase_principal_support' to 'true'."
     				);
-    			return false;
     		}
          // we could successfully enable the privilege
     	   var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
@@ -269,7 +304,7 @@ qx.Class.define("qcl.clipboard.Manager",
        } 
        else 
        {
-    		alert("Your browser does not support copying to the clipboard!");
+    		throw new Error("Your browser does not support copying to the clipboard!");
        }
     }
 
