@@ -55,9 +55,9 @@ import org.xml.sax.SAXException;
  * the most prominent example of a node. Provides many more methods compared to java.io.File. Also, it 
  * removes some redundant methods simplify the api (in particular the constructors). </p></p>
  * 
- * <p>A node has a filesystem, and a path. A node can have children and a base.</p>
+ * <p>A node has a root, and a path. A node can have children and a base.</p>
  * 
- * <p>The filesystem defines a root and a separator.</p>
+ * <p>The Root defines a root string and a separator.</p>
  *
  * <p>The path is a sequence of names separated by the filesystem separator. It never starts 
  * or ends with a separator. It does not include the filesystem root, but it always includes the path
