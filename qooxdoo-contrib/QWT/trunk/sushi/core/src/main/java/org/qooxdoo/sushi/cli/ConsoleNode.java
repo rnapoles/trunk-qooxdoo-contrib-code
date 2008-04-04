@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.io.Node;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
 
 public class ConsoleNode extends Node {
-    public static final Root FS = new Root("console:/", '/');
+    public static final Root FS = new Root(ConsoleFilesystem.INSTANCE, "console:/", '/');
     
     public ConsoleNode(IO io) {
         super(io, FS, null);

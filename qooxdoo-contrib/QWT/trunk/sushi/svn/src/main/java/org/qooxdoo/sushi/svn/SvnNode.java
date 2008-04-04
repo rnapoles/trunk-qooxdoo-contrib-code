@@ -34,7 +34,6 @@ import java.util.Set;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Root;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
@@ -42,6 +41,7 @@ import org.qooxdoo.sushi.io.ListException;
 import org.qooxdoo.sushi.io.Misc;
 import org.qooxdoo.sushi.io.MkdirException;
 import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.io.Root;
 import org.qooxdoo.sushi.io.SetLastModifiedException;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDirEntry;
@@ -67,7 +67,7 @@ public class SvnNode extends Node {
     private static final char SEPARATOR_CHAR = '/';
     public static final String SEPARATOR = "" + SEPARATOR_CHAR;
     public static final int SEPARATOR_LENGTH = 1;
-    private static final Root FS = new Root("svn:/", SEPARATOR_CHAR);
+    private static final Root FS = new Root(SvnFilesystem.INSTANCE, "svn:/", SEPARATOR_CHAR);
     
     static {
         FSRepositoryFactory.setup();

@@ -46,13 +46,13 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
-    private static final Root FS = new Root("ssh:/", '/');
+    private static final Root ROOT = new Root(SshFilesystem.INSTANCE, "ssh:/", '/');
     
     private final ChannelSftp channel;
     private final String slashPath;
     
     public SshNode(IO io, ChannelSftp channel, String path) {
-        super(io, FS, null);
+        super(io, ROOT, null);
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
@@ -67,6 +67,10 @@ public class SshNode extends Node {
         this.slashPath = "/" + path;
     }
 
+    public ChannelSftp getChannel() {
+        return channel;
+    }
+    
     @Override
     public long length() throws LengthException {
         try {

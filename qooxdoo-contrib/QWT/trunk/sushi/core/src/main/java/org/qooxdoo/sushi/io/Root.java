@@ -24,11 +24,13 @@ import java.util.List;
 import org.qooxdoo.sushi.util.Strings;
 
 public class Root {
+    public final Filesystem filesystem;
     public final String root;
     public final char separatorChar;
     public final String separator;
     
-    public Root(String root, char separatorChar) {
+    public Root(Filesystem filesystem, String root, char separatorChar) {
+        this.filesystem = filesystem;
         this.root = root;
         this.separatorChar = separatorChar;
         this.separator = "" + separatorChar;

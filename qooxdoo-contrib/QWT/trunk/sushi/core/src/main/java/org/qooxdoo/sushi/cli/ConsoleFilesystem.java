@@ -17,17 +17,24 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.io;
+package org.qooxdoo.sushi.cli;
 
-import java.io.IOException;
+import org.qooxdoo.sushi.io.Filesystem;
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.ParseException;
 
-public class ParseException extends IOException {
-    public ParseException(String msg) {
-        super(msg);
-    }
+public class ConsoleFilesystem extends Filesystem {
+    public static final ConsoleFilesystem INSTANCE = new ConsoleFilesystem();
     
-    public ParseException(String msg, Throwable cause) {
-        this(msg);
-        initCause(cause);
+    private ConsoleFilesystem() {
+        super("console");
+    }
+
+    @Override
+    public ConsoleNode parse(IO io, String str) throws ParseException {
+        if (str.length() != 0) {
+            throw new ParseException(str);
+        }
+        return new ConsoleNode(io);
     }
 }

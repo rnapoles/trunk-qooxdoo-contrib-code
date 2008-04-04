@@ -17,17 +17,22 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.io;
+package org.qooxdoo.sushi.svn;
 
 import java.io.IOException;
 
-public class ParseException extends IOException {
-    public ParseException(String msg) {
-        super(msg);
-    }
+import org.qooxdoo.sushi.io.Filesystem;
+import org.qooxdoo.sushi.io.IO;
+
+public class SvnFilesystem extends Filesystem {
+    public static final SvnFilesystem INSTANCE = new SvnFilesystem();
     
-    public ParseException(String msg, Throwable cause) {
-        this(msg);
-        initCause(cause);
+    private SvnFilesystem() {
+        super("svn");
+    }
+
+    @Override
+    public SvnNode parse(IO io, String str) throws IOException {
+        return null; // TODO
     }
 }

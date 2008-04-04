@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.cli.ConsoleNode;
+import org.qooxdoo.sushi.memory.MemoryNode;
 
 public class FactoryTest {
     private Factory f = new Factory();
@@ -33,7 +35,7 @@ public class FactoryTest {
     public void scan() throws IOException {
         assertEquals(0, f.size());
         f.scan();
-        assertEquals(2, f.size());
+        assertEquals(5, f.size());
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -58,5 +60,11 @@ public class FactoryTest {
         assertEquals("usr", node.getPath());
         node = f.parse(new IO(), "resource:META-INF/sushi/filesystems");
         assertTrue(node.isFile());
+        node = f.parse(new IO(), "http:http://heise.de");
+        assertTrue(node instanceof HttpNode);
+        node = f.parse(new IO(), "console:");
+        assertTrue(node instanceof ConsoleNode);
+        node = f.parse(new IO(), "mem:/foo");
+        assertTrue(node instanceof MemoryNode);
     }
 }
