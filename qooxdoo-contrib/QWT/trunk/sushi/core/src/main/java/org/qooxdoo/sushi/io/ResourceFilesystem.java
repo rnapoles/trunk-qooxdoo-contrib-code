@@ -20,7 +20,7 @@
 package org.qooxdoo.sushi.io;
 
 
-public class ResourceFilesystem extends FS {
+public class ResourceFilesystem extends Filesystem {
     public ResourceFilesystem() {
         super();
     }

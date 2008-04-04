@@ -20,8 +20,8 @@
 package org.qooxdoo.sushi.io;
 
 
-public abstract class FS {
-    public FS() {
+public abstract class Filesystem {
+    public Filesystem() {
     }
 
     public abstract Node parse(IO io, String str) throws ParseException;
