@@ -23,7 +23,7 @@ import java.io.File;
 
 public class FileFilesystem extends Filesystem {
     public FileFilesystem() {
-        super();
+        super("file");
     }
 
     @Override

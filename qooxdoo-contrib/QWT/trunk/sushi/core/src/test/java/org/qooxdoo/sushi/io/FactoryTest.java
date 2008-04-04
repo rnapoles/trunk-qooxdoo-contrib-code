@@ -39,14 +39,14 @@ public class FactoryTest {
     @Test(expected=IllegalArgumentException.class)
     public void duplicate() throws IOException {
         assertEquals(0, f.size());
-        f.add("foo", new FileFilesystem());
-        f.add("foo", new FileFilesystem());
+        f.add(new FileFilesystem());
+        f.add(new FileFilesystem());
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void unkownClass() throws IOException {
         assertEquals(0, f.size());
-        f.add("foo", "unkown");
+        f.add("unkown");
     }
     
     @Test
@@ -56,7 +56,7 @@ public class FactoryTest {
         f.scan();
         node = f.parse(new IO(), "file:/usr");
         assertEquals("usr", node.getPath());
-        node = f.parse(new IO(), "resource:META-INF/sushi/filesystem.properties");
+        node = f.parse(new IO(), "resource:META-INF/sushi/filesystems");
         assertTrue(node.isFile());
     }
 }
