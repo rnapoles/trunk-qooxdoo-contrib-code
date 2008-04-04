@@ -51,7 +51,7 @@ public class FileNode extends Node {
         
         str = file.getAbsolutePath().toUpperCase();
         for (Root fs : FSS) {
-            if (str.startsWith(fs.root)) {
+            if (str.startsWith(fs.id)) {
                 return fs;
             }
         }
@@ -86,7 +86,7 @@ public class FileNode extends Node {
     
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, (FileNode) base, new File(fs.root + path));
+        return new FileNode(io, (FileNode) base, new File(fs.id + path));
     }
     
     public URI toURI() {
@@ -106,7 +106,7 @@ public class FileNode extends Node {
     
     @Override
     public String getPath() {
-        return file.getPath().substring(fs.root.length());
+        return file.getPath().substring(fs.id.length());
     }
     
     //--

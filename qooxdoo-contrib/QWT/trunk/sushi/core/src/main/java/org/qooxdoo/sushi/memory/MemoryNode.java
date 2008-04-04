@@ -36,7 +36,7 @@ import org.qooxdoo.sushi.io.SetLastModifiedException;
 
 /** You'll normally use IO.stringNode() to create instances */
 public class MemoryNode extends Node {
-    private static final Root FS = new Root(MemoryFilesystem.INSTANCE, "mem:/", '/');
+    private static final Root FS = new Root(MemoryFilesystem.INSTANCE, "/", '/');
     
     public static MemoryNode createRoot(IO io) {
         return new Context(io).node("");

@@ -61,7 +61,7 @@ public class CsvTest {
             check("\"\n\"");
             fail();
         } catch (CsvExceptions e) {
-            assertEquals("mem:/tmp:1: quote not closed\nmem:/tmp:2: quote not closed", e.getMessage());
+            assertEquals("/tmp:1: quote not closed\n/tmp:2: quote not closed", e.getMessage());
         }
     }
 

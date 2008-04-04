@@ -570,6 +570,6 @@ public abstract class NodeTest {
         Node file;
         
         file = work.join("foo");
-        assertEquals(file.fs.root + file.getPath(), file.toString());
+        assertEquals(file.fs.id + file.getPath(), file.toString());
     }
 }
