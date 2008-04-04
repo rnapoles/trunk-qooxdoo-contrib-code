@@ -34,23 +34,23 @@ import org.qooxdoo.sushi.util.Program;
  * <p>File, directory, symlink or something not yet created. Relacement java.io.File.</p>
  */
 public class FileNode extends Node {
-    private static final Filesystem[] FSS;
+    private static final Root[] FSS;
     
     static {
         File[] roots;
         
         roots = File.listRoots();
-        FSS = new Filesystem[roots.length];
+        FSS = new Root[roots.length];
         for (int i = 0; i < roots.length; i++) {
-            FSS[i] = new Filesystem(roots[i].getAbsolutePath(), File.separatorChar);
+            FSS[i] = new Root(roots[i].getAbsolutePath(), File.separatorChar);
         }
     }
     
-    private static Filesystem findFs(File file) {
+    private static Root findFs(File file) {
         String str;
         
         str = file.getAbsolutePath().toUpperCase();
-        for (Filesystem fs : FSS) {
+        for (Root fs : FSS) {
             if (str.startsWith(fs.root)) {
                 return fs;
             }

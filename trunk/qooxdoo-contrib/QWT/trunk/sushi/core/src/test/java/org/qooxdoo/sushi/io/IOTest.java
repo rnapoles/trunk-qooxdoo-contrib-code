@@ -28,7 +28,7 @@ import org.qooxdoo.sushi.util.Reflect;
 
 public class IOTest {
     // TODO
-    private static Filesystem fs(IO io) {
+    private static Root fs(IO io) {
         return io.getWorking().fs;
     }
     

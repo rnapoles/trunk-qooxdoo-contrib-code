@@ -70,12 +70,12 @@ public abstract class Node {
     public final IO io;
     
     /** never null */
-    public final Filesystem fs;
+    public final Root fs;
     
     /** may be null */
     public final Node base;
     
-    public Node(IO io, Filesystem fs, Node base) {
+    public Node(IO io, Root fs, Node base) {
         this.io = io;
         this.fs = fs;
         this.base = base;

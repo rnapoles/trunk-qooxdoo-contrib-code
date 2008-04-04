@@ -33,7 +33,7 @@ import java.util.List;
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
  */
 public class HttpNode extends Node {
-    private static final Filesystem FS = new Filesystem("http:/", '/');
+    private static final Root FS = new Root("http:/", '/');
     
     // CAUTION: no forResource method, because non-existing resources don't have a url
     

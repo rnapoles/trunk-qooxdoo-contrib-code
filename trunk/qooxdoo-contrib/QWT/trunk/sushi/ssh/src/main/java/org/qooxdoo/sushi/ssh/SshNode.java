@@ -31,7 +31,7 @@ import java.util.List;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Filesystem;
+import org.qooxdoo.sushi.io.Root;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
@@ -46,7 +46,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
-    private static final Filesystem FS = new Filesystem("ssh:/", '/');
+    private static final Root FS = new Root("ssh:/", '/');
     
     private final ChannelSftp channel;
     private final String slashPath;

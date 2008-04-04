@@ -26,7 +26,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class ResourceNode extends Node {
-    public static final Filesystem FS = new Filesystem("resource:/", '/');
+    public static final Root FS = new Root("resource:/", '/');
     
     private final ClassLoader loader;
     private final String path;
