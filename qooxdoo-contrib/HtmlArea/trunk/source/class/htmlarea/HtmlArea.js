@@ -2191,7 +2191,7 @@ qx.Class.define("htmlarea.HtmlArea",
           (this.__commandManager.__commandManager.__lastSelectionType != "Control")
         )
         {
-          return this.__commandManager.execute("inserthtml", '<a href="' + url + '">' + url + '</a> ');
+          return this.__commandManager.execute("inserthtml", ' <a href="' + url + '">' + url + '</a> ');
         }
         else
         {
