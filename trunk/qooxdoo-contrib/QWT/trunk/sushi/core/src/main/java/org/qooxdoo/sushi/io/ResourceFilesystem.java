@@ -21,7 +21,9 @@ package org.qooxdoo.sushi.io;
 
 
 public class ResourceFilesystem extends Filesystem {
-    public ResourceFilesystem() {
+    public static final ResourceFilesystem INSTANCE = new ResourceFilesystem();
+    
+    private ResourceFilesystem() {
         super("resource");
     }
 

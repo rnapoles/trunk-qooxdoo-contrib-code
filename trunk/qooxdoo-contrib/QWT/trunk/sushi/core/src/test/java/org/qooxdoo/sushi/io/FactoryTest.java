@@ -39,8 +39,8 @@ public class FactoryTest {
     @Test(expected=IllegalArgumentException.class)
     public void duplicate() throws IOException {
         assertEquals(0, f.size());
-        f.add(new FileFilesystem());
-        f.add(new FileFilesystem());
+        f.add(FileFilesystem.INSTANCE);
+        f.add(FileFilesystem.INSTANCE);
     }
 
     @Test(expected=IllegalArgumentException.class)

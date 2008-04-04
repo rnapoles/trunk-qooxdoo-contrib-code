@@ -72,11 +72,15 @@ public class Factory {
             throw new IllegalArgumentException("unkown class: " + filesystemClass, e);
         }
         try {
-            fs = (Filesystem) clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException("cannot instantiate", e);
+            fs = (Filesystem) clazz.getDeclaredField("INSTANCE").get(null);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("cannot instantiate", e);
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (SecurityException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
         }
         add(fs);
     }
