@@ -22,7 +22,9 @@ package org.qooxdoo.sushi.io;
 import java.io.File;
 
 public class FileFilesystem extends Filesystem {
-    public FileFilesystem() {
+    public static final FileFilesystem INSTANCE = new FileFilesystem();
+    
+    private FileFilesystem() {
         super("file");
     }
 
