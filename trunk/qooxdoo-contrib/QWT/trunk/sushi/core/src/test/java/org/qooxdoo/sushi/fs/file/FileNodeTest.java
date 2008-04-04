@@ -228,8 +228,8 @@ public class FileNodeTest extends NodeTest {
     
     @Test
     public void filesystem() {
-        assertEquals(File.separator, work.fs.separator);
-        assertEquals(File.separatorChar, work.fs.separatorChar);
+        assertEquals(File.separator, work.getRoot().separator);
+        assertEquals(File.separatorChar, work.getRoot().separatorChar);
     }
 }
 

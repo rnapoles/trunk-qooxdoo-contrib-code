@@ -52,7 +52,7 @@ public class SshNode extends Node {
     private final String slashPath;
     
     public SshNode(IO io, ChannelSftp channel, String path) {
-        super(io, ROOT, null);
+        super(io, ROOT);
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();

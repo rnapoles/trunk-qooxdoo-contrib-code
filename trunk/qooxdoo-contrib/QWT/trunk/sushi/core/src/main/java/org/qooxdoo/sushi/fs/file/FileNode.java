@@ -81,7 +81,7 @@ public class FileNode extends Node {
      * a given path.
      */
     public FileNode(IO io, FileNode base, File file) {
-        super(io, findFs(file), base);
+        super(io, findFs(file));
         
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
@@ -90,11 +90,12 @@ public class FileNode extends Node {
             throw new IllegalArgumentException("should not happen because java.io.File normalizes paths: " + file.getPath());
         }
         this.file = file;
+        setBase(base);
     }
     
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, (FileNode) base, new File(fs.id + path));
+        return new FileNode(io, (FileNode) getBase(), new File(root.id + path));
     }
     
     public URI toURI() {
@@ -114,7 +115,7 @@ public class FileNode extends Node {
     
     @Override
     public String getPath() {
-        return file.getPath().substring(fs.id.length());
+        return file.getPath().substring(root.id.length());
     }
     
     //--
@@ -188,7 +189,7 @@ public class FileNode extends Node {
         }
         result = new ArrayList<FileNode>(children.length);
         for (int i = 0; i < children.length; i++) {
-            result.add(new FileNode(io, (FileNode) base, children[i]));
+            result.add(new FileNode(io, (FileNode) getBase(), children[i]));
         }
         return result;
     }

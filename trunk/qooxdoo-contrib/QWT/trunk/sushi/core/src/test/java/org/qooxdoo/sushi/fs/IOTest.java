@@ -31,7 +31,7 @@ import org.qooxdoo.sushi.util.Reflect;
 public class IOTest {
     // TODO
     private static Root fs(IO io) {
-        return io.getWorking().fs;
+        return io.getWorking().root;
     }
     
     @Test
@@ -121,7 +121,7 @@ public class IOTest {
         path = io.path("foo" + io.os.listSeparator + fs(io).id + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
-        assertEquals(io.getWorking().fs.id + "bar", path.get(1).toString());
+        assertEquals(io.getWorking().root.id + "bar", path.get(1).toString());
         try {
             io.classpath("nosuchfile.jar");
             fail();

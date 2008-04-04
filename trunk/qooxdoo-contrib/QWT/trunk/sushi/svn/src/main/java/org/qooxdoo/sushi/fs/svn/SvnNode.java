@@ -127,7 +127,7 @@ public class SvnNode extends Node {
     private String comment;
     
     public SvnNode(IO io, SVNRepository repository, boolean directory, String path) {
-        super(io, FS, null);
+        super(io, FS);
         if (path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }

@@ -35,7 +35,7 @@ public class ConsoleNode extends Node {
     public static final Root FS = new Root(ConsoleFilesystem.INSTANCE, "/", '/');
     
     public ConsoleNode(IO io) {
-        super(io, FS, null);
+        super(io, FS);
     }
 
     @Override
