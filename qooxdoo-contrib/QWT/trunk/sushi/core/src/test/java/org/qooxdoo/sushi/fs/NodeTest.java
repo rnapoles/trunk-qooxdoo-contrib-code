@@ -53,7 +53,7 @@ public abstract class NodeTest {
     @Before
     public void setUp() throws Exception {
         work = createWork();
-        sep = work.fs.separator;
+        sep = work.getRoot().separator;
     }
     
     @Test
@@ -572,6 +572,6 @@ public abstract class NodeTest {
         Node file;
         
         file = work.join("foo");
-        assertEquals(file.fs.id + file.getPath(), file.toString());
+        assertEquals(file.getRoot().id + file.getPath(), file.toString());
     }
 }

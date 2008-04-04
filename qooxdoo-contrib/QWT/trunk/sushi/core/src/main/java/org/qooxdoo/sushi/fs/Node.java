@@ -53,8 +53,8 @@ import org.xml.sax.SAXException;
 
 /**
  * <p>Abstraction from a file: something you can get an input or output stream from. FileNode is probably
- * the most prominent example of a node. Provides many more methods compared to java.io.File. Also, it 
- * removes some redundant methods simplify the api (in particular the constructors). </p></p>
+ * the most prominent example of a node. Provides more methods compared to java.io.File, especially for
+ * scripting. Also, it removes some redundant methods simplify the api (in particular the constructors).</p>
  * 
  * <p>A node has a root, and a path. A node can have children and a base.</p>
  * 
@@ -64,22 +64,28 @@ import org.xml.sax.SAXException;
  * or ends with a separator. It does not include the filesystem root, but it always includes the path
  * of the base. A node with an empty path is called root node.
  *   
- * <p>The base is a node this node is relative to. It's optional, a node without base is called absolute.</p> 
+ * <p>The base is a node this node is relative to. It's optional, a node without base is called absolute.</p>
+ * 
+ * <p>A node is immutable, except for its base.</p>
  */
 public abstract class Node {
     /** never null */
     public final IO io;
     
     /** never null */
-    public final Root fs;
+    protected final Root root;
     
     /** may be null */
-    public final Node base;
+    private Node base;
     
-    public Node(IO io, Root fs, Node base) {
+    public Node(IO io, Root root) {
         this.io = io;
-        this.fs = fs;
-        this.base = base;
+        this.root = root;
+        this.base = null;
+    }
+    
+    public Root getRoot() {
+        return root;
     }
     
     /** @return node with the specified path */
@@ -116,8 +122,15 @@ public abstract class Node {
      * 
      * @return null for absolute file
      */
-    public final Node getBase() {
+    public Node getBase() {
         return base;
+    }
+
+    public void setBase(Node base) {
+        if (base != null && root != base.root) {
+            throw new IllegalArgumentException(root + " conflicts " + base.root);
+        }
+        this.base = base;
     }
 
     public abstract String getPath();
@@ -128,7 +141,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(fs.separatorChar) + 1);
+        return path.substring(path.lastIndexOf(root.separatorChar) + 1);
     }
     
     public Node getParent() {
@@ -139,7 +152,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf(fs.separatorChar);
+        idx = path.lastIndexOf(root.separatorChar);
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -178,26 +191,26 @@ public abstract class Node {
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(fs.separatorChar) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(root.separatorChar) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, fs.separator);
+        ups = Strings.count(startfilepath, root.separator);
         for (i = 0; i < ups; i++) {
-            result.append(".." + fs.separator);
+            result.append(".." + root.separator);
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();
     }
 
-    /** @return fs.root + getPath */ 
+    /** @return fs.root + getPath, but not filesystem name */ 
     public String getAbsolute() {
-        return fs.id + getPath();
+        return root.id + getPath();
     }
     
     public Node join(List<String> paths) {
-        return newInstance(fs.join(getPath(), paths));
+        return newInstance(root.join(getPath(), paths));
     }
     
     public Node join(String... names) {

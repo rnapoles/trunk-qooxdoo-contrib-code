@@ -31,10 +31,10 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.Root;
 
-// TODO: generalize, don't use Nodes
+// TODO: generalize, don't use File nodes
 public class FilterTest {
     private static final IO IO_OBJ = new IO();
-    private static final Root FS = IO_OBJ.getTemp().fs;
+    private static final Root ROOT = IO_OBJ.getTemp().getRoot();
 
     @Test
     public void empty() throws IOException {
@@ -113,7 +113,7 @@ public class FilterTest {
         try {
             root = IO_OBJ.createTempDirectory();
             for (String path : paths) {
-                path = path.replace('/', FS.separatorChar);
+                path = path.replace('/', ROOT.separatorChar);
                 file = root.join(path);
                 file.getParent().mkdirsOpt();
                 file.writeBytes();

@@ -54,7 +54,7 @@ public class HttpNode extends Node {
     private final URL url;
     
     public HttpNode(IO io, URL url) {
-        super(io, FS, null);
+        super(io, FS);
         this.url = url;
     }
     

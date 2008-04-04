@@ -43,7 +43,7 @@ public class ResourceNode extends Node {
     }
 
     public ResourceNode(IO io, ClassLoader loader, String path) {
-        super(io, FS, null);
+        super(io, FS);
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
