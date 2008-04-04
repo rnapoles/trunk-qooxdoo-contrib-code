@@ -32,9 +32,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.filter.Filter;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;

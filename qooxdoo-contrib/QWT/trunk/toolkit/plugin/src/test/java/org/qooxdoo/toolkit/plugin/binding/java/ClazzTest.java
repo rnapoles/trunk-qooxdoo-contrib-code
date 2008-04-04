@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.toolkit.plugin.binding.java.Modifier;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
 import org.qooxdoo.toolkit.plugin.binding.java.ClazzType;

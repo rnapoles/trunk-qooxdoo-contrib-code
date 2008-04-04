@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.util.Strings;
 
 public class PatchSet {

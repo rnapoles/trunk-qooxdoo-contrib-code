@@ -22,7 +22,7 @@ package org.qooxdoo.toolkit.plugin.binding.java;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 
 public class MethodTest {
     private static final IO IO_OBJ = new IO();

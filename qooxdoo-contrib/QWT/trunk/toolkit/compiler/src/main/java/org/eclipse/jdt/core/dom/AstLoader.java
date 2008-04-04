@@ -30,7 +30,7 @@ import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.core.BasicCompilationUnit;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 public class AstLoader {
     public static List<CompilationUnit> run(List<Node> classpath, List<? extends Node> sources) throws IOException {

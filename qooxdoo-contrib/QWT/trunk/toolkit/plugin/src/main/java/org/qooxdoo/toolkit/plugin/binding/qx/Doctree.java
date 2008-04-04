@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.xml.Loader;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;

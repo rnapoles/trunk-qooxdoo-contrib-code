@@ -21,7 +21,7 @@ package org.qooxdoo.sushi;
 
 import java.util.Properties;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;

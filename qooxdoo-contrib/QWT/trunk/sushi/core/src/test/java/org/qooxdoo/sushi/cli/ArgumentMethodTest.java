@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;
 import static org.junit.Assert.*;
 

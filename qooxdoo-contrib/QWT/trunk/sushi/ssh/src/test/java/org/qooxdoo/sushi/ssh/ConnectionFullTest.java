@@ -30,7 +30,7 @@ import java.net.UnknownHostException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.util.ExitCode;
 
 import com.jcraft.jsch.JSchException;

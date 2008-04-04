@@ -27,8 +27,8 @@ import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.xml.SAXLoaderException;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Builder;

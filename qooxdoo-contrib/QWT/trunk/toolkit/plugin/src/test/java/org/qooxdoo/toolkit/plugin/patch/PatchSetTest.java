@@ -25,8 +25,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.memory.MemoryNode;
 import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 

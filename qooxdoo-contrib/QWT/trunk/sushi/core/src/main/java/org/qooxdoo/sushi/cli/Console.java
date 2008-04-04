@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.MultiOutputStream;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.MultiOutputStream;
 
 /**
  * Configurable replacement for System.out, System.err and System.in. 

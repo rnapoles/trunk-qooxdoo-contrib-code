@@ -19,9 +19,9 @@
 
 package org.qooxdoo.sushi.memory;
 
-import org.qooxdoo.sushi.io.Filesystem;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.ParseException;
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ParseException;
 
 
 public class MemoryFilesystem extends Filesystem {

@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.xml.Builder;
 import org.qooxdoo.sushi.xml.Selector;
 import org.qooxdoo.sushi.xml.XmlException;
@@ -59,7 +59,7 @@ public class Feed {
 
     //-
 
-    public void write(org.qooxdoo.sushi.io.FileNode dest) throws IOException {
+    public void write(org.qooxdoo.sushi.fs.FileNode dest) throws IOException {
         dest.writeXml(toXml(dest.getIO().xml.builder));
     }        
 

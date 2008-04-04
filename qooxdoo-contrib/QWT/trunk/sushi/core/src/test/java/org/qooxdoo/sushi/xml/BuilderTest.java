@@ -34,8 +34,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 public class BuilderTest {
     private static final IO IO_OBJ = new IO();

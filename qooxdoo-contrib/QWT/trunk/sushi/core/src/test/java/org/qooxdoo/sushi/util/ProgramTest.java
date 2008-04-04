@@ -26,8 +26,8 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.OS;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.OS;
 
 public class ProgramTest {
     private static final IO IO_OBJ = new IO();

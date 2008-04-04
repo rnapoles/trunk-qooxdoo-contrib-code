@@ -30,7 +30,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Path;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;

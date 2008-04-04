@@ -28,9 +28,9 @@ import java.util.Properties;
 
 import org.qooxdoo.sushi.csv.Csv;
 import org.qooxdoo.sushi.csv.View;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.io.NodeWriter;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.NodeWriter;
 import org.qooxdoo.sushi.metadata.store.PropertyStore;
 import org.qooxdoo.sushi.metadata.xml.DomTree;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;

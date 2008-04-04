@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.archive.Archive;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.svn.SvnNode;
 
 public class Skeleton {

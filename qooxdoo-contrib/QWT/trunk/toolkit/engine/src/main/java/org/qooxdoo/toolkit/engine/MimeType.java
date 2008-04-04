@@ -19,7 +19,7 @@
 
 package org.qooxdoo.toolkit.engine;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 public enum MimeType {
     XML("text/xml"),

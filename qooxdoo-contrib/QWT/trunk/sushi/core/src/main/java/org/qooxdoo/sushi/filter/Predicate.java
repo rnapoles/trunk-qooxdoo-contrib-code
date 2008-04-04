@@ -21,8 +21,8 @@ package org.qooxdoo.sushi.filter;
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.io.ExistsException;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.ExistsException;
+import org.qooxdoo.sushi.fs.Node;
 
 public interface Predicate {
     Predicate FILE = new Predicate() {

@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.qooxdoo.sushi.io.ListException;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ListException;
+import org.qooxdoo.sushi.fs.Node;
 
 public class Resolver {
     private static final String SEP = ":";

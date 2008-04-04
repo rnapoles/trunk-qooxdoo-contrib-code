@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.IO;
 
 /**
  * Wraps a Process builder to add some convenience methods

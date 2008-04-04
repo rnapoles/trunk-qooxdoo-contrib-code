@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.util.Strings;
 
 /** A list of lines. http://de.wikipedia.org/wiki/CSV-Datei. */

@@ -22,7 +22,7 @@ package org.qooxdoo.sushi.classfile;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 /**
  * A context to read a class file. The context is comprised of an

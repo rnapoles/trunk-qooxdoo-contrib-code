@@ -21,8 +21,8 @@ package org.qooxdoo.sushi.svn;
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.io.Filesystem;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.IO;
 
 public class SvnFilesystem extends Filesystem {
     public static final SvnFilesystem INSTANCE = new SvnFilesystem();

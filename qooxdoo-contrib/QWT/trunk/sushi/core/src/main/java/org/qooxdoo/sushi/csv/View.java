@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.Path;
 import org.qooxdoo.sushi.metadata.Schema;

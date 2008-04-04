@@ -21,7 +21,7 @@ package org.qooxdoo.toolkit.qooxdoo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.rhino.QooxdooEngine;
 

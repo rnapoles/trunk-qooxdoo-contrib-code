@@ -52,7 +52,7 @@ import qx.ui.tree.TreeFolder;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.JavaScriptException;
 import org.qooxdoo.toolkit.rhino.QooxdooEngine;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 
 public class QooxdooTest {
     private static final IO io = new IO();

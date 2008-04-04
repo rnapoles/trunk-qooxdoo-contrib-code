@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.Node;
 
 /**
  * Packages Qooxdoo resources.

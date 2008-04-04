@@ -26,7 +26,7 @@ import java.util.Date;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Settings;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 /**
  * Installs a Maven-bug-workaround in your local repository

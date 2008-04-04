@@ -19,7 +19,7 @@
 
 package org.qooxdoo.sushi.filter;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 public interface Action {
     void invoke(Node node);

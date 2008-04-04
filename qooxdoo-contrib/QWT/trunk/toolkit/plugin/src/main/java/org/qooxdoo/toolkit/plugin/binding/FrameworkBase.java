@@ -22,7 +22,7 @@ package org.qooxdoo.toolkit.plugin.binding;
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.qooxdoo.sushi.io.FileNode;
+import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.Base;

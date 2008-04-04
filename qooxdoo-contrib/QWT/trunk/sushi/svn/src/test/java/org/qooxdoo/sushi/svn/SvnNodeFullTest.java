@@ -29,9 +29,9 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.io.NodeTest;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.NodeTest;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;

@@ -28,8 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.qooxdoo.sushi.io.Buffer;
-import org.qooxdoo.sushi.io.Settings;
+import org.qooxdoo.sushi.fs.Buffer;
+import org.qooxdoo.sushi.fs.Settings;
 
 /** Main class */
 public class MethodServlet extends Servlet {

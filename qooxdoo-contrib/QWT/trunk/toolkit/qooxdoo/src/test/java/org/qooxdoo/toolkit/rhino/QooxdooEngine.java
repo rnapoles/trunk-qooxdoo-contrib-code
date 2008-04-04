@@ -19,7 +19,7 @@
 
 package org.qooxdoo.toolkit.rhino;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.xml.Xml;
 import org.qooxdoo.toolkit.qooxdoo.Qooxdoo;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;

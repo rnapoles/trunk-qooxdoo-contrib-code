@@ -24,7 +24,7 @@ import java.util.Arrays;
 import org.qooxdoo.sushi.csv.Csv;
 import org.qooxdoo.sushi.csv.Format;
 import org.qooxdoo.sushi.csv.View;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;

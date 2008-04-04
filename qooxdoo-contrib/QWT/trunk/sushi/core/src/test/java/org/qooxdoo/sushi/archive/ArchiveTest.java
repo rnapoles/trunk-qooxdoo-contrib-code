@@ -26,8 +26,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 import static org.junit.Assert.*;
 

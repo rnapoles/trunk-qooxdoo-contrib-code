@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.store.PropertyStore;
 import org.qooxdoo.sushi.metadata.xml.Loader;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;

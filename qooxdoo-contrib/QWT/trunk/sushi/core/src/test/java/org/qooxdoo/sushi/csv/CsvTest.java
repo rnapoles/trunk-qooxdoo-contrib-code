@@ -27,8 +27,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 public class CsvTest {
     private static final Format FMT = new Format();

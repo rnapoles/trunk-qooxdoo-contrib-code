@@ -25,8 +25,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.Schema;

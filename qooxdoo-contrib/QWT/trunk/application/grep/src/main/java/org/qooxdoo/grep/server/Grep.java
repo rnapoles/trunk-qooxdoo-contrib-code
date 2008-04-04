@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.qooxdoo.grep.common.GrepService;
 import org.qooxdoo.grep.common.Match;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 public class Grep implements GrepService {
     private static final int MAX = 100;

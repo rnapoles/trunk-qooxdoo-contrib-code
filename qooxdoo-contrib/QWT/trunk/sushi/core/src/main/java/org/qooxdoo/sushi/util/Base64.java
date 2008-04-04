@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.qooxdoo.sushi.io.Settings;
+import org.qooxdoo.sushi.fs.Settings;
 
 public class Base64 {
     /** true create base64 */

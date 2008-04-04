@@ -21,9 +21,9 @@ package org.qooxdoo.sushi.ssh;
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.io.Filesystem;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.ParseException;
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ParseException;
 
 import com.jcraft.jsch.JSchException;
 
