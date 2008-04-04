@@ -83,7 +83,7 @@ public class SshNodeFullTest extends NodeTest {
     }
 
     @Test
-    public void root() throws Exception {
+    public void rootPath() throws Exception {
         SshNode root;
         
         root = create("");
