@@ -34,7 +34,7 @@ public class HttpFilesystem extends Filesystem {
     }
 
     @Override
-    public HttpNode parse(IO io, String str) throws ParseException, MalformedURLException {
-        return new HttpNode(io, new URL(str));
+    public HttpNode parse(IO io, String rootPath) throws ParseException, MalformedURLException {
+        return new HttpNode(io, new URL(rootPath));
     }
 }

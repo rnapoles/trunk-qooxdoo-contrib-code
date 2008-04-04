@@ -36,14 +36,14 @@ public class SshFilesystem extends Filesystem {
     }
 
     @Override
-    public SshNode parse(IO io, String str) throws IOException {
+    public SshNode parse(IO io, String rootPath) throws IOException {
         String hostname;
         User user;
         
         hostname = "localhost"; // TODO
         user = User.withUserKey(io);
         try {
-            return new SshNode(io, Connection.create(hostname, user).open(), str);
+            return new SshNode(io, Connection.create(hostname, user).open(), rootPath);
         } catch (JSchException e) {
             throw new ParseException("cannot connect", e);
         }

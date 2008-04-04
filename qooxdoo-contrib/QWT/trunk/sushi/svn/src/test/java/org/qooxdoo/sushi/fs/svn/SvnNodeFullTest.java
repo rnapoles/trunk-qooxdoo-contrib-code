@@ -21,7 +21,6 @@ package org.qooxdoo.sushi.fs.svn;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +28,10 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.Factory;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
+import org.qooxdoo.sushi.fs.ParseException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -52,55 +53,55 @@ public class SvnNodeFullTest extends NodeTest {
     public Node createWork() throws IOException {
         SvnNode node;
 
-        try {
-            node = SvnNode.create(IO, URL + "/work");
-            node.deleteOpt();
-            node.mkdir();
-            return node;
-        } catch (SVNException e) {
-            throw new RuntimeException(e);
-        }
+        node = create(URL + "/work");
+        node.deleteOpt();
+        node.mkdir();
+        return node;
+    }
+
+    @Test
+    public void locator() throws Exception {
+        String locator;
+        Factory factory;
+        Node again;
+        
+        locator = work.getLocator();
+        factory = new Factory();
+        factory.scan();
+        again = factory.parse(IO, locator);
+        assertEquals(work, again);
+        assertEquals(locator, again.getLocator());
     }
 
     @Test
     public void rootWithUrl() throws SVNException {
-        assertEquals(URL.toString() + "|/", work.getRoot().id);
+        assertEquals(URL.toString() + "/", work.getRoot().id);
     }
  
     @Test
-    public void path() throws SVNException {
-        assertEquals("", SvnNode.create(IO, URL.toString()).getPath());
+    public void path() throws IOException {
+        assertEquals("", create(URL.toString()).getPath());
         // assertEquals("test", SvnNode.create(IO, TEST).getPath());
         assertEquals("work", work.getPath());
     }
  
-    @Test
-    public void invalid() throws SVNException {
-        try {
-            SvnNode.create(IO, URL + "/tailingslash/");
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
+    @Test(expected=IllegalArgumentException.class)
+    public void invalid() throws IOException {
+        create(URL + "/tailingslash/");
     }
  
-    @Test
-    public void connectionRefused() throws SVNException {
-        try {
-            SvnNode.create(IO, "https://heise.de/svn");
-            fail();
-        } catch (SVNException e) {
-            // ok
-        }
+    @Test(expected=ParseException.class)
+    public void connectionRefused() throws IOException {
+        create("https://heise.de/svn");
     }
 
     @Test
-    public void revisions() throws SVNException {
+    public void revisions() throws IOException, SVNException {
         SvnNode root;
         long rootRevision;
         long fileRevision;
         
-        root = SvnNode.create(IO, URL.toString());
+        root = create(URL.toString());
         rootRevision = root.getLatestRevision();
         fileRevision = ((SvnNode) root.join("work")).getLatestRevision();
         assertTrue(fileRevision <= rootRevision);
@@ -111,7 +112,7 @@ public class SvnNodeFullTest extends NodeTest {
         SvnNode root;
         List<Node> lst;
         
-        root = SvnNode.create(IO, URL.toString());
+        root = create(URL.toString());
         lst = IO.filter().include("*").collect(root);
         assertEquals(1, lst.size());
     }
@@ -160,7 +161,13 @@ public class SvnNodeFullTest extends NodeTest {
         SvnNode svn;
         
         dir = IO.createTempDirectory();
-        svn = SvnNode.create(IO, "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/branches/0.7.x");
+        svn = create("https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/branches/0.7.x");
         svn.export(dir);
+    }
+    
+    //--
+    
+    private SvnNode create(String path) throws ParseException {
+        return SvnFilesystem.INSTANCE.parse(IO, path);
     }
 }

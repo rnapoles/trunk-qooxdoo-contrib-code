@@ -33,6 +33,7 @@ import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.fs.http.HttpNode;
+import org.qooxdoo.sushi.fs.svn.SvnFilesystem;
 import org.qooxdoo.sushi.fs.svn.SvnNode;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
@@ -239,7 +240,7 @@ public class DistributionMojo extends Base {
         long revision;
 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        src = SvnNode.create(io, url);
+        src = SvnFilesystem.INSTANCE.parse(io, url);
         revision = src.export(qwt);
         qwt.join("svninfo").writeLines("url=" + url, "revision=" + revision);
     }

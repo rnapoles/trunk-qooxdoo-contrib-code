@@ -135,6 +135,10 @@ public abstract class Node {
 
     public abstract String getPath();
     
+    public String getLocator() {
+        return root.filesystem.getName() + ":" + root.id + getPath();
+    }
+
     /** @return the last path segment (or an empty string for the root node */ 
     public String getName() {
         String path;

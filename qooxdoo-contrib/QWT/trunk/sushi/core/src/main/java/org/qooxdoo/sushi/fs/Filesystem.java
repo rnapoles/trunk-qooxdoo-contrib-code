@@ -23,6 +23,9 @@ import java.io.IOException;
 
 
 public abstract class Filesystem {
+    /** separator file system name from rootPath in Locator strings */
+    public static final char SEPARTOR = ':';
+    
     private final String name;
     
     public Filesystem(String name) {
@@ -33,5 +36,5 @@ public abstract class Filesystem {
         return name;
     }
 
-    public abstract Node parse(IO io, String str) throws IOException;
+    public abstract Node parse(IO io, String rootPath) throws IOException;
 }

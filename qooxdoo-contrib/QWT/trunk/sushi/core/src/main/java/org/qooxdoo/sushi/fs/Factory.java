@@ -100,21 +100,21 @@ public class Factory {
         return map.size();
     }
     
-    public Node parse(IO io, String str) throws IOException {
+    public Node parse(IO io, String locator) throws IOException {
         int idx;
         String name;
         Filesystem fs;
         
-        idx = str.indexOf(':');
+        idx = locator.indexOf(Filesystem.SEPARTOR);
         if (idx == -1) {
-            throw new ParseException("unkown file system: " + str);
+            throw new ParseException("unkown file system: " + locator);
         }
-        name = str.substring(0, idx);
+        name = locator.substring(0, idx);
         fs = map.get(name);
         if (fs == null) {
-            throw new ParseException("unkown file system: " + name);
+            throw new ParseException("unkown file system: " + locator);
         }
         
-        return fs.parse(io, str.substring(idx + 1));
+        return fs.parse(io, locator.substring(idx + 1));
     }
 }
