@@ -27,9 +27,9 @@ import javax.servlet.ServletException;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 @Ignore // TODO
 public class ClientTest {

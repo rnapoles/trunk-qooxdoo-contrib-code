@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;
 

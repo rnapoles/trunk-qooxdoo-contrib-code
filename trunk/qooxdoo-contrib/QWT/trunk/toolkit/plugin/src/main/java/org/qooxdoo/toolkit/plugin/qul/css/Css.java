@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.mapping.Mapper;
 import org.qooxdoo.sushi.scanner.Position;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;

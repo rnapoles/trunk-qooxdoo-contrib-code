@@ -50,7 +50,7 @@ public class Builder {
     }
 
     /** Create a validating builder */
-    public Builder(org.qooxdoo.sushi.io.Node schema) throws IOException, SAXException {
+    public Builder(org.qooxdoo.sushi.fs.Node schema) throws IOException, SAXException {
         this.builder = createValidatingDocumentBuilder(schema);
     }
 
@@ -72,7 +72,7 @@ public class Builder {
         }
     }
 
-    public Document parse(org.qooxdoo.sushi.io.Node node) throws SAXException, IOException {
+    public Document parse(org.qooxdoo.sushi.fs.Node node) throws SAXException, IOException {
         InputStream stream;
         InputSource src;
         Document doc;
@@ -189,7 +189,7 @@ public class Builder {
         return result;
     }
 
-    public static DocumentBuilder createValidatingDocumentBuilder(org.qooxdoo.sushi.io.Node schema) throws IOException, SAXException {
+    public static DocumentBuilder createValidatingDocumentBuilder(org.qooxdoo.sushi.fs.Node schema) throws IOException, SAXException {
         DocumentBuilderFactory factory;
         DocumentBuilder builder;
 
@@ -203,7 +203,7 @@ public class Builder {
         return builder;
     }
 
-    public static SAXParser createValidatingSAXParser(org.qooxdoo.sushi.io.Node schema) throws IOException, SAXException {
+    public static SAXParser createValidatingSAXParser(org.qooxdoo.sushi.fs.Node schema) throws IOException, SAXException {
         return Factories.saxParser(schema);
     }
 

@@ -29,8 +29,8 @@ import org.qooxdoo.sushi.cli.Cli;
 import org.qooxdoo.sushi.cli.Command;
 import org.qooxdoo.sushi.cli.Option;
 import org.qooxdoo.sushi.cli.Remaining;
-import org.qooxdoo.sushi.io.ExistsException;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.ExistsException;
+import org.qooxdoo.sushi.fs.Node;
 
 public class Main extends Cli implements Command {
     public static void main(String[] args) {

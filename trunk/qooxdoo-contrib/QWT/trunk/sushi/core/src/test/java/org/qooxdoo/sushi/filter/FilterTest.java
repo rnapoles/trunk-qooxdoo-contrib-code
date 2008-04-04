@@ -27,9 +27,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.io.Root;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.Root;
 
 // TODO: generalize, don't use Nodes
 public class FilterTest {

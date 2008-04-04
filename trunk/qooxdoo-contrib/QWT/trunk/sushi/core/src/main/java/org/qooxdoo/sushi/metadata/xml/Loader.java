@@ -27,8 +27,8 @@ import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.xml.Builder;

@@ -22,8 +22,8 @@ package org.qooxdoo.sushi.svn;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.qooxdoo.sushi.io.MkdirException;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.Node;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNErrorMessage;

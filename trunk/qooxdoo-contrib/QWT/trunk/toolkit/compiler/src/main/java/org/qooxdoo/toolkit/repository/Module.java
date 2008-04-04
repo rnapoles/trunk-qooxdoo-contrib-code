@@ -22,7 +22,7 @@ package org.qooxdoo.toolkit.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Root;
+import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.toolkit.compiler.Naming;
 
 /**

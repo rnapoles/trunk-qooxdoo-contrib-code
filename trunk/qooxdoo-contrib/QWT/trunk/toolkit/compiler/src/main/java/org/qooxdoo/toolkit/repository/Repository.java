@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.qooxdoo.sushi.archive.Archive;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.toolkit.compiler.Naming;
 

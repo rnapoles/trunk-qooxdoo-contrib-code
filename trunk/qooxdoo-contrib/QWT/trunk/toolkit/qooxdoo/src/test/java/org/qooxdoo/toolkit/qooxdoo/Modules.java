@@ -15,7 +15,7 @@ import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.internal.runners.MethodValidator;
 import org.junit.internal.runners.TestClass;
 import org.junit.runner.notification.RunNotifier;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
 

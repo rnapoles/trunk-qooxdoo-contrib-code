@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.filter;
 
 import java.util.Collection;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 public class CollectAction implements Action {
     private final Collection<Node> collection;

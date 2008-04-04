@@ -24,12 +24,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.DeleteException;
-import org.qooxdoo.sushi.io.Root;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.MkdirException;
-import org.qooxdoo.sushi.io.Node;
-import org.qooxdoo.sushi.io.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.DeleteException;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.Root;
+import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ConsoleNode extends Node {
     public static final Root FS = new Root(ConsoleFilesystem.INSTANCE, "/", '/');

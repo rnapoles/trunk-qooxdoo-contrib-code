@@ -21,8 +21,8 @@ package org.qooxdoo.sushi;
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 public class IOSample {
     private static final IO IO_OBJ = new IO();

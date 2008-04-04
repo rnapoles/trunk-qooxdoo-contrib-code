@@ -37,8 +37,8 @@ import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.Node;
 
 /**
  * Starts QWT application in an embedded Tomcat.

@@ -21,8 +21,8 @@ package org.qooxdoo.sushi.ssh;
 
 import java.io.IOException;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Settings;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Settings;
 import org.qooxdoo.sushi.util.ExitCode;
 
 import com.jcraft.jsch.JSch;

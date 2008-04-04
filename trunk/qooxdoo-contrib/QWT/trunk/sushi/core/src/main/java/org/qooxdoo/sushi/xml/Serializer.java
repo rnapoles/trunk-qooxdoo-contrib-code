@@ -47,7 +47,7 @@ public class Serializer {
         this.transformer = createPrettyPrinter();
     }
     
-    public void serialize(Node src, org.qooxdoo.sushi.io.Node dest) throws IOException {
+    public void serialize(Node src, org.qooxdoo.sushi.fs.Node dest) throws IOException {
         Writer writer;
         
         // use writer to let dest define the encoding

@@ -37,8 +37,8 @@ import org.eclipse.jdt.core.dom.Modifier;
 
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ResourceNode;
 
 public class Naming {
     /**

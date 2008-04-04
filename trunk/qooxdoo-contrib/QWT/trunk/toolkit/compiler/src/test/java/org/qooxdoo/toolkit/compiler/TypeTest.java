@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 public class TypeTest extends Base {
     private static final Node RESOURCES = HOME.join("src/test/resources");

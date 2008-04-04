@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.SimpleTypeException;
 import org.qooxdoo.sushi.metadata.Type;

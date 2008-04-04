@@ -26,8 +26,8 @@ import java.util.List;
 import org.junit.Test;
 import org.xml.sax.SAXParseException;
 
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ResourceNode;
 import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
 import org.qooxdoo.toolkit.plugin.binding.java.Field;

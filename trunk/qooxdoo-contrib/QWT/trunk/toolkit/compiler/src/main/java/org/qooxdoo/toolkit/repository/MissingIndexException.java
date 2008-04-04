@@ -22,7 +22,7 @@ package org.qooxdoo.toolkit.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 
 public class MissingIndexException extends RepositoryException {
     public final Repository repository;

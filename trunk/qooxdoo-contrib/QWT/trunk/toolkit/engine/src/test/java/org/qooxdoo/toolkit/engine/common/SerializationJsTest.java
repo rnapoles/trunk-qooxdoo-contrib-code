@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.toolkit.rhino.QooxdooEngine;
 
 public class SerializationJsTest {

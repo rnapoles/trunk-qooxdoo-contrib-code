@@ -26,8 +26,8 @@ import qx.ui.core.Widget;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.ResourceNode;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ResourceNode;
 
 public class Qooxdoo {
     public static void main(String[] args) throws IOException {

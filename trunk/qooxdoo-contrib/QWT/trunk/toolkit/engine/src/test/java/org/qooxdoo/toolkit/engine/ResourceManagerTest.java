@@ -26,9 +26,9 @@ import java.io.ByteArrayOutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.qooxdoo.sushi.io.Buffer;
-import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.Buffer;
+import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.IO;
 
 public class ResourceManagerTest {
     private ResourceManager rm;

@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.cli;
 
 import java.util.Arrays;
 
-import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;
 

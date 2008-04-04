@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.xml.Builder;
 import org.qooxdoo.sushi.xml.Serializer;
 import org.xml.sax.Attributes;

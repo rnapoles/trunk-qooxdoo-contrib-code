@@ -33,8 +33,8 @@ import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.JavaScriptEngine;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.io.IO;
-import org.qooxdoo.sushi.io.Node;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 public abstract class Base {
     protected static final IO IO_OBJ = new IO();
