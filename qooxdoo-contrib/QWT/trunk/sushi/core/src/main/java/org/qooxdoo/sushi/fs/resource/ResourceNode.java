@@ -33,7 +33,7 @@ import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ResourceNode extends Node {
-    public static final Root FS = new Root(ResourceFilesystem.INSTANCE, "/", '/');
+    public static final Root ROOT = new Root(ResourceFilesystem.INSTANCE, "/", '/');
     
     private final ClassLoader loader;
     private final String path;
@@ -43,7 +43,7 @@ public class ResourceNode extends Node {
     }
 
     public ResourceNode(IO io, ClassLoader loader, String path) {
-        super(io, FS);
+        super(io, ROOT);
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }

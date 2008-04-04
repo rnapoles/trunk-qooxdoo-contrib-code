@@ -36,7 +36,7 @@ import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 /** You'll normally use IO.stringNode() to create instances */
 public class MemoryNode extends Node {
-    private static final Root FS = new Root(MemoryFilesystem.INSTANCE, "/", '/');
+    private static final Root ROOT = new Root(MemoryFilesystem.INSTANCE, "/", '/');
     
     public static MemoryNode createRoot(IO io) {
         return new Context(io).node("");
@@ -57,7 +57,7 @@ public class MemoryNode extends Node {
     
     /** Do not call - use create instead. */
     public MemoryNode(Context context, String path, Type type, byte[] data) {
-        super(context.io, FS);
+        super(context.io, ROOT);
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }

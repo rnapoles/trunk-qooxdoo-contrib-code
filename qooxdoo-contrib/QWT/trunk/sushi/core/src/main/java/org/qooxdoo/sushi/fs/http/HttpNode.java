@@ -41,7 +41,7 @@ import org.qooxdoo.sushi.fs.file.FileNode;
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
  */
 public class HttpNode extends Node {
-    private static final Root FS = new Root(HttpFilesystem.INSTANCE, "/", '/');
+    private static final Root ROOTS = new Root(HttpFilesystem.INSTANCE, "/", '/');
     
     // CAUTION: no forResource method, because non-existing resources don't have a url
     
@@ -54,7 +54,7 @@ public class HttpNode extends Node {
     private final URL url;
     
     public HttpNode(IO io, URL url) {
-        super(io, FS);
+        super(io, ROOTS);
         this.url = url;
     }
     
