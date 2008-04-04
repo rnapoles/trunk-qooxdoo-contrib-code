@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.io;
 
 import java.io.File;
 
-public class FileFilesystem extends FS {
+public class FileFilesystem extends Filesystem {
     public FileFilesystem() {
         super();
     }

@@ -29,10 +29,10 @@ import java.util.Properties;
 
 /** Knows the availeable filesystems and how to create them */
 public class Factory {
-    private final Map<String, FS> map;
+    private final Map<String, Filesystem> map;
     
     public Factory() {
-        this.map = new HashMap<String, FS>();
+        this.map = new HashMap<String, Filesystem>();
     }
 
     // cannot use Nodes/IO because they're not yet initialized
@@ -59,7 +59,7 @@ public class Factory {
     
     public void add(String name, String filesystemClass) {
         Class<?> clazz;
-        FS fs;
+        Filesystem fs;
         
         try {
             clazz = Class.forName(filesystemClass);
@@ -67,7 +67,7 @@ public class Factory {
             throw new IllegalArgumentException("unkown class: " + filesystemClass, e);
         }
         try {
-            fs = (FS) clazz.newInstance();
+            fs = (Filesystem) clazz.newInstance();
         } catch (InstantiationException e) {
             throw new IllegalArgumentException("cannot instantiate", e);
         } catch (IllegalAccessException e) {
@@ -76,7 +76,7 @@ public class Factory {
         add(name, fs);
     }
 
-    public void add(String name, FS filesystem) {
+    public void add(String name, Filesystem filesystem) {
         if (map.containsKey(name)) {
             throw new IllegalArgumentException("duplicate name: " + name);
         }
@@ -90,7 +90,7 @@ public class Factory {
     public Node parse(IO io, String str) throws ParseException {
         int idx;
         String name;
-        FS fs;
+        Filesystem fs;
         
         idx = str.indexOf(':');
         if (idx == -1) {
