@@ -31,7 +31,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-/** a session with a buffer */
+/** A session with settings */
 public class Connection {
     public static Connection create(String host, User user) throws JSchException {
         return new Host(host, user).connect();
