@@ -198,7 +198,28 @@ class qcl_db_model extends qcl_jsonrpc_model
 		}
       return $this->db->getAllRows($sql);   	
  	}
-
+ 	
+ 	/**
+   * gets database records by their primary key
+   * @param array|int		  $ids   	
+   * @param string|null 	$orderBy 	(optional) order by field
+   * @param array|null		$fields		(optional) Array of fields to retrieve 
+   * @return Array Array of db record sets
+   */
+ 	function getRowsById( $ids, $orderBy=null, $fields=null )
+ 	{
+ 	  if ( ! is_numeric($ids) and !is_array($ids) )
+ 	  {
+ 	    $this->raiseError("qcl_db_model::getRowsById() : invalid parameter id: '$ids'");
+ 	  }
+ 	  $rowIds = implode(",", (array) $ids );
+ 	  if ( ! empty($rowIds) )
+ 	  {
+ 	    return $this->getRowsWhere( "`{$this->key_id}` IN ($rowIds)", $orderBy, $fields );
+ 	  }  
+ 	}
+ 	
+ 	
  	/**
    * gets values of database columns that match a where condition
    * @param string|array	 	$column		name of column(s) 
