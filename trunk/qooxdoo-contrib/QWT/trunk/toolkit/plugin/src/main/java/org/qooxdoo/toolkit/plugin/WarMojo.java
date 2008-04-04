@@ -24,7 +24,7 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProjectHelper;
 import org.qooxdoo.sushi.archive.Archive;
-import org.qooxdoo.sushi.fs.FileNode;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
 /**
  * Packages an application into a War file.

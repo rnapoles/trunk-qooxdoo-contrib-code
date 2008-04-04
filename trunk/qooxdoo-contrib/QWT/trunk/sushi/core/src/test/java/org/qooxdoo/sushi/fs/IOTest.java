@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.util.Reflect;
 
 public class IOTest {

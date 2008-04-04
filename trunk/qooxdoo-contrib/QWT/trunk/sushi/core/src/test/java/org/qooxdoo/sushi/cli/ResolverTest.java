@@ -28,9 +28,10 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.console.ConsoleNode;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class ResolverTest {

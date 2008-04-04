@@ -59,7 +59,7 @@ public class Feed {
 
     //-
 
-    public void write(org.qooxdoo.sushi.fs.FileNode dest) throws IOException {
+    public void write(org.qooxdoo.sushi.fs.file.FileNode dest) throws IOException {
         dest.writeXml(toXml(dest.getIO().xml.builder));
     }        
 
