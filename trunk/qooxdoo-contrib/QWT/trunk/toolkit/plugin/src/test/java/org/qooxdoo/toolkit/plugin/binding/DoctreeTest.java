@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ResourceNode;
+import org.qooxdoo.sushi.fs.resource.ResourceNode;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.toolkit.plugin.binding.qx.Doctree;
 import org.xml.sax.SAXException;

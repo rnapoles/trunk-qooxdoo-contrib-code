@@ -17,16 +17,22 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.resource;
 
-import java.io.IOException;
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ParseException;
 
-public class Misc {
-    public static IOException exception(String msg, Throwable cause) {
-        IOException e;
-        
-        e = new IOException(msg);
-        e.initCause(cause);
-        return e;
+
+public class ResourceFilesystem extends Filesystem {
+    public static final ResourceFilesystem INSTANCE = new ResourceFilesystem();
+    
+    private ResourceFilesystem() {
+        super("resource");
+    }
+
+    @Override
+    public ResourceNode parse(IO io, String str) throws ParseException {
+        return new ResourceNode(io, str);
     }
 }

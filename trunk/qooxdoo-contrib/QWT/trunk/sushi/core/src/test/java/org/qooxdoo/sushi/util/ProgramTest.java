@@ -27,7 +27,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.OS;
+import org.qooxdoo.sushi.io.OS;
 
 public class ProgramTest {
     private static final IO IO_OBJ = new IO();

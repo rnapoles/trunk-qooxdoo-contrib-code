@@ -28,9 +28,9 @@ import java.util.Map;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.ResourceNode;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.fs.resource.ResourceNode;
 
 /**
  * Generates a new application.

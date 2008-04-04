@@ -22,7 +22,7 @@ package org.qooxdoo.sushi.xml;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.fs.OS;
+import org.qooxdoo.sushi.io.OS;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.io;
 
 public enum OS {
     LINUX("Linux", "$", "", ':', "\n", "--format", "%a"),

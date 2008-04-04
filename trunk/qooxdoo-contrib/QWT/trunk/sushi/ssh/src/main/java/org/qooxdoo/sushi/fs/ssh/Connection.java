@@ -22,8 +22,8 @@ package org.qooxdoo.sushi.fs.ssh;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-import org.qooxdoo.sushi.fs.MultiOutputStream;
 import org.qooxdoo.sushi.fs.Settings;
+import org.qooxdoo.sushi.io.MultiOutputStream;
 import org.qooxdoo.sushi.util.ExitCode;
 
 import com.jcraft.jsch.ChannelExec;

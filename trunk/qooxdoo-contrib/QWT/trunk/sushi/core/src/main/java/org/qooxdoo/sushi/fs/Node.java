@@ -44,6 +44,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Serializer;
 import org.w3c.dom.Document;

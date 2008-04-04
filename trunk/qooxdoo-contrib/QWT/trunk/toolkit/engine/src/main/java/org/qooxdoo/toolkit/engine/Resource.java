@@ -25,9 +25,9 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.qooxdoo.sushi.fs.Buffer;
 import org.qooxdoo.sushi.fs.LastModifiedException;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.io.Buffer;
 
 public class Resource {
     private final Node normal;

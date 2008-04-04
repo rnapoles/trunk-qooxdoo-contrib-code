@@ -28,14 +28,14 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.sushi.fs.Buffer;
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.OS;
 import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.io.Buffer;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
 
 /**

@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
+
+import org.qooxdoo.sushi.fs.Node;
 
 /**
  * <p>Buffer to access streams. </p>

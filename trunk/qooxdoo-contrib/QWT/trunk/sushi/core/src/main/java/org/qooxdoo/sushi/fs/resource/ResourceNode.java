@@ -17,13 +17,20 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import org.qooxdoo.sushi.fs.DeleteException;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.Root;
+import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ResourceNode extends Node {
     public static final Root FS = new Root(ResourceFilesystem.INSTANCE, "/", '/');

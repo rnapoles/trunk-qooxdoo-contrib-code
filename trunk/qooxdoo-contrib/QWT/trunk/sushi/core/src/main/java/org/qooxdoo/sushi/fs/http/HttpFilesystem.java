@@ -17,18 +17,24 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.http;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 
-public class ResourceFilesystem extends Filesystem {
-    public static final ResourceFilesystem INSTANCE = new ResourceFilesystem();
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ParseException;
+
+public class HttpFilesystem extends Filesystem {
+    public static final HttpFilesystem INSTANCE = new HttpFilesystem();
     
-    private ResourceFilesystem() {
-        super("resource");
+    private HttpFilesystem() {
+        super("http");
     }
 
     @Override
-    public ResourceNode parse(IO io, String str) throws ParseException {
-        return new ResourceNode(io, str);
+    public HttpNode parse(IO io, String str) throws ParseException, MalformedURLException {
+        return new HttpNode(io, new URL(str));
     }
 }

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.fs.OS;
+import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.metadata.model.Car;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.Kind;
