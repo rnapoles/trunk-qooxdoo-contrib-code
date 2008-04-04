@@ -34,21 +34,12 @@ import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
-import org.qooxdoo.sushi.fs.file.FileNode;
 
 /** 
  * Use http networking properties to specify proxies:
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
  */
 public class HttpNode extends Node {
-    // CAUTION: no forResource method, because non-existing resources don't have a url
-    
-    public static HttpNode forFile(FileNode file) throws MalformedURLException {
-        return new HttpNode(file.io, file.toURI().toURL());
-    }
-
-    //--
-    
     private final URL url;
     
     public HttpNode(IO io, URL url) {

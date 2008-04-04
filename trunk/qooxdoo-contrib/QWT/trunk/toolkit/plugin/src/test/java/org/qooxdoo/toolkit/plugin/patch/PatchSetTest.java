@@ -24,10 +24,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.junit.Test;
-
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
 import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 
 public class PatchSetTest {
@@ -67,7 +66,7 @@ public class PatchSetTest {
         Node dir;
         
         set = load("### mhm\n+++\nfoo");
-        dir = MemoryNode.createRoot(IO_OBJ);
+        dir = MemoryFilesystem.INSTANCE.createRoot(IO_OBJ);
         dir.join("mhm").writeBytes();
         set.apply(dir);
     }

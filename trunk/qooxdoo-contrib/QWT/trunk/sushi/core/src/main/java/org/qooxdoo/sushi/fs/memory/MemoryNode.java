@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.Root;
@@ -37,12 +36,6 @@ import org.qooxdoo.sushi.fs.SetLastModifiedException;
 /** You'll normally use IO.stringNode() to create instances */
 public class MemoryNode extends Node {
     private static final Root ROOT = new Root(MemoryFilesystem.INSTANCE, "/", '/');
-    
-    public static MemoryNode createRoot(IO io) {
-        return new Context(io).node("");
-    }
-
-    //--
     
     /** never null */
     private final Context context;
