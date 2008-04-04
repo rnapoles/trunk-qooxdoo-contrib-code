@@ -34,7 +34,7 @@ import java.util.Set;
 import org.qooxdoo.sushi.io.DeleteException;
 import org.qooxdoo.sushi.io.ExistsException;
 import org.qooxdoo.sushi.io.FileNode;
-import org.qooxdoo.sushi.io.Filesystem;
+import org.qooxdoo.sushi.io.Root;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.LastModifiedException;
 import org.qooxdoo.sushi.io.LengthException;
@@ -67,7 +67,7 @@ public class SvnNode extends Node {
     private static final char SEPARATOR_CHAR = '/';
     public static final String SEPARATOR = "" + SEPARATOR_CHAR;
     public static final int SEPARATOR_LENGTH = 1;
-    private static final Filesystem FS = new Filesystem("svn:/", SEPARATOR_CHAR);
+    private static final Root FS = new Root("svn:/", SEPARATOR_CHAR);
     
     static {
         FSRepositoryFactory.setup();

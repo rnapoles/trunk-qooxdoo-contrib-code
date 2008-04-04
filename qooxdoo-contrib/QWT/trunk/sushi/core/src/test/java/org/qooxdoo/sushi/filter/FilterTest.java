@@ -27,14 +27,14 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.io.Filesystem;
+import org.qooxdoo.sushi.io.Root;
 import org.qooxdoo.sushi.io.IO;
 import org.qooxdoo.sushi.io.Node;
 
 // TODO: generalize, don't use Nodes
 public class FilterTest {
     private static final IO IO_OBJ = new IO();
-    private static final Filesystem FS = IO_OBJ.getTemp().fs;
+    private static final Root FS = IO_OBJ.getTemp().fs;
 
     @Test
     public void empty() throws IOException {
