@@ -25,6 +25,7 @@ import java.net.URL;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class HttpFilesystem extends Filesystem {
     public static final HttpFilesystem INSTANCE = new HttpFilesystem();
@@ -33,8 +34,14 @@ public class HttpFilesystem extends Filesystem {
         super("http");
     }
 
+    // CAUTION: no forResource method, because non-existing resources don't have a url
+    
     @Override
     public HttpNode parse(IO io, String rootPath) throws ParseException, MalformedURLException {
         return new HttpNode(io, new URL(rootPath));
+    }
+
+    public HttpNode forFile(FileNode file) throws MalformedURLException {
+        return new HttpNode(file.io, file.toURI().toURL());
     }
 }

@@ -34,7 +34,7 @@ import java.util.zip.ZipOutputStream;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
-import org.qooxdoo.sushi.fs.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
 import org.qooxdoo.sushi.io.Buffer;
 
 public class Archive {
@@ -42,7 +42,7 @@ public class Archive {
     public static final String MANIFEST = META_INF + "/MANIFEST.MF";
 
     public static Archive createZip(IO io) {
-        return new Archive(MemoryNode.createRoot(io), null);
+        return new Archive(MemoryFilesystem.INSTANCE.createRoot(io), null);
     }
 
     public static Archive loadZip(Node src) throws IOException {
@@ -50,7 +50,7 @@ public class Archive {
     }
 
     public static Archive createJar(IO io) {
-        return new Archive(MemoryNode.createRoot(io), new Manifest());
+        return new Archive(MemoryFilesystem.INSTANCE.createRoot(io), new Manifest());
     }
 
     public static Archive loadJar(Node src) throws IOException {
