@@ -25,24 +25,24 @@ import org.qooxdoo.sushi.util.Strings;
 
 public class Root {
     public final Filesystem filesystem;
-    public final String root;
+    public final String id;
     public final char separatorChar;
     public final String separator;
     
-    public Root(Filesystem filesystem, String root, char separatorChar) {
+    public Root(Filesystem filesystem, String id, char separatorChar) {
         this.filesystem = filesystem;
-        this.root = root;
+        this.id = id;
         this.separatorChar = separatorChar;
         this.separator = "" + separatorChar;
         
-        if (!root.endsWith(separator)) {
+        if (!id.endsWith(separator)) {
             throw new IllegalArgumentException();
         }
     }
 
     @Override
     public String toString() {
-        return root;
+        return id;
     }
     
     //-- path handling

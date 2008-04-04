@@ -192,7 +192,7 @@ public abstract class Node {
 
     /** @return fs.root + getPath */ 
     public String getAbsolute() {
-        return fs.root + getPath();
+        return fs.id + getPath();
     }
     
     public Node join(List<String> paths) {

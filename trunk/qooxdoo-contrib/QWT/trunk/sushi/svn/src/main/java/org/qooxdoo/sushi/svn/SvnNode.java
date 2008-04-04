@@ -67,7 +67,7 @@ public class SvnNode extends Node {
     private static final char SEPARATOR_CHAR = '/';
     public static final String SEPARATOR = "" + SEPARATOR_CHAR;
     public static final int SEPARATOR_LENGTH = 1;
-    private static final Root FS = new Root(SvnFilesystem.INSTANCE, "svn:/", SEPARATOR_CHAR);
+    private static final Root FS = new Root(SvnFilesystem.INSTANCE, "/", SEPARATOR_CHAR);
     
     static {
         FSRepositoryFactory.setup();

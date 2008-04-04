@@ -38,9 +38,9 @@ public class IOTest {
         FileNode node;
         
         io = new IO();
-        node = io.node(fs(io).root);
+        node = io.node(fs(io).id);
         assertEquals("", node.getName());
-        assertEquals(fs(io).root, node.getAbsolute());
+        assertEquals(fs(io).id, node.getAbsolute());
         assertEquals(".", node.getRelative(node));
         assertTrue(node.isDirectory());
     }
@@ -51,12 +51,12 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node(fs(io).root + "a");
+        node = io.node(fs(io).id + "a");
         assertNull(node.getBase());
         assertEquals("a", node.getName());
         assertEquals("a", node.getPath());
         assertEquals("", node.getParent().getPath());
-        assertEquals(fs(io).root + "a", node.toString());
+        assertEquals(fs(io).id + "a", node.toString());
     }
 
     @Test
@@ -65,12 +65,12 @@ public class IOTest {
         FileNode node;
 
         io = new IO();
-        node = io.node(fs(io).root + "x" + fs(io).separator + "y");
+        node = io.node(fs(io).id + "x" + fs(io).separator + "y");
         assertNull(node.getBase());
         assertEquals("y", node.getName());
         assertEquals("x" + fs(io).separator + "y", node.getPath());
         assertEquals("x", node.getParent().getPath());
-        assertEquals(fs(io).root + "x" + fs(io).separator + "y", node.toString());
+        assertEquals(fs(io).id + "x" + fs(io).separator + "y", node.toString());
     }
 
     
@@ -116,10 +116,10 @@ public class IOTest {
         
         io = new IO();
         assertEquals(0, io.path("").size());
-        path = io.path("foo" + io.os.listSeparator + fs(io).root + "bar");
+        path = io.path("foo" + io.os.listSeparator + fs(io).id + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
-        assertEquals(io.getWorking().fs.root + "bar", path.get(1).toString());
+        assertEquals(io.getWorking().fs.id + "bar", path.get(1).toString());
         try {
             io.classpath("nosuchfile.jar");
             fail();

@@ -46,7 +46,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
-    private static final Root ROOT = new Root(SshFilesystem.INSTANCE, "ssh:/", '/');
+    private static final Root ROOT = new Root(SshFilesystem.INSTANCE, "/", '/');
     
     private final ChannelSftp channel;
     private final String slashPath;
