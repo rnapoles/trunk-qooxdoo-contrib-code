@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class ResolverTest {
     private Resolver resolver;

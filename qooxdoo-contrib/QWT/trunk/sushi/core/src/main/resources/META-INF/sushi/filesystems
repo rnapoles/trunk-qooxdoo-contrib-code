@@ -1,5 +1,5 @@
 org.qooxdoo.sushi.fs.FileFilesystem
 org.qooxdoo.sushi.fs.ResourceFilesystem
 org.qooxdoo.sushi.fs.HttpFilesystem
-org.qooxdoo.sushi.memory.MemoryFilesystem
+org.qooxdoo.sushi.fs.memory.MemoryFilesystem
 org.qooxdoo.sushi.cli.ConsoleFilesystem

@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.cli.ConsoleNode;
-import org.qooxdoo.sushi.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class FactoryTest {
     private Factory f = new Factory();

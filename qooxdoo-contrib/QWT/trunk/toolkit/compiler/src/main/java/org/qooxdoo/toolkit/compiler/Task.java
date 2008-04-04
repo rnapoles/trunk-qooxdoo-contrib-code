@@ -31,9 +31,9 @@ import org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.eclipse.jdt.internal.core.BasicCompilationUnit;
 
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.filter.Filter;
 
 /** Collects arguments, invokes the compiler, and provides additional results */
 public class Task {

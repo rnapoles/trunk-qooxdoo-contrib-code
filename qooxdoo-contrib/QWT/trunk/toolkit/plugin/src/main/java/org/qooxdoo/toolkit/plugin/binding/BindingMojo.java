@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.maven.project.MavenProject;
-import org.qooxdoo.sushi.filter.Filter;
 import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.OS;
+import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.xml.XmlException;

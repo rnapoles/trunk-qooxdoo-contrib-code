@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.qooxdoo.sushi.filter.Filter;
-import org.qooxdoo.sushi.memory.Context;
-import org.qooxdoo.sushi.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.fs.memory.Context;
+import org.qooxdoo.sushi.fs.memory.MemoryNode;
 import org.qooxdoo.sushi.util.Reflect;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Xml;
