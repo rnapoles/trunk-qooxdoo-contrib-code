@@ -41,8 +41,6 @@ import org.qooxdoo.sushi.fs.file.FileNode;
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
  */
 public class HttpNode extends Node {
-    private static final Root ROOT = new Root(HttpFilesystem.INSTANCE, "/", '/');
-    
     // CAUTION: no forResource method, because non-existing resources don't have a url
     
     public static HttpNode forFile(FileNode file) throws MalformedURLException {
@@ -54,8 +52,21 @@ public class HttpNode extends Node {
     private final URL url;
     
     public HttpNode(IO io, URL url) {
-        super(io, ROOT);
+        super(io, new Root(HttpFilesystem.INSTANCE, root(url), '/'));
         this.url = url;
+    }
+
+    private static String root(URL url) {
+    	int port;
+    	
+    	if (url.getRef() != null) {
+    		throw new IllegalArgumentException(url.toString());
+    	}
+    	if (url.getUserInfo() != null) {
+    		throw new IllegalArgumentException(url.toString());
+    	}
+    	port = url.getPort();
+    	return url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/';
     }
     
     @Override
@@ -89,8 +100,9 @@ public class HttpNode extends Node {
     
     @Override
     public HttpNode newInstance(String path) {
+    	// ignores query
         try {
-            return new HttpNode(io, new URL(url.getProtocol(), url.getHost(), path));
+            return new HttpNode(io, new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }

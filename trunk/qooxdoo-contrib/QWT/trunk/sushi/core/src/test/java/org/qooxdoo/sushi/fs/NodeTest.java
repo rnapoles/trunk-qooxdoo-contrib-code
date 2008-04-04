@@ -41,21 +41,7 @@ import org.qooxdoo.sushi.xml.Xml;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public abstract class NodeTest {
-    protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
-    
-    /** creates a new empty directory */
-    protected abstract Node createWork() throws IOException;
-
-    protected Node work;
-    protected String sep;
-    
-    @Before
-    public void setUp() throws Exception {
-        work = createWork();
-        sep = work.getRoot().separator;
-    }
-    
+public abstract class NodeTest extends NodeReadOnlyTest {
     @Test
     public void work() throws IOException {
         List<?> children;

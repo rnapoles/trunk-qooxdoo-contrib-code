@@ -27,6 +27,7 @@ import java.net.URL;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class HttpNodeFullTest {
@@ -36,15 +37,15 @@ public class HttpNodeFullTest {
     public void normal() throws IOException {
         URL url;
         HttpNode node;
-        
-        url = new URL("http://qooxdoo.org/documentation/0.7");
+    
+        url = new URL("http://englishediting.de/index.html");
         node = new HttpNode(ioObj, url);
-        assertEquals("documentation/0.7", node.getPath());
         assertTrue(node.isFile());
         assertTrue(node.exists());
         assertTrue(node.readString().length() > 1);
-        assertEquals("documentation", node.getParent().getPath());
-        assertEquals("", node.getParent().getParent().getPath());
+        assertEquals("http://englishediting.de/", node.getRoot().id);
+        assertEquals("index.html", node.getPath());
+        assertEquals("", node.getParent().getPath());
     }
 
     @Test
@@ -66,9 +67,18 @@ public class HttpNodeFullTest {
     @Test
     public void ampersand() throws IOException {
         URL url;
-        
+        HttpNode node;
+
         url = new URL("http://www.heise.de/?b=1&c=d");
-        assertTrue(new HttpNode(ioObj, url).readString().length() > 1); 
+        node = new HttpNode(ioObj, url);
+        assertEquals("", node.getPath());
+        assertEquals("b=1&c=d", node.getUrl().getQuery());
+        assertTrue(node.readString().length() > 1); 
+        node = (HttpNode) node.join("foo");
+        // overwrite query!
+        assertEquals("foo", node.getPath());
+        assertEquals("foo", node.getUrl().getPath());
+        assertEquals(null, node.getUrl().getQuery());
     }
 }
 
