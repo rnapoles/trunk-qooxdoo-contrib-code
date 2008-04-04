@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.qooxdoo.sushi.fs.file.FileNode;
+
 public class TempFiles extends Thread {
     /** null if the exit task has already been started */
     private List<FileNode> delete;

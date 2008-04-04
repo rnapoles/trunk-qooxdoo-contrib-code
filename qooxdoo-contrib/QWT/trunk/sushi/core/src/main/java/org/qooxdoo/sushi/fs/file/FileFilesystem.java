@@ -17,9 +17,13 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.file;
 
 import java.io.File;
+
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.ParseException;
 
 public class FileFilesystem extends Filesystem {
     public static final FileFilesystem INSTANCE = new FileFilesystem();

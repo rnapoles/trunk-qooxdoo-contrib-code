@@ -27,8 +27,8 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.io.xpp3.SettingsXpp3Reader;
 import org.apache.maven.settings.io.xpp3.SettingsXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
 /**
  * Base class for Mojos that modify settings.

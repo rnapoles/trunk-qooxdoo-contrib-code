@@ -35,8 +35,8 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
 public abstract class WebappBase extends Base {
     /**

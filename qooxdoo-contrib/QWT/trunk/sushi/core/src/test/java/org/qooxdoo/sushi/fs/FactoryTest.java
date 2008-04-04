@@ -25,7 +25,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.qooxdoo.sushi.cli.ConsoleNode;
+import org.qooxdoo.sushi.fs.console.ConsoleNode;
+import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class FactoryTest {

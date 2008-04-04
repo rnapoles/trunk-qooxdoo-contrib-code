@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
 /** TODO: move more tests into NodeTest */
 public class FileNodeTest extends NodeTest {

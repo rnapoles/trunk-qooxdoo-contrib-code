@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.cli;
+package org.qooxdoo.sushi.fs.console;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;

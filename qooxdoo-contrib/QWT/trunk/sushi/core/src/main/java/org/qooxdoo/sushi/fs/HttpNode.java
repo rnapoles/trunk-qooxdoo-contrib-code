@@ -28,6 +28,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import org.qooxdoo.sushi.fs.file.FileNode;
+
 /** 
  * Use http networking properties to specify proxies:
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html

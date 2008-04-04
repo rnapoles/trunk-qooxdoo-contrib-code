@@ -28,8 +28,8 @@ import java.io.IOException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.metadata.annotation.AnnotationSchema;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;

@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.fs;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.file.FileFilesystem;
 
 public class FilesystemTest {
     @Test(expected=IllegalArgumentException.class)

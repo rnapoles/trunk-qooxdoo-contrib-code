@@ -25,11 +25,11 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.OS;
 import org.qooxdoo.sushi.fs.ResourceNode;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.XmlException;

@@ -32,9 +32,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.qooxdoo.sushi.fs.Buffer;
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class Archive {

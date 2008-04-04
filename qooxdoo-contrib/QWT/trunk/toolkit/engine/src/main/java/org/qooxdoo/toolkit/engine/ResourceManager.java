@@ -27,10 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.qooxdoo.sushi.fs.Buffer;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.FileNode;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.ResourceNode;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class ResourceManager {
     public static ResourceManager create(FileNode basedir) {
