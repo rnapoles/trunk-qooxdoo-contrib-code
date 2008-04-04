@@ -73,7 +73,7 @@ public abstract class Node {
     public final IO io;
     
     /** never null */
-    protected final Root root;
+    private final Root root;
     
     /** may be null */
     private Node base;
