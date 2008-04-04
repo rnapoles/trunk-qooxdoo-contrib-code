@@ -64,16 +64,16 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnNode extends Node {
-    private static final char SEPARATOR_CHAR = '/';
-    public static final String SEPARATOR = "" + SEPARATOR_CHAR;
-    public static final int SEPARATOR_LENGTH = 1;
-    private static final Root ROOT = new Root(SvnFilesystem.INSTANCE, "/", SEPARATOR_CHAR);
-    
     static {
         FSRepositoryFactory.setup();
         DAVRepositoryFactory.setup();
     }
 
+    
+    private static final char SEPARATOR_CHAR = '/';
+    public static final String SEPARATOR = "" + SEPARATOR_CHAR;
+    public static final int SEPARATOR_LENGTH = 1;
+    
     //--
     
     public static SvnNode create(IO io, String url) throws SVNException {
@@ -127,7 +127,7 @@ public class SvnNode extends Node {
     private String comment;
     
     public SvnNode(IO io, SVNRepository repository, boolean directory, String path) {
-        super(io, ROOT);
+        super(io, root(repository));
         if (path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }
@@ -138,6 +138,10 @@ public class SvnNode extends Node {
         this.directory = directory;
         this.path = path;
         this.comment = "sushi commit";
+    }
+
+    private static Root root(SVNRepository repository) {
+        return new Root(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "|/", SEPARATOR_CHAR);
     }
     
     /** use when closing an output stream */

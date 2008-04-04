@@ -69,6 +69,12 @@ public abstract class NodeTest {
         assertEquals(0, children.size());
     }
     
+    @Test
+    public void root() {
+        assertEquals(work.join("a").getRoot(), work.join("a").getRoot());
+        assertEquals(work.join("a").getRoot(), work.join("ab").getRoot());
+    }
+
     //--
 
     @Test

@@ -32,15 +32,11 @@ import org.junit.Test;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
 import org.qooxdoo.sushi.fs.file.FileNode;
-import org.qooxdoo.sushi.fs.svn.SvnNode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 
 public class SvnNodeFullTest extends NodeTest {
-    // created manually with 
-    //    emerge --config =dev-util/subversion-1.3.1
-    // (see http://gentoo-wiki.com/HOWTO_Subversion)
     private static SVNURL URL;
 
     @BeforeClass
@@ -66,6 +62,11 @@ public class SvnNodeFullTest extends NodeTest {
         }
     }
 
+    @Test
+    public void rootWithUrl() throws SVNException {
+        assertEquals(URL.toString() + "|/", work.getRoot().id);
+    }
+ 
     @Test
     public void path() throws SVNException {
         assertEquals("", SvnNode.create(IO, URL.toString()).getPath());

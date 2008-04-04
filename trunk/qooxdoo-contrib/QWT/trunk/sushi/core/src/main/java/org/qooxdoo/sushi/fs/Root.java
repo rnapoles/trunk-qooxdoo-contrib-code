@@ -71,4 +71,22 @@ public class Root {
     public List<String> split(String path) {
         return Strings.split(separator, path);
     }
+    
+    //--
+ 
+    @Override
+    public boolean equals(Object obj) {
+        Root root;
+        
+        if (obj instanceof Root) {
+            root = (Root) obj;
+            return filesystem == root.filesystem && id.equals(root.id);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
