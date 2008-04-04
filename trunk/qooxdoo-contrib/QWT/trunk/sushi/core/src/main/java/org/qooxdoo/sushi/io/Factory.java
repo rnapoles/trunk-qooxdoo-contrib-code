@@ -25,7 +25,8 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+
+import org.qooxdoo.sushi.util.Strings;
 
 /** Knows the availeable filesystems and how to create them */
 public class Factory {
@@ -41,23 +42,27 @@ public class Factory {
         Enumeration<URL> e;
         URL url;
         InputStream src;
-        Properties p;
+        Buffer buffer;
+        String content;
         
-        descriptor = "META-INF/sushi/filesystem.properties";
+        descriptor = "META-INF/sushi/filesystems";
+        buffer = new Buffer();
         e = getClass().getClassLoader().getResources(descriptor);
         while (e.hasMoreElements()) {
             url = e.nextElement();
             src = url.openStream();
-            p = new Properties();
-            p.load(src);
-            for (Map.Entry<Object, Object> entry : p.entrySet()) {
-                add((String) entry.getKey(), (String) entry.getValue());
+            content = buffer.readString(src, Settings.UTF_8);
+            for (String line : Strings.split("\n", content)) {
+                line = line.trim();
+                if (line.length() > 0) {
+                    add(line);
+                }
             }
             src.close();
         }
     }
     
-    public void add(String name, String filesystemClass) {
+    public void add(String filesystemClass) {
         Class<?> clazz;
         Filesystem fs;
         
@@ -73,12 +78,15 @@ public class Factory {
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("cannot instantiate", e);
         }
-        add(name, fs);
+        add(fs);
     }
 
-    public void add(String name, Filesystem filesystem) {
+    public void add(Filesystem filesystem) {
+        String name;
+        
+        name = filesystem.getName();
         if (map.containsKey(name)) {
-            throw new IllegalArgumentException("duplicate name: " + name);
+            throw new IllegalArgumentException("duplicate filesystem name: " + name);
         }
         map.put(name, filesystem);
     }

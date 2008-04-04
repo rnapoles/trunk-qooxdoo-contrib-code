@@ -21,7 +21,14 @@ package org.qooxdoo.sushi.io;
 
 
 public abstract class Filesystem {
-    public Filesystem() {
+    private final String name;
+    
+    public Filesystem(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public abstract Node parse(IO io, String str) throws ParseException;
