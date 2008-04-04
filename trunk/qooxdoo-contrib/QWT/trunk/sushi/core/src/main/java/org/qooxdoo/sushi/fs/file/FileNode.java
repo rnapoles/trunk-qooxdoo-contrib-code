@@ -42,15 +42,15 @@ import org.qooxdoo.sushi.util.Program;
  * <p>File, directory, symlink or something not yet created. Relacement java.io.File.</p>
  */
 public class FileNode extends Node {
-    private static final Root[] FSS;
+    private static final Root[] ROOTS;
     
     static {
         File[] roots;
         
         roots = File.listRoots();
-        FSS = new Root[roots.length];
+        ROOTS = new Root[roots.length];
         for (int i = 0; i < roots.length; i++) {
-            FSS[i] = new Root(FileFilesystem.INSTANCE, roots[i].getAbsolutePath(), File.separatorChar);
+            ROOTS[i] = new Root(FileFilesystem.INSTANCE, roots[i].getAbsolutePath(), File.separatorChar);
         }
     }
     
@@ -58,7 +58,7 @@ public class FileNode extends Node {
         String str;
         
         str = file.getAbsolutePath().toUpperCase();
-        for (Root fs : FSS) {
+        for (Root fs : ROOTS) {
             if (str.startsWith(fs.id)) {
                 return fs;
             }
