@@ -63,6 +63,11 @@ public class HttpNode extends Node {
         throw new UnsupportedOperationException();
     }
 
+    @Override 
+    public long getLastModified() {
+        return 0;
+    }
+
     @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
         throw new SetLastModifiedException(this);
@@ -115,11 +120,6 @@ public class HttpNode extends Node {
     @Override
     public boolean isDirectory() {
         return false;
-    }
-    
-    @Override 
-    public long getLastModified() {
-        return 0;
     }
 
     @Override
