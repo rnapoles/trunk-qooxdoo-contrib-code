@@ -1,4 +1,8 @@
 <?php
+/**
+ * qcl: qooxdoo component library
+ * 
+ */
 
 /**
  * base class providing __construct and & __destruct compatibility to php4 objects
