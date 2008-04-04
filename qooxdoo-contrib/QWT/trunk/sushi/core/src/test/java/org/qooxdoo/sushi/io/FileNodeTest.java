@@ -40,7 +40,7 @@ public class FileNodeTest extends NodeTest {
     }
     
     @Test
-    public void constrcutor() throws Exception {
+    public void constructor() throws Exception {
         try {
             new FileNode(IO, new File("foo"));
             fail();
