@@ -28,7 +28,7 @@ import javax.xml.transform.TransformerException;
 
 import org.junit.Test;
 
-import org.qooxdoo.sushi.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class NodeXmlTest {
     private static final IO IO_OBJ = new IO();

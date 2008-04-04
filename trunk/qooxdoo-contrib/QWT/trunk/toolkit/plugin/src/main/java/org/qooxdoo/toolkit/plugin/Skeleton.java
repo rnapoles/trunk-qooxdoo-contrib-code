@@ -25,7 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.svn.SvnNode;
+import org.qooxdoo.sushi.fs.svn.SvnNode;
 
 public class Skeleton {
     public static final String NAME = "skel.zip";
