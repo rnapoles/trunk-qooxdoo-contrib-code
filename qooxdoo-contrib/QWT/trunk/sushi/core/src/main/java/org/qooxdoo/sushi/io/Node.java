@@ -51,8 +51,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * <p>Abstraction from a file: omething you can get an input or output stream from. FileNode is probably
- * the most prominent example of a node.</p>
+ * <p>Abstraction from a file: something you can get an input or output stream from. FileNode is probably
+ * the most prominent example of a node. Provides many more methods compared to java.io.File. Also, it 
+ * removes some redundant methods simplify the api (in particular the constructors). </p></p>
  * 
  * <p>A node has a filesystem, and a path. A node can have children and a base.</p>
  * 
