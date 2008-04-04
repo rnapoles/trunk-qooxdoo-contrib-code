@@ -1044,6 +1044,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * updates or creates table in database if it doesn't exist yet
    * @param string $table 
    * @return 
+   * FIXME: need to strip AUTO_INCREMENT from sql dumps!
    */
   function updateTableStructure($table)
   {
