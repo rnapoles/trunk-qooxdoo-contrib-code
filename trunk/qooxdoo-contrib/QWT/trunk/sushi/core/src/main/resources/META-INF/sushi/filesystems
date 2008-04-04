@@ -1,2 +1,5 @@
 org.qooxdoo.sushi.io.FileFilesystem
 org.qooxdoo.sushi.io.ResourceFilesystem
+org.qooxdoo.sushi.io.HttpFilesystem
+org.qooxdoo.sushi.memory.MemoryFilesystem
+org.qooxdoo.sushi.cli.ConsoleFilesystem

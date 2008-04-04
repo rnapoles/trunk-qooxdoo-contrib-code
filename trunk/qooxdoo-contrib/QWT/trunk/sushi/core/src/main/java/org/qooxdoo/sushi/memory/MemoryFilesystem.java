@@ -17,17 +17,22 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.io;
+package org.qooxdoo.sushi.memory;
 
-import java.io.IOException;
+import org.qooxdoo.sushi.io.Filesystem;
+import org.qooxdoo.sushi.io.IO;
+import org.qooxdoo.sushi.io.ParseException;
 
-public class ParseException extends IOException {
-    public ParseException(String msg) {
-        super(msg);
-    }
+
+public class MemoryFilesystem extends Filesystem {
+    public static final MemoryFilesystem INSTANCE = new MemoryFilesystem();
     
-    public ParseException(String msg, Throwable cause) {
-        this(msg);
-        initCause(cause);
+    private MemoryFilesystem() {
+        super("mem");
+    }
+
+    @Override
+    public MemoryNode parse(IO io, String str) throws ParseException {
+        return MemoryNode.createRoot(io).newInstance(str);
     }
 }

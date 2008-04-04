@@ -24,6 +24,6 @@ import org.junit.Test;
 public class FilesystemTest {
     @Test(expected=IllegalArgumentException.class)
     public void constructor() {
-        new Root("foo", '/');
+        new Root(FileFilesystem.INSTANCE, "foo", '/');
     }
 }

@@ -99,7 +99,7 @@ public class Factory {
         return map.size();
     }
     
-    public Node parse(IO io, String str) throws ParseException {
+    public Node parse(IO io, String str) throws IOException {
         int idx;
         String name;
         Filesystem fs;
@@ -111,7 +111,7 @@ public class Factory {
         name = str.substring(0, idx);
         fs = map.get(name);
         if (fs == null) {
-            throw new ParseException("unkown file system: " + str);
+            throw new ParseException("unkown file system: " + name);
         }
         
         return fs.parse(io, str.substring(idx + 1));

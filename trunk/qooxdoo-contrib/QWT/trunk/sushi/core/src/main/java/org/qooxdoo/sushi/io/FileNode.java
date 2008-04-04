@@ -42,7 +42,7 @@ public class FileNode extends Node {
         roots = File.listRoots();
         FSS = new Root[roots.length];
         for (int i = 0; i < roots.length; i++) {
-            FSS[i] = new Root(roots[i].getAbsolutePath(), File.separatorChar);
+            FSS[i] = new Root(FileFilesystem.INSTANCE, roots[i].getAbsolutePath(), File.separatorChar);
         }
     }
     

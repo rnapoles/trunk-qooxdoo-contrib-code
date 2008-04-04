@@ -19,6 +19,8 @@
 
 package org.qooxdoo.sushi.io;
 
+import java.io.IOException;
+
 
 public abstract class Filesystem {
     private final String name;
@@ -31,5 +33,5 @@ public abstract class Filesystem {
         return name;
     }
 
-    public abstract Node parse(IO io, String str) throws ParseException;
+    public abstract Node parse(IO io, String str) throws IOException;
 }

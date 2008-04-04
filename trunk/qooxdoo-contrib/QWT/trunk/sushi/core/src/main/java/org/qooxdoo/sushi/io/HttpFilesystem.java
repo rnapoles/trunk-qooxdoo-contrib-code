@@ -19,15 +19,18 @@
 
 package org.qooxdoo.sushi.io;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-public class ParseException extends IOException {
-    public ParseException(String msg) {
-        super(msg);
-    }
+public class HttpFilesystem extends Filesystem {
+    public static final HttpFilesystem INSTANCE = new HttpFilesystem();
     
-    public ParseException(String msg, Throwable cause) {
-        this(msg);
-        initCause(cause);
+    private HttpFilesystem() {
+        super("http");
+    }
+
+    @Override
+    public HttpNode parse(IO io, String str) throws ParseException, MalformedURLException {
+        return new HttpNode(io, new URL(str));
     }
 }
