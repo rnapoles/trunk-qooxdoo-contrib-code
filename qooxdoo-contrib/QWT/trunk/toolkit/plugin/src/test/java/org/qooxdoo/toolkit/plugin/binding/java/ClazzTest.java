@@ -45,7 +45,7 @@ public class ClazzTest {
         assertEquals("foo.bar.Baz", clazz.getFullName());
         assertEquals("foo.bar", clazz.getPackage());
         assertEquals("Baz", clazz.getName());
-        assertTrue(clazz.getJavaFile(io.getWorking()).getAbsolute().endsWith(io.getWorking().fs.join("foo", "bar", "Baz.java")));
+        assertTrue(clazz.getJavaFile(io.getWorking()).getAbsolute().endsWith(io.getWorking().getRoot().join("foo", "bar", "Baz.java")));
         assertEquals(
                 "/* Copyright (c) 1&1. All Rights Reserved. */\n" +
                 "\n" +

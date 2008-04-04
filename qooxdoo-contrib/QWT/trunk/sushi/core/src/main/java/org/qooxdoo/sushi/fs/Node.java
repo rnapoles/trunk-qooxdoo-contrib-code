@@ -204,7 +204,7 @@ public abstract class Node {
         return result.toString();
     }
 
-    /** @return fs.root + getPath, but not filesystem name */ 
+    /** @return root.id + getPath, but not the filesystem name. Note that it's not a path! */ 
     public String getAbsolute() {
         return root.id + getPath();
     }
