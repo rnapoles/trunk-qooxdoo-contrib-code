@@ -32,8 +32,6 @@ import org.qooxdoo.sushi.util.Program;
 
 /**
  * <p>File, directory, symlink or something not yet created. Relacement java.io.File.</p>
- * <p>Some redundant methods from java.io.File are not provided to simplify the api (in
- * particular: some constructors and getXxxPath/getXxxFile). </p>
  */
 public class FileNode extends Node {
     private static final Filesystem[] FSS;
