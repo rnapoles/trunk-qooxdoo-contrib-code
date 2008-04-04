@@ -31,9 +31,9 @@ public class ConsoleFilesystem extends Filesystem {
     }
 
     @Override
-    public ConsoleNode parse(IO io, String str) throws ParseException {
-        if (str.length() != 0) {
-            throw new ParseException(str);
+    public ConsoleNode parse(IO io, String rootPath) throws ParseException {
+        if (rootPath.length() != 0) {
+            throw new ParseException(rootPath);
         }
         return new ConsoleNode(io);
     }

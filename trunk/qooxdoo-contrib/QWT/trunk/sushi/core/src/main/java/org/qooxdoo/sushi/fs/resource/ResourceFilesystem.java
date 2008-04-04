@@ -32,7 +32,7 @@ public class ResourceFilesystem extends Filesystem {
     }
 
     @Override
-    public ResourceNode parse(IO io, String str) throws ParseException {
-        return new ResourceNode(io, str);
+    public ResourceNode parse(IO io, String rootPath) throws ParseException {
+        return new ResourceNode(io, rootPath);
     }
 }

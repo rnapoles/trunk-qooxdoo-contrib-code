@@ -49,13 +49,9 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
-import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
-import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNFileRevision;
 import org.tmatesoft.svn.core.io.SVNRepository;
-import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
@@ -64,61 +60,10 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnNode extends Node {
-    static {
-        FSRepositoryFactory.setup();
-        DAVRepositoryFactory.setup();
-    }
-
-    
     private static final char SEPARATOR_CHAR = '/';
     public static final String SEPARATOR = "" + SEPARATOR_CHAR;
     public static final int SEPARATOR_LENGTH = 1;
     
-    //--
-    
-    public static SvnNode create(IO io, String url) throws SVNException {
-        return create(io, url, null, null);
-    }
-
-    public static SvnNode create(IO io, String url, String username, String password) throws SVNException {
-        SVNRepository repository;
-        String root;
-        String path;
-        
-        if (url.endsWith(SEPARATOR)) {
-            throw new IllegalArgumentException(url);
-        }
-        repository = repository(SVNURL.parseURIEncoded(url), username, password);
-        root = repository.getRepositoryRoot(true).toString();
-        path = repository.getLocation().toString();
-        if (root.equals(path)) {
-            path = "";
-        } else {
-            root = root + "/";
-            if (!path.startsWith(root)) {
-                throw new IllegalArgumentException(root + "+" + path);
-            }
-            repository.setLocation(SVNURL.parseURIEncoded(root), true);
-            path = path.substring(root.length());
-        }
-        return create(io, repository, path);
-    }
-    
-    private static SVNRepository repository(SVNURL url, String username, String password) throws SVNException {
-        SVNRepository repository;
-        
-        repository = SVNRepositoryFactory.create(url);
-        repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(
-                SVNWCUtil.getDefaultConfigurationDirectory(),
-                username, password, 
-                false /* do not store credentials, not even when configured */));
-        return repository;
-    }
-    
-    public static SvnNode create(IO io, SVNRepository repository, String path) throws SVNException {
-        return new SvnNode(io, repository, repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
-    }
-
     //--
     
     private final SVNRepository repository;
@@ -141,7 +86,7 @@ public class SvnNode extends Node {
     }
 
     private static Root root(SVNRepository repository) {
-        return new Root(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "|/", SEPARATOR_CHAR);
+        return new Root(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "/", SEPARATOR_CHAR);
     }
     
     /** use when closing an output stream */
@@ -156,7 +101,8 @@ public class SvnNode extends Node {
     @Override
     public SvnNode newInstance(String path) {
         try {
-            return create(io, repository, path);
+            // TODO: cast
+            return ((SvnFilesystem) getRoot().filesystem).create(io, repository, path);
         } catch (SVNException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -404,7 +350,7 @@ public class SvnNode extends Node {
     
     @Override
     public boolean equalsNode(Node node) {
-        return repository == ((SvnNode) node).repository;
+        return repository.getLocation().equals(((SvnNode) node).repository.getLocation());
     }
 
     //--
@@ -437,7 +383,7 @@ public class SvnNode extends Node {
         } else {
             // repository updates has a target to restrict the result, but it supports
             // only one segment. So I have to create a new repository ...
-            sub = repository(repository.getLocation().appendPath(path, true), null, null); // TODO: auth
+            sub = SvnFilesystem.repository(repository.getLocation().appendPath(path, true), null, null); // TODO: auth
         }
         sub.update(revision, "", true, exporter, exporter);
     }

@@ -33,12 +33,12 @@ public class FileFilesystem extends Filesystem {
     }
 
     @Override
-    public FileNode parse(IO io, String str) throws ParseException {
+    public FileNode parse(IO io, String rootPath) throws ParseException {
         File file;
         
-        file = new File(str);
+        file = new File(rootPath);
         if (!file.isAbsolute()) {
-            throw new ParseException("TODO: " + str);
+            throw new ParseException("TODO: " + rootPath);
         }
         return new FileNode(io, null, file);
     }
