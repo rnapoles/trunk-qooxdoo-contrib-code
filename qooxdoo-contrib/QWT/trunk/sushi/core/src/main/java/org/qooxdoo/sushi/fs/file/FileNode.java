@@ -95,7 +95,7 @@ public class FileNode extends Node {
     
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, (FileNode) getBase(), new File(root.id + path));
+        return new FileNode(io, (FileNode) getBase(), new File(getRoot() + path));
     }
     
     public URI toURI() {
@@ -115,7 +115,7 @@ public class FileNode extends Node {
     
     @Override
     public String getPath() {
-        return file.getPath().substring(root.id.length());
+        return file.getPath().substring(getRoot().id.length());
     }
     
     //--

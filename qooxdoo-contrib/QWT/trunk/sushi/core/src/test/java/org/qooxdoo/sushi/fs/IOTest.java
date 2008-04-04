@@ -19,19 +19,24 @@
 
 package org.qooxdoo.sushi.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.util.Reflect;
 
 public class IOTest {
     // TODO
     private static Root fs(IO io) {
-        return io.getWorking().root;
+        return io.getWorking().getRoot();
     }
     
     @Test
@@ -121,7 +126,7 @@ public class IOTest {
         path = io.path("foo" + io.os.listSeparator + fs(io).id + "bar");
         assertEquals(2, path.size());
         assertEquals("foo", path.get(0).toString());
-        assertEquals(io.getWorking().root.id + "bar", path.get(1).toString());
+        assertEquals(io.getWorking().getRoot().id + "bar", path.get(1).toString());
         try {
             io.classpath("nosuchfile.jar");
             fail();
