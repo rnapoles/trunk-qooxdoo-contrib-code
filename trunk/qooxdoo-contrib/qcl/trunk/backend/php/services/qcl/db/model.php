@@ -1032,26 +1032,21 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 
   /**
-   * saves the sql commands necessary to create the table into a file 
+   * saves the sql commands necessary to create the table into a file. 
+   * This will not overwrite an existing file. If you want to update
+   * the sql stored in the file system from the structure existing in the 
+   * database, remove the file and $this->setInitialized($table,false).
    * @return boolen success
    */
   function saveTableStructureSql($table)
   {
       $file = $this->getSqlFileName($table);
-      if ( is_writeable ( dirname ( $file ) ) )
+      if ( ! file_exists( $file ) and is_writeable ( dirname ( $file ) ) )
       {
-        if ( ! file_exists( $file ) or is_writeable ( $file ) )
-        {
-          $sql = $this->getCreateTableSql($table);
-          file_put_contents($file, $sql );        
-          $this->info("Stored sql for {$table}");
-          return true;
-        }
-        else
-        {
-          $this->warn ( "Problem saving structure of $table in file $file.");
-          return false;
-        }
+        $sql = $this->getCreateTableSql($table);
+        file_put_contents($file, $sql );        
+        $this->info("Stored sql for {$table}");
+        return true;
       }
       else
       {
