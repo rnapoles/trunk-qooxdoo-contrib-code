@@ -19,9 +19,12 @@
 
 package org.qooxdoo.sushi.fs;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.xml.Xml;
@@ -39,5 +42,19 @@ public abstract class NodeReadOnlyTest {
     public void setUp() throws Exception {
         work = createWork();
         sep = work.getRoot().separator;
+    }
+
+    @Test
+    public void locator() throws Exception {
+        String locator;
+        Factory factory;
+        Node again;
+        
+        locator = work.getLocator();
+        factory = new Factory();
+        factory.scan();
+        again = factory.parse(IO, locator);
+        assertEquals(work, again);
+        assertEquals(locator, again.getLocator());
     }
 }

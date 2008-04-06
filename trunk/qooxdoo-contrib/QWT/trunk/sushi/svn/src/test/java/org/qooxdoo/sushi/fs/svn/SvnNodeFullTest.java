@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.qooxdoo.sushi.fs.Factory;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
 import org.qooxdoo.sushi.fs.ParseException;
@@ -57,20 +56,6 @@ public class SvnNodeFullTest extends NodeTest {
         node.deleteOpt();
         node.mkdir();
         return node;
-    }
-
-    @Test
-    public void locator() throws Exception {
-        String locator;
-        Factory factory;
-        Node again;
-        
-        locator = work.getLocator();
-        factory = new Factory();
-        factory.scan();
-        again = factory.parse(IO, locator);
-        assertEquals(work, again);
-        assertEquals(locator, again.getLocator());
     }
 
     @Test

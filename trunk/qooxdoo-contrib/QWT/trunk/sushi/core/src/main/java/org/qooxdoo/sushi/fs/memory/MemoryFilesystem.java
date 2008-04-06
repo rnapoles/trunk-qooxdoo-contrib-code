@@ -33,7 +33,10 @@ public class MemoryFilesystem extends Filesystem {
 
     @Override
     public MemoryNode parse(IO io, String rootPath) throws ParseException {
-        return createRoot(io).newInstance(rootPath);
+    	if (!rootPath.startsWith("/")) {
+    		throw new ParseException(rootPath);
+    	}
+        return createRoot(io).newInstance(rootPath.substring(1));
     }
 
     public MemoryNode createRoot(IO io) {
