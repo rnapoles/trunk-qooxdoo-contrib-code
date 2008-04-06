@@ -1037,6 +1037,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * the sql stored in the file system from the structure existing in the 
    * database, remove the file and $this->setInitialized($table,false).
    * @return boolen success
+   * @todo: remove AUTO-INCREMENT value
    */
   function saveTableStructureSql($table)
   {
@@ -1050,7 +1051,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
       else
       {
-        $this->warn ( dirname ( $file ) . " is not writable. Cannot store sql.");
+        $this->warn ( dirname ( $file ) . " exists or is not writable. Updated sql is not stored.");
         return false;
       }
   }
@@ -1060,7 +1061,6 @@ class qcl_db_model extends qcl_jsonrpc_model
    * updates or creates table in database if it doesn't exist yet
    * @param string $table 
    * @return 
-   * FIXME: need to strip AUTO_INCREMENT from sql dumps!
    */
   function updateTableStructure($table)
   {

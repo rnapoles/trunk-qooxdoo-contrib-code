@@ -592,19 +592,33 @@ for ($i = 0; $i < count($serviceComponents); $i++)
  * Now replace all dots with slashes so we can locate the service script.  We
  * also retain the exploded components of the path, as the class name of the
  * service is the last component of the path.
+ * == added CB: look for a folder "controller" and append it if exists ==
  */
 $servicePath = implode("/", $serviceComponents);
 
 /* Try to load the requested service */
-if ( ! file_exists( servicePathPrefix . $servicePath . ".php") )
+if ( file_exists( servicePathPrefix . $servicePath . ".php") )
 {
-    /* Couldn't find the requested service */
-    $error->SetError(JsonRpcError_ServiceNotFound,
-                     "Service `$servicePath` not found.");
-    $error->SendAndExit();
-    /* never gets here */
+  require servicePathPrefix . $servicePath . ".php";
 }
-require servicePathPrefix . $servicePath . ".php";
+else
+{
+  array_splice($serviceComponents,count($serviceComponents)-1,0,array("controllers"));
+  $servicePath2 = implode("/", $serviceComponents);
+  if ( file_exists( servicePathPrefix . $servicePath2 . ".php") )
+  {
+    require servicePathPrefix . $servicePath2 . ".php";
+  }
+  else
+  {  
+      /* Couldn't find the requested service */
+      $error->SetError(JsonRpcError_ServiceNotFound,
+                       "Service `$servicePath` not found.");
+      $error->SendAndExit();
+      /* never gets here */
+  }
+}
+
 
 /* The service class is the last component of the service name */
 $className = JsonRpcClassPrefix . $serviceComponents[count($serviceComponents) - 1];
