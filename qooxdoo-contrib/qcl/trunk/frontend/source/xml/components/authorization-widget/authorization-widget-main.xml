@@ -13,13 +13,10 @@
 	<qx:security>
 		<qx:permission name="qcl.auth.permissions.manage" />
 	</qx:security>
-	
-	<qx:window 
-		id="authConfigWindow" 
-		width="500" height="400" 
-		caption="Configure Application Access / Authorizations"
-		showMinimize="false" showClose="true" 
-		modal="false">
+
+    <qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+      qx.event.message.Bus.dispatch("qcl.auth.messages.reload","");
+    </qx:messageSubscriber>  
 
 		<qxt:script>
 			<![CDATA[
@@ -28,22 +25,9 @@
 			// application class
 			var appClassName = qx.core.Init.getInstance().getApplication().classname;
 			var appName	= appClassName.substring(0,appClassName.indexOf("."));
-			authConfigWindow.setUserData("serviceName",appName + ".security" );
+			this.getApplication().setUserData("serviceName",appName + ".security" );
 			]]>
 		</qxt:script>
-		
-		<qx:eventListener type="appear">
-			this.centerToBrowser();
-		</qx:eventListener>
-
-		<qx:messageSubscriber filter="qcl.auth.commands.access.manage">
-			this.show();
-			qx.event.message.Bus.dispatch("qcl.auth.messages.reload");
-		</qx:messageSubscriber>
-		
-		<qx:messageSubscriber filter="qcl.auth.messages.logout">
-			this.hide();
-		</qx:messageSubscriber>		
 		 
 		<qx:verticalBoxLayout dimension="100%,100%">
 		
@@ -134,7 +118,5 @@
 			</qx:verticalSplitPane>
 		
 		</qx:verticalBoxLayout>
-
-	</qx:window>
 	
 </qxt:include-definition>

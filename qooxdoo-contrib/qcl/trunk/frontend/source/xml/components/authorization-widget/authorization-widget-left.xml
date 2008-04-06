@@ -38,8 +38,8 @@
 				<qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition><![CDATA[
 					return (
-						authConfigWindow.getUserData("currentNodeType") == "qcl.auth.types.Role"
-						&& authConfigWindow.getUserData("currentTree") == this
+						this.getApplication().getUserData("currentNodeType") == "qcl.auth.types.Role"
+						&& this.getApplication().getUserData("currentTree") == this
 					);
 				]]></qx:condition>
 			</qx:permission>
@@ -55,7 +55,7 @@
 					<![CDATA[
 					// only allow delete if node is a user (left) or permission (right)
 					return (
-							authConfigWindow.getUserData("currentNodeType") != "qcl.auth.types.Role"
+							this.getApplication().getUserData("currentNodeType") != "qcl.auth.types.Role"
 					);
 					]]>
 				</qx:condition>				
@@ -63,8 +63,8 @@
 					<![CDATA[
 					// only allow remove if node is exists more than once
 					// this function might perform badly if there are lots of users
-					var currentNode = authConfigWindow.getUserData("currentNode");
-					var currentTree = authConfigWindow.getUserData("currentTree");
+					var currentNode = this.getApplication().getUserData("currentNode");
+					var currentTree = this.getApplication().getUserData("currentTree");
 					if ( ! currentNode ) return false;
 					var nodeNamedId	= currentNode.data.namedId; 
 					var data 				= currentTree.getDataModel().getData();
@@ -88,15 +88,15 @@
 					<![CDATA[
 					// only allow delete if node is a user (left) or in the right tree (additional condition is added there)
 					return (
-							authConfigWindow.getUserData("currentNodeType") == "qcl.auth.types.User"
-							|| ( authConfigWindow.getUserData("currentTree") != this )
+							this.getApplication().getUserData("currentNodeType") == "qcl.auth.types.User"
+							|| ( this.getApplication().getUserData("currentTree") != this )
 					);
 					]]>
 				</qx:condition>
 				<qx:condition>
 					<![CDATA[
 					// only allow delete if node has no children
-					var node = authConfigWindow.getUserData("currentNode"); 
+					var node = this.getApplication().getUserData("currentNode"); 
 					if ( ! node ) return false;
 					switch ( node.type )
 					{
@@ -119,8 +119,8 @@
 					<![CDATA[
 					return (
 							// only allow delete if node is a user (left) or in the right tree (additional condition is added there)
-							authConfigWindow.getUserData("currentNodeType") == "qcl.auth.types.User"
-							|| ( authConfigWindow.getUserData("currentTree") != this )											
+							this.getApplication().getUserData("currentNodeType") == "qcl.auth.types.User"
+							|| ( this.getApplication().getUserData("currentTree") != this )											
 					);
 					]]>
 				</qx:condition>		
@@ -134,7 +134,7 @@
 		<qx:messageSubscriber filter="qcl.auth.messages.reload">			
 			<![CDATA[
 			// set service method
-			this.setServiceName(authConfigWindow.getUserData("serviceName"));
+			this.setServiceName(this.getApplication().getUserData("serviceName"));
 
 			// (re)load tree
 			this.getDataModel().clearData(); this.updateClient();
@@ -145,7 +145,7 @@
 		<qx:eventListener type="focus" >
 		
 			// we are in focus
-			authConfigWindow.setUserData("currentTree",this); 
+			this.getApplication().setUserData("currentTree",this); 
 			
 			// set drag policy
 			var user = qcl.auth.user.Manager.getInstance().getActiveUser();  
@@ -171,8 +171,8 @@
 			// save current node and notify subscribers
 			var nodeType = this.getNodeType(node);  
 			node.data.sourceTree = this;
-			authConfigWindow.setUserData("currentNodeType",nodeType);
-			authConfigWindow.setUserData("currentNode",node);
+			this.getApplication().setUserData("currentNodeType",nodeType);
+			this.getApplication().setUserData("currentNode",node);
 			qx.event.message.Bus.dispatch( "qcl.auth.messages.changeSelection",node );
 			
 		</qx:eventListener>
@@ -180,7 +180,7 @@
 		<!-- clear selection when clicked in other tree -->
 
 		<qx:messageSubscriber filter="qcl.auth.messages.changeSelection">
-			if (authConfigWindow.getUserData("currentTree") != this) 
+			if (this.getApplication().getUserData("currentTree") != this) 
 			{ 
 				this.getSelectionModel().clearSelection();
 			}
@@ -266,7 +266,7 @@
 			<![CDATA[
 			var newName = prompt(this.tr("Please enter login name of new user"));
 			if ( ! newName ) return;
-			roleNode = authConfigWindow.getUserData("currentNode");
+			roleNode = this.getApplication().getUserData("currentNode");
 			if (this.getNodeType(roleNode) != "qcl.auth.types.Role" )
 			{
 				qx.event.message.Bus.dispatch("error-client", "Cannot create user - invalid parent node.");
@@ -285,7 +285,7 @@
 		
 		<qx:messageSubscriber filter="qcl.auth.commands.item.delete">
 			<![CDATA[
-			var node 				= authConfigWindow.getUserData("currentNode"),
+			var node 				= this.getApplication().getUserData("currentNode"),
 					id					= node.data.id,
 					namedId			= node.data.namedId,
 					name 				= node.data.name,
@@ -309,7 +309,7 @@
 		
 		<qx:messageSubscriber filter="qcl.auth.commands.item.remove">
 			<![CDATA[
-			var node 				= authConfigWindow.getUserData("currentNode"),
+			var node 				= this.getApplication().getUserData("currentNode"),
 					id					= node.data.id,
 					nodeType 		= this.getNodeType(node),
 					shortType		= nodeType.substr(nodeType.lastIndexOf(".")+1),
@@ -324,7 +324,7 @@
 			// listen to message only if this is not a drag and drop session
 			if ( ! this.getUserData("dropData") )
 			{
-				this.getDataModel().prune(authConfigWindow.getUserData("currentNode"),true);
+				this.getDataModel().prune(this.getApplication().getUserData("currentNode"),true);
 				this.getDataModel().setData();
 			}
 		</qx:messageSubscriber>
