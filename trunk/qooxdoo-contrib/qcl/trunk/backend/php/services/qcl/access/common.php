@@ -121,9 +121,9 @@ class qcl_access_common extends qcl_db_model
 	 */
 	function createIfNotExists( $namedId, $parentId=null )
   {
- 		if ( $this->namedIdExists ( $namedId ) )
+ 		if ( $id = $this->namedIdExists ( $namedId ) )
  		{
- 			return false;
+ 			return $id;
  		}
  		return $this->create( $namedId, $parentId );
   }   

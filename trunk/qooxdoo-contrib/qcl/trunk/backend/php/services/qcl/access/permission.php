@@ -37,7 +37,7 @@ class qcl_access_permission extends qcl_access_common
   //-------------------------------------------------------------
   // public methods 
   //-------------------------------------------------------------
-      
+ 
   /**
    * get a list of permissions for one or all roles
    * @param mixed $roleId null for all, array for a list of and integer for a single user id
@@ -65,6 +65,38 @@ class qcl_access_permission extends qcl_access_common
 		return $result;
  	} 
 
+  /**
+   * creates a new permission. throws an error if permission already exists
+   * @overridden
+   * @param string $namedId
+   * @param int[optional] $roleId 
+   */
+ 	function create( $namedId, $roleId=null )
+ 	{
+ 	 	if ( ! $roleId )
+ 		{
+   	  $controller =& $this->getController();
+      $roleModel  =& $controller->getModel("role");
+   	  $roleId	    =  $roleModel->createIfNotExists("qcl.roles.Unassigned");
+ 		}
+ 		return parent::create( $namedId, $roleId );
+ 	}
+ 	
+  /**
+   * creates a new permission if it doesn't exist
+   * @overridden
+   * @param string $namedId
+   * @param int[optional] $roleId 
+   */
+ 	function createIfNotExists( $namedId, $roleId=null )
+ 	{
+ 		if ( $id = $this->namedIdExists ( $namedId ) )
+ 		{
+ 			return $id;
+ 		}
+    return $this->create( $namedId, $roleId ); 	  
+ 	}
+ 	
   /**
    * adds permission(s) to role(s) 
    * @param mixed $permissionRefs (array or single value) permission ref(s) (id or namedId)
