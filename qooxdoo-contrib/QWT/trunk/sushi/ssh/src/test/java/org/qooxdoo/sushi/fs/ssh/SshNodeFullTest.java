@@ -91,4 +91,12 @@ public class SshNodeFullTest extends NodeTest {
         assertEquals("", root.getName());
         assertTrue(root.list().size() > 0);
     }
+    
+    @Test
+    public void parse() throws Exception {
+    	SshNode node;
+    	
+    	node = SshFilesystem.INSTANCE.parse(IO, "localhost/usr");
+    	assertEquals("ssh:mhm@localhost", node.getLocator());
+    }
 }

@@ -43,16 +43,15 @@ import org.qooxdoo.sushi.io.Misc;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
-    private static final Root ROOT = new Root(SshFilesystem.INSTANCE, "/", '/');
-    
     private final ChannelSftp channel;
     private final String slashPath;
     
     public SshNode(IO io, ChannelSftp channel, String path) {
-        super(io, ROOT);
+        super(io, root(channel));
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
@@ -67,6 +66,13 @@ public class SshNode extends Node {
         this.slashPath = "/" + path;
     }
 
+    private static Root root(ChannelSftp channel) {
+    	Session session;
+    	
+    	session = channel.getSession();
+    	return new Root(SshFilesystem.INSTANCE, session.getUserName() + "@" + session.getHost() + "/", '/');
+    }
+    
     public ChannelSftp getChannel() {
         return channel;
     }
