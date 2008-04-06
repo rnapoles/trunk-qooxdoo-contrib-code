@@ -168,7 +168,8 @@ class qcl_db_model extends qcl_jsonrpc_model
   }  
   
  	/**
-   * gets all database records or those that match a where condition
+   * gets all database records or those that match a where condition. 
+   * the table name is available as the alias "r" (for records)
    * @param string 			  $where   	where condition to match, if null, get all
    * @param string|null 	$orderBy 	(optional) order by field
    * @param array|null		$fields		(optional) Array of fields to retrieve 
@@ -185,7 +186,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 			$fields = "*"; 
 		}
 		
-		$sql = "SELECT $fields FROM {$this->table} \n";
+		$sql = "SELECT $fields FROM {$this->table} AS r \n";
 		
 		if ($where)
 		{
