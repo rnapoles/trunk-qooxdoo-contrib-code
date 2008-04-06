@@ -154,20 +154,33 @@ class qcl_db_tree extends qcl_db_model
 	}
 		
 	/**
-	 * set parent folder id of current record
+	 * set parent folder id of current or specified record
 	 * @param int		$parentId
-	 * @param boolean	$forceUpdate 	whether to update the database (default:false)
+	 * @param int[optional] $folderId
 	 * @return void
 	 */
-	function setParentId($parentId)
+	function setParentId($parentId,$folderId=null)
 	{
 		$parentId = (int) $parentId;
-		$this->setFieldValue("parentId",$parentId);
-		$this->update();
+		$this->setFieldValue("parentId",$parentId,$folderId);
+    if ( !$folderId )
+    {
+		  $this->update();
+    }
 	}
-  
+
+	/**
+	 * get parent folder id of current or specified record
+	 * @param int		$folderId
+	 * @return int parent id
+	 */
+	function getParentId($folderId=null)
+	{
+		return $this->getFieldValue("parentId",$folderId);
+	}	
+	
   /**
-   * gets the path of a folder in the folder hierarchie
+   * gets the path of a folder in the folder hierarchy
    * @return 
    */
   function getPath( $id=null )
