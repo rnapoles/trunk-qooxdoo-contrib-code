@@ -409,12 +409,12 @@ class qcl_db_model extends qcl_jsonrpc_model
 	/**
 	 * checks if record with $namedId exists
 	 * @param string	$namedId
-	 * @param boolean result
+	 * @param int id of existing record of false
 	 */
 	function namedIdExists( $namedId )
 	{
 		$row = $this->getByNamedId ( $namedId );
-		return count($row) ? true : false;
+		return count($row) ? $row[$this->key_id] : false;
 	}
   
   /**
