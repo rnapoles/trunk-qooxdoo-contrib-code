@@ -16,7 +16,6 @@
 		<qx:permission name="qcl.config.permissions.editor.deleteKey"/>
 		<qx:permission name="qcl.config.permissions.editor.editKey"/>
 	</qx:security>
-	
 	<qx:menu id="contextMenuAuthConfig">
 	
 		<qx:menuButton text="New Key"
@@ -39,21 +38,9 @@
 		
 	</qx:menu>
 		
-	<qx:window 
-		id="configEditorWindow" 
-		width="500" height="400" 
-		caption="Edit Configuration"
-		showMinimize="false" showClose="true" 
-		modal="false" onAppear="this.centerToBrowser()">
-		
-		<qx:messageSubscriber filter="qcl.config.commands.editor.show">
-			this.show();
-			qx.event.message.Bus.dispatch("qcl.config.messages.editor.reload","");
+		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+			qx.event.message.Bus.dispatch("qcl.config.messages.editor.reload");
 		</qx:messageSubscriber>
-		
-		<qx:messageSubscriber filter="qcl.auth.messages.logout">
-			this.hide();
-		</qx:messageSubscriber>		
 		 
 		<qx:verticalBoxLayout dimension="100%,100%">
 		
@@ -262,6 +249,5 @@
 		
 		</qx:verticalBoxLayout>
 
-	</qx:window>
 	
 </qxt:include-definition>
