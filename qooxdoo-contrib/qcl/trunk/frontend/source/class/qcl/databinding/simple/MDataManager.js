@@ -242,7 +242,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      * @type member
      * @return {void}
      */
-    executeOnServer : function()
+    executeService : function()
     {
       this._updateClient.apply(this,arguments);
     },
