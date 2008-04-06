@@ -33,7 +33,7 @@
 					this.setUserData("oldWidth", this.getWidthValue() );
 
 					// set service method
-    			this.setServiceName(authConfigWindow.getUserData("serviceName"));
+    			this.setServiceName(this.getApplication().getUserData("serviceName"));
 
 					var node = message.getData();
 

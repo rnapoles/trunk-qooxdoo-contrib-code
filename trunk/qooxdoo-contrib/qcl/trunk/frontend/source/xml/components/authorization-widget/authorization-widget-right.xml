@@ -33,7 +33,7 @@
 			<qx:permission name="qcl.auth.permissions.role.create">
 				<qx:updater message="qcl.auth.messages.changeSelection" />
 				<qx:condition>
-					return (authConfigWindow.getUserData("currentTree") == this);
+					return (this.getApplication().getUserData("currentTree") == this);
 				</qx:condition>
 			</qx:permission>
 
@@ -42,8 +42,8 @@
 				<qx:condition>
 					<![CDATA[
 					return (
-						authConfigWindow.getUserData("currentTree") == this
-						&& authConfigWindow.getUserData("currentNodeType") == "qcl.auth.types.Role"
+						this.getApplication().getUserData("currentTree") == this
+						&& this.getApplication().getUserData("currentNodeType") == "qcl.auth.types.Role"
 					);
 					]]>
 				</qx:condition>
@@ -59,7 +59,7 @@
 			<![CDATA[
 
 			// set service method
-			this.setServiceName(authConfigWindow.getUserData("serviceName"));
+			this.setServiceName(this.getApplication().getUserData("serviceName"));
 
 			// (re)load tree
 			this.getDataModel().clearData();
@@ -82,7 +82,7 @@
 		<qx:eventListener type="focus" >
 			<![CDATA[
 			// we are in focus
-			authConfigWindow.setUserData("currentTree",this); 
+			this.getApplication().setUserData("currentTree",this); 
 			
 			// set drag policy
 			var user = qcl.auth.user.Manager.getInstance().getActiveUser();  
@@ -108,8 +108,8 @@
 			// determine and save node type and notify subscribers
 			var nodeType = this.getNodeType(node);  
 			node.data.sourceTree = this;
-			authConfigWindow.setUserData("currentNodeType",nodeType);
-			authConfigWindow.setUserData("currentNode",node);
+			this.getApplication().setUserData("currentNodeType",nodeType);
+			this.getApplication().setUserData("currentNode",node);
 			qx.event.message.Bus.dispatch( "qcl.auth.messages.changeSelection",node );
 			]]>
 		</qx:eventListener>
@@ -117,7 +117,7 @@
 		<!-- clear selection when clicked in other tree -->
 
 		<qx:messageSubscriber filter="qcl.auth.messages.changeSelection">
-			if (authConfigWindow.getUserData("currentTree") != this) 
+			if (this.getApplication().getUserData("currentTree") != this) 
 			{ 
 				this.getSelectionModel().clearSelection();
 			}
@@ -174,7 +174,7 @@
 			<![CDATA[
 			var newName = prompt(this.tr("Please enter dot-separated named id (foo.roles.mySpecialRole) of role"));
 			if ( ! newName ) return;
-			roleNode = authConfigWindow.getUserData("currentNode");
+			roleNode = this.getApplication().getUserData("currentNode");
 			this.updateServer( this.getServiceName() + ".createItem", "role", newName, roleNode.data.id );
 			]]>
 		</qx:messageSubscriber>		
@@ -182,7 +182,7 @@
 		<qx:messageSubscriber filter="qcl.auth.messages.role.created">
 			<![CDATA[
 			var id   = message.getData();
-			var parentNodeId = authConfigWindow.getUserData("currentNode").data.id;	
+			var parentNodeId = this.getApplication().getUserData("currentNode").data.id;	
 			qx.event.message.Bus.dispatch( "qcl.auth.messages.reload" );
 			]]>
 		</qx:messageSubscriber>
@@ -193,7 +193,7 @@
 			<![CDATA[
 			var newName = prompt(this.tr("Please enter dot-separated named id (foo.permissions.doFoo) of permission"));
 			if ( ! newName ) return;
-			var roleNode = authConfigWindow.getUserData("currentNode");
+			var roleNode = this.getApplication().getUserData("currentNode");
 			var nodeType = this.getNodeType(roleNode) ; 
 			if ( nodeType != "qcl.auth.types.Role" )
 			{
@@ -226,7 +226,7 @@
 			// listen to message only if this is not a drag and drop session
 			if ( ! this.getUserData("dropData") )
 			{
-				this.getDataModel().prune(authConfigWindow.getUserData("currentNode"),true);
+				this.getDataModel().prune(this.getApplication().getUserData("currentNode"),true);
 				this.getDataModel().setData();
 			}
 		</qx:messageSubscriber>
