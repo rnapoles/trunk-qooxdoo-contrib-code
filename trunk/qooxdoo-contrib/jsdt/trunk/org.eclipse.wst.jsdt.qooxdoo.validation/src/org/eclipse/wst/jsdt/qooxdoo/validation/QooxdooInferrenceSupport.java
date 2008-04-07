@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.wst.jsdt.core.ast.IASTNode;
 import org.eclipse.wst.jsdt.core.ast.IExpression;
 import org.eclipse.wst.jsdt.core.ast.IFunctionCall;
+import org.eclipse.wst.jsdt.core.ast.IFunctionDeclaration;
 import org.eclipse.wst.jsdt.core.ast.IFunctionExpression;
 import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
 import org.eclipse.wst.jsdt.core.ast.ISingleNameReference;
@@ -15,7 +16,6 @@ import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.wst.jsdt.internal.compiler.ast.Expression;
 import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
 
@@ -39,7 +39,7 @@ public class QooxdooInferrenceSupport extends InferEngine {
   protected boolean handleFunctionCall( IFunctionCall messageSend ) {
     if( isQxClassDefined( messageSend ) ) {
       IExpression firstArg = messageSend.getArguments()[ 0 ];
-      String name = getTrimmedName( ( IStringLiteral )firstArg );
+      String name = new String( (( IStringLiteral )firstArg).source());
       InferredType type = null;
       if( name.contains( "." ) ) {
         type = getTypeWithNamespace( name, firstArg );
@@ -119,11 +119,16 @@ public class QooxdooInferrenceSupport extends InferEngine {
   }
 
   @Override
-  public boolean visit( IThisReference qualifiedThisReference ) {
+  public boolean visit( IThisReference tr ) {
     return true;
   }
   
-  
+
+  @Override
+  public boolean visit( IFunctionDeclaration methodDeclaration ) {
+    return super.visit( methodDeclaration );
+  }
+
   @Override
   public void endVisit( IObjectLiteralField field ) {
     IObjectLiteralField pop = memberTypeStack.pop();
@@ -141,14 +146,6 @@ public class QooxdooInferrenceSupport extends InferEngine {
            && "define".equals( new String( messageSend.getSelector() ) );
   }
 
-  private String getTrimmedName( IStringLiteral firstArg ) {
-    return new String( firstArg.source());
-  }
-
-  private static void printExpression( IExpression expression, StringBuffer out )
-  {
-    ( ( Expression )expression ).printExpression( 0, out );
-  }
 
   static String getName( IExpression expression ) {
     ISingleNameReference nameref = (ISingleNameReference) expression;
