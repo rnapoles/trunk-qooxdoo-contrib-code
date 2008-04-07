@@ -63,6 +63,8 @@ public class Members_PDETest extends Assert {
     sammy.cleanUp();
   }
 
+  // fails: static methods are not yet working - is it due to jsdt or
+  // qooxdoo-tools?
   @Test
   public void triggerAutoCompletion() throws Exception {
     sammy.openEditor( new FileEditorInput( this.file ) );
