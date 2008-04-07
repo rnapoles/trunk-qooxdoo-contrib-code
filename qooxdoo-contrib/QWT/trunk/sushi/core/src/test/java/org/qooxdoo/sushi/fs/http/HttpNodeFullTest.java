@@ -27,7 +27,6 @@ import java.net.URL;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.Node;
 
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class HttpNodeFullTest {
