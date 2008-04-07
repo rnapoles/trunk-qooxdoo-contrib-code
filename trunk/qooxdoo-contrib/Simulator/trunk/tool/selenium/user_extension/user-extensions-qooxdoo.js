@@ -777,10 +777,7 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
   else
   {
     LOG.error("qx-locator: element not found for locator: qx-locator=" + qxLocator);
-
-    // have to throw this error, as otherwise Selenium will loop through all frames an cause an
-    // unexpected error trying to access qx
-    throw new SeleniumError("qooxdoo-Element " + qxLocator + " not found");
+    return null;
   }
 };
 
