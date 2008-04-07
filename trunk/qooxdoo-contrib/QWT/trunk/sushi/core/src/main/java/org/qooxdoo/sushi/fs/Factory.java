@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Strings;
 
@@ -100,21 +101,38 @@ public class Factory {
         return map.size();
     }
     
-    public Node parse(IO io, String locator) throws IOException {
+    public Node parse(IO io, Node working, String locator) throws IOException {
         int idx;
         String name;
         Filesystem fs;
+        Node result;
         
         idx = locator.indexOf(Filesystem.SEPARTOR);
         if (idx == -1) {
-            throw new ParseException("unkown file system: " + locator);
+            fs = defaultFs(working);
+        } else {
+            name = locator.substring(0, idx);
+            fs = map.get(name);
+            if (fs == null) {
+                fs = defaultFs(working);
+            }
         }
-        name = locator.substring(0, idx);
-        fs = map.get(name);
-        if (fs == null) {
-            throw new ParseException("unkown file system: " + locator);
+        result = fs.parse(io, locator.substring(idx + 1));
+        if (result == null) {
+            if (working == null || fs != working.getRoot().filesystem) {
+                throw new ParseException("no working directory for filesystem " + fs.getName());
+            }
+            result = working.join(locator.substring(idx + 1));
+            result.setBase(working);
         }
-        
-        return fs.parse(io, locator.substring(idx + 1));
+        return result;
+    }
+    
+    private Filesystem defaultFs(Node working) { 
+        if (working == null) {
+            return FileFilesystem.INSTANCE;
+        } else {
+            return working.getRoot().filesystem;
+        }
     }
 }

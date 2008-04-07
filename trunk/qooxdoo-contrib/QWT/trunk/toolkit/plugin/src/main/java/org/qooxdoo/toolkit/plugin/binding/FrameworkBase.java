@@ -50,7 +50,7 @@ public abstract class FrameworkBase extends Base {
     protected FileNode frameworkDir;
     
     public void setFrameworkDir(String path) {
-        frameworkDir = io.node(path);
+        frameworkDir = io.file(path);
     }
 
     @Override

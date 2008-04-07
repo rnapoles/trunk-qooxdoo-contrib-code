@@ -37,9 +37,10 @@ public class FileFilesystem extends Filesystem {
         File file;
         
         file = new File(rootPath);
-        if (!file.isAbsolute()) {
-            throw new ParseException("TODO: " + rootPath);
+        if (file.isAbsolute()) {
+            return new FileNode(io, null, file);
+        } else {
+            return null;
         }
-        return new FileNode(io, null, file);
     }
 }

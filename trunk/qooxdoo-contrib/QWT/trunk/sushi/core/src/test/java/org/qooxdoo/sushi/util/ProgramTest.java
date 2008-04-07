@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.OS;
 
 public class ProgramTest {
@@ -112,7 +113,7 @@ public class ProgramTest {
     private Program p(String ... args) {
         Program p;
         
-        p = new Program(IO_OBJ.getHome());
+        p = new Program((FileNode) IO_OBJ.getHome());
         if (OS.CURRENT == OS.WINDOWS) {
             p.add("cmd", "/C");
         }

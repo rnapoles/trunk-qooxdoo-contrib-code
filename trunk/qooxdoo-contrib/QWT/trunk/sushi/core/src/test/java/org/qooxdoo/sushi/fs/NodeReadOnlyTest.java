@@ -53,7 +53,7 @@ public abstract class NodeReadOnlyTest {
         locator = work.getLocator();
         factory = new Factory();
         factory.scan();
-        again = factory.parse(IO, locator);
+        again = IO.node(locator);
         assertEquals(work, again);
         assertEquals(locator, again.getLocator());
     }

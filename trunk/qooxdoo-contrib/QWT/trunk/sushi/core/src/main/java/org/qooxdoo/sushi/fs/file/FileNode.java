@@ -370,16 +370,20 @@ public class FileNode extends Node {
     public int getMode() throws IOException {
         Program stat;
         
-        stat = new Program(io.getWorking(), "stat");
+        stat = new Program(dir(), "stat");
         stat.add(OS.CURRENT.stat);
         stat.add(getAbsolute());
         return Integer.parseInt(stat.exec().trim(), 8) & 0777;
     }
 
     public void setMode(int mode) throws IOException {
-        new Program(io.getWorking(), "chmod", Integer.toOctalString(mode), getAbsolute()).execNoOutput();
+        new Program(dir(), "chmod", Integer.toOctalString(mode), getAbsolute()).execNoOutput();
     }
     
+    private FileNode dir() {
+        return (FileNode) getParent();
+    }
+
     //-- Object methods
     
     /** TODO: compare canonical paths? */

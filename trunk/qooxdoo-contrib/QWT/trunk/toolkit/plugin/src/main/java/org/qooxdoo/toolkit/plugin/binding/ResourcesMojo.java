@@ -76,7 +76,7 @@ public class ResourcesMojo extends FrameworkBase {
     }
 
     private FileNode classes() {
-        return io.node(project.getBuild().getDirectory() + "/classes");
+        return io.file(project.getBuild().getDirectory() + "/classes");
     }
 
     private void svninfo() throws MojoExecutionException, IOException {
