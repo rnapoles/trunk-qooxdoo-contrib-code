@@ -511,74 +511,12 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               this.error("Rpc datatype 'treedatamodel' only valid for qx.ui.treevirtual.TreeVirtual!");
               return false;
             }
-            var dataModel = this.getDataModel();
-            var data = data.treedatamodel;
-						var pruneParent = true; // prune parent node once
-            
-            if ( data && typeof data == "object" && data.length )
-            {
-						  
-              // prune parent of first node, this assumes that all nodes 
-              // sent have the same parent.
-              var parentNodeId = data[0].parentNodeId || 0; 
-              dataModel.prune(parentNodeId);  
-              dataModel.setState(parentNodeId,{bOpened:true});
-              
-              for (var i=0; i<data.length;i++)
-						  {
-						    var node = data[i];
-						    
-								// check node for commands; MUST NEVER BE FIRST NODE SENT!
-								if ( node.command )
-								{
-										switch(node.command)
-										{
-											case "render":
-												dataModel.setData();
-												break;		
-										}
-										continue;
-								}
-								
-						    // create node
-						    if( node.isBranch )
-						    {
-						      var nodeId = dataModel.addBranch( node.parentNodeId || 0 );
-						    }
-						    else
-						    {
-						      var nodeId = dataModel.addLeaf( node.parentNodeId || 0 );								      
-						    }
-						    
-                // index node id to data properties put into user data
-                if ( node.index )
-                {
-                  if (!this.getUserData(node.index.name))
-                  {
-                    this.setUserData(node.index.name,{});  
-                  }                    
-                  this.getUserData(node.index.name)[node.index.key]=nodeId;
-                  delete node.index;
-                }
-                
-						    // set node state, including custom properties
-						    delete node.parentNodeId;
-								dataModel.setState( nodeId, node );
-								
-								// drag data alias
-								if (this.setNodeType && node.data && node.data.type)
-								{
-									this.setNodeType( nodeId, node.data.type );
-								}
- 
-						  }
-						  // update tree
-						  dataModel.setData();            
-            }
-            else
-            {
-              this.warn("Invalid rpc data!");
-            }
+						// FIXME: This doesn't belong here! BAD HACK!!
+						if ( ! qx.Class.hasMixin( treevirtual.TreeVirtual, qcl.databinding.simple.MTreeVirtual ))
+						{
+							qx.Class.include( treevirtual.TreeVirtual, qcl.databinding.simple.MTreeVirtual );
+						}
+						this.handleServerData(data.treedatamodel);
             break;
           
           /* qx.ui.table.model.Simple */

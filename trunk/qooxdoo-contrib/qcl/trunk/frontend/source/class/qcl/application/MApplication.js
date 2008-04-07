@@ -248,7 +248,7 @@ qx.Mixin.define("qcl.application.MApplication",
 			if( value )
 			{
 				var state = qx.client.History.getInstance().getState();
-				console.log("Initial state: " + state);
+				//console.log("Initial state: " + state);
 				this.__hashParams  = this._analyzeHashString();
 				console.log(this.__hashParams);
 				qx.client.History.getInstance().addEventListener("request", function(e) {
