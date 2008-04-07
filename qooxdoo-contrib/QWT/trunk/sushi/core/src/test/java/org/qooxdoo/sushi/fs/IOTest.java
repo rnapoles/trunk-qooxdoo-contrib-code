@@ -40,9 +40,9 @@ public class IOTest {
     }
     
     @Test
-    public void nodeRoot() {
+    public void nodeRoot() throws IOException {
         IO io;
-        FileNode node;
+        Node node;
         
         io = new IO();
         node = io.node(fs(io).id);
@@ -55,7 +55,7 @@ public class IOTest {
     @Test
     public void nodeAbsolute() {
         IO io;
-        FileNode node;
+        Node node;
 
         io = new IO();
         node = io.node(fs(io).id + "a");
@@ -69,7 +69,7 @@ public class IOTest {
     @Test
     public void nodeAbsoluteSubdir() {
         IO io;
-        FileNode node;
+        Node node;
 
         io = new IO();
         node = io.node(fs(io).id + "x" + fs(io).separator + "y");
@@ -84,7 +84,7 @@ public class IOTest {
     @Test
     public void nodeRelative() {
         IO io;
-        FileNode node;
+        Node node;
         
         io = new IO();
         node = io.node("a");
@@ -97,7 +97,7 @@ public class IOTest {
     @Test
     public void nodeDot() {
         IO io;
-        FileNode dot;
+        Node dot;
 
         io = new IO();
         dot = io.node(".");
@@ -119,7 +119,7 @@ public class IOTest {
     @Test
     public void path() {
         IO io;
-        List<FileNode> path;
+        List<Node> path;
         
         io = new IO();
         assertEquals(0, io.path("").size());

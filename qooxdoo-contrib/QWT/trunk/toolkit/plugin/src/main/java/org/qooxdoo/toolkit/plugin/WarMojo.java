@@ -42,7 +42,7 @@ public class WarMojo extends WebappBase {
     private FileNode war;
     
     public void setWar(String path) {
-        war = io.node(path);
+        war = io.file(path);
     }
 
     /**

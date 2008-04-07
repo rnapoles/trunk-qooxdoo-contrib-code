@@ -91,7 +91,7 @@ public class Application implements ApplicationMBean {
         if (!docrootFile.isDirectory()) {
             throw new IllegalStateException(docrootFile.toString());
         }
-        docroot = io.node(docrootFile);
+        docroot = io.file(docrootFile);
         clientDir = (FileNode) docroot.join("client").mkdirOpt();
         rm = ResourceManager.create(docroot);
         rm.addPrefix("", clientDir);

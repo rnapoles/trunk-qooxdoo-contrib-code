@@ -86,7 +86,7 @@ public class DistributionMojo extends Base {
     private FileNode unzipped;
 
     public void setUnzipped(String path) {
-        unzipped = io.node(path);
+        unzipped = io.file(path);
     }
 
     /**
@@ -98,7 +98,7 @@ public class DistributionMojo extends Base {
     private FileNode qwtSource;
 
     public void setQwtSource(String path) {
-        qwtSource = io.node(path);
+        qwtSource = io.file(path);
     }
 
     // can't use Sushi because I need executable flags

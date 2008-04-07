@@ -103,7 +103,7 @@ public abstract class WebappBase extends Base {
     private FileNode images;
 
     public void setImages(String path) {
-        images = io.node(path);
+        images = io.file(path);
     }
     
     /**
@@ -125,7 +125,7 @@ public abstract class WebappBase extends Base {
     private FileNode classesDirectory;
 
     public void setClassesDirectory(String path) {
-        classesDirectory = io.node(path);
+        classesDirectory = io.file(path);
     }
 
     /**
@@ -137,7 +137,7 @@ public abstract class WebappBase extends Base {
     protected FileNode webapp;
 
     public void setWebapp(String path) {
-        webapp = io.node(path);
+        webapp = io.file(path);
     }
     
     private static final String WEB_INF = "WEB-INF";
@@ -209,7 +209,7 @@ public abstract class WebappBase extends Base {
         int srcNo = 1;
         for (Object obj : project.getCompileSourceRoots()) {
             debug("source link " + obj);
-            linkOrCopy(io.node((String) obj), (FileNode) webinfSrc.join("" + srcNo));
+            linkOrCopy(io.file((String) obj), (FileNode) webinfSrc.join("" + srcNo));
             srcNo++;
         }
     }

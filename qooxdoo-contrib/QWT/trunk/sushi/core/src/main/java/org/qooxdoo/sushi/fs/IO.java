@@ -66,11 +66,14 @@ public class IO {
     /** never null */
     public final Xml xml;
 
-    private FileNode home;
+    private Node home;
+    // TODO: node
     private FileNode temp;
-    private FileNode working;
+    private Node working;
     
     private final List<String> defaultExcludes;
+    
+    private final Factory factory;
     
     public final int maxInMemorySize;
     
@@ -79,6 +82,12 @@ public class IO {
     }
     
     public IO(OS os, Settings settings, Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {
+        this.factory = new Factory();
+        try {
+            factory.scan();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.os = os;
         this.settings = settings;
         this.buffer = buffer;
@@ -94,30 +103,31 @@ public class IO {
 
     //--
     
-    public FileNode getHome() {
+    public Node getHome() {
         return home;
     }
 
-    public IO setHome(FileNode home) {
+    public IO setHome(Node home) {
         this.home = home;
         return this;
     }
     
     /** current working directory */
-    public FileNode getWorking() {
+    public Node getWorking() {
         return working;
     }
 
     /** current working directory */
-    public IO setWorking(FileNode working) {
+    public IO setWorking(Node working) {
         this.working = working;
         return this;
     }
     
-    public FileNode getTemp() {
+    public Node getTemp() {
         return temp;
     }
-    
+
+    // TODO: node
     public IO setTemp(FileNode temp) {
         this.temp = temp;
         return this;
@@ -138,20 +148,31 @@ public class IO {
     }
     
     //-- Node creation helper
-    
-    public FileNode node(String path) {
-        return node(new File(path));
-    }
 
-    /** CAUTION: relative to io.getCwd() */
-    public FileNode node(File file) {
-        if (".".equals(file.getPath())) {
-            return new FileNode(this, getWorking(), getWorking().getFile());
+    public FileNode file(String path) {
+        try {
+            return (FileNode) factory.parse(this, working, "file:" + path);
+        } catch (IOException e) {
+            throw new RuntimeException("TODO", e);
         }
-        if (file.isAbsolute()) {
-            return new FileNode(this, null, file);
-        } else {
-            return new FileNode(this, getWorking(), new File(getWorking().getFile(), file.getPath()).getAbsoluteFile());
+    }
+    
+    public FileNode file(File file) {
+        return (FileNode) node(file.getAbsolutePath());
+    }
+    
+    public Node node(String optPath) {
+        Node result;
+        
+        if (optPath.equals(".")) {
+            result = node(working.getLocator());
+            result.setBase(working);
+            return result;
+        }
+        try {
+            return factory.parse(this, working, optPath);
+        } catch (IOException e) {
+            throw new RuntimeException("TODO", e);
         }
     }
     
@@ -173,7 +194,7 @@ public class IO {
      */
     public FileNode node(URL url) {
         try {
-            return node(URLDecoder.decode(url.getFile(), 
+            return (FileNode) node(URLDecoder.decode(url.getFile(), 
                     Settings.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("expected on every platform", e);
@@ -182,21 +203,21 @@ public class IO {
     
     //-- 
     
-    public List<FileNode> path(String path) {
-        List<FileNode> result;
+    public List<Node> path(String path) {
+        List<Node> result;
         
-        result = new ArrayList<FileNode>();
+        result = new ArrayList<Node>();
         for (String str: Strings.split(os.listSeparator, path)) {
             result.add(node(str));
         }
         return result;
     }
 
-    public List<FileNode> classpath(String path) throws IOException {
-        List<FileNode> result;
+    public List<Node> classpath(String path) throws IOException {
+        List<Node> result;
         
         result = path(path);
-        for (FileNode node : result) {
+        for (Node node : result) {
             node.checkExists();
         }
         return result;
@@ -343,6 +364,6 @@ public class IO {
             throw new IllegalStateException(
                 "property " + name + " does not point to a directory: " + value);
         }
-        return node(file);
+        return (FileNode) node(file.getAbsolutePath());
     }
 }

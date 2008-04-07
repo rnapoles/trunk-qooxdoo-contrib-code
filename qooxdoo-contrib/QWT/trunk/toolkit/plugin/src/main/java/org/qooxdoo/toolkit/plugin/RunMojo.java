@@ -69,7 +69,7 @@ public class RunMojo extends WebappBase {
     private FileNode tomcat;
 
     public void setTomcat(String str) {
-        tomcat = io.node(str);
+        tomcat = io.file(str);
     }
 
     @Override

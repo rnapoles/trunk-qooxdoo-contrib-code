@@ -70,7 +70,7 @@ public class NewMojo extends Base {
         }
         artifact = pkg.substring(idx + 1); // ok for -1
         group = pkg.substring(0, idx);
-        dest = io.node(artifact);
+        dest = io.file(artifact);
         unpack(dest);
         renameFiles(dest, "PACKAGE", pkg.replace('.', '/'));
         map = new HashMap<String, String>();

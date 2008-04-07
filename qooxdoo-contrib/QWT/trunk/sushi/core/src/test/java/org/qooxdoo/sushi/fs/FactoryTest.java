@@ -56,17 +56,18 @@ public class FactoryTest {
     @Test
     public void parse() throws IOException {
         Node node;
+        IO io;
         
-        f.scan();
-        node = f.parse(new IO(), "file:/usr");
+        io = new IO();
+        node = io.node("file:/usr");
         assertEquals("usr", node.getPath());
-        node = f.parse(new IO(), "resource:META-INF/sushi/filesystems");
+        node = io.node("resource:META-INF/sushi/filesystems");
         assertTrue(node.isFile());
-        node = f.parse(new IO(), "http:http://heise.de");
+        node = io.node("http:http://heise.de");
         assertTrue(node instanceof HttpNode);
-        node = f.parse(new IO(), "console:");
+        node = io.node("console:");
         assertTrue(node instanceof ConsoleNode);
-        node = f.parse(new IO(), "mem://1/foo");
+        node = io.node("mem://1/foo");
         assertTrue(node instanceof MemoryNode);
     }
 }
