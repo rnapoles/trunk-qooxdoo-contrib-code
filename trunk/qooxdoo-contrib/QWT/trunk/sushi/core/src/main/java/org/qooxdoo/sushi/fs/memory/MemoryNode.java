@@ -30,15 +30,12 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 /** You'll normally use IO.stringNode() to create instances */
 public class MemoryNode extends Node {
-    private static final Root ROOT = new Root(MemoryFilesystem.INSTANCE, "/", '/');
-    
     /** never null */
-    private final MemoryRoot context;
+    private final MemoryRoot root;
 
     /** never null */
     private final String path;
@@ -49,19 +46,19 @@ public class MemoryNode extends Node {
     private long lastModified;
     
     /** Do not call - use create instead. */
-    public MemoryNode(MemoryRoot context, String path, Type type, byte[] data) {
-        super(context.io, context.root());
+    public MemoryNode(MemoryRoot root, String path, Type type, byte[] data) {
+        super(root.io, root.root());
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-        this.context = context;
+        this.root = root;
         this.path = path;
         this.type = type;
         this.lastModified = System.currentTimeMillis();
     }
 
     public MemoryRoot getContext() {
-        return context;
+        return root;
     }
     
     public Type getType() {
@@ -70,7 +67,7 @@ public class MemoryNode extends Node {
     
     @Override
     public MemoryNode newInstance(String path) {
-        return context.node(path);
+        return root.node(path);
     }
 
     @Override
@@ -95,7 +92,7 @@ public class MemoryNode extends Node {
     
     @Override
     public long length() {
-        return context.length(path);
+        return root.length(path);
     }
 
     @Override
@@ -143,7 +140,7 @@ public class MemoryNode extends Node {
             return null;
         }
         try {
-            return context.list(path);
+            return root.list(path);
         } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -154,7 +151,7 @@ public class MemoryNode extends Node {
         if (type != Type.FILE) {
             throw new FileNotFoundException(path);
         }
-        return context.open(path);
+        return root.open(path);
     }
 
     @Override
@@ -167,7 +164,7 @@ public class MemoryNode extends Node {
             @Override
             public void close() throws IOException {
                 type = Type.FILE;
-                context.store(path, this.buf, this.count);
+                root.store(path, this.buf, this.count);
                 super.close();
             }
         };
@@ -175,7 +172,7 @@ public class MemoryNode extends Node {
 
     @Override
     protected boolean equalsNode(Node node) {
-        return context == (((MemoryNode) node).context);
+        return root == (((MemoryNode) node).root);
     }
 
     @Override
