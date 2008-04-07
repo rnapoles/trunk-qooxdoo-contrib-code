@@ -119,12 +119,13 @@ qx.Mixin.define("qcl.application.MApplication",
      * TODOC
      *
      * @type member
+     * @param string {String} optional string to analyze instead of location.hash
      * @return {Map} TODOC
      */
-    _analyzeHashString : function()
+    _analyzeHashString : function(string)
     {
-      var h = location.hash;
-      var hP = location.hashParams = {};
+      var h  = string || location.hash || "";
+      var hP = {};
 
       if (h)
       {
@@ -136,7 +137,7 @@ qx.Mixin.define("qcl.application.MApplication",
           hP[p[0]] = typeof p[1] == "string" ? decodeURIComponent(p[1].replace(/\+/g, ' ')) : true;
         }
       }
-
+			if ( ! string ) location.hashParams = hP;
       return hP;
     },
 
@@ -199,15 +200,20 @@ qx.Mixin.define("qcl.application.MApplication",
      * dispatch a data event "changeFoo" with the value "bar" on the application singleton.
      * @param {String} name
      * @param {String} value
+     * @param {String} optional description of the state that will appear in the title bar and the browser history
      */
-    setState : function( name, value )
+    setState : function( name, value, description )
     {
-      if ( typeof(name) != "string" || typeof(value) != "string" )
+      if ( typeof(name) != "string" )
 			{
 				this.error("Invalid parameters");
 			}
       this.setHashParam( name, value );
-			this._fireStateEvent( name, value );
+			//console.log("Setting '" + name + "' to " +value);
+			
+			// qooxdoo browser navigation button support
+			// this will also fire the changeState event
+			qx.client.History.getInstance().addToHistory(location.hash.substr(1),description);
     },
     
 		/**
@@ -228,47 +234,40 @@ qx.Mixin.define("qcl.application.MApplication",
 		_fireStateEvent : function ( name, data )
 		{
 			var eventName = "change" + name.substr(0,1).toUpperCase() + name.substr(1);
-			this.createDispatchDataEvent(eventName,data);
+			//console.log("Firing Event '" + eventName + "' with data :" + data );
+			qx.core.Init.getInstance().getApplication().createDispatchDataEvent(eventName,data);
 		},
 		
+		
 		/**
-		 * Turn on or off a periodic check of the url for changes of the state variables. If one
-		 * of the states change, the corresponding data event is fired. 
+		 * Support qooxdoo history manager 
 		 * @param {Boolean} value
 		 */
-		setUrlMonitoring : function( value, interval )
+		setHistorySupport : function (value)
 		{
-			var interval = interval || 300;
-			
-			if ( value && ! this.__intervalObj ) 
+			if( value )
 			{
-				var self = this;
-				this.__hash = location.hash;
+				var state = qx.client.History.getInstance().getState();
+				console.log("Initial state: " + state);
 				this.__hashParams  = this._analyzeHashString();
-				
-				this.__intervalObj = window.setInterval(function(){
-					if ( self.__hash != location.hash )
+				console.log(this.__hashParams);
+				qx.client.History.getInstance().addEventListener("request", function(e) {
+				  var state = e.getData();
+					//console.log("State: " + state);
+					
+				  // application specific state update
+					var hP = this._analyzeHashString(state);
+					for ( var key in hP )
 					{
-						var hP = self._analyzeHashString();
-						for ( var key in hP )
+						var value = hP[key]; 
+						if ( value != this.__hashParams[key] )
 						{
-							var value = hP[key]; 
-							if ( value != self.__hashParams[key] )
-							{
-								self.__hashParams[key] = value;
-								self._fireStateEvent(key,value);
-							}
+							this.__hashParams[key] = value;
+							this._fireStateEvent(key,value);
 						}
 					}
-				},interval);					
-			}
-			else if ( ! value && this.__intervalObj )
-			{
-				window.clearInterval( this.__intervalObj );
-				this.__intervalObj = null;
-				this.__hash = null;
-				this.__hashParameters = null;
-			}				
+				}, this);
+			}			
 		}
   }
 });
