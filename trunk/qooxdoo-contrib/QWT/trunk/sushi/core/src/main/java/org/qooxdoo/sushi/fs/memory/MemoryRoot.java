@@ -31,13 +31,13 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
-public class Context {
+public class MemoryRoot {
     public final IO io;
     public final int id;
     private final Map<String, MemoryNode> nodes;
     private final Map<String, Object> store;
     
-    public Context(IO io, int id) {
+    public MemoryRoot(IO io, int id) {
         this.io = io;
         this.id = id;
         this.nodes = new HashMap<String, MemoryNode>();

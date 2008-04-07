@@ -38,7 +38,7 @@ public class MemoryNode extends Node {
     private static final Root ROOT = new Root(MemoryFilesystem.INSTANCE, "/", '/');
     
     /** never null */
-    private final Context context;
+    private final MemoryRoot context;
 
     /** never null */
     private final String path;
@@ -49,7 +49,7 @@ public class MemoryNode extends Node {
     private long lastModified;
     
     /** Do not call - use create instead. */
-    public MemoryNode(Context context, String path, Type type, byte[] data) {
+    public MemoryNode(MemoryRoot context, String path, Type type, byte[] data) {
         super(context.io, context.root());
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
@@ -60,7 +60,7 @@ public class MemoryNode extends Node {
         this.lastModified = System.currentTimeMillis();
     }
 
-    public Context getContext() {
+    public MemoryRoot getContext() {
         return context;
     }
     
