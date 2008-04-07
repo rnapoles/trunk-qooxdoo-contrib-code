@@ -37,23 +37,26 @@ public class SshFilesystem extends Filesystem {
 
     @Override
     public SshNode parse(IO io, String rootPath) throws IOException {
-    	int idx;
+        int idx;
         String hostname;
         User user;
         String path;
         
-        idx = rootPath.indexOf('/');
-        if (idx == -1) {
-        	throw new ParseException("missing host name");
+        if (!rootPath.startsWith("//")) {
+            throw new ParseException(rootPath);
         }
-        hostname = rootPath.substring(0, idx);
+        idx = rootPath.indexOf('/', 2);
+        if (idx == -1) {
+            throw new ParseException(rootPath);
+        }
+        hostname = rootPath.substring(2, idx);
         path = rootPath.substring(idx + 1);
         idx = hostname.indexOf('@');
         if (idx == -1) {
-        	user = User.withUserKey(io);
+            user = User.withUserKey(io);
         } else {
-        	user = User.withUserKey(io, hostname.substring(0, idx));
-        	hostname = hostname.substring(idx + 1);
+            user = User.withUserKey(io, hostname.substring(0, idx));
+            hostname = hostname.substring(idx + 1);
         }
         try {
             return new SshNode(io, Connection.create(hostname, user).open(), path);
