@@ -2181,22 +2181,33 @@ qx.Class.define("htmlarea.HtmlArea",
 
       "mshtml" : function(url)
       {
+
+        /* (Undo)Manager object */
+        var manager = this.__commandManager.__commandManager;
+
+        if (typeof(manager) != "object") {
+          /* Manager not available - does HA has focus */
+          return false;
+        }
+
         /* 
          * Last selection was _not_ an image and current selection is empty:
          * Insert URL as text with a link on it.
          */
-        if
-        (
-          (this.__commandManager.__commandManager.__currentRange.text == "") &&
-          (this.__commandManager.__commandManager.__lastSelectionType != "Control")
-        )
-        {
-          return this.__commandManager.execute("inserthtml", ' <a href="' + url + '">' + url + '</a> ');
-        }
-        else
-        {
-          /* Otherwise just execute command on selection */
-          return this.__commandManager.execute("inserthyperlink", url);
+        try{
+          if( (manager.__currentRange.text == "") && (manager.__lastSelectionType != "Control") )
+          {
+            return this.__commandManager.execute("inserthtml", ' <a href="' + url + '">' + url + '</a> ');
+          }
+          else
+          {
+            /* Otherwise just execute command on selection */
+            return this.__commandManager.execute("inserthyperlink", url);
+          }
+        } catch(e) {
+          if (qx.core.Variant.isSet("qx.debug", "on")) {
+            this.debug("inserthyperlink failed!");
+          }
         }
       },
 
