@@ -170,7 +170,8 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
      */
     loadNodeByServerId : function(nodeId,loadNodeFunc,loadIdHierarchyFunc)
     {
-			if ( ! this.getServerNodeIdMap()[nodeId] )
+			var map = this.getServerNodeIdMap();
+			if ( ! map[nodeId] )
 			{
 				// node has not been loaded, add event listener if it hasn't been added yet
 				if ( ! this.__nodeIdHierarchyLoadedEvent )
@@ -179,7 +180,10 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 					{
 						// load all of the nodes along the hierarchy of nodes
 						ids.forEach(function(id){
-							loadNodeFunc(id)
+							if ( ! map[id] )
+							{
+								loadNodeFunc(id)	
+							}
 						},this); 
 					});
 					this.__nodeIdHierarchyLoadedEvent = true;
