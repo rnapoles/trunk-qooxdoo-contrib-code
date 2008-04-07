@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Qooxdoo Library Plug-in
 Bundle-SymbolicName: org.eclipse.wst.jsdt.support.qooxdoo;singleton:=true
 Bundle-Version: 1.0.0
-Require-Bundle: org.eclipse.wst.jsdt.core,
- org.eclipse.wst.jsdt.ui,
+Require-Bundle: org.eclipse.wst.jsdt.ui,
  org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.wst.jsdt.core
