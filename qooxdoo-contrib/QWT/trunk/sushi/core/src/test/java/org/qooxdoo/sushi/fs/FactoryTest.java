@@ -66,7 +66,7 @@ public class FactoryTest {
         assertTrue(node instanceof HttpNode);
         node = f.parse(new IO(), "console:");
         assertTrue(node instanceof ConsoleNode);
-        node = f.parse(new IO(), "mem:/foo");
+        node = f.parse(new IO(), "mem://1/foo");
         assertTrue(node instanceof MemoryNode);
     }
 }

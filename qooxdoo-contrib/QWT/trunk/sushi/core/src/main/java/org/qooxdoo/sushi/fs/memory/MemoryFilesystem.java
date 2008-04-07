@@ -19,6 +19,8 @@
 
 package org.qooxdoo.sushi.fs.memory;
 
+import java.util.WeakHashMap;
+
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
@@ -27,20 +29,54 @@ import org.qooxdoo.sushi.fs.ParseException;
 public class MemoryFilesystem extends Filesystem {
     public static final MemoryFilesystem INSTANCE = new MemoryFilesystem();
     
+    private final WeakHashMap<Integer, Context> contexts;
+    
     private MemoryFilesystem() {
         super("mem");
+        
+        this.contexts = new WeakHashMap<Integer, Context>();
     }
 
     @Override
     public MemoryNode parse(IO io, String rootPath) throws ParseException {
-        if (!rootPath.startsWith("/")) {
+        int idx;
+        int id;
+        
+        if (!rootPath.startsWith("//")) {
             throw new ParseException(rootPath);
         }
-        return createRoot(io).newInstance(rootPath.substring(1));
+        idx = rootPath.indexOf('/', 2);
+        if (idx == -1) {
+            throw new ParseException(rootPath);
+        }
+        try {
+            id = Integer.parseInt(rootPath.substring(2, idx));
+        } catch (NumberFormatException e) {
+            throw new ParseException(rootPath, e);
+        }
+        return getRoot(io, id).newInstance(rootPath.substring(idx + 1));
+    }
+
+    public MemoryNode getRoot(IO io, int id) {
+        Context context;
+        
+        context = contexts.get(id);
+        if (context == null) {
+            context = new Context(io, id);
+            contexts.put(id, context);
+        }
+        return context.node("");
     }
 
     public MemoryNode createRoot(IO io) {
-        return new Context(io).node("");
+        Context context;
+        
+        for (int id = 0; true; id++) {
+            if (!contexts.containsKey(id)) {
+                context = new Context(io, id);
+                contexts.put(id, context);
+                return context.node("");
+            }
+        }
     }
-
 }

@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
-import org.qooxdoo.sushi.fs.memory.Context;
+import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.OS;
@@ -158,7 +158,7 @@ public class IO {
     // TODO: re-use context?
     public MemoryNode stringNode(String content) {
         try {
-            return (MemoryNode) new Context(this).node("tmp").writeString(content);
+            return (MemoryNode) MemoryFilesystem.INSTANCE.createRoot(this).join("tmp").writeString(content);
         } catch (IOException e) {
             throw new RuntimeException("unexpected", e);
         }

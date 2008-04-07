@@ -20,13 +20,13 @@
 package org.qooxdoo.sushi.csv;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
-
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
@@ -57,11 +57,18 @@ public class CsvTest {
 
     @Test
     public void twoError() throws IOException {
+        String msg;
+        int idx;
+        
         try {
             check("\"\n\"");
             fail();
         } catch (CsvExceptions e) {
-            assertEquals("/tmp:1: quote not closed\n/tmp:2: quote not closed", e.getMessage());
+            msg = e.getMessage();
+            idx = msg.indexOf("quote not closed");
+            assertTrue(idx != -1);
+            idx = msg.indexOf("quote not closed", idx + 1);
+            assertTrue(idx != -1);
         }
     }
 
