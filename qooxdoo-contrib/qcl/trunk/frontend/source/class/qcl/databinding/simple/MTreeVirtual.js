@@ -140,13 +140,15 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
     },
 
 		/**
-		 * gets server-side node id of a node
+		 * gets client-side node id of a node and retrieves it from the map
+		 * linking client and server-side ids.
 		 * @param {Object} node
 		 * @return {Int|null} parent node id
 		 */
 		getParentNodeId : function ( node )
 		{
 			var parentNodeId = node.parentNodeId;
+			var map          = this.getServerNodeIdMap();
 			
 			if ( parentNodeId === null )
 			{
@@ -155,7 +157,6 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 					if ( typeof map[node.data.id] == "undefined" )
 					{
 						// get parent node from map
-						parentNodeId = map[node.data.id ].parentNodeId;
 					}
 					else
 					{
