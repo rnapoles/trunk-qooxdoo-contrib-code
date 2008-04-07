@@ -178,15 +178,16 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
      * this will also load all ancestors and siblings of this node.
      * @type member
      * @param nodeId {Int} id of the node on the server
-     * @param loadNodeFunc {Function} function that loads a node from the server
+     * @param loadNodeChildrenFunc {Function} function that loads the children of a node from the server
      * @param loadIdHierarchyFunc {Function} function that calls the  
      * service method on the server, which dispatches a "nodeIdHierarchyLoaded"
      * event with an array of ids, starting with the top folder to the node to be
-     * loaded. 
+     * loaded. The first set of subnodes below the root has to be loaded already
+     * for this to work.
      * 
      * @return {void} 
      */
-    loadNodeByServerId : function(nodeId,loadNodeFunc,loadIdHierarchyFunc)
+    loadNodeByServerId : function(nodeId,loadNodeChildrenFunc,loadIdHierarchyFunc)
     {
 			var map = this.getServerNodeIdMap();
 			if ( ! map[nodeId] )
@@ -198,9 +199,16 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 					{
 						// load all of the nodes along the hierarchy of nodes if they do not exist already
 						ids.forEach(function(id){
-							if ( ! map[id] )
+							var node = map[id];
+							if ( !node )
 							{
-								loadNodeFunc(id)	
+								// the node doesn't exist yet and is not the root node, this is an unrecoverable error
+								this.error("Can only load child nodes, top node must exist already!") 
+							}
+							if ( node.children.length == 0  && node.data.childCount )
+							{
+								// load it if there are children but they have not been loaded yet 
+								loadNodeChildrenFunc(id)	
 							}
 						},this); 
 					});
