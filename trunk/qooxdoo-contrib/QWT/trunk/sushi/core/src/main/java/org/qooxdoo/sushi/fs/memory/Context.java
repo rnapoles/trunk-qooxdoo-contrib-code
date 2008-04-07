@@ -28,20 +28,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class Context {
     public final IO io;
+    public final int id;
     private final Map<String, MemoryNode> nodes;
     private final Map<String, Object> store;
     
-    public Context(IO io) {
+    public Context(IO io, int id) {
         this.io = io;
+        this.id = id;
         this.nodes = new HashMap<String, MemoryNode>();
         this.store = new HashMap<String, Object>();
         add(new MemoryNode(this, "", Type.DIRECTORY, null));
     }
 
+    public Root root() {
+        return new Root(MemoryFilesystem.INSTANCE, "//" + id + "/", '/');
+    }
+    
     public void add(MemoryNode node) {
         nodes.put(node.getPath(), node);
     }
