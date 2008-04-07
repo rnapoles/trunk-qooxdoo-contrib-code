@@ -85,6 +85,7 @@ public class Namespace_PDETest extends Assert {
     assertTrue( getFirstErrorMessage( markers ), markers.isEmpty() );
   }
 
+  // demonstration of a feature that does not work yet
   @Test
   public void getFullyQualifiedNameInAutoCompletion() throws Exception {
     sammy.openEditor( new FileEditorInput( this.file ) );
@@ -96,7 +97,6 @@ public class Namespace_PDETest extends Assert {
     ShellOperator autoCompletionShell = new ShellOperator();
     Table suggestions = findTable( autoCompletionShell );
     TableItem suggestion = findItem( suggestions, "a.b.App" );
-    sammy.stopAndShowChangesToUser();
     assertNotNull( suggestion );
   }
 
