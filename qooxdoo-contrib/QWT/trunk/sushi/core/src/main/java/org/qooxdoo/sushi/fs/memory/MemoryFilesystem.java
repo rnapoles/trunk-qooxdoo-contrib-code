@@ -29,12 +29,12 @@ import org.qooxdoo.sushi.fs.ParseException;
 public class MemoryFilesystem extends Filesystem {
     public static final MemoryFilesystem INSTANCE = new MemoryFilesystem();
     
-    private final WeakHashMap<Integer, MemoryRoot> contexts;
+    private final WeakHashMap<Integer, MemoryRoot> roots;
     
     private MemoryFilesystem() {
         super("mem", '/');
         
-        this.contexts = new WeakHashMap<Integer, MemoryRoot>();
+        this.roots = new WeakHashMap<Integer, MemoryRoot>();
     }
 
     @Override
@@ -58,24 +58,24 @@ public class MemoryFilesystem extends Filesystem {
     }
 
     public MemoryNode getRoot(IO io, int id) {
-        MemoryRoot context;
+        MemoryRoot root;
         
-        context = contexts.get(id);
-        if (context == null) {
-            context = new MemoryRoot(io, id);
-            contexts.put(id, context);
+        root = roots.get(id);
+        if (root == null) {
+            root = new MemoryRoot(io, id);
+            roots.put(id, root);
         }
-        return context.node("");
+        return root.node("");
     }
 
     public MemoryNode createRoot(IO io) {
-        MemoryRoot context;
+        MemoryRoot root;
         
         for (int id = 0; true; id++) {
-            if (!contexts.containsKey(id)) {
-                context = new MemoryRoot(io, id);
-                contexts.put(id, context);
-                return context.node("");
+            if (!roots.containsKey(id)) {
+                root = new MemoryRoot(io, id);
+                roots.put(id, root);
+                return root.node("");
             }
         }
     }
