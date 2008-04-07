@@ -67,10 +67,10 @@ public class SshNode extends Node {
     }
 
     private static Root root(ChannelSftp channel) {
-    	Session session;
-    	
-    	session = channel.getSession();
-    	return new Root(SshFilesystem.INSTANCE, session.getUserName() + "@" + session.getHost() + "/", '/');
+        Session session;
+
+        session = channel.getSession();
+        return new Root(SshFilesystem.INSTANCE, "//" + session.getUserName() + "@" + session.getHost() + "/", '/');
     }
     
     public ChannelSftp getChannel() {
@@ -259,6 +259,6 @@ public class SshNode extends Node {
     
     @Override
     protected boolean equalsNode(Node node) {
-        return channel == ((SshNode) node).channel;
+        return getRoot().equals(node.getRoot());
     }
 }
