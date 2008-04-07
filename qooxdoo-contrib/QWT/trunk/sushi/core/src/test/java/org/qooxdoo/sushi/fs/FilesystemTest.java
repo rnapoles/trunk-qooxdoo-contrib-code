@@ -25,6 +25,6 @@ import org.qooxdoo.sushi.fs.file.FileFilesystem;
 public class FilesystemTest {
     @Test(expected=IllegalArgumentException.class)
     public void constructor() {
-        new Root(FileFilesystem.INSTANCE, "foo", '/');
+        new Root(FileFilesystem.INSTANCE, "foo");
     }
 }

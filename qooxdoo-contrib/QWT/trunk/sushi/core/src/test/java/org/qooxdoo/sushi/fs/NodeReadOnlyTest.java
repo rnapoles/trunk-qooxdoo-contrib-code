@@ -41,7 +41,7 @@ public abstract class NodeReadOnlyTest {
     @Before
     public void setUp() throws Exception {
         work = createWork();
-        sep = work.getRoot().separator;
+        sep = work.getRoot().filesystem.getSeparator();
     }
 
     @Test

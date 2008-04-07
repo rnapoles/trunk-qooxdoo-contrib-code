@@ -31,7 +31,7 @@ public class HttpFilesystem extends Filesystem {
     public static final HttpFilesystem INSTANCE = new HttpFilesystem();
     
     private HttpFilesystem() {
-        super("http");
+        super("http", '/');
     }
 
     // CAUTION: no forResource method, because non-existing resources don't have a url

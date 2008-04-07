@@ -40,7 +40,7 @@ public class SvnFilesystem extends Filesystem {
     public static final SvnFilesystem INSTANCE = new SvnFilesystem();
     
     private SvnFilesystem() {
-        super("svn");
+        super("svn", '/');
     }
 
     @Override

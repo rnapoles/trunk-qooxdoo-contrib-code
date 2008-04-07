@@ -33,7 +33,7 @@ import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ResourceNode extends Node {
-    public static final Root ROOT = new Root(ResourceFilesystem.INSTANCE, "/", '/');
+    public static final Root ROOT = new Root(ResourceFilesystem.INSTANCE, "/");
     
     private final ClassLoader loader;
     private final String path;

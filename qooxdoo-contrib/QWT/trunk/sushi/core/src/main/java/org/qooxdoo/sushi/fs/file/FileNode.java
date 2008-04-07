@@ -50,7 +50,7 @@ public class FileNode extends Node {
         roots = File.listRoots();
         ROOTS = new Root[roots.length];
         for (int i = 0; i < roots.length; i++) {
-            ROOTS[i] = new Root(FileFilesystem.INSTANCE, roots[i].getAbsolutePath(), File.separatorChar);
+            ROOTS[i] = new Root(FileFilesystem.INSTANCE, roots[i].getAbsolutePath());
         }
     }
     

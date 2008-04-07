@@ -32,7 +32,7 @@ public class SshFilesystem extends Filesystem {
     public static final SshFilesystem INSTANCE = new SshFilesystem();
     
     private SshFilesystem() {
-        super("ssh");
+        super("ssh", '/');
     }
 
     @Override

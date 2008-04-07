@@ -72,12 +72,12 @@ public class IOTest {
         Node node;
 
         io = new IO();
-        node = io.node(fs(io).id + "x" + fs(io).separator + "y");
+        node = io.node(fs(io).id + "x" + fs(io).filesystem.getSeparator() + "y");
         assertNull(node.getBase());
         assertEquals("y", node.getName());
-        assertEquals("x" + fs(io).separator + "y", node.getPath());
+        assertEquals("x" + fs(io).filesystem.getSeparator() + "y", node.getPath());
         assertEquals("x", node.getParent().getPath());
-        assertEquals(fs(io).id + "x" + fs(io).separator + "y", node.toString());
+        assertEquals(fs(io).id + "x" + fs(io).filesystem.getSeparator() + "y", node.toString());
     }
 
     
@@ -89,7 +89,7 @@ public class IOTest {
         io = new IO();
         node = io.node("a");
         assertNotNull(node.getBase());
-        assertTrue(node.getPath().endsWith(fs(io).separator + "a"));
+        assertTrue(node.getPath().endsWith(fs(io).filesystem.getSeparator() + "a"));
         assertEquals(io.getWorking(), node.getParent());
         assertEquals("a", node.toString());
     }

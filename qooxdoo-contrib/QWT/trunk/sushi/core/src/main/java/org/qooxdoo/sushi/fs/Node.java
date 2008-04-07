@@ -145,7 +145,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(root.separatorChar) + 1);
+        return path.substring(path.lastIndexOf(root.filesystem.getSeparatorChar()) + 1);
     }
     
     public Node getParent() {
@@ -156,7 +156,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf(root.separatorChar);
+        idx = path.lastIndexOf(root.filesystem.getSeparatorChar());
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -195,14 +195,14 @@ public abstract class Node {
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(root.separatorChar) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(root.filesystem.getSeparatorChar()) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, root.separator);
+        ups = Strings.count(startfilepath, root.filesystem.getSeparator());
         for (i = 0; i < ups; i++) {
-            result.append(".." + root.separator);
+            result.append(".." + root.filesystem.getSeparator());
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();

@@ -32,7 +32,7 @@ public class MemoryFilesystem extends Filesystem {
     private final WeakHashMap<Integer, MemoryRoot> contexts;
     
     private MemoryFilesystem() {
-        super("mem");
+        super("mem", '/');
         
         this.contexts = new WeakHashMap<Integer, MemoryRoot>();
     }
