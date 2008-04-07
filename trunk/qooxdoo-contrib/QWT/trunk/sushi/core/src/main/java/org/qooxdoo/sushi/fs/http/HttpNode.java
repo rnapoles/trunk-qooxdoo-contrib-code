@@ -48,16 +48,16 @@ public class HttpNode extends Node {
     }
 
     private static String root(URL url) {
-    	int port;
-    	
-    	if (url.getRef() != null) {
-    		throw new IllegalArgumentException(url.toString());
-    	}
-    	if (url.getUserInfo() != null) {
-    		throw new IllegalArgumentException(url.toString());
-    	}
-    	port = url.getPort();
-    	return url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/';
+        int port;
+
+        if (url.getRef() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getUserInfo() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        port = url.getPort();
+        return url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/';
     }
     
     @Override
@@ -91,7 +91,7 @@ public class HttpNode extends Node {
     
     @Override
     public HttpNode newInstance(String path) {
-    	// ignores query
+        // ignores query
         try {
             return new HttpNode(io, new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
         } catch (MalformedURLException e) {
