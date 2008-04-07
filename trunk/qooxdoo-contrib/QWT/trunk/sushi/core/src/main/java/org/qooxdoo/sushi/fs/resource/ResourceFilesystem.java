@@ -28,7 +28,7 @@ public class ResourceFilesystem extends Filesystem {
     public static final ResourceFilesystem INSTANCE = new ResourceFilesystem();
     
     private ResourceFilesystem() {
-        super("resource");
+        super("resource", '/');
     }
 
     @Override

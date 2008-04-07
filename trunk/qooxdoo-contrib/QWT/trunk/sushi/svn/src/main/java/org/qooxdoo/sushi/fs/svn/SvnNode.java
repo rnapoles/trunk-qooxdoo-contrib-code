@@ -86,7 +86,7 @@ public class SvnNode extends Node {
     }
 
     private static Root root(SVNRepository repository) {
-        return new Root(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "/", SEPARATOR_CHAR);
+        return new Root(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "/");
     }
     
     /** use when closing an output stream */

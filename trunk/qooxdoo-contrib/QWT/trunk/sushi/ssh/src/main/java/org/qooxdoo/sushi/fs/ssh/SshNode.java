@@ -70,7 +70,7 @@ public class SshNode extends Node {
         Session session;
 
         session = channel.getSession();
-        return new Root(SshFilesystem.INSTANCE, "//" + session.getUserName() + "@" + session.getHost() + "/", '/');
+        return new Root(SshFilesystem.INSTANCE, "//" + session.getUserName() + "@" + session.getHost() + "/");
     }
     
     public ChannelSftp getChannel() {

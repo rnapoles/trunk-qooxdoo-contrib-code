@@ -26,16 +26,11 @@ import org.qooxdoo.sushi.util.Strings;
 public class Root {
     public final Filesystem filesystem;
     public final String id;
-    public final char separatorChar;
-    public final String separator;
     
-    public Root(Filesystem filesystem, String id, char separatorChar) {
+    public Root(Filesystem filesystem, String id) {
         this.filesystem = filesystem;
         this.id = id;
-        this.separatorChar = separatorChar;
-        this.separator = "" + separatorChar;
-        
-        if (!id.endsWith(separator)) {
+        if (!id.endsWith(filesystem.getSeparator())) {
             throw new IllegalArgumentException();
         }
     }
@@ -48,7 +43,7 @@ public class Root {
     //-- path handling
 
     public String join(String... names) {
-        return Strings.join(separator, names);
+        return Strings.join(filesystem.getSeparator(), names);
     }
     
     public String join(String head, List<String> paths) {
@@ -56,12 +51,12 @@ public class Root {
         
         buffer = new StringBuffer(head);
         for (String path : paths) {
-            if (path.startsWith(separator)) {
+            if (path.startsWith(filesystem.getSeparator())) {
                 throw new IllegalArgumentException(path);
             }
             // TODO: Svn nodes ...
             if (buffer.length() > 0) {
-                buffer.append(separatorChar);
+                buffer.append(filesystem.getSeparatorChar());
             }
             buffer.append(path);
         }
@@ -69,7 +64,7 @@ public class Root {
     }
 
     public List<String> split(String path) {
-        return Strings.split(separator, path);
+        return Strings.split(filesystem.getSeparator(), path);
     }
     
     //--

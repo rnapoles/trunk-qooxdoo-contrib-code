@@ -25,16 +25,28 @@ import java.io.IOException;
 public abstract class Filesystem {
     /** separator file system name from rootPath in Locator strings */
     public static final char SEPARTOR = ':';
-    
+
     private final String name;
+    private final String separator;
+    private final char separatorChar;
     
-    public Filesystem(String name) {
+    public Filesystem(String name, char separatorChar) {
         this.name = name;
+        this.separator = "" + separatorChar;
+        this.separatorChar = separatorChar;
     }
 
     public String getName() {
         return name;
     }
 
+    public String getSeparator() {
+        return separator;
+    }
+    
+    public char getSeparatorChar() {
+        return separatorChar;
+    }
+    
     public abstract Node parse(IO io, String rootPath) throws IOException;
 }

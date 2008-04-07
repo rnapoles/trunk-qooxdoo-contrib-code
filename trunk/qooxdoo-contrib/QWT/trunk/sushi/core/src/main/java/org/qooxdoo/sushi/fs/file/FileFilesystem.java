@@ -29,7 +29,7 @@ public class FileFilesystem extends Filesystem {
     public static final FileFilesystem INSTANCE = new FileFilesystem();
     
     private FileFilesystem() {
-        super("file");
+        super("file", File.separatorChar);
     }
 
     @Override

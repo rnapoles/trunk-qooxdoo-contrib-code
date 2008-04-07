@@ -27,7 +27,7 @@ public class ConsoleFilesystem extends Filesystem {
     public static final ConsoleFilesystem INSTANCE = new ConsoleFilesystem();
     
     private ConsoleFilesystem() {
-        super("console");
+        super("console", '/');
     }
 
     @Override

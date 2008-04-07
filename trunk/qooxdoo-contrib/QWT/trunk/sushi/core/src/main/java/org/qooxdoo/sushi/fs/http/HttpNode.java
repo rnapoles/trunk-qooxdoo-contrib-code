@@ -43,7 +43,7 @@ public class HttpNode extends Node {
     private final URL url;
     
     public HttpNode(IO io, URL url) {
-        super(io, new Root(HttpFilesystem.INSTANCE, root(url), '/'));
+        super(io, new Root(HttpFilesystem.INSTANCE, root(url)));
         this.url = url;
     }
 

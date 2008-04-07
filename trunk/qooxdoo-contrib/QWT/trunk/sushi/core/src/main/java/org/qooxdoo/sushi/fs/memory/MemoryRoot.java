@@ -46,7 +46,7 @@ public class MemoryRoot {
     }
 
     public Root root() {
-        return new Root(MemoryFilesystem.INSTANCE, "//" + id + "/", '/');
+        return new Root(MemoryFilesystem.INSTANCE, "//" + id + "/");
     }
     
     public void add(MemoryNode node) {
@@ -83,7 +83,7 @@ public class MemoryRoot {
         result = new ArrayList<MemoryNode>();
         for (MemoryNode node : nodes.values()) {
             child = node.getPath();
-            idx = child.lastIndexOf(node.getRoot().separatorChar);
+            idx = child.lastIndexOf(node.getRoot().filesystem.getSeparatorChar());
             if (!path.equals(child) && path.equals(idx == -1 ? "" : child.substring(0, idx))) {
                 if (node.exists()) {
                     result.add(node);
