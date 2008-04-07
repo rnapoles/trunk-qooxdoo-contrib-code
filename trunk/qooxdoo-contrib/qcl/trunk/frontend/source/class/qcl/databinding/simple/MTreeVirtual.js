@@ -70,36 +70,20 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
     {
       var dataModel   = this.getDataModel();
 			var map         = this.getServerNodeIdMap();
-			var pruneParent = true; // prune parent node once
       
       if ( data && typeof data == "object" && data.length )
       {
-				var parentNodeId = data[0].parentNodeId;
-				if ( parentNodeId === null )
-				{
-					if ( data.node && data.node.id )
-					{
-						if ( typeof map[data.node.id] == "undefined" )
-						{
-							// get parent node from map
-							parentNodeId = map[data.node.id].parentNodeId;
-						}
-						else
-						{
-							this.warn("Parent node of node '" + data.label + "' has not been loaded yet. Skipping." );
-						}	
-					}
-					else
-					{
-						this.warn("Cannot attach node '" + data.label + "'. Neither parent node id nor server-side id is available. Skipping." );
-					}	
-				}
 				
-        // prune parent of first node, this assumes that all nodes 
-        // sent have the same parent.
-        dataModel.prune(parentNodeId);  
-        dataModel.setState(parentNodeId,{bOpened:true});
-        
+				// prune parent of first node, this assumes that all nodes 
+        // sent have the same parent.				
+				var parentNodeId = this.getParentNodeId(data[0]);
+				if ( parentNodeId !== null )
+				{
+	        dataModel.prune(parentNodeId);  
+	        dataModel.setState(parentNodeId,{bOpened:true});				
+				}
+								
+ 				// add all nodes 
         for (var i=0; i<data.length;i++)
 			  {
 			    var node = data[i];
@@ -117,13 +101,14 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 					}
 					
 			    // create node
+					var parentNodeId = this.getParentNodeId(node);
 			    if( node.isBranch )
 			    {
-			      var nodeId = dataModel.addBranch( node.parentNodeId || 0 );
+			      var nodeId = dataModel.addBranch( parentNodeId );
 			    }
 			    else
 			    {
-			      var nodeId = dataModel.addLeaf( node.parentNodeId || 0 );								      
+			      var nodeId = dataModel.addLeaf( parentNodeId );								      
 			    }
           
 					// store server-side node id
@@ -132,11 +117,11 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 						map[node.data.id] = nodeId;
 					}
 					
-			    // set node state, including custom properties
+			    // set node state, including custom properties, except the parent node id
 			    delete node.parentNodeId;
 					dataModel.setState( nodeId, node );
 					
-					// drag data alias
+					// drag data alias FIXME: this is a hack!
 					if (this.setNodeType && node.data && node.data.type)
 					{
 						this.setNodeType( nodeId, node.data.type );
@@ -154,6 +139,38 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
       }
     },
 
+		/**
+		 * gets server-side node id of a node
+		 * @param {Object} node
+		 * @return {Int|null} parent node id
+		 */
+		getParentNodeId : function ( node )
+		{
+			var parentNodeId = node.parentNodeId;
+			
+			if ( parentNodeId === null )
+			{
+				if ( node.data && node.data.id )
+				{
+					if ( typeof map[node.data.id] == "undefined" )
+					{
+						// get parent node from map
+						parentNodeId = map[node.data.id ].parentNodeId;
+					}
+					else
+					{
+						this.warn("Parent node of node '" + node.label + "' has not been loaded yet." );
+						return null;
+					}	
+				}
+				else
+				{
+					this.warn("Cannot find parent node of '" + node.label + "'. Neither parent node id nor server-side id is available. " );
+					return null;
+				}	
+			}		
+			return parentNodeId;	
+		},
 
     /**
      * Loads a tree node of which the server-side Id is known
@@ -178,7 +195,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
 				{
 					this.addEventListener("nodeIdHierarchyLoaded",function(ids)
 					{
-						// load all of the nodes along the hierarchy of nodes
+						// load all of the nodes along the hierarchy of nodes if they do not exist already
 						ids.forEach(function(id){
 							if ( ! map[id] )
 							{
