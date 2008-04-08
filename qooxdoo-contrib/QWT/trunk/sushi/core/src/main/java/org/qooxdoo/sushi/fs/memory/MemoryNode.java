@@ -47,7 +47,7 @@ public class MemoryNode extends Node {
     
     /** Do not call - use create instead. */
     public MemoryNode(MemoryRoot root, String path, Type type, byte[] data) {
-        super(root.io);
+        super();
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }

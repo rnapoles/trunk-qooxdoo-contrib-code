@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs.svn;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
@@ -37,22 +38,20 @@ public class SvnFilesystem extends Filesystem {
         DAVRepositoryFactory.setup();
     }
     
-    public static final SvnFilesystem INSTANCE = new SvnFilesystem();
-    
-    private SvnFilesystem() {
-        super("svn", '/');
+    public SvnFilesystem(IO io) {
+        super(io, "svn", '/');
     }
 
     @Override
-    public SvnNode parse(IO io, String rootPath) throws ParseException {
+    public SvnNode parse(String rootPath) throws ParseException {
         try {
-            return parse(io, rootPath, null, null);
+            return parse(rootPath, null, null);
         } catch (SVNException e) {
             throw new ParseException("invalid svn url: " + rootPath, e);
         }
     }
     
-    public SvnNode parse(IO io, String url, String username, String password) throws SVNException {
+    public SvnNode parse(String url, String username, String password) throws SVNException {
         SVNRepository repository;
         String root;
         String path;
@@ -73,13 +72,16 @@ public class SvnFilesystem extends Filesystem {
             repository.setLocation(SVNURL.parseURIEncoded(root), true);
             path = path.substring(root.length());
         }
-        return create(io, repository, path);
+        return create(repository, path);
     }
     
-    public SvnNode create(IO io, SVNRepository repository, String path) throws SVNException {
-        return new SvnNode(io, repository, repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
+    public SvnNode create(SVNRepository repository, String path) throws SVNException {
+        SimpleRoot root;
+        
+        root = new SimpleRoot(this, repository.getLocation().toString() + "/");
+        return new SvnNode(root, repository, repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
     }
-    
+
     //--
     
     public static SVNRepository repository(SVNURL url, String username, String password) throws SVNException {

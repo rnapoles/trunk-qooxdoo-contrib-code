@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
@@ -74,6 +75,7 @@ public class IO {
     private final List<String> defaultExcludes;
     
     private final Factory factory;
+    private final FileFilesystem fileFilesystem;
     
     public final int maxInMemorySize;
     
@@ -82,12 +84,14 @@ public class IO {
     }
     
     public IO(OS os, Settings settings, Buffer buffer, int maxInMemorySize, Xml xml, String... defaultExcludes) {
-        this.factory = new Factory();
+        this.factory = new Factory(this);
         try {
             factory.scan();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.fileFilesystem = factory.get(FileFilesystem.class);
+        factory.setDefault(fileFilesystem);
         this.os = os;
         this.settings = settings;
         this.buffer = buffer;
@@ -151,7 +155,7 @@ public class IO {
 
     public FileNode file(String path) {
         try {
-            return (FileNode) factory.parse(this, working, "file:" + path);
+            return (FileNode) factory.parse(working, "file:" + path);
         } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -170,19 +174,34 @@ public class IO {
             return result;
         }
         try {
-            return factory.parse(this, working, optPath);
+            return factory.parse(working, optPath);
         } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }
     }
     
-    // TODO: re-use context?
+    // TODO: re-use root?
     public MemoryNode stringNode(String content) {
+        MemoryFilesystem memFs;
+        
+        memFs = getMemoryFilesystem();
         try {
-            return (MemoryNode) MemoryFilesystem.INSTANCE.createRoot(this).join("tmp").writeString(content);
+            return (MemoryNode) memFs.createRoot().join("tmp").writeString(content);
         } catch (IOException e) {
             throw new RuntimeException("unexpected", e);
         }
+    }
+    
+    public Factory getFactory() {
+        return factory;
+    }
+    
+    public MemoryFilesystem getMemoryFilesystem() {
+        return factory.get(MemoryFilesystem.class);
+    }
+
+    public FileFilesystem getFileFilesystem() {
+        return fileFilesystem;
     }
     
     /**
@@ -228,7 +247,7 @@ public class IO {
     public FileNode createTempFile() throws IOException {
         FileNode file;
         
-        file = new FileNode(this, File.createTempFile("sushifile", "tmp", temp.getFile()));
+        file = fileFilesystem.forFile(File.createTempFile("sushifile", "tmp", temp.getFile()));
         TEMP_FILES.deleteAtExit(file);
         return file;
     }
@@ -332,7 +351,7 @@ public class IO {
             if (!filename.endsWith(resourcename.replace('/', File.separatorChar))) {
                 throw new RuntimeException("classname not found in file url: " + filename + " " + resourcename);
             }
-            file = new FileNode(this, new File(filename.substring(0, filename.length() - resourcename.length())));
+            file = fileFilesystem.forFile(new File(filename.substring(0, filename.length() - resourcename.length())));
         } else if ("jar".equals(protocol)) {
             filename = url.getFile();
             idx = filename.indexOf('!');

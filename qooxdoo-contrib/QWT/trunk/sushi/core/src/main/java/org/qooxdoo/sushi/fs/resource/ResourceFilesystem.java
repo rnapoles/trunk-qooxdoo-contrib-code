@@ -26,15 +26,13 @@ import org.qooxdoo.sushi.fs.Root;
 
 
 public class ResourceFilesystem extends Filesystem implements Root {
-    public static final ResourceFilesystem INSTANCE = new ResourceFilesystem();
-    
-    private ResourceFilesystem() {
-        super("resource", '/');
+    public ResourceFilesystem(IO io) {
+        super(io, "resource", '/');
     }
 
     @Override
-    public ResourceNode parse(IO io, String rootPath) throws ParseException {
-        return new ResourceNode(io, rootPath);
+    public ResourceNode parse(String rootPath) throws ParseException {
+        return new ResourceNode(this, rootPath);
     }
 
     public Filesystem getFilesystem() {

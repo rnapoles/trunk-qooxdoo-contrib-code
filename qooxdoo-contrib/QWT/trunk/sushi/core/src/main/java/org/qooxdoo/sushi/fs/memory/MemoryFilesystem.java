@@ -27,18 +27,16 @@ import org.qooxdoo.sushi.fs.ParseException;
 
 
 public class MemoryFilesystem extends Filesystem {
-    public static final MemoryFilesystem INSTANCE = new MemoryFilesystem();
-    
     private final WeakHashMap<Integer, MemoryRoot> roots;
     
-    private MemoryFilesystem() {
-        super("mem", '/');
+    public MemoryFilesystem(IO io) {
+        super(io, "mem", '/');
         
         this.roots = new WeakHashMap<Integer, MemoryRoot>();
     }
 
     @Override
-    public MemoryNode parse(IO io, String rootPath) throws ParseException {
+    public MemoryNode parse(String rootPath) throws ParseException {
         int idx;
         int id;
         
@@ -54,26 +52,26 @@ public class MemoryFilesystem extends Filesystem {
         } catch (NumberFormatException e) {
             throw new ParseException(rootPath, e);
         }
-        return getRoot(io, id).newInstance(rootPath.substring(idx + 1));
+        return getRoot(id).newInstance(rootPath.substring(idx + 1));
     }
 
-    public MemoryNode getRoot(IO io, int id) {
+    public MemoryNode getRoot(int id) {
         MemoryRoot root;
         
         root = roots.get(id);
         if (root == null) {
-            root = new MemoryRoot(io, id);
+            root = new MemoryRoot(this, id);
             roots.put(id, root);
         }
         return root.node("");
     }
 
-    public MemoryNode createRoot(IO io) {
+    public MemoryNode createRoot() {
         MemoryRoot root;
         
         for (int id = 0; true; id++) {
             if (!roots.containsKey(id)) {
-                root = new MemoryRoot(io, id);
+                root = new MemoryRoot(this, id);
                 roots.put(id, root);
                 return root.node("");
             }

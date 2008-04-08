@@ -24,24 +24,27 @@ import java.io.IOException;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 
 public class SshFilesystem extends Filesystem {
-    public static final SshFilesystem INSTANCE = new SshFilesystem();
-    
-    private SshFilesystem() {
-        super("ssh", '/');
+    public SshFilesystem(IO io) {
+        super(io, "ssh", '/');
     }
 
     @Override
-    public SshNode parse(IO io, String rootPath) throws IOException {
+    public SshNode parse(String rootPath) throws IOException {
         int idx;
         String hostname;
         User user;
         String path;
+        IO io;
         
+        io = getIO();
         if (!rootPath.startsWith("//")) {
             throw new ParseException(rootPath);
         }
@@ -58,10 +61,20 @@ public class SshFilesystem extends Filesystem {
             user = User.withUserKey(io, hostname.substring(0, idx));
             hostname = hostname.substring(idx + 1);
         }
+
         try {
-            return new SshNode(io, Connection.create(hostname, user).open(), path);
+            return forChannel(Connection.create(hostname, user).open(), path);
         } catch (JSchException e) {
             throw new ParseException("cannot connect", e);
         }
+    }
+
+    public SshNode forChannel(ChannelSftp channel, String path) throws IOException {
+        Session session;
+        SimpleRoot root;
+        
+        session = channel.getSession();
+        root = new SimpleRoot(this, "//" + session.getUserName() + "@" + session.getHost() + "/");
+        return new SshNode(root, channel, path);
     }
 }

@@ -65,7 +65,7 @@ public class SshNodeFullTest extends NodeTest {
     }
     
     private SshNode create(String path) throws IOException, JSchException {
-        return new SshNode(IO, channel, path);
+        return IO.getFactory().get(SshFilesystem.class).forChannel(channel, path);
     }
 
     @Override
@@ -90,13 +90,5 @@ public class SshNodeFullTest extends NodeTest {
         assertEquals("", root.getPath());
         assertEquals("", root.getName());
         assertTrue(root.list().size() > 0);
-    }
-    
-    @Test
-    public void parse() throws Exception {
-        SshNode node;
-
-        node = SshFilesystem.INSTANCE.parse(IO, "//localhost/usr");
-        assertEquals("ssh://mhm@localhost/usr", node.getLocator());
     }
 }

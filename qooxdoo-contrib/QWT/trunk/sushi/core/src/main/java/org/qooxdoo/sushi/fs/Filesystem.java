@@ -26,19 +26,25 @@ import org.qooxdoo.sushi.util.Strings;
 
 
 public abstract class Filesystem {
-    /** separator file system name from rootPath in Locator strings */
+    /** separates file system name from rootPath in Locator strings */
     public static final char SEPARTOR = ':';
 
+    private final IO io;
     private final String name;
     private final String separator;
     private final char separatorChar;
     
-    public Filesystem(String name, char separatorChar) {
+    public Filesystem(IO io, String name, char separatorChar) {
+        this.io = io;
         this.name = name;
         this.separator = "" + separatorChar;
         this.separatorChar = separatorChar;
     }
 
+    public IO getIO() {
+        return io;
+    }
+    
     public String getName() {
         return name;
     }
@@ -51,7 +57,7 @@ public abstract class Filesystem {
         return separatorChar;
     }
     
-    public abstract Node parse(IO io, String rootPath) throws IOException;
+    public abstract Node parse(String rootPath) throws IOException;
 
     //--
     

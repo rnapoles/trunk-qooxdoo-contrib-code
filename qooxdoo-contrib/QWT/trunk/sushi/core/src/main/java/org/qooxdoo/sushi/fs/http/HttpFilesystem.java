@@ -24,24 +24,39 @@ import java.net.URL;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class HttpFilesystem extends Filesystem {
-    public static final HttpFilesystem INSTANCE = new HttpFilesystem();
-    
-    private HttpFilesystem() {
-        super("http", '/');
+    public HttpFilesystem(IO io) {
+        super(io, "http", '/');
+    }
+
+    @Override
+    public HttpNode parse(String rootPath) throws MalformedURLException {
+        return forUrl(new URL(rootPath));
     }
 
     // CAUTION: no forResource method, because non-existing resources don't have a url
     
-    @Override
-    public HttpNode parse(IO io, String rootPath) throws ParseException, MalformedURLException {
-        return new HttpNode(io, new URL(rootPath));
+    public HttpNode forFile(FileNode file) throws MalformedURLException {
+        return forUrl(file.toURI().toURL());
+    }
+    
+    public HttpNode forUrl(URL url) {
+        return new HttpNode(root(url), url);
     }
 
-    public HttpNode forFile(FileNode file) throws MalformedURLException {
-        return new HttpNode(file.getIO(), file.toURI().toURL());
+    private SimpleRoot root(URL url) {
+        int port;
+
+        if (url.getRef() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getUserInfo() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        port = url.getPort();
+        return new SimpleRoot(this, url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/');
     }
 }

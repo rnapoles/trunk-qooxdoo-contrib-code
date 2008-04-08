@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.LastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
@@ -43,15 +42,15 @@ import org.qooxdoo.sushi.io.Misc;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
+    private final SimpleRoot root;
     private final ChannelSftp channel;
     private final String slashPath;
     
-    public SshNode(IO io, ChannelSftp channel, String path) {
-        super(io);
+    public SshNode(SimpleRoot root, ChannelSftp channel, String path) {
+        super();
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
@@ -62,16 +61,14 @@ public class SshNode extends Node {
         if (channel == null) {
             throw new IllegalArgumentException();
         }
+        this.root = root;
         this.channel = channel;
         this.slashPath = "/" + path;
     }
 
     @Override
     public SimpleRoot getRoot() {
-        Session session;
-
-        session = channel.getSession();
-        return new SimpleRoot(SshFilesystem.INSTANCE, "//" + session.getUserName() + "@" + session.getHost() + "/");
+        return root;
     }
     
     public ChannelSftp getChannel() {
@@ -89,7 +86,7 @@ public class SshNode extends Node {
 
     @Override
     public SshNode newInstance(String path) {
-        return new SshNode(getIO(), channel, path);
+        return new SshNode(root, channel, path);
     }
 
     @Override

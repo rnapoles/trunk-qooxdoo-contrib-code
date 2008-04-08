@@ -27,18 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class MemoryRoot implements Root {
-    public final IO io;
+    public final MemoryFilesystem filesystem;
     public final int id;
     private final Map<String, MemoryNode> nodes;
     private final Map<String, Object> store;
     
-    public MemoryRoot(IO io, int id) {
-        this.io = io;
+    public MemoryRoot(MemoryFilesystem filesystem, int id) {
+        this.filesystem = filesystem;
         this.id = id;
         this.nodes = new HashMap<String, MemoryNode>();
         this.store = new HashMap<String, Object>();
@@ -46,7 +45,7 @@ public class MemoryRoot implements Root {
     }
 
     public MemoryFilesystem getFilesystem() {
-        return MemoryFilesystem.INSTANCE;
+        return filesystem;
     }
 
     public String getId() {
@@ -119,8 +118,8 @@ public class MemoryRoot implements Root {
         if (old instanceof FileNode) {
             ((FileNode) old).delete();
         }
-        if (used > io.maxInMemorySize) {
-            file = io.createTempFile();
+        if (used > filesystem.getIO().maxInMemorySize) {
+            file = filesystem.getIO().createTempFile();
             file.writeBytes(data, 0, used);
             store.put(path, file);
         } else {

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
@@ -42,25 +41,13 @@ import org.qooxdoo.sushi.util.Program;
  * <p>File, directory, symlink or something not yet created. Relacement java.io.File.</p>
  */
 public class FileNode extends Node {
-    private static final SimpleRoot[] ROOTS;
+    private final SimpleRoot root;
     
-    static {
-        File[] roots;
-        
-        roots = File.listRoots();
-        ROOTS = new SimpleRoot[roots.length];
-        for (int i = 0; i < roots.length; i++) {
-            ROOTS[i] = new SimpleRoot(FileFilesystem.INSTANCE, roots[i].getAbsolutePath());
-        }
-    }
-
-    //--
-    
-    /** never null, always absolute */
+    /** never null and always absolute */
     private final File file;
 
-    public FileNode(IO io, File file) {
-        this(io, null, file);
+    public FileNode(SimpleRoot root, File file) {
+        this(root, null, file);
     }
 
     /** 
@@ -68,8 +55,8 @@ public class FileNode extends Node {
      * directory) and use the join method to create new nodes. Use IO.node to create nodes for
      * a given path.
      */
-    public FileNode(IO io, FileNode base, File file) {
-        super(io);
+    public FileNode(SimpleRoot root, FileNode base, File file) {
+        super();
         
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
@@ -77,26 +64,19 @@ public class FileNode extends Node {
         if (file.getPath().endsWith(File.separator) && file.getParent() != null) {
             throw new IllegalArgumentException("should not happen because java.io.File normalizes paths: " + file.getPath());
         }
+        this.root = root;
         this.file = file;
         setBase(base);
     }
     
     @Override
     public SimpleRoot getRoot() {
-        String str;
-        
-        str = file.getAbsolutePath().toUpperCase();
-        for (SimpleRoot fs : ROOTS) {
-            if (str.startsWith(fs.getId())) {
-                return fs;
-            }
-        }
-        throw new IllegalArgumentException(str);
+        return root;
     }
 
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(getIO(), (FileNode) getBase(), new File(getRoot() + path));
+        return new FileNode(getRoot(), (FileNode) getBase(), new File(getRoot() + path));
     }
     
     public URI toURI() {
@@ -184,7 +164,7 @@ public class FileNode extends Node {
         }
         result = new ArrayList<FileNode>(children.length);
         for (int i = 0; i < children.length; i++) {
-            result.add(new FileNode(getIO(), (FileNode) getBase(), children[i]));
+            result.add(new FileNode(root, (FileNode) getBase(), children[i]));
         }
         return result;
     }
