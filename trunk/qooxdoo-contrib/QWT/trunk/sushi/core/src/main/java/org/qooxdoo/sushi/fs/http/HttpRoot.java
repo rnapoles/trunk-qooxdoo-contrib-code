@@ -19,15 +19,14 @@
 
 package org.qooxdoo.sushi.fs.http;
 
-import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.Root;
 
 
 public class HttpRoot implements Root {
-    private final Filesystem filesystem;
+    private final HttpFilesystem filesystem;
     private final String id;
     
-    public HttpRoot(Filesystem filesystem, String id) {
+    public HttpRoot(HttpFilesystem filesystem, String id) {
         this.filesystem = filesystem;
         this.id = id;
         if (!id.endsWith(filesystem.getSeparator())) {
@@ -35,13 +34,6 @@ public class HttpRoot implements Root {
         }
     }
 
-    @Override
-    public String toString() {
-        return id;
-    }
-    
-    //--
- 
     @Override
     public boolean equals(Object obj) {
         HttpRoot root;
@@ -58,7 +50,7 @@ public class HttpRoot implements Root {
         return id.hashCode();
     }
 
-    public Filesystem getFilesystem() {
+    public HttpFilesystem getFilesystem() {
         return filesystem;
     }
 
