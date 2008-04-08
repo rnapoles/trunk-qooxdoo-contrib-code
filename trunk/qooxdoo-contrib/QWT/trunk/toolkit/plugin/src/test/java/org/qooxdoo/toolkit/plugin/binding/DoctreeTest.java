@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
 import org.qooxdoo.sushi.metadata.xml.LoaderException;
 import org.qooxdoo.toolkit.plugin.binding.qx.Doctree;
 import org.xml.sax.SAXException;
@@ -15,6 +14,6 @@ public class DoctreeTest {
         IO io;
         
         io = new IO();
-        Doctree.load(new ResourceNode(io, "doctree.xml"));
+        Doctree.load(io.node("resource:doctree.xml"));
     }
 }

@@ -28,7 +28,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
 import org.qooxdoo.sushi.util.Strings;
@@ -63,7 +62,7 @@ public abstract class Base extends AbstractMojo {
 
     public static String getVersion(IO io) {
         try {
-            return new ResourceNode(io, "toolkit.version").readString().trim();
+            return io.node("resource:toolkit.version").readString().trim();
         } catch (IOException e) {
             throw new RuntimeException("unkown version");
         }

@@ -24,14 +24,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.junit.Test;
-import org.xml.sax.SAXParseException;
-
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
-import org.qooxdoo.toolkit.plugin.binding.java.Clazz;
-import org.qooxdoo.toolkit.plugin.binding.java.Set;
-import org.qooxdoo.toolkit.plugin.binding.java.Field;
-import org.qooxdoo.toolkit.plugin.binding.java.SimpleType;
+import org.xml.sax.SAXParseException;
 
 public class DoctreeTest {
     private static final IO IO_OBJ = new IO();
@@ -89,7 +83,7 @@ public class DoctreeTest {
     @Test 
     public void doctree() throws Exception {
         try {
-            Set.loadRaw(new ResourceNode(IO_OBJ, "doctree.xml"));
+            Set.loadRaw(IO_OBJ.node("resource:doctree.xml"));
         } catch (SAXParseException e) {
             throw new RuntimeException(e.getLineNumber() + ":" + e.getMessage(), e);
         }

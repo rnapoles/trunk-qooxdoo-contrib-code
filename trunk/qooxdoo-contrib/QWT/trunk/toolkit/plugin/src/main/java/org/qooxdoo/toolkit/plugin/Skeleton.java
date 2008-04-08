@@ -52,7 +52,7 @@ public class Skeleton {
         zip = Archive.createZip(IO_OBJ);
         url = getUrl(args[1]);
         System.out.println("svn export " + url);
-        src = SvnFilesystem.INSTANCE.parse(IO_OBJ, url);
+        src = IO_OBJ.getFactory().get(SvnFilesystem.class).parse(url);
         src.export(zip.data);
         for (Node application : zip.data.list()) {
             if (application.isDirectory()) {

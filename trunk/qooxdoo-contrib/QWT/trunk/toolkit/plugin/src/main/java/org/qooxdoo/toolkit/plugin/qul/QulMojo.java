@@ -28,6 +28,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.http.HttpFilesystem;
 import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.Base;
@@ -119,7 +120,7 @@ public class QulMojo extends Base {
         for (Object obj : lst) {
             artifact = (Artifact) obj;
             debug("checking " + artifact.getFile());
-            node = new HttpNode(io, new URL("jar:file:" + artifact.getFile().getAbsolutePath() +"!/" + DOCTREE_SER));
+            node = io.getFactory().get(HttpFilesystem.class).forUrl(new URL("jar:file:" + artifact.getFile().getAbsolutePath() +"!/" + DOCTREE_SER));
             if (node.exists()) {
                 result = (Set) node.readObject();
                 debug("done: " + result.size() + " classes, loaded from " + node.getUrl());

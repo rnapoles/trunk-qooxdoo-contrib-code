@@ -53,7 +53,7 @@ public class Qooxdoo {
         
         patch(repository);
         try {
-            str = new ResourceNode(io, "log/info.log").readString();
+            str = io.node("resource:log/info.log").readString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

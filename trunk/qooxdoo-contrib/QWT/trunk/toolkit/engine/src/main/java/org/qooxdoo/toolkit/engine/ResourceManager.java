@@ -29,7 +29,6 @@ import org.qooxdoo.sushi.fs.ExistsException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
 import org.qooxdoo.sushi.io.Buffer;
 
 public class ResourceManager {
@@ -50,7 +49,7 @@ public class ResourceManager {
     }
 
     public void addResourcePrefix(String prefix) {
-        addPrefix(prefix, new ResourceNode(io, trim(prefix)));
+        addPrefix(prefix, io.node("resource:" + trim(prefix)));
     }
 
     private static String trim(String str) {
