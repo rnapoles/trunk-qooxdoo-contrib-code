@@ -24,7 +24,6 @@ import java.net.URL;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class HttpFilesystem extends Filesystem {
@@ -48,7 +47,7 @@ public class HttpFilesystem extends Filesystem {
         return new HttpNode(root(url), url);
     }
 
-    private SimpleRoot root(URL url) {
+    private HttpRoot root(URL url) {
         int port;
 
         if (url.getRef() != null) {
@@ -58,6 +57,6 @@ public class HttpFilesystem extends Filesystem {
             throw new IllegalArgumentException(url.toString());
         }
         port = url.getPort();
-        return new SimpleRoot(this, url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/');
+        return new HttpRoot(this, url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/');
     }
 }
