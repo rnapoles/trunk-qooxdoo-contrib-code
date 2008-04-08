@@ -560,6 +560,6 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         Node file;
         
         file = work.join("foo");
-        assertEquals(file.getRoot().id + file.getPath(), file.toString());
+        assertEquals(file.getRoot().getId() + file.getPath(), file.toString());
     }
 }

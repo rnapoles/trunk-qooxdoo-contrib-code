@@ -136,7 +136,7 @@ public abstract class Node {
     public abstract String getPath();
     
     public String getLocator() {
-        return root.filesystem.getName() + ":" + root.id + getPath();
+        return root.getFilesystem().getName() + ":" + root.getId() + getPath();
     }
 
     /** @return the last path segment (or an empty string for the root node */ 
@@ -145,7 +145,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(root.filesystem.getSeparatorChar()) + 1);
+        return path.substring(path.lastIndexOf(root.getFilesystem().getSeparatorChar()) + 1);
     }
     
     public Node getParent() {
@@ -156,7 +156,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf(root.filesystem.getSeparatorChar());
+        idx = path.lastIndexOf(root.getFilesystem().getSeparatorChar());
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -195,14 +195,14 @@ public abstract class Node {
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(root.filesystem.getSeparatorChar()) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(root.getFilesystem().getSeparatorChar()) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, root.filesystem.getSeparator());
+        ups = Strings.count(startfilepath, root.getFilesystem().getSeparator());
         for (i = 0; i < ups; i++) {
-            result.append(".." + root.filesystem.getSeparator());
+            result.append(".." + root.getFilesystem().getSeparator());
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();
@@ -210,7 +210,7 @@ public abstract class Node {
 
     /** @return root.id + getPath, but not the filesystem name. Note that it's not a path! */ 
     public String getAbsolute() {
-        return root.id + getPath();
+        return root.getId() + getPath();
     }
     
     public Node join(List<String> paths) {

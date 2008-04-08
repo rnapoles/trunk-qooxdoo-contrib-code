@@ -102,7 +102,7 @@ public class SvnNode extends Node {
     public SvnNode newInstance(String path) {
         try {
             // TODO: cast
-            return ((SvnFilesystem) getRoot().filesystem).create(io, repository, path);
+            return ((SvnFilesystem) getRoot().getFilesystem()).create(io, repository, path);
         } catch (SVNException e) {
             throw new RuntimeException("TODO", e);
         }

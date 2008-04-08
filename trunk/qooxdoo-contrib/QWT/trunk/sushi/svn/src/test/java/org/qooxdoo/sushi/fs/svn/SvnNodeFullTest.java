@@ -60,7 +60,7 @@ public class SvnNodeFullTest extends NodeTest {
 
     @Test
     public void rootWithUrl() throws SVNException {
-        assertEquals(URL.toString() + "/", work.getRoot().id);
+        assertEquals(URL.toString() + "/", work.getRoot().getId());
     }
  
     @Test
