@@ -17,45 +17,50 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs.svn;
+package org.qooxdoo.sushi.fs.ssh;
 
 import org.qooxdoo.sushi.fs.Root;
-import org.tmatesoft.svn.core.io.SVNRepository;
 
-public class SvnRoot implements Root {
-    private final SvnFilesystem filesystem;
-    private final SVNRepository repository;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.Session;
+
+public class SshRoot implements Root {
+    private final SshFilesystem filesystem;
+    private final ChannelSftp channel;
     
-    public SvnRoot(SvnFilesystem filesystem, SVNRepository repository) {
+    public SshRoot(SshFilesystem filesystem, ChannelSftp channel) {
         this.filesystem = filesystem;
-        this.repository = repository;
+        this.channel = channel;
     }
     
-    public SvnFilesystem getFilesystem() {
+    public SshFilesystem getFilesystem() {
         return filesystem;
     }
 
     public String getId() {
-        return repository.getLocation().toString() + "/";
+        Session session;
+        
+        session = channel.getSession();
+        return "//" + session.getUserName() + "@" + session.getHost() + "/";
     }
 
-    public SVNRepository getRepository() {
-        return repository;
+    public ChannelSftp getChannel() {
+        return channel;
     }
     
     @Override
     public boolean equals(Object obj) {
-        SvnRoot root;
+        SshRoot root;
         
-        if (obj instanceof SvnRoot) {
-            root = (SvnRoot) obj;
-            return repository.getLocation().equals(root.repository.getLocation());
+        if (obj instanceof SshRoot) {
+            root = (SshRoot) obj;
+            return getId().equals(root.getId());
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return repository.getLocation().hashCode();
+        return getId().hashCode();
     }
 }

@@ -24,11 +24,9 @@ import java.io.IOException;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 
 public class SshFilesystem extends Filesystem {
@@ -70,11 +68,6 @@ public class SshFilesystem extends Filesystem {
     }
 
     public SshNode forChannel(ChannelSftp channel, String path) throws IOException {
-        Session session;
-        SimpleRoot root;
-        
-        session = channel.getSession();
-        root = new SimpleRoot(this, "//" + session.getUserName() + "@" + session.getHost() + "/");
-        return new SshNode(root, channel, path);
+        return new SshNode(new SshRoot(this, channel), path);
     }
 }
