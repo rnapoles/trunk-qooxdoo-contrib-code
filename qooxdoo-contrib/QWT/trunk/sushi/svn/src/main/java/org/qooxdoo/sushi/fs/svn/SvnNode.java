@@ -346,11 +346,6 @@ public class SvnNode extends Node {
         return info.getNewRevision();
     }
     
-    @Override
-    public boolean equalsNode(Node node) {
-        return getRoot().equals(node.getRoot());
-    }
-
     //--
     
     // TODO

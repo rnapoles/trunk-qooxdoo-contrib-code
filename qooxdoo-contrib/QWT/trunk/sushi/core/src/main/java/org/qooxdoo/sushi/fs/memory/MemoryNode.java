@@ -172,11 +172,6 @@ public class MemoryNode extends Node {
     }
 
     @Override
-    protected boolean equalsNode(Node node) {
-        return root == (((MemoryNode) node).root);
-    }
-
-    @Override
     public String getPath() {
         return path;
     }

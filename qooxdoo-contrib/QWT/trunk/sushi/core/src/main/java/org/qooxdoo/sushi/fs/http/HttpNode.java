@@ -93,11 +93,6 @@ public class HttpNode extends Node {
     }
     
     @Override
-    protected boolean equalsNode(Node node) {
-        return url.sameFile(((HttpNode) node).url);
-    }
-    
-    @Override
     public boolean exists() {
         try {
             return inputStream() != null;

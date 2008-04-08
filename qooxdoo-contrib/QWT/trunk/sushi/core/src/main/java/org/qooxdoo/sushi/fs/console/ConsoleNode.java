@@ -64,11 +64,6 @@ public class ConsoleNode extends Node {
     }
 
     @Override
-    protected boolean equalsNode(Node node) {
-        return true;
-    }
-
-    @Override
     public boolean exists() {
         return true;
     }
