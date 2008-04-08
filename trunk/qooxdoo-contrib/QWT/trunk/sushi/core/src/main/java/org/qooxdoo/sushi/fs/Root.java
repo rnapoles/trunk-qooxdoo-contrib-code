@@ -19,9 +19,6 @@
 
 package org.qooxdoo.sushi.fs;
 
-import java.util.List;
-
-import org.qooxdoo.sushi.util.Strings;
 
 public class Root {
     private final Filesystem filesystem;
@@ -38,33 +35,6 @@ public class Root {
     @Override
     public String toString() {
         return id;
-    }
-    
-    //-- path handling
-
-    public String join(String... names) {
-        return Strings.join(filesystem.getSeparator(), names);
-    }
-    
-    public String join(String head, List<String> paths) {
-        StringBuffer buffer;
-        
-        buffer = new StringBuffer(head);
-        for (String path : paths) {
-            if (path.startsWith(filesystem.getSeparator())) {
-                throw new IllegalArgumentException(path);
-            }
-            // TODO: Svn nodes ...
-            if (buffer.length() > 0) {
-                buffer.append(filesystem.getSeparatorChar());
-            }
-            buffer.append(path);
-        }
-        return buffer.toString();
-    }
-
-    public List<String> split(String path) {
-        return Strings.split(filesystem.getSeparator(), path);
     }
     
     //--

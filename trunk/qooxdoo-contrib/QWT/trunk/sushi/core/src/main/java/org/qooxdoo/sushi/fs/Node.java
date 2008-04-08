@@ -214,7 +214,7 @@ public abstract class Node {
     }
     
     public Node join(List<String> paths) {
-        return newInstance(root.join(getPath(), paths));
+        return newInstance(root.getFilesystem().join(getPath(), paths));
     }
     
     public Node join(String... names) {
