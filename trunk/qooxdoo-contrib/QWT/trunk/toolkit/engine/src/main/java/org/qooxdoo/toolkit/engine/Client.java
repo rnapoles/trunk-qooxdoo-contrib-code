@@ -106,7 +106,7 @@ public class Client implements ClientMBean {
         this.sources = sources;
         this.includes = includes;
         this.excludes = excludes;
-        this.classpath = classpath(sources.io);
+        this.classpath = classpath(sources.getIO());
         this.title = title;
         this.main = main;
         this.nextSessionId = 0;
@@ -217,7 +217,7 @@ public class Client implements ClientMBean {
         Node tmp;
         Qooxdoo qooxdoo;
         
-        io = sources.io;
+        io = sources.getIO();
         srcFilter = io.filter();
         srcFilter.include(includes);
         srcFilter.exclude(excludes);

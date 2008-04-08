@@ -89,7 +89,7 @@ public abstract class Type {
         Instance<T> result;
         
         src = node.createReader();
-        result = loadXml(node.io, node.getPath(), src);
+        result = loadXml(node.getIO(), node.getPath(), src);
         src.close();
         return result;
     }

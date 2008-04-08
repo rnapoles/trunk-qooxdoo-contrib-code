@@ -46,7 +46,7 @@ public class Archive {
     }
 
     public static Archive loadZip(Node src) throws IOException {
-        return createZip(src.io).read(src);
+        return createZip(src.getIO()).read(src);
     }
 
     public static Archive createJar(IO io) {
@@ -54,7 +54,7 @@ public class Archive {
     }
 
     public static Archive loadJar(Node src) throws IOException {
-        return createJar(src.io).read(src);
+        return createJar(src.getIO()).read(src);
     }
 
     private static String getPath(ZipEntry entry) {
@@ -93,7 +93,7 @@ public class Archive {
         ZipEntry entry;
         Node node;
         
-        buffer = file.io.buffer;
+        buffer = file.getIO().buffer;
         zip = new ZipInputStream(file.createInputStream());
         while (true) {
             entry = zip.getNextEntry();
@@ -180,7 +180,7 @@ public class Archive {
         for (Node file : files) {
             in = file.createInputStream();
             out.putNextEntry(new ZipEntry(file.getPath()));
-            file.io.buffer.copy(in, out);
+            file.getIO().buffer.copy(in, out);
             out.closeEntry();
             in.close();
         }

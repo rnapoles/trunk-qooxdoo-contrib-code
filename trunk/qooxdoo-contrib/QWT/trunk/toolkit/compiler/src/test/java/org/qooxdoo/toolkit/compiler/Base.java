@@ -180,7 +180,7 @@ public abstract class Base {
         try {
             // no task.classpath(CLASSPATH) because it's already in the repository:
             compileTask.classpath.add(classes);
-            compileTask.sourcepath(HOME.io.stringNode(java));
+            compileTask.sourcepath(HOME.getIO().stringNode(java));
             compiled = compileTask.invoke();
         } catch (IOException e) {
             throw new RuntimeException("unexpected", e);

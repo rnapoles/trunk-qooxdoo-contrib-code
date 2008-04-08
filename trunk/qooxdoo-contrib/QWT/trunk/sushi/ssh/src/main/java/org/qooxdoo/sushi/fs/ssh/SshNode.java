@@ -89,7 +89,7 @@ public class SshNode extends Node {
 
     @Override
     public SshNode newInstance(String path) {
-        return new SshNode(io, channel, path);
+        return new SshNode(getIO(), channel, path);
     }
 
     @Override
@@ -217,7 +217,7 @@ public class SshNode extends Node {
     public InputStream createInputStream() throws IOException {
         FileNode tmp;
         
-        tmp = io.createTempFile();
+        tmp = getIO().createTempFile();
         try {
             get(tmp);
         } catch (SftpException e) {
