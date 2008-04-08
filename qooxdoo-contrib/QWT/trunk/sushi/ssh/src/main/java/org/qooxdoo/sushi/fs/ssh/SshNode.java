@@ -82,11 +82,6 @@ public class SshNode extends Node {
     }
 
     @Override
-    public SshNode newInstance(String path) {
-        return new SshNode(root, path);
-    }
-
-    @Override
     public String getPath() {
         return slashPath.substring(1);
     }

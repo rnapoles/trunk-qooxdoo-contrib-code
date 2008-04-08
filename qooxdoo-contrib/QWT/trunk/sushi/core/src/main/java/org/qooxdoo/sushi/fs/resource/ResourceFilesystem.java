@@ -40,7 +40,9 @@ public class ResourceFilesystem extends Filesystem implements Root {
         return new ResourceNode(this, rootPath);
     }
 
-    public Filesystem getFilesystem() {
+    //-- Root methods
+    
+    public ResourceFilesystem getFilesystem() {
         return this;
     }
 
@@ -48,6 +50,10 @@ public class ResourceFilesystem extends Filesystem implements Root {
         return "";
     }
 
+    public ResourceNode newInstance(String path) {
+        return new ResourceNode(this, path);
+    }
+    
     public InputStream inputStream(String path) {
         // TODO: ResourceNode.class.getLoader() doesn't work for SshNode's billy loading ...
         if (loader == null) {

@@ -76,9 +76,6 @@ public class SvnFilesystem extends Filesystem {
     }
     
     public SvnNode create(SVNRepository repository, String path) throws SVNException {
-        HttpRoot root;
-        
-        root = new HttpRoot(this, repository.getLocation().toString() + "/");
         return new SvnNode(new SvnRoot(this, repository), repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
     }
 

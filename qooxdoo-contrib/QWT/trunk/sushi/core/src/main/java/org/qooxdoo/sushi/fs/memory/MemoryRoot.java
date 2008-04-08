@@ -51,12 +51,8 @@ public class MemoryRoot implements Root {
     public String getId() {
         return "//" + id + "/";
     }
-    
-    public void add(MemoryNode node) {
-        nodes.put(node.getPath(), node);
-    }
-    
-    public MemoryNode node(String path) {
+
+    public MemoryNode newInstance(String path) {
         MemoryNode node;
         
         node = nodes.get(path);
@@ -65,6 +61,10 @@ public class MemoryRoot implements Root {
             nodes.put(node.getPath(), node);
         }
         return node;
+    }
+    
+    public void add(MemoryNode node) {
+        nodes.put(node.getPath(), node);
     }
     
     public long length(String path) {

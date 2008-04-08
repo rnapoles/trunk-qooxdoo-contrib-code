@@ -37,11 +37,17 @@ public class ConsoleFilesystem extends Filesystem implements Root {
         return new ConsoleNode(this);
     }
 
+    //-- root methods
+    
     public Filesystem getFilesystem() {
         return this;
     }
 
     public String getId() {
         return "/";
+    }
+
+    public ConsoleNode newInstance(String path) {
+        throw new UnsupportedOperationException();
     }
 }

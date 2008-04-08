@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -79,16 +78,6 @@ public class HttpNode extends Node {
     @Override
     public Node mkdir() throws MkdirException {
         throw new MkdirException(this);
-    }
-    
-    @Override
-    public HttpNode newInstance(String path) {
-        // ignores query
-        try {
-            return new HttpNode(root, new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("TODO", e);
-        }
     }
     
     @Override

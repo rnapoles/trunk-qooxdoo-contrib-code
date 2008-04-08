@@ -82,9 +82,6 @@ public abstract class Node {
         return getRoot().getFilesystem().getIO();
     }
 
-    /** @return node with the specified path */
-    public abstract Node newInstance(String path);
-
     public abstract InputStream createInputStream() throws IOException;
     public abstract OutputStream createOutputStream() throws IOException;
 
@@ -152,9 +149,9 @@ public abstract class Node {
         }
         idx = path.lastIndexOf(getRoot().getFilesystem().getSeparatorChar());
         if (idx == -1) {
-            return newInstance("");
+            return getRoot().newInstance("");
         } else {
-            return newInstance(path.substring(0, idx));
+            return getRoot().newInstance(path.substring(0, idx));
         }
     }
 
@@ -210,7 +207,7 @@ public abstract class Node {
     }
     
     public Node join(List<String> paths) {
-        return newInstance(getRoot().getFilesystem().join(getPath(), paths));
+        return getRoot().newInstance(getRoot().getFilesystem().join(getPath(), paths));
     }
     
     public Node join(String... names) {

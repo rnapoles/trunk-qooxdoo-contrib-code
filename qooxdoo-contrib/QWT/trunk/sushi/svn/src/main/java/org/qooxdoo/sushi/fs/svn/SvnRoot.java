@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.fs.svn;
 
 import org.qooxdoo.sushi.fs.Root;
+import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 public class SvnRoot implements Root {
@@ -43,6 +44,14 @@ public class SvnRoot implements Root {
         return repository;
     }
     
+    public SvnNode newInstance(String path) {
+        try {
+            return filesystem.create(repository, path);
+        } catch (SVNException e) {
+            throw new RuntimeException("TODO", e);
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         SvnRoot root;

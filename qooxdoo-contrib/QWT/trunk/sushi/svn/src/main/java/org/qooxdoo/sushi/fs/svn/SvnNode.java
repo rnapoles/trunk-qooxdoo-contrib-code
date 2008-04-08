@@ -88,15 +88,6 @@ public class SvnNode extends Node {
     }
     
     @Override
-    public SvnNode newInstance(String path) {
-        try {
-            return ((SvnFilesystem) getRoot().getFilesystem()).create(root.getRepository(), path);
-        } catch (SVNException e) {
-            throw new RuntimeException("TODO", e);
-        }
-    }
-
-    @Override
     public String getPath() {
         return path;
     }

@@ -19,19 +19,36 @@
 
 package org.qooxdoo.sushi.fs.http;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.qooxdoo.sushi.fs.Root;
 
-
 public class HttpRoot implements Root {
-    private final HttpFilesystem filesystem;
-    private final String id;
-    
-    public HttpRoot(HttpFilesystem filesystem, String id) {
-        this.filesystem = filesystem;
-        this.id = id;
-        if (!id.endsWith(filesystem.getSeparator())) {
-            throw new IllegalArgumentException();
+    public static HttpRoot forUrl(HttpFilesystem filesystem, URL url) {
+        if (!url.getProtocol().equals(url.getProtocol())) {
+            throw new IllegalArgumentException(url.toString());
         }
+        if (url.getRef() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getUserInfo() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getQuery() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        return new HttpRoot(filesystem, url.getHost(), url.getPort());
+    }
+    
+    private final HttpFilesystem filesystem;
+    private final String host;
+    private final int port;
+    
+    public HttpRoot(HttpFilesystem filesystem, String host, int port) {
+        this.filesystem = filesystem;
+        this.host = host;
+        this.port = port;
     }
 
     @Override
@@ -40,14 +57,14 @@ public class HttpRoot implements Root {
         
         if (obj instanceof HttpRoot) {
             root = (HttpRoot) obj;
-            return filesystem == root.filesystem && id.equals(root.id);
+            return filesystem == root.filesystem && host.equals(root.host) && port == root.port;
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return host.hashCode();
     }
 
     public HttpFilesystem getFilesystem() {
@@ -55,6 +72,15 @@ public class HttpRoot implements Root {
     }
 
     public String getId() {
-        return id;
+        return "//" + host + (port == -1 ? "" : "" + port) + "/";
+    }
+
+    public HttpNode newInstance(String path) {
+        // ignores query
+        try {
+            return new HttpNode(this, new URL("http", host, port, path));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("TODO", e);
+        }
     }
 }

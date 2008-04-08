@@ -44,6 +44,10 @@ public class SshRoot implements Root {
         return "//" + session.getUserName() + "@" + session.getHost() + "/";
     }
 
+    public SshNode newInstance(String path) {
+        return new SshNode(this, path);
+    }
+    
     public ChannelSftp getChannel() {
         return channel;
     }

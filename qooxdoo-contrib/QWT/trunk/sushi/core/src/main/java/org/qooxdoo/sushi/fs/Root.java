@@ -22,4 +22,5 @@ package org.qooxdoo.sushi.fs;
 public interface Root {
     Filesystem getFilesystem();
     String getId();
+    Node newInstance(String path);
 }
