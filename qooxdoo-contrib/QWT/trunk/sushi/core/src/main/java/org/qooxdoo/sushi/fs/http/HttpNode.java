@@ -32,24 +32,23 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 
 /** 
  * Use http networking properties to specify proxies:
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
  */
 public class HttpNode extends Node {
-    private final SimpleRoot root;
+    private final HttpRoot root;
     private final URL url;
     
-    public HttpNode(SimpleRoot root, URL url) {
+    public HttpNode(HttpRoot root, URL url) {
         super();
         this.root = root;
         this.url = url;
     }
 
     @Override
-    public SimpleRoot getRoot() {
+    public HttpRoot getRoot() {
         return root;
     }
     

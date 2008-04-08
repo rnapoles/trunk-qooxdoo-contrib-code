@@ -17,14 +17,17 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs;
+package org.qooxdoo.sushi.fs.http;
+
+import org.qooxdoo.sushi.fs.Filesystem;
+import org.qooxdoo.sushi.fs.Root;
 
 
-public class SimpleRoot implements Root {
+public class HttpRoot implements Root {
     private final Filesystem filesystem;
     private final String id;
     
-    public SimpleRoot(Filesystem filesystem, String id) {
+    public HttpRoot(Filesystem filesystem, String id) {
         this.filesystem = filesystem;
         this.id = id;
         if (!id.endsWith(filesystem.getSeparator())) {
@@ -41,10 +44,10 @@ public class SimpleRoot implements Root {
  
     @Override
     public boolean equals(Object obj) {
-        SimpleRoot root;
+        HttpRoot root;
         
-        if (obj instanceof SimpleRoot) {
-            root = (SimpleRoot) obj;
+        if (obj instanceof HttpRoot) {
+            root = (HttpRoot) obj;
             return filesystem == root.filesystem && id.equals(root.id);
         }
         return false;
