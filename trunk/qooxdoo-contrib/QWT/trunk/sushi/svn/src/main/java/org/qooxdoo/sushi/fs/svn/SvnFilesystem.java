@@ -56,7 +56,7 @@ public class SvnFilesystem extends Filesystem {
         String root;
         String path;
         
-        if (url.endsWith(SvnNode.SEPARATOR)) {
+        if (url.endsWith(getSeparator())) {
             throw new IllegalArgumentException(url);
         }
         repository = repository(SVNURL.parseURIEncoded(url), username, password);

@@ -41,7 +41,7 @@ import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Xml;
 
 /**
- * <p>Access to the filesystem, various default settings, default nodes and node factory. 
+ * <p>Access to filesystems, various default settings and default nodes. 
  * Not thread save, every thread should have it's own instance. </p>
  * 
  * <p>Name: I used to call this class Context, but there are way to many context classes around. 
@@ -151,7 +151,7 @@ public class IO {
         return defaultExcludes;
     }
     
-    //-- Node creation helper
+    //-- Node creation
 
     public FileNode file(String path) {
         try {
@@ -369,6 +369,8 @@ public class IO {
         }
         return file;
     }
+    
+    //--
     
     private FileNode init(String name) {
         String value;

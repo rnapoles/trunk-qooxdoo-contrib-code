@@ -39,6 +39,7 @@ public class HttpFilesystem extends Filesystem {
 
     // CAUTION: no forResource method, because non-existing resources don't have a url
     
+    // TODO: dump?
     public HttpNode forFile(FileNode file) throws MalformedURLException {
         return forUrl(file.toURI().toURL());
     }
