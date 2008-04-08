@@ -36,8 +36,8 @@ import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
 
@@ -51,7 +51,7 @@ public class SshNode extends Node {
     private final String slashPath;
     
     public SshNode(IO io, ChannelSftp channel, String path) {
-        super(io, root(channel));
+        super(io);
         
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
@@ -66,11 +66,12 @@ public class SshNode extends Node {
         this.slashPath = "/" + path;
     }
 
-    private static Root root(ChannelSftp channel) {
+    @Override
+    public SimpleRoot getRoot() {
         Session session;
 
         session = channel.getSession();
-        return new Root(SshFilesystem.INSTANCE, "//" + session.getUserName() + "@" + session.getHost() + "/");
+        return new SimpleRoot(SshFilesystem.INSTANCE, "//" + session.getUserName() + "@" + session.getHost() + "/");
     }
     
     public ChannelSftp getChannel() {

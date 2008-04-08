@@ -32,8 +32,8 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 
 /** 
  * Use http networking properties to specify proxies:
@@ -43,11 +43,13 @@ public class HttpNode extends Node {
     private final URL url;
     
     public HttpNode(IO io, URL url) {
-        super(io, new Root(HttpFilesystem.INSTANCE, root(url)));
+        super(io);
         this.url = url;
     }
 
-    private static String root(URL url) {
+    // TODO: cache
+    @Override
+    public SimpleRoot getRoot() {
         int port;
 
         if (url.getRef() != null) {
@@ -57,7 +59,7 @@ public class HttpNode extends Node {
             throw new IllegalArgumentException(url.toString());
         }
         port = url.getPort();
-        return url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/';
+        return new SimpleRoot(HttpFilesystem.INSTANCE, url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/');
     }
     
     @Override

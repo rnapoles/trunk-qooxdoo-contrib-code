@@ -19,47 +19,7 @@
 
 package org.qooxdoo.sushi.fs;
 
-
-public class Root {
-    private final Filesystem filesystem;
-    private final String id;
-    
-    public Root(Filesystem filesystem, String id) {
-        this.filesystem = filesystem;
-        this.id = id;
-        if (!id.endsWith(filesystem.getSeparator())) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    @Override
-    public String toString() {
-        return id;
-    }
-    
-    //--
- 
-    @Override
-    public boolean equals(Object obj) {
-        Root root;
-        
-        if (obj instanceof Root) {
-            root = (Root) obj;
-            return filesystem == root.filesystem && id.equals(root.id);
-        }
-        return false;
-    }
-    
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
-    public Filesystem getFilesystem() {
-        return filesystem;
-    }
-
-    public String getId() {
-        return id;
-    }
+public interface Root {
+    Filesystem getFilesystem();
+    String getId();
 }

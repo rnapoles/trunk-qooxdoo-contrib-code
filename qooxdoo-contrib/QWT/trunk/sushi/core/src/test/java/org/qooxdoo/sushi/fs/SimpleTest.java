@@ -22,9 +22,9 @@ package org.qooxdoo.sushi.fs;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.file.FileFilesystem;
 
-public class FilesystemTest {
+public class SimpleTest {
     @Test(expected=IllegalArgumentException.class)
     public void constructor() {
-        new Root(FileFilesystem.INSTANCE, "foo");
+        new SimpleRoot(FileFilesystem.INSTANCE, "foo");
     }
 }

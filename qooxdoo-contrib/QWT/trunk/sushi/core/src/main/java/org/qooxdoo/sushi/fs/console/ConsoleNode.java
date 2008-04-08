@@ -28,16 +28,18 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ConsoleNode extends Node {
-    public static final Root ROOT = new Root(ConsoleFilesystem.INSTANCE, "/");
-    
     public ConsoleNode(IO io) {
-        super(io, ROOT);
+        super(io);
     }
 
+    @Override
+    public ConsoleFilesystem getRoot() {
+        return ConsoleFilesystem.INSTANCE;
+    }
+    
     @Override
     public List<ConsoleNode> list() {
         return null;

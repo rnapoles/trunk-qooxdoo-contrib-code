@@ -22,8 +22,9 @@ package org.qooxdoo.sushi.fs.console;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.Root;
 
-public class ConsoleFilesystem extends Filesystem {
+public class ConsoleFilesystem extends Filesystem implements Root {
     public static final ConsoleFilesystem INSTANCE = new ConsoleFilesystem();
     
     private ConsoleFilesystem() {
@@ -36,5 +37,13 @@ public class ConsoleFilesystem extends Filesystem {
             throw new ParseException(rootPath);
         }
         return new ConsoleNode(io);
+    }
+
+    public Filesystem getFilesystem() {
+        return this;
+    }
+
+    public String getId() {
+        return "/";
     }
 }

@@ -34,11 +34,11 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.resource.ResourceFilesystem;
+import org.qooxdoo.sushi.fs.resource.ResourceNode;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
 
 public class Naming {
     /**
@@ -61,7 +61,7 @@ public class Naming {
 
         result = new Repository();
         try {
-            root = Module.fromString(new ResourceNode(io, Module.toFileName(ResourceNode.ROOT, ROOT)).readString());
+            root = Module.fromString(new ResourceNode(io, Module.toFileName(ResourceFilesystem.INSTANCE, ROOT)).readString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

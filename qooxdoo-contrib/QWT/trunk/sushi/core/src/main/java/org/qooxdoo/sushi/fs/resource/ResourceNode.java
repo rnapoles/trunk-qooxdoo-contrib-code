@@ -29,12 +29,9 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ResourceNode extends Node {
-    public static final Root ROOT = new Root(ResourceFilesystem.INSTANCE, "/");
-    
     private final ClassLoader loader;
     private final String path;
     
@@ -43,7 +40,7 @@ public class ResourceNode extends Node {
     }
 
     public ResourceNode(IO io, ClassLoader loader, String path) {
-        super(io, ROOT);
+        super(io);
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
@@ -51,6 +48,11 @@ public class ResourceNode extends Node {
         this.path = path;
     }
 
+    @Override
+    public ResourceFilesystem getRoot() {
+        return ResourceFilesystem.INSTANCE;
+    }
+    
     @Override
     public long length() {
         throw new UnsupportedOperationException();

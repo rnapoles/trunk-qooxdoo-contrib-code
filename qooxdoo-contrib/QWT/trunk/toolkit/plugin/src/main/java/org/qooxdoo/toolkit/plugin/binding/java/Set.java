@@ -238,7 +238,7 @@ public class Set implements Serializable {
         String fullName;
         
         fullName = file.getRelative(root);
-        fullName = fullName.replace(file.getRoot().separatorChar, '.');
+        fullName = fullName.replace(file.getRoot().getFilesystem().getSeparatorChar(), '.');
         fullName = fullName.substring(0, fullName.length() - 3);
         return fullName;
     }
