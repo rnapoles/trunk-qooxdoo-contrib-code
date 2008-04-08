@@ -96,7 +96,7 @@ public class FileNode extends Node {
 
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(io, (FileNode) getBase(), new File(getRoot() + path));
+        return new FileNode(getIO(), (FileNode) getBase(), new File(getRoot() + path));
     }
     
     public URI toURI() {
@@ -190,7 +190,7 @@ public class FileNode extends Node {
         }
         result = new ArrayList<FileNode>(children.length);
         for (int i = 0; i < children.length; i++) {
-            result.add(new FileNode(io, (FileNode) getBase(), children[i]));
+            result.add(new FileNode(getIO(), (FileNode) getBase(), children[i]));
         }
         return result;
     }
@@ -250,14 +250,14 @@ public class FileNode extends Node {
         String output;
         
         dest.checkNotExists();
-        if (io.os == OS.WINDOWS) {
+        if (getIO().os == OS.WINDOWS) {
             p = new Program((FileNode) dest.getParent(), "cmd", "/C", "move");
         } else {
             p = new Program((FileNode) dest.getParent(), "mv");
         }
         p.add(getAbsolute(), dest.getName());
         output = p.exec();
-        if (output.length() > 0 && io.os != OS.WINDOWS) {
+        if (output.length() > 0 && getIO().os != OS.WINDOWS) {
             throw new IOException("unexpected output: " + output);
         }
         return dest;

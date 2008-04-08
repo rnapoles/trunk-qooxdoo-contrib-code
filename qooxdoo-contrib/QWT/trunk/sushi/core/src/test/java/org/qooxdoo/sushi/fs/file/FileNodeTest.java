@@ -125,7 +125,7 @@ public class FileNodeTest extends NodeTest {
     }
 
     private void checkMode(FileNode node) throws IOException {
-        if (node.io.os == OS.WINDOWS) {
+        if (node.getIO().os == OS.WINDOWS) {
             return; // TODO
         }
         checkMode(node, 0644);

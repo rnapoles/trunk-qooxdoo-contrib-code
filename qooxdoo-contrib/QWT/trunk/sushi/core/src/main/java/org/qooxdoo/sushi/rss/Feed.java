@@ -36,7 +36,7 @@ public class Feed {
     private final List<Channel> channels;
     
     public static Feed read(Node src) throws XmlException, IOException, SAXException {
-        return fromXml(src.io.xml.selector, src.readXml());
+        return fromXml(src.getIO().xml.selector, src.readXml());
     }
 
     public static Feed fromXml(Selector selector, Document doc) throws XmlException {

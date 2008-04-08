@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 
 public class NodeReader extends InputStreamReader {
     public static NodeReader create(Node node) throws IOException {
-        return new NodeReader(node, node.createInputStream(), node.io.settings.encoding);
+        return new NodeReader(node, node.createInputStream(), node.getIO().settings.encoding);
     }
 
     //--

@@ -95,7 +95,7 @@ public class HttpNode extends Node {
     public HttpNode newInstance(String path) {
         // ignores query
         try {
-            return new HttpNode(io, new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
+            return new HttpNode(getIO(), new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }

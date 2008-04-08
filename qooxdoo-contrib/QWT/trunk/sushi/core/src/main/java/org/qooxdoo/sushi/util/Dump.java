@@ -62,7 +62,7 @@ public class Dump {
         Writer writer;
 
         writer = dest.createWriter();
-        dump(dest.io, obj, writer, maxDepth);
+        dump(dest.getIO(), obj, writer, maxDepth);
         writer.close();
     }
 

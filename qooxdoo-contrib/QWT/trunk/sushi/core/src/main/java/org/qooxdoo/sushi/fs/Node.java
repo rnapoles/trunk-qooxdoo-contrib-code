@@ -70,7 +70,7 @@ import org.xml.sax.SAXException;
  */
 public abstract class Node {
     /** never null */
-    public final IO io;
+    private final IO io;
     
     /** may be null */
     private Node base;
@@ -82,6 +82,10 @@ public abstract class Node {
     
     public abstract Root getRoot();
     
+    public IO getIO() {
+        return io;
+    }
+
     /** @return node with the specified path */
     public abstract Node newInstance(String path);
 

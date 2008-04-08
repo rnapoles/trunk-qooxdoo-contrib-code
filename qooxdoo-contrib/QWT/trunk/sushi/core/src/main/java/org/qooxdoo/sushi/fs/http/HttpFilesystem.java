@@ -42,6 +42,6 @@ public class HttpFilesystem extends Filesystem {
     }
 
     public HttpNode forFile(FileNode file) throws MalformedURLException {
-        return new HttpNode(file.io, file.toURI().toURL());
+        return new HttpNode(file.getIO(), file.toURI().toURL());
     }
 }

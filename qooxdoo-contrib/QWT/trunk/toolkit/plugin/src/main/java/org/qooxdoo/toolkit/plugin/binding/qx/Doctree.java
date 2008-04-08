@@ -80,7 +80,7 @@ public class Doctree {
         Reader in;
         
         // TODO: no validation
-        tmp = src.io.stringNode("");
+        tmp = src.getIO().stringNode("");
         N.run(src, tmp);
         in = tmp.createReader();
         result = new Loader(type, Builder.createSAXParser()).run(new InputSource(in));

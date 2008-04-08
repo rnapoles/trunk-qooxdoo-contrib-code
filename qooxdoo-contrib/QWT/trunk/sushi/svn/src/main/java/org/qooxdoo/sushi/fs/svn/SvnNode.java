@@ -103,7 +103,7 @@ public class SvnNode extends Node {
     public SvnNode newInstance(String path) {
         try {
             // TODO: cast
-            return ((SvnFilesystem) getRoot().getFilesystem()).create(io, repository, path);
+            return ((SvnFilesystem) getRoot().getFilesystem()).create(getIO(), repository, path);
         } catch (SVNException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -129,7 +129,7 @@ public class SvnNode extends Node {
             result = new ArrayList<SvnNode>(lst.size());
             for (int i = 0; i < lst.size(); i++) {
                 entry = lst.get(i);
-                result.add(new SvnNode(io, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
+                result.add(new SvnNode(getIO(), repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
             }
             return result;
         } catch (SVNException e) {
@@ -175,7 +175,7 @@ public class SvnNode extends Node {
         FileNode tmp;
         OutputStream dest;
         
-        tmp = io.createTempFile();
+        tmp = getIO().createTempFile();
         dest = tmp.createOutputStream();
         try {
             load(dest);
