@@ -59,12 +59,6 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnNode extends Node {
-    private static final char SEPARATOR_CHAR = '/';
-    public static final String SEPARATOR = "" + SEPARATOR_CHAR;
-    public static final int SEPARATOR_LENGTH = 1;
-    
-    //--
-
     private final SimpleRoot root;
     private final SVNRepository repository;
     private final boolean directory;
@@ -73,10 +67,10 @@ public class SvnNode extends Node {
     
     public SvnNode(SimpleRoot root, SVNRepository repository, boolean directory, String path) {
         super();
-        if (path.startsWith(SEPARATOR)) {
+        if (path.startsWith(root.getFilesystem().getSeparator())) {
             throw new IllegalArgumentException(path);
         }
-        if (path.endsWith(SEPARATOR)) {
+        if (path.endsWith(root.getFilesystem().getSeparator())) {
             throw new IllegalArgumentException(path);
         }
         this.root = root;
@@ -357,11 +351,11 @@ public class SvnNode extends Node {
     //--
     
     // TODO
-    public static String join(String left, String right) {
+    public String join(String left, String right) {
         if (left.length() == 0) {
             return right;
         }
-        return left + SEPARATOR + right;
+        return left + root.getFilesystem().getSeparator() + right;
     }
 
     public long export(Node dest) throws IOException, SVNException {

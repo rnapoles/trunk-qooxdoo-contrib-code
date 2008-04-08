@@ -47,15 +47,6 @@ public class FileNode extends Node {
     private final File file;
 
     public FileNode(SimpleRoot root, File file) {
-        this(root, null, file);
-    }
-
-    /** 
-     * Rarely used, usually you'll start with one of the Nodes from IO (e.g. the current working
-     * directory) and use the join method to create new nodes. Use IO.node to create nodes for
-     * a given path.
-     */
-    public FileNode(SimpleRoot root, FileNode base, File file) {
         super();
         
         if (!file.isAbsolute()) {
@@ -66,7 +57,6 @@ public class FileNode extends Node {
         }
         this.root = root;
         this.file = file;
-        setBase(base);
     }
     
     @Override
@@ -76,7 +66,11 @@ public class FileNode extends Node {
 
     @Override
     public FileNode newInstance(String path) {
-        return new FileNode(getRoot(), (FileNode) getBase(), new File(getRoot() + path));
+        FileNode result;
+        
+        result = new FileNode(getRoot(), new File(getRoot() + path));
+        result.setBase(getBase());
+        return result;
     }
     
     public URI toURI() {
@@ -157,6 +151,7 @@ public class FileNode extends Node {
     public List<FileNode> list() {
         File[] children;
         List<FileNode> result;
+        FileNode child;
         
         children = file.listFiles();
         if (children == null) {
@@ -164,7 +159,9 @@ public class FileNode extends Node {
         }
         result = new ArrayList<FileNode>(children.length);
         for (int i = 0; i < children.length; i++) {
-            result.add(new FileNode(root, (FileNode) getBase(), children[i]));
+            child = new FileNode(root, children[i]);
+            child.setBase(getBase());
+            result.add(child);
         }
         return result;
     }

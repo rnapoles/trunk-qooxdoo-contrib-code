@@ -55,7 +55,7 @@ public class FileFilesystem extends Filesystem {
 
     public FileNode forFile(File file) {
         if (file.isAbsolute()) {
-            return new FileNode(root(file), null, file);
+            return new FileNode(root(file), file);
         } else {
             throw new IllegalArgumentException("absolute file expected: " + file.toString());
         }

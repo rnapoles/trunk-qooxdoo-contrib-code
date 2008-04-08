@@ -48,7 +48,6 @@ public class HttpNode extends Node {
         this.url = url;
     }
 
-    // TODO: cache
     @Override
     public SimpleRoot getRoot() {
         return root;
