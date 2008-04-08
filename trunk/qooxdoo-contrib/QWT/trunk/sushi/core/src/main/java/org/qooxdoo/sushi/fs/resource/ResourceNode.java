@@ -63,11 +63,6 @@ public class ResourceNode extends Node {
     }
     
     @Override
-    public ResourceNode newInstance(String path) {
-        return new ResourceNode(filesystem, path);
-    }
-    
-    @Override
     public boolean exists() {
         return filesystem.inputStream(path) != null;
     }

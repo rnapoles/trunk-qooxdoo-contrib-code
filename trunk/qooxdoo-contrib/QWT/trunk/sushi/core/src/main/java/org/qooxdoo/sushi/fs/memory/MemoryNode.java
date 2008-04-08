@@ -67,11 +67,6 @@ public class MemoryNode extends Node {
     }
     
     @Override
-    public MemoryNode newInstance(String path) {
-        return root.node(path);
-    }
-
-    @Override
     public boolean exists() {
         return type != Type.NONE;
     }

@@ -63,15 +63,6 @@ public class FileNode extends Node {
         return root;
     }
 
-    @Override
-    public FileNode newInstance(String path) {
-        FileNode result;
-        
-        result = new FileNode(root, new File(root.getId() + path));
-        result.setBase(getBase());
-        return result;
-    }
-    
     public URI toURI() {
         return file.toURI();
     }

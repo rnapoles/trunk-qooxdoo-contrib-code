@@ -102,10 +102,4 @@ public class ConsoleNode extends Node {
     public Node mkdir() throws MkdirException {
         throw new MkdirException(this);
     }
-
-    @Override
-    public Node newInstance(String path) {
-        throw new UnsupportedOperationException();
-    }
-
 }

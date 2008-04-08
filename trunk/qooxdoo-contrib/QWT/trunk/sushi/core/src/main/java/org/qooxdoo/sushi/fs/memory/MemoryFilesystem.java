@@ -55,7 +55,7 @@ public class MemoryFilesystem extends Filesystem {
         return getRoot(id).newInstance(rootPath.substring(idx + 1));
     }
 
-    public MemoryNode getRoot(int id) {
+    public MemoryRoot getRoot(int id) {
         MemoryRoot root;
         
         root = roots.get(id);
@@ -63,17 +63,17 @@ public class MemoryFilesystem extends Filesystem {
             root = new MemoryRoot(this, id);
             roots.put(id, root);
         }
-        return root.node("");
+        return root;
     }
 
-    public MemoryNode createRoot() {
+    public MemoryRoot createRoot() {
         MemoryRoot root;
         
         for (int id = 0; true; id++) {
             if (!roots.containsKey(id)) {
                 root = new MemoryRoot(this, id);
                 roots.put(id, root);
-                return root.node("");
+                return root;
             }
         }
     }

@@ -19,6 +19,8 @@
 
 package org.qooxdoo.sushi.fs.file;
 
+import java.io.File;
+
 import org.qooxdoo.sushi.fs.Root;
 
 
@@ -40,5 +42,9 @@ public class FileRoot implements Root {
 
     public String getId() {
         return id;
+    }
+    
+    public FileNode newInstance(String path) {
+        return new FileNode(this, new File(id + path));
     }
 }
