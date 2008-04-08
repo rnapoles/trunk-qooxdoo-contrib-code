@@ -59,7 +59,7 @@ public class FileNode extends Node {
         
         str = file.getAbsolutePath().toUpperCase();
         for (Root fs : ROOTS) {
-            if (str.startsWith(fs.id)) {
+            if (str.startsWith(fs.getId())) {
                 return fs;
             }
         }
@@ -115,7 +115,7 @@ public class FileNode extends Node {
     
     @Override
     public String getPath() {
-        return file.getPath().substring(getRoot().id.length());
+        return file.getPath().substring(getRoot().getId().length());
     }
     
     //--

@@ -24,8 +24,8 @@ import java.util.List;
 import org.qooxdoo.sushi.util.Strings;
 
 public class Root {
-    public final Filesystem filesystem;
-    public final String id;
+    private final Filesystem filesystem;
+    private final String id;
     
     public Root(Filesystem filesystem, String id) {
         this.filesystem = filesystem;
@@ -83,5 +83,13 @@ public class Root {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    public Filesystem getFilesystem() {
+        return filesystem;
+    }
+
+    public String getId() {
+        return id;
     }
 }

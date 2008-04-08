@@ -119,7 +119,7 @@ public class Factory {
         }
         result = fs.parse(io, locator.substring(idx + 1));
         if (result == null) {
-            if (working == null || fs != working.getRoot().filesystem) {
+            if (working == null || fs != working.getRoot().getFilesystem()) {
                 throw new ParseException("no working directory for filesystem " + fs.getName());
             }
             result = working.join(locator.substring(idx + 1));
@@ -132,7 +132,7 @@ public class Factory {
         if (working == null) {
             return FileFilesystem.INSTANCE;
         } else {
-            return working.getRoot().filesystem;
+            return working.getRoot().getFilesystem();
         }
     }
 }

@@ -83,7 +83,7 @@ public class MemoryRoot {
         result = new ArrayList<MemoryNode>();
         for (MemoryNode node : nodes.values()) {
             child = node.getPath();
-            idx = child.lastIndexOf(node.getRoot().filesystem.getSeparatorChar());
+            idx = child.lastIndexOf(node.getRoot().getFilesystem().getSeparatorChar());
             if (!path.equals(child) && path.equals(idx == -1 ? "" : child.substring(0, idx))) {
                 if (node.exists()) {
                     result.add(node);

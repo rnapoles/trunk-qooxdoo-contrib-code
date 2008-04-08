@@ -113,7 +113,7 @@ public class FilterTest {
         try {
             root = IO_OBJ.createTempDirectory();
             for (String path : paths) {
-                path = path.replace('/', ROOT.filesystem.getSeparatorChar());
+                path = path.replace('/', ROOT.getFilesystem().getSeparatorChar());
                 file = root.join(path);
                 file.getParent().mkdirsOpt();
                 file.writeBytes();

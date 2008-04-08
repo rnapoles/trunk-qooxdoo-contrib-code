@@ -42,7 +42,7 @@ public class HttpNodeFullTest {
         assertTrue(node.isFile());
         assertTrue(node.exists());
         assertTrue(node.readString().length() > 1);
-        assertEquals("http://englishediting.de/", node.getRoot().id);
+        assertEquals("http://englishediting.de/", node.getRoot().getId());
         assertEquals("index.html", node.getPath());
         assertEquals("", node.getParent().getPath());
     }
