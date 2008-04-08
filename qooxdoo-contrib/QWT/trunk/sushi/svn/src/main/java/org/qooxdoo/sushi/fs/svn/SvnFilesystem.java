@@ -79,7 +79,7 @@ public class SvnFilesystem extends Filesystem {
         SimpleRoot root;
         
         root = new SimpleRoot(this, repository.getLocation().toString() + "/");
-        return new SvnNode(root, repository, repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
+        return new SvnNode(new SvnRoot(this, repository), repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
     }
 
     //--

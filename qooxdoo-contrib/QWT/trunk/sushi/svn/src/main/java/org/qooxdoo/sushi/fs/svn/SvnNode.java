@@ -39,7 +39,6 @@ import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
 import org.tmatesoft.svn.core.SVNCommitInfo;
@@ -59,13 +58,12 @@ import org.tmatesoft.svn.core.wc.SVNStatusType;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 public class SvnNode extends Node {
-    private final SimpleRoot root;
-    private final SVNRepository repository;
+    private final SvnRoot root;
     private final boolean directory;
     private final String path;
     private String comment;
     
-    public SvnNode(SimpleRoot root, SVNRepository repository, boolean directory, String path) {
+    public SvnNode(SvnRoot root, boolean directory, String path) {
         super();
         if (path.startsWith(root.getFilesystem().getSeparator())) {
             throw new IllegalArgumentException(path);
@@ -74,14 +72,13 @@ public class SvnNode extends Node {
             throw new IllegalArgumentException(path);
         }
         this.root = root;
-        this.repository = repository;
         this.directory = directory;
         this.path = path;
         this.comment = "sushi commit";
     }
 
     @Override
-    public SimpleRoot getRoot() {
+    public SvnRoot getRoot() {
         return root;
     }
     
@@ -90,14 +87,10 @@ public class SvnNode extends Node {
         this.comment = comment;
     }
     
-    public SVNRepository getRepository() {
-        return repository;
-    }
-    
     @Override
     public SvnNode newInstance(String path) {
         try {
-            return ((SvnFilesystem) getRoot().getFilesystem()).create(repository, path);
+            return ((SvnFilesystem) getRoot().getFilesystem()).create(root.getRepository(), path);
         } catch (SVNException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -113,7 +106,9 @@ public class SvnNode extends Node {
         List<SVNDirEntry> lst;
         List<SvnNode> result;
         SVNDirEntry entry;
+        SVNRepository repository;
         
+        repository = root.getRepository();
         try {
             if (repository.checkPath(path, -1) != SVNNodeKind.DIR) {
                 return null;
@@ -123,7 +118,7 @@ public class SvnNode extends Node {
             result = new ArrayList<SvnNode>(lst.size());
             for (int i = 0; i < lst.size(); i++) {
                 entry = lst.get(i);
-                result.add(new SvnNode(root, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
+                result.add(new SvnNode(root, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
             }
             return result;
         } catch (SVNException e) {
@@ -136,7 +131,7 @@ public class SvnNode extends Node {
         SVNDirEntry dir;
         
         if (directory) {
-            dir = repository.getDir(path, -1, false, new ArrayList<Object>());
+            dir = root.getRepository().getDir(path, -1, false, new ArrayList<Object>());
             return dir.getRevision();
         } else {
             revs = getRevisions();
@@ -149,14 +144,14 @@ public class SvnNode extends Node {
     }
     
     public List<Long> getRevisions(long start) throws SVNException {
-        return getRevisions(start, repository.getLatestRevision());
+        return getRevisions(start, root.getRepository().getLatestRevision());
     }
 
     public List<Long> getRevisions(long start, long end) throws SVNException {
         Collection<SVNFileRevision> revisions;
         List<Long> result;
         
-        revisions = (Collection<SVNFileRevision>) repository.getFileRevisions(path, null, start, end);
+        revisions = (Collection<SVNFileRevision>) root.getRepository().getFileRevisions(path, null, start, end);
         result = new ArrayList<Long>();
         for (SVNFileRevision rev : revisions) {
             result.add(rev.getRevision());
@@ -215,7 +210,7 @@ public class SvnNode extends Node {
         ISVNEditor editor;
         SVNCommitInfo info;
         
-        editor = repository.getCommitEditor(comment, null);
+        editor = root.getRepository().getCommitEditor(comment, null);
         editor.openRoot(-1);
         editor.deleteEntry(path, -1);
         editor.closeDir();
@@ -228,7 +223,7 @@ public class SvnNode extends Node {
         ISVNEditor editor;
 
         try {
-            editor = repository.getCommitEditor("sushi delete", null);
+            editor = root.getRepository().getCommitEditor("sushi delete", null);
             editor.openRoot(-1);
             editor.addDir(path, null, -1);
             editor.closeDir();
@@ -241,10 +236,13 @@ public class SvnNode extends Node {
     }
     
     public long load(OutputStream dest) throws SVNException, FileNotFoundException {
-        return load(repository.getLatestRevision(), dest);
+        return load(root.getRepository().getLatestRevision(), dest);
     }
 
     public long load(long revision, OutputStream dest) throws FileNotFoundException, SVNException {
+        SVNRepository repository;
+        
+        repository = root.getRepository();
         if (repository.checkPath(path, revision) != SVNNodeKind.FILE) {
             throw new FileNotFoundException("no such file: " + path + ", revision " + revision);
         }
@@ -254,7 +252,7 @@ public class SvnNode extends Node {
     @Override
     public boolean exists() throws ExistsException {
         try {
-            return exists(repository.getLatestRevision());
+            return exists(root.getRepository().getLatestRevision());
         } catch (SVNException e) {
             throw new ExistsException(this, e);
         }
@@ -263,14 +261,14 @@ public class SvnNode extends Node {
     public boolean exists(long revision) throws SVNException {
         SVNNodeKind kind;
         
-        kind = repository.checkPath(path, revision);
+        kind = root.getRepository().checkPath(path, revision);
         return kind == SVNNodeKind.FILE || kind == SVNNodeKind.DIR;
     }
 
     @Override
     public long length() throws LengthException {
         try {
-            return repository.info(path, -1).getSize();
+            return root.getRepository().info(path, -1).getSize();
         } catch (SVNException e) {
             throw new LengthException(this, e);
         }
@@ -287,6 +285,9 @@ public class SvnNode extends Node {
     }
     
     private SVNNodeKind kind() throws ExistsException {
+        SVNRepository repository;
+        
+        repository = root.getRepository();
         try {
             return repository.checkPath(path, repository.getLatestRevision());
         } catch (SVNException e) {
@@ -297,7 +298,7 @@ public class SvnNode extends Node {
     @Override
     public long getLastModified() throws LastModifiedException {
         try {
-            return repository.info(path, -1).getDate().getTime();
+            return root.getRepository().info(path, -1).getDate().getTime();
         } catch (SVNException e) {
             throw new LastModifiedException(this, e);
         }
@@ -321,7 +322,9 @@ public class SvnNode extends Node {
         SVNCommitInfo info;
         SVNDeltaGenerator deltaGenerator;
         String checksum;
+        SVNRepository repository;
         
+        repository = root.getRepository();
         try {
             exists = exists();
         } catch (ExistsException e) {
@@ -345,7 +348,7 @@ public class SvnNode extends Node {
     
     @Override
     public boolean equalsNode(Node node) {
-        return repository.getLocation().equals(((SvnNode) node).repository.getLocation());
+        return getRoot().equals(node.getRoot());
     }
 
     //--
@@ -369,7 +372,9 @@ public class SvnNode extends Node {
     public void export(Node dest, long revision) throws IOException, SVNException {
         Exporter exporter;
         SVNRepository sub;
+        SVNRepository repository;
         
+        repository = root.getRepository();
         this.checkDirectory();
         dest.checkDirectory();
         exporter = new Exporter(revision, dest);
@@ -414,7 +419,9 @@ public class SvnNode extends Node {
     
     protected Collection<SVNLogEntry> queryChanges(long startRevision) throws SVNException {
         long endRevision;
+        SVNRepository repository;
         
+        repository = root.getRepository();
         endRevision = repository.getLatestRevision();
         if (startRevision > endRevision) {
             // empty log - might happen if "last deployed revision + 1" is passed to this function
@@ -493,7 +500,9 @@ public class SvnNode extends Node {
         final List<String> remote;
         StringBuilder message;
         SVNClientManager manager;
-
+        SVNRepository repository;
+        
+        repository = root.getRepository();
         local = new ArrayList<String>();
         remote = new ArrayList<String>();
         manager = SVNClientManager.newInstance(SVNWCUtil.createDefaultOptions(true), repository.getAuthenticationManager());
