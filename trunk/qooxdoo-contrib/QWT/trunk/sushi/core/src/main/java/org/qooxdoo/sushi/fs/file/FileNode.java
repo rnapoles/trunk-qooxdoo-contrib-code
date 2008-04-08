@@ -103,12 +103,6 @@ public class FileNode extends Node {
         return file.toURI();
     }
 
-    public IO getIO() {
-        return io;
-    }
-    
-
-    
     /** Avoid calling this method, should be used to interact with 'legacy' code only */
     public File getFile() {
         return file;
