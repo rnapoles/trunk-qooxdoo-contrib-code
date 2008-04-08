@@ -22,9 +22,10 @@ package org.qooxdoo.sushi.fs.resource;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.Root;
 
 
-public class ResourceFilesystem extends Filesystem {
+public class ResourceFilesystem extends Filesystem implements Root {
     public static final ResourceFilesystem INSTANCE = new ResourceFilesystem();
     
     private ResourceFilesystem() {
@@ -34,5 +35,13 @@ public class ResourceFilesystem extends Filesystem {
     @Override
     public ResourceNode parse(IO io, String rootPath) throws ParseException {
         return new ResourceNode(io, rootPath);
+    }
+
+    public Filesystem getFilesystem() {
+        return this;
+    }
+
+    public String getId() {
+        return "";
     }
 }

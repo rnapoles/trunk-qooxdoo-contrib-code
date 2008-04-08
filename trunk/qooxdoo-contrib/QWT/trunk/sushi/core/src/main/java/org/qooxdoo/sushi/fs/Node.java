@@ -72,21 +72,15 @@ public abstract class Node {
     /** never null */
     public final IO io;
     
-    /** never null */
-    private final Root root;
-    
     /** may be null */
     private Node base;
     
-    public Node(IO io, Root root) {
+    public Node(IO io) {
         this.io = io;
-        this.root = root;
         this.base = null;
     }
     
-    public Root getRoot() {
-        return root;
-    }
+    public abstract Root getRoot();
     
     /** @return node with the specified path */
     public abstract Node newInstance(String path);
@@ -127,8 +121,8 @@ public abstract class Node {
     }
 
     public void setBase(Node base) {
-        if (base != null && root != base.root) {
-            throw new IllegalArgumentException(root + " conflicts " + base.root);
+        if (base != null && !getRoot().equals(base.getRoot())) {
+            throw new IllegalArgumentException(getRoot() + " conflicts " + base.getRoot());
         }
         this.base = base;
     }
@@ -136,7 +130,7 @@ public abstract class Node {
     public abstract String getPath();
     
     public String getLocator() {
-        return root.getFilesystem().getName() + ":" + root.getId() + getPath();
+        return getRoot().getFilesystem().getName() + ":" + getRoot().getId() + getPath();
     }
 
     /** @return the last path segment (or an empty string for the root node */ 
@@ -145,7 +139,7 @@ public abstract class Node {
         
         path = getPath();
         // ok for -1: 
-        return path.substring(path.lastIndexOf(root.getFilesystem().getSeparatorChar()) + 1);
+        return path.substring(path.lastIndexOf(getRoot().getFilesystem().getSeparatorChar()) + 1);
     }
     
     public Node getParent() {
@@ -156,7 +150,7 @@ public abstract class Node {
         if ("".equals(path)) {
             return null;
         }
-        idx = path.lastIndexOf(root.getFilesystem().getSeparatorChar());
+        idx = path.lastIndexOf(getRoot().getFilesystem().getSeparatorChar());
         if (idx == -1) {
             return newInstance("");
         } else {
@@ -188,21 +182,23 @@ public abstract class Node {
         int len;
         int ups;
         int i;
+        Filesystem fs;
         
         if (base.equals(this)) {
             return ".";
         }
+        fs = getRoot().getFilesystem();
         startfilepath = base.join("foo").getPath();
         destpath = getPath();
         common = Strings.getCommon(startfilepath, destpath);
-        common = common.substring(0, common.lastIndexOf(root.getFilesystem().getSeparatorChar()) + 1);  // ok for idx == -1
+        common = common.substring(0, common.lastIndexOf(fs.getSeparatorChar()) + 1);  // ok for idx == -1
         len = common.length();
         startfilepath = startfilepath.substring(len);
         destpath = destpath.substring(len);
         result = new StringBuilder();
-        ups = Strings.count(startfilepath, root.getFilesystem().getSeparator());
+        ups = Strings.count(startfilepath, fs.getSeparator());
         for (i = 0; i < ups; i++) {
-            result.append(".." + root.getFilesystem().getSeparator());
+            result.append(".." + fs.getSeparator());
         }
         result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
         return result.toString();
@@ -210,11 +206,11 @@ public abstract class Node {
 
     /** @return root.id + getPath, but not the filesystem name. Note that it's not a path! */ 
     public String getAbsolute() {
-        return root.getId() + getPath();
+        return getRoot().getId() + getPath();
     }
     
     public Node join(List<String> paths) {
-        return newInstance(root.getFilesystem().join(getPath(), paths));
+        return newInstance(getRoot().getFilesystem().join(getPath(), paths));
     }
     
     public Node join(String... names) {

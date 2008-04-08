@@ -31,7 +31,7 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
-public class MemoryRoot {
+public class MemoryRoot implements Root {
     public final IO io;
     public final int id;
     private final Map<String, MemoryNode> nodes;
@@ -45,8 +45,12 @@ public class MemoryRoot {
         add(new MemoryNode(this, "", Type.DIRECTORY, null));
     }
 
-    public Root root() {
-        return new Root(MemoryFilesystem.INSTANCE, "//" + id + "/");
+    public MemoryFilesystem getFilesystem() {
+        return MemoryFilesystem.INSTANCE;
+    }
+
+    public String getId() {
+        return "//" + id + "/";
     }
     
     public void add(MemoryNode node) {

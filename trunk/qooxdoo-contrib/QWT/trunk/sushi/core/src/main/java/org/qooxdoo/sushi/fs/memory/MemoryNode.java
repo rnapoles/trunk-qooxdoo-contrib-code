@@ -47,7 +47,7 @@ public class MemoryNode extends Node {
     
     /** Do not call - use create instead. */
     public MemoryNode(MemoryRoot root, String path, Type type, byte[] data) {
-        super(root.io, root.root());
+        super(root.io);
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
@@ -57,7 +57,8 @@ public class MemoryNode extends Node {
         this.lastModified = System.currentTimeMillis();
     }
 
-    public MemoryRoot getContext() {
+    @Override
+    public MemoryRoot getRoot() {
         return root;
     }
     

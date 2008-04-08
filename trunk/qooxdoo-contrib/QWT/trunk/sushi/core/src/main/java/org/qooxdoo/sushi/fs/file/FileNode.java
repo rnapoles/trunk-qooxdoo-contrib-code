@@ -32,8 +32,8 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
@@ -42,28 +42,16 @@ import org.qooxdoo.sushi.util.Program;
  * <p>File, directory, symlink or something not yet created. Relacement java.io.File.</p>
  */
 public class FileNode extends Node {
-    private static final Root[] ROOTS;
+    private static final SimpleRoot[] ROOTS;
     
     static {
         File[] roots;
         
         roots = File.listRoots();
-        ROOTS = new Root[roots.length];
+        ROOTS = new SimpleRoot[roots.length];
         for (int i = 0; i < roots.length; i++) {
-            ROOTS[i] = new Root(FileFilesystem.INSTANCE, roots[i].getAbsolutePath());
+            ROOTS[i] = new SimpleRoot(FileFilesystem.INSTANCE, roots[i].getAbsolutePath());
         }
-    }
-    
-    private static Root findFs(File file) {
-        String str;
-        
-        str = file.getAbsolutePath().toUpperCase();
-        for (Root fs : ROOTS) {
-            if (str.startsWith(fs.getId())) {
-                return fs;
-            }
-        }
-        throw new IllegalArgumentException(str);
     }
 
     //--
@@ -81,7 +69,7 @@ public class FileNode extends Node {
      * a given path.
      */
     public FileNode(IO io, FileNode base, File file) {
-        super(io, findFs(file));
+        super(io);
         
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
@@ -93,6 +81,19 @@ public class FileNode extends Node {
         setBase(base);
     }
     
+    @Override
+    public SimpleRoot getRoot() {
+        String str;
+        
+        str = file.getAbsolutePath().toUpperCase();
+        for (SimpleRoot fs : ROOTS) {
+            if (str.startsWith(fs.getId())) {
+                return fs;
+            }
+        }
+        throw new IllegalArgumentException(str);
+    }
+
     @Override
     public FileNode newInstance(String path) {
         return new FileNode(io, (FileNode) getBase(), new File(getRoot() + path));

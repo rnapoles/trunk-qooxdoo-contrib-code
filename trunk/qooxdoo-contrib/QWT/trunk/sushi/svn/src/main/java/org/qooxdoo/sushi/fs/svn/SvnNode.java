@@ -39,8 +39,8 @@ import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
 import org.tmatesoft.svn.core.SVNCommitInfo;
@@ -72,7 +72,7 @@ public class SvnNode extends Node {
     private String comment;
     
     public SvnNode(IO io, SVNRepository repository, boolean directory, String path) {
-        super(io, root(repository));
+        super(io);
         if (path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }
@@ -85,8 +85,9 @@ public class SvnNode extends Node {
         this.comment = "sushi commit";
     }
 
-    private static Root root(SVNRepository repository) {
-        return new Root(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "/");
+    @Override
+    public SimpleRoot getRoot() {
+        return new SimpleRoot(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "/");
     }
     
     /** use when closing an output stream */
