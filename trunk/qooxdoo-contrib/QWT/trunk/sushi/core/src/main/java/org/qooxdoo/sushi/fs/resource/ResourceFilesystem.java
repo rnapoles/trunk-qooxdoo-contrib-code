@@ -19,6 +19,8 @@
 
 package org.qooxdoo.sushi.fs.resource;
 
+import java.io.InputStream;
+
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
@@ -26,8 +28,11 @@ import org.qooxdoo.sushi.fs.Root;
 
 
 public class ResourceFilesystem extends Filesystem implements Root {
+    private ClassLoader loader;
+    
     public ResourceFilesystem(IO io) {
         super(io, "resource", '/');
+        loader = getClass().getClassLoader();
     }
 
     @Override
@@ -41,5 +46,14 @@ public class ResourceFilesystem extends Filesystem implements Root {
 
     public String getId() {
         return "";
+    }
+
+    public InputStream inputStream(String path) {
+        // TODO: ResourceNode.class.getLoader() doesn't work for SshNode's billy loading ...
+        if (loader == null) {
+            return ClassLoader.getSystemResourceAsStream(path);
+        } else {
+            return loader.getResourceAsStream(path);
+        }
     }
 }

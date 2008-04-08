@@ -254,9 +254,4 @@ public class SshNode extends Node {
     public void put(final byte[] data) throws JSchException, IOException, SftpException {
         channel.put(new ByteArrayInputStream(data), slashPath);
     }
-    
-    @Override
-    protected boolean equalsNode(Node node) {
-        return getRoot().equals(node.getRoot());
-    }
 }

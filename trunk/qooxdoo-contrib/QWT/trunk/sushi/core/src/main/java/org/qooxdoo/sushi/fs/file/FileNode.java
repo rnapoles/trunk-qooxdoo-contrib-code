@@ -355,13 +355,5 @@ public class FileNode extends Node {
     private FileNode dir() {
         return (FileNode) getParent();
     }
-
-    //-- Object methods
-    
-    /** TODO: compare canonical paths? */
-    @Override
-    protected boolean equalsNode(Node node) {
-        return file.equals(((FileNode) node).file);
-    }
 }
 

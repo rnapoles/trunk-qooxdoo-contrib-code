@@ -32,20 +32,13 @@ import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ResourceNode extends Node {
     private final ResourceFilesystem filesystem;
-    private final ClassLoader loader;
     private final String path;
     
     public ResourceNode(ResourceFilesystem filesystem, String path) {
-        this(filesystem, ResourceNode.class.getClassLoader(), path);
-    }
-
-    public ResourceNode(ResourceFilesystem filesystem, ClassLoader loader, String path) {
-        super();
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
         this.filesystem = filesystem;
-        this.loader = loader;
         this.path = path;
     }
 
@@ -69,23 +62,14 @@ public class ResourceNode extends Node {
         throw new SetLastModifiedException(this);
     }
     
-    public ClassLoader getLoader() {
-        return loader;
-    }
-    
     @Override
     public ResourceNode newInstance(String path) {
-        return new ResourceNode(filesystem, loader, path);
-    }
-    
-    @Override
-    protected boolean equalsNode(Node node) {
-        return loader == (((ResourceNode) node).loader);
+        return new ResourceNode(filesystem, path);
     }
     
     @Override
     public boolean exists() {
-        return inputStream() != null;
+        return filesystem.inputStream(path) != null;
     }
 
     @Override
@@ -102,7 +86,7 @@ public class ResourceNode extends Node {
     public InputStream createInputStream() throws IOException {
         InputStream src;
 
-        src = inputStream();
+        src = filesystem.inputStream(path);
         if (src == null) {
             throw new FileNotFoundException("resource not found: " + path);
         }
@@ -122,15 +106,6 @@ public class ResourceNode extends Node {
     @Override
     public ResourceNode delete() throws DeleteException {
         throw new DeleteException(this);
-    }
-
-    private InputStream inputStream() {
-        // TODO: ResourceNode.class.getLoader() doesn't work for SshNode's billy loading ...
-        if (loader == null) {
-            return ClassLoader.getSystemResourceAsStream(path);
-        } else {
-            return loader.getResourceAsStream(path);
-        }
     }
 
     @Override

@@ -593,11 +593,8 @@ public abstract class Node {
         if (!getPath().equals(node.getPath())) {
             return false;
         }
-        return equalsNode(node);
+        return getRoot().equals(node.getRoot());
     }
-
-    // called if node type and path have already been checked
-    protected abstract boolean equalsNode(Node node);
 
     @Override
     public int hashCode() {
