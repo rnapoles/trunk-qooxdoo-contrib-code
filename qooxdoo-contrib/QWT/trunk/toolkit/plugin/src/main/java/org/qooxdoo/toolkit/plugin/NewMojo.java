@@ -30,7 +30,6 @@ import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
 
 /**
  * Generates a new application.
@@ -88,7 +87,7 @@ public class NewMojo extends Base {
         Node src;
         List<String> apps;
         
-        archive = Archive.loadZip(new ResourceNode(io, Skeleton.NAME));
+        archive = Archive.loadZip(io.node("resource:" + Skeleton.NAME));
         src = archive.data.join(application); 
         if (!src.isDirectory()) {
             apps = new ArrayList<String>();

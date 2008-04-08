@@ -56,12 +56,14 @@ public class Naming {
     public static final String CINIT = "cinit";
 
     public static Repository createRootRepository(IO io) {
+        ResourceFilesystem rfs;
         Repository result;
         Module root;
 
+        rfs = io.getFactory().get(ResourceFilesystem.class);
         result = new Repository();
         try {
-            root = Module.fromString(new ResourceNode(io, Module.toFileName(ResourceFilesystem.INSTANCE, ROOT)).readString());
+            root = Module.fromString(rfs.parse(Module.toFileName(rfs, ROOT)).readString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

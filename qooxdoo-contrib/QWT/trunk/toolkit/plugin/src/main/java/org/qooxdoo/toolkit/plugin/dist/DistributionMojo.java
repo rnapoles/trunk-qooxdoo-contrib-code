@@ -32,6 +32,7 @@ import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.fs.http.HttpFilesystem;
 import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.fs.svn.SvnFilesystem;
 import org.qooxdoo.sushi.fs.svn.SvnNode;
@@ -177,7 +178,7 @@ public class DistributionMojo extends Base {
 
         src = io.getTemp().join(MAVEN_NAME);
         if (!src.isFile()) {
-            download = new HttpNode(io, new URL("http://archive.apache.org/dist/maven/binaries/" + MAVEN_NAME));
+            download = io.getFactory().get(HttpFilesystem.class).forUrl(new URL("http://archive.apache.org/dist/maven/binaries/" + MAVEN_NAME));
             info("downloading " + download);
             download.copyFile(src);
         } else {
@@ -240,7 +241,7 @@ public class DistributionMojo extends Base {
         long revision;
 
         url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        src = SvnFilesystem.INSTANCE.parse(io, url);
+        src = io.getFactory().get(SvnFilesystem.class).parse(url);
         revision = src.export(qwt);
         qwt.join("svninfo").writeLines("url=" + url, "revision=" + revision);
     }

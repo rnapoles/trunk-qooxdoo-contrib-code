@@ -21,13 +21,13 @@ package org.qooxdoo.toolkit.qooxdoo;
 
 import java.io.IOException;
 
-import qx.core.Bootstrap;
-import qx.ui.core.Widget;
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
-import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
+
+import qx.core.Bootstrap;
+import qx.ui.core.Widget;
 
 public class Qooxdoo {
     public static void main(String[] args) throws IOException {
@@ -53,7 +53,7 @@ public class Qooxdoo {
         
         patch(repository);
         try {
-            str = new ResourceNode(io, "log/info.log").readString();
+            str = io.node("resource:log/info.log").readString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

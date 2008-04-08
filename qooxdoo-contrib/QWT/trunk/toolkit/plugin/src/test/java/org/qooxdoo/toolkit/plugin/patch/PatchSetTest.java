@@ -66,7 +66,7 @@ public class PatchSetTest {
         Node dir;
         
         set = load("### mhm\n+++\nfoo");
-        dir = MemoryFilesystem.INSTANCE.createRoot(IO_OBJ);
+        dir = IO_OBJ.getMemoryFilesystem().createRoot();
         dir.join("mhm").writeBytes();
         set.apply(dir);
     }

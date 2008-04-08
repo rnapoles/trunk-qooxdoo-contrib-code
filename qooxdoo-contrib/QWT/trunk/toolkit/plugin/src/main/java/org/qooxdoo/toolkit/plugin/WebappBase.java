@@ -177,7 +177,7 @@ public abstract class WebappBase extends Base {
             name = getLibName(artifact);
             if (name != null) {
                 debug("project link " + artifact.getFile());
-                linkOrCopy(new FileNode(io, artifact.getFile()), (FileNode) lib.join(name));
+                linkOrCopy(io.file(artifact.getFile()), (FileNode) lib.join(name));
             }
         }
         try {
@@ -195,7 +195,7 @@ public abstract class WebappBase extends Base {
                 name = getLibName(artifact);
                 if (name != null) {
                     debug("system link " + artifact.getFile());
-                    linkOrCopy(new FileNode(io, artifact.getFile()), (FileNode) lib.join(name));
+                    linkOrCopy(io.file(artifact.getFile()), (FileNode) lib.join(name));
                 }
             }
         }
