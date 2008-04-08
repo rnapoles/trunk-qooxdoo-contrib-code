@@ -36,7 +36,6 @@ import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.Misc;
 
@@ -45,29 +44,27 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
-    private final SimpleRoot root;
+    private final SshRoot root;
     private final ChannelSftp channel;
     private final String slashPath;
     
-    public SshNode(SimpleRoot root, ChannelSftp channel, String path) {
-        super();
-        
+    public SshNode(SshRoot root, String path) {
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
         }
         if (path.endsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-        if (channel == null) {
+        if (root == null) {
             throw new IllegalArgumentException();
         }
         this.root = root;
-        this.channel = channel;
+        this.channel = root.getChannel();
         this.slashPath = "/" + path;
     }
 
     @Override
-    public SimpleRoot getRoot() {
+    public SshRoot getRoot() {
         return root;
     }
     
@@ -86,7 +83,7 @@ public class SshNode extends Node {
 
     @Override
     public SshNode newInstance(String path) {
-        return new SshNode(root, channel, path);
+        return new SshNode(root, path);
     }
 
     @Override
