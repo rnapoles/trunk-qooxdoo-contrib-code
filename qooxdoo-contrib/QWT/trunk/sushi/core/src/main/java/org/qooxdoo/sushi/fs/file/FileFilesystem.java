@@ -24,10 +24,9 @@ import java.io.File;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 
 public class FileFilesystem extends Filesystem {
-    private final SimpleRoot[] roots;
+    private final FileRoot[] roots;
     
     public FileFilesystem(IO io) {
         super(io, "file", File.separatorChar);
@@ -35,9 +34,9 @@ public class FileFilesystem extends Filesystem {
         File[] rootFiles;
         
         rootFiles = File.listRoots();
-        roots = new SimpleRoot[rootFiles.length];
+        roots = new FileRoot[rootFiles.length];
         for (int i = 0; i < rootFiles.length; i++) {
-            roots[i] = new SimpleRoot(this, rootFiles[i].getAbsolutePath());
+            roots[i] = new FileRoot(this, rootFiles[i].getAbsolutePath());
         }
     }
 
@@ -61,11 +60,11 @@ public class FileFilesystem extends Filesystem {
         }
     }
 
-    public SimpleRoot root(File file) {
+    public FileRoot root(File file) {
         String str;
         
         str = file.getAbsolutePath().toUpperCase();
-        for (SimpleRoot fs : roots) {
+        for (FileRoot fs : roots) {
             if (str.startsWith(fs.getId())) {
                 return fs;
             }

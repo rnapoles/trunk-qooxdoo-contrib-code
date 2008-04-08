@@ -32,7 +32,6 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
-import org.qooxdoo.sushi.fs.SimpleRoot;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
@@ -41,12 +40,12 @@ import org.qooxdoo.sushi.util.Program;
  * <p>File, directory, symlink or something not yet created. Relacement java.io.File.</p>
  */
 public class FileNode extends Node {
-    private final SimpleRoot root;
+    private final FileRoot root;
     
     /** never null and always absolute */
     private final File file;
 
-    public FileNode(SimpleRoot root, File file) {
+    public FileNode(FileRoot root, File file) {
         super();
         
         if (!file.isAbsolute()) {
@@ -60,7 +59,7 @@ public class FileNode extends Node {
     }
     
     @Override
-    public SimpleRoot getRoot() {
+    public FileRoot getRoot() {
         return root;
     }
 
@@ -68,7 +67,7 @@ public class FileNode extends Node {
     public FileNode newInstance(String path) {
         FileNode result;
         
-        result = new FileNode(getRoot(), new File(getRoot() + path));
+        result = new FileNode(root, new File(root.getId() + path));
         result.setBase(getBase());
         return result;
     }
