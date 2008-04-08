@@ -29,7 +29,6 @@ import java.net.URLConnection;
 import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
@@ -40,26 +39,19 @@ import org.qooxdoo.sushi.fs.SimpleRoot;
  * http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
  */
 public class HttpNode extends Node {
+    private final SimpleRoot root;
     private final URL url;
     
-    public HttpNode(IO io, URL url) {
-        super(io);
+    public HttpNode(SimpleRoot root, URL url) {
+        super();
+        this.root = root;
         this.url = url;
     }
 
     // TODO: cache
     @Override
     public SimpleRoot getRoot() {
-        int port;
-
-        if (url.getRef() != null) {
-            throw new IllegalArgumentException(url.toString());
-        }
-        if (url.getUserInfo() != null) {
-            throw new IllegalArgumentException(url.toString());
-        }
-        port = url.getPort();
-        return new SimpleRoot(HttpFilesystem.INSTANCE, url.getProtocol() + "://" + url.getHost() + ((port == -1) ? "" : "" + port) + '/');
+        return root;
     }
     
     @Override
@@ -95,7 +87,7 @@ public class HttpNode extends Node {
     public HttpNode newInstance(String path) {
         // ignores query
         try {
-            return new HttpNode(getIO(), new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
+            return new HttpNode(root, new URL(url.getProtocol(), url.getHost(), url.getPort(), path));
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }

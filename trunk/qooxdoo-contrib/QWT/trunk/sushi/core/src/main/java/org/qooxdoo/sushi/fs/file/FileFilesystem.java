@@ -24,23 +24,52 @@ import java.io.File;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.SimpleRoot;
 
 public class FileFilesystem extends Filesystem {
-    public static final FileFilesystem INSTANCE = new FileFilesystem();
+    private final SimpleRoot[] roots;
     
-    private FileFilesystem() {
-        super("file", File.separatorChar);
+    public FileFilesystem(IO io) {
+        super(io, "file", File.separatorChar);
+
+        File[] rootFiles;
+        
+        rootFiles = File.listRoots();
+        roots = new SimpleRoot[rootFiles.length];
+        for (int i = 0; i < rootFiles.length; i++) {
+            roots[i] = new SimpleRoot(this, rootFiles[i].getAbsolutePath());
+        }
     }
 
     @Override
-    public FileNode parse(IO io, String rootPath) throws ParseException {
+    public FileNode parse(String rootPath) throws ParseException {
         File file;
         
         file = new File(rootPath);
         if (file.isAbsolute()) {
-            return new FileNode(io, null, file);
+            return forFile(file);
         } else {
             return null;
         }
+    }
+
+    public FileNode forFile(File file) {
+        if (file.isAbsolute()) {
+            return new FileNode(root(file), null, file);
+        } else {
+            throw new IllegalArgumentException("absolute file expected: " + file.toString());
+        }
+    }
+
+    public SimpleRoot root(File file) {
+        String str;
+        
+        str = file.getAbsolutePath().toUpperCase();
+        for (SimpleRoot fs : roots) {
+            if (str.startsWith(fs.getId())) {
+                return fs;
+            }
+        }
+        throw new IllegalArgumentException(str);
     }
 }

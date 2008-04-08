@@ -25,18 +25,16 @@ import org.qooxdoo.sushi.fs.ParseException;
 import org.qooxdoo.sushi.fs.Root;
 
 public class ConsoleFilesystem extends Filesystem implements Root {
-    public static final ConsoleFilesystem INSTANCE = new ConsoleFilesystem();
-    
-    private ConsoleFilesystem() {
-        super("console", '/');
+    public ConsoleFilesystem(IO io) {
+        super(io, "console", '/');
     }
 
     @Override
-    public ConsoleNode parse(IO io, String rootPath) throws ParseException {
+    public ConsoleNode parse(String rootPath) throws ParseException {
         if (rootPath.length() != 0) {
             throw new ParseException(rootPath);
         }
-        return new ConsoleNode(io);
+        return new ConsoleNode(this);
     }
 
     public Filesystem getFilesystem() {

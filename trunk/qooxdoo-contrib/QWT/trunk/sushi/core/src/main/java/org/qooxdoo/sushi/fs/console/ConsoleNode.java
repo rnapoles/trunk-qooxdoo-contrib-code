@@ -25,19 +25,22 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ConsoleNode extends Node {
-    public ConsoleNode(IO io) {
-        super(io);
+    private final ConsoleFilesystem root;
+    
+    public ConsoleNode(ConsoleFilesystem root) {
+        super();
+        
+        this.root = root;
     }
 
     @Override
     public ConsoleFilesystem getRoot() {
-        return ConsoleFilesystem.INSTANCE;
+        return root;
     }
     
     @Override

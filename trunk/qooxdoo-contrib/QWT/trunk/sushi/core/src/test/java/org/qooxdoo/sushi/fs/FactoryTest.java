@@ -31,7 +31,8 @@ import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
 
 public class FactoryTest {
-    private Factory f = new Factory();
+    private IO io = new IO();
+    private Factory f = new Factory(io);
     
     @Test
     public void scan() throws IOException {
@@ -43,8 +44,8 @@ public class FactoryTest {
     @Test(expected=IllegalArgumentException.class)
     public void duplicate() throws IOException {
         assertEquals(0, f.size());
-        f.add(FileFilesystem.INSTANCE);
-        f.add(FileFilesystem.INSTANCE);
+        f.add(new FileFilesystem(io));
+        f.add(new FileFilesystem(io));
     }
 
     @Test(expected=IllegalArgumentException.class)

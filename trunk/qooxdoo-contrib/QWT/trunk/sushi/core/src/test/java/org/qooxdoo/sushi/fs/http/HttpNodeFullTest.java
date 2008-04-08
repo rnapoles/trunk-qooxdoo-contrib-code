@@ -31,6 +31,7 @@ import org.qooxdoo.sushi.fs.IO;
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class HttpNodeFullTest {
     private IO ioObj = new IO();
+    private HttpFilesystem fs = ioObj.getFactory().get(HttpFilesystem.class);
     
     @Test
     public void normal() throws IOException {
@@ -38,7 +39,7 @@ public class HttpNodeFullTest {
         HttpNode node;
     
         url = new URL("http://englishediting.de/index.html");
-        node = new HttpNode(ioObj, url);
+        node = fs.forUrl(url);
         assertTrue(node.isFile());
         assertTrue(node.exists());
         assertTrue(node.readString().length() > 1);
@@ -54,7 +55,7 @@ public class HttpNodeFullTest {
         
         url = getClass().getResource("/java/lang/Object.class");
         assertEquals("jar", url.getProtocol());
-        node = new HttpNode(ioObj, url);
+        node = fs.forUrl(url);
         assertEquals(url.toString().substring(4), node.getPath());
         assertTrue(node.exists());
         assertTrue(node.isFile());
@@ -69,7 +70,7 @@ public class HttpNodeFullTest {
         HttpNode node;
 
         url = new URL("http://www.heise.de/?b=1&c=d");
-        node = new HttpNode(ioObj, url);
+        node = fs.forUrl(url);
         assertEquals("", node.getPath());
         assertEquals("b=1&c=d", node.getUrl().getQuery());
         assertTrue(node.readString().length() > 1); 

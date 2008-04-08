@@ -33,7 +33,6 @@ import java.util.Set;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.LastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
@@ -65,20 +64,22 @@ public class SvnNode extends Node {
     public static final int SEPARATOR_LENGTH = 1;
     
     //--
-    
+
+    private final SimpleRoot root;
     private final SVNRepository repository;
     private final boolean directory;
     private final String path;
     private String comment;
     
-    public SvnNode(IO io, SVNRepository repository, boolean directory, String path) {
-        super(io);
+    public SvnNode(SimpleRoot root, SVNRepository repository, boolean directory, String path) {
+        super();
         if (path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }
         if (path.endsWith(SEPARATOR)) {
             throw new IllegalArgumentException(path);
         }
+        this.root = root;
         this.repository = repository;
         this.directory = directory;
         this.path = path;
@@ -87,7 +88,7 @@ public class SvnNode extends Node {
 
     @Override
     public SimpleRoot getRoot() {
-        return new SimpleRoot(SvnFilesystem.INSTANCE, repository.getLocation().toString() + "/");
+        return root;
     }
     
     /** use when closing an output stream */
@@ -102,8 +103,7 @@ public class SvnNode extends Node {
     @Override
     public SvnNode newInstance(String path) {
         try {
-            // TODO: cast
-            return ((SvnFilesystem) getRoot().getFilesystem()).create(getIO(), repository, path);
+            return ((SvnFilesystem) getRoot().getFilesystem()).create(repository, path);
         } catch (SVNException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -129,7 +129,7 @@ public class SvnNode extends Node {
             result = new ArrayList<SvnNode>(lst.size());
             for (int i = 0; i < lst.size(); i++) {
                 entry = lst.get(i);
-                result.add(new SvnNode(getIO(), repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
+                result.add(new SvnNode(root, repository, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
             }
             return result;
         } catch (SVNException e) {

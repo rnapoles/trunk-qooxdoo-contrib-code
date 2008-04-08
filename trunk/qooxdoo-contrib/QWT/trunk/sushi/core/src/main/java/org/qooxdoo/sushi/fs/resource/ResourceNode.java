@@ -26,31 +26,32 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 
 public class ResourceNode extends Node {
+    private final ResourceFilesystem filesystem;
     private final ClassLoader loader;
     private final String path;
     
-    public ResourceNode(IO io, String path) {
-        this(io, ResourceNode.class.getClassLoader(), path);
+    public ResourceNode(ResourceFilesystem filesystem, String path) {
+        this(filesystem, ResourceNode.class.getClassLoader(), path);
     }
 
-    public ResourceNode(IO io, ClassLoader loader, String path) {
-        super(io);
+    public ResourceNode(ResourceFilesystem filesystem, ClassLoader loader, String path) {
+        super();
         if (path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
+        this.filesystem = filesystem;
         this.loader = loader;
         this.path = path;
     }
 
     @Override
     public ResourceFilesystem getRoot() {
-        return ResourceFilesystem.INSTANCE;
+        return filesystem;
     }
     
     @Override
@@ -74,7 +75,7 @@ public class ResourceNode extends Node {
     
     @Override
     public ResourceNode newInstance(String path) {
-        return new ResourceNode(getIO(), loader, path);
+        return new ResourceNode(filesystem, loader, path);
     }
     
     @Override

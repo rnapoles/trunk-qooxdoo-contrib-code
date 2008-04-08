@@ -47,12 +47,9 @@ public abstract class NodeReadOnlyTest {
     @Test
     public void locator() throws Exception {
         String locator;
-        Factory factory;
         Node again;
         
         locator = work.getLocator();
-        factory = new Factory();
-        factory.scan();
         again = IO.node(locator);
         assertEquals(work, again);
         assertEquals(locator, again.getLocator());

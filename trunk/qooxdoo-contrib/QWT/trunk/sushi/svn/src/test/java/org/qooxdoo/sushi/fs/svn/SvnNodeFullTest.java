@@ -153,6 +153,6 @@ public class SvnNodeFullTest extends NodeTest {
     //--
     
     private SvnNode create(String path) throws ParseException {
-        return SvnFilesystem.INSTANCE.parse(IO, path);
+        return IO.getFactory().get(SvnFilesystem.class).parse(path);
     }
 }

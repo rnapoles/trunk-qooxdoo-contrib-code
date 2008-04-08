@@ -69,21 +69,17 @@ import org.xml.sax.SAXException;
  * <p>A node is immutable, except for its base.</p>
  */
 public abstract class Node {
-    /** never null */
-    private final IO io;
-    
     /** may be null */
     private Node base;
     
-    public Node(IO io) {
-        this.io = io;
+    public Node() {
         this.base = null;
     }
     
     public abstract Root getRoot();
     
     public IO getIO() {
-        return io;
+        return getRoot().getFilesystem().getIO();
     }
 
     /** @return node with the specified path */
@@ -204,7 +200,7 @@ public abstract class Node {
         for (i = 0; i < ups; i++) {
             result.append(".." + fs.getSeparator());
         }
-        result.append(Strings.replace(destpath, io.os.lineSeparator, "" + io.os.lineSeparator));
+        result.append(Strings.replace(destpath, getIO().os.lineSeparator, "" + getIO().os.lineSeparator));
         return result.toString();
     }
 
@@ -236,17 +232,17 @@ public abstract class Node {
         byte[] result;
         
         src = createInputStream();
-        result = io.buffer.readBytes(src);
+        result = getIO().buffer.readBytes(src);
         src.close();
         return result;
     }
 
     public String readString() throws IOException {
-        return io.settings.string(readBytes());
+        return getIO().settings.string(readBytes());
     }
     
     public List<String> readLines() throws IOException {
-        return Strings.split(io.settings.lineSeparator, readString());
+        return Strings.split(getIO().settings.lineSeparator, readString());
     }
 
     public Object readObject() throws IOException {
@@ -264,7 +260,7 @@ public abstract class Node {
     }
 
     public Document readXml() throws IOException, SAXException {
-        return io.xml.builder.parse(this);
+        return getIO().xml.builder.parse(this);
     }
 
     public Transformer readXsl() throws IOException, TransformerConfigurationException {
@@ -336,7 +332,7 @@ public abstract class Node {
     }
 
     public List<Node> copyDirectory(Node dest) throws IOException {
-        return copyDirectory(io.filter().includeAll(), dest);
+        return copyDirectory(getIO().filter().includeAll(), dest);
     }
 
     /**
@@ -370,7 +366,7 @@ public abstract class Node {
     
     /** uses default excludes */
     public List<Node> find(String... includes) throws IOException {
-        return find(io.filter().include(includes));
+        return find(getIO().filter().include(includes));
     }
     
     public Node findOne(String include) throws IOException {
@@ -483,7 +479,7 @@ public abstract class Node {
     }
     
     public Node writeLines(List<String> lines) throws IOException {
-        return writeString(Strings.join(io.settings.lineSeparator, lines));
+        return writeString(Strings.join(getIO().settings.lineSeparator, lines));
     }
 
     public Node writeObject(Serializable obj) throws IOException {
@@ -496,7 +492,7 @@ public abstract class Node {
     }
 
     public Node writeXml(org.w3c.dom.Node node) throws IOException {
-        io.xml.serializer.serialize(node, this);
+        getIO().xml.serializer.serialize(node, this);
         return this;
     }
 
@@ -507,7 +503,7 @@ public abstract class Node {
         InputStream in;
         
         in = createInputStream();
-        io.buffer.copy(in, dest);
+        getIO().buffer.copy(in, dest);
         in.close();
     }
 
@@ -519,7 +515,7 @@ public abstract class Node {
         
         in = createInputStream();
         out = new GZIPOutputStream(dest.createOutputStream());
-        io.buffer.copy(in, out);
+        getIO().buffer.copy(in, out);
         in.close();
         out.close();
     }
@@ -530,7 +526,7 @@ public abstract class Node {
         
         in = new GZIPInputStream(createInputStream());
         out = dest.createOutputStream();
-        io.buffer.copy(in, out);
+        getIO().buffer.copy(in, out);
         in.close();
         out.close();
     }
@@ -546,7 +542,7 @@ public abstract class Node {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        io.buffer.digest(src, complete);
+        getIO().buffer.digest(src, complete);
         src.close();
         result = new StringBuilder();
         for (byte b : complete.digest()) {
@@ -558,7 +554,7 @@ public abstract class Node {
     }
     
     public boolean diff(Node right) throws IOException {
-        return diff(right, new Buffer(io.buffer));
+        return diff(right, new Buffer(getIO().buffer));
     }
     
     public boolean diff(Node right, Buffer rightBuffer) throws IOException {
@@ -568,7 +564,7 @@ public abstract class Node {
         int leftChunk;
         int rightChunk;
         
-        leftBuffer = io.buffer;
+        leftBuffer = getIO().buffer;
         leftSrc = createInputStream();
         rightSrc = right.createInputStream();
         do {

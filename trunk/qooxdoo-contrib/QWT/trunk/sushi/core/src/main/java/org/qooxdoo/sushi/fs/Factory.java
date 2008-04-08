@@ -21,21 +21,25 @@ package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Strings;
 
 /** Knows the availeable filesystems and how to create them */
 public class Factory {
+    private final IO io;
     private final Map<String, Filesystem> map;
+    private Filesystem dflt;
     
-    public Factory() {
+    public Factory(IO io) {
+        this.io = io;
         this.map = new HashMap<String, Filesystem>();
+        this.dflt = null;
     }
 
     // cannot use Nodes/IO because they're not yet initialized
@@ -74,14 +78,18 @@ public class Factory {
             throw new IllegalArgumentException("unkown class: " + filesystemClass, e);
         }
         try {
-            fs = (Filesystem) clazz.getDeclaredField("INSTANCE").get(null);
+            fs = (Filesystem) clazz.getConstructor(IO.class).newInstance(io);
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("cannot get instance", e);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("cannot get instance", e);
         } catch (SecurityException e) {
-            throw new IllegalArgumentException("cannot get instance", e);
-        } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException("cannot get instance", e);
         }
         add(fs);
@@ -101,7 +109,7 @@ public class Factory {
         return map.size();
     }
     
-    public Node parse(IO io, Node working, String locator) throws IOException {
+    public Node parse(Node working, String locator) throws IOException {
         int idx;
         String name;
         Filesystem fs;
@@ -117,7 +125,7 @@ public class Factory {
                 fs = defaultFs(working);
             }
         }
-        result = fs.parse(io, locator.substring(idx + 1));
+        result = fs.parse(locator.substring(idx + 1));
         if (result == null) {
             if (working == null || fs != working.getRoot().getFilesystem()) {
                 throw new ParseException("no working directory for filesystem " + fs.getName());
@@ -127,10 +135,33 @@ public class Factory {
         }
         return result;
     }
+
+    public <T extends Filesystem> T get(Class<T> c) {
+        T result;
+        
+        result = lookup(c);
+        if (result == null) {
+            throw new IllegalArgumentException("no such filesystem: " + c.getName());
+        }
+        return result;
+    }
+
+    public <T extends Filesystem> T lookup(Class<T> c) {
+        for (Filesystem fs : map.values()) {
+            if (fs.getClass().equals(c)) {
+                return (T) fs;
+            }
+        }
+        return null;
+    }
+    
+    public void setDefault(Filesystem fs) {
+        dflt = fs;
+    }
     
     private Filesystem defaultFs(Node working) { 
         if (working == null) {
-            return FileFilesystem.INSTANCE;
+            return dflt;
         } else {
             return working.getRoot().getFilesystem();
         }
