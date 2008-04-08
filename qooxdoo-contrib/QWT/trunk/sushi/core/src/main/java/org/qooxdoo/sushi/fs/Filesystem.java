@@ -20,6 +20,9 @@
 package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
+import java.util.List;
+
+import org.qooxdoo.sushi.util.Strings;
 
 
 public abstract class Filesystem {
@@ -49,4 +52,33 @@ public abstract class Filesystem {
     }
     
     public abstract Node parse(IO io, String rootPath) throws IOException;
+
+    //--
+    
+    public String join(String... names) {
+        return Strings.join(separator, names);
+    }
+    
+    public String join(String head, List<String> paths) {
+        StringBuffer buffer;
+        
+        buffer = new StringBuffer(head);
+        for (String path : paths) {
+            if (path.startsWith(separator)) {
+                throw new IllegalArgumentException(path);
+            }
+            // TODO: Svn nodes ...
+            if (buffer.length() > 0) {
+                buffer.append(separatorChar);
+            }
+            buffer.append(path);
+        }
+        return buffer.toString();
+    }
+
+    public List<String> split(String path) {
+        return Strings.split(separator, path);
+    }
+    
+    
 }
