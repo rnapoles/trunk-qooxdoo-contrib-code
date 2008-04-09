@@ -49,6 +49,17 @@ public class HttpNodeFullTest {
         assertEquals("", node.getParent().getPath());
     }
 
+    @Test
+    public void node() throws IOException {
+        String url;
+        HttpNode node;
+    
+        url = "http://englishediting.de/index.html";
+        node = (HttpNode) ioObj.node(url);
+        assertEquals("index.html", node.getPath());
+        assertEquals(url, node.getUrl().toString());
+    }
+
     @Ignore // TODO
     public void jarUrl() {
         URL url;

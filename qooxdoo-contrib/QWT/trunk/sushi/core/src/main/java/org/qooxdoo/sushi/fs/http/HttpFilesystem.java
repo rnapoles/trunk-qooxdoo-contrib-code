@@ -32,7 +32,7 @@ public class HttpFilesystem extends Filesystem {
 
     @Override
     public HttpNode parse(String rootPath) throws MalformedURLException {
-        return forUrl(new URL(rootPath));
+        return forUrl(new URL("http:" + rootPath));
     }
 
     public HttpNode forUrl(URL url) {

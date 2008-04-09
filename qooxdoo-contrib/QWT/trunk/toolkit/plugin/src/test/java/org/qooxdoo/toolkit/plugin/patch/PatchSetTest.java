@@ -26,7 +26,6 @@ import java.io.IOException;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
 import org.qooxdoo.toolkit.plugin.binding.patch.PatchSet;
 
 public class PatchSetTest {
