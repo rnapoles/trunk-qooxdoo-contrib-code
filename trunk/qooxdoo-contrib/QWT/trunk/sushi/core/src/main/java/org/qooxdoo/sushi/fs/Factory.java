@@ -61,7 +61,11 @@ public class Factory {
             for (String line : Strings.split("\n", content)) {
                 line = line.trim();
                 if (line.length() > 0) {
-                    add(line);
+                    try {
+                        add(line);
+                    } catch (IllegalArgumentException e2) {
+                        System.out.println("TODO: " + url + ":" + e2.getMessage());
+                    }
                 }
             }
             src.close();
