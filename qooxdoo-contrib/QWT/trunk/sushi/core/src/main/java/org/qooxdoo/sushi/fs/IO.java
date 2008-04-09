@@ -149,31 +149,23 @@ public class IO {
     
     //-- Node creation
 
-    public FileNode file(String path) {
-        try {
-            return (FileNode) factory.parse(working, "file:" + path);
-        } catch (IOException e) {
-            throw new RuntimeException("TODO", e);
-        }
+    public FileNode file(File file) throws LocatorException {
+        return file(file.getAbsolutePath());
     }
     
-    public FileNode file(File file) {
-        return (FileNode) node(file.getAbsolutePath());
+    public FileNode file(String rootPath) throws LocatorException {
+        return (FileNode) node("file:" + rootPath);
     }
     
-    public Node node(String optPath) {
+    public Node node(String locatorOrDot) throws LocatorException {
         Node result;
         
-        if (optPath.equals(".")) {
+        if (locatorOrDot.equals(".")) {
             result = node(working.getLocator());
             result.setBase(working);
             return result;
         }
-        try {
-            return factory.parse(working, optPath);
-        } catch (IOException e) {
-            throw new RuntimeException("TODO", e);
-        }
+        return factory.parse(working, locatorOrDot);
     }
     
     // TODO: re-use root?
@@ -218,7 +210,7 @@ public class IO {
     
     //-- 
     
-    public List<Node> path(String path) {
+    public List<Node> path(String path) throws LocatorException {
         List<Node> result;
         
         result = new ArrayList<Node>();

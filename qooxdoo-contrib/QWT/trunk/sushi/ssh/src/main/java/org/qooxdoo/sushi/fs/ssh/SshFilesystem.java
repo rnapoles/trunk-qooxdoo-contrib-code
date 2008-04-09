@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.RootPathException;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
@@ -35,7 +35,7 @@ public class SshFilesystem extends Filesystem {
     }
 
     @Override
-    public SshNode parse(String rootPath) throws IOException {
+    public SshNode parse(String rootPath) throws RootPathException {
         int idx;
         String hostname;
         User user;
@@ -44,26 +44,30 @@ public class SshFilesystem extends Filesystem {
         
         io = getIO();
         if (!rootPath.startsWith("//")) {
-            throw new ParseException(rootPath);
+            throw new RootPathException("invalid root");
         }
         idx = rootPath.indexOf('/', 2);
         if (idx == -1) {
-            throw new ParseException(rootPath);
+            throw new RootPathException("invalid root");
         }
         hostname = rootPath.substring(2, idx);
         path = rootPath.substring(idx + 1);
         idx = hostname.indexOf('@');
-        if (idx == -1) {
-            user = User.withUserKey(io);
-        } else {
-            user = User.withUserKey(io, hostname.substring(0, idx));
-            hostname = hostname.substring(idx + 1);
-        }
-
         try {
-            return forChannel(Connection.create(hostname, user).open(), path);
-        } catch (JSchException e) {
-            throw new ParseException("cannot connect", e);
+            if (idx == -1) {
+                user = User.withUserKey(io);
+            } else {
+                user = User.withUserKey(io, hostname.substring(0, idx));
+                hostname = hostname.substring(idx + 1);
+            }
+            
+            try {
+                return forChannel(Connection.create(hostname, user).open(), path);
+            } catch (JSchException e) {
+                throw new RootPathException(e);
+            }
+        } catch (IOException e) {
+            throw new RootPathException(e);
         }
     }
 

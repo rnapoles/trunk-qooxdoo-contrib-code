@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.fs.svn;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.RootPathException;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
@@ -42,11 +42,11 @@ public class SvnFilesystem extends Filesystem {
     }
 
     @Override
-    public SvnNode parse(String rootPath) throws ParseException {
+    public SvnNode parse(String rootPath) throws RootPathException {
         try {
             return parse(rootPath, null, null);
         } catch (SVNException e) {
-            throw new ParseException("invalid svn url: " + rootPath, e);
+            throw new RootPathException(e);
         }
     }
     

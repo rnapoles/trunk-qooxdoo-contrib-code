@@ -113,7 +113,7 @@ public class Factory {
         return map.size();
     }
     
-    public Node parse(Node working, String locator) throws IOException {
+    public Node parse(Node working, String locator) throws LocatorException {
         int idx;
         String name;
         Filesystem fs;
@@ -129,10 +129,14 @@ public class Factory {
                 fs = defaultFs(working);
             }
         }
-        result = fs.parse(locator.substring(idx + 1));
+        try {
+            result = fs.parse(locator.substring(idx + 1));
+        } catch (RootPathException e) {
+            throw new LocatorException(locator, e.getMessage(), e.getCause());
+        }
         if (result == null) {
             if (working == null || fs != working.getRoot().getFilesystem()) {
-                throw new ParseException("no working directory for filesystem " + fs.getName());
+                throw new LocatorException(locator, "no working directory for filesystem " + fs.getName());
             }
             result = working.join(locator.substring(idx + 1));
             result.setBase(working);

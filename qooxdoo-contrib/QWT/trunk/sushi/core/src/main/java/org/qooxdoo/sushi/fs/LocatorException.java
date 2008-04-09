@@ -19,16 +19,16 @@
 
 package org.qooxdoo.sushi.fs;
 
-/** 
- * A file system root like the drive letter on Windows or the Host Name for HttpFilesystem. 
- * The root is not a node. A root node is a node with an empty path. 
- */
-public interface Root {
-    /** Backlink */
-    Filesystem getFilesystem();
+/** TODO: checked exception? */
+public class LocatorException extends RuntimeException {
+    public LocatorException(String locator, String msg) {
+        this(locator, msg, null);
+    }
     
-    String getId();
-    
-    /** Creates a new node with no base. The path has already been checked syntactically. */
-    Node node(String path);
+    public LocatorException(String locator, String msg, Throwable cause) {
+        super(locator + ": " + msg);
+        if (cause != null) {
+            initCause(cause);
+        }
+    }
 }

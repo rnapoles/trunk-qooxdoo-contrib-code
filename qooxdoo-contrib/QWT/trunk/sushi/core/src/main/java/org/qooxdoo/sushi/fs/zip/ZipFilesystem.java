@@ -24,7 +24,8 @@ import java.util.zip.ZipFile;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.LocatorException;
+import org.qooxdoo.sushi.fs.RootPathException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class ZipFilesystem extends Filesystem {
@@ -33,16 +34,24 @@ public class ZipFilesystem extends Filesystem {
     }
 
     @Override
-    public ZipNode parse(String rootPath) throws IOException {
+    public ZipNode parse(String rootPath) throws RootPathException {
         int idx;
         FileNode jar;
         
         idx = rootPath.indexOf("!/");
         if (idx == -1) {
-            throw new ParseException(rootPath);
+            throw new RootPathException("invalid root");
         }
-        jar = getIO().file(rootPath.substring(0, idx));
-        return node(jar, rootPath.substring(idx + 2));
+        try {
+            jar = getIO().file(rootPath.substring(0, idx));
+        } catch (LocatorException e) {
+            throw new RootPathException(e);
+        }
+        try {
+            return node(jar, rootPath.substring(idx + 2));
+        } catch (IOException e) {
+            throw new RootPathException(e);
+        }
     }
 
     public ZipNode node(FileNode jar) throws IOException {

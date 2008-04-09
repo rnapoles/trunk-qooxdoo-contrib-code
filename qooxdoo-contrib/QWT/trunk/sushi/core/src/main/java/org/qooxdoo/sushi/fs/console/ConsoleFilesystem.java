@@ -21,8 +21,8 @@ package org.qooxdoo.sushi.fs.console;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
 import org.qooxdoo.sushi.fs.Root;
+import org.qooxdoo.sushi.fs.RootPathException;
 
 public class ConsoleFilesystem extends Filesystem implements Root {
     public ConsoleFilesystem(IO io) {
@@ -30,9 +30,9 @@ public class ConsoleFilesystem extends Filesystem implements Root {
     }
 
     @Override
-    public ConsoleNode parse(String rootPath) throws ParseException {
+    public ConsoleNode parse(String rootPath) throws RootPathException {
         if (rootPath.length() != 0) {
-            throw new ParseException(rootPath);
+            throw new RootPathException("unexpected path");
         }
         return new ConsoleNode(this);
     }
