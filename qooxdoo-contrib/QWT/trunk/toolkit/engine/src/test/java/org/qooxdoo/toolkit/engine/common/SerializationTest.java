@@ -132,7 +132,7 @@ public class SerializationTest {
         lst = new ArrayList<Site>();
         lst.add(new Site("a", "b", "c", null, null));
         lst.add(new Site("x", "y", "z", null, null));
-        check("[<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Site',('svnurl':'c','path':null,'lastUpdate':null,'name':'b','id':'a')>,<'org%2eqooxdoo%2etoolkit%2eengine%2ecommon%2eSerializationTest%24Site',(@2:'z',@4:null,@5:null,@6:'y',@8:'x')>]", lst);
+        check(null, lst);
     }
 
     public static class Site {

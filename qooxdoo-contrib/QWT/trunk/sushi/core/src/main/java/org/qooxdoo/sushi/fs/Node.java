@@ -55,16 +55,22 @@ import org.xml.sax.SAXException;
  * <p>Abstraction from a file: something you can get an input or output stream from. FileNode is probably
  * the most prominent example of a node. Provides more methods compared to java.io.File, especially for
  * scripting. Also, it removes some redundant methods simplify the api (in particular the constructors).</p>
+
+ * <p>A node is identified by a locator. It has a root, and a path. A node can have children and a base.</p>
+ *
+ * <p>A locator is similar to a URL, it has the form filesystem ":" root separator path.</p>
  * 
- * <p>A node has a root, and a path. A node can have children and a base.</p>
- * 
- * <p>The Root defines a root string and a separator.</p>
+ * <p>The Root defines and identifier and a filesystem. The filesystem defines a separator.</p>
  *
  * <p>The path is a sequence of names separated by the filesystem separator. It never starts 
- * or ends with a separator. It does not include the filesystem root, but it always includes the path
+ * or ends with a separator. It does not include the root, but it always includes the path
  * of the base. A node with an empty path is called root node.
  *   
  * <p>The base is a node this node is relative to. It's optional, a node without base is called absolute.</p>
+ * 
+ * <p>A node is usually created with <code>io.node(locator)</code> or, if you already have a node, with 
+ * <code>node.join(path)</code>. The constructor of the respective node class is rarely used directly, it's used
+ * indirectly by the filesystem. </p>
  * 
  * <p>A node is immutable, except for its base.</p>
  */
