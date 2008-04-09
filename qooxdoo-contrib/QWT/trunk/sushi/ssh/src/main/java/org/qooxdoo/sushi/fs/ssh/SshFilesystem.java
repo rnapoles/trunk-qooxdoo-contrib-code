@@ -30,6 +30,9 @@ import com.jcraft.jsch.JSchException;
 
 
 public class SshFilesystem extends Filesystem {
+    public String passphrase;
+    public int timeout;
+    
     public SshFilesystem(IO io) {
         super(io, "ssh", '/');
     }
@@ -37,8 +40,8 @@ public class SshFilesystem extends Filesystem {
     @Override
     public SshNode parse(String rootPath) throws RootPathException {
         int idx;
-        String hostname;
-        User user;
+        String machine;
+        String user;
         String path;
         IO io;
         
@@ -50,19 +53,18 @@ public class SshFilesystem extends Filesystem {
         if (idx == -1) {
             throw new RootPathException("invalid root");
         }
-        hostname = rootPath.substring(2, idx);
+        machine = rootPath.substring(2, idx);
         path = rootPath.substring(idx + 1);
-        idx = hostname.indexOf('@');
+        idx = machine.indexOf('@');
         try {
             if (idx == -1) {
-                user = User.withUserKey(io);
+                user = null;
             } else {
-                user = User.withUserKey(io, hostname.substring(0, idx));
-                hostname = hostname.substring(idx + 1);
+                user = machine.substring(0, idx);
+                machine = machine.substring(idx + 1);
             }
-            
             try {
-                return forChannel(Connection.create(hostname, user).open(), path);
+                return forChannel(Host.create(io, machine, user, passphrase, timeout).connect().open(), path);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }

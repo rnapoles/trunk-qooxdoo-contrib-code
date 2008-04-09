@@ -33,10 +33,6 @@ import com.jcraft.jsch.Session;
 
 /** A session with settings */
 public class Connection {
-    public static Connection create(String host, User user) throws JSchException {
-        return new Host(host, user).connect();
-    }
-    
     private final Host host;
     private final Session session;
     private final Settings settings;
