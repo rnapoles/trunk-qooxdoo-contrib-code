@@ -30,7 +30,7 @@ import java.util.Map;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Strings;
 
-/** Knows the availeable filesystems and how to create them */
+/** Knows the available filesystems and how to create them */
 public class Factory {
     private final IO io;
     private final Map<String, Filesystem> map;
@@ -118,6 +118,7 @@ public class Factory {
         String name;
         Filesystem fs;
         Node result;
+        String rootPath;
         
         idx = locator.indexOf(Filesystem.SEPARTOR);
         if (idx == -1) {
@@ -129,8 +130,9 @@ public class Factory {
                 fs = defaultFs(working);
             }
         }
+        rootPath = locator.substring(idx + 1);
         try {
-            result = fs.parse(locator.substring(idx + 1));
+            result = fs.parse(rootPath);
         } catch (RootPathException e) {
             throw new LocatorException(locator, e.getMessage(), e.getCause());
         }
