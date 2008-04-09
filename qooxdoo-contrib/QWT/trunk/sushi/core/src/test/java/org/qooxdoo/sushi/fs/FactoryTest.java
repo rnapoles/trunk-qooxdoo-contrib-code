@@ -38,7 +38,7 @@ public class FactoryTest {
     public void scan() throws IOException {
         assertEquals(0, f.size());
         f.scan();
-        assertEquals(5, f.size());
+        assertEquals(6, f.size());
     }
 
     @Test(expected=IllegalArgumentException.class)
