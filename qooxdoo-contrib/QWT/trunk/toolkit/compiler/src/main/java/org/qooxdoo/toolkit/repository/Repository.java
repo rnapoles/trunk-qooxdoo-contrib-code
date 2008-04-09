@@ -151,7 +151,7 @@ public class Repository implements Iterable<Module> {
         index = new ArrayList<String>();
         for (Module module : this) {
             index.add(module.getName());
-            dest = dir.join(module.getFileName(dir.getRoot().getFilesystem()));
+            dest = module.getNode(dir);
             dest.getParent().mkdirsOpt();
             dest.writeString(module.toString());
         }
@@ -206,7 +206,7 @@ public class Repository implements Iterable<Module> {
         for (String line : Strings.split(LF, index.readString())) {
             line = line.trim(); 
             if (line.length() > 0) {
-                file = src.join(Module.toFileName(src.getRoot().getFilesystem(), line));
+                file = Module.getNode(src, line);
                 add(Module.fromString(file.readString()));
             }
         }

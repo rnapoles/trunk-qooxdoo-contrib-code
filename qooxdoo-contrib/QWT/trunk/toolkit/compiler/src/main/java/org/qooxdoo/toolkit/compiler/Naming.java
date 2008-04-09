@@ -35,8 +35,6 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.resource.ResourceFilesystem;
-import org.qooxdoo.sushi.fs.resource.ResourceNode;
 import org.qooxdoo.toolkit.repository.Module;
 import org.qooxdoo.toolkit.repository.Repository;
 
@@ -56,14 +54,12 @@ public class Naming {
     public static final String CINIT = "cinit";
 
     public static Repository createRootRepository(IO io) {
-        ResourceFilesystem rfs;
         Repository result;
         Module root;
 
-        rfs = io.getFactory().get(ResourceFilesystem.class);
         result = new Repository();
         try {
-            root = Module.fromString(rfs.parse(Module.toFileName(rfs, ROOT)).readString());
+            root = Module.fromString(Module.getNode(io.node("resource:"), ROOT).readString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
