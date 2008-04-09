@@ -61,22 +61,6 @@ public class HttpNodeFullTest {
     }
 
     @Ignore // TODO
-    public void jarUrl() {
-        URL url;
-        HttpNode node;
-        
-        url = getClass().getResource("/java/lang/Object.class");
-        assertEquals("jar", url.getProtocol());
-        node = fs.forUrl(url);
-        assertEquals(url.toString().substring(4), node.getPath());
-        assertTrue(node.exists());
-        assertTrue(node.isFile());
-        assertTrue(node.getParent().getPath().endsWith("/java/lang"));
-        node = (HttpNode) node.getParent().join("Object.class");
-        assertTrue(node.exists());
-    }
-
-    @Ignore // TODO
     public void ampersand() throws IOException {
         URL url;
         HttpNode node;

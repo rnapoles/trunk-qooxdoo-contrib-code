@@ -21,15 +21,12 @@ package org.qooxdoo.toolkit.plugin.qul;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.http.HttpFilesystem;
-import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.xml.XmlException;
 import org.qooxdoo.toolkit.plugin.Base;
 import org.qooxdoo.toolkit.plugin.binding.java.Set;
@@ -113,17 +110,17 @@ public class QulMojo extends Base {
         List<?> lst;
         Set result;
         Artifact artifact;
-        HttpNode node;
+        Node node;
         
         debug("loading doctree ...");
         lst = project.getRuntimeArtifacts();
         for (Object obj : lst) {
             artifact = (Artifact) obj;
             debug("checking " + artifact.getFile());
-            node = io.getFactory().get(HttpFilesystem.class).forUrl(new URL("jar:file:" + artifact.getFile().getAbsolutePath() +"!/" + DOCTREE_SER));
+            node = io.node("zip:" + artifact.getFile().getAbsolutePath() +"!/" + DOCTREE_SER);
             if (node.exists()) {
                 result = (Set) node.readObject();
-                debug("done: " + result.size() + " classes, loaded from " + node.getUrl());
+                debug("done: " + result.size() + " classes, loaded from " + node.getLocator());
                 return result;
             }
         }
