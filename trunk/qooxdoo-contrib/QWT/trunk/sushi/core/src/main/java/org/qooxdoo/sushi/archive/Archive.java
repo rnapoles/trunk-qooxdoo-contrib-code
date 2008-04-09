@@ -41,7 +41,7 @@ public class Archive {
     public static final String MANIFEST = META_INF + "/MANIFEST.MF";
 
     public static Archive createZip(IO io) {
-        return new Archive(io.getMemoryFilesystem().createRoot().newInstance(""), null);
+        return new Archive(io.getMemoryFilesystem().createRoot().node(""), null);
     }
 
     public static Archive loadZip(Node src) throws IOException {
@@ -49,7 +49,7 @@ public class Archive {
     }
 
     public static Archive createJar(IO io) {
-        return new Archive(io.getMemoryFilesystem().createRoot().newInstance(""), new Manifest());
+        return new Archive(io.getMemoryFilesystem().createRoot().node(""), new Manifest());
     }
 
     public static Archive loadJar(Node src) throws IOException {

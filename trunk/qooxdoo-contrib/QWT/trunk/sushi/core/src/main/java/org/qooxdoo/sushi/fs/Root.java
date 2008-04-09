@@ -22,5 +22,7 @@ package org.qooxdoo.sushi.fs;
 public interface Root {
     Filesystem getFilesystem();
     String getId();
-    Node newInstance(String path);
+    
+    /** Creates a new node with no base. The path has already been checked syntactically. */
+    Node node(String path);
 }

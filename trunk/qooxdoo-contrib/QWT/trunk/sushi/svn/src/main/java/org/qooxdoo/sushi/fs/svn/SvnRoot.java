@@ -44,7 +44,7 @@ public class SvnRoot implements Root {
         return repository;
     }
     
-    public SvnNode newInstance(String path) {
+    public SvnNode node(String path) {
         try {
             return filesystem.create(repository, path);
         } catch (SVNException e) {

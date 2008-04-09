@@ -52,7 +52,7 @@ public class MemoryRoot implements Root {
         return "//" + id + "/";
     }
 
-    public MemoryNode newInstance(String path) {
+    public MemoryNode node(String path) {
         MemoryNode node;
         
         node = nodes.get(path);

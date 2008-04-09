@@ -182,7 +182,7 @@ public class IO {
         
         memFs = getMemoryFilesystem();
         try {
-            return (MemoryNode) memFs.createRoot().newInstance("tmp").writeString(content);
+            return (MemoryNode) memFs.createRoot().node("tmp").writeString(content);
         } catch (IOException e) {
             throw new RuntimeException("unexpected", e);
         }

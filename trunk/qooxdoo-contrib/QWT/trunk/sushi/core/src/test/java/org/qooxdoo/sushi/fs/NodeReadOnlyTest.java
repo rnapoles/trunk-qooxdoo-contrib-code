@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.fs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
@@ -53,5 +54,13 @@ public abstract class NodeReadOnlyTest {
         again = IO.node(locator);
         assertEquals(work, again);
         assertEquals(locator, again.getLocator());
+    }
+
+    @Test
+    public void rootCreatedNodeWithoutBase() throws Exception {
+        Node node;
+        
+        node = work.getRoot().node("foo");
+        assertNull(node.getBase());
     }
 }

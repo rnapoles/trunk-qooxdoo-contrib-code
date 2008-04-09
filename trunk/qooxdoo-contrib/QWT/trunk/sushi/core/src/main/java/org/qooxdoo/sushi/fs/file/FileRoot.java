@@ -44,7 +44,7 @@ public class FileRoot implements Root {
         return id;
     }
     
-    public FileNode newInstance(String path) {
+    public FileNode node(String path) {
         return new FileNode(this, new File(id + path));
     }
 }

@@ -46,8 +46,6 @@ public class FileNode extends Node {
     private final File file;
 
     public FileNode(FileRoot root, File file) {
-        super();
-        
         if (!file.isAbsolute()) {
             throw new IllegalArgumentException(file.toString());
         }
