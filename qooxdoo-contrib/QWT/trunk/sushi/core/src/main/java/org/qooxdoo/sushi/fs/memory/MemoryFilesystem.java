@@ -55,7 +55,7 @@ public class MemoryFilesystem extends Filesystem {
         } catch (NumberFormatException e) {
             throw new ParseException(rootPath, e);
         }
-        return getRoot(id).newInstance(rootPath.substring(idx + 1));
+        return getRoot(id).node(rootPath.substring(idx + 1));
     }
 
     public MemoryRoot getRoot(int id) {

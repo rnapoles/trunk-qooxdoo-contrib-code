@@ -50,7 +50,7 @@ public class ResourceFilesystem extends Filesystem implements Root {
         return "";
     }
 
-    public ResourceNode newInstance(String path) {
+    public ResourceNode node(String path) {
         return new ResourceNode(this, path);
     }
     

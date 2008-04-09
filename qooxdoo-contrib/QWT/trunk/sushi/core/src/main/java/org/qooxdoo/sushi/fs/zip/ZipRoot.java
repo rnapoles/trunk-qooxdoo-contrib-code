@@ -59,7 +59,7 @@ public class ZipRoot implements Root {
         return zip.getName() + "!/";
     }
 
-    public ZipNode newInstance(String path) {
+    public ZipNode node(String path) {
         return new ZipNode(this, path);
     }
     

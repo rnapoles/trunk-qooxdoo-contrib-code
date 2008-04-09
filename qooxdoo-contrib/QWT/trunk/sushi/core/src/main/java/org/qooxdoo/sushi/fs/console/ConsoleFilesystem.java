@@ -47,7 +47,7 @@ public class ConsoleFilesystem extends Filesystem implements Root {
         return "/";
     }
 
-    public ConsoleNode newInstance(String path) {
+    public ConsoleNode node(String path) {
         throw new UnsupportedOperationException();
     }
 }

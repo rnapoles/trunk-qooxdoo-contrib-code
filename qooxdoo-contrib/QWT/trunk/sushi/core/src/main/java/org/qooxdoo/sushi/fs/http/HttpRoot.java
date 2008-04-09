@@ -75,7 +75,7 @@ public class HttpRoot implements Root {
         return "//" + host + (port == -1 ? "" : "" + port) + "/";
     }
 
-    public HttpNode newInstance(String path) {
+    public HttpNode node(String path) {
         // ignores query
         try {
             return new HttpNode(this, new URL("http", host, port, path));
