@@ -521,7 +521,7 @@ qx.Class.define("htmlarea.command.Manager",
         */
 
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-         htmlText += this.__keepStyleAfterBlockElement();
+         htmlText += '<span style="' + this.getCurrentStyles() + '">';
        }
   
        return this.__insertHtml(htmlText, commandObject);
@@ -535,7 +535,7 @@ qx.Class.define("htmlarea.command.Manager",
       * @type member
       * @return {String} the span element.
       */
-     __keepStyleAfterBlockElement : function()
+     getCurrentStyles : function()
      {
        /* Current selection */
        var sel = this.__editorInstance.__getSelection();
@@ -551,7 +551,7 @@ qx.Class.define("htmlarea.command.Manager",
        var usedStyles = { "font-size" : true };
        
        /* This string will be build to save the style settings over the <hr> element. */
-       var styleSettings = '<span style="';
+       var styleSettings = '';
   
        /* Retrieve element's computed style. */
        var decoration = window.getComputedStyle(elem, null);
@@ -608,8 +608,6 @@ qx.Class.define("htmlarea.command.Manager",
          /* Store style settings */
          styleSettings += style + ":" + styleValue + "; ";
        }
-
-       styleSettings += '">';
        
        return styleSettings;
      },

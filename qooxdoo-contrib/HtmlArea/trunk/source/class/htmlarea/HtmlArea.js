@@ -49,6 +49,12 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isEditable = false;
     this.__isReady = false;
     
+    /* Flag indicating if a paragraph has been inserted by the browser */
+    this.__midasAddedParagraph = false;
+    
+    /* String containing the styles settings of current paragraph */
+    this.__currentStyles = "";
+    
     this.__firstLineSelected = false;
 
     this.setTabIndex(1);
@@ -535,9 +541,11 @@ qx.Class.define("htmlarea.HtmlArea",
         style   : qx.core.Variant.select("qx.client",
         {
            "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-                       'body { width:100%; height:100%;background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }',
-           "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: hidden; } ' +
-                       'body { background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }'
+                       'body { width:100%; height:100%;background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+                       'p { margin:0px; padding:0px; } ',
+           "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: hidden; }' +
+                       'body { background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+                       'p { margin:0px; padding:0px; } '
         }),
         body    : '<body id="bodyElement">\n',
         footer  : '</body></html>'
@@ -934,7 +942,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * propValue = wrap.doctype + wrap.html + '<head>' + wrap.head + '</head>' + wrap.body + propValue + wrap.footer;
        **/
 
-      var body = "";
+      var body = "<p>&nbsp;</p>";
       if (useCurrentBodyStyle === true)
       {
         body = wrap.body.replace('>',' style="'+this.__getElementStyleAsString(doc.body)+'">');
@@ -1262,10 +1270,27 @@ qx.Class.define("htmlarea.HtmlArea",
         }
       }
       
-      /* Check if the first line is (partly) selected. */
       else if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
+        /* Fetch selection */
         var sel = this.__getSelection();
+
+        /* Check if a paragraph has been inserted by the browser in _handleKeyPress */
+        if(this.__midasAddedParagraph)
+        {
+          /* Get focus node */
+          var element = sel.focusNode;
+          
+          /* Check if focus node is an element (and not a text node) */
+          if(element.nodeType == element.ELEMENT_NODE)
+          {
+            /* Apply saved style from last paragraph */
+            element.setAttribute("style", this.__currentStyles);
+          }
+
+          /* Reset flag */
+          this.__midasAddedParagraph = false;
+        }
 
         /* These keys can change the selection */
         switch(keyIdentifier)
@@ -1358,6 +1383,7 @@ qx.Class.define("htmlarea.HtmlArea",
         break;
 
         case "enter":
+
           /* If only "Enter" key was pressed and "messengerMode" is activated */
           if (!isShiftPressed && !isCtrlPressed && this.getMessengerMode())
           {
@@ -1454,10 +1480,17 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
+
+              /* Save current styles */
+              this.__currentStyles = this.__commandManager.__commandManager.getCurrentStyles();
+              
               if (this.__insertParagraphOnLinebreak())
               {
                 e.preventDefault();
                 e.stopPropagation();
+              }else{
+                /* Set flag since we can not apply saved styles right now. */
+                this.__midasAddedParagraph = true;
               }
             }
           }
@@ -1757,9 +1790,16 @@ qx.Class.define("htmlarea.HtmlArea",
          * if so create a new paragraph with a textNode and a "br" element
          * as childs to force the browser to create a new line.
          */
+        
+        
+        
         if (paragraph.parentNode.nextSibling == null)
         {
           var newPara  = doc.createElement("p");
+
+          /* Apply saved styles from last paragaph on the new one: */
+          newPara.setAttribute("style", this.__currentStyles);
+
           var textNode = doc.createTextNode(" ");
           var brNode   = doc.createElement("br");
           newPara.appendChild(textNode);
