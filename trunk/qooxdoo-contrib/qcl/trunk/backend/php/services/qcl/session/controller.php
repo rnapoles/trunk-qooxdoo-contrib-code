@@ -96,90 +96,17 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 	 */
 	function getResponseData()
 	{
-		$sessionModel        =& $this->getModel("session");
-    $broadcastedMessages = $sessionModel->getBroadcastedMessages($this->getSessionId());
-    foreach( $broadcastedMessages as $message )
+		$sessionModel =& $this->getModel("session");
+    $messages = $sessionModel->getBroadcastedMessages($this->getSessionId());
+    $this->info(count($messages) . " broadcasted messages.");
+    foreach( $messages as $message )
     {
       $this->addMessage($message['name'],$message['data']);
+      $this->info($message['name']);
     }
-    return $this->_response;
+    return parent::getResponseData();
 	}
 
-	//-------------------------------------------------------------
-  // message polling - deprecated!
-  //-------------------------------------------------------------
-	
-	/**
-	 * server messages
-	 * @param string 	$params[0]	request id
-	 */
-	function method_getServerMessages( $params )
-	{
-		$requestId 	= $params[0]; 
-		$className	= get_class($this);
-		$sessionId 	= session_id();
-		
-		// get messages from database and delete them
-		$db =& $this->getSingleton("qcl_db_pear");
-		if ( $requestId )
-		{
-			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className' AND `request_id` = '$requestId'";
-		}
-		else
-		{
-			$whereQuery = "`session_id` = '$sessionId' AND `class` = '$className'";			
-		}
-
-		// get messages
-		$messages = $db->getAllRows("
-			SELECT * FROM `messages`
-			WHERE $whereQuery
-		");	
-		
-		$this->log("### Polled for ". count($messages) . " messages.");
-		
-		// and delete them
-		$db->execute("
-			DELETE FROM `messages`
-			WHERE $whereQuery
-		");
-		
-		// send to server 
-		foreach ($messages as $message )
-		{ 
-			$this->dispatchMessage( $message['name'], unserialize($message['data']) );
-		}
-		return $this->getResponseData();
-	}
-
-	/**
-	 * add server message
-	 * @param string 	$message
-	 * @param mixed		$data
-	 * @param string	$requestId 	(optional)
-	 * @todo: add a php string that is dynamically eval'd before dispatching the message
-	 * so that permissions and conditions can be checked dependend on the user
-	 */
-	function addServerMessage( $name, $data, $requestId = null)
-	{ 
-		$className	= get_class($this);
-		$sessionId 	= session_id();
-		
-		// create data row
-		$row = array(
-			'class'			  => $className,
-			'session_id'	=> $sessionId,
-			'request_id'	=> $requestId,
-			'name'			  => $name,
-			'data'			  => serialize($data)
-		);
-		
-		// insert messages into database
-		$db =& $this->getNew("qcl_db_pear");
-		$db->insert("messages",$row);
-		
-		return;
-	}
 
 	 
 }	
