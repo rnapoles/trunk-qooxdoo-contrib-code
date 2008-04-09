@@ -30,7 +30,7 @@ import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.xml.Xml;
 
 public abstract class NodeReadOnlyTest {
-    protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), 3, new Xml(), "**/.svn/**/*");
+    protected static final IO IO = new IO(OS.CURRENT, new Settings(), new Buffer(), new Xml(), "**/.svn/**/*");
     
     /** creates a new empty directory */
     protected abstract Node createWork() throws IOException;
