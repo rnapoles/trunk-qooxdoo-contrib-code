@@ -22,7 +22,6 @@ package org.qooxdoo.sushi.fs.svn;
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.ParseException;
-import org.qooxdoo.sushi.fs.http.HttpRoot;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;

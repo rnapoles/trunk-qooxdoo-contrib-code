@@ -118,7 +118,7 @@ public class MemoryRoot implements Root {
         if (old instanceof FileNode) {
             ((FileNode) old).delete();
         }
-        if (used > filesystem.getIO().maxInMemorySize) {
+        if (used > filesystem.maxInMemorySize) {
             file = filesystem.getIO().createTempFile();
             file.writeBytes(data, 0, used);
             store.put(path, file);

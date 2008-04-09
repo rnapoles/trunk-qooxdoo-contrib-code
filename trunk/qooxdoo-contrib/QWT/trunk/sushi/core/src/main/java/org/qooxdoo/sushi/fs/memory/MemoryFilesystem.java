@@ -29,10 +29,13 @@ import org.qooxdoo.sushi.fs.ParseException;
 public class MemoryFilesystem extends Filesystem {
     private final WeakHashMap<Integer, MemoryRoot> roots;
     
+    public int maxInMemorySize;
+    
     public MemoryFilesystem(IO io) {
         super(io, "mem", '/');
         
         this.roots = new WeakHashMap<Integer, MemoryRoot>();
+        this.maxInMemorySize = 32 * 1024;
     }
 
     @Override
