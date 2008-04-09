@@ -108,10 +108,8 @@ qx.Mixin.define("qcl.application.MApplication",
         p.push(key + "=" + encodeURIComponent(gP[key]));
       }
 
-      with (window.location) 
-      {
-        href = protocol + "//" + host + pathname + "?" + p.join("&") + hash;
-      }
+      window.location.search = p.join("&");
+
     },
 
 
@@ -123,10 +121,10 @@ qx.Mixin.define("qcl.application.MApplication",
      * @return {Map} TODOC
      */
     _analyzeHashString : function(string)
-    {
+    { 
       var h  = string || location.hash || "";
+      h = h.replace(/%3D/g,"=").replace(/%26/g,"&"); // safari doesn't properly decodes the URI, therefore a manual replacement
       var hP = {};
-
       if (h)
       {
         var parts = h.substr(1).split("&");
@@ -137,7 +135,7 @@ qx.Mixin.define("qcl.application.MApplication",
           hP[p[0]] = typeof p[1] == "string" ? decodeURIComponent(p[1].replace(/\+/g, ' ')) : true;
         }
       }
-			if ( ! string ) location.hashParams = hP;
+      if ( ! string ) location.hashParams = hP;
       return hP;
     },
 
@@ -187,10 +185,9 @@ qx.Mixin.define("qcl.application.MApplication",
         p.push(key + "=" + encodeURIComponent(hP[key]));
       }
 
-      with (window.location) 
-      {
-        href = protocol + "//" + host + pathname + search + "#" + p.join("&");
-      }
+      //var l = window.location;
+      //l.href = l.protocol + "//" + l.host + l.pathname + l.search + "#" + p.join("&");
+      window.location.hash = p.join("&");
     },
     
     /**
@@ -205,69 +202,98 @@ qx.Mixin.define("qcl.application.MApplication",
     setState : function( name, value, description )
     {
       if ( typeof(name) != "string" )
-			{
-				this.error("Invalid parameters");
-			}
-      this.setHashParam( name, value );
-			//console.log("Setting '" + name + "' to " +value);
+      {
+        this.error("Invalid parameters");
+      }
 			
-			// qooxdoo browser navigation button support
-			// this will also fire the changeState event
-			qx.client.History.getInstance().addToHistory(location.hash.substr(1),description);
+			// convert to string
+			if ( typeof(value) != "string" )
+			{
+				value = new String(value);
+			}
+			
+			var oldValue = this.getState(name);
+			
+			//console.log("New state for '" + name + "' :'" +value +"', old state :'" + oldValue +"'");
+			
+			// only dispatch events if value actually changes
+      if ( value != oldValue )
+      {
+        // this will also fire the changeState event
+        this.setHashParam( name, value );
+        //console.log("Setting '" + name + "' to " +value);
+        
+        // qooxdoo browser navigation button support
+        qx.client.History.getInstance().addToHistory(location.hash.substr(1),description);        
+      }
     },
     
-		/**
-		 * Gets the string value of a state
-		 * @param {String} name
-		 */
+    /**
+     * Gets the string value of a state
+     * @param {String} name
+     */
     getState : function ( name )
     {
-    	return this.getHashParam( name );
+      return this.getHashParam( name );
+    },
+    
+    /**
+     * fires a "change state" event
+     * @param {String} name
+     * @param {String} data
+     * @return void
+     */
+    _fireStateEvent : function ( name, data )
+    {
+      var eventName = "change" + name.substr(0,1).toUpperCase() + name.substr(1);
+      //console.log("Firing Event '" + eventName + "' with data :" + data );
+      qx.core.Init.getInstance().getApplication().createDispatchDataEvent(eventName,data);
+    },
+    
+    
+    /**
+     * Support qooxdoo history manager 
+     * @param {Boolean} value
+     */
+    setHistorySupport : function (value)
+    {
+      if( value )
+      {
+        var state = qx.client.History.getInstance().getState();
+        //console.log("Initial state: " + state);
+        this.__hashParams  = this._analyzeHashString();
+        //console.log(this.__hashParams);
+        qx.client.History.getInstance().addEventListener("request", function(e) {
+          var state = e.getData();
+          //console.log("State: " + state);
+          
+          // application specific state update
+          var hP = this._analyzeHashString(state);
+          for ( var key in hP )
+          {
+            var value = hP[key]; 
+            if ( value != this.__hashParams[key] )
+            {
+              this.__hashParams[key] = value;
+              this._fireStateEvent(key,value);
+            }
+          }
+        }, this);
+      }     
     },
 		
-		/**
-		 * fires a "change state" event
-		 * @param {String} name
-		 * @param {String} data
-		 * @return void
-		 */
-		_fireStateEvent : function ( name, data )
-		{
-			var eventName = "change" + name.substr(0,1).toUpperCase() + name.substr(1);
-			//console.log("Firing Event '" + eventName + "' with data :" + data );
-			qx.core.Init.getInstance().getApplication().createDispatchDataEvent(eventName,data);
-		},
-		
 		
 		/**
-		 * Support qooxdoo history manager 
-		 * @param {Boolean} value
+		 * updates the current state, firing all change events even if 
+		 * the state hasn't changed.
 		 */
-		setHistorySupport : function (value)
+		updateState : function()
 		{
-			if( value )
-			{
-				var state = qx.client.History.getInstance().getState();
-				//console.log("Initial state: " + state);
-				this.__hashParams  = this._analyzeHashString();
-				//console.log(this.__hashParams);
-				qx.client.History.getInstance().addEventListener("request", function(e) {
-				  var state = e.getData();
-					//console.log("State: " + state);
-					
-				  // application specific state update
-					var hP = this._analyzeHashString(state);
-					for ( var key in hP )
-					{
-						var value = hP[key]; 
-						if ( value != this.__hashParams[key] )
-						{
-							this.__hashParams[key] = value;
-							this._fireStateEvent(key,value);
-						}
-					}
-				}, this);
-			}			
+			var stateMap = this._analyzeHashString();
+			for(var key in stateMap)
+		 	{
+			   this._fireStateEvent( key, stateMap[key] );
+			}
 		}
   }
 });

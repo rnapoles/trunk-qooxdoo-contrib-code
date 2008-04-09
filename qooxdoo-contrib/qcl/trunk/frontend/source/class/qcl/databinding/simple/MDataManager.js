@@ -511,11 +511,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               this.error("Rpc datatype 'treedatamodel' only valid for qx.ui.treevirtual.TreeVirtual!");
               return false;
             }
-						// FIXME: This doesn't belong here! BAD HACK!!
-						if ( ! qx.Class.hasMixin( qx.ui.treevirtual.TreeVirtual, qcl.databinding.simple.MTreeVirtual ))
-						{
-							qx.Class.include( qx.ui.treevirtual.TreeVirtual, qcl.databinding.simple.MTreeVirtual );
-						}
 						this.handleServerData(data.treedatamodel);
             break;
           
