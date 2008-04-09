@@ -23,7 +23,7 @@ import java.util.WeakHashMap;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.RootPathException;
 
 
 public class MemoryFilesystem extends Filesystem {
@@ -39,21 +39,21 @@ public class MemoryFilesystem extends Filesystem {
     }
 
     @Override
-    public MemoryNode parse(String rootPath) throws ParseException {
+    public MemoryNode parse(String rootPath) throws RootPathException {
         int idx;
         int id;
         
         if (!rootPath.startsWith("//")) {
-            throw new ParseException(rootPath);
+            throw new RootPathException("invalid root");
         }
         idx = rootPath.indexOf('/', 2);
         if (idx == -1) {
-            throw new ParseException(rootPath);
+            throw new RootPathException("invalid root");
         }
         try {
             id = Integer.parseInt(rootPath.substring(2, idx));
         } catch (NumberFormatException e) {
-            throw new ParseException(rootPath, e);
+            throw new RootPathException(e);
         }
         return getRoot(id).node(rootPath.substring(idx + 1));
     }

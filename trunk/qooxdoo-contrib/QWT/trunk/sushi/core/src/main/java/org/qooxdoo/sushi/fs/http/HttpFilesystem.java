@@ -24,6 +24,7 @@ import java.net.URL;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.RootPathException;
 
 public class HttpFilesystem extends Filesystem {
     public HttpFilesystem(IO io) {
@@ -31,8 +32,12 @@ public class HttpFilesystem extends Filesystem {
     }
 
     @Override
-    public HttpNode parse(String rootPath) throws MalformedURLException {
-        return forUrl(new URL("http:" + rootPath));
+    public HttpNode parse(String rootPath) throws RootPathException {
+        try {
+            return forUrl(new URL("http:" + rootPath));
+        } catch (MalformedURLException e) {
+            throw new RootPathException(e);
+        }
     }
 
     public HttpNode forUrl(URL url) {

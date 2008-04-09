@@ -21,13 +21,12 @@ package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
 
-public class ParseException extends IOException {
-    public ParseException(String msg) {
+public class RootPathException extends IOException {
+    public RootPathException(String msg) {
         super(msg);
     }
     
-    public ParseException(String msg, Throwable cause) {
-        this(msg);
+    public RootPathException(Throwable cause) {
         initCause(cause);
     }
 }

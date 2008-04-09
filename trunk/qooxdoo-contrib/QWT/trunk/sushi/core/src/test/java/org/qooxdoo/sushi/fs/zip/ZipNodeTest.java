@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.RootPathException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
 /** Accesses external hosts and might need proxy configuration => Full test */
@@ -34,7 +35,7 @@ public class ZipNodeTest {
     private ZipFilesystem fs = ioObj.getFactory().get(ZipFilesystem.class);
     
     @Test
-    public void jar() throws IOException {
+    public void jar() throws RootPathException, IOException {
         FileNode jar;
         String rootPath;
         String locator;

@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
 import org.qooxdoo.sushi.fs.Root;
 
 
@@ -36,7 +35,7 @@ public class ResourceFilesystem extends Filesystem implements Root {
     }
 
     @Override
-    public ResourceNode parse(String rootPath) throws ParseException {
+    public ResourceNode parse(String rootPath) {
         return new ResourceNode(this, rootPath);
     }
 

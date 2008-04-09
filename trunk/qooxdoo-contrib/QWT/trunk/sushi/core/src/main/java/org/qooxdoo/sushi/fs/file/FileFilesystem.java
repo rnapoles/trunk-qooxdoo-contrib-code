@@ -23,7 +23,7 @@ import java.io.File;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.ParseException;
+import org.qooxdoo.sushi.fs.RootPathException;
 
 public class FileFilesystem extends Filesystem {
     private final FileRoot[] roots;
@@ -41,7 +41,7 @@ public class FileFilesystem extends Filesystem {
     }
 
     @Override
-    public FileNode parse(String rootPath) throws ParseException {
+    public FileNode parse(String rootPath) throws RootPathException {
         File file;
         
         file = new File(rootPath);

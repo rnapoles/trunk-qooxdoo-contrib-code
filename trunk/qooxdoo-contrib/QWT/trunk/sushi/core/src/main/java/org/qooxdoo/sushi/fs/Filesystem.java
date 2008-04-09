@@ -19,7 +19,6 @@
 
 package org.qooxdoo.sushi.fs;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.qooxdoo.sushi.util.Strings;
@@ -57,7 +56,7 @@ public abstract class Filesystem {
         return separatorChar;
     }
     
-    public abstract Node parse(String rootPath) throws IOException;
+    public abstract Node parse(String rootPath) throws RootPathException;
 
     //--
     
