@@ -106,7 +106,7 @@ public class Exec {
     @Override
     public String toString() {
         Host host = connection.getHost();
-        return host.getUser().getName() + '@' + host.getMachine() + "# " + Strings.join(" ", command);
+        return host.getUser() + '@' + host.getMachine() + "# " + Strings.join(" ", command);
     }
 
     private static class TimedOutputStream extends FilterOutputStream {

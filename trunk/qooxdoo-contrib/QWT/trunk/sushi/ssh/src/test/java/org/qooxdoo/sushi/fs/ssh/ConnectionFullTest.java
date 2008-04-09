@@ -41,7 +41,6 @@ public class ConnectionFullTest {
     public static Connection open() throws JSchException, IOException {
         String hostname;
         String username;
-        User user;
         
         hostname = prop("sushi.ssh.test.host");
         if (hostname == null) {
@@ -53,12 +52,7 @@ public class ConnectionFullTest {
             }        
         }
         username = prop("sushi.ssh.test.user");
-        if (username != null) {
-            user = User.withUserKey(IO_OBJ, username);
-        } else {
-            user = User.withUserKey(IO_OBJ);
-        }
-        return Connection.create(hostname, user);
+        return Host.create(IO_OBJ, hostname, username, null, 0).connect();
     }
     
     private static String prop(String key) {
