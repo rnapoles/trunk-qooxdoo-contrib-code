@@ -20,7 +20,6 @@
 package org.qooxdoo.toolkit.plugin.dist;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +31,6 @@ import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
-import org.qooxdoo.sushi.fs.http.HttpFilesystem;
-import org.qooxdoo.sushi.fs.http.HttpNode;
-import org.qooxdoo.sushi.fs.svn.SvnFilesystem;
 import org.qooxdoo.sushi.fs.svn.SvnNode;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
@@ -173,12 +169,11 @@ public class DistributionMojo extends Base {
     private static final String MAVEN_NAME = "apache-maven-2.0.8-bin.zip";
     private void mvn() throws IOException {
         Node src;
-        
-        HttpNode download;
+        Node download;
 
         src = io.getTemp().join(MAVEN_NAME);
         if (!src.isFile()) {
-            download = io.getFactory().get(HttpFilesystem.class).forUrl(new URL("http://archive.apache.org/dist/maven/binaries/" + MAVEN_NAME));
+            download = io.node("http://archive.apache.org/dist/maven/binaries/" + MAVEN_NAME);
             info("downloading " + download);
             download.copyFile(src);
         } else {
@@ -236,14 +231,12 @@ public class DistributionMojo extends Base {
     }
 
     private void qwtSvn(Node qwt) throws IOException, SVNException {
-        String url;
         SvnNode src;
         long revision;
 
-        url = "https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk";
-        src = io.getFactory().get(SvnFilesystem.class).parse(url);
+        src = (SvnNode) io.node("svn:https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/trunk");
         revision = src.export(qwt);
-        qwt.join("svninfo").writeLines("url=" + url, "revision=" + revision);
+        qwt.join("svninfo").writeLines("src=" + src.getLocator(), "revision=" + revision);
     }
 
     private void repository() throws IOException {

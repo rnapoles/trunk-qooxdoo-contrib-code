@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.svn.SvnFilesystem;
 import org.qooxdoo.sushi.fs.svn.SvnNode;
 
 public class Skeleton {
@@ -52,7 +51,7 @@ public class Skeleton {
         zip = Archive.createZip(IO_OBJ);
         url = getUrl(args[1]);
         System.out.println("svn export " + url);
-        src = IO_OBJ.getFactory().get(SvnFilesystem.class).parse(url);
+        src = (SvnNode) IO_OBJ.node("svn:" + url);
         src.export(zip.data);
         for (Node application : zip.data.list()) {
             if (application.isDirectory()) {
