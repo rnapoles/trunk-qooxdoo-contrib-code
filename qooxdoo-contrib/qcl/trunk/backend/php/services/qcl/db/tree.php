@@ -214,10 +214,31 @@ class qcl_db_tree extends qcl_db_model
   }
   
   /**
-   * gets the ids in the path of a folder in the folder hierarchy
-   * @return 
+   * gets the ids in the path of a folder in the folder hierarchy,
+   * starting from the top node to the node
+   * @return array
    */
-  function getHierarchyIds( $id=null )
+  function getNodeIdHierarchy( $id )
+  {
+    if ( (int) $id == 0 )
+    {
+      // top folder
+      return array();
+    }
+    $folder = $this->getById($id);  
+    $hierarchyIds = $this->getNodeIdHierarchy( $folder[$this->key_parentId] );
+    array_push($hierarchyIds,$id);
+    return $hierarchyIds;
+  }
+  
+  /**
+   * gets the ids in the path of a folder in the folder hierarchy,
+   * starting from the node to the top node. Deprecated, use
+   * getNodeIdHierarchy instead.
+   * @deprecated 
+   * @return array
+   */
+  function getHierarchyIds( $id )
   {
     if ( $id !== null )
     {

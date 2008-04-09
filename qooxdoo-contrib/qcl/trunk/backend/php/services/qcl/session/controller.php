@@ -157,6 +157,8 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 	 * @param string 	$message
 	 * @param mixed		$data
 	 * @param string	$requestId 	(optional)
+	 * @todo: add a php string that is dynamically eval'd before dispatching the message
+	 * so that permissions and conditions can be checked dependend on the user
 	 */
 	function addServerMessage( $name, $data, $requestId = null)
 	{ 
@@ -165,15 +167,15 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 		
 		// create data row
 		$row = array(
-			'class'			=> $className,
+			'class'			  => $className,
 			'session_id'	=> $sessionId,
 			'request_id'	=> $requestId,
-			'name'			=> $name,
-			'data'			=> serialize($data)
+			'name'			  => $name,
+			'data'			  => serialize($data)
 		);
 		
 		// insert messages into database
-		$db =& $this->getSingleton("qcl_db_pear");
+		$db =& $this->getNew("qcl_db_pear");
 		$db->insert("messages",$row);
 		
 		return;
