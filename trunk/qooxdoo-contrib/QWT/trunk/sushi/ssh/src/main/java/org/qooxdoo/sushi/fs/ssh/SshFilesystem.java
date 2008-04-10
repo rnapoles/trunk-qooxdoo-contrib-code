@@ -32,14 +32,30 @@ import com.jcraft.jsch.JSchException;
 
 
 public class SshFilesystem extends Filesystem {
-    public String passphrase;
-    public int timeout;
+    private String passphrase;
+    private int timeout;
     private JSch jsch;
     
     public SshFilesystem(IO io) {
         super(io, "ssh", '/');
         
         jsch = new JSch();
+    }
+
+    public void setPassphrase(String passphrase) {
+        this.passphrase = passphrase;
+    }
+
+    public String getPassphrase() {
+        return passphrase;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public int getTimeout() {
+        return timeout;
     }
 
     public JSch getJSch() {
@@ -71,7 +87,7 @@ public class SshFilesystem extends Filesystem {
                 machine = machine.substring(idx + 1);
             }
             try {
-                return new SshNode(createRoot(machine, user, passphrase, timeout), path);
+                return new SshNode(createRoot(machine, user), path);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }
@@ -81,10 +97,10 @@ public class SshFilesystem extends Filesystem {
     }
 
     public SshRoot createLocalRoot() throws JSchException, IOException {
-        return createRoot("localhost", "localhost", null, 0);
+        return createRoot("localhost", "localhost");
     }
 
-    public SshRoot createRoot(String machine, String user, String passphrase, int timeout) throws JSchException, IOException {
+    public SshRoot createRoot(String machine, String user) throws JSchException, IOException {
         IO io;
         Node dir;
         Node file;

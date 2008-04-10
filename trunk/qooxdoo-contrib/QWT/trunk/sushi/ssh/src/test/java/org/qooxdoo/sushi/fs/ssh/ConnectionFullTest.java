@@ -39,20 +39,20 @@ public class ConnectionFullTest {
     private static final IO IO_OBJ = new IO();
     
     public static SshRoot open() throws JSchException, IOException {
-        String hostname;
-        String username;
+        String host;
+        String user;
         
-        hostname = prop("sushi.ssh.test.host");
-        if (hostname == null) {
+        host = prop("sushi.ssh.test.host");
+        if (host == null) {
             try {
                 InetAddress addr = InetAddress.getLocalHost();
-                hostname = addr.getHostName();
+                host = addr.getHostName();
             } catch (UnknownHostException e) {
-                hostname = "localhost";
+                host = "localhost";
             }        
         }
-        username = prop("sushi.ssh.test.user");
-        return IO_OBJ.getFactory().get(SshFilesystem.class).createRoot(hostname, username, null, 0);
+        user = prop("sushi.ssh.test.user");
+        return IO_OBJ.getFactory().get(SshFilesystem.class).createRoot(host, user);
     }
     
     private static String prop(String key) {
