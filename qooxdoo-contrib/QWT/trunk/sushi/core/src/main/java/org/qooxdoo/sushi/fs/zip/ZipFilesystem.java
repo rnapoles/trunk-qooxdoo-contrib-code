@@ -34,7 +34,7 @@ public class ZipFilesystem extends Filesystem {
     }
 
     @Override
-    public ZipNode parse(String rootPath) throws RootPathException {
+    public ZipNode rootPath(String rootPath) throws RootPathException {
         int idx;
         FileNode jar;
         

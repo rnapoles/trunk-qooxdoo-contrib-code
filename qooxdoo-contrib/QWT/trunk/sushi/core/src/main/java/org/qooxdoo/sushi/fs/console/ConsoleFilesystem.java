@@ -30,7 +30,7 @@ public class ConsoleFilesystem extends Filesystem implements Root {
     }
 
     @Override
-    public ConsoleNode parse(String rootPath) throws RootPathException {
+    public ConsoleNode rootPath(String rootPath) throws RootPathException {
         if (rootPath.length() != 0) {
             throw new RootPathException("unexpected path");
         }

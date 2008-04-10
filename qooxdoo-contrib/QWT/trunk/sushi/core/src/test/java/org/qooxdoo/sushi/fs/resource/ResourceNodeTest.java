@@ -32,18 +32,18 @@ public class ResourceNodeTest {
     
     @Test
     public void existing() throws Exception {
-        assertEquals("hello", RFS.parse("testresource").readString());
+        assertEquals("hello", RFS.rootPath("testresource").readString());
     }
     
     @Test
     public void noneExisting() throws Exception {
-        assertFalse(RFS.parse("nosuchresource").exists());
+        assertFalse(RFS.rootPath("nosuchresource").exists());
     }
 
     @Test
     public void absolutePath() throws Exception {
         try {
-            RFS.parse("/absolute");
+            RFS.rootPath("/absolute");
             fail();
         } catch (IllegalArgumentException e) {
             // ok

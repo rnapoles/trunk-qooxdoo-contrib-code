@@ -191,7 +191,7 @@ public class IO extends Thread {
         Node result;
         
         try {
-            result = fs.parse(rootPath);
+            result = fs.rootPath(rootPath);
         } catch (RootPathException e) {
             throw new LocatorException(fs.getName() + ":" + rootPath, e.getMessage(), e.getCause());
         }

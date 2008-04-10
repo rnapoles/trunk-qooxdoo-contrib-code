@@ -39,7 +39,7 @@ public class MemoryFilesystem extends Filesystem {
     }
 
     @Override
-    public MemoryNode parse(String rootPath) throws RootPathException {
+    public MemoryNode rootPath(String rootPath) throws RootPathException {
         int idx;
         int id;
         

@@ -53,7 +53,7 @@ public class SvnFilesystem extends Filesystem {
     
     
     @Override
-    public SvnNode parse(String rootPath) throws RootPathException {
+    public SvnNode rootPath(String rootPath) throws RootPathException {
         try {
             return doParse(rootPath);
         } catch (SVNException e) {

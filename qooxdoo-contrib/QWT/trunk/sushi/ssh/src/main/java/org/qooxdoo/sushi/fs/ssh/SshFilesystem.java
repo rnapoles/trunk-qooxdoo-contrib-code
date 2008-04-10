@@ -75,7 +75,7 @@ public class SshFilesystem extends Filesystem {
     }
     
     @Override
-    public SshNode parse(String rootPath) throws RootPathException {
+    public SshNode rootPath(String rootPath) throws RootPathException {
         int idx;
         String host;
         String user;
