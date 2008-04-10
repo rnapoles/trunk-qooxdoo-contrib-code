@@ -25,22 +25,6 @@ import java.net.URL;
 import org.qooxdoo.sushi.fs.Root;
 
 public class HttpRoot implements Root {
-    public static HttpRoot forUrl(HttpFilesystem filesystem, URL url) {
-        if (!url.getProtocol().equals(url.getProtocol())) {
-            throw new IllegalArgumentException(url.toString());
-        }
-        if (url.getRef() != null) {
-            throw new IllegalArgumentException(url.toString());
-        }
-        if (url.getUserInfo() != null) {
-            throw new IllegalArgumentException(url.toString());
-        }
-        if (url.getQuery() != null) {
-            throw new IllegalArgumentException(url.toString());
-        }
-        return new HttpRoot(filesystem, url.getHost(), url.getPort());
-    }
-    
     private final HttpFilesystem filesystem;
     private final String host;
     private final int port;

@@ -33,14 +33,30 @@ public class HttpFilesystem extends Filesystem {
 
     @Override
     public HttpNode rootPath(String rootPath) throws RootPathException {
+        URL url;
+        
         try {
-            return forUrl(new URL("http:" + rootPath));
+            url = new URL("http:" + rootPath);
         } catch (MalformedURLException e) {
             throw new RootPathException(e);
         }
+        return root(url).node(url.getPath());
     }
 
-    public HttpNode forUrl(URL url) {
-        return new HttpNode(HttpRoot.forUrl(this, url), url);
+    public HttpRoot root(URL url) {
+        if (!url.getProtocol().equals(url.getProtocol())) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getRef() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getUserInfo() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        if (url.getQuery() != null) {
+            throw new IllegalArgumentException(url.toString());
+        }
+        // ignores url.getPath()
+        return new HttpRoot(this, url.getHost(), url.getPort());
     }
 }
