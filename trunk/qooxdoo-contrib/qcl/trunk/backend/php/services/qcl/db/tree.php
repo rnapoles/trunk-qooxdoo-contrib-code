@@ -80,13 +80,14 @@ class qcl_db_tree extends qcl_db_model
 	/**
 	 * reorders childrens positions
 	 * @param int $parentId parent folder id
-	 * @param string|null $orderBy
+	 * @param string|null $orderBy defaults to position column
 	 */
 	function reorder ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
+		$orderBy  = either ( $orderBy, $this->key_position );
 		$childIds = $this->getChildIds ( $parentId, $orderBy );
-		$index = 0;
+		$index = 1;
 		foreach ( $childIds as $id )
 		{
 			$data=array();

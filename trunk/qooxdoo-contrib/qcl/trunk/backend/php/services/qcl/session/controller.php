@@ -72,7 +72,7 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 	 */
 	function broadcastMessage ( $message, $data=true )
 	{
-		$this->info("Broadcast $message");
+		//$this->info("Broadcast $message");
 		if ( is_string ($message) )
 		{
 	    $sessionModel =& $this->getModel("session");
@@ -98,11 +98,11 @@ class qcl_session_controller extends qcl_jsonrpc_controller
 	{
 		$sessionModel =& $this->getModel("session");
     $messages = $sessionModel->getBroadcastedMessages($this->getSessionId());
-    $this->info(count($messages) . " broadcasted messages.");
+    //$this->info(count($messages) . " broadcasted messages.");
     foreach( $messages as $message )
     {
       $this->addMessage($message['name'],$message['data']);
-      $this->info($message['name']);
+      //$this->info($message['name']);
     }
     return parent::getResponseData();
 	}
