@@ -1,9 +1,65 @@
+/* ************************************************************************
 
-/**
- * Mixin for application 
- */
+  qcl qooxdoo component library
+  
+  qcl.application.MApplication mixin
+  
+  provides 
+    - central state storage, 
+    - browser history support 
+    - access to the top appication with the clipboard
+
+   Copyright:
+     2007 Christian Boulanger
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     See the LICENSE file in the project's top-level directory for details.
+
+   Authors:
+     * Christian Boulanger (cboulanger)
+
+************************************************************************ */
+
+/* ************************************************************************
+
+#module(qcl.application)
+
+************************************************************************ */
 qx.Mixin.define("qcl.application.MApplication",
 {
+
+  /*
+  *****************************************************************************
+     PROPERTIES
+  *****************************************************************************
+  */
+
+  properties : {
+    
+    /** the backwards history **/
+    backHistoryStack :
+    {
+      check : "Array",
+      init : []
+    },
+    
+    /** the forward history **/
+    forwardHistoryStack :
+    {
+      check : "Array",
+      init : []
+    }   
+
+  },
+
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+  
   members :
   {
     /**
@@ -185,8 +241,6 @@ qx.Mixin.define("qcl.application.MApplication",
         p.push(key + "=" + encodeURIComponent(hP[key]));
       }
 
-      //var l = window.location;
-      //l.href = l.protocol + "//" + l.host + l.pathname + l.search + "#" + p.join("&");
       window.location.hash = p.join("&");
     },
     
@@ -220,11 +274,11 @@ qx.Mixin.define("qcl.application.MApplication",
       if ( value != oldValue )
       {
         // this will also fire the changeState event
+        //console.log("Setting hash param '" + name + "' to " +value);
         this.setHashParam( name, value );
-        //console.log("Setting '" + name + "' to " +value);
         
         // qooxdoo browser navigation button support
-        qx.client.History.getInstance().addToHistory(location.hash.substr(1),description);        
+        this.addToHistory(location.hash.substr(1),description);        
       }
     },
     
@@ -258,20 +312,22 @@ qx.Mixin.define("qcl.application.MApplication",
     setHistorySupport : function (value)
     {
       if( value )
-      {
+      {        
         var state = qx.client.History.getInstance().getState();
-        //console.log("Initial state: " + state);
+        // console.log("Initial state: " + state);
+        this.__lastHash    = state; 
         this.__hashParams  = this._analyzeHashString();
         //console.log(this.__hashParams);
         qx.client.History.getInstance().addEventListener("request", function(e) {
           var state = e.getData();
-          //console.log("State: " + state);
+          //console.log("'request' event received with hash'"+state+"'");
           
           // application specific state update
           var hP = this._analyzeHashString(state);
           for ( var key in hP )
           {
             var value = hP[key]; 
+            //console.log("State param '"+key+"': new value '"+value+"', stored value '"+this.__hashParams[key]+"'.");
             if ( value != this.__hashParams[key] )
             {
               this.__hashParams[key] = value;
@@ -294,6 +350,83 @@ qx.Mixin.define("qcl.application.MApplication",
 		 	{
 			   this._fireStateEvent( key, stateMap[key] );
 			}
-		}
+		},
+    
+    /**
+     * wraps qx.client.History.getInstance().navigateBack();
+     */
+    navigateBack : function()
+    {
+      var bHist = this.getBackHistoryStack();
+      var fHist = this.getForwardHistoryStack();
+      //console.log("Trying to navigate backwards, stack length is "+ bHist.length);
+      if ( bHist.length )
+      {
+        var hash = bHist.shift(); // get from backward stack
+        fHist.unshift(hash); // and put on forward stack
+        
+        // for some reason, this has to be executed twice to trigger the back action
+        qx.client.History.getInstance().navigateBack();
+        qx.client.History.getInstance().navigateBack();
+
+        return true;
+      }
+      return false;
+    },
+    
+    /**
+     * wraps qx.client.History.getInstance().navigateForward()
+     */
+    navigateForward : function()
+    {
+      var fHist = this.getForwardHistoryStack();
+      var bHist = this.getBackHistoryStack();
+      //console.log("Trying to navigate forwards, stack length is "+ fHist.length);
+      if ( fHist.length )
+      {
+        var hash = fHist.shift(); // get from forward stack
+        bHist.unshift(hash); // and put on backward stack
+        
+        // for some reason, this has to be executed twice to trigger the forward action
+        qx.client.History.getInstance().navigateForward();
+        qx.client.History.getInstance().navigateForward();
+        return true;
+      }
+      return false;
+    },
+    
+    /**
+     * Wraps the qooxdoo history function and tries to guess wether the move was forward or backwards
+     * @param hash {String}
+     * @param description {String|undefined}
+     */
+    addToHistory : function( hash, description )
+    {
+      
+      // check if state has changed
+      if ( hash == this.__lastHash )
+      {
+        console.log("Hash hasn't changed, not adding it to history...");
+        return;
+      }
+      this.__lastHash = hash;
+      
+      var fHist = this.getForwardHistoryStack();
+      var bHist = this.getBackHistoryStack();
+
+      bHist.unshift(hash);
+
+      qx.client.History.getInstance().addToHistory( hash, description );
+    },
+
+    canNavigateBack : function()
+    {
+      return ( this.getBackHistoryStack().length > 1 );
+    },
+    
+    canNavigateForward : function()
+    {
+      return ( this.getForwardHistoryStack().length > 1 );
+    }
   }
 });
