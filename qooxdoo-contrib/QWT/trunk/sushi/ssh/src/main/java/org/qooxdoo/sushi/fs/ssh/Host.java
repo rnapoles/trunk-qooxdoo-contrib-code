@@ -39,8 +39,6 @@ import com.jcraft.jsch.UserInfo;
 
 /** A session factory with convenience methods to invoke command */
 public class Host implements UserInfo {
-    private static final Settings SETTINGS = new Settings();
-    
     public static Host createLocal(IO io) throws JSchException, IOException {
         return create(io, "localhost", "localhost", null, 0);
     }

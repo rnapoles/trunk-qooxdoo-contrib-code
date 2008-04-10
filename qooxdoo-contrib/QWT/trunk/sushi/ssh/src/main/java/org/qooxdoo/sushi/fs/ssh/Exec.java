@@ -19,8 +19,6 @@
 
 package org.qooxdoo.sushi.fs.ssh;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
@@ -106,26 +104,5 @@ public class Exec {
     @Override
     public String toString() {
         return host.getUser() + '@' + host.getMachine() + "# " + Strings.join(" ", command);
-    }
-
-    private static class TimedOutputStream extends FilterOutputStream {
-        private long started;
-        public long duration;
-
-        public TimedOutputStream(OutputStream out) {
-            super(out);
-            this.started = System.currentTimeMillis();
-            this.duration = 0;
-        }
-        
-        @Override
-        public void close() throws IOException {
-            super.close();
-            if (duration == 0) {
-                duration = System.currentTimeMillis() - started;
-            } else {
-                // already closed
-            }
-        }
     }
 }
