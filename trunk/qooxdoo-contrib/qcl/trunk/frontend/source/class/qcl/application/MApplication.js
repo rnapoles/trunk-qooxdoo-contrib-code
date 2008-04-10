@@ -179,11 +179,11 @@ qx.Mixin.define("qcl.application.MApplication",
     _analyzeHashString : function(string)
     { 
       var h  = string || location.hash || "";
-      h = h.replace(/%3D/g,"=").replace(/%26/g,"&"); // safari doesn't properly decodes the URI, therefore a manual replacement
+      h = h.replace(/#/,"").replace(/%3D/g,"=").replace(/%26/g,"&"); // safari doesn't properly decodes the URI, therefore a manual replacement
       var hP = {};
       if (h)
       {
-        var parts = h.substr(1).split("&");
+        var parts = h.split("&");
 
         for (var i=0; i<parts.length; i++)
         {
@@ -243,6 +243,33 @@ qx.Mixin.define("qcl.application.MApplication",
 
       window.location.hash = p.join("&");
     },
+
+    /**
+     * TODOC
+     *
+     * @type member
+     * @param name {String} TODOC
+     * @return {Map}  
+     */
+    removeHashParam : function(name)
+    {
+      var hP = this._analyzeHashString();
+      
+      if (typeof(hP[name]) != undefined) 
+      {
+        delete hP[name];
+        
+        var p = [];
+        
+        for (var key in hP) 
+        {
+          p.push(key + "=" + encodeURIComponent(hP[key]));
+        }
+        
+        window.location.hash = p.join("&");
+      }
+      return hP;
+    },
     
     /**
      * sets a state aspect of the application. the state is exclusively stored in the hash
@@ -285,14 +312,25 @@ qx.Mixin.define("qcl.application.MApplication",
     /**
      * Gets the string value of a state
      * @param {String} name
+     * @return {String}
      */
     getState : function ( name )
     {
       return this.getHashParam( name );
     },
+
+    /**
+     * Removes a state
+     * @param {String} name
+     * @return {Map}
+     */
+    removeState : function ( name )
+    {
+      return this.removeHashParam( name );
+    },
     
     /**
-     * fires a "change state" event
+     * Fires a "change state" event
      * @param {String} name
      * @param {String} data
      * @return void
@@ -337,11 +375,11 @@ qx.Mixin.define("qcl.application.MApplication",
         }, this);
       }     
     },
-		
-		
+	
 		/**
-		 * updates the current state, firing all change events even if 
+		 * Updates the current state, firing all change events even if 
 		 * the state hasn't changed.
+		 * @return {Map}
 		 */
 		updateState : function()
 		{
@@ -350,10 +388,11 @@ qx.Mixin.define("qcl.application.MApplication",
 		 	{
 			   this._fireStateEvent( key, stateMap[key] );
 			}
+      return stateMap;
 		},
     
     /**
-     * wraps qx.client.History.getInstance().navigateBack();
+     * Wraps qx.client.History.getInstance().navigateBack();
      */
     navigateBack : function()
     {
@@ -396,13 +435,12 @@ qx.Mixin.define("qcl.application.MApplication",
     },
     
     /**
-     * Wraps the qooxdoo history function and tries to guess wether the move was forward or backwards
+     * Wraps the qooxdoo history function
      * @param hash {String}
      * @param description {String|undefined}
      */
     addToHistory : function( hash, description )
     {
-      
       // check if state has changed
       if ( hash == this.__lastHash )
       {
@@ -410,12 +448,8 @@ qx.Mixin.define("qcl.application.MApplication",
         return;
       }
       this.__lastHash = hash;
-      
-      var fHist = this.getForwardHistoryStack();
       var bHist = this.getBackHistoryStack();
-
       bHist.unshift(hash);
-
       qx.client.History.getInstance().addToHistory( hash, description );
     },
 
