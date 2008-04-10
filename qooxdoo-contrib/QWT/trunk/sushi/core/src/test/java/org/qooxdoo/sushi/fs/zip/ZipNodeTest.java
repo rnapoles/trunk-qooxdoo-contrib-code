@@ -32,7 +32,6 @@ import org.qooxdoo.sushi.fs.file.FileNode;
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class ZipNodeTest {
     private IO ioObj = new IO();
-    private ZipFilesystem fs = ioObj.getFilesystem(ZipFilesystem.class);
     
     @Test
     public void jar() throws RootPathException, IOException {
@@ -44,7 +43,7 @@ public class ZipNodeTest {
         jar = ioObj.locateClasspathItem(Object.class);
         rootPath = jar.getAbsolute() + "!/java/lang/Object.class";
         locator = "zip:" + rootPath;
-        node = fs.rootPath(rootPath);
+        node = (ZipNode) ioObj.node(locator);
         assertEquals(locator, node.getLocator());
         assertEquals("java/lang/Object.class", node.getPath());
         assertTrue(node.exists());

@@ -53,36 +53,37 @@ public class SvnFilesystem extends Filesystem {
     
     
     @Override
-    public SvnNode rootPath(String rootPath) throws RootPathException {
+    public SvnRoot rootPath(String rootPath, StringBuilder path) throws RootPathException {
         try {
-            return doParse(rootPath);
+            return doRootPath(rootPath, path);
         } catch (SVNException e) {
             throw new RootPathException(e);
         }
     }
     
-    public SvnNode doParse(String url) throws SVNException {
+    public SvnRoot doRootPath(String url, StringBuilder path) throws SVNException {
         SVNRepository repository;
         String root;
-        String path;
+        String remaining;
         
         if (url.endsWith(getSeparator())) {
             throw new IllegalArgumentException(url);
         }
         repository = repository(SVNURL.parseURIEncoded(url), username, password);
         root = repository.getRepositoryRoot(true).toString();
-        path = repository.getLocation().toString();
-        if (root.equals(path)) {
-            path = "";
+        remaining = repository.getLocation().toString();
+        if (root.equals(remaining)) {
+            remaining = "";
         } else {
             root = root + "/";
-            if (!path.startsWith(root)) {
-                throw new IllegalArgumentException(root + "+" + path);
+            if (!remaining.startsWith(root)) {
+                throw new IllegalArgumentException(root + "+" + remaining);
             }
             repository.setLocation(SVNURL.parseURIEncoded(root), true);
-            path = path.substring(root.length());
+            remaining = remaining.substring(root.length());
         }
-        return root(repository).node(path);
+        path.append(remaining);
+        return root(repository);
     }
     
     public SvnRoot root(SVNRepository repository) throws SVNException {

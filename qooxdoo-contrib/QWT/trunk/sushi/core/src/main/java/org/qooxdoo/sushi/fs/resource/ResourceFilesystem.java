@@ -35,8 +35,9 @@ public class ResourceFilesystem extends Filesystem implements Root {
     }
 
     @Override
-    public ResourceNode rootPath(String rootPath) {
-        return new ResourceNode(this, rootPath);
+    public ResourceFilesystem rootPath(String rootPath, StringBuilder path) {
+        path.append(rootPath);
+        return this;
     }
 
     //-- Root methods

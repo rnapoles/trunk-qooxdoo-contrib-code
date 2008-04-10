@@ -39,7 +39,7 @@ public class MemoryFilesystem extends Filesystem {
     }
 
     @Override
-    public MemoryNode rootPath(String rootPath) throws RootPathException {
+    public MemoryRoot rootPath(String rootPath, StringBuilder path) throws RootPathException {
         int idx;
         int id;
         
@@ -55,10 +55,11 @@ public class MemoryFilesystem extends Filesystem {
         } catch (NumberFormatException e) {
             throw new RootPathException(e);
         }
-        return getRoot(id).node(rootPath.substring(idx + 1));
+        path.append(rootPath.substring(idx + 1));
+        return root(id);
     }
 
-    public MemoryRoot getRoot(int id) {
+    public MemoryRoot root(int id) {
         MemoryRoot root;
         
         root = roots.get(id);
@@ -69,7 +70,7 @@ public class MemoryFilesystem extends Filesystem {
         return root;
     }
 
-    public MemoryRoot createRoot() {
+    public MemoryRoot root() {
         MemoryRoot root;
         
         for (int id = 0; true; id++) {

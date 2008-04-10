@@ -24,7 +24,7 @@ import org.qooxdoo.sushi.fs.NodeTest;
 public class MemoryNodeTest extends NodeTest {
     @Override
     protected MemoryNode createWork() {
-        return IO.getMemoryFilesystem().createRoot().node("");
+        return IO.getMemoryFilesystem().root().node("");
     }
 }
 

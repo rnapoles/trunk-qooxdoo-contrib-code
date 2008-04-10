@@ -40,14 +40,15 @@ public class FileFilesystem extends Filesystem {
     }
 
     @Override
-    public FileNode rootPath(String rootPath) {
+    public FileRoot rootPath(String rootPath, StringBuilder path) {
         FileRoot root;
         
         root = root(rootPath);
         if (root == null) {
             return null;
         } else {
-            return root.node(rootPath.substring(root.getId().length()));
+            path.append(rootPath.substring(root.getId().length()));
+            return root;
         }
     }
 
