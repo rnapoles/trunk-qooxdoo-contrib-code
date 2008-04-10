@@ -31,7 +31,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
 public class Exec {
-    public static Exec begin(Connection connection, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
+    public static Exec begin(Host host, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
     throws JSchException {
         TimedOutputStream dest;
         
@@ -45,26 +45,26 @@ public class Exec {
         channel.setOutputStream(dest);
         channel.setExtOutputStream(dest);
         channel.connect();
-        return new Exec(connection, command, channel, dest);
+        return new Exec(host, command, channel, dest);
     }
 
-    private final Connection connection;
+    private final Host host;
     private final String[] command;
     private final TimedOutputStream dest;
     private final ChannelExec channel;
 
-    public Exec(Connection connection, String[] command, ChannelExec channel, TimedOutputStream dest) {
+    public Exec(Host host, String[] command, ChannelExec channel, TimedOutputStream dest) {
         if (channel == null) {
             throw new IllegalArgumentException();
         }
-        this.connection = connection;
+        this.host = host;
         this.command = command;
         this.channel = channel;
         this.dest = dest;
     }
 
-    public Connection getConnection() {
-        return connection;
+    public Host getHost() {
+        return host;
     }
 
     public boolean canEnd() {
@@ -105,7 +105,6 @@ public class Exec {
     
     @Override
     public String toString() {
-        Host host = connection.getHost();
         return host.getUser() + '@' + host.getMachine() + "# " + Strings.join(" ", command);
     }
 
