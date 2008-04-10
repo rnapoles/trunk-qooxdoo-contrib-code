@@ -32,6 +32,7 @@ import com.jcraft.jsch.JSchException;
 
 
 public class SshFilesystem extends Filesystem {
+    private Node privateKey;
     private String passphrase;
     private int timeout;
     private JSch jsch;
@@ -39,9 +40,20 @@ public class SshFilesystem extends Filesystem {
     public SshFilesystem(IO io) {
         super(io, "ssh", '/');
         
+        privateKey = null;
+        passphrase = null;
+        timeout = 0;
         jsch = new JSch();
     }
 
+    public void setPrivateKey(Node privateKey) {
+        this.privateKey = privateKey;
+    }
+    
+    public Node getPrivateKey() {
+        return privateKey;
+    }
+    
     public void setPassphrase(String passphrase) {
         this.passphrase = passphrase;
     }
@@ -104,27 +116,39 @@ public class SshFilesystem extends Filesystem {
         IO io;
         Node dir;
         Node file;
-        Node privateKey;
-
+        Node key;
+        String pp;
+        
         io = getIO();
         if (user == null) {
             user = io.getHome().getName();
         }
         dir = io.getHome().join(".ssh");
-        if (passphrase == null) {
-            if (passphrase == null) {
-                file = dir.join("passphrase");
-                if (file.exists()) {
-                    passphrase = file.readString().trim();
-                } else {
-                    passphrase = "";
-                }
+        if (passphrase != null) {
+            pp = passphrase;
+        } else {
+            file = dir.join("passphrase");
+            if (file.exists()) {
+                pp = file.readString().trim();
+            } else {
+                pp = "";
             }
         }
-        privateKey = dir.join("id_dsa");
-        if (!privateKey.exists()) {
-            privateKey = dir.join("id_rsa");
+        if (privateKey != null) {
+            key = privateKey;
+        } else {
+            key = dir.join("id_dsa");
+            if (!key.exists()) {
+                key = dir.join("id_rsa");
+            }
         }
-        return new SshRoot(this, machine, user, (FileNode) privateKey, passphrase, timeout);
+        if (!key.isFile()) {
+            throw new IOException("private key not found: " + key);
+        }
+        if (!(key instanceof FileNode)) {
+            // TODO: what about security?
+            key = key.copyFile(io.createTempFile());
+        }
+        return new SshRoot(this, machine, user, (FileNode) key, pp, timeout);
     }
 }

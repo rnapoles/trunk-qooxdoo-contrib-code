@@ -501,13 +501,17 @@ public abstract class Node {
 
     //-- copy
     
-    /** overwrites existing files */
-    public void copyFile(Node dest) throws IOException {
+    /** 
+     * Overwrites existing files.
+     * @return dest 
+     */
+    public Node copyFile(Node dest) throws IOException {
         InputStream in;
         
         in = createInputStream();
         getIO().buffer.copy(in, dest);
         in.close();
+        return dest;
     }
 
     //-- other
