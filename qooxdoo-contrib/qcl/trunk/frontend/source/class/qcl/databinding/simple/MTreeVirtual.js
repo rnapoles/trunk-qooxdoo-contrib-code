@@ -62,12 +62,6 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
   },
 
   /*
-  ---------------------------------------------------------------------------
-    PROPERTIES
-  ---------------------------------------------------------------------------
-  */
-
-  /*
   *****************************************************************************
      MEMBERS
   *****************************************************************************
@@ -90,7 +84,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
       
       if ( ! data instanceof Array )
       {
-        console.warn("Invalid rpc data." );
+        //console.log("Invalid rpc data." );
         return;
       }
       
@@ -98,15 +92,13 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         
       // prune parent of first node, this assumes that all nodes 
       // sent have the same parent.       
-      var parentNodeId = this.getParentNodeId(data[0]);
       
-      //console.log("Parent node of 1st element: #"+parentNodeId);
-      
-      if ( parentNodeId !== null )
+      var serverParentId = data[0].data.parentId ;
+      if ( serverParentId )
       {
-        //console.log("Pruning node #"+parentNodeId);
-        dataModel.prune(parentNodeId);  
-        dataModel.setState(parentNodeId,{bOpened:true});        
+        //console.log("Pruning node server#"+serverParentId);
+        this.pruneByServerNodeId( serverParentId );  
+        this.setStateByServerNodeId( serverParentId ,{bOpened:true});        
       }
               
         // add all nodes 
@@ -134,7 +126,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         var parentNodeId = this.getParentNodeId(node);
         if (parentNodeId == null)
         {
-          console.warn("Cannot find parent node for node server#" + node.data.id);
+          //console.log("Cannot find parent node for node server#" + node.data.id);
           continue;
         }
         if( node.isBranch )
@@ -200,7 +192,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         }
         catch(e)
         {
-          console.warn("Node for node id "+ node + " does not exist:" + e);
+          //console.log("Node for node id "+ node + " does not exist:" + e);
           return;
         }
         
@@ -211,7 +203,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         }
         else
         {
-          console.warn("Node for node id "+ node + " does not exist.");
+          //console.log("Node for node id "+ node + " does not exist.");
           return;
         }
       }
@@ -227,7 +219,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         var map = this.getServerNodeIdMap();
         if ( typeof(node.data) != "object")
         {
-          console.warn("No node data!");
+          //console.log("No node data!");
           return;
         }
         
@@ -237,13 +229,13 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
           var parentNodeId = map[node.data.parentId];
           if ( typeof(parentNodeId) != "number" )
           {
-            console.warn("Cannot find data.parentId #" + node.data.parentId );
+            //console.log("Cannot find data.parentId #" + node.data.parentId );
             return 0;
           }        
         }   
         else 
         {
-          console.warn("Cannot get parent node of node server#" + node.data.id);
+          //console.log("Cannot get parent node of node server#" + node.data.id);
           return 0;
         }
       }   
@@ -305,7 +297,7 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
             // check if first node exists
             if ( typeof(map[ids[0]]) == "undefined" )
             {
-              console.warn("First element in hierarchy must be loaded already!");
+              //console.log("First element in hierarchy must be loaded already!");
               return;
             }
             
@@ -355,48 +347,64 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
      * loaded. The first set of subnodes below the root has to be loaded already
      * for this to work.
      */
-    selectByServerNodeId : function (nodeId,loadNodeChildrenFunc,loadIdHierarchyFunc)
+    selectByServerNodeId : function (serverNodeId,loadNodeChildrenFunc,loadIdHierarchyFunc)
     {
-      //console.log("selectByServerNodeId(" + nodeId + ")");
-      var treeNodeId = this.getServerNodeIdMap()[nodeId];
+      //console.log("selectByServerNodeId(" + serverNodeId + ","+loadNodeChildrenFunc+","+loadIdHierarchyFunc+")");
+      var treeNodeId = this.getServerNodeIdMap()[serverNodeId];
+      
       if ( treeNodeId )
       {
-        //console.log("Selecting already loaded node #" + treeNodeId);
+        //console.log("Selecting already loaded node client#" + treeNodeId);
         // load has already been loaded, select it with a small timeout
         qx.client.Timer.once(function(){
-          var row = this.getDataModel().getRowFromNodeId(treeNodeId); 
+          try {
+            var row = this.getDataModel().getRowFromNodeId(treeNodeId);  
+          }
+          catch(e)
+          {
+            console.warn(e);
+          } 
           if ( typeof(row) == "number" )
           {
-            //console.log("Selecting row #" + row);
-            this.scrollCellVisible(0,row);
-            this.getSelectionModel().clearSelection();
-            this.getSelectionModel().addSelectionInterval(row,row);        
-            this.setServerNodeIdSelected(parseInt(nodeId));   
+            var selModel = this.getSelectionModel();
+            if ( selModel.isSelectedIndex(row ) )
+            {
+              //console.log("Row #"+row+" is already selected. Ignoring select command.");
+            }
+            else
+            {
+              //console.log("Selecting row #" + row);
+              this.scrollCellVisible(0,row);
+              selModel.clearSelection();
+              selModel.addSelectionInterval(row,row);                      
+            }
+            this.setServerNodeIdSelected(parseInt(serverNodeId));   
           }
           else
           {
-            console.warn("No row number available for node client#" + treeNodeId + ", server#" + nodeId);  
+            console.warn("No row number available for node client#" + treeNodeId + ", server#" + serverNodeId+" - probably not loaded yet.");  
           }
         },this,100);
       }
       else
       {
-        //console.log("Cannot select, loading unloaded node #" + nodeId );
+        //console.log("Cannot select, loading unloaded node #" + serverNodeId );
         if ( ! this.__nodeLoadedCheckSelectEvent )
         {
           // event listener that waits for nodes to be loaded. if the server-side id matches, the node is selected
           //console.log("Attaching nodeLoadedCheckSelectEvent event listener...");
           this.addEventListener("nodeLoaded",function(event){
-            var node = event.getData();
-            //console.log("Loaded node #"+node.data.id + ", we want to select #" + this.__selectNodeByServerId );
-            var selId = this.getServerNodeIdToSelect();
+            var node    = event.getData();
+            var selId   = this.getServerNodeIdToSelect();
             var isSelId = this.getServerNodeIdSelected();
-            if ( selId && node.data && node.data.id == selId ) 
+            //console.log("Loaded node server#"+node.data.id + ", we want to select server#" + selId );
+            if ( selId && node.data.id == selId ) 
             {
+              //console.log("Bingo! Now selecting server#" + selId );
               this.selectByServerNodeId(selId);
-              this.setServerNodeIdToSelect(null); 
+              this.setServerNodeIdToSelect(null);  
             }
-            else if (isSelId)
+            else if (isSelId && this.isLoaded(isSelId) )
             {
               this.selectByServerNodeId(isSelId);
             }
@@ -404,11 +412,10 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
           this.__nodeLoadedCheckSelectEvent = true;
         }
         // save node id for later, when the node has been loaded
-        this.setServerNodeIdToSelect(parseInt(nodeId));   
+        this.setServerNodeIdToSelect(parseInt(serverNodeId));   
         
         // load node(s)
-        //console.log("Instead of selecting, we are Loading node server#"+nodeId);
-        this.loadNodeByServerId(nodeId,loadNodeChildrenFunc,loadIdHierarchyFunc);
+        this.loadNodeByServerId(serverNodeId,loadNodeChildrenFunc,loadIdHierarchyFunc);
       }     
     },
     
@@ -431,11 +438,160 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         {
           throw new Error("Cannot update node - node hasn't been loaded yet.");
         }
-        // update node
-        var model = this.getDataModel();
-        model.setState(nodeId,node);
-        model.setData();
+      }  
+      // select properties to update, ideally, they should be filtered out already
+      var props = {
+        'label'         : node.label,
+        'icon'          : node.icon,
+        'iconSelected'  : node.iconSelected,
+        'cellStyle'     : node.cellStyle,
+        'labelStyle'    : node.labelStyle,
+        'data'          : node.data,
+        'columnData'    : node.columnData
+      };
+      
+      // update node
+      var model = this.getDataModel();
+      model.setState(nodeId,props);
+      model.setData();
+    },
+    
+    /**
+     * gets the client-side node id from the server-side node id
+     * @param serverNodeId {Integer}
+     * @return {Integer}
+     * @throws exception if node hasn't been loaded yet
+     */
+    getClientNodeId : function ( serverNodeId )
+    {
+      var map    = this.getServerNodeIdMap();
+      var nodeId = map[serverNodeId];      
+      if ( typeof(nodeId) != "number" )
+      {
+        throw new Error("Node server#"+serverNodeId+" hasn't been loaded");
       }
-    }
+      return nodeId;
+    },
+    
+    /**
+     * Checks if node identified by its server-side id has already been loaded
+     * @param nodeId {Integer} server-side node id
+     * @return {Boolean}
+     */
+    isLoaded : function ( serverNodeId )
+    {
+      var map = this.getServerNodeIdMap();
+      var isLoaded = ( typeof(map[serverNodeId]) == "number" );
+      //console.log("Node server#"+serverNodeId+(isLoaded ? " is loaded.":" is not loaded."));
+      return isLoaded;
+    },
+    
+    /**
+     * Checks if node identified by its server-side id has loaded its children
+     * @param nodeId {Integer} server-side node id
+     * @return {Boolean}
+     */
+    hasLoadedChildren : function ( serverNodeId )
+    {
+      var map    = this.getServerNodeIdMap();
+      var nodeId = map[serverNodeId];
+      
+      // node not loaded
+      if ( typeof(nodeId) != "number" ) return false;
+      
+      var node = this.nodeGet(nodeId);
+      
+      if ( typeof(node) != "object")
+      {
+        console.warn("Node client#"+nodeId+"does not exist!");
+        return false;
+      }
+      //console.log("node.children.length:"+node.children.length+",node.data.childCount:"+node.data.childCount);
+      childrenLoaded = (node.children.length > 0 || node.data.childCount == 0 );
+      //console.log("Children of node server#"+serverNodeId+(childrenLoaded ? " are loaded.":" are not loaded."));
+      return childrenLoaded;
+    },    
+    
+    /**
+     * clears the tree, deleting the server-side node map
+     */
+    clear : function()
+    {
+      this.setServerNodeIdMap([]);
+      this.getDataModel().clearData();
+    },
+    
+    /**
+     * prunes a node identified by the server-side id. 
+     * @param serverNodeId {Integer}
+     * @param selfAlso {Boolean} Optional
+     */
+    pruneByServerNodeId : function( serverNodeId, selfAlso )
+    {
+      try 
+      {
+        var nodeId = this.getClientNodeId(serverNodeId);  
+      } 
+      catch(e) 
+      {
+        console.warn(e);
+        return;
+      }
+      
+      var _this = this;
+      var map   = this.getServerNodeIdMap();
+      var node  = this.nodeGet(nodeId);
+      
+      // recursive deletion function
+      var delFunc = function(serverId)
+      {
+        var node1 = _this.nodeGet(map[serverId]); 
+        if ( node1.children.length )
+        {
+          node1.children.forEach(function(clientId){
+            var node2 = _this.nodeGet(clientId);
+            delFunc(node2.data.id);
+          });
+        }
+        delete map[serverId];
+      }
+      
+      // remove children
+      if ( node.children.length )
+      {
+        node.children.forEach(function(clientId){
+          var node2 = _this.nodeGet(clientId);
+          delFunc(node2.data.id);
+        });
+      }
+      
+      if (selfAlso)
+      {
+        delete map[serverNodeId];
+      }
+      
+      // prune in tree data model
+      this.getDataModel().prune(nodeId,selfAlso);
+
+    },
+    
+    /**
+     * sets the state of a node identified by the server-side id. 
+     * @param serverNodeId {Integer}
+     * @param state {Map} 
+     */
+    setStateByServerNodeId : function ( serverNodeId, state )
+    {
+      try 
+      {
+        var nodeId = this.getClientNodeId(serverNodeId);  
+      } 
+      catch(e) 
+      {
+        console.warn(e);
+        return;
+      }
+      this.getDataModel().setState(nodeId,state);
+    }   
   }
 });
