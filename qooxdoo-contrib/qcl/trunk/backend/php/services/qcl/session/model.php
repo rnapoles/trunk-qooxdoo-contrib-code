@@ -114,7 +114,6 @@ class qcl_session_model extends qcl_db_model
       WHERE `{$this->key_namedId}` = '$sessionId'
     ");
    
-    $this->info($msgData);
     $messages = array();
         
     if ( trim($msgData) )
@@ -133,7 +132,6 @@ class qcl_session_model extends qcl_db_model
           );
         }        
       }
-      $this->info($messages);
       $this->db->execute("
         UPDATE `{$this->table}`
         SET `{$this->key_messages}` = ''
