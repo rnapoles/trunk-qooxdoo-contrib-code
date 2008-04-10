@@ -19,14 +19,19 @@
 
 package org.qooxdoo.sushi.fs.ssh;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.Settings;
 import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.io.MultiOutputStream;
 import org.qooxdoo.sushi.util.ExitCode;
 
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -63,16 +68,20 @@ public class Host implements UserInfo {
         if (!privateKey.exists()) {
             privateKey = dir.join("id_rsa");
         }
-        return new Host(machine, user, (FileNode) privateKey, passphrase, timeout);
+        return new Host(machine, user, (FileNode) privateKey, passphrase, timeout, io.settings);
     }
-
+    
     private final String user;
     private final FileNode privateKey;
     private final String passphrase;
     private final String machine;
-    private final int timeout;
+    private final Session session;
+    private final Settings settings;
+    
+    public Host(String machine, String user, FileNode privateKey, String passphrase, int timeout, Settings settings) 
+    throws JSchException {
+        JSch jsch;
 
-    public Host(String machine, String user, FileNode privateKey, String passphrase, int timeout) throws JSchException {
         if (user == null) {
             throw new IllegalArgumentException();
         }
@@ -80,9 +89,50 @@ public class Host implements UserInfo {
         this.privateKey = privateKey;
         this.passphrase = passphrase;
         this.machine = machine;
-        this.timeout = timeout;
+        this.settings = settings;
+        
+        jsch = new JSch();
+        this.session = login(jsch, machine);
+        session.connect(timeout);
+    }
+    
+    public void close() {
+        session.disconnect();
     }
 
+    /** @return a connected channel; automatically closed when the connection is closed */
+    public ChannelSftp open() throws JSchException {
+        ChannelSftp channel;
+        
+        channel = (ChannelSftp) session.openChannel("sftp");
+        channel.connect();
+        return channel;
+    }
+
+    public Exec begin(boolean tty, String ... command) throws JSchException {
+        return begin(tty, MultiOutputStream.createNullStream(), command);
+    }
+    
+    public Exec begin(boolean tty, OutputStream out, String ... command) throws JSchException {
+        return Exec.begin(this, tty, (ChannelExec) session.openChannel("exec"), out, command);
+    }
+    
+    public String exec(String ... command) throws JSchException, ExitCode {
+        return exec(true, command);
+    }
+    
+    public String exec(boolean tty, String ... command) throws JSchException, ExitCode {
+        ByteArrayOutputStream out;
+
+        out = new ByteArrayOutputStream();
+        try {
+            begin(tty, out, command).end();
+        } catch (ExitCode e) {
+            throw new ExitCode(e.call, e.code, settings.string(out));
+        }
+        return settings.string(out);
+    }
+    
     public String getUser() {
         return user;
     }
@@ -99,30 +149,6 @@ public class Host implements UserInfo {
     
     public String getMachine() {
         return machine;
-    }
-    
-    /**
-     * @return never null 
-     */ 
-    public String exec(String ... command) throws JSchException, ExitCode {
-        Connection con;
-        
-        con = connect();
-        try {
-            return con.exec(command);
-        } finally {
-            con.close();
-        }
-    }
-
-    public Connection connect() throws JSchException {
-        JSch jsch;
-        Session session;
-        
-        jsch = new JSch();
-        session = login(jsch, machine);
-        session.connect(timeout);
-        return new Connection(this, session, SETTINGS);
     }
     
     //-- interface implementation 

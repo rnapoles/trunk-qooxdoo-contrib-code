@@ -36,17 +36,17 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 
 public class SshNodeFullTest extends NodeTest {
-    private static Connection connection;
+    private static Host host;
     private ChannelSftp channel;
     
     @BeforeClass
     public static void beforeClass() throws Exception {
-        connection = ConnectionFullTest.open();
+        host = ConnectionFullTest.open();
     }
 
     @Before @Override
     public void setUp() throws Exception {
-        channel = connection.open();
+        channel = host.open();
         super.setUp();
     }
     
@@ -59,8 +59,8 @@ public class SshNodeFullTest extends NodeTest {
     
     @AfterClass
     public static void afterClass() throws Exception {
-        if (connection != null) {
-            connection.close();
+        if (host != null) {
+            host.close();
         }
     }
     

@@ -64,7 +64,7 @@ public class SshFilesystem extends Filesystem {
                 machine = machine.substring(idx + 1);
             }
             try {
-                return forChannel(Host.create(io, machine, user, passphrase, timeout).connect().open(), path);
+                return forChannel(Host.create(io, machine, user, passphrase, timeout).open(), path);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }
