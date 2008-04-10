@@ -52,7 +52,7 @@ public class ConnectionFullTest {
             }        
         }
         user = prop("sushi.ssh.test.user");
-        return IO_OBJ.getFactory().get(SshFilesystem.class).createRoot(host, user);
+        return IO_OBJ.getFilesystem(SshFilesystem.class).createRoot(host, user);
     }
     
     private static String prop(String key) {

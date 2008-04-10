@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.fs.IO;
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class HttpNodeFullTest {
     private IO ioObj = new IO();
-    private HttpFilesystem fs = ioObj.getFactory().get(HttpFilesystem.class);
+    private HttpFilesystem fs = ioObj.getFilesystem(HttpFilesystem.class);
     
     @Test
     public void normal() throws IOException {

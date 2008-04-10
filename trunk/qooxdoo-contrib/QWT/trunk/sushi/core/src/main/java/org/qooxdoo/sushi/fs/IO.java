@@ -21,13 +21,18 @@ package org.qooxdoo.sushi.fs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.fs.file.FileNode;
@@ -74,7 +79,7 @@ public class IO {
     
     private final List<String> defaultExcludes;
     
-    private final Factory factory;
+    private final Map<String, Filesystem> filesystems;
     private final FileFilesystem fileFilesystem;
     
     public IO() {
@@ -82,17 +87,16 @@ public class IO {
     }
     
     public IO(OS os, Settings settings, Buffer buffer, Xml xml, String... defaultExcludes) {
-        this.factory = new Factory(this);
-        try {
-            factory.scan();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        this.fileFilesystem = factory.get(FileFilesystem.class);
-        factory.setDefault(fileFilesystem);
         this.os = os;
         this.settings = settings;
         this.buffer = buffer;
+        this.filesystems = new HashMap<String, Filesystem>();
+        try {
+            initFilesystems();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.fileFilesystem = getFilesystem(FileFilesystem.class);
         this.temp = init("java.io.tmpdir");
         this.home = init("user.home");
         this.working = init("user.dir");
@@ -159,13 +163,40 @@ public class IO {
     
     public Node node(String locatorOrDot) throws LocatorException {
         Node result;
+        int idx;
+        String name;
+        Filesystem fs;
+        String rootPath;
         
         if (locatorOrDot.equals(".")) {
             result = node(working.getLocator());
             result.setBase(working);
             return result;
         }
-        return factory.parse(working, locatorOrDot);
+        idx = locatorOrDot.indexOf(Filesystem.SEPARTOR);
+        if (idx == -1) {
+            fs = defaultFs(working);
+        } else {
+            name = locatorOrDot.substring(0, idx);
+            fs = filesystems.get(name);
+            if (fs == null) {
+                fs = defaultFs(working);
+            }
+        }
+        rootPath = locatorOrDot.substring(idx + 1);
+        try {
+            result = fs.parse(rootPath);
+        } catch (RootPathException e) {
+            throw new LocatorException(locatorOrDot, e.getMessage(), e.getCause());
+        }
+        if (result == null) {
+            if (working == null || fs != working.getRoot().getFilesystem()) {
+                throw new LocatorException(locatorOrDot, "no working directory for filesystem " + fs.getName());
+            }
+            result = working.join(locatorOrDot.substring(idx + 1));
+            result.setBase(working);
+        }
+        return result;
     }
     
     // TODO: re-use root?
@@ -180,12 +211,8 @@ public class IO {
         }
     }
     
-    public Factory getFactory() {
-        return factory;
-    }
-    
     public MemoryFilesystem getMemoryFilesystem() {
-        return factory.get(MemoryFilesystem.class);
+        return getFilesystem(MemoryFilesystem.class);
     }
 
     public FileFilesystem getFileFilesystem() {
@@ -356,6 +383,102 @@ public class IO {
             throw new RuntimeException("protocol not supported: " + protocol);
         }
         return file;
+    }
+    
+    //--
+    
+    // cannot use Nodes/IO because they're not yet initialized
+    public void initFilesystems() throws IOException {
+        String descriptor;
+        Enumeration<URL> e;
+        URL url;
+        InputStream src;
+        Buffer buffer;
+        String content;
+        
+        descriptor = "META-INF/sushi/filesystems";
+        buffer = new Buffer();
+        e = getClass().getClassLoader().getResources(descriptor);
+        while (e.hasMoreElements()) {
+            url = e.nextElement();
+            src = url.openStream();
+            content = buffer.readString(src, Settings.UTF_8);
+            for (String line : Strings.split("\n", content)) {
+                line = line.trim();
+                if (line.length() > 0) {
+                    try {
+                        addFilesystem(line.trim());
+                    } catch (IllegalArgumentException e2) {
+                        System.out.println("TODO: " + url + ":" + e2.getMessage());
+                    }
+                }
+            }
+            src.close();
+        }
+    }
+    
+    public void addFilesystem(String filesystemClass) {
+        Class<?> clazz;
+        Filesystem fs;
+        
+        try {
+            clazz = Class.forName(filesystemClass);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("unkown class: " + filesystemClass, e);
+        }
+        try {
+            fs = (Filesystem) clazz.getConstructor(IO.class).newInstance(this);
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        } catch (SecurityException e) {
+            throw new IllegalArgumentException("cannot get instance", e);
+        }
+        addFilesystem(fs);
+    }
+
+    public void addFilesystem(Filesystem filesystem) {
+        String name;
+        
+        name = filesystem.getName();
+        if (filesystems.containsKey(name)) {
+            throw new IllegalArgumentException("duplicate filesystem name: " + name);
+        }
+        filesystems.put(name, filesystem);
+    }
+    
+    private Filesystem defaultFs(Node working) {
+        if (working == null) {
+            return fileFilesystem;
+        } else {
+            return working.getRoot().getFilesystem();
+        }
+    }
+
+    public <T extends Filesystem> T getFilesystem(Class<T> c) {
+        T result;
+        
+        result = lookupFilesystem(c);
+        if (result == null) {
+            throw new IllegalArgumentException("no such filesystem: " + c.getName());
+        }
+        return result;
+    }
+
+    public <T extends Filesystem> T lookupFilesystem(Class<T> c) {
+        for (Filesystem fs : filesystems.values()) {
+            if (fs.getClass().equals(c)) {
+                return (T) fs;
+            }
+        }
+        return null;
     }
     
     //--

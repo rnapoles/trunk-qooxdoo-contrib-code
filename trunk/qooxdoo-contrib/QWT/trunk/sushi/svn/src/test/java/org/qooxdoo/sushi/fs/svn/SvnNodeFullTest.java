@@ -158,6 +158,6 @@ public class SvnNodeFullTest extends NodeTest {
     //--
     
     private SvnNode create(String path) throws RootPathException {
-        return IO.getFactory().get(SvnFilesystem.class).parse(path);
+        return IO.getFilesystem(SvnFilesystem.class).parse(path);
     }
 }
