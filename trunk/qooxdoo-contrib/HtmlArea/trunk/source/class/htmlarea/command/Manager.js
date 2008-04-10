@@ -554,7 +554,7 @@ qx.Class.define("htmlarea.command.Manager",
        var styleSettings = '';
   
        /* Retrieve element's computed style. */
-       var decoration = window.getComputedStyle(elem, null);
+       var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
   
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
