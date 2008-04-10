@@ -23,29 +23,36 @@ import java.io.IOException;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.RootPathException;
+import org.qooxdoo.sushi.fs.file.FileNode;
 
-import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
 
 public class SshFilesystem extends Filesystem {
     public String passphrase;
     public int timeout;
+    private JSch jsch;
     
     public SshFilesystem(IO io) {
         super(io, "ssh", '/');
+        
+        jsch = new JSch();
     }
 
+    public JSch getJSch() {
+        return jsch;
+    }
+    
     @Override
     public SshNode parse(String rootPath) throws RootPathException {
         int idx;
         String machine;
         String user;
         String path;
-        IO io;
         
-        io = getIO();
         if (!rootPath.startsWith("//")) {
             throw new RootPathException("invalid root");
         }
@@ -64,7 +71,7 @@ public class SshFilesystem extends Filesystem {
                 machine = machine.substring(idx + 1);
             }
             try {
-                return forChannel(Host.create(io, machine, user, passphrase, timeout).open(), path);
+                return new SshNode(createRoot(machine, user, passphrase, timeout), path);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }
@@ -73,7 +80,35 @@ public class SshFilesystem extends Filesystem {
         }
     }
 
-    public SshNode forChannel(ChannelSftp channel, String path) throws IOException {
-        return new SshNode(new SshRoot(this, channel), path);
+    public SshRoot createLocalRoot() throws JSchException, IOException {
+        return createRoot("localhost", "localhost", null, 0);
+    }
+
+    public SshRoot createRoot(String machine, String user, String passphrase, int timeout) throws JSchException, IOException {
+        IO io;
+        Node dir;
+        Node file;
+        Node privateKey;
+
+        io = getIO();
+        if (user == null) {
+            user = io.getHome().getName();
+        }
+        dir = io.getHome().join(".ssh");
+        if (passphrase == null) {
+            if (passphrase == null) {
+                file = dir.join("passphrase");
+                if (file.exists()) {
+                    passphrase = file.readString().trim();
+                } else {
+                    passphrase = "";
+                }
+            }
+        }
+        privateKey = dir.join("id_dsa");
+        if (!privateKey.exists()) {
+            privateKey = dir.join("id_rsa");
+        }
+        return new SshRoot(this, machine, user, (FileNode) privateKey, passphrase, timeout);
     }
 }

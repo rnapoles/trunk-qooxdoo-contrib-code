@@ -38,7 +38,7 @@ import com.jcraft.jsch.JSchException;
 public class ConnectionFullTest {
     private static final IO IO_OBJ = new IO();
     
-    public static Host open() throws JSchException, IOException {
+    public static SshRoot open() throws JSchException, IOException {
         String hostname;
         String username;
         
@@ -52,7 +52,7 @@ public class ConnectionFullTest {
             }        
         }
         username = prop("sushi.ssh.test.user");
-        return Host.create(IO_OBJ, hostname, username, null, 0);
+        return IO_OBJ.getFactory().get(SshFilesystem.class).createRoot(hostname, username, null, 0);
     }
     
     private static String prop(String key) {
@@ -66,63 +66,63 @@ public class ConnectionFullTest {
         }
     }
     
-    private Host host;
+    private SshRoot root;
 
     @Before
     public void setUp() throws Exception {
-        host = open();
+        root = open();
     }
     
     @After
     public void tearDown() throws Exception {
-        if (host != null) {
-            host.close();
+        if (root != null) {
+            root.close();
         }
     }
     
     @Test
     public void normal() throws Exception {
-        assertEquals("\r\n", host.exec("echo"));
-        assertEquals("hello\r\n", host.exec("echo", "hello"));
-        assertEquals("again\r\n", host.exec("echo", "again"));
+        assertEquals("\r\n", root.exec("echo"));
+        assertEquals("hello\r\n", root.exec("echo", "hello"));
+        assertEquals("again\r\n", root.exec("echo", "again"));
         try {
-            host.exec("commandnotfound");
+            root.exec("commandnotfound");
             fail();
         } catch (ExitCode e) {
             assertTrue(e.output.contains("commandnotfound"));
         }
 
-        assertEquals("alive\r\n", host.exec("echo", "alive"));
+        assertEquals("alive\r\n", root.exec("echo", "alive"));
     }
 
     @Test
     public void variablesLost() throws Exception {
-        assertEquals("\r\n", host.exec("echo", "$FOO"));
-        host.exec("export", "FOO=bar");
-        assertEquals("\r\n", host.exec("echo", "$FOO"));
+        assertEquals("\r\n", root.exec("echo", "$FOO"));
+        root.exec("export", "FOO=bar");
+        assertEquals("\r\n", root.exec("echo", "$FOO"));
     }
 
     @Test
     public void directoryLost() throws Exception {
         String start;
         
-        start = host.exec("pwd");
-        assertEquals("/usr\r\n", host.exec("cd", "/usr", "&&", "pwd"));
-        assertEquals(start, host.exec("pwd"));
+        start = root.exec("pwd");
+        assertEquals("/usr\r\n", root.exec("cd", "/usr", "&&", "pwd"));
+        assertEquals(start, root.exec("pwd"));
     }
 
     @Test
     public void shell() throws Exception {
-        host.exec("echo", "-e", "\\003320l");
+        root.exec("echo", "-e", "\\003320l");
 
-        assertEquals("", host.exec("exit", "0", "||", "echo", "dontprintthis"));
-        assertEquals("a\r\nb\r\n", host.exec("echo", "a", "&&", "echo", "b"));
-        assertEquals("a\r\n", host.exec("echo", "a", "||", "echo", "b"));
-        assertEquals("file\r\n", host.exec(
+        assertEquals("", root.exec("exit", "0", "||", "echo", "dontprintthis"));
+        assertEquals("a\r\nb\r\n", root.exec("echo", "a", "&&", "echo", "b"));
+        assertEquals("a\r\n", root.exec("echo", "a", "||", "echo", "b"));
+        assertEquals("file\r\n", root.exec(
                 "if", "test", "-a", "/etc/profile;", 
                 "then", "echo", "file;",
                 "else", "echo", "nofile;", "fi"));
-        assertEquals("nofile\r\n", host.exec(
+        assertEquals("nofile\r\n", root.exec(
                 "if", "test", "-a", "nosuchfile;", 
                 "then", "echo", "file;",
                 "else", "echo", "nofile;", "fi"));
@@ -132,7 +132,7 @@ public class ConnectionFullTest {
     public void timeout() throws Exception {
         Exec exec;
         
-        exec = host.begin(true, "sleep", "5");
+        exec = root.begin(true, "sleep", "5");
         try {
             exec.end(1000);
             fail();
@@ -153,21 +153,21 @@ public class ConnectionFullTest {
             "1234567890" +
             "1234567890" +
             "1234567890";
-        assertEquals(longline + "\r\n", host.exec("echo", longline));
+        assertEquals(longline + "\r\n", root.exec("echo", longline));
     }
 
     @Test
     public void cancel() throws Exception {
         String tmp = "/tmp/cancel-sushi";
 
-        host.exec("rm", "-f", tmp);
-        host.begin(true, "sleep", "2", "&&", "echo", "hi", ">" + tmp);
+        root.exec("rm", "-f", tmp);
+        root.begin(true, "sleep", "2", "&&", "echo", "hi", ">" + tmp);
         Thread.sleep(500);
         tearDown();
         Thread.sleep(3000);
         setUp();
         try {            
-            host.exec("ls", tmp);
+            root.exec("ls", tmp);
             fail();
         } catch (ExitCode e) {
             assertTrue(e.getMessage().contains("No such file"));
@@ -177,7 +177,7 @@ public class ConnectionFullTest {
     @Test
     public void erroroutput() throws Exception {
         try {
-            host.exec("echo", "foo", "&&", "exit", "1");
+            root.exec("echo", "foo", "&&", "exit", "1");
             fail();
         } catch (ExitCode e) {
             assertEquals(1, e.code);
@@ -189,7 +189,7 @@ public class ConnectionFullTest {
     public void duration() throws Exception {
         Exec exec;
         
-        exec = host.begin(true, "sleep", "2");
+        exec = root.begin(true, "sleep", "2");
         exec.end();
         assertTrue(exec.duration() >= 2000);
         assertTrue(exec.duration() <= 2200);

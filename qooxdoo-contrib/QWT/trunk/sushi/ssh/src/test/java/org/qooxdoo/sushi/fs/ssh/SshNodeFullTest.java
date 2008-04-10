@@ -32,40 +32,34 @@ import org.junit.Test;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
 
-import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 
 public class SshNodeFullTest extends NodeTest {
-    private static Host host;
-    private ChannelSftp channel;
+    private static SshRoot root;
     
     @BeforeClass
     public static void beforeClass() throws Exception {
-        host = ConnectionFullTest.open();
+        root = ConnectionFullTest.open();
     }
 
     @Before @Override
     public void setUp() throws Exception {
-        channel = host.open();
         super.setUp();
     }
     
     @After
     public void after() throws Exception {
-        if (channel != null) {
-            channel.disconnect();
-        }
     }
     
     @AfterClass
     public static void afterClass() throws Exception {
-        if (host != null) {
-            host.close();
+        if (root != null) {
+            root.close();
         }
     }
     
     private SshNode create(String path) throws IOException, JSchException {
-        return IO.getFactory().get(SshFilesystem.class).forChannel(channel, path);
+        return new SshNode(root, path);
     }
 
     @Override

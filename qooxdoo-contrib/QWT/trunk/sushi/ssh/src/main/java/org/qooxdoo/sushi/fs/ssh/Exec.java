@@ -29,7 +29,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
 public class Exec {
-    public static Exec begin(Host host, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
+    public static Exec begin(SshRoot root, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
     throws JSchException {
         TimedOutputStream dest;
         
@@ -43,26 +43,26 @@ public class Exec {
         channel.setOutputStream(dest);
         channel.setExtOutputStream(dest);
         channel.connect();
-        return new Exec(host, command, channel, dest);
+        return new Exec(root, command, channel, dest);
     }
 
-    private final Host host;
+    private final SshRoot root;
     private final String[] command;
     private final TimedOutputStream dest;
     private final ChannelExec channel;
 
-    public Exec(Host host, String[] command, ChannelExec channel, TimedOutputStream dest) {
+    public Exec(SshRoot root, String[] command, ChannelExec channel, TimedOutputStream dest) {
         if (channel == null) {
             throw new IllegalArgumentException();
         }
-        this.host = host;
+        this.root = root;
         this.command = command;
         this.channel = channel;
         this.dest = dest;
     }
 
-    public Host getHost() {
-        return host;
+    public SshRoot getRoot() {
+        return root;
     }
 
     public boolean canEnd() {
@@ -103,6 +103,6 @@ public class Exec {
     
     @Override
     public String toString() {
-        return host.getUser() + '@' + host.getMachine() + "# " + Strings.join(" ", command);
+        return root.getUser() + '@' + root.getMachine() + "# " + Strings.join(" ", command);
     }
 }
