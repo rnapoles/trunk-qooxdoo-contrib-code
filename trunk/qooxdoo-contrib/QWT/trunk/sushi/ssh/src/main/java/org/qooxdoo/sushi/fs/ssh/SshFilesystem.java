@@ -75,11 +75,10 @@ public class SshFilesystem extends Filesystem {
     }
     
     @Override
-    public SshNode rootPath(String rootPath) throws RootPathException {
+    public SshRoot rootPath(String rootPath, StringBuilder path) throws RootPathException {
         int idx;
         String host;
         String user;
-        String path;
         
         if (!rootPath.startsWith("//")) {
             throw new RootPathException("invalid root");
@@ -89,7 +88,7 @@ public class SshFilesystem extends Filesystem {
             throw new RootPathException("invalid root");
         }
         host = rootPath.substring(2, idx);
-        path = rootPath.substring(idx + 1);
+        path.append(rootPath.substring(idx + 1));
         idx = host.indexOf('@');
         try {
             if (idx == -1) {
@@ -99,7 +98,7 @@ public class SshFilesystem extends Filesystem {
                 host = host.substring(idx + 1);
             }
             try {
-                return root(host, user).node(path);
+                return root(host, user);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }

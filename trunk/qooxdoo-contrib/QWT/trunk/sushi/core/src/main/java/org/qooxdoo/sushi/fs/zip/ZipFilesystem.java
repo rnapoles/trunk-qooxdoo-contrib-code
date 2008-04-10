@@ -34,7 +34,7 @@ public class ZipFilesystem extends Filesystem {
     }
 
     @Override
-    public ZipNode rootPath(String rootPath) throws RootPathException {
+    public ZipRoot rootPath(String rootPath, StringBuilder path) throws RootPathException {
         int idx;
         FileNode jar;
         
@@ -47,8 +47,9 @@ public class ZipFilesystem extends Filesystem {
         } catch (LocatorException e) {
             throw new RootPathException(e);
         }
+        path.append(rootPath.substring(idx + 2));
         try {
-            return node(jar, rootPath.substring(idx + 2));
+            return root(jar);
         } catch (IOException e) {
             throw new RootPathException(e);
         }

@@ -188,19 +188,24 @@ public class IO extends Thread {
     }
     
     private Node node(Filesystem fs, String rootPath) throws LocatorException {
+        Root root;
         Node result;
+        StringBuilder path;
         
+        path = new StringBuilder();
         try {
-            result = fs.rootPath(rootPath);
+            root = fs.rootPath(rootPath, path);
         } catch (RootPathException e) {
             throw new LocatorException(fs.getName() + ":" + rootPath, e.getMessage(), e.getCause());
         }
-        if (result == null) {
+        if (root == null) {
             if (working == null || fs != working.getRoot().getFilesystem()) {
                 throw new LocatorException(fs.getName() + ":" + rootPath, "no working directory for filesystem " + fs.getName());
             }
             result = working.join(rootPath);
             result.setBase(working);
+        } else {
+            result = root.node(path.toString());
         }
         return result;
     }
@@ -211,7 +216,7 @@ public class IO extends Thread {
         
         memFs = getMemoryFilesystem();
         try {
-            return (MemoryNode) memFs.createRoot().node("tmp").writeString(content);
+            return (MemoryNode) memFs.root().node("tmp").writeString(content);
         } catch (IOException e) {
             throw new RuntimeException("unexpected", e);
         }

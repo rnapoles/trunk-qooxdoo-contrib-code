@@ -28,22 +28,21 @@ import org.qooxdoo.sushi.fs.IO;
 
 public class ResourceNodeTest {
     private static final IO IO_OBJ = new IO();
-    private static final ResourceFilesystem RFS = IO_OBJ.getFilesystem(ResourceFilesystem.class);
     
     @Test
     public void existing() throws Exception {
-        assertEquals("hello", RFS.rootPath("testresource").readString());
+        assertEquals("hello", IO_OBJ.node("resource:testresource").readString());
     }
     
     @Test
     public void noneExisting() throws Exception {
-        assertFalse(RFS.rootPath("nosuchresource").exists());
+        assertFalse(IO_OBJ.node("resource:nosuchresource").exists());
     }
 
     @Test
     public void absolutePath() throws Exception {
         try {
-            RFS.rootPath("/absolute");
+            IO_OBJ.node("resource:/absolute");
             fail();
         } catch (IllegalArgumentException e) {
             // ok

@@ -57,12 +57,12 @@ public abstract class Filesystem {
     }
     
     /** 
-     * Creates a new node. The implementation should create a root and invoke root.node with the remaining path on it 
-     * TODO: I'd like to rename this to "node", but this would clash with Root.node ...
+     * Returns a possibly new root. 
      * 
+     * @param path is an out argument with the remaining path
      * @return null if rootPath does not contain a root
      */ 
-    public abstract Node rootPath(String rootPath) throws RootPathException;
+    public abstract Root rootPath(String rootPath, StringBuilder path) throws RootPathException;
 
     //--
     

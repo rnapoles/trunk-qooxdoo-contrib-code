@@ -32,7 +32,7 @@ public class HttpFilesystem extends Filesystem {
     }
 
     @Override
-    public HttpNode rootPath(String rootPath) throws RootPathException {
+    public HttpRoot rootPath(String rootPath, StringBuilder path) throws RootPathException {
         URL url;
         
         try {
@@ -40,7 +40,8 @@ public class HttpFilesystem extends Filesystem {
         } catch (MalformedURLException e) {
             throw new RootPathException(e);
         }
-        return root(url).node(url.getPath());
+        path.append(url.getPath());
+        return root(url);
     }
 
     public HttpRoot root(URL url) {
