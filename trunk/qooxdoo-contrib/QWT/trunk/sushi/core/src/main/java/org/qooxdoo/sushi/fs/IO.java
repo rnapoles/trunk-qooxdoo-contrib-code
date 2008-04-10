@@ -46,22 +46,16 @@ import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Xml;
 
 /**
- * <p>Access to filesystems, various default settings and default nodes. 
+ * <p>Access to file systems, various default settings and default nodes. 
  * Not thread save, every thread should have it's own instance. </p>
+ * 
+ * <p>IO is a thread which executes on shutdown.</p>
  * 
  * <p>Name: I used to call this class Context, but there are way to many context classes around. 
  * Calling it Settings is not appropriate because of the various read and write methods.
- * And calling it Filesystem suggests a singleton, which is wrong, and it's longer than just IO.</p>
+ * </p>
  */
-public class IO {
-    private static final TempFiles TEMP_FILES;
-    static {
-        TEMP_FILES = new TempFiles();
-        Runtime.getRuntime().addShutdownHook(TEMP_FILES);
-    }
-    
-    //--
-    
+public class IO extends Thread {
     public final OS os;
     
     /** never null */
@@ -81,6 +75,9 @@ public class IO {
     
     private final Map<String, Filesystem> filesystems;
     private final FileFilesystem fileFilesystem;
+    
+    private final TempFiles tempFiles;
+    private final List<Runnable> onShutdown;
     
     public IO() {
         this(OS.CURRENT, new Settings(), new Buffer(), new Xml(), "**/.svn", "**/.svn/**/*");
@@ -103,6 +100,11 @@ public class IO {
         
         this.xml = xml;
         this.defaultExcludes = new ArrayList<String>(Arrays.asList(defaultExcludes));
+        
+        this.onShutdown = new ArrayList<Runnable>();
+        this.tempFiles = new TempFiles();
+        onShutdown(tempFiles);
+        Runtime.getRuntime().addShutdownHook(this);
     }
 
     //--
@@ -263,7 +265,7 @@ public class IO {
         FileNode file;
         
         file = fileFilesystem.forFile(File.createTempFile("sushifile", "tmp", temp.getFile()));
-        TEMP_FILES.deleteAtExit(file);
+        tempFiles.deleteAtExit(file);
         return file;
     }
     
@@ -271,11 +273,11 @@ public class IO {
         FileNode dir;
 
         while (true) {
-            dir = (FileNode) temp.join("sushidir" + TEMP_FILES.random() + "tmp");
+            dir = (FileNode) temp.join("sushidir" + tempFiles.random() + "tmp");
             if (!dir.exists()) {
                 // TODO: how to do this atomically?
                 dir.mkdir();
-                TEMP_FILES.deleteAtExit(dir);
+                tempFiles.deleteAtExit(dir);
                 return dir;
             }
         }
@@ -497,5 +499,24 @@ public class IO {
                 "property " + name + " does not point to a directory: " + value);
         }
         return (FileNode) node(file.getAbsolutePath());
+    }
+    
+    //-- executes on shotdown
+    
+    public void onShutdown(Runnable runnable) {
+        onShutdown.add(runnable);
+    }
+
+    @Override
+    public void run() {
+        for (Runnable cleaner : onShutdown) {
+            try {
+                cleaner.run();
+            } catch (Exception e) {
+                // TODO
+                System.err.println("showdown failure: " + cleaner);
+                e.printStackTrace();
+            }
+        }
     }
 }
