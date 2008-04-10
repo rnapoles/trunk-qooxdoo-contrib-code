@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,15 +31,12 @@ import org.qooxdoo.sushi.fs.IO;
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class HttpNodeFullTest {
     private IO ioObj = new IO();
-    private HttpFilesystem fs = ioObj.getFilesystem(HttpFilesystem.class);
     
     @Test
     public void normal() throws IOException {
-        URL url;
         HttpNode node;
     
-        url = new URL("http://englishediting.de/index.html");
-        node = fs.forUrl(url);
+        node = (HttpNode) ioObj.node("http://englishediting.de/index.html");
         assertTrue(node.isFile());
         assertTrue(node.exists());
         assertTrue(node.readString().length() > 1);
@@ -62,11 +58,9 @@ public class HttpNodeFullTest {
 
     @Ignore // TODO
     public void ampersand() throws IOException {
-        URL url;
         HttpNode node;
 
-        url = new URL("http://www.heise.de/?b=1&c=d");
-        node = fs.forUrl(url);
+        node = (HttpNode) ioObj.node("http://www.heise.de/?b=1&c=d");
         assertEquals("", node.getPath());
         assertEquals("b=1&c=d", node.getUrl().getQuery());
         assertTrue(node.readString().length() > 1); 
