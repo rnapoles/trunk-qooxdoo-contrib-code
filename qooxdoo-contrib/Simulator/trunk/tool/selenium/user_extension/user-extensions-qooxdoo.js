@@ -332,14 +332,14 @@ Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventP
  */
 Selenium.prototype.doQxClick = function(locator, eventParams)
 {
-  var element = this.page().findElementOrNull(locator);
+  var element = this.page().findElement(locator);
   this.clickElementQx(element, eventParams);
 };
 
 
 Selenium.prototype.doQxExecute = function(locator, eventParams)
 {
-  var element = this.page().findElementOrNull(locator);
+  var element = this.page().findElement(locator);
   if (element.qx_Widget && element.qx_Widget.execute)
   {
     element.qx_Widget.execute();
@@ -352,7 +352,7 @@ Selenium.prototype.doQxExecute = function(locator, eventParams)
 
 Selenium.prototype.doGetViewport = function(locator, eventParams)
 {
-  var docelem = this.page().findElementOrNull("dom=document"); // evtl. document.body
+  var docelem = this.page().findElement("dom=document"); // evtl. document.body
   //var win     = docelem.parentWindow? docelem.parentWindow : docelem.defaultView;
   var win     = selenium.browserbot.getCurrentWindow();
 
@@ -438,7 +438,7 @@ Selenium.prototype.doGetViewport = function(locator, eventParams)
  */
 Selenium.prototype.doQxClickAt = function(locator, eventParams)
 {
-  var element = this.page().findElementOrNull(locator);
+  var element = this.page().findElement(locator);
   var coordsXY = getClientXY(element);
   LOG.debug("computed coords: X=" + coordsXY[0] + " Y=" + coordsXY[1]);
 
@@ -495,9 +495,12 @@ Selenium.prototype.isQxEnabled = function(locator)
     }
 
     LOG.debug("isQxEnabled: qxxLocator=" + qxxLocator);
-    var qxObject = this.page().findElementOrNull(qxxLocator);
-
-    return qxObject.getEnabled();
+    var qxObject = this.page().findElement(qxxLocator);
+    if (qxObject) {
+      return qxObject.getEnabled();
+    } else {
+      throw new SeleniumError("No such object: " + locator)
+    }
   }
   else
   {
