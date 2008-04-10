@@ -137,11 +137,11 @@ public class SshRoot implements Root, UserInfo {
         return user;
     }
 
-    public Session login(JSch jsch, String machine) throws JSchException {
+    public Session login(JSch jsch, String host) throws JSchException {
         Session session;
         
         jsch.addIdentity(privateKey.getAbsolute());
-        session = jsch.getSession(user, machine, 22);
+        session = jsch.getSession(user, host, 22);
         session.setUserInfo(this);
         return session;
     }
