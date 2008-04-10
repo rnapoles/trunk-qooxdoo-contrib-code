@@ -28,14 +28,15 @@ import org.qooxdoo.sushi.util.Strings;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
-public class Exec {
-    public static Exec begin(SshRoot root, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
+/** Process on the remote machine */
+public class Process {
+    public static Process start(SshRoot root, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
     throws JSchException {
         TimedOutputStream dest;
         
         dest = new TimedOutputStream(out);
         // tty=true propagates ctrl-c to the host machine:
-        // (unfortuneatly, this causes ssh servers to send cr/lf, and I didn't find
+        // (unfortunately, this causes ssh servers to send cr/lf, and I didn't find
         // a way to stop this - try setTerminalMode and also sending special character sequences)
         channel.setPty(tty);
         channel.setCommand(Strings.join(" ", command));
@@ -43,7 +44,7 @@ public class Exec {
         channel.setOutputStream(dest);
         channel.setExtOutputStream(dest);
         channel.connect();
-        return new Exec(root, command, channel, dest);
+        return new Process(root, command, channel, dest);
     }
 
     private final SshRoot root;
@@ -51,7 +52,7 @@ public class Exec {
     private final TimedOutputStream dest;
     private final ChannelExec channel;
 
-    public Exec(SshRoot root, String[] command, ChannelExec channel, TimedOutputStream dest) {
+    public Process(SshRoot root, String[] command, ChannelExec channel, TimedOutputStream dest) {
         if (channel == null) {
             throw new IllegalArgumentException();
         }
@@ -65,20 +66,23 @@ public class Exec {
         return root;
     }
 
-    public boolean canEnd() {
+    public boolean isTerminated() {
         return channel.isClosed();
     }
 
-    public void end() throws JSchException, ExitCode {
+    public void waitFor() throws JSchException, ExitCode {
         try {
-            end(1000L * 60 * 60 * 24); // 1 day
+            waitFor(1000L * 60 * 60 * 24); // 1 day
         } catch (InterruptedException e) {
             throw new RuntimeException("unexpected", e);
         }
     }
     
-    /** @param CAUTION: &lt;= 0 immediately times out */
-    public void end(long timeout) throws JSchException, ExitCode, InterruptedException {
+    /** 
+     * Waits for termination.
+     *  
+     * @param CAUTION: &lt;= 0 immediately times out */
+    public void waitFor(long timeout) throws JSchException, ExitCode, InterruptedException {
         long deadline;
         
         try {

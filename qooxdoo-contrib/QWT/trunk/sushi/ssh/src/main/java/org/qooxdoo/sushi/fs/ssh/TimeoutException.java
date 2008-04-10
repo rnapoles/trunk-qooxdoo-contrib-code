@@ -22,9 +22,9 @@ package org.qooxdoo.sushi.fs.ssh;
 import com.jcraft.jsch.JSchException;
 
 public class TimeoutException extends JSchException {
-    public final Exec exec;
+    public final Process exec;
 
-    public TimeoutException(Exec exec) {
+    public TimeoutException(Process exec) {
         super(exec.toString());
         this.exec = exec;
     }

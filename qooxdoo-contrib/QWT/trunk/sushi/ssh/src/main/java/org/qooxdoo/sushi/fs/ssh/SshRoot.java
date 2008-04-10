@@ -92,12 +92,12 @@ public class SshRoot implements Root, UserInfo {
         session.disconnect();
     }
 
-    public Exec begin(boolean tty, String ... command) throws JSchException {
-        return begin(tty, MultiOutputStream.createNullStream(), command);
+    public Process start(boolean tty, String ... command) throws JSchException {
+        return start(tty, MultiOutputStream.createNullStream(), command);
     }
     
-    public Exec begin(boolean tty, OutputStream out, String ... command) throws JSchException {
-        return Exec.begin(this, tty, (ChannelExec) session.openChannel("exec"), out, command);
+    public Process start(boolean tty, OutputStream out, String ... command) throws JSchException {
+        return Process.start(this, tty, (ChannelExec) session.openChannel("exec"), out, command);
     }
     
     public String exec(String ... command) throws JSchException, ExitCode {
@@ -109,7 +109,7 @@ public class SshRoot implements Root, UserInfo {
 
         out = new ByteArrayOutputStream();
         try {
-            begin(tty, out, command).end();
+            start(tty, out, command).waitFor();
         } catch (ExitCode e) {
             throw new ExitCode(e.call, e.code, filesystem.getIO().settings.string(out));
         }

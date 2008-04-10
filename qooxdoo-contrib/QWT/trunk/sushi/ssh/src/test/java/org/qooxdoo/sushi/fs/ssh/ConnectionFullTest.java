@@ -130,11 +130,11 @@ public class ConnectionFullTest {
 
     @Test
     public void timeout() throws Exception {
-        Exec exec;
+        Process process;
         
-        exec = root.begin(true, "sleep", "5");
+        process = root.start(true, "sleep", "5");
         try {
-            exec.end(1000);
+            process.waitFor(1000);
             fail();
         } catch (TimeoutException e) {
             // ok
@@ -161,7 +161,7 @@ public class ConnectionFullTest {
         String tmp = "/tmp/cancel-sushi";
 
         root.exec("rm", "-f", tmp);
-        root.begin(true, "sleep", "2", "&&", "echo", "hi", ">" + tmp);
+        root.start(true, "sleep", "2", "&&", "echo", "hi", ">" + tmp);
         Thread.sleep(500);
         tearDown();
         Thread.sleep(3000);
@@ -187,11 +187,11 @@ public class ConnectionFullTest {
 
     @Test
     public void duration() throws Exception {
-        Exec exec;
+        Process process;
         
-        exec = root.begin(true, "sleep", "2");
-        exec.end();
-        assertTrue(exec.duration() >= 2000);
-        assertTrue(exec.duration() <= 2200);
+        process = root.start(true, "sleep", "2");
+        process.waitFor();
+        assertTrue(process.duration() >= 2000);
+        assertTrue(process.duration() <= 2200);
     }
 }
