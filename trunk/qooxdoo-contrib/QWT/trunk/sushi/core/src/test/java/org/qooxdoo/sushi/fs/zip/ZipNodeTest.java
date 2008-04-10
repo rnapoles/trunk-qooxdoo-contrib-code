@@ -44,7 +44,7 @@ public class ZipNodeTest {
         jar = ioObj.locateClasspathItem(Object.class);
         rootPath = jar.getAbsolute() + "!/java/lang/Object.class";
         locator = "zip:" + rootPath;
-        node = fs.parse(rootPath);
+        node = fs.rootPath(rootPath);
         assertEquals(locator, node.getLocator());
         assertEquals("java/lang/Object.class", node.getPath());
         assertTrue(node.exists());

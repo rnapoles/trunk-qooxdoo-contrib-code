@@ -32,7 +32,7 @@ public class HttpFilesystem extends Filesystem {
     }
 
     @Override
-    public HttpNode parse(String rootPath) throws RootPathException {
+    public HttpNode rootPath(String rootPath) throws RootPathException {
         try {
             return forUrl(new URL("http:" + rootPath));
         } catch (MalformedURLException e) {

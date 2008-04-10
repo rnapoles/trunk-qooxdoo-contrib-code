@@ -40,7 +40,7 @@ public class FileFilesystem extends Filesystem {
     }
 
     @Override
-    public FileNode parse(String rootPath) {
+    public FileNode rootPath(String rootPath) {
         FileRoot root;
         
         root = root(rootPath);

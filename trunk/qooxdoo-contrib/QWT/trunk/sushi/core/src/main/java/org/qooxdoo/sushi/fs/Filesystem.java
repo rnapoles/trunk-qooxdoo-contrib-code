@@ -62,7 +62,7 @@ public abstract class Filesystem {
      * 
      * @return null if rootPath does not contain a root
      */ 
-    public abstract Node parse(String rootPath) throws RootPathException;
+    public abstract Node rootPath(String rootPath) throws RootPathException;
 
     //--
     
