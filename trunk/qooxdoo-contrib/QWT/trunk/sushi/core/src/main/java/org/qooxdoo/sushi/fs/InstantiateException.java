@@ -17,9 +17,9 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs.ssh;
+package org.qooxdoo.sushi.fs;
 
-/** TODO: generalize for all instantiation */
+/** TODO: checked exception */
 public class InstantiateException extends RuntimeException {
     public InstantiateException(Throwable cause) {
         super(cause);

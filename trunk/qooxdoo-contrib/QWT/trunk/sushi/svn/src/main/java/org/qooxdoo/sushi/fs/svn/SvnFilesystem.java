@@ -23,7 +23,6 @@ import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.RootPathException;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
@@ -83,11 +82,11 @@ public class SvnFilesystem extends Filesystem {
             repository.setLocation(SVNURL.parseURIEncoded(root), true);
             path = path.substring(root.length());
         }
-        return create(repository, path);
+        return root(repository).node(path);
     }
     
-    public SvnNode create(SVNRepository repository, String path) throws SVNException {
-        return new SvnNode(new SvnRoot(this, repository), repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
+    public SvnRoot root(SVNRepository repository) throws SVNException {
+        return new SvnRoot(this, repository);
     }
 
     //--
