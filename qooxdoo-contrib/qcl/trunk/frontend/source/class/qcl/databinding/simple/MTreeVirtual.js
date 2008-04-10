@@ -82,9 +82,9 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
       var dataModel   = this.getDataModel();
       var map         = this.getServerNodeIdMap();
       
-      if ( ! data instanceof Array )
+      if ( ! ( data instanceof Array) )
       {
-        //console.log("Invalid rpc data." );
+        console.log("Invalid rpc data." );
         return;
       }
       
@@ -517,7 +517,10 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
      */
     clear : function()
     {
-      this.setServerNodeIdMap([]);
+      this.setServerNodeIdMap({});
+      this.getSelectionModel().clearSelection();
+      this.setServerNodeIdToSelect(null);
+      this.setServerNodeIdSelected(null);   
       this.getDataModel().clearData();
     },
     
