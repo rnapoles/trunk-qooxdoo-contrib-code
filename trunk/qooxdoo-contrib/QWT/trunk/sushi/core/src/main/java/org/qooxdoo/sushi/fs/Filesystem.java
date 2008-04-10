@@ -56,7 +56,12 @@ public abstract class Filesystem {
         return separatorChar;
     }
     
-    // TODO: I'd like to rename this to "node", but this would clash with Root.node ...
+    /** 
+     * Creates a new node. The implementation should create a root and invoke root.node with the remaining path on it 
+     * TODO: I'd like to rename this to "node", but this would clash with Root.node ...
+     * 
+     * @return null if rootPath does not contain a root
+     */ 
     public abstract Node parse(String rootPath) throws RootPathException;
 
     //--

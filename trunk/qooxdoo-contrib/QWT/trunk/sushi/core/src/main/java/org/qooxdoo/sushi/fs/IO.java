@@ -155,12 +155,12 @@ public class IO extends Thread {
     
     //-- Node creation
 
-    public FileNode file(File file) throws LocatorException {
+    public FileNode file(File file) {
         return file(file.getAbsolutePath());
     }
     
-    public FileNode file(String rootPath) throws LocatorException {
-        return (FileNode) node("file:" + rootPath);
+    public FileNode file(String rootPath) {
+        return (FileNode) node(fileFilesystem, rootPath);
     }
     
     public Node node(String locatorOrDot) throws LocatorException {
@@ -168,7 +168,6 @@ public class IO extends Thread {
         int idx;
         String name;
         Filesystem fs;
-        String rootPath;
         
         if (locatorOrDot.equals(".")) {
             result = node(working.getLocator());
@@ -185,17 +184,22 @@ public class IO extends Thread {
                 fs = defaultFs(working);
             }
         }
-        rootPath = locatorOrDot.substring(idx + 1);
+        return node(fs, locatorOrDot.substring(idx + 1));
+    }
+    
+    private Node node(Filesystem fs, String rootPath) throws LocatorException {
+        Node result;
+        
         try {
             result = fs.parse(rootPath);
         } catch (RootPathException e) {
-            throw new LocatorException(locatorOrDot, e.getMessage(), e.getCause());
+            throw new LocatorException(fs.getName() + ":" + rootPath, e.getMessage(), e.getCause());
         }
         if (result == null) {
             if (working == null || fs != working.getRoot().getFilesystem()) {
-                throw new LocatorException(locatorOrDot, "no working directory for filesystem " + fs.getName());
+                throw new LocatorException(fs.getName() + ":" + rootPath, "no working directory for filesystem " + fs.getName());
             }
-            result = working.join(locatorOrDot.substring(idx + 1));
+            result = working.join(rootPath);
             result.setBase(working);
         }
         return result;
@@ -264,7 +268,7 @@ public class IO extends Thread {
     public FileNode createTempFile() throws IOException {
         FileNode file;
         
-        file = fileFilesystem.forFile(File.createTempFile("sushifile", "tmp", temp.getFile()));
+        file = file(File.createTempFile("sushifile", "tmp", temp.getFile()));
         tempFiles.deleteAtExit(file);
         return file;
     }
@@ -368,7 +372,7 @@ public class IO extends Thread {
             if (!filename.endsWith(resourcename.replace('/', File.separatorChar))) {
                 throw new RuntimeException("classname not found in file url: " + filename + " " + resourcename);
             }
-            file = fileFilesystem.forFile(new File(filename.substring(0, filename.length() - resourcename.length())));
+            file = file(filename.substring(0, filename.length() - resourcename.length()));
         } else if ("jar".equals(protocol)) {
             filename = url.getFile();
             idx = filename.indexOf('!');

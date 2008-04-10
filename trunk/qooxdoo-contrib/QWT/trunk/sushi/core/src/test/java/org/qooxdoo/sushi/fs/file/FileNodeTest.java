@@ -40,11 +40,6 @@ public class FileNodeTest extends NodeTest {
         return IO.createTempDirectory();
     }
     
-    @Test(expected=IllegalArgumentException.class)
-    public void constructor() throws Exception {
-        IO.getFileFilesystem().forFile(new File("foo"));
-    }
-
     @Test
     public void normalizeSlashAfterDirectory() {
         if (OS.CURRENT == OS.WINDOWS) {
