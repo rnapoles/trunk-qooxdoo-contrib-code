@@ -23,7 +23,6 @@ import java.io.File;
 
 import org.qooxdoo.sushi.fs.Filesystem;
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.RootPathException;
 
 public class FileFilesystem extends Filesystem {
     private final FileRoot[] roots;
@@ -41,34 +40,23 @@ public class FileFilesystem extends Filesystem {
     }
 
     @Override
-    public FileNode parse(String rootPath) throws RootPathException {
-        File file;
+    public FileNode parse(String rootPath) {
+        FileRoot root;
         
-        file = new File(rootPath);
-        if (file.isAbsolute()) {
-            return forFile(file);
-        } else {
+        root = root(rootPath);
+        if (root == null) {
             return null;
-        }
-    }
-
-    public FileNode forFile(File file) {
-        if (file.isAbsolute()) {
-            return new FileNode(root(file), file);
         } else {
-            throw new IllegalArgumentException("absolute file expected: " + file.toString());
+            return root.node(rootPath.substring(root.getId().length()));
         }
     }
 
-    public FileRoot root(File file) {
-        String str;
-        
-        str = file.getAbsolutePath().toUpperCase();
+    public FileRoot root(String rootPath) {
         for (FileRoot fs : roots) {
-            if (str.startsWith(fs.getId())) {
+            if (rootPath.startsWith(fs.getId())) {
                 return fs;
             }
         }
-        throw new IllegalArgumentException(str);
+        return null;
     }
 }
