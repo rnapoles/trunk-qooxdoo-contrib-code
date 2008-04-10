@@ -34,7 +34,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
-public class SshRoot implements Root, UserInfo {
+public class SshRoot implements Root, UserInfo, Runnable {
     private final SshFilesystem filesystem;
     private final String user;
     private final FileNode privateKey;
@@ -55,6 +55,7 @@ public class SshRoot implements Root, UserInfo {
         this.session = login(filesystem.getJSch(), host);
         this.session.connect(timeout);
         this.channelFtp = null;
+        filesystem.getIO().onShutdown(this);
     }
 
     //-- Root interface
@@ -184,5 +185,9 @@ public class SshRoot implements Root, UserInfo {
     public void showMessage(String message) {
         System.out.println("showMessage " + message);
     }
-    
+
+    // executes on shutdown
+    public void run() {
+        close();
+    }
 }

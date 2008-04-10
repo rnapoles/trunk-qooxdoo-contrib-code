@@ -26,7 +26,7 @@ import java.util.Random;
 
 import org.qooxdoo.sushi.fs.file.FileNode;
 
-public class TempFiles extends Thread {
+public class TempFiles implements Runnable {
     /** null if the exit task has already been started */
     private List<FileNode> delete;
 
@@ -34,8 +34,6 @@ public class TempFiles extends Thread {
     private final Random rand;
     
     public TempFiles() {
-        super("TempFilesAtExit");
-        
         this.delete = new ArrayList<FileNode>();
         this.rand = new Random();
     }
@@ -56,7 +54,6 @@ public class TempFiles extends Thread {
         }
     }
 
-    @Override
     public synchronized void run() {
         List<FileNode> tmp;
         
