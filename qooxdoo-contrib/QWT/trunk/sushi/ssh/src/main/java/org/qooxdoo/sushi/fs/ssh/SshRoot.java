@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 import org.qooxdoo.sushi.fs.Root;
-import org.qooxdoo.sushi.fs.Settings;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.MultiOutputStream;
 import org.qooxdoo.sushi.util.ExitCode;
@@ -41,19 +40,17 @@ public class SshRoot implements Root, UserInfo {
     private final String user;
     private final FileNode privateKey;
     private final String passphrase;
-    private final String machine;
+    private final String host;
     private final Session session;
-    private final Settings settings;
     
-    public SshRoot(SshFilesystem filesystem, String machine, String user, FileNode privateKey, String passphrase, int timeout) 
+    public SshRoot(SshFilesystem filesystem, String host, String user, FileNode privateKey, String passphrase, int timeout) 
     throws JSchException {
         this.filesystem = filesystem;
         this.user = user;
         this.privateKey = privateKey;
         this.passphrase = passphrase;
-        this.machine = machine;
-        this.settings = filesystem.getIO().settings;
-        this.session = login(filesystem.getJSch(), machine);
+        this.host = host;
+        this.session = login(filesystem.getJSch(), host);
         this.session.connect(timeout);
         this.channel = (ChannelSftp) session.openChannel("sftp");
         this.channel.connect();
@@ -114,9 +111,9 @@ public class SshRoot implements Root, UserInfo {
         try {
             begin(tty, out, command).end();
         } catch (ExitCode e) {
-            throw new ExitCode(e.call, e.code, settings.string(out));
+            throw new ExitCode(e.call, e.code, filesystem.getIO().settings.string(out));
         }
-        return settings.string(out);
+        return filesystem.getIO().settings.string(out);
     }
     
     public String getUser() {
@@ -133,8 +130,8 @@ public class SshRoot implements Root, UserInfo {
     }
 
     
-    public String getMachine() {
-        return machine;
+    public String getHost() {
+        return host;
     }
     
     //-- interface implementation 

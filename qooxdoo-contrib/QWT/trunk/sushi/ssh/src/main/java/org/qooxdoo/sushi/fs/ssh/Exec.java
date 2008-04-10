@@ -103,6 +103,6 @@ public class Exec {
     
     @Override
     public String toString() {
-        return root.getUser() + '@' + root.getMachine() + "# " + Strings.join(" ", command);
+        return root.getUser() + '@' + root.getHost() + "# " + Strings.join(" ", command);
     }
 }
