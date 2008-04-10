@@ -37,20 +37,32 @@ public class SvnFilesystem extends Filesystem {
         DAVRepositoryFactory.setup();
     }
     
+    private String username;
+    private String password;
+    
     public SvnFilesystem(IO io) {
         super(io, "svn", '/');
+        
+        this.username = null;
+        this.password = null;
     }
 
+    public void setCredentials(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+    
+    
     @Override
     public SvnNode parse(String rootPath) throws RootPathException {
         try {
-            return parse(rootPath, null, null);
+            return doParse(rootPath);
         } catch (SVNException e) {
             throw new RootPathException(e);
         }
     }
     
-    public SvnNode parse(String url, String username, String password) throws SVNException {
+    public SvnNode doParse(String url) throws SVNException {
         SVNRepository repository;
         String root;
         String path;
