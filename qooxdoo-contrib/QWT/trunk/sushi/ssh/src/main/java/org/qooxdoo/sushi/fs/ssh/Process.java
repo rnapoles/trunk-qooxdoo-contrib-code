@@ -28,7 +28,7 @@ import org.qooxdoo.sushi.util.Strings;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 
-/** Process on the remote machine */
+/** Process on the remote host */
 public class Process {
     public static Process start(SshRoot root, boolean tty, OutputStream out, String ... command) 
     throws JSchException {
@@ -37,7 +37,7 @@ public class Process {
         
         dest = new TimedOutputStream(out);
         channel = root.createChannelExec();
-        // tty=true propagates ctrl-c to the host machine:
+        // tty=true propagates ctrl-c to the remote host:
         // (unfortunately, this causes ssh servers to send cr/lf, and I didn't find
         // a way to stop this - try setTerminalMode and also sending special character sequences)
         channel.setPty(tty);

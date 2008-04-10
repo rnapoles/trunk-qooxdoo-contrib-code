@@ -77,7 +77,7 @@ public class SshFilesystem extends Filesystem {
     @Override
     public SshNode parse(String rootPath) throws RootPathException {
         int idx;
-        String machine;
+        String host;
         String user;
         String path;
         
@@ -88,18 +88,18 @@ public class SshFilesystem extends Filesystem {
         if (idx == -1) {
             throw new RootPathException("invalid root");
         }
-        machine = rootPath.substring(2, idx);
+        host = rootPath.substring(2, idx);
         path = rootPath.substring(idx + 1);
-        idx = machine.indexOf('@');
+        idx = host.indexOf('@');
         try {
             if (idx == -1) {
                 user = null;
             } else {
-                user = machine.substring(0, idx);
-                machine = machine.substring(idx + 1);
+                user = host.substring(0, idx);
+                host = host.substring(idx + 1);
             }
             try {
-                return new SshNode(createRoot(machine, user), path);
+                return new SshNode(createRoot(host, user), path);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }
@@ -112,7 +112,7 @@ public class SshFilesystem extends Filesystem {
         return createRoot("localhost", "localhost");
     }
 
-    public SshRoot createRoot(String machine, String user) throws JSchException, IOException {
+    public SshRoot createRoot(String host, String user) throws JSchException, IOException {
         IO io;
         Node dir;
         Node file;
@@ -149,6 +149,6 @@ public class SshFilesystem extends Filesystem {
             // TODO: what about security?
             key = key.copyFile(io.createTempFile());
         }
-        return new SshRoot(this, machine, user, (FileNode) key, pp, timeout);
+        return new SshRoot(this, host, user, (FileNode) key, pp, timeout);
     }
 }
