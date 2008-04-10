@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs.ssh;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
+import org.qooxdoo.sushi.fs.InstantiateException;
 import org.qooxdoo.sushi.fs.Root;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.MultiOutputStream;

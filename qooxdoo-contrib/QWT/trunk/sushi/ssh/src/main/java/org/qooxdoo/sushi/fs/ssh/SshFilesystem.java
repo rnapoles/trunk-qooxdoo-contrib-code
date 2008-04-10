@@ -99,7 +99,7 @@ public class SshFilesystem extends Filesystem {
                 host = host.substring(idx + 1);
             }
             try {
-                return new SshNode(createRoot(host, user), path);
+                return root(host, user).node(path);
             } catch (JSchException e) {
                 throw new RootPathException(e);
             }
@@ -108,11 +108,11 @@ public class SshFilesystem extends Filesystem {
         }
     }
 
-    public SshRoot createLocalRoot() throws JSchException, IOException {
-        return createRoot("localhost", "localhost");
+    public SshRoot localRoot() throws JSchException, IOException {
+        return root("localhost", getIO().getWorking().getName());
     }
 
-    public SshRoot createRoot(String host, String user) throws JSchException, IOException {
+    public SshRoot root(String host, String user) throws JSchException, IOException {
         IO io;
         Node dir;
         Node file;

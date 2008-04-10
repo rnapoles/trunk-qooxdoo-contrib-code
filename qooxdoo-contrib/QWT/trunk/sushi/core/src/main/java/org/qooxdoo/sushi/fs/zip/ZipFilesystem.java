@@ -54,11 +54,11 @@ public class ZipFilesystem extends Filesystem {
         }
     }
 
-    public ZipNode node(FileNode jar) throws IOException {
-        return node(jar, "");
+    public ZipNode node(FileNode jar, String path) throws IOException {
+        return root(jar).node(path);
     }
 
-    public ZipNode node(FileNode jar, String path) throws IOException {
-        return new ZipNode(new ZipRoot(this, new ZipFile(jar.getAbsolute())), path);
+    public ZipRoot root(FileNode jar) throws IOException {
+        return new ZipRoot(this, new ZipFile(jar.getAbsolute()));
     }
 }

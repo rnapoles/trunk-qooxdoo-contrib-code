@@ -19,8 +19,10 @@
 
 package org.qooxdoo.sushi.fs.svn;
 
+import org.qooxdoo.sushi.fs.InstantiateException;
 import org.qooxdoo.sushi.fs.Root;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 public class SvnRoot implements Root {
@@ -44,11 +46,11 @@ public class SvnRoot implements Root {
         return repository;
     }
     
-    public SvnNode node(String path) {
+    public SvnNode node(String path) throws InstantiateException {
         try {
-            return filesystem.create(repository, path);
+            return new SvnNode(this, repository.checkPath(path, -1) == SVNNodeKind.DIR, path);
         } catch (SVNException e) {
-            throw new RuntimeException("TODO", e);
+            throw new InstantiateException(e);
         }
     }
 
