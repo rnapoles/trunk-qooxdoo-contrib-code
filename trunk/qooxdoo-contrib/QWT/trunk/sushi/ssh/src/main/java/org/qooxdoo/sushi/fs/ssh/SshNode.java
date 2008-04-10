@@ -48,7 +48,11 @@ public class SshNode extends Node {
     private final ChannelSftp channel;
     private final String slashPath;
     
-    public SshNode(SshRoot root, String path) {
+    public SshNode(SshRoot root, String path) throws JSchException {
+        this(root, root.getChannelFtp(), path);
+    }
+    
+    public SshNode(SshRoot root, ChannelSftp channel, String path) {
         if (path.startsWith("/")) {
             throw new IllegalArgumentException();
         }
@@ -59,7 +63,7 @@ public class SshNode extends Node {
             throw new IllegalArgumentException();
         }
         this.root = root;
-        this.channel = root.getChannel();
+        this.channel = channel;
         this.slashPath = "/" + path;
     }
 
