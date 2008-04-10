@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.qooxdoo.sushi.fs.LocatorException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.NodeTest;
 import org.qooxdoo.sushi.fs.RootPathException;
@@ -81,7 +80,7 @@ public class SvnNodeFullTest extends NodeTest {
         create(URL + "/tailingslash/");
     }
  
-    @Test(expected=LocatorException.class)
+    @Test(expected=RootPathException.class)
     public void connectionRefused() throws IOException {
         create("https://heise.de/svn");
     }
