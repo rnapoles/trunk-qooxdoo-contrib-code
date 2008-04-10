@@ -36,12 +36,14 @@ import com.jcraft.jsch.UserInfo;
 
 public class SshRoot implements Root, UserInfo {
     private final SshFilesystem filesystem;
-    private final ChannelSftp channel;
     private final String user;
     private final FileNode privateKey;
     private final String passphrase;
     private final String host;
     private final Session session;
+    
+    // created on demaned because it's only needed for nodes, for for "exec" stuff
+    private ChannelSftp channelFtp;
     
     public SshRoot(SshFilesystem filesystem, String host, String user, FileNode privateKey, String passphrase, int timeout) 
     throws JSchException {
@@ -52,9 +54,10 @@ public class SshRoot implements Root, UserInfo {
         this.host = host;
         this.session = login(filesystem.getJSch(), host);
         this.session.connect(timeout);
-        this.channel = (ChannelSftp) session.openChannel("sftp");
-        this.channel.connect();
+        this.channelFtp = null;
     }
+
+    //-- Root interface
     
     public SshFilesystem getFilesystem() {
         return filesystem;
@@ -64,12 +67,12 @@ public class SshRoot implements Root, UserInfo {
         return "//" + session.getUserName() + "@" + session.getHost() + "/";
     }
 
-    public SshNode node(String path) {
-        return new SshNode(this, path);
-    }
-    
-    public ChannelSftp getChannel() {
-        return channel;
+    public SshNode node(String path) throws InstantiateException {
+        try {
+            return new SshNode(this, path);
+        } catch (JSchException e) {
+            throw new InstantiateException(e);
+        }
     }
     
     @Override
@@ -88,6 +91,20 @@ public class SshRoot implements Root, UserInfo {
         return getId().hashCode();
     }
     
+    //--
+    
+    public ChannelSftp getChannelFtp() throws JSchException {
+        if (channelFtp == null) {
+            channelFtp = (ChannelSftp) session.openChannel("sftp");
+            channelFtp.connect();
+        }
+        return channelFtp;
+    }
+    
+    public ChannelExec createChannelExec() throws JSchException {
+        return (ChannelExec) session.openChannel("exec");
+    }
+    
     public void close() {
         session.disconnect();
     }
@@ -97,7 +114,7 @@ public class SshRoot implements Root, UserInfo {
     }
     
     public Process start(boolean tty, OutputStream out, String ... command) throws JSchException {
-        return Process.start(this, tty, (ChannelExec) session.openChannel("exec"), out, command);
+        return Process.start(this, tty, out, command);
     }
     
     public String exec(String ... command) throws JSchException, ExitCode {

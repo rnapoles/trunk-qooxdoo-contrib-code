@@ -30,11 +30,13 @@ import com.jcraft.jsch.JSchException;
 
 /** Process on the remote machine */
 public class Process {
-    public static Process start(SshRoot root, boolean tty, ChannelExec channel, OutputStream out, String ... command) 
+    public static Process start(SshRoot root, boolean tty, OutputStream out, String ... command) 
     throws JSchException {
         TimedOutputStream dest;
+        ChannelExec channel;
         
         dest = new TimedOutputStream(out);
+        channel = root.createChannelExec();
         // tty=true propagates ctrl-c to the host machine:
         // (unfortunately, this causes ssh servers to send cr/lf, and I didn't find
         // a way to stop this - try setTerminalMode and also sending special character sequences)
