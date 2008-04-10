@@ -28,7 +28,7 @@ import org.qooxdoo.sushi.fs.IO;
 
 public class ResourceNodeTest {
     private static final IO IO_OBJ = new IO();
-    private static final ResourceFilesystem RFS = IO_OBJ.getFactory().get(ResourceFilesystem.class);
+    private static final ResourceFilesystem RFS = IO_OBJ.getFilesystem(ResourceFilesystem.class);
     
     @Test
     public void existing() throws Exception {

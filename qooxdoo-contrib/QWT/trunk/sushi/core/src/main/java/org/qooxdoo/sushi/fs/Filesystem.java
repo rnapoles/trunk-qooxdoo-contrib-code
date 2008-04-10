@@ -56,6 +56,7 @@ public abstract class Filesystem {
         return separatorChar;
     }
     
+    // TODO: I'd like to rename this to "node", but this would clash with Root.node ...
     public abstract Node parse(String rootPath) throws RootPathException;
 
     //--

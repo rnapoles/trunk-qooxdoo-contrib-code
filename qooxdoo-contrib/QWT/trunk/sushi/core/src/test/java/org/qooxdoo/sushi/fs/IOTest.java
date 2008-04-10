@@ -30,7 +30,11 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.console.ConsoleNode;
+import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.fs.http.HttpNode;
+import org.qooxdoo.sushi.fs.memory.MemoryNode;
 import org.qooxdoo.sushi.util.Reflect;
 
 public class IOTest {
@@ -38,6 +42,41 @@ public class IOTest {
     private static Root fs(IO io) {
         return io.getWorking().getRoot();
     }
+    
+    //-- filesystems
+
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void filesystemDuplicate() throws IOException {
+        IO io = new IO();
+        
+        io.addFilesystem(new FileFilesystem(io));
+        io.addFilesystem(new FileFilesystem(io));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void filesystemUnkownClass() throws IOException {
+        new IO().addFilesystem("unkown");
+    }
+    
+    @Test
+    public void filesystemParse() throws IOException {
+        Node node;
+        IO io;
+        
+        io = new IO();
+        node = io.node("file:/usr");
+        assertEquals("usr", node.getPath());
+        node = io.node("resource:META-INF/sushi/filesystems");
+        assertTrue(node.isFile());
+        node = io.node("http:http://heise.de");
+        assertTrue(node instanceof HttpNode);
+        node = io.node("console:");
+        assertTrue(node instanceof ConsoleNode);
+        node = io.node("mem://1/foo");
+        assertTrue(node instanceof MemoryNode);
+    }
+    //--
     
     @Test
     public void nodeRoot() throws IOException {

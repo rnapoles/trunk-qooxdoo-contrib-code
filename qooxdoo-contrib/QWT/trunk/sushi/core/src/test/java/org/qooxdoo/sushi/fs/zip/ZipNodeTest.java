@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.fs.file.FileNode;
 /** Accesses external hosts and might need proxy configuration => Full test */
 public class ZipNodeTest {
     private IO ioObj = new IO();
-    private ZipFilesystem fs = ioObj.getFactory().get(ZipFilesystem.class);
+    private ZipFilesystem fs = ioObj.getFilesystem(ZipFilesystem.class);
     
     @Test
     public void jar() throws RootPathException, IOException {
