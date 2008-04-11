@@ -84,7 +84,7 @@ public class Skeleton {
         "  <parent>\n" +
         "    <groupId>org.qooxdoo</groupId>\n" + 
         "    <artifactId>qooxdoo</artifactId>\n" + 
-        "    <version>2-SNAPSHOT</version>\n" + 
+        "    <version>3-SNAPSHOT</version>\n" + 
         "  </parent>\n";
     private static final String MARK = "##parent##";
     
