@@ -4,7 +4,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <parent>
     <groupId>org.qooxdoo</groupId>
     <artifactId>qooxdoo</artifactId>
-    <version>2-SNAPSHOT</version>
+    <version>3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.qooxdoo</groupId>
