@@ -76,11 +76,6 @@ public class SvnNodeFullTest extends NodeTest {
         assertEquals("work", work.getPath());
     }
  
-    @Test(expected=IllegalArgumentException.class)
-    public void invalid() throws IOException {
-        create(URL + "/tailingslash/");
-    }
- 
     @Test(expected=LocatorException.class)
     public void connectionRefused() throws IOException {
         create("https://heise.de/svn");
