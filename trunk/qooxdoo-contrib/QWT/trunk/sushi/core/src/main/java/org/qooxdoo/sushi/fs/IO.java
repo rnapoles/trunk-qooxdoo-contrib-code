@@ -206,6 +206,10 @@ public class IO extends Thread {
         String path;
         String separator;
         
+        separator = fs.getSeparator();
+        if (rootPath.endsWith(separator)) {
+            throw new LocatorException(fs.getName() + ":" + rootPath, "unexpected tailing " + separator);
+        }
         pathBuilder = new StringBuilder();
         try {
             root = fs.rootPath(rootPath, pathBuilder);
@@ -219,15 +223,10 @@ public class IO extends Thread {
             result = working.join(rootPath);
             result.setBase(working);
         } else {
-            separator = fs.getSeparator();
             path = pathBuilder.toString();
             if (path.startsWith(separator)) {
                 throw new LocatorException(fs.getName() + ":" + rootPath, "unexpected heading " + separator);
             }
-            if (path.endsWith(separator)) {
-                throw new LocatorException(fs.getName() + ":" + rootPath, "unexpected tailing " + separator);
-            }
-            
             result = root.node(path);
         }
         return result;

@@ -57,7 +57,7 @@ public abstract class Filesystem {
     }
     
     /** 
-     * Returns a possibly new root. 
+     * Returns a possibly new root. Never calls with tailing separator in rootPath. 
      * 
      * @param path is an out argument with the remaining path
      * @return null if rootPath does not contain a root
