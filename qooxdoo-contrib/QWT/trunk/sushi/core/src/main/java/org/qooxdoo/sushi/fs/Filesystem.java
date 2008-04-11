@@ -57,7 +57,8 @@ public abstract class Filesystem {
     }
     
     /** 
-     * Returns a possibly new root. Never calls with tailing separator in rootPath. 
+     * Returns a possibly new root. You'll normally not use this method directly, use
+     * IO.node(Filesystem, rootpath) instead.
      * 
      * @param path is an out argument with the remaining path
      * @return null if rootPath does not contain a root
