@@ -213,7 +213,11 @@ public abstract class Node {
     }
     
     public Node join(List<String> paths) {
-        return getRoot().node(getRoot().getFilesystem().join(getPath(), paths));
+        Node result;
+        
+        result = getRoot().node(getRoot().getFilesystem().join(getPath(), paths));
+        result.setBase(getBase());
+        return result;
     }
     
     public Node join(String... names) {
