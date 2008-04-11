@@ -88,7 +88,7 @@ public class This_PDETest extends Assert {
     TextEditorOperator teo = new TextEditorOperator( "Application.js",
                                                      getProperties() );
     teo.setCurserAfter( "construct : function(x) {" );
-    sammy.stopAndShowChangesToUser();
+    // sammy.stopAndShowChangesToUser();
     checkMembersFound( teo );
   }
 
