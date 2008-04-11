@@ -46,7 +46,7 @@ public class Set implements Serializable {
         set = loadRaw(src);
         set.addUndocumented(jsroot, undocumented);
         set.addNatives(jsroot);
-        set.addDependencies(output.getIO().settings.lineSeparator, output.readString());
+        set.addDependencies(output.getIO().getSettings().lineSeparator, output.readString());
         return set;
     }
     

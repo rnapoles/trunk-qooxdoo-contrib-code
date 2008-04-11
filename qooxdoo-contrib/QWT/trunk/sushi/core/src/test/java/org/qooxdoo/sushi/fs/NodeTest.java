@@ -318,10 +318,10 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         Document doc;
         Node file;
 
-        doc = IO.xml.builder.literal("<a><b/></a>");        
+        doc = IO.getXml().builder.literal("<a><b/></a>");        
         file = work.join("foo");
         file.writeXml(doc);
-        assertEquals(IO.settings.join("<a>", "<b/>", "</a>", ""), file.readString());
+        assertEquals(IO.getSettings().join("<a>", "<b/>", "</a>", ""), file.readString());
         doc = file.readXml();
         assertEquals("a", doc.getDocumentElement().getLocalName());
     }

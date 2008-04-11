@@ -69,7 +69,7 @@ public class Program {
         
         result = new ByteArrayOutputStream();
         exec(result);
-        return io.settings.string(result.toByteArray());
+        return io.getSettings().string(result.toByteArray());
     }
     
     /** executes a command in this directory, returns the output */
@@ -81,7 +81,7 @@ public class Program {
         builder.redirectErrorStream(true);
         process = builder.start();
         // this looks like a busy wait to me, but it's what all the examples suggest:
-        io.buffer.copy(process.getInputStream(), dest);
+        io.getBuffer().copy(process.getInputStream(), dest);
         try {
             exit = process.waitFor();
         } catch (InterruptedException e) {
@@ -89,7 +89,7 @@ public class Program {
         }
         if (exit != 0) {
             if (dest instanceof ByteArrayOutputStream) {
-                output = io.settings.string(((ByteArrayOutputStream) dest));
+                output = io.getSettings().string(((ByteArrayOutputStream) dest));
             } else {
                 output = "";
             }

@@ -47,7 +47,7 @@ public class NodeXmlTest {
         src = IO_OBJ.stringNode("<foo><bar/></foo>");
         dest = IO_OBJ.stringNode("");
         src.xslt(t, dest);
-        assertEquals(IO_OBJ.settings.join("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<out/>", ""), 
+        assertEquals(IO_OBJ.getSettings().join("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<out/>", ""), 
                 dest.readString());
     }
 }
