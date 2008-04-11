@@ -35,9 +35,6 @@ public class ResourceNode extends Node {
     private final String path;
     
     public ResourceNode(ResourceFilesystem filesystem, String path) {
-        if (path.startsWith("/")) {
-            throw new IllegalArgumentException(path);
-        }
         this.filesystem = filesystem;
         this.path = path;
     }

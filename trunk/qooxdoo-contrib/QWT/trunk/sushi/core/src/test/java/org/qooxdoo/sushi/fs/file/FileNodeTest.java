@@ -41,17 +41,6 @@ public class FileNodeTest extends NodeTest {
     }
     
     @Test
-    public void normalizeSlashAfterDirectory() {
-        if (OS.CURRENT == OS.WINDOWS) {
-            assertEquals("WINDOWS", IO.node("c:\\WINDOWS\\").getPath());
-            assertEquals("WINDOWS\\foo", IO.node("c:\\WINDOWS\\foo").getPath());
-        } else {
-            assertEquals("usr", IO.node("/usr/").getPath());
-            assertEquals("usr/bin", IO.node("/usr/bin").getPath());
-        }
-    }
-
-    @Test
     public void renameFile() throws IOException {
         FileNode src;
         FileNode dest;

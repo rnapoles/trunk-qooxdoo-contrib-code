@@ -49,11 +49,31 @@ public abstract class NodeReadOnlyTest {
     public void locator() throws Exception {
         String locator;
         Node again;
+        Filesystem fs;
         
+        fs = work.getRoot().getFilesystem();
         locator = work.getLocator();
+        assertEquals(locator, fs.getName() + ":" + work.getIO().node(fs.getName() + 
+                ":" + work.getRoot().getId() + work.getPath()));
         again = IO.node(locator);
         assertEquals(work, again);
         assertEquals(locator, again.getLocator());
+    }
+
+    @Test(expected=LocatorException.class)
+    public void headingSlash() throws Exception {
+        Filesystem fs;
+        
+        fs = work.getRoot().getFilesystem();
+        work.getIO().node(fs.getName() + ":" + work.getRoot().getId() + fs.getSeparator() + work.getPath());
+    }
+
+    @Test(expected=LocatorException.class)
+    public void tailingSlash() throws Exception {
+        Filesystem fs;
+        
+        fs = work.getRoot().getFilesystem();
+        work.getIO().node(fs.getName() + ":" + work.getRoot().getId() + work.getPath() + fs.getSeparator());
     }
 
     @Test

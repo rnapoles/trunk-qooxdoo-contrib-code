@@ -62,7 +62,7 @@ public class HttpRoot implements Root {
     public HttpNode node(String path) {
         // ignores query
         try {
-            return new HttpNode(this, new URL("http", host, port, path));
+            return new HttpNode(this, new URL("http", host, port, "/" + path));
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }

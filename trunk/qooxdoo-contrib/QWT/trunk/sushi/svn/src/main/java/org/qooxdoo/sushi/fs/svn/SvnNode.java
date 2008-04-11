@@ -65,12 +65,6 @@ public class SvnNode extends Node {
     
     public SvnNode(SvnRoot root, boolean directory, String path) {
         super();
-        if (path.startsWith(root.getFilesystem().getSeparator())) {
-            throw new IllegalArgumentException(path);
-        }
-        if (path.endsWith(root.getFilesystem().getSeparator())) {
-            throw new IllegalArgumentException(path);
-        }
         this.root = root;
         this.directory = directory;
         this.path = path;

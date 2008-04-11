@@ -21,10 +21,10 @@ package org.qooxdoo.sushi.fs.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.LocatorException;
 
 public class ResourceNodeTest {
     private static final IO IO_OBJ = new IO();
@@ -39,14 +39,9 @@ public class ResourceNodeTest {
         assertFalse(IO_OBJ.node("resource:nosuchresource").exists());
     }
 
-    @Test
+    @Test(expected=LocatorException.class)
     public void absolutePath() throws Exception {
-        try {
-            IO_OBJ.node("resource:/absolute");
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
+        IO_OBJ.node("resource:/absolute");
     }
 }
 

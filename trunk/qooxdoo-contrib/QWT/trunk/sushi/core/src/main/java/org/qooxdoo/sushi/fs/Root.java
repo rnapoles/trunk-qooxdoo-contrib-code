@@ -29,6 +29,9 @@ public interface Root {
     
     String getId();
     
-    /** Creates a new node with no base. The path has already been checked syntactically. */
+    /**
+     * Creates a new node with no base. The path has already been checked syntactically. 
+     * Never calles with heading or tailing separator. 
+     */
     Node node(String path);
 }
