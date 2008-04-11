@@ -92,7 +92,7 @@ public class Archive {
         ZipEntry entry;
         Node node;
         
-        buffer = file.getIO().buffer;
+        buffer = file.getIO().getBuffer();
         zip = new ZipInputStream(file.createInputStream());
         while (true) {
             entry = zip.getNextEntry();
@@ -179,7 +179,7 @@ public class Archive {
         for (Node file : files) {
             in = file.createInputStream();
             out.putNextEntry(new ZipEntry(file.getPath()));
-            file.getIO().buffer.copy(in, out);
+            file.getIO().getBuffer().copy(in, out);
             out.closeEntry();
             in.close();
         }

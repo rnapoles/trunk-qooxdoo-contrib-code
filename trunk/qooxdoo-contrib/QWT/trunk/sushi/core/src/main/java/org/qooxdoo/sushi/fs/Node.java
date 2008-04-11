@@ -235,17 +235,17 @@ public abstract class Node {
         byte[] result;
         
         src = createInputStream();
-        result = getIO().buffer.readBytes(src);
+        result = getIO().getBuffer().readBytes(src);
         src.close();
         return result;
     }
 
     public String readString() throws IOException {
-        return getIO().settings.string(readBytes());
+        return getIO().getSettings().string(readBytes());
     }
     
     public List<String> readLines() throws IOException {
-        return Strings.split(getIO().settings.lineSeparator, readString());
+        return Strings.split(getIO().getSettings().lineSeparator, readString());
     }
 
     public Object readObject() throws IOException {
@@ -263,7 +263,7 @@ public abstract class Node {
     }
 
     public Document readXml() throws IOException, SAXException {
-        return getIO().xml.builder.parse(this);
+        return getIO().getXml().builder.parse(this);
     }
 
     public Transformer readXsl() throws IOException, TransformerConfigurationException {
@@ -482,7 +482,7 @@ public abstract class Node {
     }
     
     public Node writeLines(List<String> lines) throws IOException {
-        return writeString(Strings.join(getIO().settings.lineSeparator, lines));
+        return writeString(Strings.join(getIO().getSettings().lineSeparator, lines));
     }
 
     public Node writeObject(Serializable obj) throws IOException {
@@ -495,7 +495,7 @@ public abstract class Node {
     }
 
     public Node writeXml(org.w3c.dom.Node node) throws IOException {
-        getIO().xml.serializer.serialize(node, this);
+        getIO().getXml().serializer.serialize(node, this);
         return this;
     }
 
@@ -509,7 +509,7 @@ public abstract class Node {
         InputStream in;
         
         in = createInputStream();
-        getIO().buffer.copy(in, dest);
+        getIO().getBuffer().copy(in, dest);
         in.close();
         return dest;
     }
@@ -522,7 +522,7 @@ public abstract class Node {
         
         in = createInputStream();
         out = new GZIPOutputStream(dest.createOutputStream());
-        getIO().buffer.copy(in, out);
+        getIO().getBuffer().copy(in, out);
         in.close();
         out.close();
     }
@@ -533,7 +533,7 @@ public abstract class Node {
         
         in = new GZIPInputStream(createInputStream());
         out = dest.createOutputStream();
-        getIO().buffer.copy(in, out);
+        getIO().getBuffer().copy(in, out);
         in.close();
         out.close();
     }
@@ -549,7 +549,7 @@ public abstract class Node {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        getIO().buffer.digest(src, complete);
+        getIO().getBuffer().digest(src, complete);
         src.close();
         result = new StringBuilder();
         for (byte b : complete.digest()) {
@@ -561,7 +561,7 @@ public abstract class Node {
     }
     
     public boolean diff(Node right) throws IOException {
-        return diff(right, new Buffer(getIO().buffer));
+        return diff(right, new Buffer(getIO().getBuffer()));
     }
     
     public boolean diff(Node right, Buffer rightBuffer) throws IOException {
@@ -571,7 +571,7 @@ public abstract class Node {
         int leftChunk;
         int rightChunk;
         
-        leftBuffer = getIO().buffer;
+        leftBuffer = getIO().getBuffer();
         leftSrc = createInputStream();
         rightSrc = right.createInputStream();
         do {

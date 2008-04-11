@@ -59,12 +59,12 @@ public class IO extends Thread {
     public final OS os;
     
     /** never null */
-    public final Buffer buffer;
+    private final Buffer buffer;
     
-    public final Settings settings;
+    private final Settings settings;
     
     /** never null */
-    public final Xml xml;
+    private final Xml xml;
 
     private Node home;
     // TODO: node
@@ -80,10 +80,10 @@ public class IO extends Thread {
     private final List<Runnable> onShutdown;
     
     public IO() {
-        this(OS.CURRENT, new Settings(), new Buffer(), new Xml(), "**/.svn", "**/.svn/**/*");
+        this(OS.CURRENT, new Settings(), new Buffer(), "**/.svn", "**/.svn/**/*");
     }
     
-    public IO(OS os, Settings settings, Buffer buffer, Xml xml, String... defaultExcludes) {
+    public IO(OS os, Settings settings, Buffer buffer, String... defaultExcludes) {
         this.os = os;
         this.settings = settings;
         this.buffer = buffer;
@@ -98,7 +98,7 @@ public class IO extends Thread {
         this.home = init("user.home");
         this.working = init("user.dir");
         
-        this.xml = xml;
+        this.xml = new Xml();
         this.defaultExcludes = new ArrayList<String>(Arrays.asList(defaultExcludes));
         
         this.onShutdown = new ArrayList<Runnable>();
@@ -107,7 +107,7 @@ public class IO extends Thread {
         Runtime.getRuntime().addShutdownHook(this);
     }
 
-    //--
+    //-- configuration
     
     public Node getHome() {
         return home;
@@ -139,6 +139,18 @@ public class IO extends Thread {
         return this;
     }
     
+    public Buffer getBuffer() {
+        return buffer;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public Xml getXml() {
+        return xml;
+    }
+
     //--
 
     public Filter filter() {

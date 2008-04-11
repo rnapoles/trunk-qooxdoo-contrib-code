@@ -22,26 +22,32 @@ package org.qooxdoo.sushi.fs.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import org.junit.Test;
-import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.LocatorException;
+import java.io.IOException;
 
-public class ResourceNodeTest {
-    private static final IO IO_OBJ = new IO();
-    
+import org.junit.Test;
+import org.qooxdoo.sushi.fs.LocatorException;
+import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.NodeReadOnlyTest;
+
+public class ResourceNodeTest extends NodeReadOnlyTest {
     @Test
     public void existing() throws Exception {
-        assertEquals("hello", IO_OBJ.node("resource:testresource").readString());
+        assertEquals("hello", IO.node("resource:testresource").readString());
     }
     
     @Test
     public void noneExisting() throws Exception {
-        assertFalse(IO_OBJ.node("resource:nosuchresource").exists());
+        assertFalse(IO.node("resource:nosuchresource").exists());
     }
 
     @Test(expected=LocatorException.class)
     public void absolutePath() throws Exception {
-        IO_OBJ.node("resource:/absolute");
+        IO.node("resource:/absolute");
+    }
+
+    @Override
+    protected Node createWork() throws IOException {
+        return IO.node("resource:foo");
     }
 }
 
