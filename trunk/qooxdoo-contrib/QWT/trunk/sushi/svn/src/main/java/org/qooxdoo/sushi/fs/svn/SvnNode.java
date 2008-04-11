@@ -92,6 +92,7 @@ public class SvnNode extends Node {
         List<SvnNode> result;
         SVNDirEntry entry;
         SVNRepository repository;
+        SvnNode child;
         
         repository = root.getRepository();
         try {
@@ -103,7 +104,9 @@ public class SvnNode extends Node {
             result = new ArrayList<SvnNode>(lst.size());
             for (int i = 0; i < lst.size(); i++) {
                 entry = lst.get(i);
-                result.add(new SvnNode(root, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath())));
+                child = new SvnNode(root, entry.getKind() == SVNNodeKind.DIR, join(path, entry.getRelativePath()));
+                child.setBase(getBase());
+                result.add(child);
             }
             return result;
         } catch (SVNException e) {
