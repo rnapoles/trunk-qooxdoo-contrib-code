@@ -59,6 +59,20 @@ public abstract class NodeTest extends NodeReadOnlyTest {
 
     //--
 
+    @Test 
+    public void listAndBase() throws Exception {
+        List<? extends Node> lst;
+        
+        work.setBase(work);
+        work.join("foo").mkdir();
+        lst = work.list();
+        assertEquals(1, lst.size());
+        assertEquals("foo", lst.get(0).getName());
+        assertEquals(work, lst.get(0).getBase());
+    }
+
+    //--
+    
     @Test
     public void joinWithSlash() {
         try {
