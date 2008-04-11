@@ -59,6 +59,21 @@ public abstract class NodeReadOnlyTest {
         assertEquals(locator, again.getLocator());
     }
 
+    @Test
+    public void rootCreatesNodeWithoutBase() throws Exception {
+        assertNull(work.getRoot().node("foo").getBase());
+    }
+    
+    @Test
+    public void base() throws Exception {
+        Node node;
+
+        work.setBase(work);
+        assertEquals(work, work.getBase());
+        node = work.join("subdir");
+        assertEquals(work, node.getBase());
+    }
+
     @Test(expected=LocatorException.class)
     public void headingSlash() throws Exception {
         Filesystem fs;

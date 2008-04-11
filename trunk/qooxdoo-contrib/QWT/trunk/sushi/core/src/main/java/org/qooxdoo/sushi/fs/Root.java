@@ -31,7 +31,7 @@ public interface Root {
     
     /**
      * Creates a new node with no base. The path has already been checked syntactically. 
-     * Never calles with heading or tailing separator. 
+     * Never called with heading or tailing separator. The base of the resulting node must be null. 
      */
     Node node(String path);
 }
