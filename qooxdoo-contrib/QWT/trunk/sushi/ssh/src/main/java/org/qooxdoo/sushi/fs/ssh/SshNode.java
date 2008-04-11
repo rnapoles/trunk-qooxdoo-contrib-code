@@ -53,12 +53,6 @@ public class SshNode extends Node {
     }
     
     public SshNode(SshRoot root, ChannelSftp channel, String path) {
-        if (path.startsWith("/")) {
-            throw new IllegalArgumentException();
-        }
-        if (path.endsWith("/")) {
-            throw new IllegalArgumentException(path);
-        }
         if (root == null) {
             throw new IllegalArgumentException();
         }

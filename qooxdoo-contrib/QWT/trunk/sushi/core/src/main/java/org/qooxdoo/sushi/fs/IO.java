@@ -190,11 +190,13 @@ public class IO extends Thread {
     private Node node(Filesystem fs, String rootPath) throws LocatorException {
         Root root;
         Node result;
-        StringBuilder path;
+        StringBuilder pathBuilder;
+        String path;
+        String separator;
         
-        path = new StringBuilder();
+        pathBuilder = new StringBuilder();
         try {
-            root = fs.rootPath(rootPath, path);
+            root = fs.rootPath(rootPath, pathBuilder);
         } catch (RootPathException e) {
             throw new LocatorException(fs.getName() + ":" + rootPath, e.getMessage(), e.getCause());
         }
@@ -205,7 +207,16 @@ public class IO extends Thread {
             result = working.join(rootPath);
             result.setBase(working);
         } else {
-            result = root.node(path.toString());
+            separator = fs.getSeparator();
+            path = pathBuilder.toString();
+            if (path.startsWith(separator)) {
+                throw new LocatorException(fs.getName() + ":" + rootPath, "unexpected heading " + separator);
+            }
+            if (path.endsWith(separator)) {
+                throw new LocatorException(fs.getName() + ":" + rootPath, "unexpected tailing " + separator);
+            }
+            
+            result = root.node(path);
         }
         return result;
     }

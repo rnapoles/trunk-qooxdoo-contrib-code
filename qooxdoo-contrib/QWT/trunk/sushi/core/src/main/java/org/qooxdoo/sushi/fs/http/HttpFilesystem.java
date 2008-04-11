@@ -40,7 +40,7 @@ public class HttpFilesystem extends Filesystem {
         } catch (MalformedURLException e) {
             throw new RootPathException(e);
         }
-        path.append(url.getPath());
+        path.append(url.getPath().substring(1));
         return root(url);
     }
 
