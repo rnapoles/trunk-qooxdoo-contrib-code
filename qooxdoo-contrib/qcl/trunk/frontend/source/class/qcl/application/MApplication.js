@@ -255,7 +255,7 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       var hP = this._analyzeHashString();
       
-      if (typeof(hP[name]) != undefined) 
+      if ( typeof(hP[name]) != "undefined") 
       {
         delete hP[name];
         
@@ -320,6 +320,45 @@ qx.Mixin.define("qcl.application.MApplication",
     },
 
     /**
+     * Updates the current state, firing all change events even if 
+     * the state hasn't changed. If you don't supply any argument,
+     * all states will be updated. If you supply an array of strings
+     * or a variable number of string arguments, only the states 
+     * in the array or arguments will be updated.
+     * @param state {var} optional. a variable number of string arguments or an array
+     * @return {Map}
+     */
+    updateState : function()
+    {
+      var states = {};
+      var stateMap = this._analyzeHashString();
+      if ( arguments[0] instanceof Array )
+      {
+        arguments[0].forEach(function(name){
+         states[name] = true; 
+        }); 
+      }
+      else if ( arguments.length)
+      {
+        for (var i=0; i<arguments.length; i++)
+        {
+          states[arguments[i]] = true; 
+        }
+      }
+      else
+      {
+        states = null;
+      }
+      
+      for(var key in stateMap)
+      {
+         if ( states && ! states[key] ) continue;
+         this._fireStateEvent( key, stateMap[key] );
+      }
+      return stateMap;
+    },
+
+    /**
      * Removes a state
      * @param {String} name
      * @return {Map}
@@ -376,20 +415,7 @@ qx.Mixin.define("qcl.application.MApplication",
       }     
     },
 	
-		/**
-		 * Updates the current state, firing all change events even if 
-		 * the state hasn't changed.
-		 * @return {Map}
-		 */
-		updateState : function()
-		{
-			var stateMap = this._analyzeHashString();
-			for(var key in stateMap)
-		 	{
-			   this._fireStateEvent( key, stateMap[key] );
-			}
-      return stateMap;
-		},
+
     
     /**
      * Wraps qx.client.History.getInstance().navigateBack();
