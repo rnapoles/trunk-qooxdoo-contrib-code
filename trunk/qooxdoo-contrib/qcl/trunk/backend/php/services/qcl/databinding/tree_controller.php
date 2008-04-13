@@ -13,9 +13,9 @@ class qcl_databinding_tree_controller extends bibliograph_controller
   // class variables
   //-------------------------------------------------------------
 
-  var $icon             = "icon/16/mimetypes/text-ascii.png";
-  var $icon_selected    = "icon/16/mimetypes/text-ascii.png";
-  var $type             = "bibliograph.types.Note";
+  var $icon;
+  var $icon_selected;
+  var $type;
 
   //-------------------------------------------------------------
   // internal methods
