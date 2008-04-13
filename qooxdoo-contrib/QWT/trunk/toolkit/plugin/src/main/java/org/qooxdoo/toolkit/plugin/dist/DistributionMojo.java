@@ -166,7 +166,7 @@ public class DistributionMojo extends Base {
                       + "</settings>\n");
     }
 
-    private static final String MAVEN_NAME = "apache-maven-2.0.8-bin.zip";
+    private static final String MAVEN_NAME = "apache-maven-2.0.9-bin.zip";
     private void mvn() throws IOException {
         Node src;
         Node download;

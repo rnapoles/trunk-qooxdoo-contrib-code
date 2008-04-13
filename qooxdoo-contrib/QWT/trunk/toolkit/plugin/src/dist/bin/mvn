@@ -19,7 +19,7 @@ cd "$current"
 
 REPO=$QWT_HOME/repository
 SETTINGS=$QWT_HOME/bin/settings.xml
-MVN=$QWT_HOME/apache-maven-2.0.8/bin/mvn
+MVN=$QWT_HOME/apache-maven-2.0.9/bin/mvn
 case "`uname`" in
   CYGWIN*) REPO=`cygpath --windows $REPO`
     SETTINGS=`cygpath --windows $SETTINGS`
