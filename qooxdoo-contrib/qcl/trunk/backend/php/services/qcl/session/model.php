@@ -90,6 +90,7 @@ class qcl_session_model extends qcl_db_model
    * @param string $sessionId 
    * @param string $message 
    * @param mixed  $data
+   * @todo base64encode and separate with CR
    */
   function addMessageBroadcast( $sessionId, $message, $data )
   {
@@ -105,6 +106,7 @@ class qcl_session_model extends qcl_db_model
    * gets broadcasted messages for the connected client
    * @return array
    * @param $sessionId Object
+   * @todo sepatate with CR and base64decode 
    */
   function getBroadcastedMessages( $sessionId )
   {
