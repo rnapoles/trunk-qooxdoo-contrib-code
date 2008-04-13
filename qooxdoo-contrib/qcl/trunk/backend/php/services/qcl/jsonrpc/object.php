@@ -87,8 +87,6 @@ class qcl_jsonrpc_object extends qcl_object {
  	
  	/**
  	 * get a variable from the session 
- 	 * the variables are available on a class basis, the namespace of the 
- 	 * variables is the class name.
  	 * @param string	$name	name of the variable
  	 * @return reference a  reference to the session variable
  	 */

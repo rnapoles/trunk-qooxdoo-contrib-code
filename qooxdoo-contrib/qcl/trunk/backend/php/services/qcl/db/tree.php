@@ -279,6 +279,7 @@ class qcl_db_tree extends qcl_db_model
    */
   function getIdByPath ( $path )
   {
+    $this->raiseError("Not implemented.");
     $path = str_replace("\\/","&backslash;",$path);
     $parts = explode("/",$path);
     foreach ( $parts as $part )
@@ -295,6 +296,7 @@ class qcl_db_tree extends qcl_db_model
    */
   function createPath( $path )
   {
+    $this->raiseError("Not implemented.");
     $path = str_replace("\\/","&backslash;",$path);
     $parts = explode("/",$path);
     foreach ( $parts as $part )
