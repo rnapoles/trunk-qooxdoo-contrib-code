@@ -62,10 +62,12 @@ public class SshFilesystem extends Filesystem {
         return passphrase;
     }
 
+    /** millis */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
 
+    /** millis */
     public int getTimeout() {
         return timeout;
     }
