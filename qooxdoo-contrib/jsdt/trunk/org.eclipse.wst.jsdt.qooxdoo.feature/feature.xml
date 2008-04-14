@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.wst.jsdt.qooxdoo.feature"
+      id="org.qooxdoo.qxdt.feature"
       label="Qooxdoo Support for JSDT"
       version="1.0.0.qualifier"
       provider-name="1&amp;1">
