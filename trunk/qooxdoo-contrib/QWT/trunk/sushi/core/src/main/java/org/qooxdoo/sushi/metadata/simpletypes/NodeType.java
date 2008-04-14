@@ -20,15 +20,15 @@
 package org.qooxdoo.sushi.metadata.simpletypes;
 
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.SimpleType;
 
-public class FileNodeType extends SimpleType {
+public class NodeType extends SimpleType {
     private final IO io;
     
-    public FileNodeType(Schema schema, IO io) {
-        super(schema, FileNode.class, "filenode");
+    public NodeType(Schema schema, IO io) {
+        super(schema, Node.class, "node");
         
         this.io = io;
     }
