@@ -21,6 +21,10 @@ package org.qooxdoo.sushi.fs;
 
 /** TODO: checked exception */
 public class InstantiateException extends RuntimeException {
+    public InstantiateException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
     public InstantiateException(Throwable cause) {
         super(cause);
     }
