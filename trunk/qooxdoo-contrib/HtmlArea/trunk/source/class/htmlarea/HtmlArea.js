@@ -1559,18 +1559,35 @@ qx.Class.define("htmlarea.HtmlArea",
               }
               else
               {
-                /*
-                 * Jump to first position in the first line. 
-                 */
-                
-                /* Remove ranges, if present */
-                sel.removeAllRanges();
+                /* Fetch all text nodes from body element */
+                var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
 
-                /* Collapse at first character */
-                sel.collapse(doc.body, 0);
-              }
+                /* Iterate over result */
+                while(currentItem = elements.iterateNext())
+                {
+                  /* Skip CSS text nodes */
+                  if(currentItem.parentNode && (currentItem.parentNode.tagName != "STYLE") )
+                  {
 
-            }
+                    /* Expand selection to first text node and collapse here */
+                    try
+                    {
+                      // Sometimes this does not work...
+                      sel.extend(currentItem, 0);
+                      if (!sel.isCollapsed) {
+                        sel.collapseToStart();
+                      }
+                    }catch(e){ }
+                    
+                    /* We have found the correct text node, leave loop here */
+                    break;
+                  }
+
+                } // while
+
+              } // if
+
+            } // if
 
           }
 
