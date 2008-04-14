@@ -17,7 +17,7 @@ import org.eclipse.wst.jsdt.ui.wizards.NewElementWizardPage;
 
 public class QooxdooLibraryWizardPage extends NewElementWizardPage implements IJsGlobalScopeContainerPage, IJsGlobalScopeContainerPageExtension, IJsGlobalScopeContainerPageExtension2 {
 
-  private static final String CONTAINER_ID = "org.eclipse.wst.jsdt.support.qooxdoo.QooxdooLibrary";
+  private static final String CONTAINER_ID = "org.qooxdoo.qxdt.support.QooxdooLibrary";
 
   public QooxdooLibraryWizardPage() {
       super("QooxdooLib");

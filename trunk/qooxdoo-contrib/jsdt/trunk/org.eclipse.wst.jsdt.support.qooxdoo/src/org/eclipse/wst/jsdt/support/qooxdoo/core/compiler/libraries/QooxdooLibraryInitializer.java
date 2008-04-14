@@ -14,7 +14,7 @@ public class QooxdooLibraryInitializer
   extends JsGlobalScopeContainerInitializer implements IJsGlobalScopeContainerInitializerExtension
 {
 
-  protected static final String PLUGIN_ID = "org.eclipse.wst.jsdt.support.qooxdoo";
+  protected static final String PLUGIN_ID = "org.qooxdoo.qxdt.support";
   private static final String ContainerDescription = "Qooxdoo Class Library";
 
   public QooxdooLibraryInitializer() {
