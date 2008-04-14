@@ -73,7 +73,7 @@ public class SshRoot implements Root, UserInfo, Runnable {
         try {
             return new SshNode(this, path);
         } catch (JSchException e) {
-            throw new InstantiateException(e);
+            throw new InstantiateException(toString(), e);
         }
     }
     
@@ -91,6 +91,11 @@ public class SshRoot implements Root, UserInfo, Runnable {
     @Override
     public int hashCode() {
         return getId().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "SshNode host=" + host + ", user=" + user + ", privateKey=" + privateKey + ", passphrase=" + passphrase;  
     }
     
     //--
