@@ -19,18 +19,22 @@
 
 package org.qooxdoo.sushi.cli;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;
-
-import static org.junit.Assert.*;
 
 public class ParserTest {
     private static final IO IO_OBJ = new IO();
@@ -214,18 +218,18 @@ public class ParserTest {
     }
 
     public static class Values {
-        public FileNode first;
+        public Node first;
         @Value(name = "second", position = 2)
         public String second;
-        public List<FileNode> remaining = new ArrayList<FileNode>();
+        public List<Node> remaining = new ArrayList<Node>();
         
         @Value(name = "first", position = 1)
-        public void first(FileNode first) {
+        public void first(Node first) {
             this.first = first;
         }
 
         @Remaining(name = "remaining")
-        public void remaining(FileNode str) {
+        public void remaining(Node str) {
             remaining.add(str);
         }
     }
