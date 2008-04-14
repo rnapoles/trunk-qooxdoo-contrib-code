@@ -13,7 +13,7 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
   // The plug-in ID
-  public static final String PLUGIN_ID = "org.eclipse.wst.jsdt.qooxdoo.validation";
+  public static final String PLUGIN_ID = "org.qooxdoo.qxdt.inference";
   // The shared instance
   private static Activator plugin;
 
