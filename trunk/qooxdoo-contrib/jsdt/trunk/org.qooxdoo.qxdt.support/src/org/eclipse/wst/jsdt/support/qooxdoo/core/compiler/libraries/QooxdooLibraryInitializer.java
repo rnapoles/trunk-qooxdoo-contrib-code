@@ -1,17 +1,14 @@
 package org.eclipse.wst.jsdt.support.qooxdoo.core.compiler.libraries;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.wst.jsdt.core.IJavaProject;
 import org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 import org.eclipse.wst.jsdt.core.compiler.libraries.LibraryLocation;
 import org.eclipse.wst.jsdt.core.compiler.libraries.SystemLibraryLocation;
-import org.eclipse.wst.jsdt.internal.ui.IJsGlobalScopeContainerInitializerExtension;
-
 
 public class QooxdooLibraryInitializer
-  extends JsGlobalScopeContainerInitializer implements IJsGlobalScopeContainerInitializerExtension
+  extends JsGlobalScopeContainerInitializer
 {
 
   protected static final String PLUGIN_ID = "org.qooxdoo.qxdt.support";
@@ -22,12 +19,14 @@ public class QooxdooLibraryInitializer
 
   public LibraryLocation getLibraryLocation() {
     return new SystemLibraryLocation() {
+
       @Override
       public char[][] getLibraryFileNames() {
-        return new char[][] {
+        return new char[][]{
           "qx.0.7.2.js".toCharArray()
         };
       }
+
       @Override
       protected String getPluginId() {
         return PLUGIN_ID;
@@ -35,29 +34,26 @@ public class QooxdooLibraryInitializer
     };
   }
 
-
-  public ImageDescriptor getImage(IPath containerPath, String element, IJavaProject project) {
-      return ImageDescriptor.createFromFile(this.getClass(), "QooxdooSmall.png");
-  }
-
-  public String getDescription(IPath containerPath, IJavaProject project) {
-      return ContainerDescription;
+  public String getDescription( IPath containerPath, IJavaProject project ) {
+    return ContainerDescription;
   }
 
   public String getDescription() {
-      return ContainerDescription;
+    return ContainerDescription;
   }
+
   /*
    * (non-Javadoc)
    * 
    * @see org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer#getKind()
    */
   public int getKind() {
-      return IJsGlobalScopeContainer.K_SYSTEM;
+    return IJsGlobalScopeContainer.K_SYSTEM;
   }
 
-  public boolean canUpdateJsGlobalScopeContainer(IPath containerPath, IJavaProject project) {
-      return true;
+  public boolean canUpdateJsGlobalScopeContainer( IPath containerPath,
+                                                  IJavaProject project )
+  {
+    return true;
   }
 }
-
