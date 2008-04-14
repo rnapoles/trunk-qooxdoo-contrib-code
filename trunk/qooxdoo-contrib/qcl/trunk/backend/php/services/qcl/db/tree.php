@@ -209,7 +209,8 @@ class qcl_db_tree extends qcl_db_model
     //else
     //{
       $label =  trim( str_replace( "/", "\\/", $folder[$this->key_label] ) );
-      $path = $this->getPath( $folder[$this->key_parentId] ) . "/" . $label;
+      $parentPath = $this->getPath( $folder[$this->key_parentId] );
+      $path .= ( $parentPath ? ($parentPath . "/") : "") . $label;
     //}
     return $path;
   }

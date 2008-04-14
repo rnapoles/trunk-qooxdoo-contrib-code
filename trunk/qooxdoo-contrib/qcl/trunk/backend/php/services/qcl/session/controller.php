@@ -107,7 +107,17 @@ class qcl_session_controller extends qcl_jsonrpc_controller
     return parent::getResponseData();
 	}
 
-
+	/**
+	 * gets the path to a file that has been uploaded with uploader.php
+	 * @param string $file filename (must not have any path information)
+	 * @return string fully qualified path to file
+	 */
+	function getTmpUploadPath($file)
+	{
+    $prefix  = session_id();
+    $path = "../../var/upload/tmp/{$prefix}_{$file}";
+    return realpath($path);
+	}
 	 
 }	
 
