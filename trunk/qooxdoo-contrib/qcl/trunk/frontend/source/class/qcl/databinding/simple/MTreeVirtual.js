@@ -471,10 +471,18 @@ qx.Mixin.define("qcl.databinding.simple.MTreeVirtual",
         'data'          : node.data,
         'columnData'    : node.columnData
       };
-      
+
       // update node
       var model = this.getDataModel();
       model.setState(nodeId,props);
+
+      // drag data alias FIXME: this is a hack!
+      if (this.setNodeType && node.data.type)
+      {
+        //console.log("Setting d&d type of node client #"+nodeId+" to "+node.data.type);
+        this.setNodeType( nodeId, node.data.type );
+      }
+      
       model.setData();
     },
     
