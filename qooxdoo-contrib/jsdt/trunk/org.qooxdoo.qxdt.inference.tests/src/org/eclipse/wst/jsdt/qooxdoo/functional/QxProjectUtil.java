@@ -32,6 +32,7 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPListElement;
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPUserLibraryElement;
 import org.eclipse.wst.jsdt.launching.JavaRuntime;
 import org.eclipse.wst.jsdt.qooxdoo.validation.Activator;
+import org.qooxdoo.qxdt.support.QxSupport;
 
 public class QxProjectUtil {
 
@@ -59,7 +60,7 @@ public class QxProjectUtil {
   }
 
   private static String getLibBundleLocation() {
-    URL result = Platform.getBundle( "org.eclipse.wst.jsdt.support.qooxdoo" )
+    URL result = Platform.getBundle( QxSupport.ID )
       .getEntry( "/libraries/qx.0.7.2.js" );
     try {
       result = FileLocator.resolve( result );
