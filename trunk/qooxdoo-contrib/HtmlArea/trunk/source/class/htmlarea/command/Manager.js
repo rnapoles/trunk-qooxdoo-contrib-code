@@ -281,9 +281,14 @@ qx.Class.define("htmlarea.command.Manager",
         /* Flag indicating if range was empty before executing command. Needed for IE bug. */
         var emptyRange = false;
 
+        /* Request current range explicitly, if command is "Bold" */
+        if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (command == "Bold") ) {
+          this.__currentRange = this.__editorInstance.getRange();
+        }
+
         /* Body element must have focus before executing command */
         this.__doc.body.focus();
-        
+
         /*
          * IE looses the selection if the user clicks on any other element e.g. a toolbar item
          * To manipulate the selected text correctly IE has to execute the command on the previously
