@@ -27,7 +27,7 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.Schema;
-import org.qooxdoo.sushi.metadata.simpletypes.FileNodeType;
+import org.qooxdoo.sushi.metadata.simpletypes.NodeType;
 import org.qooxdoo.sushi.util.Strings;
 
 public class ReflectSchema extends Schema {
@@ -36,7 +36,7 @@ public class ReflectSchema extends Schema {
 
     public ReflectSchema(IO io) {
         this();
-        add(new FileNodeType(this, io));
+        add(new NodeType(this, io));
     }
 
     @Override
