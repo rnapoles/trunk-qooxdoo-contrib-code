@@ -10,10 +10,13 @@
  	<target name="allElementsDelegator">
 		<ant antfile="${genericTargets}" target="${target}">
 	 		<property name="type" value="feature" />
+	 		<property name="id" value="org.eclipse.wst.jsdt.feature" />		
+		</ant>
+		<ant antfile="${genericTargets}" target="${target}">
+	 		<property name="type" value="feature" />
 	 		<property name="id" value="org.qooxdoo.qxdt.feature" />		
 		</ant>
  	</target>
- 
  	<!-- ===================================================================== -->
  	<!-- Targets to assemble the built elements for particular configurations  -->
  	<!-- These generally call the generated assemble scripts (named in         -->
@@ -22,6 +25,9 @@
  	<!-- Replace element.id with the id of the top level element being built   -->
  	<!-- ===================================================================== -->
  	<target name="assemble.org.qooxdoo.qxdt.feature">
+ 		<ant antfile="${assembleScriptName}" dir="${buildDirectory}"/>		
+ 	</target>	
+ 	<target name="assemble.org.eclipse.wst.jsdt.feature">
  		<ant antfile="${assembleScriptName}" dir="${buildDirectory}"/>		
  	</target>	
 </project>
