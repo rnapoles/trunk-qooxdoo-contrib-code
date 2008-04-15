@@ -3,5 +3,5 @@ feature@org.qooxdoo.qxdt.feature=SVN,trunk,https://qooxdoo-contrib.svn.sourcefor
 
 # qxdt plugins
 plugin@org.qooxdoo.qxdt.inference=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.qooxdoo.qxdt.inference
-plugin@org.qooxdoo.qxdt.inference=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.qooxdoo.qxdt.support
+plugin@org.qooxdoo.qxdt.support=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.qooxdoo.qxdt.support
 
