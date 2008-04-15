@@ -18,6 +18,7 @@ plugin@org.eclipse.wst.jsdt.web.core=v200804040626,:pserver:anonymous@dev.eclips
 plugin@org.eclipse.wst.jsdt.web.support.jsp=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.support.jsp
 plugin@org.eclipse.wst.jsdt.web.ui=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.ui
 
-feature@org.eclipse.wst.jsdt.feature=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/features/org.eclipse.wst.jsdt.feature
+feature@org.eclipse.wst.jsdt.feature=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.eclipse.wst.jsdt.feature
+#feature@org.eclipse.wst.jsdt.feature=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/features/org.eclipse.wst.jsdt.feature
 
 !***************
