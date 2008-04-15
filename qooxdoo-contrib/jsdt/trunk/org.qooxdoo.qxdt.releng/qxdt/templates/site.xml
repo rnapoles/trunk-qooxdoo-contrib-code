@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <feature url="features/QOOXDOO_JAR" id="org.qooxdoo.qxdt.feature" version="QOOXDOO_VERSION"/>
-   <feature url="features/JSDT_JAR" id="org.eclipse.wst.jsdt.feature" version="JSDT_VERSION"/>
-</site>
