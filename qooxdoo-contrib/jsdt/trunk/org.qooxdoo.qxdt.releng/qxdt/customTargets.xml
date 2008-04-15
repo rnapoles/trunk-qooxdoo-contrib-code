@@ -139,11 +139,24 @@
 	<!-- ===================================================================== -->
 	<target name="postBuild">
 		<antcall target="gatherLogs" />
+		<antcall target="assembleUpdateSite"/>
 		<!--
 		<antcall target="test" />
 		-->
 	</target>
+	
+	<!-- ===================================================================== -->
+	<!-- Steps to do to test the build results -->
+	<!-- ===================================================================== -->
 
+	<target name="assembleUpdateSite">
+		<property name="updateSiteDirectory" value="${buildDirectory}/I.feature/eclipse"/>
+		<unzip src="${buildDirectory}/I.feature/org.qooxdoo.qxdt.feature-feature.zip"
+		       dest="${buildDirectory}/I.feature/"/>
+		<unzip src="${buildDirectory}/I.feature/org.eclipse.wst.jsdt.feature-feature.zip"
+		       dest="${buildDirectory}/I.feature/"/>
+	</target>
+	
 	<!-- ===================================================================== -->
 	<!-- Steps to do to test the build results -->
 	<!-- ===================================================================== -->
