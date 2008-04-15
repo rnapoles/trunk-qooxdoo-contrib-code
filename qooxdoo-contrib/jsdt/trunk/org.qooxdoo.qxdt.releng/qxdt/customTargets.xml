@@ -158,7 +158,6 @@
 		<antcall target="generateSiteXML"/>
 	</target>
 	<target name="generateSiteXML">
-		<property name="updateSiteDirectory" value="/tmp/qxdt-updatesite"/>
 		<copy file="templates/site.xml" todir="${updateSiteDirectory}"/>
 		
 		<!-- Find the qxdt feature file -->
