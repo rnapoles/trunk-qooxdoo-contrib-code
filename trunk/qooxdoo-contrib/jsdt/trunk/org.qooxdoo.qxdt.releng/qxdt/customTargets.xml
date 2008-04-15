@@ -140,6 +140,7 @@
 	<target name="postBuild">
 		<antcall target="gatherLogs" />
 		<antcall target="assembleUpdateSite"/>
+		<antcall target="uploadUpdateSite"/>
 		<!--
 		<antcall target="test" />
 		-->
@@ -158,7 +159,7 @@
 		<antcall target="generateSiteXML"/>
 	</target>
 	<target name="generateSiteXML">
-		<copy file="templates/site.xml" todir="${updateSiteDirectory}"/>
+		<copy file="${buildDirectory}/features/org.qooxdoo.qxdt.feature/templates/site.xml" todir="${updateSiteDirectory}"/>
 		
 		<!-- Find the qxdt feature file -->
 		<fileset dir="${updateSiteDirectory}/features" id="qooxdooJarId">
@@ -199,6 +200,11 @@
 		
 	</target>
 	
+	<target name="uploadUpdateSite">
+		 <scp todir="${uploadLocation}">
+		    <fileset dir="${updateSiteDirectory}"/>
+		  </scp>
+	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to do to test the build results -->
 	<!-- ===================================================================== -->
