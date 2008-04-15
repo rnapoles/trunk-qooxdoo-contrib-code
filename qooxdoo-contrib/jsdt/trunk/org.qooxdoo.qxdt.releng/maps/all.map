@@ -1,5 +1,7 @@
+# qxdt feature
 feature@org.qooxdoo.qxdt.feature=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.qooxdoo.qxdt.feature
 
-# yim rcp plugins
-#plugin@com.yoxos.yan.core=HEAD,:extssh:build@192.168.6.7:/cvsroot,,yim/com.yoxos.yan.core,com.yoxos.yan.core
+# qxdt plugins
+plugin@org.qooxdoo.qxdt.inference=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.qooxdoo.qxdt.inference
+plugin@org.qooxdoo.qxdt.inference=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.qooxdoo.qxdt.support
 
