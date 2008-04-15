@@ -155,6 +155,49 @@
 		       dest="${buildDirectory}/I.feature/"/>
 		<unzip src="${buildDirectory}/I.feature/org.eclipse.wst.jsdt.feature-feature.zip"
 		       dest="${buildDirectory}/I.feature/"/>
+		<antcall target="generateSiteXML"/>
+	</target>
+	<target name="generateSiteXML">
+		<property name="updateSiteDirectory" value="/tmp/qxdt-updatesite"/>
+		<copy file="templates/site.xml" todir="${updateSiteDirectory}"/>
+		
+		<!-- Find the qxdt feature file -->
+		<fileset dir="${updateSiteDirectory}/features" id="qooxdooJarId">
+	        <include name="**/org.qooxdoo.qxdt.feature*.jar"/>
+	    </fileset>
+		<!-- -->
+		<!-- Find the property of qooxdooJar by removing the path prefix -->
+	    <pathconvert pathsep="," property="qooxdooJar" refid="qooxdooJarId">
+            <map from="${updateSiteDirectory}/" to=""/>
+		</pathconvert>
+		
+		<!-- Find the property of qooxdooJarVersion by removing the filename prefix -->
+		<pathconvert pathsep="${FILE_SEP}" property="qooxdooJarVersion" refid="qooxdooJarId">
+                <map from="${updateSiteDirectory}/features/org.qooxdoo.qxdt.feature_" to=""/>
+        </pathconvert>
+
+		<!-- Find the jsdt feature file -->
+		<fileset dir="${updateSiteDirectory}/features" id="jsdtJarId">
+	        <include name="**/org.eclipse.wst.jsdt*.jar"/>
+	    </fileset>
+		<!-- Find the property of jsdtJar by removing the path prefix -->
+	    <pathconvert pathsep="," property="jsdtJar" refid="jsdtJarId">
+            <map from="${updateSiteDirectory}/" to=""/>
+		</pathconvert>
+		<!-- Find the property of jsdtJarVersion by removing the filename prefix -->
+		<pathconvert pathsep="${FILE_SEP}" property="jsdtJarVersion" refid="jsdtJarId">
+                <map from="${updateSiteDirectory}/features/org.qooxdoo.qxdt.feature_" to=""/>
+        </pathconvert>
+		
+		<!-- Do the actual replacements in the site.xml -->
+		<replace file="${updateSiteDirectory}/site.xml" token="QOOXDOO_VERSION" value="${qooxdooJarVersion}"/>
+		<replace file="${updateSiteDirectory}/site.xml" token="JSDT_VERSION" value="${jsdtJarVersion}"/>
+		<!-- The replacement workaround with pathconvert and map is not able to remove postfix ".jar" -->
+		<replace file="${updateSiteDirectory}/site.xml" token=".jar" value=""/>
+
+		<replace file="${updateSiteDirectory}/site.xml" token="QOOXDOO_JAR" value="${qooxdooJar}"/>
+		<replace file="${updateSiteDirectory}/site.xml" token="JSDT_JAR" value="${jsdtJar}"/>
+		
 	</target>
 	
 	<!-- ===================================================================== -->
