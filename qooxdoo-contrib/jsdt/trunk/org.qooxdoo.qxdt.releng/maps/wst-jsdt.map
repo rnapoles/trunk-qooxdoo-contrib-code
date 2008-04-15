@@ -1,0 +1,21 @@
+!*************** wst-jsdt.map
+
+! This map file is for 
+! WTP 3.0 releases  
+
+! These bundles are currently being developed and released 
+! from the HEAD branch
+
+plugin@org.eclipse.wst.jsdt.doc=v200803102008,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/docs/org.eclipse.wst.jsdt.doc
+plugin@org.eclipse.wst.jsdt.core=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.core
+plugin@org.eclipse.wst.jsdt.manipulation=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.manipulation
+plugin@org.eclipse.wst.jsdt.support.firefox=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.support.firefox
+plugin@org.eclipse.wst.jsdt.support.ie=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.support.ie
+plugin@org.eclipse.wst.jsdt.ui=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.ui
+plugin@org.eclipse.wst.jsdt.web.core=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.core
+plugin@org.eclipse.wst.jsdt.web.support.jsp=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.support.jsp
+plugin@org.eclipse.wst.jsdt.web.ui=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.ui
+
+feature@org.eclipse.wst.jsdt.feature=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/features/org.eclipse.wst.jsdt.feature
+
+!***************
