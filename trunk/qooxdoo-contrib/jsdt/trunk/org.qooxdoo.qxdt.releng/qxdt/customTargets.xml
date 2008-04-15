@@ -27,9 +27,9 @@
 	<!-- ===================================================================== -->
 	<target name="getMapFiles" depends="checkLocalMaps" unless="skipMaps">
 		<property name="mapsCheckoutTag" value="HEAD" />
-		<svn username="anonymous" password=""> 
-		      <checkout url="https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt/trunk/org.qooxdoo.qxdt.releng/maps" destPath="${buildDirectory}/maps" /> 
-		    </svn> 
+		<svn javahl="false">
+			<export srcurl="${map}" revision="${revision}" destpath="${buildDirectory}/maps" force="true"/>
+		</svn>
 	</target>
 
 	<target name="checkLocalMaps">
