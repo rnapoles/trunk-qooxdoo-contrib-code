@@ -191,7 +191,7 @@
 					'value': "", 
 					'permissionRead' : null,
 					'permissionWrite' : null,
-					'userId' : 0
+					'userId' : "global"
 				};
 				this.updateServer( this.getUserData("servicePrefix") + 'configuration.create', this.__newConfigKey );
 			</qx:messageSubscriber>
