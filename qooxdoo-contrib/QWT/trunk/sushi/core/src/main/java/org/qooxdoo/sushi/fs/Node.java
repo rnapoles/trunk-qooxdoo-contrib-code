@@ -293,21 +293,23 @@ public abstract class Node {
 
     //--
     
-    public void checkExists() throws IOException {
+    public Node checkExists() throws IOException {
         if (!exists()) {
             throw new IOException("no such file or directory: " + this);
         }
+        return this;
     }
 
-    public void checkNotExists() throws IOException {
+    public Node checkNotExists() throws IOException {
         if (exists()) {
             throw new IOException("file or directory already exists: " + this);
         }
+        return this;
     }
 
-    public void checkDirectory() throws IOException {
+    public Node checkDirectory() throws IOException {
         if (isDirectory()) {
-            return;
+            return this;
         }
         if (exists()) {
             throw new IOException("directory expected: " + this);
@@ -316,9 +318,9 @@ public abstract class Node {
         }
     }
     
-    public void checkFile() throws IOException {
+    public Node checkFile() throws IOException {
         if (isFile()) {
-            return;
+            return this;
         }
         if (exists()) {
             throw new IOException("file expected: " + this);
@@ -542,17 +544,30 @@ public abstract class Node {
         out.close();
     }
 
+    public String sha() throws IOException {
+        try {
+            return digest("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String md5() throws IOException {
+        try {
+            return digest("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public String digest(String name) throws IOException, NoSuchAlgorithmException {
         InputStream src;
         StringBuilder result;
         
         src =  createInputStream();
         MessageDigest complete;
-        try {
-            complete = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+
+        complete = MessageDigest.getInstance(name);
         getIO().getBuffer().digest(src, complete);
         src.close();
         result = new StringBuilder();
