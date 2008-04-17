@@ -23,14 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.xml.Builder;
 import org.qooxdoo.sushi.xml.Selector;
 import org.qooxdoo.sushi.xml.XmlException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public class Feed {
     private final List<Channel> channels;
@@ -59,7 +58,7 @@ public class Feed {
 
     //-
 
-    public void write(org.qooxdoo.sushi.fs.file.FileNode dest) throws IOException {
+    public void write(Node dest) throws IOException {
         dest.writeXml(toXml(dest.getIO().getXml().builder));
     }        
 
