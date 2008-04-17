@@ -283,7 +283,7 @@ qx.Class.define("htmlarea.command.Manager",
 
         /* Request current range explicitly, if command is "Bold" */
         if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (command == "Bold") ) {
-          this.__currentRange = this.__editorInstance.getRange();
+          this.__currentRange = this.__editorInstance.getRange(); 
         }
 
         /* Body element must have focus before executing command */
@@ -524,15 +524,64 @@ qx.Class.define("htmlarea.command.Manager",
         * the current style setting after inserint the
         * <hr> tag.
         */
-
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-         htmlText += '<span style="' + this.getCurrentStyles() + '">';
+         htmlText += this.__generateHelperNodes();
        }
   
        return this.__insertHtml(htmlText, commandObject);
      },
 
+     /**
+      * Helper function which generates <span>-tags which can be used to apply the
+      * current style to an element.
+      * 
+      * @type member
+      * @return {String} String containing tags with special style settings.
+      */
+     __generateHelperNodes : function()
+     {
+       /* Fetch current styles */
+       var collectedStyles = this.getCurrentStyles();
+       
+       var styleString = "";
+       var spanString = "";
+       var htmlText = "";
 
+       /* Cycle over collected styles and generate output string */
+       for(var attribute in collectedStyles)
+       {
+         /* "text-decoration" is special. */
+         if(attribute == "text-decoration")
+         {
+           var textDecorations = collectedStyles[attribute];
+
+           /*
+            * An extra <span> is needed for every text-decoration value,
+            * because the color of a decoration is based on the element's color. 
+            */
+           for(i=0; i<textDecorations.length; i++)
+           {
+             spanString += '<span style="';
+             spanString += 'color: ' + textDecorations[i]['color'] + ';';
+             spanString += 'text-decoration: ' + textDecorations[i]['text-decoration'] + ';';
+             spanString += '">';
+           }
+         }
+         else
+         {
+           /* Put together style string for <span> */
+           styleString += attribute + ":" + collectedStyles[attribute] + "; ";
+         }
+       }
+
+       /* This span conatains all styles settings, except "text-decoration" */
+       htmlText += '<span style="' + styleString + '">';
+
+       /* Put it all together */
+       return spanString + htmlText;
+     },
+
+     
      /**
       * Internal helper function which retrieves all style settings, which are set
       * on the focus node and saves them on a span element.
@@ -555,36 +604,31 @@ qx.Class.define("htmlarea.command.Manager",
         */
        var usedStyles = { "font-size" : true };
        
-       /* This string will be build to save the style settings over the <hr> element. */
-       var styleSettings = '';
+       /* This map will be build to save the style settings over the <hr> element. */
+       var styleSettings = {};
   
        /* Retrieve element's computed style. */
        var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
   
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
-  
+
+       /* List of parent elements plus the element itself. */
+       var elementAndParents = qx.lang.Array.insertBefore(parents, elem, parents[0]);
+
        /* Helper vars */
        var styleAttribute;
        var styleValue;
        var parentStyleValue;
        var parentDecoration;
        var i, j;
-       
-       /* These style properties have to be handled specially */
-       var specialStyles = {
-         "background-color" : "transparent",
-         "text-decoration"  : "none"
-       };
-  
-       /* 
-        * NOTE that element's own styles are read first!
-        * Afterwards, cycle through parents.
-        */
-       for(i=0; i<=parents.length; i++)
+
+       /* Read style attributes set on element and all parents */
+       for(i=0; i<elementAndParents.length; i++)
        {
+         elem = elementAndParents[i];
          /* Cycle though style properties */
-         for (j=0; j<=elem.style.length; j++)
+         for (j=0; j<elem.style.length; j++)
          {
            styleAttribute = elem.style[j];
            if (styleAttribute.length > 0)
@@ -593,46 +637,97 @@ qx.Class.define("htmlarea.command.Manager",
              usedStyles[styleAttribute] = true;
            }
          }
-         /* Set pointer to element's next parent. */
-         elem = parents[i];
        }
-  
+
+
        /* Cycle through saved style names and fetch computed value for each of it. */
        for(style in usedStyles)
        {
          styleValue = decoration.getPropertyValue(style);
-         
-         /*
-          * For some style properties the element's parents properties
-          * have to be examined.
-          */
-         if( specialStyles[style] && (specialStyles[style] == styleValue) ){
-           styleValue = this.__getSpecialStyle(parents, style, styleValue);
-         }
 
-         /* Store style settings */
-         styleSettings += style + ":" + styleValue + "; ";
+         /* 
+          * The attribute "background-color" is special, since it can have "transparent" as value.
+          * In this case, we have to retrieve the _real_ color value from a parent element
+          */
+         if( (style == "background-color") && (styleValue == "transparent") )
+         {
+           styleSettings[style] = this.__getBackgroundColor(parents);
+         }
+         /*
+          * The attribute "text-decoration" is even more special. ;-) __getTextDecorations() generates an
+          * array containing all text-decoration styles and colors, that are visible on element.
+          */
+         else if(style == "text-decoration")
+         {
+           styleSettings[style] = this.__getTextDecorations(elementAndParents);
+         }
+         else
+         {
+           /* Store all other style values */
+           styleSettings[style] = styleValue;
+         }
        }
-       
+
        return styleSettings;
      },
 
 
      /**
       * Helper function which walks over all given parent
-      * elements and compares the computed value of the selected
-      * style property with the given one.
+      * elements and stores all text-decoration values and colors. 
       * 
-      * Returns the computed value of a parent element 
-      * if it differs in the given on (that means, that the value is usable).
+      * Returns an array containing all computed values of "text-decoration"
+      * and "text-color".
       *
       * @type member
       * @param value {Array} List with element's parents.
-      * @param value {String} Style property name.
-      * @param value {String} Style value, which can not be used.
-      * @return {String} Computed value. 
+      * @return {Array} List containing style information about element's parents.
       */
-     __getSpecialStyle : function(parents, styleName, invalidValue)
+     __getTextDecorations : function(parents)
+     {
+       var elem, decorationValue, colorValue, parentStyleValue;
+       var decorationValues = [];
+
+       /* Cycle through parents */
+       for(var i=0; i<parents.length; i++)
+       {
+         elem = parents[i];
+
+         /* Retrieve computed style */
+         parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+         
+         /* Store values */
+         decorationValue = parentDecoration.getPropertyValue("text-decoration");
+         colorValue = parentDecoration.getPropertyValue("color");
+
+         /* Check if text-decoration is valid */
+         if (decorationValue != "none")
+         {
+           /* Add parent's decoration style values to array */
+           decorationValues.push({
+             'text-decoration' : decorationValue,
+             'color'           : colorValue
+           });
+         }
+       }
+
+       /* Return collected values */
+       return decorationValues;
+     },
+
+
+     /**
+      * Helper function which walks over all given parent
+      * elements and searches for an valid value for "background-color". 
+      * 
+      * Returns the computed value of "background-color" of one parent
+      * element, if it contains a _real_ color. 
+      *
+      * @type member
+      * @param value {Array} List with element's parents.
+      * @return {String} Background color value. 
+      */
+     __getBackgroundColor : function(parents)
      {
        var elem, parentDecoration, parentStyleValue;
        var styleSettings = "";
@@ -643,11 +738,11 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style*/
-         parentDecoration = window.getComputedStyle(elem, null);
-         parentStyleValue = parentDecoration.getPropertyValue(styleName);
+         parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+         parentStyleValue = parentDecoration.getPropertyValue("background-color");
 
          /* Check if computed value is valid */
-         if (parentStyleValue != invalidValue)
+         if (parentStyleValue != "transparent")
          {
            /* Return computed value */
            return parentStyleValue;
