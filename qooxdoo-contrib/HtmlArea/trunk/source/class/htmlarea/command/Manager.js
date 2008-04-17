@@ -73,6 +73,18 @@ qx.Class.define("htmlarea.command.Manager",
       this.__doc = doc;
     },
 
+    /*
+     * When executing these commands, IE 6 sometimes selects the last <span> tag
+     * completly by mistake. It is necessary to check if the range is still
+     * collapsed after executing one of these commands.
+     */
+    __invalidFocusCommands :
+    {
+      "Bold"          : true,
+      "Italic"        : true,
+      "Underline"     : true,
+      "StrikeThrough" : true
+    },
 
     /*
      * Store the current range for IE browser to support execCommands
@@ -282,7 +294,12 @@ qx.Class.define("htmlarea.command.Manager",
         var emptyRange = false;
 
         /* Request current range explicitly, if command is "Bold" */
-        if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (command == "Bold") ) {
+        if(
+          (qx.core.Variant.isSet("qx.client", "mshtml")) &&
+          (qx.core.Client.getInstance().getVersion() < 7) &&
+          (this.__invalidFocusCommands[command])
+        )
+        {
           this.__currentRange = this.__editorInstance.getRange(); 
         }
 
@@ -338,10 +355,11 @@ qx.Class.define("htmlarea.command.Manager",
           }
 
           /* 
-           * IE has the unwanted behavior to select text after setting font weight to bold.
+           * IE has the unwanted behavior to select text after executing some commands
+           * (see this.__invalidFocusCommands).
            * If this happens, we have to collapse the range afterwards.    
            */
-          if(command == "Bold")
+          if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (this.__invalidFocusCommands[command]) )
           {
             var range = this.getCurrentRange();
             /* Check if range is empty */
