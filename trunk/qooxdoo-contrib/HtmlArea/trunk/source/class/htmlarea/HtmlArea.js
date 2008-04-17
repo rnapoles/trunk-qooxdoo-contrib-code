@@ -1481,9 +1481,20 @@ qx.Class.define("htmlarea.HtmlArea",
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
 
-              /* Save current styles */
-              this.__currentStyles = this.__commandManager.__commandManager.getCurrentStyles();
-              
+              /* Get current styles */
+              var currentStyleData = this.__commandManager.__commandManager.getCurrentStyles();
+
+              /* 
+               * Build style string, which will be applied on the paragph elements
+               * NOTE: This will change soon! 
+               */
+              var styleString = "";
+              for (var attribute in currentStyleData) {
+                styleString += attribute + ":" + currentStyleData[attribute] + "; ";
+              }
+
+              this.__currentStyles = styleString;
+
               if (this.__insertParagraphOnLinebreak())
               {
                 e.preventDefault();
