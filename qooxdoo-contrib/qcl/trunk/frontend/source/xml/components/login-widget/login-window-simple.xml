@@ -56,9 +56,7 @@
 						</qx:gridLayoutCell>
 
 						<qx:gridLayoutCell>
-							<qx:verticalBoxLayout width="100%" overflow="auto">
-								<qx:textField id="loginWindow_username" width="100%" height="20"/>
-							</qx:verticalBoxLayout>
+				  		<qx:textField id="loginWindow_username" width="100%" height="20"/>
 						</qx:gridLayoutCell>
 
 					</qx:gridLayoutRow>
@@ -72,9 +70,7 @@
 						</qx:gridLayoutCell>
 
 						<qx:gridLayoutCell>
-							<qx:verticalBoxLayout overflow="auto" width="100%">
-								<qx:passwordField id="loginWindow_password" width="100%" height="20"/>
-							</qx:verticalBoxLayout>
+							<qx:passwordField id="loginWindow_password" width="100%" height="20"/>
 						</qx:gridLayoutCell>
 
 					</qx:gridLayoutRow>
