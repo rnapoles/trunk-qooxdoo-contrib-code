@@ -106,7 +106,7 @@ public class Archive {
             if (entry.isDirectory()) {
                 node.mkdirsOpt();
             } else if (isManifest(node)) {
-                mergeManifest(zip);
+                mergeManifest(new Manifest(zip));
                 zip.closeEntry();
             } else {
                 node.getParent().mkdirsOpt();
@@ -122,12 +122,10 @@ public class Archive {
         return manifest != null && MANIFEST.equals(node.getPath());        
     }
     
-    public void mergeManifest(InputStream src) throws IOException {
-        Manifest rightManifest;
+    public void mergeManifest(Manifest rightManifest) throws IOException {
         Map<String, Attributes> rightSections;
         Attributes left;
         
-        rightManifest = new Manifest(src);
         manifest.getMainAttributes().putAll(rightManifest.getMainAttributes());
         rightSections = rightManifest.getEntries();
         for (String name : rightSections.keySet()) {
