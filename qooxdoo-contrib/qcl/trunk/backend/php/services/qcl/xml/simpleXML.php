@@ -14,8 +14,9 @@
  **/
 class qcl_xml_simpleXML extends qcl_object
 {
-  var $error;
-    
+
+  var $__impl = null; // simple xml implementation
+  
   /**
    * constructor
    **/
@@ -23,36 +24,45 @@ class qcl_xml_simpleXML extends qcl_object
   {
     if ( PHP_VERSION < 5 )
     {
-      require_once('qcl/lib/class/IsterXmlSimpleXMLImpl.php');
-      $this->doc = new IsterXmlSimpleXMLImpl;
-      if ( str_len($xml) < 255 and @is_file( $xml ) )
+      require_once('qcl/lib/simplexml44/class/IsterXmlSimpleXMLImpl.php');
+      $this->__impl =& new IsterXmlSimpleXMLImpl;
+      if ( is_valid_file( $xml ) )
       {
-        $this->doc->load_file($xml);
+        $this->doc =& $this->__impl->load_file($xml);
+      }
+      elseif ( is_string ( $xml ) )
+      {
+        $this->doc =& $this->__impl->load_string($xml);
       }
       else
       {
-        $this->doc->load_string($xml);
+        $this->raiseError("Invalid parameter " . $xml );
       }
     }
     else
     {
-      if ( str_len($xml) < 255 and @is_file( $xml ) )
+      if ( is_valid_file( $xml ) )
       {
         $this->doc = simplexml_load_file($xml);
       }
-      else
+      elseif ( is_string ( $xml ) )
       {
         $this->doc = simplexml_load_string($xml);
       }
+      else
+      {
+        $this->raiseError("Invalid parameter " . $xml );
+      }      
     }
   }
+  
   
   /**
    * get the root of the document, use this for cross-version compatibility
    */
   function &getRoot()
   {
-    if ( PHP_VERSION < 5 )
+    if ( $this->__imp )
     {
       return $this->doc->root;
     }
@@ -61,7 +71,56 @@ class qcl_xml_simpleXML extends qcl_object
       return $this->doc;
     }
   }  
-
+  
+  function &getDocument()
+  {
+    return $this->doc;
+  }
+  
+  /**
+   * cross-version method to get CDATA content of a node
+   * @param mixed $pathOrNode (string) path (only unique tag names, not a XPATH query) or (object) node 
+   * @return CDATA content or NULL if path does not exist 
+   */
+  function getData($pathOrNode)
+  {
+    if ( is_object($pathOrNode) )
+    {
+      $tmp =& $pathOrNode;
+    }
+    else
+    {
+      if (! is_object ($this->doc) )
+      {
+        $this->raiseError("No xml document available.");
+      }
+      
+      $tmp =& $this->doc;
+      
+      foreach ( explode("/",$path) as $part )
+      {
+        if ( !$path ) continue; // ignore initial "//"
+  
+        $tmp =& $tmp->$part;
+        if (! is_object ($tmp) )
+        {
+          $this->error = "Path '$path' stuck at '$part'.";
+          return null;
+        }
+      }
+    }
+        
+    if ( $this->__impl )
+    {
+      return $tmp->CDATA();
+    }
+    else
+    {
+      return (string) $tmp;
+    }
+  }
+  
+  
 }
 
 
