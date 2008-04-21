@@ -511,6 +511,44 @@ qx.Class.define("htmlarea.command.Manager",
 
        return ret;
      },
+     
+     
+     /**
+      * ONLY IE
+      * Inserts a simple linebreak ('<br>') at the current position.
+      * 
+      * @type member
+      * @return {Boolean} Returns true if an br element is inserted
+      */
+     __insertBrOnLinebreak : qx.core.Variant.select("qx.client", 
+     {
+       "mshtml" : function()
+       {
+         var rng = this.__editorInstance.getRange();
+         var parentElement = rng.parentElement().nodeName.toLowerCase();
+         
+         /* 
+          * Only insert the "br" element if we are currently NOT inside a list.
+          * If we are return "false" to let the browser handle this (event is not stopped).
+          */
+         if (parentElement != "li")
+         {
+           rng.pasteHTML(htmlarea.HtmlArea.simpleLinebreak);
+           rng.collapse(false);
+           rng.select();
+           
+           return true;
+         }
+                
+         return false;
+       },
+       
+       "default" : function()
+       {
+         return false;
+       }
+     }),
+     
 
      /**
       * Helper function to set a text align on a range.
