@@ -3,9 +3,10 @@
       id="org.qooxdoo.qxdt.feature"
       label="Qooxdoo Support for JSDT"
       version="1.0.0.qualifier"
-      provider-name="1&amp;1">
+      provider-name="1&amp;1"
+      plugin="org.qooxdoo.qxdt.support">
 
-   <description url="http://download.innoopract.com/qxdt/updates/site.xml">
+   <description url="http://download.innoopract.com/qxdt/updates/newandnoteworthy.txt">
       Development tools for Qooxdoo based on JSDT
    </description>
 
@@ -16,6 +17,10 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <url>
+      <update label="QXDT Update Site" url="http://download.innoopract.com/qxdt/updates/site.xml"/>
+   </url>
 
    <plugin
          id="org.qooxdoo.qxdt.inference"
