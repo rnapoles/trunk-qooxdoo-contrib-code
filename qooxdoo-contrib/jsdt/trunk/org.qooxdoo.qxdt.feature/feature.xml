@@ -5,11 +5,11 @@
       version="1.0.0.qualifier"
       provider-name="1&amp;1">
 
-   <description url="http://www.example.com/description">
+   <description url="http://download.innoopract.com/qxdt/updates/site.xml">
       Development tools for Qooxdoo based on JSDT
    </description>
 
-   <copyright url="http://download.innoopract.com/qxdt/updates/newandnoteworthy.txt">
+   <copyright>
       All rights reserved by 1&amp;1 (2008)
    </copyright>
 
