@@ -4,47 +4,11 @@
  * 
  */
 
-/**
- * base class providing __construct and & __destruct compatibility to php4 objects
- */
-class patched_object {
-	
-	/**
-	 * PHP4 __construct() hack taken from cakephp
-	 * taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
-	 *
-	 * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
-	 * Copyright 2005-2007, Cake Software Foundation, Inc.
-	 *								1785 E. Sahara Avenue, Suite 490-204
-	 *								Las Vegas, Nevada 89104
-	 *
-	 * Licensed under The MIT License
-	 * Redistributions of files must retain the above copyright notice.
-	 *
-	 * A hack to support __construct() on PHP 4
-	 * Hint: descendant classes have no PHP4 class_name() constructors,
-	 * so this constructor gets called first and calls the top-layer __construct()
-	 * which (if present) should call parent::__construct()
-	 *
-	 * @return Object
-	 */
-	function patched_object() 
-	{
-		//trigger_error("qcl_object constructor called");
-		$args = func_get_args();
-		if (method_exists($this, '__destruct')) 
-		{
-			register_shutdown_function (array(&$this, '__destruct'));
-		}
-		if (method_exists($this, '__construct')) 
-		{
-			call_user_func_array(array(&$this, '__construct'), $args);
-		}
-	}
+// helper functions
+require_once("qcl/functions.php");
 
-    function __construct() {}
-
-}
+// php4 object compatibility patch
+require_once("qcl/patched_object.php");
 
 // log constants
 define( "QCL_LOG_FILE" ,	QCL_LOG_PATH . "bibliograph.log" ); // todo: make application-specific!
@@ -65,8 +29,8 @@ $GLOBALS['_stackTrace'] = array();
 /**
  * base class of all json rpc service classes
  */
-
-class qcl_object extends patched_object {
+class qcl_object extends patched_object 
+{
 
    //-------------------------------------------------------------
    // instance variables
@@ -313,148 +277,4 @@ class qcl_object extends patched_object {
     return implode("\n",array_reverse($GLOBALS['_stackTrace'])) ;
   }
 	  
-}
-
-
-// convenience functions, may be already defined
-
-/**
- * PHP5 file_put_contents emulation
- *
- */
-if(!function_exists("file_put_contents")){
-    function file_put_contents($file,$data)
-    {
-        @unlink($file);
-        error_log($data,3,$file);
-    }
-}
-
-/**
- * avoids if statements such as if($a) $c=$a; else $c=$b;
- *
- * @argument mixed 
- * @argument mixed ...
- * @return first non-null argument, otherwise false
- */ 
-if(!function_exists("either")){
-    function either()
-    {
-            $arg_list = func_get_args();
-            foreach($arg_list as $arg)
-                    if($arg) return $arg;
-        return false;
-    } 
-}
-
-/**
- * php4 equivalent of stream_get_contents
- * 
- * @param resource $resource resource handle
- */
-if( ! function_exists( "stream_get_contents" ) )
-{
-    function stream_get_contents($resource)
-    {
-		$stream = "";
-		while ( ! feof ( $resource ) ) 
-		{ 
-			$stream .= fread ( $resource );
-		}
-		return $stream;
-    } 
-}
-
-/**
- * php4 equivalent of scandir
- * from http://www.php.net/manual/en/function.scandir.php
- * @return array list of files
- * @param string $dir
- * @param boolean $sortorder 
- */ 
-if(!function_exists('scandir')) 
-{
-  function scandir($dir, $sortorder = 0) 
-  {
-    if(is_dir($dir) && $dirlist = @opendir($dir)) 
-    {
-      while(($file = readdir($dirlist)) !== false) 
-      {
-          $files[] = $file;
-      }
-      closedir($dirlist);
-      ($sortorder == 0) ? asort($files) : rsort($files); // arsort was replaced with rsort
-      return $files;
-    } 
-    else 
-    {
-      return false;  
-    }
-  }
-}
-
-/**
- * php4 equivalent of array_diff_key
- * from http://de3.php.net/manual/en/function.array-diff-key.php
- * @return array 
- */ 
-if(!function_exists('array_diff_key')) 
-{
-  function array_diff_key()
-  {
-    $arrs = func_get_args();
-    $result = array_shift($arrs);
-    foreach ($arrs as $array) {
-      foreach ($result as $key => $v) {
-        if (array_key_exists($key, $array)) {
-            unset($result[$key]);
-        }
-      }
-    }
-    return $result;
-   }
-}
-
-/**
- * php4 equivalent of json_encode
- */
-if ( ! function_exists("json_encode")	)
-{
-	function json_encode( $string )
-	{
-		require_once ("qcl/jsonrpc/JSON.phps");
-		$json = new JSON();
-		return $json->encode( $string );
-	}
-}
-
-/**
- * php4 equivalent of json_decode
- */
-if ( ! function_exists("json_decode")	)
-{
-	function json_decode( $string, $tranformToArray=false )
-	{
-		require_once ("qcl/jsonrpc/JSON.phps");
-		$json = new JSON();
-		$var = $json->decode( $string );
-		if ( is_object( $var ) and $tranformToArray );
-		{
-			return object2array($var);
-		}
-		return $var;
-	}
-}
-
-/**
- * transform an object structure into an associative array
- */
-function object2array($obj)
-{
-	if (! is_object($obj)) return (array) $obj;
-	$arr=array();
-	foreach (get_object_vars($obj) as $key => $val) {
-        $arr[$key]= is_object($val) ? object2array($val) : $val;
-    }
-    return $arr;
 }
