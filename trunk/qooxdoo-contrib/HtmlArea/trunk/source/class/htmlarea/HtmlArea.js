@@ -735,8 +735,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
         if (this.__loadCounter > 5)
         {
-          this.error('cant load HtmlArea. Document is not available. ' + doc, exc);
-          this.createDispatchDataEvent("loadingError", exc);
+          this.error('cant load HtmlArea. Document is not available. ' + doc);
+          this.createDispatchDataEvent("loadingError");
         }
         else
         {
