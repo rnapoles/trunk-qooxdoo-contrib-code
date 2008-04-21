@@ -21,8 +21,6 @@ import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
 
 public class QooxdooInferrenceSupport extends InferEngine {
 
-  asdf
-  
   private CompilationUnitDeclaration compilationUnit;
   private Stack<InferredType> classDefinitionStack = new Stack<InferredType>();
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
