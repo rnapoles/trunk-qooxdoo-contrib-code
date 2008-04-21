@@ -188,7 +188,13 @@ class qcl_config_controller extends qcl_session_controller
 		foreach( $rows as $row )
 		{
 			$table[]  = array (
-        $row['id'], $row['namedId'], $row['type'],  $row['value'],  $row['permissionRead'],  $row['permissionWrite'],  $row['user'] 
+        $row['id'], 
+        $row['namedId'], 
+        $row['type'],  
+        $row['value'],  
+        $row['permissionRead'],  
+        $row['permissionWrite'],  
+        $row['user'] 
       );
 		}
 		$this->set( "tabledatamodel", $table );
