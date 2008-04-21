@@ -151,14 +151,16 @@
 	<!-- ===================================================================== -->
 
 	<target name="assembleUpdateSite">
-		<property name="updateSiteDirectory" value="${buildDirectory}/I.feature/eclipse"/>
 		<unzip src="${buildDirectory}/I.feature/org.qooxdoo.qxdt.feature-feature.zip"
 		       dest="${buildDirectory}/I.feature/"/>
 		<unzip src="${buildDirectory}/I.feature/org.eclipse.wst.jsdt.feature-feature.zip"
 		       dest="${buildDirectory}/I.feature/"/>
 		<antcall target="generateSiteXML"/>
 	</target>
+	
+	
 	<target name="generateSiteXML">
+		<property name="updateSiteDirectory" value="${buildDirectory}/I.feature/eclipse"/>
 		<copy file="${buildDirectory}/features/org.qooxdoo.qxdt.feature/templates/site.xml" todir="${updateSiteDirectory}"/>
 		
 		<!-- Find the qxdt feature file -->
@@ -167,8 +169,8 @@
 	    </fileset>
 		<!-- -->
 		<!-- Find the property of qooxdooJar by removing the path prefix -->
-	    <pathconvert pathsep="," property="qooxdooJar" refid="qooxdooJarId">
-            <map from="${updateSiteDirectory}/" to=""/>
+	    <pathconvert pathsep="${FILE_SEP}" property="qooxdooJar" refid="qooxdooJarId">
+            <map from="${updateSiteDirectory}/features/" to=""/>
 		</pathconvert>
 		
 		<!-- Find the property of qooxdooJarVersion by removing the filename prefix -->
@@ -181,12 +183,12 @@
 	        <include name="**/org.eclipse.wst.jsdt*.jar"/>
 	    </fileset>
 		<!-- Find the property of jsdtJar by removing the path prefix -->
-	    <pathconvert pathsep="," property="jsdtJar" refid="jsdtJarId">
-            <map from="${updateSiteDirectory}/" to=""/>
+	    <pathconvert pathsep="${FILE_SEP}" property="jsdtJar" refid="jsdtJarId">
+            <map from="${updateSiteDirectory}/features/" to=""/>
 		</pathconvert>
 		<!-- Find the property of jsdtJarVersion by removing the filename prefix -->
 		<pathconvert pathsep="${FILE_SEP}" property="jsdtJarVersion" refid="jsdtJarId">
-                <map from="${updateSiteDirectory}/features/org.qooxdoo.qxdt.feature_" to=""/>
+                <map from="${updateSiteDirectory}/features/org.eclipse.wst.jsdt.feature_" to=""/>
         </pathconvert>
 		
 		<!-- Do the actual replacements in the site.xml -->
@@ -197,7 +199,7 @@
 
 		<replace file="${updateSiteDirectory}/site.xml" token="QOOXDOO_JAR" value="${qooxdooJar}"/>
 		<replace file="${updateSiteDirectory}/site.xml" token="JSDT_JAR" value="${jsdtJar}"/>
-		
+		<echo message="update site dir: ${updateSiteDirectory}"/>
 	</target>
 	
 	<target name="uploadUpdateSite">
