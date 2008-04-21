@@ -105,6 +105,13 @@ qx.Class.define("htmlarea.command.Manager",
      * Computed pixel sizes for values size attribute in <font> tag
      */
     __fontSizeNames : [ 10, 12, 16, 18, 24, 32, 48 ],
+    
+    
+    /*
+     * In Gecko-browser hyperlinks which are based on *collapsed* selection are inserted as DOM nodes. 
+     * To keep track of these nodes they are equipped with an unique id (-> "qx_link" + __hyperLinkId)
+     */
+    __hyperLinkId : 0,
 
 
     /**
@@ -205,9 +212,9 @@ qx.Class.define("htmlarea.command.Manager",
         insertunorderedlist   : { useBuiltin : true, identifier : "InsertUnorderedList", method : null },
 
         inserthorizontalrule  : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHr" },
-        insertimage           : { useBuiltin : true, identifier : "InsertImage", method : null },
+        insertimage           : { useBuiltin : false, identifier : "InsertImage", method : "__insertImage" },
 
-        inserthyperlink       : { useBuiltin : true, identifier : "CreateLink", method : null },
+        inserthyperlink       : { useBuiltin : false, identifier : "CreateLink", method : "__insertHyperLink" },
 
         selectall             : { useBuiltin : false, identifier : "SelectAll", method : "__selectAll" },
         selectedtext          : { useBuiltin : false, identifier : null, method : "__getSelectedText" },
@@ -525,6 +532,113 @@ qx.Class.define("htmlarea.command.Manager",
      },
      
 
+    /**
+     * Inserts an image
+     * 
+     * @type member
+     * @param attributes {Map} map with attributes which should be applied (e.g. "src", "border", "width" and "height")
+     * @param commandObject {Object} command object
+     * @return {Boolean} Success of operation
+     */
+     __insertImage : qx.core.Variant.select("qx.client", {
+       "gecko" : function(attributes, commandObject)
+       {
+         /* Only insert an image if the src attribute info is available */
+         if (attributes.src)
+         {
+           /* Insert the image via the execCommand and add the attributes afterwards */
+           this.__doc.execCommand(commandObject.identifier, false, attributes.src);
+           
+           /* Remove the "src" attribute from the map */
+           delete attributes.src;
+           
+           /* Get the image node */
+           var sel = this.__editorInstance.__getSelection();
+           var anchorNode = sel.anchorNode;
+           var offset = sel.anchorOffset;
+           var img = anchorNode.childNodes[offset-1];
+           
+           var attrNode;
+           for (var attribute in attributes)
+           {
+             attrNode = this.__doc.createAttribute(attribute);
+             attrNode.nodeValue = attributes[attribute];
+             
+             img.setAttributeNode(attrNode);
+           }
+         }
+         else
+         {
+           return false;
+         }
+       },
+       
+       "default" : function(value, commandObject)
+       {
+         /* For all other browsers use the execCommand directly */
+         return this.__doc.execCommand(commandObject.identifier, false, value);  
+       }
+     }),
+     
+     /**
+      * Inserts a hyperlink. In Gecko browser these is achieved by
+      * inserting DOM nodes.
+      * IE is using the "CreateLink" execCommand.
+      * 
+      * @type member
+      * @param url {String} url to insert
+      * @param commandObject {Object} command object
+      * @return {Boolean} result
+      */
+     __insertHyperLink : qx.core.Variant.select("qx.client", {
+       "gecko" : function(url, commandObject)
+       {
+         var sel      = this.__editorInstance.__getSelection();
+         var rng      = this.__editorInstance.__createRange(sel);
+         
+         /* 
+          * SPECIAL CASE
+          * If the selection is collapsed insert a link with
+          * the URL as text.
+          */
+         if (sel.isCollapsed)
+         {
+           /* Only use the link id for links which are based on a collapsed selection */
+           var linkId   = "qx_link" + ++this.__hyperLinkId;
+           
+           /* Create and insert the link as DOM nodes */
+           var linkNode = this.__doc.createElement("a");
+           var hrefAttr = this.__doc.createAttribute("href");
+           var idAttr   = this.__doc.createAttribute("id");
+           var linkText = document.createTextNode(url);
+           
+           idAttr.nodeValue   = linkId;
+           linkNode.setAttributeNode(idAttr);
+           
+           hrefAttr.nodeValue = url;
+           linkNode.setAttributeNode(hrefAttr);
+           
+           linkNode.appendChild(linkText);
+           rng.insertNode(linkNode);
+           rng.selectNode(linkNode);
+           
+           sel.collapseToEnd();
+           
+           return true;      
+         }
+         else
+         {
+           /* Use the execCommand if any selection is available */
+           return this.__doc.execCommand(commandObject.identifier, false, url);
+         }
+       },
+       
+       "default" : function(url, commandObject)
+       {
+         return this.__doc.execCommand(commandObject.identifier, false, url);
+       }
+     }),
+     
      /**
       * Internal method to insert an horizontal ruler in the document
       *

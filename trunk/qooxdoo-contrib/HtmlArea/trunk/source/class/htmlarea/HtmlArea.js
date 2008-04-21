@@ -2281,31 +2281,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       "default" : function(url)
       {
-        var sel = this.__getSelection();
-        var rng = this.__createRange(sel);
-
-        /* 
-         * Selection does not contain content:
-         * Insert URL as text with a link on it.
-         */
-        if(sel.isCollapsed)
-        {
-          var textNode = document.createTextNode(url);
-          rng.insertNode(textNode);
-          rng.selectNode(textNode);
-
-          var retVal = this.__commandManager.execute("inserthyperlink", url);
-          sel.collapseToEnd();
-
-          return retVal;
-        }
-        else
-        {
-          /* Otherwise just execute command on selection */
-          return this.__commandManager.execute("inserthyperlink", url);
-        }
+        return this.__commandManager.execute("inserthyperlink", url);
       }
-
     }), 
 
     /**

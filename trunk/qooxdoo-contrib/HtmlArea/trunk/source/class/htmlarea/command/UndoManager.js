@@ -289,8 +289,29 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
       else
       {
-        /* Undo changes by applying the corresponding command */
-        return this.__commandManager.execute(undoInfo.command, undoInfo.value);
+        if (undoInfo.command == "inserthyperlink")
+        {
+          /* Get the current linkId and locate the element */
+          var linkId = "qx_link" + this.__commandManager.__hyperLinkId;
+          var link = this.__doc.getElementById(linkId); 
+          
+          if (link)
+          {
+            /* Delete the element */
+            link.parentNode.removeChild(link);
+            
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+        else
+        {
+          /* Undo changes by applying the corresponding command */
+          return this.__commandManager.execute(undoInfo.command, undoInfo.value);  
+        }
       }
     },
 
@@ -370,6 +391,17 @@ qx.Class.define("htmlarea.command.UndoManager",
 
         try
         {
+          /*
+           * IMPORTANT
+           * It *could* happen that 2 content changes occuring right after another in the undo-stack.
+           * Gecko is removing both of these 2 changes in *ONE* undo step. To keep the undo-stack in-sync
+           * we have also to remove the previous stack entry.
+           */
+          if (this.__undoStack.length > 1 && this.__undoStack[this.__undoStack.length-1].actionType == "Content")
+          {
+            this.__undoStack.pop();
+          }
+          
           /* Use the native undo command */
           return this.__doc.execCommand("Undo", false, null);
         }
@@ -506,6 +538,9 @@ qx.Class.define("htmlarea.command.UndoManager",
 
       "default" : function(redoInfo)
       {
+        /* Update the undo history */
+        this.__addToUndoStack(redoInfo);
+        
         return this.__doc.execCommand("Redo", false, null);
       }
     }),
@@ -595,7 +630,16 @@ qx.Class.define("htmlarea.command.UndoManager",
        */
       this.__commandManager.__commands["backgroundcolor"].customUndo = true;
       this.__commandManager.__commands["backgroundimage"].customUndo = true;
-      this.__commandManager.__commands["inserthtml"].customUndo = true;
+      
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        this.__commandManager.__commands["inserthyperlink"].customUndo = true;
+      }
+      
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        this.__commandManager.__commands["inserthtml"].customUndo = true;
+      }
     },
     
 
@@ -615,6 +659,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       undoObject.commandObject = commandObject;
       undoObject.command       = command;
       undoObject.value         = value;
+      undoObject.actionType    = "Custom";
 
       if (commandObject.customUndo)
       {
@@ -634,9 +679,19 @@ qx.Class.define("htmlarea.command.UndoManager",
           case "inserthtml":
             parameters.push("undo_" + this.__undoId);
           break;
+          
+          case "inserthyperlink":
+            /*
+             * SPECIAL CASE
+             * If the hyperlinks gets inserted on a selection treat it as a command step
+             */
+            if (!this.__editorInstance.__getSelection().isCollapsed)
+            {
+              undoObject.actionType = "Command";
+            }
+          break;
         }
 
-        undoObject.actionType = "Custom";
         undoObject.parameter  = parameters;
       }
       else
@@ -644,15 +699,29 @@ qx.Class.define("htmlarea.command.UndoManager",
         if (qx.core.Variant.isSet("qx.client", "gecko"))
         {
           /*
-           * Ignore the command if the range currently manipulated is collapsed.
-           * If the range is collapsed gecko marks this manipulation NOT as an
-           * extra action.
+           * Ignore commands which normally act on ranges if the current range
+           * is collapsed, e.g. Gecko DOES NOT mark setting a collapsed range to
+           * bold as an extra action. 
+           * However commands like inserting an ordered list or table which do not 
+           * need to act on a range to work should be captured.
            *
-           * -> no extra undo step
            */
-          if (this.__editorInstance.getRange().collapsed)
+          if (this.__editorInstance.__getSelection().isCollapsed)
           {
-            return;
+            switch(command)
+            {
+              // TODO: create a list of all commands which DO NOT need to act on a range to perform!
+              case "insertorderedlist":
+              case "insertunorderedlist":
+              case "justifyright":
+              case "inserthtml":
+              case "insertimage":
+                undoObject.actionType = "Command";
+              break;
+              
+              default:
+                return;
+            }
           }
           else
           {
@@ -722,6 +791,7 @@ qx.Class.define("htmlarea.command.UndoManager",
 
        /* After a command (other than "undo") no redo is possible */
        this.__redoPossible = false;
+       this.__redoStack    = [];
        
        /* Fire an update event  */
        this.__updateUndoRedoState();
@@ -839,6 +909,7 @@ qx.Class.define("htmlarea.command.UndoManager",
           if(! (e.isCtrlPressed() && (keyIdentifier == "z" || keyIdentifier == "y")) ) {
             /* Otherwise mark the redo as not possible anymore */
             this.__redoPossible = false;
+            this.__redoStack    = [];
           }
 
           /* Indicate start of typing */
@@ -866,7 +937,7 @@ qx.Class.define("htmlarea.command.UndoManager",
             }
 
             /* Add undo infos to the stack */
-            this.__addToUndoStack(undoObject);
+            //this.__addToUndoStack(undoObject);
 
             /* Mark the beginning of typing */
             this.__startTyping = true;
