@@ -131,4 +131,5 @@ Eclipse-LazyStart: true
 Bundle-SymbolicName: org.eclipse.wst.jsdt.ui; singleton:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Bundle-Localization: plugin
+Bundle-ActivationPolicy: lazy
 
