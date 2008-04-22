@@ -1,3 +1,3 @@
 /**
- * The listview package.
+ * The ListView package.
  */
