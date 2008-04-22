@@ -1265,8 +1265,8 @@ public void notifySourceElementRequestor( InferredType type ) {
 
 	typeInfo.name = type.getName();
 
-	typeInfo.nameSourceStart = type.sourceStart;
-	typeInfo.nameSourceEnd = -1;
+	typeInfo.nameSourceStart = type.getNameStart();
+	typeInfo.nameSourceEnd = typeInfo.nameSourceStart+typeInfo.name.length-1;
 	typeInfo.superclass = type.getSuperClassName();
 	typeInfo.superinterfaces = null;
 //		typeInfo.typeParameters = getTypeParameterInfos(typeDeclaration.typeParameters);
@@ -1329,9 +1329,7 @@ public void notifySourceElementRequestor( InferredType type ) {
 //		int selectorSourceEnd = this.sourceEnds.get(methodDeclaration);
 
 		methodInfo.declarationStart = methodDeclaration.declarationSourceStart;
-
-		// 08-03-03 mkempka@innoopract.com: changed to display visibility of inferred methods
-		methodInfo.modifiers = methodDeclaration.modifiers;
+		methodInfo.modifiers = 0;
 		if (method.isStatic)
 			methodInfo.modifiers |= ClassFileConstants.AccStatic;
 		methodInfo.name =method.name;
