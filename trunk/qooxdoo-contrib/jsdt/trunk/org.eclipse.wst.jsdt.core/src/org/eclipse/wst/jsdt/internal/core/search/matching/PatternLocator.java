@@ -23,6 +23,7 @@ import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.core.search.SearchMatch;
 import org.eclipse.wst.jsdt.core.search.SearchPattern;
 import org.eclipse.wst.jsdt.internal.compiler.ast.ASTNode;
+import org.eclipse.wst.jsdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.ast.Annotation;
 import org.eclipse.wst.jsdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.ast.Expression;
@@ -137,7 +138,7 @@ public static char[] qualifiedPattern(char[] simpleNamePattern, char[] qualifica
 	} else {
 		return qualificationPattern == null
 			? CharOperation.concat(ONE_STAR, simpleNamePattern)
-			: CharOperation.concat(qualificationPattern, simpleNamePattern, '.');
+			: CharOperation.concat(qualificationPattern, simpleNamePattern, '/');
 	}
 }
 public static char[] qualifiedSourceName(TypeBinding binding) {
@@ -460,7 +461,18 @@ protected void matchReportReference(ASTNode reference, IJavaElement element, Bin
 	matchReportReference(reference, element, elementBinding, accuracy, locator);
 }
 public SearchMatch newDeclarationMatch(ASTNode reference, IJavaElement element, Binding elementBinding, int accuracy, int length, MatchLocator locator) {
-    return locator.newDeclarationMatch(element, elementBinding, accuracy, reference.sourceStart, length);
+	int offset=reference.sourceStart;
+	if (reference instanceof AbstractMethodDeclaration) {
+		AbstractMethodDeclaration method = (AbstractMethodDeclaration) reference;
+		if (method.selector==null && method.inferredMethod!=null)
+		{
+			offset=method.inferredMethod.nameStart;
+			if (length>=0)
+				length=method.inferredMethod.name.length;
+		}
+	}
+
+		return locator.newDeclarationMatch(element, elementBinding, accuracy, offset, length);
 }
 protected int referenceType() {
 	return 0; // defaults to unknown (a generic JavaSearchMatch will be created)
@@ -801,15 +813,33 @@ protected int resolveLevelForType(char[] qualifiedPattern, TypeBinding type) {
 	if (type.isTypeVariable()) return IMPOSSIBLE_MATCH;
 
 	// NOTE: if case insensitive search then qualifiedPattern is assumed to be lowercase
-
+    char [] filePath=new char[]{};
+    char [] bindingPath=filePath;
+	int index;
+	if ( (index=CharOperation.lastIndexOf('/', qualifiedPattern))>-1)
+	{
+		filePath=CharOperation.subarray(qualifiedPattern, 0, index);
+		qualifiedPattern=CharOperation.subarray(qualifiedPattern, index+1, qualifiedPattern.length);
+		bindingPath=type.getFileName();
+		index=CharOperation.lastIndexOf('/', bindingPath);
+		if (index>-1)
+			bindingPath=CharOperation.subarray(bindingPath, 0, index);
+	}
+	
 	char[] qualifiedPackageName = type.qualifiedPackageName();
 	char[] qualifiedSourceName = qualifiedSourceName(type);
 	char[] fullyQualifiedTypeName = qualifiedPackageName.length == 0
 		? qualifiedSourceName
 		: CharOperation.concat(qualifiedPackageName, qualifiedSourceName, '.');
-	return CharOperation.match(qualifiedPattern, fullyQualifiedTypeName, this.isCaseSensitive)
-		? ACCURATE_MATCH
-		: IMPOSSIBLE_MATCH;
+	if (CharOperation.match(qualifiedPattern, fullyQualifiedTypeName, this.isCaseSensitive))
+	{
+		if (filePath.length>0)
+		{
+		   return (CharOperation.endsWith(bindingPath, filePath)) ? ACCURATE_MATCH:IMPOSSIBLE_MATCH;	
+		}
+		return ACCURATE_MATCH;
+	}
+	return IMPOSSIBLE_MATCH;
 }
 /* (non-Javadoc)
  * Resolve level for type with a given binding with all pattern information.

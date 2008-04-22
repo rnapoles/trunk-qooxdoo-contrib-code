@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.internal.core.util.Util;
 
 public class SystemLibraryLocation implements LibraryLocation {
 
@@ -52,9 +53,9 @@ public class SystemLibraryLocation implements LibraryLocation {
 		ArrayList allEntries = new ArrayList();
 		while(entries.hasMoreElements()) {
 			Path value = new Path((String)entries.nextElement());
-			String extension = value.getFileExtension();
-			if(extension!=null && extension.equalsIgnoreCase("js")) { //$NON-NLS-1$
-				allEntries.add(value.lastSegment().toCharArray());
+			char [] filename=value.lastSegment().toCharArray();
+			if(Util.isJavaLikeFileName(filename)) { //$NON-NLS-1$
+				allEntries.add(filename);
 			}
 		}
 		char[][] fileNames = new char[allEntries.size()][];
@@ -106,7 +107,7 @@ public class SystemLibraryLocation implements LibraryLocation {
 					}
 				}
 			}
-		}catch(Exception ex) {ex.printStackTrace();}
+		}catch(Exception ex) {}
 
 	}
 

@@ -1460,6 +1460,7 @@ public class InferEngine extends ASTVisitor {
 		 * this
 		 */
 		if( expression instanceof ThisReference ){
+			if (this.passNumber==2 && this.currentContext.currentType==null)
 			{
 				char [] possibleTypeName={'g','l','o','b','a','l'};
 				if (this.currentContext.currentMethod!=null)

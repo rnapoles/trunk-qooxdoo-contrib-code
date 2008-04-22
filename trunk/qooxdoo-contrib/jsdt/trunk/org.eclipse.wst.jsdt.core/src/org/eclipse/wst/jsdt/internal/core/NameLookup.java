@@ -53,6 +53,8 @@ import org.eclipse.wst.jsdt.internal.compiler.env.AccessRestriction;
 import org.eclipse.wst.jsdt.internal.compiler.env.AccessRuleSet;
 import org.eclipse.wst.jsdt.internal.compiler.lookup.Binding;
 import org.eclipse.wst.jsdt.internal.compiler.lookup.CompilationUnitScope;
+import org.eclipse.wst.jsdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.wst.jsdt.internal.compiler.lookup.SourceTypeBinding;
 import org.eclipse.wst.jsdt.internal.compiler.parser.ScannerHelper;
 import org.eclipse.wst.jsdt.internal.compiler.util.SuffixConstants;
 import org.eclipse.wst.jsdt.internal.core.search.BasicSearchEngine;
@@ -1035,16 +1037,19 @@ public class NameLookup implements SuffixConstants {
 				if (checkRestrictions) {
 					accessRestriction = getViolatedRestriction(bindingName, packageName, element, accessRestriction);
 				}
-//				char[] path = null;
-//
-//				if(element instanceof SourceTypeBinding) {
-//					path = ((SourceTypeBinding)element).getFileName();
-//				}else if ( element instanceof ReferenceBinding) {
-//					path = ((ReferenceBinding)element).getFileName();
-//				}
-//				if(!getRestrictedAccessRequestor().acceptBinding(bindingType, acceptFlags, packageName.toCharArray(), bindingName.toCharArray(), new String(path), accessRestriction)){
-//					continue;
-//				}
+				char[] path = null;
+
+				if(element instanceof SourceTypeBinding) {
+					path = ((SourceTypeBinding)element).getFileName();
+				}else if ( element instanceof ReferenceBinding) {
+					path = ((ReferenceBinding)element).getFileName();
+				}else if(element instanceof SourceType){
+					path = ((SourceType)element).getPath().toString().toCharArray();
+				}
+				if(path!=null && !getRestrictedAccessRequestor().acceptBinding(bindingType, acceptFlags, packageName.toCharArray(), bindingName.toCharArray(), new String(path), accessRestriction)){
+					element = null;
+					continue;
+				}
 //
 				Answer answer = new Answer(element, accessRestriction);
 				if (!answer.ignoreIfBetter()) {
@@ -1408,10 +1413,13 @@ public class NameLookup implements SuffixConstants {
 //	private String [] splitPackageName(String name)
 //	{
 //		String[] strings;
-//		if (name.endsWith(".js"))
+//		int index=Util.indexOfJavaLikeExtension(name);
+//		if (index>=0)
 //		{
-//			strings= Util.splitOn('.', name, 0, name.length()-3);
-//			strings[strings.length-1]=strings[strings.length-1]+".js";
+//			String extension=name.substring(index+1);
+//			name=name.substring(0,index);
+//			strings= Util.splitOn('.', name, 0, name.length());
+//			strings[strings.length-1]=strings[strings.length-1]+extension;
 //		}
 //		else
 //		strings  = Util.splitOn('.', name, 0, name.length());

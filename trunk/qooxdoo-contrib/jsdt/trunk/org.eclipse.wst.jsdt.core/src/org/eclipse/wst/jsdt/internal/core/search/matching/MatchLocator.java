@@ -128,6 +128,7 @@ import org.eclipse.wst.jsdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.wst.jsdt.internal.core.JavaElement;
 import org.eclipse.wst.jsdt.internal.core.JavaModelManager;
 import org.eclipse.wst.jsdt.internal.core.JavaProject;
+import org.eclipse.wst.jsdt.internal.core.LibraryFragmentRoot;
 import org.eclipse.wst.jsdt.internal.core.LocalVariable;
 import org.eclipse.wst.jsdt.internal.core.NameLookup;
 import org.eclipse.wst.jsdt.internal.core.Openable;
@@ -405,7 +406,8 @@ public static void findIndexMatches(InternalSearchPattern pattern, Index index, 
 }
 
 public static IJavaElement getProjectOrJar(IJavaElement element) {
-	while (!(element instanceof IJavaProject) && !(element instanceof JarPackageFragmentRoot)) {
+	while (!(element instanceof IJavaProject) &&
+			!(element instanceof JarPackageFragmentRoot || element instanceof LibraryFragmentRoot)) {
 		element = element.getParent();
 	}
 	return element;
@@ -2363,6 +2365,7 @@ protected void reportMatching(CompilationUnitDeclaration unit, boolean mustResol
 			if (enclosingElement == null) return;
 			boolean typeInHierarchy = true;
 			boolean matchedClassContainer=true;
+			enclosingElement=((ITypeRoot)enclosingElement).getType(new String(inferredType.getName()));
 
 			Integer level = (Integer) nodeSet.matchingNodes.removeKey(inferredType);
 			int accuracy = (level != null && matchedClassContainer) ? level.intValue() : -1;
