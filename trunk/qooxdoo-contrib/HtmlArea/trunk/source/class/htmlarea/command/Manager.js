@@ -642,7 +642,7 @@ qx.Class.define("htmlarea.command.Manager",
          if (sel.isCollapsed)
          {
            /* Only use the link id for links which are based on a collapsed selection */
-           var linkId   = "qx_link" + ++this.__hyperLinkId;
+           var linkId   = "qx_link" + (++this.__hyperLinkId);
            
            /* Create and insert the link as DOM nodes */
            var linkNode = this.__doc.createElement("a");
