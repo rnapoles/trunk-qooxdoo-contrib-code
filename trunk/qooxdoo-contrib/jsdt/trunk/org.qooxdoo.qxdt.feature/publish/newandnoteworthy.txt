@@ -1,2 +1,5 @@
+2008-04-22:
+  - synchronized with Eclipse CVS Head 
+  - fixed bug 825 (include path incomplete) 
 2008-04-21:
   - continuous build that publishes to an update site
