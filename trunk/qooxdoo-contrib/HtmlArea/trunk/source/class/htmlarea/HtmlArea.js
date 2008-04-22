@@ -1130,22 +1130,22 @@ qx.Class.define("htmlarea.HtmlArea",
              * useCSS is deprecated - see http://www.mozilla.org/editor/midas-spec.html
              */
             this.__commandManager.execute("stylewithcss", true);
-
-            /*
-             * this command only works when the cursor is inside a paragraph. Then
-             * it is needed to press the Enter key twice to get paragraphs.
-             */
-            //doc.execCommand("insertbronreturn", false, false);
           }
           catch(ex)
           {
-            try {
+            try
+            {
               this.__commandManager.execute("usecss", false);
-            } catch(ex) {
-              if (!this.__isReady) {
+            }
+            catch(ex)
+            {
+              if (!this.__isReady)
+              {
                 this.error("Failed to enable rich edit functionality");
                 this.createDispatchDataEvent("loadingError", ex);
-              } else {
+              }
+              else
+              {
                 throw new Error("Failed to enable rich edit functionality");
               }
             }
