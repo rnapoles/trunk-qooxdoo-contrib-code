@@ -20,7 +20,7 @@
 
 /* ************************************************************************
 
-#embed(qx.static/image/blank.gif)
+#embed(listview/image/blank.gif)
 
 ************************************************************************ */
 
@@ -54,7 +54,7 @@ qx.Class.define("listview.ContentCellImage",
   */
 
   statics : {
-    empty : { source : "static/image/blank.gif" }
+    empty : { source : "listview/image/blank.gif" }
   },
 
 
@@ -102,7 +102,7 @@ qx.Class.define("listview.ContentCellImage",
     setSource : function(vSource)
     {
       if (this._initialLayoutDone) {
-        return this._updateContent(qx.io.Alias.getInstance().resolve(vSource == "" ? "static/image/blank.gif" : vSource));
+        return this._updateContent(qx.io.Alias.getInstance().resolve(vSource == "" ? "listview/image/blank.gif" : vSource));
       } else {
         return qx.ui.basic.Image.prototype.setSource.call(this, vSource);
       }
