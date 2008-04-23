@@ -55,7 +55,7 @@ qx.Class.define("listview.ListView",
     // ************************************************************************
     //   HEADER
     // ************************************************************************
-    this._header = new qx.ui.listview.Header(vColumns);
+    this._header = new listview.Header(vColumns);
     this._header.setParent(this);
 
     // ************************************************************************
@@ -69,7 +69,7 @@ qx.Class.define("listview.ListView",
     // ************************************************************************
     //   PANE
     // ************************************************************************
-    this._pane = new qx.ui.listview.ListViewPane(vData, vColumns);
+    this._pane = new listview.ListViewPane(vData, vColumns);
     this._pane.setParent(this._frame);
 
     // ************************************************************************
@@ -348,7 +348,7 @@ qx.Class.define("listview.ListView",
         var vNewCell = this._getHeaderCell(value);
 
         if (vNewCell && vNewCell.getSortOrder() == null) {
-          vNewCell.setSortOrder(qx.ui.listview.HeaderCell.C_SORT_ASCENDING);
+          vNewCell.setSortOrder(listview.HeaderCell.C_SORT_ASCENDING);
         }
       }
     },

@@ -53,8 +53,8 @@ qx.Class.define("listview.Header",
 
     for (var vCol in vColumns)
     {
-      vHeadCell = new qx.ui.listview.HeaderCell(vColumns[vCol], vCol);
-      vHeadSeparator = new qx.ui.listview.HeaderSeparator;
+      vHeadCell = new listview.HeaderCell(vColumns[vCol], vCol);
+      vHeadSeparator = new listview.HeaderSeparator;
 
       this.add(vHeadCell, vHeadSeparator);
 
@@ -68,7 +68,7 @@ qx.Class.define("listview.Header",
       }
 
       // store some additional data
-      vColumns[vCol].contentClass = qx.Class.getByName("qx.ui.listview.ContentCell" + qx.lang.String.toFirstUp(vColumns[vCol].type || "text"));
+      vColumns[vCol].contentClass = qx.Class.getByName("listview.ContentCell" + qx.lang.String.toFirstUp(vColumns[vCol].type || "text"));
       vColumns[vCol].headerCell = vHeadCell;
     }
 
@@ -225,7 +225,7 @@ qx.Class.define("listview.Header",
         var vResizeCursor = false;
         var vResizeSeparator = null;
 
-        if (vTarget instanceof qx.ui.listview.HeaderSeparator)
+        if (vTarget instanceof listview.HeaderSeparator)
         {
           vResizeCursor = true;
           vResizeSeparator = vTarget;
@@ -245,7 +245,7 @@ qx.Class.define("listview.Header",
           vResizeSeparator = vTarget.getNextSibling();
         }
 
-        if (!(vResizeSeparator instanceof qx.ui.listview.HeaderSeparator)) {
+        if (!(vResizeSeparator instanceof listview.HeaderSeparator)) {
           vResizeSeparator = vTarget = vResizeCursor = null;
         }
 
