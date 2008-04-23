@@ -23,7 +23,7 @@
  */
 qx.Class.define("listview.ContentCellIconHtml",
 {
-  extend : qx.ui.embed.IconHtmlEmbed,
+  extend : listview.embed.IconHtmlEmbed,
 
 
 
