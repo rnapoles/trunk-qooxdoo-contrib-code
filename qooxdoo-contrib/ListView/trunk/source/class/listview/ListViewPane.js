@@ -58,7 +58,7 @@ qx.Class.define("listview.ListViewPane",
     // ************************************************************************
     //   INITIALIZE MANAGER
     // ************************************************************************
-    this._manager = new qx.ui.listview.SelectionManager(this);
+    this._manager = new listview.SelectionManager(this);
 
     // ************************************************************************
     //   MOUSE EVENT LISTENER
@@ -701,7 +701,7 @@ qx.Class.define("listview.ListViewPane",
      */
     scrollItemIntoViewX : function(vItem, vAlignLeft) {},
 
-    // this.error("Not implemented in qx.ui.listview.ListViewPane!");
+    // this.error("Not implemented in listview.ListViewPane!");
     /**
      * TODOC
      *
@@ -770,7 +770,7 @@ qx.Class.define("listview.ListViewPane",
      * @return {void}
      */
     setScrollLeft : function() {
-      this.error("Not implemented in qx.ui.listview.ListViewPane!");
+      this.error("Not implemented in listview.ListViewPane!");
     },
 
 

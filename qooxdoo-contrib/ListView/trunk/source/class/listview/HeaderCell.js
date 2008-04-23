@@ -176,11 +176,11 @@ qx.Class.define("listview.HeaderCell",
 
       switch(vCurrentSortOrder)
       {
-        case qx.ui.listview.HeaderCell.C_SORT_ASCENDING:
-          return qx.ui.listview.HeaderCell.C_SORT_DESCENDING;
+        case listview.HeaderCell.C_SORT_ASCENDING:
+          return listview.HeaderCell.C_SORT_DESCENDING;
 
         default:
-          return qx.ui.listview.HeaderCell.C_SORT_ASCENDING;
+          return listview.HeaderCell.C_SORT_ASCENDING;
       }
     },
 
@@ -203,7 +203,7 @@ qx.Class.define("listview.HeaderCell",
         return vSortMethod(a[vFieldId][vSortProp], b[vFieldId][vSortProp]);
       });
 
-      if (this.getSortOrder() == qx.ui.listview.HeaderCell.C_SORT_DESCENDING) {
+      if (this.getSortOrder() == listview.HeaderCell.C_SORT_DESCENDING) {
         vData.reverse();
       }
     },
@@ -230,14 +230,14 @@ qx.Class.define("listview.HeaderCell",
 
       switch(value)
       {
-        case qx.ui.listview.HeaderCell.C_SORT_ASCENDING:
+        case listview.HeaderCell.C_SORT_ASCENDING:
           this._arrowup.setDisplay(true);
           this._arrowdown.setDisplay(false);
 
           vListView.setSortBy(this._id);
           break;
 
-        case qx.ui.listview.HeaderCell.C_SORT_DESCENDING:
+        case listview.HeaderCell.C_SORT_DESCENDING:
           this._arrowup.setDisplay(false);
           this._arrowdown.setDisplay(true);
 

@@ -210,7 +210,7 @@ qx.Class.define("listview.SelectionManager",
 
 
     /**
-     * In a qx.ui.listview.ListView there are no disabled entries support currently.
+     * In a listview.ListView there are no disabled entries support currently.
      *
      * @type member
      * @param vItem {var} TODOC
