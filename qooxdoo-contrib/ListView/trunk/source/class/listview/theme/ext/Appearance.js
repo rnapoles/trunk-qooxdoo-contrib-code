@@ -27,7 +27,7 @@
 /**
  * Button appearacne theme.
  */
-qx.Theme.define("listview.theme.classic.Appearance",
+qx.Theme.define("listview.theme.ext.Appearance",
 {
   title: "Classic mixin for listview",
 
