@@ -23,7 +23,7 @@
  */
 qx.Class.define("listview.ContentCellText",
 {
-  extend : qx.ui.embed.TextEmbed,
+  extend : listview.embed.TextEmbed,
 
 
 

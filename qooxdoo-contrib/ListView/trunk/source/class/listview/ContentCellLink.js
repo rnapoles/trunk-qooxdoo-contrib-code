@@ -23,7 +23,7 @@
  */
 qx.Class.define("listview.ContentCellLink",
 {
-  extend : qx.ui.embed.LinkEmbed,
+  extend : listview.embed.LinkEmbed,
 
 
 
