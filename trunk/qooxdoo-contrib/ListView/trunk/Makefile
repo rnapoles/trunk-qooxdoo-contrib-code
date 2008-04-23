@@ -40,7 +40,7 @@ QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.2-sdk
 # Namespace of your application e.g. custom
 # Even complexer stuff is possible like: net.sf.custom
 #
-APPLICATION_NAMESPACE = listview 
+APPLICATION_NAMESPACE = listview
 
 #
 # Files that will be copied from the source directory into the build
