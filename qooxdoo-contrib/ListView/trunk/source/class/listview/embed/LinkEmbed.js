@@ -18,14 +18,9 @@
 
 ************************************************************************ */
 
-/* ************************************************************************
-
-
-************************************************************************ */
-
-qx.Class.define("qx.ui.embed.LinkEmbed",
+qx.Class.define("listview.embed.LinkEmbed",
 {
-  extend : qx.ui.embed.HtmlEmbed,
+  extend : listview.embed.HtmlEmbed,
 
 
 
