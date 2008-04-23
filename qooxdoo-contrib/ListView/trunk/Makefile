@@ -34,7 +34,7 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = ../../../qooxdoo.legacy_0_7_x
+QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.2-sdk
 
 #
 # Namespace of your application e.g. custom
