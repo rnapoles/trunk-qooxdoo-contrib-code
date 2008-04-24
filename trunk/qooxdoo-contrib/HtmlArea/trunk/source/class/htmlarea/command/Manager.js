@@ -611,10 +611,32 @@ qx.Class.define("htmlarea.command.Manager",
          }
        },
        
-       "default" : function(value, commandObject)
+       "mshtml" : function(attributes, commandObject)
+       {
+         /* Put together the HTML for the image */
+         var img = "<img ";
+         for (var attrName in attributes)
+         {
+           img += attrName + "='" + attributes[attrName] + "' ";
+         }
+         img += "/>";
+                  
+         /* 
+          * IE *does not* support the "insertHtml" command and
+          * the "insertImage" command is not sufficient.
+          * We need to add the given attributes to the image, so the
+          * only working solution is to use the "pasteHTML" method of the
+          * TextRange Object. 
+          */
+         var currRange = this.getCurrentRange();
+         currRange.select();
+         currRange.pasteHTML(img);
+       },
+       
+       "default" : function(attributes, commandObject)
        {
          /* For all other browsers use the execCommand directly */
-         return this.__doc.execCommand(commandObject.identifier, false, value);  
+         return this.__doc.execCommand(commandObject.identifier, false, attributes.src);  
        }
      }),
      
@@ -668,6 +690,34 @@ qx.Class.define("htmlarea.command.Manager",
          {
            /* Use the execCommand if any selection is available */
            return this.__doc.execCommand(commandObject.identifier, false, url);
+         }
+       },
+       
+       "mshtml" : function(url, commandObject)
+       {
+         /* 
+          * Check for a valid text range. If it is available (=text selected) insert the
+          * link via the "insertLink" execCommand otherwise insert the link with the URL 
+          * as link text.  
+          */
+         try
+         {
+           if (this.__currentRange != null && this.__currentRange.text != "")
+           {
+             return this.__currentRange.execCommand(commandObject.identifier, false, url);
+           }
+           else
+           {
+             return this.__insertHtml(' <a href="' + url + '">' + url + '</a> ', commandObject);
+           }
+         } 
+         catch(e)
+         {
+           if (qx.core.Variant.isSet("qx.debug", "on"))
+           {
+             this.debug("inserthyperlink failed!");
+           }
+           return false;
          }
        },
        

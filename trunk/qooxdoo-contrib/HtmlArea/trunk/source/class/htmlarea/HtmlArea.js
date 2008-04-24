@@ -1951,7 +1951,6 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleFocusOut : qx.core.Variant.select("qx.client", {
       "mshtml" : function(e)
       {
-
         /* Save range text */
         if (this.__storedSelectedHtml == null){
           this.__storedSelectedHtml = this.getSelectedHtml();
@@ -2244,46 +2243,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param url {String} URL for the image to be inserted
      * @return {Boolean} Success of operation
      */
-    insertHyperLink : qx.core.Variant.select("qx.client",
+    insertHyperLink : function(url)
     {
-
-      "mshtml" : function(url)
-      {
-
-        /* (Undo)Manager object */
-        var manager = this.__commandManager.__commandManager;
-
-        if (typeof(manager) != "object") {
-          /* Manager not available - does HA has focus */
-          return false;
-        }
-
-        /* 
-         * Last selection was _not_ an image and current selection is empty:
-         * Insert URL as text with a link on it.
-         */
-        try{
-          if( (manager.__currentRange.text == "") && (manager.__lastSelectionType != "Control") )
-          {
-            return this.__commandManager.execute("inserthtml", ' <a href="' + url + '">' + url + '</a> ');
-          }
-          else
-          {
-            /* Otherwise just execute command on selection */
-            return this.__commandManager.execute("inserthyperlink", url);
-          }
-        } catch(e) {
-          if (qx.core.Variant.isSet("qx.debug", "on")) {
-            this.debug("inserthyperlink failed!");
-          }
-        }
-      },
-
-      "default" : function(url)
-      {
-        return this.__commandManager.execute("inserthyperlink", url);
-      }
-    }), 
+      return this.__commandManager.execute("inserthyperlink", url);
+    },
 
     /**
      * Alias for setBackgroundColor("transparent");
