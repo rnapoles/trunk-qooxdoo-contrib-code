@@ -291,6 +291,21 @@ qx.Class.define("htmlarea.command.UndoManager",
       /* Add undo step to the redoStack */
       this.__addToRedoStack(undoInfo);
       
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        /* If the undo step is a linebreak -> perform two undo steps */
+        if (undoInfo.command == "inserthtml" && undoInfo.value == htmlarea.HtmlArea.simpleLinebreak)
+        {
+          this.__doc.execCommand("Undo", false, null);
+          
+          if (this.__undoStack.length > 0)
+          {
+            var nextUndoStep = this.__undoStack.pop();
+            this.__addToRedoStack(nextUndoStep);
+          }
+        }
+      }
+      
       /* Use the native undo command */
       return this.__doc.execCommand("Undo", false, null);
     },
@@ -448,6 +463,21 @@ qx.Class.define("htmlarea.command.UndoManager",
     {
       /* Update the undo history */
       this.__addToUndoStack(redoInfo);
+      
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        /* If the redo step is a linebreak -> perform two redo steps */
+        if (redoInfo.command == "inserthtml" && redoInfo.value == htmlarea.HtmlArea.simpleLinebreak)
+        {
+          this.__doc.execCommand("Redo", false, null);
+          
+          if (this.__redoStack.length > 0)
+          {
+            var nextRedoStep = this.__redoStack.pop();
+            this.__addToUndoStack(nextRedoStep);
+          }
+        }
+      }
       
       return this.__doc.execCommand("Redo", false, null);
     },
