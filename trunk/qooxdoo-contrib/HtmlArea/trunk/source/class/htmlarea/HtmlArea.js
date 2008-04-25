@@ -1452,7 +1452,10 @@ qx.Class.define("htmlarea.HtmlArea",
               }              
             }
           }
-          else
+          /*
+           * Special handling for Firefox when hitting the "Enter" key
+           */
+          else if(qx.core.Variant.isSet("qx.client", "gecko"))
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
