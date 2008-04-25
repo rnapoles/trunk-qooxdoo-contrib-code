@@ -131,7 +131,7 @@ qx.Class.define("htmlarea.Application",
 
       var innerHtmlButton = new qx.ui.form.Button("innerHtml");
       innerHtmlButton.addEventListener("execute", function(e){
-        var html = htmlArea.__doc.body.innerHTML;
+        var html = htmlArea.getContentDocument().body.innerHTML;
         textArea.setValue(textArea.getValue() + "\n" + html);
       }, this);
 
