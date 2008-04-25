@@ -47,6 +47,12 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     /* Bind listener to get into the right context */
     this.__handleMouseUp = qx.lang.Function.bind(this._handleMouseUp, this);
+    
+    if (qx.core.Variant.isSet("qx.client", "mshtml"))
+    {
+      /* Bind listener to get into the right context - only needed in IE */
+      this.__handleMouseDown = qx.lang.Function.bind(this._handleMouseDown, this);
+    }
   },
   
   events : 
@@ -94,6 +100,12 @@ qx.Class.define("htmlarea.command.UndoManager",
       
       /* Mouse up listener is used to look after internal changes like image resizing etc. */
       qx.html.EventRegistration.addEventListener(this.__doc, "mouseup", this.__handleMouseUp);
+      
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        /* Mouse down listener is used to look after internal changes like image resizing etc. */
+        qx.html.EventRegistration.addEventListener(this.__doc, "mousedown", this.__handleMouseDown);
+      }
     },
     
     
@@ -810,12 +822,44 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     
     /**
-     * Mouse up handler method.
-     * Currently only implemented in Gecko browsers and
-     * used to track Midas changes like resizing an image or a table element.
+     * Mouse down handler method.
+     * Currently only implemented for IE.
+     * Used to track internal changes like resizing an image or a table element.
      * 
      * @type member
-     * @param e {qx.event.type.Mouse} mouse event instance
+     * @param e {DOM event} mouse event instance
+     * @return {void}
+     */
+    _handleMouseDown : qx.core.Variant.select("qx.client", {
+      "mshtml" : function(e)
+      {
+        var checkNode = e.srcElement;
+        
+        if (checkNode && checkNode.nodeName.toLowerCase() == "img" || checkNode.nodeName.toLowerCase() == "table" )
+        {
+          this.__selectedNode = { node : checkNode,
+                                  content : checkNode.outerHTML 
+                                };
+        }
+        else
+        {
+          this.__selectedNode = null;
+        }      
+      },
+      
+      "default" : function(e)
+      {
+        return true;
+      }
+    }),
+    
+    
+    /**
+     * Mouse up handler method.
+     * Used to track internal changes like resizing an image or a table element.
+     * 
+     * @type member
+     * @param e {DOM event} mouse event instance
      * @return {void}
      */
     _handleMouseUp : qx.core.Variant.select("qx.client", {
@@ -900,14 +944,6 @@ qx.Class.define("htmlarea.command.UndoManager",
       {
         var checkNode = e.srcElement;
         
-        if (this.__selectedNode == null && checkNode.nodeName.toLowerCase() == "img")
-        {
-          var clone = e.srcElement.cloneNode(true);
-          this.__selectedNode = { node  : e.srcElement,
-                                  content : clone.outerHTML
-                                };
-        }
-        
         if (this.__selectedNode != null)
         {
           if (checkNode.nodeType == 1)
@@ -935,6 +971,10 @@ qx.Class.define("htmlarea.command.UndoManager",
                 } 
               }
             }
+          }
+          else
+          {
+            this.__selectedNode = null;
           }
         }
       }
