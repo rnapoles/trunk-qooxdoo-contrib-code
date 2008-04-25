@@ -11,7 +11,6 @@ Require-Bundle: org.junit4,
  org.eclipse.ui.editors,
  org.eclipse.jface.text,
  org.eclipse.wst.jsdt.ui,
- abbot.swt.eclipse,
  de.mkempka.sammy.ide,
  org.eclipse.wst.jsdt.core,
  org.qooxdoo.qxdt.support
