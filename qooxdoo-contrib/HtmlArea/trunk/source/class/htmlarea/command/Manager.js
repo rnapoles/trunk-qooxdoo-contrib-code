@@ -469,8 +469,8 @@ qx.Class.define("htmlarea.command.Manager",
          }
          else
          {
-           this.__editorInstance._visualizeFocus();
-
+           this.__doc.body.focus();
+           
            /* this.__currentRange can be a wrong range!*/
            var storedRange = this.getCurrentRange();
            
