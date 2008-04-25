@@ -45,10 +45,8 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     editorInstance.addEventListener("keypress", this._handleKeyPress, this);
     
-    if (qx.core.Variant.isSet("qx.client", "gecko"))
-    {
-      this.__handleMouseUp = qx.lang.Function.bind(this._handleMouseUp, this);
-    }
+    /* Bind listener to get into the right context */
+    this.__handleMouseUp = qx.lang.Function.bind(this._handleMouseUp, this);
   },
   
   events : 
@@ -94,10 +92,8 @@ qx.Class.define("htmlarea.command.UndoManager",
       this.__doc = doc;
       this.__commandManager.setContentDocument(doc);
       
-      if (qx.core.Variant.isSet("qx.client", "gecko"))
-      {
-        qx.html.EventRegistration.addEventListener(this.__doc, "mouseup", this.__handleMouseUp);
-      }
+      /* Mouse up listener is used to look after internal changes like image resizing etc. */
+      qx.html.EventRegistration.addEventListener(this.__doc, "mouseup", this.__handleMouseUp);
     },
     
     
@@ -313,7 +309,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     /**
      * Undo an internal change like resizing an image/add table cell
-     * Currently only implemented for Gecko
      * 
      * @type member
      * @param undoInfo {Object} Undo info object
@@ -485,7 +480,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     /**
      * Redo an internal change like resizing an image/add table cell
-     * Currently only implemented for Gecko
      * 
      * @type member
      * @param redoInfo {Object} Undo info object
@@ -824,105 +818,142 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @param e {qx.event.type.Mouse} mouse event instance
      * @return {void}
      */
-    _handleMouseUp : function(e)
-    {
-      /* Get the current selected node (if available) */
-      var sel = this.__editorInstance.__getSelection();
-      var anchorNode = sel.anchorNode;
-      
-      var checkNode = anchorNode.childNodes[sel.anchorOffset];
-      /* We have direct access to the currently selected node (e.g. an image) */
-      if (checkNode && checkNode.nodeName.toLowerCase() == "img")
+    _handleMouseUp : qx.core.Variant.select("qx.client", {
+      "gecko" : function(e)
       {
-        /* 
-         * Check for stored element
-         * Store the element if is not available
-         * otherwise compare the current image element with the stored one 
-         */
-        if (this.__selectedNode == null)
-        {
-          this.__selectedNode = checkNode.cloneNode(true);
-        }
-        else
-        {
-          if (this.__selectedNode.style.width != checkNode.style.width ||
-              this.__selectedNode.style.height != checkNode.style.height)
-          {
-            /* A change occured -> add undo step and update the stored element */
-            this.__addInternalUndoStep();
-            this.__selectedNode = checkNode.cloneNode(true);
-            return; 
-          }
-        }          
-      }
-      else if (anchorNode.nodeName.toLowerCase() == "td" || anchorNode.parentNode.nodeName.toLowerCase() == "td")
-      {
-        var tableNode = anchorNode.parentNode;
-        /* Traverse up to the "table" element */
-        while (tableNode.nodeName.toLowerCase() != "table")
-        {
-          tableNode = tableNode.parentNode;
-        }
+        /* Get the current selected node (if available) */
+        var sel = this.__editorInstance.__getSelection();
+        var anchorNode = sel.anchorNode;
         
-        /* 
-         * Check for stored element
-         * Store the element if is not available
-         * otherwise compare the current table element with the stored one 
-         */
-        if (this.__selectedNode == null)
-        {
-          this.__selectedNode = tableNode.cloneNode(true);
-        }
-        else
+        var checkNode = anchorNode.childNodes[sel.anchorOffset];
+        /* We have direct access to the currently selected node (e.g. an image) */
+        if (checkNode && checkNode.nodeName.toLowerCase() == "img")
         {
           /* 
-           * Comparison is done inside a timeout method
-           * to be sure that the changes (like adding a table cell) 
-           * to the DOM are already done. 
+           * Check for stored element
+           * Store the element if is not available
+           * otherwise compare the current image element with the stored one 
            */
-          qx.client.Timer.once(function()
+          if (this.__selectedNode == null)
           {
-            /* Compare width and height and innerHTML */
-            if (tableNode.style.width != this.__selectedNode.style.width ||
-                tableNode.style.height != this.__selectedNode.style.height ||
-                tableNode.innerHTML != this.__selectedNode.innerHTML)
+            this.__selectedNode = checkNode.cloneNode(true);
+          }
+          else
+          {
+            if (this.__selectedNode.style.width != checkNode.style.width ||
+                this.__selectedNode.style.height != checkNode.style.height)
             {
               /* A change occured -> add undo step and update the stored element */
               this.__addInternalUndoStep();
-              this.__selectedNode = tableNode.cloneNode(true);                
+              this.__selectedNode = checkNode.cloneNode(true);
+              return; 
             }
-          }, this, 0);
+          }          
+        }
+        else if (anchorNode.nodeName.toLowerCase() == "td" || anchorNode.parentNode.nodeName.toLowerCase() == "td")
+        {
+          var tableNode = anchorNode.parentNode;
+          /* Traverse up to the "table" element */
+          while (tableNode.nodeName.toLowerCase() != "table")
+          {
+            tableNode = tableNode.parentNode;
+          }
+          
+          /* 
+           * Check for stored element
+           * Store the element if is not available
+           * otherwise compare the current table element with the stored one 
+           */
+          if (this.__selectedNode == null)
+          {
+            this.__selectedNode = tableNode.cloneNode(true);
+          }
+          else
+          {
+            /* 
+             * Comparison is done inside a timeout method
+             * to be sure that the changes (like adding a table cell) 
+             * to the DOM are already done. 
+             */
+            qx.client.Timer.once(function()
+            {
+              /* Compare width and height and innerHTML */
+              if (tableNode.style.width != this.__selectedNode.style.width ||
+                  tableNode.style.height != this.__selectedNode.style.height ||
+                  tableNode.innerHTML != this.__selectedNode.innerHTML)
+              {
+                /* A change occured -> add undo step and update the stored element */
+                this.__addInternalUndoStep();
+                this.__selectedNode = tableNode.cloneNode(true);                
+              }
+            }, this, 0);
+          }
+        }
+        else
+        {
+          /* Reset the stored element for every other case */
+          this.__selectedNode = null;
+        }      
+      },
+      
+      "default" : function(e)
+      {
+        var checkNode = e.srcElement;
+        
+        if (this.__selectedNode == null && checkNode.nodeName.toLowerCase() == "img")
+        {
+          var clone = e.srcElement.cloneNode(true);
+          this.__selectedNode = { node  : e.srcElement,
+                                  content : clone.outerHTML
+                                };
+        }
+        
+        if (this.__selectedNode != null)
+        {
+          if (checkNode.nodeType == 1)
+          {
+            /* Check the clicked element otherwise check the childNodes */
+            if (checkNode == this.__selectedNode.node)
+            {
+              if (checkNode.outerHTML != this.__selectedNode.content)
+              {
+                this.__selectedNode.content = checkNode.outerHTML;
+                this.__addInternalUndoStep();
+              }
+            }
+            else
+            {   
+              for (var i=0, j=checkNode.childNodes.length; i<j; i++)
+              {
+                if (checkNode.childNodes[i] == this.__selectedNode.node)
+                {
+                  if (checkNode.childNodes[i].outerHTML != this.__selectedNode.content)
+                  {
+                    this.__selectedNode.content = checkNode.childNodes[i].outerHTML;
+                    this.__addInternalUndoStep();
+                  }
+                } 
+              }
+            }
+          }
         }
       }
-      else
-      {
-        /* Reset the stored element for every other case */
-        this.__selectedNode = null;
-      }      
-    },
+    }),
     
     
     /**
      * Adds an internal undo step to the undo stack.
-     * Currently only implemented for Gecko.
      * 
      * @type member
      * @return {void} 
      */
-    __addInternalUndoStep : qx.core.Variant.select("qx.client", {
-      "gecko" : function()
-      {
-        var undoStep = this.__getUndoRedoObject();
-        undoStep.actionType = "Internal";
-              
-        this.__addToUndoStack(undoStep);
-      },
-      
-      "default" : function()
-      {
-        return;
-      }
-    }),
+    __addInternalUndoStep : function()
+    {
+      var undoStep = this.__getUndoRedoObject();
+      undoStep.actionType = "Internal";
+            
+      this.__addToUndoStack(undoStep);
+    },
     
     
     /**
