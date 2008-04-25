@@ -300,7 +300,7 @@ qx.Class.define("htmlarea.command.Manager",
         /* Flag indicating if range was empty before executing command. Needed for IE bug. */
         var emptyRange = false;
 
-        /* Request current range explicitly, if command is "Bold" */
+        /* Request current range explicitly, if command is one of the invalid focus commands. */
         if(
           (qx.core.Variant.isSet("qx.client", "mshtml")) &&
           (qx.core.Client.getInstance().getVersion() < 7) &&
@@ -745,7 +745,7 @@ qx.Class.define("htmlarea.command.Manager",
         * <hr> tag.
         */
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-         htmlText += this.__generateHelperNodes();
+         htmlText += this.generateHelperNodes();
        }
   
        return this.__insertHtml(htmlText, commandObject);
@@ -758,7 +758,7 @@ qx.Class.define("htmlarea.command.Manager",
       * @type member
       * @return {String} String containing tags with special style settings.
       */
-     __generateHelperNodes : function()
+     generateHelperNodes : function()
      {
        /* Fetch current styles */
        var collectedStyles = this.getCurrentStyles();

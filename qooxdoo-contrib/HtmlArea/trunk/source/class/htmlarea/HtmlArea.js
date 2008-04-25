@@ -49,12 +49,6 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isEditable = false;
     this.__isReady = false;
     
-    /* Flag indicating if a paragraph has been inserted by the browser */
-    this.__midasAddedParagraph = false;
-    
-    /* String containing the styles settings of current paragraph */
-    this.__currentStyles = "";
-    
     this.__firstLineSelected = false;
 
     this.setTabIndex(1);
@@ -1272,26 +1266,6 @@ qx.Class.define("htmlarea.HtmlArea",
       
       else if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
-        /* Fetch selection */
-        var sel = this.__getSelection();
-
-        /* Check if a paragraph has been inserted by the browser in _handleKeyPress */
-        if(this.__midasAddedParagraph)
-        {
-          /* Get focus node */
-          var element = sel.focusNode;
-          
-          /* Check if focus node is an element (and not a text node) */
-          if(element.nodeType == element.ELEMENT_NODE)
-          {
-            /* Apply saved style from last paragraph */
-            element.setAttribute("style", this.__currentStyles);
-          }
-
-          /* Reset flag */
-          this.__midasAddedParagraph = false;
-        }
-
         /* These keys can change the selection */
         switch(keyIdentifier)
         {
@@ -1303,6 +1277,8 @@ qx.Class.define("htmlarea.HtmlArea",
           case "pagedown":
           case "delete":
           case "end":
+            var sel    = this.__getSelection();
+            
             var doc = this.getContentDocument();
             /* Set flag indicating if first line is selected */
             this.__firstLineSelected = (sel.focusNode == doc.body.firstChild);
@@ -1480,29 +1456,9 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
-
-              /* Get current styles */
-              var currentStyleData = this.__commandManager.__commandManager.getCurrentStyles();
-
-              /* 
-               * Build style string, which will be applied on the paragph elements
-               * NOTE: This will change soon! 
-               */
-              var styleString = "";
-              for (var attribute in currentStyleData) {
-                styleString += attribute + ":" + currentStyleData[attribute] + "; ";
-              }
-
-              this.__currentStyles = styleString;
-
-              if (this.__insertParagraphOnLinebreak())
-              {
-                e.preventDefault();
-                e.stopPropagation();
-              }else{
-                /* Set flag since we can not apply saved styles right now. */
-                this.__midasAddedParagraph = true;
-              }
+              this.__insertParagraphOnLinebreak();
+              e.preventDefault();
+              e.stopPropagation();
             }
           }
           break;
@@ -1687,169 +1643,54 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __insertParagraphOnLinebreak : function()
     {
-      /* Current selection and range */
-      var range     = this.getRange();
-      var doc       = this.getContentDocument();
 
-      /* Delete any content which is currently selected */
-      if (!range.collapsed)
-      {
-        range.deleteContents();
-      }
+      var doc = this.getContentDocument();
+      var range  = this.getRange();
+      var sel = this.__getSelection();
+
+      /* This nodes are needed to apply the exactly style settings on the paragraph */
+      var styleNodes = this.__commandManager.__commandManager.generateHelperNodes();
+
+      /* Generate unique ids to find the elements later */
+      var spanId = "__placeholder__" + Date.parse(new Date());
+      var paragraphId = "__paragraph__" + Date.parse(new Date());
+
+      var helperString = '<span id="' + spanId + '"></span>';
+      var paragraphString = '<p id="' + paragraphId + '">';
+      
+      var spanNode;
+      var paragraphNode;
+
+      /* 
+       * A paragraph will only be inserted, if the paragraph before it has content.
+       * Therefore we also insert a helper node, then the paragraph and the style
+       * nodes after it.
+       */
+      this.__commandManager.execute("inserthtml", helperString + paragraphString + styleNodes);
+
+      /* Fetch elements */
+      spanNode      = this.getContentWindow().document.getElementById(spanId);
+      paragraphNode = this.getContentWindow().document.getElementById(paragraphId);
+
+      /* We do net need to pollute the generated HTML with IDs */
+      paragraphNode.removeAttribute("id");
 
       /*
-       * SPECIAL CASE
-       * The user is at the beginning of the document -> insert an empty text node
+       * If the previous paragraph only contains the helperString, it was empty before.
+       * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
        */
-      if (range.startContainer == range.endContainer && range.startContainer == doc.body &&
-          !range.startOffset && !range.endOffset)
+      if(paragraphNode.previousSibling.innerHTML == helperString)
       {
-        range.selectNodeContents(doc.body.insertBefore(doc.createTextNode(" "), doc.body.firstChild));
-      }
-
-      /*
-       * Get all the ancestor nodes of the current startContainer to get to
-       * know if the current range is already within a paragraph element
-       */
-      var ancestorNodes = qx.dom.Hierarchy.getAncestors(range.startContainer);
-
-      var paragraph       = null;
-      var paragraphParent = null;
-      for (var i=0, j=ancestorNodes.length; i<j; ++i)
-      {
-        if (htmlarea.HtmlArea.isParagraphParent(ancestorNodes[i]))
-        {
-          paragraphParent = ancestorNodes[i];
-          break;
-        }
-        else if (htmlarea.HtmlArea.isBlockNode(ancestorNodes[i]) && !(/body|html/i.test(ancestorNodes[i].nodeName)))
-        {
-          paragraph = ancestorNodes[i];
-          break;
-        }
-      }
-
-      /* If no paragraph element is available -> get the content of the range and put it inside a new paragraph  */
-      if (paragraph == null)
-      {
-        /* Check if a paragraphContainer (and its firstChild element) is already available */
-        if (paragraphParent != null && paragraphParent.firstChild)
-        {
-          wrap = paragraphParent.firstChild;
-        }
-        else
-        {
-          /* Start with the startContainer and traverse the DOM up until the first child of the paragraphContainer element is found */
-          var wrap = range.startContainer;
-          while (wrap.parentNode && !htmlarea.HtmlArea.isParagraphParent(wrap.parentNode))
-          {
-            wrap = wrap.parentNode;
-          }
-        }
-
-        var start = wrap;
-        var end   = wrap;
-
-        /* Check all all siblings at the left for block nodes */
-        while (start.previousSibling)
-        {
-          /* detail check for elements - skip check for e.g. text nodes */
-          if (qx.dom.Node.isElement(start.previousSibling))
-          {
-            if (!htmlarea.HtmlArea.isBlockNode(start.previousSibling))
-            {
-              start = start.previousSibling;
-            }
-            else
-            {
-              break;
-            }
-          }
-          else
-          {
-            start = start.previousSibling;
-          }
-        }
-
-        /* Check all all siblings at the right for block nodes */
-        while (end.nextSibling)
-        {
-          /* detail check for elements - skip check for e.g. text nodes */
-          if (qx.dom.Node.isElement(end.nextSibling))
-          {
-            if (!htmlarea.HtmlArea.isBlockNode(end.nextSibling))
-            {
-              end = end.nextSibling;
-            }
-            else
-            {
-              break;
-            }
-          }
-          else
-          {
-            end = end.nextSibling;
-          }
-        }
-
-        /*
-         * (re)set start and end of range to encapsulate the content which need
-         * to be surrounded by a new paragraph element.
-         */
-        range.setStartBefore(start);
-        range.setEndAfter(end);
-
-        /* Surround the current range with a paragraph element */
-        var paragraph = doc.createElement("p");
-        range.surroundContents(paragraph);
-
-        /*
-         * Check for a br element at the end - if it is not available create
-         * and append it. This is especially needed for Gecko browser to ensure
-         * the next enter is automatically turned into a paragraph.
-         */
-        if (paragraph.childNodes.length > 0 && paragraph.lastChild.nodeName.toLowerCase() != "br")
-        {
-          paragraph.appendChild(doc.createElement("br"));
-        }
-
-        /*
-         * Check if the paragraph element is the last within the document
-         * if so create a new paragraph with a textNode and a "br" element
-         * as childs to force the browser to create a new line.
-         */
-        
-        
-        
-        if (paragraph.parentNode.nextSibling == null)
-        {
-          var newPara  = doc.createElement("p");
-
-          /* Apply saved styles from last paragaph on the new one: */
-          newPara.setAttribute("style", this.__currentStyles);
-
-          var textNode = doc.createTextNode(" ");
-          var brNode   = doc.createElement("br");
-          newPara.appendChild(textNode);
-          newPara.appendChild(brNode);
-
-          paragraph.parentNode.appendChild(newPara);
-          range.selectNode(textNode);
-          range.collapse(true);
-        }
-
-        return true;
+        /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
+        paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
       }
       else
       {
-        /*
-         * If we are already within a paragraph element there is
-         * nothing left to do. The browser is doing the rest for us.
-         * (Creating a new paragraph element and position the cursor in
-         * this new paragraph element).
-         */
-        return false;
+        /* It is not empty, remove the helper node. */
+        spanNode.parentNode.removeChild(spanNode);
       }
+
+      return true;
     },
 
 
