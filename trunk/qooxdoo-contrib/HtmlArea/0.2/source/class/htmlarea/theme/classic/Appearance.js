@@ -42,7 +42,7 @@ qx.Theme.define("htmlarea.theme.classic.Appearance",
       style : function(states) {
         return {
           border          : new qx.ui.core.Border(1, "solid", "#CCCCCC"),
-          backgroundColor : states.focused ? "#DFEBFD" : "white"
+          backgroundColor : "white"
         }
       }
     }
