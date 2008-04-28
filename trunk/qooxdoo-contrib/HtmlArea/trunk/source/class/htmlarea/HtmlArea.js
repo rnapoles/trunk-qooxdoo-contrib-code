@@ -1464,6 +1464,28 @@ qx.Class.define("htmlarea.HtmlArea",
               e.stopPropagation();
             }
           }
+          else if(qx.core.Variant.isSet("qx.client", "webkit"))
+          {
+            if (this.getInsertParagraphOnLinebreak() && isShiftPressed)
+            {
+              
+              var sel = this.__getSelection();
+              var helperString = "";
+
+              /* Insert bogus node if we are on an empty line: */
+              if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
+              {
+                helperString = "<br class='webkit-block-placeholder' />";
+              }
+
+              this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
+
+              /* Stop event */
+              e.preventDefault();
+              e.stopPropagation();
+
+            }
+          }
           break;
 
 
