@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.wst.jsdt.core.ast.IASTNode;
 import org.eclipse.wst.jsdt.core.ast.IExpression;
 import org.eclipse.wst.jsdt.core.ast.IFunctionCall;
-import org.eclipse.wst.jsdt.core.ast.IFunctionDeclaration;
 import org.eclipse.wst.jsdt.core.ast.IFunctionExpression;
 import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
 import org.eclipse.wst.jsdt.core.ast.ISingleNameReference;
@@ -38,18 +37,26 @@ public class QooxdooInferrenceSupport extends InferEngine {
   @Override
   protected boolean handleFunctionCall( IFunctionCall messageSend ) {
     if( isQxClassDefined( messageSend ) ) {
-      IExpression firstArg = messageSend.getArguments()[ 0 ];
-      String name = new String( (( IStringLiteral )firstArg).source());
-      InferredType type = null;
-      if( name.contains( "." ) ) {
-        type = getTypeWithNamespace( name, firstArg );
-      } else {
-        type = addType( name.toCharArray() );
-        type.isDefinition = true;
-      }
-      classDefinitionStack.push( type );
+      handleQxClassDefinition( messageSend );
     }
-    return true;
+    return true; 
+  }
+
+  private void handleQxClassDefinition( IFunctionCall messageSend ) {
+    IExpression firstArg = messageSend.getArguments()[ 0 ];
+    startClassDefinition( firstArg );
+  }
+
+  private void startClassDefinition( IExpression firstArg ) {
+    String name = new String( ( ( IStringLiteral )firstArg ).source() );
+    InferredType type = null;
+    if( name.contains( "." ) ) {
+      type = getTypeWithNamespace( name, firstArg );
+    } else {
+      type = addType( name.toCharArray() );
+      type.isDefinition = true;
+    }
+    classDefinitionStack.push( type );
   }
 
   private InferredType getTypeWithNamespace( String fullName, IASTNode definiter )
@@ -106,7 +113,6 @@ public class QooxdooInferrenceSupport extends InferEngine {
       InferredType theType = classDefinitionStack.peek();
       theType.addMethod( theType.getName(), md, true );
     } else if( "extend".equals( getName( field.getFieldName() ) ) ) {
-      // TODO Button has a FieldReference
       if( field.getInitializer() instanceof ISingleNameReference ) {
         ISingleNameReference initializer = ( ISingleNameReference )field.getInitializer();
         classDefinitionStack.peek().superClass = addType( initializer.getToken() );
@@ -120,13 +126,11 @@ public class QooxdooInferrenceSupport extends InferEngine {
 
   @Override
   public boolean visit( IThisReference tr ) {
+    InferredType type = getTypeOf( tr );
+    if( !type.equals( classDefinitionStack.peek())) {
+      type.superClass = classDefinitionStack.peek();
+    }
     return true;
-  }
-  
-
-  @Override
-  public boolean visit( IFunctionDeclaration methodDeclaration ) {
-    return super.visit( methodDeclaration );
   }
 
   @Override
@@ -135,8 +139,7 @@ public class QooxdooInferrenceSupport extends InferEngine {
     if( classModificationStack.size() > 0 ) {
       classModificationStack.pop();
     }
-    Assert.isLegal( field.equals( pop ),
-                    field+ " is not " + pop );
+    Assert.isLegal( field.equals( pop ), field + " is not " + pop );
     super.endVisit( field );
   }
 
@@ -146,9 +149,8 @@ public class QooxdooInferrenceSupport extends InferEngine {
            && "define".equals( new String( messageSend.getSelector() ) );
   }
 
-
   static String getName( IExpression expression ) {
-    ISingleNameReference nameref = (ISingleNameReference) expression;
+    ISingleNameReference nameref = ( ISingleNameReference )expression;
     return new String( nameref.getToken() );
   }
 }
