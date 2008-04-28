@@ -223,7 +223,7 @@ qx.Class.define("htmlarea.command.Manager",
         inserthtml            : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHtml" },
         resethtml             : { useBuiltin : false, identifier : null, method : "__resetHtml" },
         gethtml               : { useBuiltin : false, identifier : null, method : "__getHtml" },
-        removeFormat          : { useBuiltin : true, identifier : "RemoveFormat", method : null },
+        removeformat          : { useBuiltin : true, identifier : "RemoveFormat", method : null },
 
         stylewithcss          : { useBuiltin : false, identifier : "styleWithCSS", method : "__styleWithCSS" },
         usecss                : { useBuiltin : false, identifier : "useCSS", method : "__useCSS" }
