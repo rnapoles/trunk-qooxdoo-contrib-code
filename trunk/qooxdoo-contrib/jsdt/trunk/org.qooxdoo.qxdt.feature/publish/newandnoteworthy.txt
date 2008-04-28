@@ -1,3 +1,5 @@
+2008-04-28:
+  - validate "this" correctly in members (fixed Bug 828)
 2008-04-22:
   - synchronized with Eclipse CVS Head 
   - fixed bug 825 (include path incomplete) 
