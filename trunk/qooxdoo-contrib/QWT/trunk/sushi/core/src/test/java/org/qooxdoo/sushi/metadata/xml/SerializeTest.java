@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.metadata.model.Car;
+import org.qooxdoo.sushi.metadata.model.Empty;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.Kind;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
@@ -114,6 +115,11 @@ public class SerializeTest extends ModelBase {
                 new org.qooxdoo.sushi.xml.Serializer().serialize(root));        
     }
 
+    @Test
+    public void empty() throws IOException {
+        assertEquals("<empty/>" + LF, run(new Empty()));
+    }
+    
     private String run(Object obj) {
         return METADATA.instance(obj).toXml();
     }

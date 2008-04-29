@@ -53,7 +53,7 @@ public class DomTree extends Tree {
     }
 
     @Override
-    public void begin(String name, int id, int children) throws IOException {
+    public void begin(String name, int id, boolean withEnd) throws IOException {
         Element element;
         
         element = Builder.element(parent(), name);

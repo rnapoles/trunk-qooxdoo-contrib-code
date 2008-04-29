@@ -46,6 +46,7 @@ public class Serializer {
     public void run(String name, Type type, Object obj) throws IOException {
         int id;
         List<Item<?>> items;
+        boolean empty;
         
         if (obj == null) {
             return;
@@ -59,13 +60,16 @@ public class Serializer {
             } else {
                 id = getId(obj);
                 items = ((ComplexType) type).items();
-                tree.begin(name, id, items.size());
-                for (Item<?> item : items) {
-                    for (Object itemObj : item.get(obj)) {
-                        run(item.getXmlName(), item.getType(), itemObj);
+                empty = items.size() == 0;
+                tree.begin(name, id, empty);
+                if (!empty) {
+                    for (Item<?> item : items) {
+                        for (Object itemObj : item.get(obj)) {
+                            run(item.getXmlName(), item.getType(), itemObj);
+                        }
                     }
+                    tree.end(name);
                 }
-                tree.end(name);
             }
         }
     }
