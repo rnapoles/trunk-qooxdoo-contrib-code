@@ -51,9 +51,8 @@ public class WriterTree extends Tree {
     }
 
     @Override
-    public void begin(String name, int id, int children) throws IOException {
+    public void begin(String name, int id, boolean withEnd) throws IOException {
         indent();
-        indent++;
         dest.write("<");
         dest.write(name);
         if (id != -1) {
@@ -61,9 +60,10 @@ public class WriterTree extends Tree {
             dest.write(Integer.toString(id));
             dest.write('\'');
         }
-        if (children == 0) {
+        if (withEnd) {
             dest.write("/>\n");
         } else {
+            indent++;
             dest.write(">\n");
         }
     }

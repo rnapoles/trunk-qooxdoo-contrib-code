@@ -17,15 +17,10 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.metadata.xml;
+package org.qooxdoo.sushi.metadata.model;
 
-import java.io.IOException;
+import org.qooxdoo.sushi.metadata.annotation.Type;
 
-public abstract class Tree {
-    public abstract Object done() throws IOException;
-    
-    public abstract void ref(String name, int idref) throws IOException;
-    public abstract void begin(String name, int id, boolean withEnd) throws IOException;
-    public abstract void end(String name) throws IOException;
-    public abstract void text(String name, String text) throws IOException;
+@Type
+public class Empty {
 }
