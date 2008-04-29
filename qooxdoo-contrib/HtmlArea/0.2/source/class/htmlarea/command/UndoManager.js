@@ -1020,6 +1020,18 @@ qx.Class.define("htmlarea.command.UndoManager",
    */
   destruct : function()
   {
-
+    try
+    {
+      qx.html.EventRegistration.removeEventListener(this.__doc, "mouseup", this.__handleMouseUp);
+      
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        /* Mouse down listener is used to look after internal changes like image resizing etc. */
+        qx.html.EventRegistration.removeEventListener(this.__doc, "mousedown", this.__handleMouseDown);
+      }
+    }
+    catch(e) {}
+    
+    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "__commands", "__doc");
   }
 });
