@@ -1,3 +1,5 @@
+2008-04-29;
+  - validate "this.base()" (fixed bug 829)
 2008-04-28:
   - validate "this" correctly in members (fixed Bug 828)
 2008-04-22:
