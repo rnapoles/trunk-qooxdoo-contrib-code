@@ -2715,10 +2715,6 @@ qx.Class.define("htmlarea.HtmlArea",
    */
   destruct : function()
   {
-    if (this.getDisposed()) {
-      return;
-    }
-
     /* TODO: complete disposing */
     try
     {
@@ -2741,9 +2737,14 @@ qx.Class.define("htmlarea.HtmlArea",
       //   WIDGET MOUSE EVENTS
       // ************************************************************************
       qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
+      
+      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      {
+        qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
+      }
     }
     catch(ex) {}
 
-    this._disposeFields("__handleFocusEvent", "handleMouseEvent", "__contentWrap");
+    this._disposeFields("__commandManager", "__handleFocusEvent", "handleMouseEvent", "__contentWrap");
   }
 });
