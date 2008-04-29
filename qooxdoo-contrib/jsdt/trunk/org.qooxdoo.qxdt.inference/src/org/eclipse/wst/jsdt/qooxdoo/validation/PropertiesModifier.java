@@ -11,6 +11,7 @@ import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.Argument;
 import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.MethodCreator;
 
 
 public class PropertiesModifier implements IClassModifier {
@@ -68,13 +69,13 @@ public class PropertiesModifier implements IClassModifier {
   
   private void createGetter( ISingleNameReference name ) {
     char[] methodName = getMethodName( "get", name );
-    IFunctionDeclaration fakeMd = createFakeMethodNoArgs( name, methodName );
+    IFunctionDeclaration fakeMd = MethodCreator.createFakeMethodNoArgs( name, methodName );
     itype.addMethod( methodName, fakeMd, false );
   }
 
   private void createToggler( ISingleNameReference name ) {
     char[] methodName = getMethodName( "toggle", name );
-    IFunctionDeclaration fakeMd = createFakeMethodNoArgs( name, methodName );
+    IFunctionDeclaration fakeMd = MethodCreator.createFakeMethodNoArgs( name, methodName );
     itype.addMethod( methodName, fakeMd, false );
   }
 
@@ -87,7 +88,7 @@ public class PropertiesModifier implements IClassModifier {
   private IFunctionDeclaration createFakeSetter( ISingleNameReference name,
                                                  char[] methodName )
   {
-    MethodDeclaration fakeMd = createFakeMethodNoArgs( name, methodName );
+    MethodDeclaration fakeMd = MethodCreator.createFakeMethodNoArgs( name, methodName );
     fakeMd.arguments = new Argument[] { new Argument(name.getToken(), 0, null, ClassFileConstants.AccPublic)};
     
 //    // no visible effect:
@@ -101,17 +102,6 @@ public class PropertiesModifier implements IClassModifier {
     return fakeMd;
   }
   
-  private MethodDeclaration  createFakeMethodNoArgs( ISingleNameReference name,
-                                                       char[] methodName )
-  {
-    MethodDeclaration fakeMd = new MethodDeclaration(null);
-    fakeMd.sourceStart = name.sourceStart();
-    fakeMd.sourceEnd = name.sourceEnd();
-    fakeMd.selector = methodName;
-//     @see SourceElementParser#notifySourceElementRequestor( InferredType type );
-    fakeMd.modifiers = ClassFileConstants.AccPublic;
-    return fakeMd;
-  }
 
   private char[] getMethodName( String prefix, ISingleNameReference fieldName ) {
     char[] postfix = capitalize( fieldName.getToken());
