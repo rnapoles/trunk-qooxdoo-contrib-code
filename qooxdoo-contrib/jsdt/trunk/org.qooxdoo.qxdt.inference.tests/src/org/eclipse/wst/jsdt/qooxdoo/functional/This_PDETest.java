@@ -64,7 +64,6 @@ public class This_PDETest extends Assert {
     sammy.cleanUp();
   }
 
-  // demonstration for Bug 828
   @Test
   public void resolvedInFoo() throws Exception {
     sammy.openEditor( new FileEditorInput( this.file ) );
@@ -74,7 +73,6 @@ public class This_PDETest extends Assert {
     checkMembersFound( teo );
   }
 
-  // demonstration for Bug 828
   @Test
   public void resolvedInBar() throws Exception {
     sammy.openEditor( new FileEditorInput( this.file ) );
@@ -90,7 +88,6 @@ public class This_PDETest extends Assert {
     TextEditorOperator teo = new TextEditorOperator( "Application.js",
                                                      getProperties() );
     teo.setCurserAfter( "construct : function(x) {" );
-    // sammy.stopAndShowChangesToUser();
     checkMembersFound( teo );
   }
 
