@@ -40,6 +40,7 @@
 #resource(htmlarea.image:image)
 
 ************************************************************************ */
+
 /**
  * htmlarea Example application
  */
@@ -59,18 +60,16 @@ qx.Class.define("htmlarea.Application",
   members :
   {
     /**
-     * TODOC
+     * Application startup
      *
      * @type member
-     * @param e {Event} TODOC
      * @return {void}
      */
-    main : function(e)
+    main : function()
     {
       this.base(arguments);
-
+      
       var demoContent = '<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.';
-      var debugStyles = "";
 
       qx.Theme.patch(qx.theme.classic.Appearance, htmlarea.theme.classic.Appearance);
 
@@ -80,82 +79,107 @@ qx.Class.define("htmlarea.Application",
       vb.set({ top : 20, left : 20, width : "65%", height : "auto", spacing : 20 });
       vb.addToDocument();
 
-      var htmlArea = new htmlarea.HtmlArea(demoContent, debugStyles);
-      ha = htmlArea;
+      var htmlArea = new htmlarea.HtmlArea(demoContent);
       htmlArea.set({ width : "100%", height : 400, focused : true });
-      //vb.add(htmlArea);
-
+      
       var hb = new qx.ui.layout.HorizontalBoxLayout;
       hb.set({ width : "100%", height : "auto", spacing : 10 });
-
-      var boldButton = new qx.ui.form.Button("", "htmlarea/image/text_bold.gif");
-      boldButton.addEventListener("execute", function(e){
-        this.setBold();
-      }, htmlArea);
-
-      var italicButton = new qx.ui.form.Button("", "htmlarea/image/text_italic.gif");
-      italicButton.addEventListener("execute", function(e){
-        this.setItalic();
-      }, htmlArea);
-
-      var underButton = new qx.ui.form.Button("", "htmlarea/image/text_underline.gif");
-      underButton.addEventListener("execute", function(e){
-        this.setUnderline();
-      }, htmlArea);
-
-      var strikeButton = new qx.ui.form.Button("", "htmlarea/image/text_strikethrough.gif");
-      strikeButton.addEventListener("execute", function(e){
-        this.setStrikeThrough();
-      }, htmlArea);
-
       
-      var fontSizeButton = new qx.ui.form.Button("", "htmlarea/image/fontsize.gif");
-      fontSizeButton.addEventListener("execute", function(e){
+      /* *********************************************
+       * 
+       *      Special handler for Toolbar entries
+       * 
+       * *********************************************
+       */
+      var fontSizeHandler = function(e)
+      {
         var result = window.prompt("FontSize: ", "");
         this.setFontSize(parseInt(result));
-      }, htmlArea);
-
-      var colorButton = new qx.ui.form.Button("", "htmlarea/image/color_text.gif");
-      colorButton.addEventListener("execute", function(e){
+      };
+      
+      var fontColorHandler = function(e)
+      {
         var result = window.prompt("Color (Hex): ", "#");
         this.setTextColor(result);
-      }, htmlArea);
+      };
       
-      var bgcolorButton = new qx.ui.form.Button("", "htmlarea/image/color_bg.gif");
-      bgcolorButton.addEventListener("execute", function(e){
+      var textBackgroundColorHandler = function(e)
+      {
         var result = window.prompt("BgColor (Hex): ", "#");
         this.setTextBackgroundColor(result);
-      }, htmlArea);
+      };
       
-      var olButton = new qx.ui.form.Button("", "htmlarea/image/list_ordered.gif");
-      olButton.addEventListener("execute", function(e){
-        this.insertUnorderedList();
-      }, htmlArea);
+      var insertImageHandler = function(e)
+      {
+        var attributes = { src    : qx.io.Alias.getInstance().resolve("htmlarea/image/qooxdoo_logo.png"),
+                           border : 0,
+                           title  : "qooxdoo logo",
+                           alt    : "qooxdoo logo" };
+        
+        this.insertImage(attributes);
+      };
       
-      var ulButton = new qx.ui.form.Button("", "htmlarea/image/list_numbered.gif");
-      ulButton.addEventListener("execute", function(e){
-        this.insertOrderedList();
-      }, htmlArea);
+      var insertTableHandler = function(e)
+      {
+        var table = "<table border='1'>" + 
+                      "<tbody>" +
+                        "<tr>" +
+                          "<td>First Row, First cell</td>" +
+                          "<td>First Row, Second cell</td>" +
+                        "</tr>" +
+                        "<tr>" +
+                          "<td>Second Row, First cell</td>" +
+                          "<td>Second Row, Second cell</td>" +
+                        "</tr>" +
+                      "</tbody>" +
+                    "</table>";
+        this.insertHtml(table);
+      };
       
-      var undoButton = new qx.ui.form.Button("", "htmlarea/image/undo.gif");
-      undoButton.addEventListener("execute", function(e){
-        this.undo();
-      }, htmlArea);
+      /* ***************************************
+       * 
+       *            Toolbar info
+       *  
+       * ***************************************
+       */
+      var toolbarEntries = {
+        bold :                { image : "htmlarea/image/text_bold.gif", action : htmlArea.setBold },
+        italic :              { image : "htmlarea/image/text_italic.gif", action : htmlArea.setItalic },
+        underline :           { image : "htmlarea/image/text_underline.gif", action : htmlArea.setUnderline },
+        strikethrough :       { image : "htmlarea/image/text_strikethrough.gif", action : htmlArea.setStrikeThrough },
+        
+        alignLeft :           { image : "htmlarea/image/align_left.gif", action : htmlArea.setJustifyLeft },
+        alignCenter :         { image : "htmlarea/image/align_center.gif", action : htmlArea.setJustifyCenter },
+        alignRight :          { image : "htmlarea/image/align_right.gif", action : htmlArea.setJustifyRight },
+        alignJustify :        { image : "htmlarea/image/align_justify.gif", action : htmlArea.setJustifyFull },
+        
+        fontsize :            { image :  "htmlarea/image/fontsize.gif", action : fontSizeHandler },
+        fontcolor :           { image :  "htmlarea/image/color_text.gif", action : fontColorHandler },
+        textBackgroundColor : { image :  "htmlarea/image/color_bg.gif", action : textBackgroundColorHandler },
+        
+        insertImage :         { image : "htmlarea/image/insert_image.gif", action : insertImageHandler },
+        insertTable :         { image : "htmlarea/image/insert_table.gif", action : insertTableHandler },
+        
+        ol :                  { image : "htmlarea/image/list_ordered.gif", action : htmlArea.insertOrderedList },
+        ul :                  { image : "htmlarea/image/list_unordered.gif", action : htmlArea.insertUnorderedList },
+        
+        undo :                { image : "htmlarea/image/undo.gif", action : htmlArea.undo },
+        redo :                { image : "htmlarea/image/redo.gif", action : htmlArea.redo },
+        
+        removeFormat :        { image : "htmlarea/image/remove_format.gif", action : htmlArea.removeFormat }
+      };
       
-      var redoButton = new qx.ui.form.Button("", "htmlarea/image/redo.gif");
-      redoButton.addEventListener("execute", function(e){
-        this.redo();
-      }, htmlArea);
-      
-      var removeFormatButton = new qx.ui.form.Button("", "htmlarea/image/remove_format.gif");
-      removeFormatButton.addEventListener("execute", function(e){
-        this.removeFormat();
-      }, htmlArea);
+      /* Put together toolbar entries */
+      var button;
+      for (var entry in toolbarEntries)
+      {
+        button = new qx.ui.form.Button("", toolbarEntries[entry].image);
+        button.addEventListener("execute", toolbarEntries[entry].action, htmlArea);
+        hb.add(button);
+      }
 
-      hb.add(boldButton, italicButton, underButton, strikeButton, fontSizeButton, colorButton, bgcolorButton, olButton, ulButton, removeFormatButton, undoButton, redoButton);
-
+      /* Add toolbar and HtmlArea widget */
       vb.add(hb, htmlArea);
-      
     }
   },
 
@@ -171,4 +195,3 @@ qx.Class.define("htmlarea.Application",
   }
   
 });
-
