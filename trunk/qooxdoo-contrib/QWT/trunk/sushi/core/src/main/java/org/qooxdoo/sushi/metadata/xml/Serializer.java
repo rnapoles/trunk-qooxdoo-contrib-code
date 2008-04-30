@@ -43,10 +43,12 @@ public class Serializer {
         this.idrefs = new ArrayList<Object>();
     }
 
-    public void run(String name, Type type, Object obj) throws IOException {
+    public void run(String name, Type declaredType, Object obj) throws IOException {
         int id;
         List<Item<?>> items;
         boolean empty;
+        Type actualType;
+        String typeAttribute;
         
         if (obj == null) {
             return;
@@ -55,13 +57,19 @@ public class Serializer {
         if (id != -1) {
             tree.ref(name, id);
         } else {
-            if (type instanceof SimpleType) {
-                tree.text(name, ((SimpleType) type).valueToString(obj));
+            actualType = declaredType.getSchema().type(obj.getClass());
+            if (actualType.equals(declaredType)) {
+                typeAttribute = null;
+            } else {
+                typeAttribute = actualType.getType().getName();
+            }
+            if (actualType instanceof SimpleType) {
+                tree.text(name, typeAttribute, ((SimpleType) actualType).valueToString(obj));
             } else {
                 id = getId(obj);
-                items = ((ComplexType) type).items();
+                items = ((ComplexType) actualType).items();
                 empty = items.size() == 0;
-                tree.begin(name, id, empty);
+                tree.begin(name, id, typeAttribute, empty);
                 if (!empty) {
                     for (Item<?> item : items) {
                         for (Object itemObj : item.get(obj)) {

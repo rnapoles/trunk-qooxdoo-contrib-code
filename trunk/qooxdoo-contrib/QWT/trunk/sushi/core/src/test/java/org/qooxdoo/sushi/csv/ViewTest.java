@@ -53,7 +53,7 @@ public class ViewTest extends ModelBase {
         
         view = view();
         assertEquals(90, audi.getEngine().getPs());
-        view.fromCsv(csv(NORMAL, "name;ps", "audi;5"), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;ps", "audi;5"), MODEL.instance(vendor));
         assertEquals(5, audi.getEngine().getPs());
     }
 
@@ -63,7 +63,7 @@ public class ViewTest extends ModelBase {
         
         view = view();
         assertEquals(90, audi.getEngine().getPs());
-        view.fromCsv(csv(NORMAL, "name;ps", "audi|bmw;5"), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;ps", "audi|bmw;5"), MODEL.instance(vendor));
         assertEquals(5, audi.getEngine().getPs());
         assertEquals(5, bmw.getEngine().getPs());
     }
@@ -74,7 +74,7 @@ public class ViewTest extends ModelBase {
         
         view = view();
         assertEquals(90, audi.getEngine().getPs());
-        view.fromCsv(csv(NORMAL, "name;seats;ps", "audi;5;6", "bmw;1;2"), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;seats;ps", "audi;5;6", "bmw;1;2"), MODEL.instance(vendor));
         assertEquals(5, audi.getSeats());
         assertEquals(6, audi.getEngine().getPs());
         assertEquals(1, bmw.getSeats());
@@ -86,7 +86,7 @@ public class ViewTest extends ModelBase {
         View view;
         
         view = view();
-        view.fromCsv(csv(NORMAL, "name;seats;ps"), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;seats;ps"), MODEL.instance(vendor));
     }
 
     @Test
@@ -97,11 +97,11 @@ public class ViewTest extends ModelBase {
         view.add(new Field("cd", new Path("radio/cd")));
 
         assertEquals(false, audi.getRadio().getCd());
-        view.fromCsv(csv(NORMAL, "name;cd", "audi;true"), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;cd", "audi;true"), MODEL.instance(vendor));
         assertEquals(true, audi.getRadio().getCd());
 
         assertNull(bmw.getRadio());
-        view.fromCsv(csv(NORMAL, "name;cd", "bmw;true"), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;cd", "bmw;true"), MODEL.instance(vendor));
         assertNotNull(bmw.getRadio());
         assertTrue(bmw.getRadio().getCd());
     }
@@ -120,7 +120,7 @@ public class ViewTest extends ModelBase {
         comment(view, "b", "b");
     }
     private void comment(View view, String value, String ... expected) throws Exception {
-        view.fromCsv(csv(NORMAL, "name;comment", "audi;" + value), METADATA.instance(vendor));
+        view.fromCsv(csv(NORMAL, "name;comment", "audi;" + value), MODEL.instance(vendor));
         assertEquals(Arrays.asList(expected), audi.commentList());
     }
     
@@ -148,7 +148,7 @@ public class ViewTest extends ModelBase {
         
         view = view();
         dest = new Csv(NORMAL);
-        view.toCsv(METADATA.instance(vendor), dest, "audi", "bmw");
+        view.toCsv(MODEL.instance(vendor), dest, "audi", "bmw");
         assertEquals("\"name\";\"ps\";\"seats\"\n\"audi\";90;4\n\"bmw\";200;2\n", dest.toString());
     }
     
@@ -158,7 +158,7 @@ public class ViewTest extends ModelBase {
         
         view = view();
         try {
-            view.fromCsv(csv(NORMAL, "name; ps", "audie; 5"), METADATA.instance(vendor));
+            view.fromCsv(csv(NORMAL, "name; ps", "audie; 5"), MODEL.instance(vendor));
             fail();
         } catch (ViewException e) {
             // ok

@@ -53,13 +53,14 @@ public class DomTree extends Tree {
     }
 
     @Override
-    public void begin(String name, int id, boolean withEnd) throws IOException {
+    public void begin(String name, int id, String type, boolean withEnd) throws IOException {
         Element element;
         
         element = Builder.element(parent(), name);
         if (id != -1) {
             element.setAttribute("id", Integer.toString(id));
         }
+        type(element, type);
         parents.add(element);
     }
 
@@ -69,8 +70,17 @@ public class DomTree extends Tree {
     }
 
     @Override
-    public void text(String name, String content) {
-        Builder.textElement(parent(), name, content);
+    public void text(String name, String type, String content) {
+        Element element;
+        
+        element = (Element) Builder.textElement(parent(), name, content).getParentNode();
+        type(element, type);
+    }
+
+    private void type(Element element, String type) {
+        if (type != null) {
+            element.setAttribute("type", type);
+        }
     }
     
     private Element parent() {

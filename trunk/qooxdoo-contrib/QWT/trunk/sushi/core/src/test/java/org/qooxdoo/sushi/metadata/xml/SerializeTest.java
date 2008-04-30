@@ -25,8 +25,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.io.OS;
+import org.qooxdoo.sushi.metadata.listmodel.All;
+import org.qooxdoo.sushi.metadata.listmodel.Empty;
 import org.qooxdoo.sushi.metadata.model.Car;
-import org.qooxdoo.sushi.metadata.model.Empty;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.Kind;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
@@ -99,7 +100,7 @@ public class SerializeTest extends ModelBase {
         org.w3c.dom.Element root;
         
         root = new Builder().createDocument("root").getDocumentElement();
-        METADATA.instance(new Car()).toXml(root);
+        MODEL.instance(new Car()).toXml(root);
         assertEquals(
                 "<root>" + LF +
                 "<car>" + LF +
@@ -114,13 +115,32 @@ public class SerializeTest extends ModelBase {
                 "</root>" + LF, 
                 new org.qooxdoo.sushi.xml.Serializer().serialize(root));        
     }
+    
+    private String run(Object obj) {
+        return MODEL.instance(obj).toXml();
+    }
+    
+    //-- tests with ListModel
+    
 
     @Test
     public void empty() throws IOException {
-        assertEquals("<empty/>" + LF, run(new Empty()));
+        assertEquals("<empty/>" + LF, LISTMODEL.instance(new Empty()).toXml());
     }
     
-    private String run(Object obj) {
-        return METADATA.instance(obj).toXml();
+    @Test
+    public void list() throws IOException {
+        All all;
+        
+        all = new All();
+        all.objects.add(new Empty());
+        all.objects.add("");
+        all.objects.add(2);
+        assertEquals("<all>" + LF +
+                "  <objects type='org.qooxdoo.sushi.metadata.listmodel.Empty'/>" + LF + 
+                "  <objects type='java.lang.String'></objects>" + LF +
+                "  <objects type='java.lang.Integer'>2</objects>" + LF + 
+                "</all>" + LF, 
+                LISTMODEL.instance(all).toXml());
     }
 }

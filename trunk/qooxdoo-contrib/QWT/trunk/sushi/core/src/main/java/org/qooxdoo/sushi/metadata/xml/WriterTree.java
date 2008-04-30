@@ -51,7 +51,7 @@ public class WriterTree extends Tree {
     }
 
     @Override
-    public void begin(String name, int id, boolean withEnd) throws IOException {
+    public void begin(String name, int id, String type, boolean withEnd) throws IOException {
         indent();
         dest.write("<");
         dest.write(name);
@@ -60,6 +60,7 @@ public class WriterTree extends Tree {
             dest.write(Integer.toString(id));
             dest.write('\'');
         }
+        type(type);
         if (withEnd) {
             dest.write("/>\n");
         } else {
@@ -78,10 +79,11 @@ public class WriterTree extends Tree {
     }
 
     @Override
-    public void text(String name, String text) throws IOException {
+    public void text(String name, String typeAttribute, String text) throws IOException {
         indent();
         dest.write('<');
         dest.write(name);
+        type(typeAttribute);
         dest.write('>');
         dest.write(org.qooxdoo.sushi.xml.Serializer.escapeEntities(text));
         dest.write("</");
@@ -89,6 +91,14 @@ public class WriterTree extends Tree {
         dest.write(">\n");
     }
 
+    private void type(String type) throws IOException {
+        if (type != null) {
+            dest.write(" type='");
+            dest.write(type);
+            dest.write('\'');
+        }
+    }
+    
     private void indent() throws IOException {
         for (int i = 0; i < indent; i++) {
             dest.write("  ");

@@ -17,15 +17,8 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.metadata.xml;
+package org.qooxdoo.sushi.metadata.listmodel;
 
-import java.io.IOException;
 
-public abstract class Tree {
-    public abstract Object done() throws IOException;
-    
-    public abstract void ref(String name, int idref) throws IOException;
-    public abstract void begin(String name, int id, String typeAttribute, boolean withEnd) throws IOException;
-    public abstract void end(String name) throws IOException;
-    public abstract void text(String name, String typeAttribute, String text) throws IOException;
+public class Empty {
 }

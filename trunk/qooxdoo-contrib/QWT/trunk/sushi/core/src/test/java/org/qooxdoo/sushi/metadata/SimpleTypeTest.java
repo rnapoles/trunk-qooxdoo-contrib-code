@@ -31,7 +31,7 @@ public class SimpleTypeTest extends ModelBase {
     public void string() {
         SimpleType type; 
         
-        type = (SimpleType) METADATA.type(String.class);
+        type = (SimpleType) MODEL.type(String.class);
         assertEquals("a", type.valueToString("a"));
     }
 
@@ -39,7 +39,7 @@ public class SimpleTypeTest extends ModelBase {
     public void integer() throws SimpleTypeException {
         SimpleType type; 
         
-        type = (SimpleType) METADATA.type(Integer.TYPE);
+        type = (SimpleType) MODEL.type(Integer.TYPE);
         assertEquals("2", type.valueToString(2));
         assertEquals(2, type.stringToValue("2"));
     }
@@ -65,7 +65,7 @@ public class SimpleTypeTest extends ModelBase {
     public void booleanX() throws SimpleTypeException {
         SimpleType type; 
         
-        type = (SimpleType) METADATA.type(Boolean.TYPE);
+        type = (SimpleType) MODEL.type(Boolean.TYPE);
         assertEquals("true", type.valueToString(true));
         assertEquals("false", type.valueToString(false));
         assertEquals(true, type.stringToValue("true"));
@@ -76,7 +76,7 @@ public class SimpleTypeTest extends ModelBase {
     public void integerObject() throws SimpleTypeException {
         SimpleType type; 
         
-        type = (SimpleType) METADATA.type(Integer.class);
+        type = (SimpleType) MODEL.type(Integer.class);
         assertEquals("22", type.valueToString(22));
         assertEquals(22, type.stringToValue("22"));
         try {
@@ -91,7 +91,7 @@ public class SimpleTypeTest extends ModelBase {
     public void enm() throws SimpleTypeException {
         SimpleType type; 
         
-        type = (SimpleType) METADATA.type(Kind.class);
+        type = (SimpleType) MODEL.type(Kind.class);
         assertEquals("van", type.valueToString(Kind.VAN));
         assertEquals(Kind.PICKUP, type.stringToValue("pickup"));
         try {
@@ -109,7 +109,7 @@ public class SimpleTypeTest extends ModelBase {
     private void check(Class<?> clazz, String str, Object value, String out) throws SimpleTypeException {
         SimpleType type;
         
-        type = (SimpleType) METADATA.type(clazz);
+        type = (SimpleType) MODEL.type(clazz);
         assertEquals(value, type.stringToValue(str));
         assertEquals(out, type.valueToString(value));
     }
