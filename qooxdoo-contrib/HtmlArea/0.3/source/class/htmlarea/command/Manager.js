@@ -191,7 +191,7 @@ qx.Class.define("htmlarea.command.Manager",
         fontsize              : { useBuiltin : false, identifier : "FontSize", method : "__setFontSize" },
 
         textcolor             : { useBuiltin : true, identifier : "ForeColor", method : null },
-        textbackgroundcolor   : { useBuiltin : true, identifier : qx.core.Variant.isSet("qx.client", "gecko|opera") ? "Hilitecolor" : "BackColor", method : null },
+        textbackgroundcolor   : { useBuiltin : false, identifier : null, method : "__setTextBackgroundColor" },
 
         backgroundcolor       : { useBuiltin : false, identifier : null, method : "__setBackgroundColor" },
         backgroundimage       : { useBuiltin : false, identifier : null, method : "__setBackgroundImage" },
@@ -1168,6 +1168,120 @@ qx.Class.define("htmlarea.command.Manager",
      },
 
 
+     /**
+      * Internal method to set a background color for text.
+      * Special implementation for Webkit to imitate the behaviour of IE.
+      * If the selection is collapsed Webkit sets the background color
+      * to the whole word which is currently under the caret.
+      * All others (IE, Gecko and Opera) are using the execCommand directly.
+      * 
+      * @param value {String} color to set
+      * @param commandObject {Object} command infos
+      * @return {Boolean} success of operation
+      */
+     __setTextBackgroundColor : qx.core.Variant.select("qx.client", {
+       "mshtml" : function(value, commandObject)
+       {
+         /* Body element must have focus before executing command */
+         this.__doc.body.focus();
+         
+         this.__doc.execCommand("BackColor", false, value);
+         
+         /* Focus the editor */
+         this.__focusAfterExecCommand();
+       },
+       
+       "gecko|opera" : function(value, commandObject)
+       {
+         /* Body element must have focus before executing command */
+         this.__doc.body.focus();
+         
+         this.__doc.execCommand("HiliteColor", false, value);
+         
+         /* Focus the editor */
+         this.__focusAfterExecCommand();
+       },
+       
+       "webkit" : function(value, commandObject) 
+       {
+         var sel = this.__editorInstance.__getSelection();
+         var rng = this.getCurrentRange();
+         
+         /* check for a range */
+         if (!sel.isCollapsed)
+         {
+            /* Body element must have focus before executing command */
+            this.__doc.body.focus();
+           
+           this.__doc.execCommand("BackColor", false, value);
+           
+           /* Focus the editor */
+           this.__focusAfterExecCommand();
+           
+           /* collapse the selection */
+           sel.collapseToEnd();
+           
+           return true;
+         }
+         else
+         {
+           /* 
+            * Act like an IE browser 
+            * -> if the selection is collapsed select the whole word and
+            * perform the action on this selection.
+            */
+           var right  = sel.anchorOffset;
+           var left   = sel.anchorOffset;
+           var rng    = sel.getRangeAt(0);
+           var anchor = sel.anchorNode;
+           
+           /* Check the left side - stop at a linebreak or a space */
+           while (left > 0)
+           {
+             if (anchor.nodeValue.charCodeAt(left) == 160 || anchor.nodeValue.charCodeAt(left) == 32)
+             {
+               break;
+             }
+             else
+             {
+               left--;
+             }
+           }
+           
+           /* Check the right side - stop at a linebreak or a space */
+           while (right < anchor.nodeValue.length)
+           {
+             if (anchor.nodeValue.charCodeAt(right) == 160 || anchor.nodeValue.charCodeAt(right) == 32)
+             {
+               break;
+             }
+             else
+             {
+               right++
+             }
+           }
+           
+           /* Set the start and end of the range to cover the whole word */
+           rng.setStart(sel.anchorNode, sel.anchorNode.nodeValue.charAt(left) == " " ? left + 1 : left);
+           rng.setEnd(sel.anchorNode, right);
+           sel.addRange(rng);
+           
+           /* Body element must have focus before executing command */
+           this.__doc.body.focus();
+           
+           this.__doc.execCommand("BackColor", false, value);
+           
+           /* Focus the editor */
+           this.__focusAfterExecCommand();
+           
+           /* Collapse the selection */
+           sel.collapseToEnd();
+           
+           return true;
+         }          
+       }
+     }),
+     
      /**
       * Internal method to set a background color for the whole document
       *
