@@ -37,7 +37,7 @@ qx.Class.define("htmlarea.command.Manager",
     this.__commands       = null;
     this.__populateCommandList();
 
-    this.__editorInstance.addEventListener("focusOut", this._handleFocusOut, this);
+    this.__editorInstance.addListener("focusOut", this._handleFocusOut, this);
   },
 
   statics :
@@ -828,7 +828,7 @@ qx.Class.define("htmlarea.command.Manager",
        var styleSettings = {};
   
        /* Retrieve element's computed style. */
-       var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+       var decoration = this.__editorInstance.getWindow().getComputedStyle(elem, null);
   
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
@@ -914,7 +914,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style */
-         parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+         parentDecoration = this.__editorInstance.getWindow().getComputedStyle(elem, null);
          
          /* Store values */
          decorationValue = parentDecoration.getPropertyValue("text-decoration");
@@ -958,7 +958,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style*/
-         parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+         parentDecoration = this.__editorInstance.getWindow().getComputedStyle(elem, null);
          parentStyleValue = parentDecoration.getPropertyValue("background-color");
 
          /* Check if computed value is valid */
@@ -1500,14 +1500,14 @@ qx.Class.define("htmlarea.command.Manager",
          window.setTimeout(function(e)
          {
            qx.ui.core.ClientDocument.getInstance().setActiveChild(that);
-           that.getContentWindow().focus();
+           that.getWindow().focus();
          }, 50);
        }
        else
        {
          /* for all other browser a short delayed focus on the contentWindow should do the job */
          window.setTimeout(function(e) {
-           that.getContentWindow().focus();
+           that.getWindow().focus();
          }, 50);
        }
     }
