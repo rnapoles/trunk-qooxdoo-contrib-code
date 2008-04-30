@@ -50,6 +50,9 @@ public class Loader extends DefaultHandler {
 
     public static Loader create(IO io, Type type) {
         try {
+            // No validation - because it's generally impossible: the complete schema 
+            // is unkown because users my specify arbitrary types. Instead, the loader 
+            // performs proper validation - all unknown elements/attributes are rejected. 
             return new Loader(type, Builder.createSAXParser());
         } catch (SAXException e) {
             throw new RuntimeException(e);
