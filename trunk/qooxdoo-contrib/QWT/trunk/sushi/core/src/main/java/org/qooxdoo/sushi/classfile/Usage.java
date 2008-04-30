@@ -19,7 +19,17 @@
 
 package org.qooxdoo.sushi.classfile;
 
-public abstract class Reference {
-    public abstract ClassRef getOwner();
-    public abstract Definition resolve(Repository repository);
+public class Usage {
+    public final MethodRef from;
+    public final Reference to;
+    
+    public Usage(MethodRef from, Reference to) {
+        this.from = from;
+        this.to = to;
+    }
+
+    @Override
+    public String toString() {
+        return from.toString() + ": " + to.toString();
+    }
 }

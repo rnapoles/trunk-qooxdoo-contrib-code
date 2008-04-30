@@ -39,6 +39,19 @@ public class FieldRef extends Reference {
     }
 
     @Override
+    public ClassRef getOwner() {
+        return owner;
+    }
+
+    @Override
+    public FieldDef resolve(Repository repository) {
+        ClassDef def;
+        
+        def = owner.resolve(repository);
+        return def == null ? null : def.lookupField(name);
+    }
+    
+    @Override
     public boolean equals(Object obj) {
         FieldRef ref;
 

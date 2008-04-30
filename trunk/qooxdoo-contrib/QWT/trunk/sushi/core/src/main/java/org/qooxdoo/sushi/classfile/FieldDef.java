@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Set;
 import org.qooxdoo.sushi.classfile.attribute.Attribute;
 
-public class FieldDef {
+public class FieldDef extends Definition {
     public final Set<Access> accessFlags;
     public final String name;
     public final ClassRef type;
