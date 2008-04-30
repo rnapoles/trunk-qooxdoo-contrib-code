@@ -79,6 +79,28 @@ public class MethodRef extends Reference {
         this.returnType = returnType;
     }
 
+    @Override
+    public ClassRef getOwner() {
+        return owner;
+    }
+    
+    @Override
+    public MethodDef resolve(Repository repository) {
+        ClassDef clazz;
+        MethodDef method;
+        
+        clazz = owner.resolve(repository);
+        while (clazz != null) {
+            method = clazz.lookupMethod(name, argumentTypes);
+            if (method != null) {
+                return method;
+                
+            }
+            clazz = clazz.superClass.resolve(repository);
+        }
+        return null;
+    }
+    
     //------------------------------------------------------------------
     // convinience methods to create references
 
@@ -256,7 +278,7 @@ public class MethodRef extends Reference {
         result.append('(');
         for (i = 0; i < argumentTypes.length; i++) {
             if (i > 0) {
-                result.append(' ');
+                result.append(", ");
             }
             result.append(argumentTypes[i]);
         }

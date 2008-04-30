@@ -71,6 +71,16 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
         this.componentType = componentType;
     }
 
+    @Override
+    public ClassRef getOwner() {
+        return this;
+    }
+
+    @Override
+    public ClassDef resolve(Repository repository) {
+        return repository.lookup(name);
+    }
+    
     public boolean isArray() {
         return dimensions != 0;
     }

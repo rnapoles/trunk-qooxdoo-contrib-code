@@ -27,7 +27,7 @@ import java.util.Set;
 import org.qooxdoo.sushi.classfile.attribute.Attribute;
 import org.qooxdoo.sushi.classfile.attribute.Exceptions;
 
-public class MethodDef {
+public class MethodDef extends Definition {
     public Set<Access> accessFlags;
     public String name;
     public ClassRef[] argumentTypes;

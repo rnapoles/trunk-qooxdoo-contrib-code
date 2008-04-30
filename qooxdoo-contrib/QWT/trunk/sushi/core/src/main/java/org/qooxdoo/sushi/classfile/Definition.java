@@ -19,7 +19,6 @@
 
 package org.qooxdoo.sushi.classfile;
 
-public abstract class Reference {
-    public abstract ClassRef getOwner();
-    public abstract Definition resolve(Repository repository);
+/** Something referencable */
+public class Definition {
 }

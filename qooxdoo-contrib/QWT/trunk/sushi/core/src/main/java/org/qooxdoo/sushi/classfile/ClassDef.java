@@ -32,7 +32,7 @@ import org.qooxdoo.sushi.classfile.attribute.Attribute;
  * A class file. A class file defines a Java class.
  */
 
-public class ClassDef {
+public class ClassDef extends Definition {
     public Set<Access> accessFlags;
     public ClassRef thisClass;
     public ClassRef superClass;
@@ -119,6 +119,15 @@ public class ClassDef {
         return null;
     }
     
+    public MethodDef lookupMethod(String name, ClassRef[] argumentTypes) {
+        for (MethodDef m : methods) {
+            if (m.name.equals(name) && Arrays.equals(m.argumentTypes, argumentTypes)) {
+                return m;
+            }
+        }
+        return null;
+    }
+    
     public FieldDef lookupField(FieldDef field) {
         return lookupField(field.accessFlags, field.name, field.type);
     }
@@ -126,6 +135,15 @@ public class ClassDef {
     public FieldDef lookupField(Set<Access> accessFlags, String name, ClassRef type) {
         for (FieldDef f : fields) {
             if (f.accessFlags.equals(accessFlags) && f.name.equals(name) && f.type.equals(type)) {
+                return f;
+            }
+        }
+        return null;
+    }
+    
+    public FieldDef lookupField(String name) {
+        for (FieldDef f : fields) {
+            if (f.name.equals(name)) {
                 return f;
             }
         }
