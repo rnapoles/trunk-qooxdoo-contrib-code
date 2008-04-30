@@ -23,9 +23,12 @@ import org.junit.Before;
 
 import org.qooxdoo.sushi.metadata.Schema;
 import org.qooxdoo.sushi.metadata.annotation.AnnotationSchema;
+import org.qooxdoo.sushi.metadata.reflect.ReflectSchema;
 
 public abstract class ModelBase {
-    public static final Schema METADATA = new AnnotationSchema();
+    public static final Schema MODEL = new AnnotationSchema();
+
+    public static final Schema LISTMODEL = new ReflectSchema();
 
     protected Vendor vendor;
     protected Car audi;

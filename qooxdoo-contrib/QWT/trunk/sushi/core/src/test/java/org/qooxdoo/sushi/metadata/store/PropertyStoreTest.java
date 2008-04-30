@@ -40,7 +40,7 @@ public class PropertyStoreTest extends ModelBase {
         p.put("", Engine.class.getName());
         p.put("turbo", "true");
         p.put("ps", "12");
-        engine = METADATA.type(Engine.class).<Engine>loadProperties(p).get();
+        engine = MODEL.type(Engine.class).<Engine>loadProperties(p).get();
         assertEquals(12, engine.getPs());
         assertEquals(true, engine.getTurbo());
     }
@@ -54,7 +54,7 @@ public class PropertyStoreTest extends ModelBase {
         p.put("foo", Engine.class.getName());
         p.put("foo/turbo", "true");
         p.put("foo/ps", "12");
-        engine = METADATA.type(Engine.class).<Engine>loadProperties(p, "foo").get();
+        engine = MODEL.type(Engine.class).<Engine>loadProperties(p, "foo").get();
         assertEquals(12, engine.getPs());
         assertEquals(true, engine.getTurbo());
     }
@@ -65,10 +65,10 @@ public class PropertyStoreTest extends ModelBase {
         Instance<Vendor> clone;
         Properties p;
 
-        i = METADATA.instance(vendor);
+        i = MODEL.instance(vendor);
         p = new Properties();
         i.toProperties(p, "foo");
-        clone = METADATA.type(Vendor.class).loadProperties(p, "foo");
+        clone = MODEL.type(Vendor.class).loadProperties(p, "foo");
         assertEquals(2, clone.get().cars().size());
     }
 }

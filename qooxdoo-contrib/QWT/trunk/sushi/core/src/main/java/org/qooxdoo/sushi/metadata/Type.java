@@ -106,7 +106,7 @@ public abstract class Type {
         Loader loader;
         T obj;
         
-        loader = Loader.createValidating(io, this);
+        loader = Loader.create(io, this);
         obj = (T) loader.run(src);
         return instance(obj);
     }

@@ -34,6 +34,8 @@ import org.qooxdoo.sushi.metadata.Instance;
 import org.qooxdoo.sushi.metadata.SimpleTypeException;
 import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.metadata.Variable;
+import org.qooxdoo.sushi.metadata.listmodel.All;
+import org.qooxdoo.sushi.metadata.listmodel.Empty;
 import org.qooxdoo.sushi.metadata.model.Car;
 import org.qooxdoo.sushi.metadata.model.Engine;
 import org.qooxdoo.sushi.metadata.model.ModelBase;
@@ -110,7 +112,7 @@ public class LoaderTest extends ModelBase {
         Vendor vendor;
         Car car;
         
-        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
+        vendor = (Vendor) loadXml(MODEL.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -135,7 +137,7 @@ public class LoaderTest extends ModelBase {
     public void id() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
+        vendor = (Vendor) loadXml(MODEL.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -151,7 +153,7 @@ public class LoaderTest extends ModelBase {
     public void idNotFound() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
+        vendor = (Vendor) loadXml(MODEL.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car idref='foo'/>" +
         "</vendor>").get();
@@ -164,7 +166,7 @@ public class LoaderTest extends ModelBase {
     public void idDuplicate() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
+        vendor = (Vendor) loadXml(MODEL.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -182,7 +184,7 @@ public class LoaderTest extends ModelBase {
     public void idUnexpectedContent() throws LoaderException {
         Vendor vendor;
         
-        vendor = (Vendor) loadXml(METADATA.type(Vendor.class), "<vendor>" +
+        vendor = (Vendor) loadXml(MODEL.type(Vendor.class), "<vendor>" +
         "  <id>100</id>" +
         "  <car id='foo'><name>m3</name><kind>sports</kind><seats>2</seats>" +
         "    <engine><turbo>true</turbo><ps>200</ps></engine>" +
@@ -291,7 +293,7 @@ public class LoaderTest extends ModelBase {
     }
 
     private Engine engine(String str) throws LoaderException {
-        return (Engine) loadXml(METADATA.type(Engine.class), str).get();
+        return (Engine) loadXml(MODEL.type(Engine.class), str).get();
     }
     
     //--
@@ -318,5 +320,50 @@ public class LoaderTest extends ModelBase {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    //--
+    
+    @Test
+    public void object() throws Exception {
+        Object obj;
+        org.qooxdoo.sushi.fs.Node node;
+        
+        node = IO_OBJ.stringNode(
+                "<object/>"
+        );
+        obj = LISTMODEL.type(Object.class).loadXml(node).get();
+        assertTrue(obj instanceof Object);
+    }
+    
+    @Test
+    public void objectString() throws Exception {
+        Object obj;
+        org.qooxdoo.sushi.fs.Node node;
+        
+        node = IO_OBJ.stringNode(
+                "<object type='java.lang.String'>foo</object>"
+        );
+        obj = LISTMODEL.type(Object.class).loadXml(node).get();
+        assertEquals("foo", obj);
+    }
+    
+    @Test
+    public void list() throws Exception {
+        All all;
+        org.qooxdoo.sushi.fs.Node node;
+        
+        node = IO_OBJ.stringNode(
+                "<all>" +
+                "  <objects type='java.lang.Integer'>2</objects>" +
+                "  <objects type='org.qooxdoo.sushi.metadata.listmodel.Empty'/>" + 
+                "  <objects type='java.lang.String'></objects>" +
+                "</all>"                
+        );
+        all = (All) LISTMODEL.type(All.class).loadXml(node).get();
+        assertEquals(3, all.objects.size());
+        assertEquals(2, all.objects.get(0));
+        assertTrue(all.objects.get(1) instanceof Empty);
+        assertEquals("", all.objects.get(2));
     }
 }

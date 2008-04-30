@@ -28,7 +28,6 @@ import java.util.Map;
 import javax.xml.parsers.SAXParser;
 
 import org.qooxdoo.sushi.fs.IO;
-import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.Item;
 import org.qooxdoo.sushi.metadata.Type;
 import org.qooxdoo.sushi.xml.Builder;
@@ -49,12 +48,9 @@ public class Loader extends DefaultHandler {
     private Map<String, Object> storage;
     private List<SAXException> exceptions;
 
-    public static Loader createValidating(IO io, Type type) {
-        Node xsd;
-        
+    public static Loader create(IO io, Type type) {
         try {
-            xsd = io.stringNode(type.createSchema());
-            return new Loader(type, Builder.createValidatingSAXParser(xsd));
+            return new Loader(type, Builder.createSAXParser());
         } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -101,11 +97,16 @@ public class Loader extends DefaultHandler {
         Element parent;
         Item<?> child;
         Element started;
+        int length;
+        String name;
+        String value;
+        String explicitType;
         
         check(uri, localName);
+        explicitType = attrs.getValue("type");
         if (elements.size() == 0) {
             // this is the root element - the element name doesn't matter
-            started = Element.create(null, type);
+            started = Element.create(null, override(explicitType, type));
         } else {
             parent = peek();
             child = parent.lookup(qName);
@@ -113,16 +114,9 @@ public class Loader extends DefaultHandler {
                 // cannot recover
                 throw new SAXLoaderException("unknown element '" + qName + "'", locator);
             }
-            started = Element.create(child, child.getType());
+            started = Element.create(child, override(explicitType, child.getType()));
         }
         elements.add(started);
-        attributes(attrs, started);
-    }
-
-    private void attributes(Attributes attrs, Element started) {
-        int length;
-        String name;
-        String value;
         
         length = attrs.getLength();
         for (int i = 0; i < length; i++) {
@@ -132,11 +126,25 @@ public class Loader extends DefaultHandler {
                 started.id = value;
             } else if (name.equals("idref")) {
                 started.idref = value;
+            } else if (name.equals("type")) {
+                // already processed
             } else {
                 loaderException("unexected attribute " + name);
             }
         }
-        
+    }
+
+    private Type override(String explicitType, Type type) {
+        if (explicitType != null) {
+            try {
+                return type.getSchema().type(Class.forName(explicitType));
+            } catch (ClassNotFoundException e) {
+                loaderException("unkown type: " + explicitType);
+                return type;
+            }
+        } else {
+            return type;
+        }
     }
     @Override
     public void endElement(String uri, String localName, String qName) {

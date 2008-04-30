@@ -132,7 +132,7 @@ public class PathTest extends ModelBase {
         Path p;
         
         p = new Path(path);
-        assertEquals(expected, p.selectOne(METADATA.instance(obj)).get());
+        assertEquals(expected, p.selectOne(MODEL.instance(obj)).get());
     }
 
     private void all(Object obj, String path, Object ... expected) {
@@ -140,7 +140,7 @@ public class PathTest extends ModelBase {
         List<Instance<?>> result;
 
         p = new Path(path);
-        result = p.select(METADATA.instance(obj));
+        result = p.select(MODEL.instance(obj));
         assertEquals(expected.length, result.size());
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], result.get(i).get());
@@ -148,6 +148,6 @@ public class PathTest extends ModelBase {
     }
 
     private Variable<?> access(Object obj, String path, boolean create) {
-        return new Path(path).access(METADATA.instance(obj), create);
+        return new Path(path).access(MODEL.instance(obj), create);
     }
 }

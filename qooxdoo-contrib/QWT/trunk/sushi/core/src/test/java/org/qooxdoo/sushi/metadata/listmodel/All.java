@@ -17,10 +17,14 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.metadata.model;
+package org.qooxdoo.sushi.metadata.listmodel;
 
-import org.qooxdoo.sushi.metadata.annotation.Type;
+import java.util.ArrayList;
 
-@Type
-public class Empty {
+public class All {
+    public java.util.List<Object> objects;
+    
+    public All() {
+        objects = new ArrayList<Object>();
+    }
 }
