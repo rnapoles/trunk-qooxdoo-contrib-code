@@ -16,12 +16,19 @@ This is a mirror of the qxtransformer SVN located at
 
 https://www.qxtransformer.org/svn/qxtransformer/ (note the "s" in https)
 
+You can file bug reports in our trac ticket system:
+
+http://www.qxtransformer.org/qxtransformer/newticket
+
+iIf you'd like to contribute, we'll be more than happy to provide write
+access to the repository. Please write to s.barisiuk at qxtransformer dot
+org or c.boulanger at qxtransformer dot org. If you have patches,
+attach them to a bug report in the trac.
+
 Please visit the qxtransformer homepage for more information:
 
 http://www.qxtransformer.org
 
-You can file bug reports in our trac ticket system:
 
-http://www.qxtransformer.org/qxtransformer/newticket
 
 
