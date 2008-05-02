@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.RootPathException;
 import org.qooxdoo.sushi.fs.file.FileNode;
 
@@ -42,7 +43,8 @@ public class ZipNodeTest {
         String locator;
         ZipNode object;
         ZipNode lang;
-        List<ZipNode> list;
+        List<? extends Node> list;
+        List<? extends Node> tree;
         
         jar = ioObj.locateClasspathItem(Object.class);
         rootPath = jar.getAbsolute() + "!/java/lang/Object.class";
@@ -60,6 +62,11 @@ public class ZipNodeTest {
         assertTrue(list.size() > 10);
         assertTrue(list.contains(object));
         assertFalse(list.contains(list));
+        tree = lang.find("**/*");
+        assertTrue(tree.size() > list.size());
+        assertTrue(tree.contains(object));
+        assertFalse(tree.contains(list));
+        assertTrue(tree.containsAll(list));
         object = (ZipNode) lang.join("Object.class");
         assertTrue(object.exists());
         assertTrue(object.isFile());

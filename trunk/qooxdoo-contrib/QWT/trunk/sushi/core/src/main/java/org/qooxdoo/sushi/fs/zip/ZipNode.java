@@ -141,18 +141,25 @@ public class ZipNode extends Node {
         String prefix;
         int length;
         List<ZipNode> result;
+        List<String> done;
+        int idx;
         
+        // TODO: expensive
         e = root.getZip().entries();
         separator = root.getFilesystem().getSeparator();
         prefix = getPath() + separator;
         length = prefix.length();
         result = new ArrayList<ZipNode>();
-        // TODO: expensive
+        done = new ArrayList<String>();
+        done.add(path);
         while (e.hasMoreElements()) {
             entry = e.nextElement();
             name = entry.getName();
             if (name.startsWith(prefix)) {
-                if (name.indexOf(separator, length) == -1 && !name.equals(path)) {
+                idx = name.indexOf(separator, length);
+                name = (idx == -1 ? name : name.substring(0, idx));
+                if (!done.contains(name)) {
+                    done.add(name);
                     result.add(root.node(name));
                 }
             }
