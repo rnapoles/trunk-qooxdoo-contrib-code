@@ -21,5 +21,16 @@ package org.qooxdoo.sushi.classfile;
 
 public abstract class Reference {
     public abstract ClassRef getOwner();
-    public abstract Definition resolve(Repository repository) throws ResolveException;
+    
+    public Definition resolve(Repository repository) throws ResolveException {
+        Definition def;
+        
+        def = lookup(repository);
+        if (def == null) {
+            throw new ResolveException(this); 
+        }
+        return def;
+    }
+    
+    public abstract Definition lookup(Repository repository) throws ResolveException;
 }
