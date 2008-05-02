@@ -57,7 +57,7 @@ public class Input implements Constants {
 
         u4 = readU4();
         if (u4 != MAGIC) {
-            throw new IOException("not a class file (magic=" + u4 + ")");
+            throw new IOException("not a class file (magic='" + u4 + "')");
         }
         minor = readU2();
         major = readU2();

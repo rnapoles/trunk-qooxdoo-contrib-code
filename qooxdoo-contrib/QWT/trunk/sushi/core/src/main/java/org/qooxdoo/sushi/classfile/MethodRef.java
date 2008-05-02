@@ -71,7 +71,7 @@ public class MethodRef extends Reference {
 
 
     public MethodRef(ClassRef owner, boolean ifc, ClassRef returnType,
-        String name, ClassRef[] argumentTypes) {
+        String name, ClassRef ... argumentTypes) {
         this.owner = owner;
         this.ifc = ifc;
         this.name = name;
@@ -86,20 +86,28 @@ public class MethodRef extends Reference {
     
     @Override
     public MethodDef lookup(Repository repository) throws ResolveException {
-        ClassDef clazz;
+        return lookup((ClassDef) owner.resolve(repository), repository);
+    }
+    
+    private MethodDef lookup(ClassDef def, Repository repository) throws ResolveException {
         MethodDef method;
         
-        clazz = (ClassDef) owner.resolve(repository);
-        while (true) {
-            method = clazz.lookupMethod(name, argumentTypes);
+        method = def.lookupMethod(name, argumentTypes);
+        if (method != null) {
+            return method;
+        }
+        
+        // order doesn't matter - Javac rejects ambiguous references
+        for (ClassRef next : def.interfaces) {
+            method = lookup((ClassDef) next.resolve(repository), repository);
             if (method != null) {
                 return method;
-                
             }
-            if (clazz.superClass == null) {
-                return null;
-            }
-            clazz = (ClassDef) clazz.superClass.resolve(repository);
+        }
+        if (def.superClass != null) {
+            return lookup((ClassDef) def.superClass.resolve(repository), repository);
+        } else {
+            return null;
         }
     }
     
