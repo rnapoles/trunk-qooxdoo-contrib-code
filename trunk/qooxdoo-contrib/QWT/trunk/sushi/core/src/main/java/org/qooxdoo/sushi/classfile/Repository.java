@@ -34,25 +34,32 @@ public class Repository {
         Repository set;
         
         set = new Repository();
-        set.add(file);
+        set.addAll(file);
         return set;
     }
 
     private final List<ClassDef> defs;
     
+    private final List<Node> lazy;
+    
     public Repository() {
         defs = new ArrayList<ClassDef>();
+        lazy = new ArrayList<Node>();
     }
     
-    public void add(Node file) throws IOException {
+    public void addLazy(Node node) throws IOException {
+        lazy.add(getDir(node));
+    }
+
+    private Node getDir(Node file) throws IOException {
+        return file.isDirectory() ? file : Archive.loadZip(file).data;
+    }
+    
+    public void addAll(Node file) throws IOException {
         Node dir;
         
         file.checkExists();
-        if (file.isDirectory()) {
-            dir = file;
-        } else {
-            dir = Archive.loadZip(file).data;
-        }
+        dir = getDir(file);
         for (Node node : dir.find("**/*.class")) {
             add(Input.load(node));
         }
@@ -63,7 +70,14 @@ public class Repository {
     }
 
     public ClassDef lookup(ClassDef c) {
-        return lookup(c.accessFlags, c.getName(), c.superClass, c.interfaces);
+        ClassDef def;
+        
+        def = lookup(c.accessFlags, c.getName(), c.superClass, c.interfaces);
+        if (def != null) {
+            return def;
+        }
+        // TODO: lazy load
+        return null;
     }
     
     public ClassDef lookup(java.util.Set<Access> accessFlags, String name, ClassRef superClass, List<ClassRef> interfaces) {
@@ -79,9 +93,26 @@ public class Repository {
     //--
     
     public ClassDef lookup(String name) {
+        Node file;
+        String path;
+        ClassDef added;
+
         for (ClassDef def : defs) {
             if (def.getName().equals(name)) {
                 return def;
+            }
+        }
+        path = ClassRef.classToResName(name);
+        for (Node dir : lazy) {
+            file = dir.join(path);
+            try {
+                if (file.exists()) {
+                    added = Input.load(file);
+                    add(added);
+                    return added;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("TODO", e);
             }
         }
         return null;
