@@ -19,21 +19,34 @@
 
 package org.qooxdoo.sushi.classfile;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.io.IOException;
+
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 
 public class RepositoryTest {
-    @Test
-    public void resolveInterfaceMethod() throws Exception {
-        IO io;
-        Repository repository;
-        ClassDef oo;
-        MethodRef m;
-        
+    private IO io;
+    private Repository repository;
+    
+    public RepositoryTest() throws IOException {
         io = new IO();
         repository = new Repository();
         repository.addLazy(io.locateClasspathItem(Object.class));
+    }
+
+    @Test
+    public void resolvePrimitive() throws Exception {
+        assertNull(repository.lookup("byte"));        
+    }
+    
+    @Test
+    public void resolveInterfaceMethod() throws Exception {
+        ClassDef oo;
+        MethodRef m;
+        
         oo = repository.lookup("java.io.ObjectOutput");        
         assertNotNull(oo);
         m = new MethodRef(oo.reference(), false, ClassRef.VOID, "writeUTF", ClassRef.STRING);
