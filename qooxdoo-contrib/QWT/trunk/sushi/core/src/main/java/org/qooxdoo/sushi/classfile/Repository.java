@@ -22,8 +22,10 @@ package org.qooxdoo.sushi.classfile;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
@@ -39,12 +41,12 @@ public class Repository {
         return set;
     }
 
-    private final List<ClassDef> defs;
+    private final Map<String, ClassDef> defs;
     
     private final List<Node> lazy;
     
     public Repository() {
-        defs = new ArrayList<ClassDef>();
+        defs = new HashMap<String, ClassDef>();
         lazy = new ArrayList<Node>();
     }
     
@@ -68,7 +70,7 @@ public class Repository {
     }
 
     public void add(ClassDef load) {
-        defs.add(load);
+        defs.put(load.getName(), load);
     }
 
     public ClassDef lookup(ClassDef c) {
@@ -83,7 +85,7 @@ public class Repository {
     }
     
     public ClassDef lookup(java.util.Set<Access> accessFlags, String name, ClassRef superClass, List<ClassRef> interfaces) {
-        for (ClassDef def : defs) {
+        for (ClassDef def : defs.values()) {
             if (def.getName().equals(name) && def.accessFlags.equals(accessFlags) 
                     && def.superClass.equals(superClass) && def.interfaces.equals(interfaces)) {
                 return def;
@@ -97,27 +99,26 @@ public class Repository {
     public ClassDef lookup(String name) throws IOException {
         Node file;
         String path;
-        ClassDef added;
+        ClassDef def;
 
-        for (ClassDef def : defs) {
-            if (def.getName().equals(name)) {
-                return def;
-            }
+        def = defs.get(name);
+        if (def != null) {
+            return def;
         }
         path = ClassRef.classToResName(name);
         for (Node dir : lazy) {
             file = dir.join(path);
             if (file.exists()) {
-                added = Input.load(file);
-                add(added);
-                return added;
+                def = Input.load(file);
+                add(def);
+                return def;
             }
         }
         return null;
     }
 
     public void dump(PrintStream dest) {
-        for (ClassDef def : defs) {
+        for (ClassDef def : defs.values()) {
             dest.println(def.toString());
         }
     }
@@ -125,17 +126,17 @@ public class Repository {
     public void diff(Repository rightSet, PrintStream info) {
         ClassDef tmp;
         
-        for (ClassDef left : defs) {
+        for (ClassDef left : defs.values()) {
             if (rightSet.lookup(left) == null) {
                 info.println("- " + left.toSignatureString());
             }
         }
-        for (ClassDef right : rightSet.defs) {
+        for (ClassDef right : rightSet.defs.values()) {
             if (this.lookup(right) == null) {
                 info.println("+ " + right.toSignatureString());
             }
         }
-        for (ClassDef left : defs) {
+        for (ClassDef left : defs.values()) {
             tmp = rightSet.lookup(left);
             if (tmp != null) {
                 diffBody(left, tmp, info);
@@ -146,7 +147,7 @@ public class Repository {
     public void defines(List<Reference> pblic, List<Reference> prvate) {
         ClassRef owner;
 
-        for (ClassDef def : defs) {
+        for (ClassDef def : defs.values()) {
             owner = def.reference();
             for (MethodDef m : def.methods) {
                 (m.accessFlags.contains(Access.PUBLIC) ? pblic : prvate).
@@ -214,7 +215,7 @@ public class Repository {
         ClassRef owner;
         MethodRef from;
         
-        for (ClassDef def : defs) {
+        for (ClassDef def : defs.values()) {
             owner = def.reference();
             for (MethodDef m : def.methods) {
                 code = m.getCode();
