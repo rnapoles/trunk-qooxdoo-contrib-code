@@ -101,7 +101,7 @@ public class Code extends Attribute implements Constants {
         computedStack = calcStackSize();
         if (loadedStack < computedStack) {
             LOGGER.warning(
-                "warning: loaded stack size differs from computed: " +
+                "loaded stack size differs from computed: " +
                 "loaded: " + loadedStack + " < computed: " + computedStack);
         }
     }
@@ -479,7 +479,7 @@ public class Code extends Attribute implements Constants {
             // code, and they pass class file validation:
             // (e.g. com.sun.corba.se.intneral.io.util.Arrays)
 
-            LOGGER.warning("warning: " + "unreachable code, starting " + unreachable + "\n");
+            LOGGER.warning("unreachable code, starting " + unreachable + "\n");
         }
         return result;
     }
