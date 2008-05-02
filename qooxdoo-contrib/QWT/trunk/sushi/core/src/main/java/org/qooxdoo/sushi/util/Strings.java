@@ -26,7 +26,37 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Strings {
-    public static final String[] NONE = new String[] {};
+    //
+    //-- one string 
+    //
+    
+    public static String join(String separator, String ... strings) {
+        return join(separator, Arrays.asList(strings));
+    }
+    
+    /**
+     * Concatenate the specified strings, separated by the specified space.
+     *
+     * @param strings to be concatenated
+     * @param separator between two strings
+     *
+     * @return concatenated string
+     */
+    public static String join(String separator, List<String> strings) {
+        int i;
+        int max;
+        StringBuffer buffer;
+        
+        buffer = new StringBuffer();
+        max = strings.size();
+        for (i = 0; i < max; i++) {
+            if (i > 0) {
+                buffer.append(separator);
+            }
+            buffer.append(strings.get(i));
+        }
+        return buffer.toString();
+    }
     
     public static String replaceStart(String str, String old, String replaced) {
         if (str.startsWith(old)) {
@@ -103,35 +133,6 @@ public class Strings {
         return buffer.toString();
     }
 
-    public static String join(String separator, String ... strings) {
-        return join(separator, Arrays.asList(strings));
-    }
-    
-    /**
-     ** Concatenate the specified strings, separated by the specified space.
-     **
-     ** @param strings to be concatenated
-     ** @param separator between two strings
-     **
-     ** @return concatenated string
-     **/
-    public static String join(String separator, List<String> strings) {
-        int i;
-        int max;
-        StringBuffer buffer;
-        
-        buffer = new StringBuffer();
-        max = strings.size();
-        for (i = 0; i < max; i++) {
-            if (i > 0) {
-                buffer.append(separator);
-            }
-            buffer.append(strings.get(i));
-        }
-        return buffer.toString();
-    }
-    
-    
     public static String[] trim(String ... args) {
         int i;
         
@@ -148,17 +149,6 @@ public class Strings {
             args.set(i, args.get(i).trim());
         }
         return args;
-    }
-    
-    public static String[] cdr(String[] args) {
-        String[] result;
-        
-        if (args.length == 0) {
-            throw new RuntimeException();
-        }
-        result = new String[args.length - 1];
-        System.arraycopy(args, 1, result, 0, result.length);
-        return result;
     }
     
     public static List<String> split(String separator, String str) {
@@ -186,7 +176,6 @@ public class Strings {
             result.add(str.substring(prev));
         }
     }
-
     
     public static String replace(String str, String in, String out) {
         StringBuffer buffer;
@@ -209,21 +198,6 @@ public class Strings {
         }
         buffer.append(str.substring(prev));
         return buffer.toString();
-    }
-    
-    /**
-     ** Turns a list of Strings into an array.
-     **
-     ** @param coll   collection of Strings
-     **
-     ** @return never null
-     **/
-    public static String[] toArray(Collection<String> coll) {
-        String[] ar;
-        
-        ar = new String[coll.size()];
-        coll.toArray(ar);
-        return ar;
     }
     
     public static String getCommon(String left, String right) {
@@ -311,8 +285,6 @@ public class Strings {
         return i;
     }
     
-    //--
-    
     public static String capitalize(String str) {
         if (str.length() == 0) {
             return str;
@@ -327,41 +299,7 @@ public class Strings {
         return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 
-    public static String[] cons(String car, String[] cdr) {
-        String[] result;
-
-        result = new String[1 + cdr.length];
-        result[0] = car;
-        System.arraycopy(cdr, 0, result, 1, cdr.length);
-        return result;
-    }
-
-    public static String[] append(String[] ...args) {
-        String[] result;
-        int length;
-        int ofs;
-        
-        length = 0;
-        for (String[] current : args) {
-            length += current.length;
-        }
-        result = new String[length];
-        ofs = 0;
-        for (String[] current : args) {
-            System.arraycopy(current, 0, result, ofs, current.length);
-            ofs += current.length;
-        }
-        return result;
-    }
-    
-    public static String[] toArray(List<String> strings) {
-        String[] array;
-        
-        array = new String[strings.size()];
-        strings.toArray(array);
-        return array;
-    }
-    
+    //-- TODO: dump?
     public static String[] separate(String str, char delim) {
         int i;
         StringTokenizer tokenizer;
@@ -377,8 +315,7 @@ public class Strings {
         return result;
     }
     
-    //
-    
+    // TODO: dump?
     public static String next(String all, int[] idxResult, String ... delimiters) {
         int start;
         int tmp;
@@ -407,6 +344,75 @@ public class Strings {
             idxResult[0] = next;
             return all.substring(start, end);
         }
+    }
+
+    
+    //-- string collections or arrays
+
+    public static final String[] NONE = new String[] {};
+    
+    /**
+     * Turns a list of Strings into an array.
+     *
+     * @param coll   collection of Strings
+     *
+     * @return never null
+     */
+    public static String[] toArray(Collection<String> coll) {
+        String[] ar;
+        
+        ar = new String[coll.size()];
+        coll.toArray(ar);
+        return ar;
+    }
+    
+    public static ArrayList<String> toList(String ... elements) {
+        ArrayList<String> result;
+        
+        result = new ArrayList<String>();
+        for (String e : elements) {
+            result.add(e);
+        }
+        return result;
+    }
+    
+    
+    public static String[] cons(String car, String[] cdr) {
+        String[] result;
+
+        result = new String[1 + cdr.length];
+        result[0] = car;
+        System.arraycopy(cdr, 0, result, 1, cdr.length);
+        return result;
+    }
+
+    public static String[] cdr(String[] args) {
+        String[] result;
+        
+        if (args.length == 0) {
+            throw new RuntimeException();
+        }
+        result = new String[args.length - 1];
+        System.arraycopy(args, 1, result, 0, result.length);
+        return result;
+    }
+    
+    public static String[] append(String[] ...args) {
+        String[] result;
+        int length;
+        int ofs;
+        
+        length = 0;
+        for (String[] current : args) {
+            length += current.length;
+        }
+        result = new String[length];
+        ofs = 0;
+        for (String[] current : args) {
+            System.arraycopy(current, 0, result, ofs, current.length);
+            ofs += current.length;
+        }
+        return result;
     }
 }
 

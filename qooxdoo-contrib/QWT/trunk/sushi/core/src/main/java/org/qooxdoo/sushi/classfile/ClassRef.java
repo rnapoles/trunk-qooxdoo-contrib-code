@@ -54,18 +54,21 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
         }
         name = c.getName();
         dimensions = d;
-        componentType = findComponent(name);
+        componentType = findType(name);
     }
 
     public ClassRef(String name) {
-        this(name, 0, findComponent(name));
+        this(name, 0, findType(name));
     }
 
     public ClassRef(String name, int dimensions) {
-        this(name, dimensions, findComponent(name));
+        this(name, dimensions, findType(name));
     }
 
     private ClassRef(String name, int dimensions, Type componentType) {
+        if (name.startsWith("[")) {
+            throw new IllegalArgumentException(name);
+        }
         this.name = name;
         this.dimensions = dimensions;
         this.componentType = componentType;
@@ -77,8 +80,14 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
     }
 
     @Override
-    public ClassDef resolve(Repository repository) {
-        return repository.lookup(name);
+    public ClassDef resolve(Repository repository) throws ResolveException {
+        ClassDef result;
+        
+        result = repository.lookup(name);
+        if (result == null) {
+            throw new ResolveException(this);
+        }
+        return result;
     }
     
     public boolean isArray() {
@@ -98,7 +107,7 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
     }
 
 
-    private static Type findComponent(String name) {
+    private static Type findType(String name) {
         int i;
         Type cmp;
 
@@ -185,23 +194,19 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
     }
 
     public static ClassRef forFieldDescriptor(String descriptor) {
-        return forFieldDescriptor(descriptor, 0, descriptor.length());
+        return (ClassRef) forFieldDescriptor(descriptor, 0, descriptor.length())[0];
     }
 
     /**
-     * end ofs after class to forDescriptor.
+     * @return ClassRef nextOfs
      */
-    public static int nextOfs;
-
-    /**
-     * uses nextOfs to return additional result.
-     */
-    public static ClassRef forFieldDescriptor(String descriptor, int ofs, int length) {
+    public static Object[] forFieldDescriptor(String descriptor, int ofs, int length) {
         int i, dimensions;
         char c;
         Type typeCode;
         String name;
-
+        int nextOfs;
+        
         dimensions = 0;
         while ((ofs < length) && (descriptor.charAt(ofs) == '[')) {
             dimensions++;
@@ -234,7 +239,7 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
             name = typeCode.name;
             nextOfs = ofs + 1;
         }
-        return new ClassRef(name, dimensions, typeCode);
+        return new Object[] { new ClassRef(name, dimensions, typeCode), nextOfs };
     }
 
     //--------------------------------------------------------------
@@ -261,10 +266,6 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
             }
             return name.replace('.', '/');
         }
-    }
-
-    public static ClassRef forDescriptor(String descriptor) {
-        return new ClassRef(descriptor.replace('/', '.'));
     }
 
     //------------------------------------------------------------
@@ -342,7 +343,7 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
         try {
             return Class.forName(name);
         } catch (ClassNotFoundException e) {
-            return findComponent(name).type;
+            return findType(name).type;
         }
     }
 

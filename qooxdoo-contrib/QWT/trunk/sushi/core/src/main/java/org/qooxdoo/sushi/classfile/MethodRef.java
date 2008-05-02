@@ -85,12 +85,12 @@ public class MethodRef extends Reference {
     }
     
     @Override
-    public MethodDef resolve(Repository repository) {
+    public MethodDef resolve(Repository repository) throws ResolveException {
         ClassDef clazz;
         MethodDef method;
         
         clazz = owner.resolve(repository);
-        while (clazz != null) {
+        while (true) {
             method = clazz.lookupMethod(name, argumentTypes);
             if (method != null) {
                 return method;
@@ -98,7 +98,6 @@ public class MethodRef extends Reference {
             }
             clazz = clazz.superClass.resolve(repository);
         }
-        return null;
     }
     
     //------------------------------------------------------------------
@@ -240,14 +239,15 @@ public class MethodRef extends Reference {
         if (i == -1) {
             throw new RuntimeException();
         }
-        return ClassRef.forFieldDescriptor(descriptor, i + 1,
-                                          descriptor.length());
+        return (ClassRef) ClassRef.forFieldDescriptor(descriptor, i + 1, descriptor.length())[0];
     }
 
     public static ClassRef[] forArgumentTypes(String descriptor) {
         int ofs, length;
         List<ClassRef> lst;
         ClassRef[] result;
+        Object[] tmp;
+        
 
         length = descriptor.length();
         if ((length < 2) || (descriptor.charAt(0) != '(')) {
@@ -256,8 +256,9 @@ public class MethodRef extends Reference {
         ofs = 1;
         lst = new ArrayList<ClassRef>();
         while ((ofs < length) && (descriptor.charAt(ofs) != ')')) {
-            lst.add(ClassRef.forFieldDescriptor(descriptor, ofs, length));
-            ofs = ClassRef.nextOfs;
+            tmp = ClassRef.forFieldDescriptor(descriptor, ofs, length);
+            lst.add((ClassRef) tmp[0]);
+            ofs = (Integer) tmp[1];
         }
         result = new ClassRef[lst.size()];
         lst.toArray(result);

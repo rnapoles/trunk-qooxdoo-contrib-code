@@ -19,7 +19,12 @@
 
 package org.qooxdoo.sushi.classfile;
 
-public abstract class Reference {
-    public abstract ClassRef getOwner();
-    public abstract Definition resolve(Repository repository) throws ResolveException;
+public class ResolveException extends Exception {
+    public final Reference ref;
+    
+    public ResolveException(Reference ref) {
+        super(ref.toString());
+        
+        this.ref = ref;
+    }
 }

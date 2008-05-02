@@ -31,19 +31,10 @@ import org.qooxdoo.sushi.fs.Node;
 /** A set of class definitions */
 public class Repository {
     public static Repository load(Node file) throws IOException {
-        Node dir;
         Repository set;
         
-        file.checkExists();
-        if (file.isDirectory()) {
-            dir = file;
-        } else {
-            dir = Archive.loadZip(file).data;
-        }
         set = new Repository();
-        for (Node node : dir.find("**/*.class")) {
-            set.add(Input.load(node));
-        }
+        set.add(file);
         return set;
     }
 
@@ -53,6 +44,20 @@ public class Repository {
         defs = new ArrayList<ClassDef>();
     }
     
+    public void add(Node file) throws IOException {
+        Node dir;
+        
+        file.checkExists();
+        if (file.isDirectory()) {
+            dir = file;
+        } else {
+            dir = Archive.loadZip(file).data;
+        }
+        for (Node node : dir.find("**/*.class")) {
+            add(Input.load(node));
+        }
+    }
+
     public void add(ClassDef load) {
         defs.add(load);
     }

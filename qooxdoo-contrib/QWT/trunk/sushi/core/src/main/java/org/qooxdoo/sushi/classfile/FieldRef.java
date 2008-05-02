@@ -44,11 +44,14 @@ public class FieldRef extends Reference {
     }
 
     @Override
-    public FieldDef resolve(Repository repository) {
-        ClassDef def;
+    public FieldDef resolve(Repository repository) throws ResolveException {
+        FieldDef field;
         
-        def = owner.resolve(repository);
-        return def == null ? null : def.lookupField(name);
+        field = owner.resolve(repository).lookupField(name);
+        if (field == null) {
+            throw new ResolveException(this);
+        }
+        return field;
     }
     
     @Override
