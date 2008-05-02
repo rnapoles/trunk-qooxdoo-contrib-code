@@ -81,7 +81,11 @@ public class ClassRef extends Reference implements Bytecodes, Constants {
 
     @Override
     public ClassDef lookup(Repository repository) throws ResolveException {
-        return repository.lookup(name);
+        try {
+            return repository.lookup(name);
+        } catch (IOException e) {
+            throw new ResolveException(this, e);
+        }
     }
     
     public boolean isArray() {
