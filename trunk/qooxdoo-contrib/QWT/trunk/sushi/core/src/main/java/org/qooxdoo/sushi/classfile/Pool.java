@@ -387,7 +387,11 @@ public class Pool implements Constants {
         switch (info[0]) {
         case CONSTANT_CLASS:
             str = (String) createObject(bytesToU2(info, 1));
-            return ClassRef.forDescriptor(str);
+            if (str.startsWith("[")) {
+                return ClassRef.forFieldDescriptor(str);
+            } else {
+                return new ClassRef(str.replace('/', '.'));
+            }
         case CONSTANT_STRING:
             return createObject(bytesToU2(info, 1));
         case CONSTANT_INTEGER:
