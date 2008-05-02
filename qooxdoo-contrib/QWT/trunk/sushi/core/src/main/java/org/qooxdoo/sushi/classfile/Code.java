@@ -23,13 +23,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.qooxdoo.sushi.classfile.attribute.Attribute;
 import org.qooxdoo.sushi.util.IntArrayList;
 import org.qooxdoo.sushi.util.IntBitSet;
 
-import org.qooxdoo.sushi.classfile.attribute.Attribute;
-
 public class Code extends Attribute implements Constants {
+    public static final Logger LOGGER = Logger.getLogger(Code.class.getName());
+    
     public int locals;
 
     public List<Instruction> instructions;
@@ -98,7 +100,7 @@ public class Code extends Attribute implements Constants {
 
         computedStack = calcStackSize();
         if (loadedStack < computedStack) {
-            System.out.println(
+            LOGGER.warning(
                 "warning: loaded stack size differs from computed: " +
                 "loaded: " + loadedStack + " < computed: " + computedStack);
         }
@@ -441,7 +443,6 @@ public class Code extends Attribute implements Constants {
         int unreachable;
         IntBitSet todo;
         List<?> jsrs;
-        String str;
 
         jsrs = Jsr.findJsrs(this);
         startStack = new int[instructions.size()];
@@ -478,8 +479,7 @@ public class Code extends Attribute implements Constants {
             // code, and they pass class file validation:
             // (e.g. com.sun.corba.se.intneral.io.util.Arrays)
 
-            str = "unreachable code, starting " + unreachable + "\n";
-            System.out.println("warning: " + str);
+            LOGGER.warning("warning: " + "unreachable code, starting " + unreachable + "\n");
         }
         return result;
     }
