@@ -20,9 +20,11 @@
 package org.qooxdoo.sushi.fs.zip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
@@ -38,19 +40,29 @@ public class ZipNodeTest {
         FileNode jar;
         String rootPath;
         String locator;
-        ZipNode node;
+        ZipNode object;
+        ZipNode lang;
+        List<ZipNode> list;
         
         jar = ioObj.locateClasspathItem(Object.class);
         rootPath = jar.getAbsolute() + "!/java/lang/Object.class";
         locator = "zip:" + rootPath;
-        node = (ZipNode) ioObj.node(locator);
-        assertEquals(locator, node.getLocator());
-        assertEquals("java/lang/Object.class", node.getPath());
-        assertTrue(node.exists());
-        assertTrue(node.isFile());
-        assertEquals("java/lang", node.getParent().getPath());
-        node = (ZipNode) node.getParent().join("Object.class");
-        assertTrue(node.exists());
+        object = (ZipNode) ioObj.node(locator);
+        assertEquals(locator, object.getLocator());
+        assertEquals("java/lang/Object.class", object.getPath());
+        assertTrue(object.exists());
+        assertTrue(object.isFile());
+        assertTrue(object.readString().length() > 100);
+        lang = (ZipNode) object.getParent();
+        assertEquals("java/lang", lang.getPath());
+        assertTrue(lang.isDirectory());
+        list = lang.list();
+        assertTrue(list.size() > 10);
+        assertTrue(list.contains(object));
+        assertFalse(list.contains(list));
+        object = (ZipNode) lang.join("Object.class");
+        assertTrue(object.exists());
+        assertTrue(object.isFile());
     }
 }
 

@@ -19,11 +19,14 @@
 
 package org.qooxdoo.sushi.fs.zip;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.MkdirException;
@@ -56,7 +59,7 @@ public class ZipNode extends Node {
 
     @Override 
     public long getLastModified() {
-        return 0;
+        return root.getLastModified();
     }
 
     @Override
@@ -76,28 +79,52 @@ public class ZipNode extends Node {
     
     @Override
     public boolean exists() {
-        try {
-            return root.createInputStream(path) != null;
-        } catch (FileNotFoundException e) {
-            return false;
-        } catch (IOException e) {
-            throw new RuntimeException("TODO", e);
-        }
+        return root.getZip().getEntry(path)  != null;
     }
 
     @Override
     public boolean isFile() {
-        return exists();
+        ZipEntry entry;
+        
+        entry = root.getZip().getEntry(path);
+        return entry == null ? false : !entry.isDirectory();
     }
 
     @Override
     public boolean isDirectory() {
+        ZipFile zip;
+        ZipEntry entry;
+        Enumeration<? extends ZipEntry> e;
+        String name;
+        String separator;
+        String prefix;
+        
+        zip = root.getZip();
+        e = zip.entries();
+        separator = root.getFilesystem().getSeparator();
+        prefix = getPath() + separator;
+        // TODO: expensive
+        while (e.hasMoreElements()) {
+            entry = e.nextElement();
+            name = entry.getName();
+            if (name.startsWith(prefix)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public InputStream createInputStream() throws IOException {
-        return root.createInputStream(path);
+        ZipFile zip;
+        ZipEntry entry;
+        
+        zip = root.getZip();
+        entry = zip.getEntry(path);
+        if (entry == null) {
+            return null;
+        }
+        return zip.getInputStream(entry);
     }
 
     @Override
@@ -107,7 +134,30 @@ public class ZipNode extends Node {
 
     @Override
     public List<ZipNode> list() {
-        return null;
+        ZipEntry entry;
+        Enumeration<? extends ZipEntry> e;
+        String name;
+        String separator;
+        String prefix;
+        int length;
+        List<ZipNode> result;
+        
+        e = root.getZip().entries();
+        separator = root.getFilesystem().getSeparator();
+        prefix = getPath() + separator;
+        length = prefix.length();
+        result = new ArrayList<ZipNode>();
+        // TODO: expensive
+        while (e.hasMoreElements()) {
+            entry = e.nextElement();
+            name = entry.getName();
+            if (name.startsWith(prefix)) {
+                if (name.indexOf(separator, length) == -1 && !name.equals(path)) {
+                    result.add(root.node(name));
+                }
+            }
+        }
+        return result;
     }
 
     @Override

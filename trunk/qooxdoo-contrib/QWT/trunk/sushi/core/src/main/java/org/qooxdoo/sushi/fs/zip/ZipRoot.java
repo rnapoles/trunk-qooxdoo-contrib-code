@@ -19,9 +19,7 @@
 
 package org.qooxdoo.sushi.fs.zip;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.ZipEntry;
+import java.io.File;
 import java.util.zip.ZipFile;
 
 import org.qooxdoo.sushi.fs.Root;
@@ -51,25 +49,23 @@ public class ZipRoot implements Root {
         return zip.hashCode();
     }
 
+    public ZipFile getZip() {
+        return zip;
+    }
+    
     public ZipFilesystem getFilesystem() {
         return filesystem;
     }
 
+    public long getLastModified() {
+        return new File(zip.getName()).lastModified();
+    }
+    
     public String getId() {
         return zip.getName() + "!/";
     }
 
     public ZipNode node(String path) {
         return new ZipNode(this, path);
-    }
-    
-    public InputStream createInputStream(String path) throws IOException {
-        ZipEntry entry;
-        
-        entry = zip.getEntry(path);
-        if (entry == null) {
-            return null;
-        }
-        return zip.getInputStream(entry);
     }
 }
