@@ -147,7 +147,7 @@ public class ZipNode extends Node {
         // TODO: expensive
         e = root.getZip().entries();
         separator = root.getFilesystem().getSeparator();
-        prefix = getPath() + separator;
+        prefix = path.length() == 0 ? "" : path + separator;
         length = prefix.length();
         result = new ArrayList<ZipNode>();
         done = new ArrayList<String>();
