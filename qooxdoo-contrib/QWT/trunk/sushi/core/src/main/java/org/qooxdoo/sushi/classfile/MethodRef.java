@@ -85,18 +85,21 @@ public class MethodRef extends Reference {
     }
     
     @Override
-    public MethodDef resolve(Repository repository) throws ResolveException {
+    public MethodDef lookup(Repository repository) throws ResolveException {
         ClassDef clazz;
         MethodDef method;
         
-        clazz = owner.resolve(repository);
+        clazz = (ClassDef) owner.resolve(repository);
         while (true) {
             method = clazz.lookupMethod(name, argumentTypes);
             if (method != null) {
                 return method;
                 
             }
-            clazz = clazz.superClass.resolve(repository);
+            if (clazz.superClass == null) {
+                return null;
+            }
+            clazz = (ClassDef) clazz.superClass.resolve(repository);
         }
     }
     

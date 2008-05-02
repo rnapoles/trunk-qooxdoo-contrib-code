@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.classfile;
 
 import java.lang.reflect.Field;
 
-public class FieldRef extends Reference {
+public class FieldRef extends Reference implements Constants {
     public final ClassRef owner;
     public final String name;
     public final ClassRef type;
@@ -44,14 +44,30 @@ public class FieldRef extends Reference {
     }
 
     @Override
-    public FieldDef resolve(Repository repository) throws ResolveException {
+    public FieldDef lookup(Repository repository) throws ResolveException {
+        return lookup((ClassDef) owner.resolve(repository), repository);
+    }
+    
+    private FieldDef lookup(ClassDef def, Repository repository) throws ResolveException {
         FieldDef field;
         
-        field = owner.resolve(repository).lookupField(name);
-        if (field == null) {
-            throw new ResolveException(this);
+        field = def.lookupField(name);
+        if (field != null) {
+            return field;
         }
-        return field;
+        
+        // order doesn't matter - Javac rejects ambiguous references
+        for (ClassRef next : def.interfaces) {
+            field = lookup((ClassDef) next.resolve(repository), repository);
+            if (field != null) {
+                return field;
+            }
+        }
+        if (def.superClass != null) {
+            return lookup((ClassDef) def.superClass.resolve(repository), repository);
+        } else {
+            return null;
+        }
     }
     
     @Override
