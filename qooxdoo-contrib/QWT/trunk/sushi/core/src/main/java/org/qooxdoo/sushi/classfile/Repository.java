@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.fs.zip.ZipFilesystem;
 
 /** A set of class definitions */
 public class Repository {
@@ -52,7 +53,8 @@ public class Repository {
     }
 
     private Node getDir(Node file) throws IOException {
-        return file.isDirectory() ? file : Archive.loadZip(file).data;
+        return file.isFile() && (file instanceof FileNode) ? 
+                new ZipFilesystem(file.getIO()).node((FileNode) file, "") : file;
     }
     
     public void addAll(Node file) throws IOException {
@@ -92,7 +94,7 @@ public class Repository {
     
     //--
     
-    public ClassDef lookup(String name) {
+    public ClassDef lookup(String name) throws IOException {
         Node file;
         String path;
         ClassDef added;
@@ -105,14 +107,10 @@ public class Repository {
         path = ClassRef.classToResName(name);
         for (Node dir : lazy) {
             file = dir.join(path);
-            try {
-                if (file.exists()) {
-                    added = Input.load(file);
-                    add(added);
-                    return added;
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("TODO", e);
+            if (file.exists()) {
+                added = Input.load(file);
+                add(added);
+                return added;
             }
         }
         return null;

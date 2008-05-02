@@ -19,6 +19,8 @@
 
 package org.qooxdoo.sushi.classfile;
 
+import java.io.IOException;
+
 public class ResolveException extends Exception {
     public final Reference ref;
     
@@ -26,5 +28,11 @@ public class ResolveException extends Exception {
         super(ref.toString());
         
         this.ref = ref;
+    }
+    
+    public ResolveException(Reference ref, IOException e) {
+        this(ref);
+
+        initCause(e);
     }
 }
