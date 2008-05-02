@@ -73,29 +73,6 @@ public class Repository {
         defs.put(load.getName(), load);
     }
 
-    public ClassDef lookup(ClassDef c) {
-        ClassDef def;
-        
-        def = lookup(c.accessFlags, c.getName(), c.superClass, c.interfaces);
-        if (def != null) {
-            return def;
-        }
-        // TODO: lazy load
-        return null;
-    }
-    
-    public ClassDef lookup(java.util.Set<Access> accessFlags, String name, ClassRef superClass, List<ClassRef> interfaces) {
-        for (ClassDef def : defs.values()) {
-            if (def.getName().equals(name) && def.accessFlags.equals(accessFlags) 
-                    && def.superClass.equals(superClass) && def.interfaces.equals(interfaces)) {
-                return def;
-            }
-        }
-        return null;
-    }
-    
-    //--
-    
     public ClassDef lookup(String name) throws IOException {
         Node file;
         String path;
@@ -117,13 +94,25 @@ public class Repository {
         return null;
     }
 
+    public ClassDef lookup(ClassDef c) throws IOException {
+        ClassDef def;
+        
+        def = lookup(c.getName());
+        if (def != null && def.accessFlags.equals(c.accessFlags) && def.superClass.equals(c.superClass) 
+                && def.interfaces.equals(c.interfaces)) {
+            return def;
+        } else {
+            return null;
+        }
+    }
+    
     public void dump(PrintStream dest) {
         for (ClassDef def : defs.values()) {
             dest.println(def.toString());
         }
     }
 
-    public void diff(Repository rightSet, PrintStream info) {
+    public void diff(Repository rightSet, PrintStream info) throws IOException {
         ClassDef tmp;
         
         for (ClassDef left : defs.values()) {
