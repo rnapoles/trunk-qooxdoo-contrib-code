@@ -1732,8 +1732,8 @@ qx.Class.define("htmlarea.HtmlArea",
       }
       else
       {
-        /* It is not empty, remove the helper node. */
-        spanNode.parentNode.removeChild(spanNode);
+        /* We do net need to pollute the generated HTML with IDs */
+        spanNode.removeAttribute("id");
       }
 
       return true;
