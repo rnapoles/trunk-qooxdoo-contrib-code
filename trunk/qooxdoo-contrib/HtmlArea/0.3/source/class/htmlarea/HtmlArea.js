@@ -980,10 +980,10 @@ qx.Class.define("htmlarea.HtmlArea",
     __addListeners : function()
     {
       var doc = this.getDocument();
-     
-      qx.bom.Element.addListener(doc, "keypress", this._handleKeyPress, this);
-      qx.bom.Element.addListener(doc, "keyup",    this._handleKeyUp,    this);
-      qx.bom.Element.addListener(doc, "keydown",  this._handleKeyDown,  this);
+
+      qx.bom.Element.addListener(doc.body, "keypress", this._handleKeyPress, this);
+      qx.bom.Element.addListener(doc.body, "keyup",    this._handleKeyUp,    this);
+      qx.bom.Element.addListener(doc.body, "keydown",  this._handleKeyDown,  this);
       
       /*
        * Register event handler for focus/blur events
@@ -1001,7 +1001,7 @@ qx.Class.define("htmlarea.HtmlArea",
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       ////qx.html.EventRegistration.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent);
                             
-      qx.bom.Element.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);                            
+      qx.bom.Element.addListener(doc.body, "mouseup", this.__handleMouseEvent, this);                            
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
@@ -1308,9 +1308,9 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
         
-        /*if (qx.core.Variant.isSet("qx.debug", "on")) {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
           this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase() + " | " + e.getCharCode());
-        }*/
+        }
         
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
         if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
@@ -1346,16 +1346,17 @@ qx.Class.define("htmlarea.HtmlArea",
      */
    _handleKeyPress : function(e)
    {
+      
       var doc = this.getDocument();
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
-      /*
+
       if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
+        this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getNativeEvent().charCode);
       }
-      */
+
 
       switch(keyIdentifier)
       {
@@ -1392,7 +1393,7 @@ qx.Class.define("htmlarea.HtmlArea",
             e.preventDefault();
             e.stopPropagation();
 
-            switch(qx.core.Client.getInstance().getEngine())
+            switch(qx.bom.client.Engine.NAME)
             {
                case "gecko":
                  /*
@@ -1504,11 +1505,7 @@ qx.Class.define("htmlarea.HtmlArea",
          first line completely in case the selection is already
          on the first line and "key up" is pressed.
          */
-        if (
-              qx.bom.client.Engine.GECKO &&
-              (qx.core.Client.getInstance().getVersion() < 1.9) &&
-              isShiftPressed
-            )
+        if (qx.bom.client.Engine.GECKO && qx.bom.client.Engine.FULLVERSION < 1.9 && isShiftPressed)
         {
           /* Fetch selection */
           var sel = this.__getSelection();
@@ -1537,7 +1534,7 @@ qx.Class.define("htmlarea.HtmlArea",
          * first position in the first line.
          */
         case "home":
-          if (qx.bom.client.Engine.GECKO && (qx.core.Client.getInstance().getVersion() < 1.9) )
+          if (qx.bom.client.Engine.GECKO && qx.bom.client.Engine.FULLVERSION < 1.9)
           {
 
             if(isCtrlPressed)
@@ -1716,12 +1713,12 @@ qx.Class.define("htmlarea.HtmlArea",
       if(paragraphNode.previousSibling.innerHTML == helperString)
       {
         /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-        paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
+        paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>';
       }
       else
       {
-        /* It is not empty, remove the helper node. */
-        spanNode.parentNode.removeChild(spanNode);
+        /* We do net need to pollute the generated HTML with IDs */
+        spanNode.removeAttribute("id");
       }
 
       return true;
@@ -1807,7 +1804,7 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleMouseEvent : function(e)
     {
       if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug("handleMouse " + e.type);
+        this.debug("handleMouse " + e.getType());
       }
 
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
@@ -2725,34 +2722,31 @@ qx.Class.define("htmlarea.HtmlArea",
   destruct : function()
   {
     /* TODO: complete disposing */
-    try
+    var doc = this.getDocument();
+    debugger;
+
+    // ************************************************************************
+    //   WIDGET KEY EVENTS
+    // ************************************************************************
+    qx.bom.Element.removeListener(doc.body, "keydown",  this._handleKeyPress, this);
+    qx.bom.Element.removeListener(doc.body, "keyup",    this._handleKeyPress, this);
+    qx.bom.Element.removeListener(doc.body, "keypress", this._handleKeyPress, this);
+    
+    // ************************************************************************
+    //   WIDGET FOCUS/BLUR EVENTS
+    // ************************************************************************
+//    qx.html.EventRegistration.removeEventListener(doc, "focus", this.__handleFocusEvent);
+//    qx.html.EventRegistration.removeEventListener(doc, "blur",  this.__handleFocusEvent);
+
+    // ************************************************************************
+    //   WIDGET MOUSE EVENTS
+    // ************************************************************************
+    qx.bom.Element.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
+    
+    if (qx.core.Variant.isSet("qx.client", "mshtml"))
     {
-      var doc = this.getDocument();
-
-      // ************************************************************************
-      //   WIDGET KEY EVENTS
-      // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(doc, "keydown",  qx.event.handler.KeyEventHandler.getInstance().__onkeydown);
-      qx.html.EventRegistration.removeEventListener(doc, "keyup",    qx.event.handler.KeyEventHandler.getInstance().__onkeyup);
-      qx.html.EventRegistration.removeEventListener(doc, "keypress", qx.event.handler.KeyEventHandler.getInstance().__onkeypress);
-
-      // ************************************************************************
-      //   WIDGET FOCUS/BLUR EVENTS
-      // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(doc, "focus", this.__handleFocusEvent);
-      qx.html.EventRegistration.removeEventListener(doc, "blur",  this.__handleFocusEvent);
-
-      // ************************************************************************
-      //   WIDGET MOUSE EVENTS
-      // ************************************************************************
-      qx.html.EventRegistration.removeEventListener(doc.body, qx.bom.client.Engine.MSHTML ? "mouseup" : "click", this.__handleMouseEvent);
-      
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
-      }
+//      qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
     }
-    catch(ex) {}
 
     this._disposeFields("__commandManager", "__handleFocusEvent", "handleMouseEvent", "__contentWrap");
   }
