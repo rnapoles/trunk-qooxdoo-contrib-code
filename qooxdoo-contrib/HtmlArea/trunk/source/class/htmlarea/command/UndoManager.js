@@ -109,6 +109,23 @@ qx.Class.define("htmlarea.command.UndoManager",
     },
     
     
+    
+    /**
+     * Inserts a paragraph when hitting the "enter" key.
+     * Decorator method for commandManager instance.
+     *
+     * @type member
+     * @return {Boolean} whether the key event should be stopped or not
+     */
+    insertParagraphOnLinebreak : function()
+    {
+      /* Use the internal collect method to add the command to the undo stack */
+      this.__collectUndoInfo("inserthtml", "", this.__commandManager.getCommandObject("inserthtml"));
+      
+      return this.__commandManager.insertParagraphOnLinebreak();
+    },
+    
+    
     /**
      * Executes the given command and collects (if necessary) undo information.
      *
