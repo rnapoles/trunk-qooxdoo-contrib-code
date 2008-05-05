@@ -317,6 +317,8 @@ public class LoaderTest extends ModelBase {
     private static Instance<?> loadXml(Type type, String str) throws LoaderException {
         try {
             return type.loadXml(IO_OBJ.stringNode(str));
+        } catch (LoaderException e) {
+            throw e;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
