@@ -32,8 +32,7 @@ public class QooxdooInferrenceSupport extends InferEngine {
   }
 
   // interface methods from InferEngine
-  ///////////////////////////////////////////////////
-  
+  // /////////////////////////////////////////////////
   @Override
   public void setCompilationUnit( CompilationUnitDeclaration compilationUnit ) {
     this.compilationUnit = compilationUnit;
@@ -45,7 +44,7 @@ public class QooxdooInferrenceSupport extends InferEngine {
     if( isQxClassDefined( messageSend ) ) {
       handleQxClassDefinition( messageSend );
     }
-    return true; 
+    return true;
   }
 
   @Override
@@ -59,56 +58,76 @@ public class QooxdooInferrenceSupport extends InferEngine {
 
   @Override
   public boolean visit( IObjectLiteralField field ) {
-    memberTypeStack.push( field );
-    int prevClassModStackSize = classModificationStack.size();
-    if( classModificationStack.size() > 0 ) {
-      classModificationStack.peek().add( field );
-      classModificationStack.push( classModificationStack.peek()
-        .getDetailsModifier( field ) );
+    boolean result = false;
+    if( isInQooxdooClass() ) {
+      memberTypeStack.push( field );
+      int prevClassModStackSize = classModificationStack.size();
+      if( classModificationStack.size() > 0 ) {
+        classModificationStack.peek().add( field );
+        classModificationStack.push( classModificationStack.peek()
+          .getDetailsModifier( field ) );
+      }
+      if( field.getFieldName() instanceof ISingleNameReference ) {
+        ISingleNameReference fieldName = ( ISingleNameReference )field.getFieldName();
+        String classPartName = getName( fieldName );
+        if( "statics".equals( classPartName ) ) {
+          classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
+                                                               true ) );
+        } else if( "members".equals( classPartName ) ) {
+          classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
+                                                               false ) );
+        } else if( "properties".equals( classPartName ) ) {
+          classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
+        } else if( "construct".equals( classPartName ) ) { 
+          MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
+          md.modifiers = ClassFileConstants.AccPublic;
+          InferredType theType = classDefinitionStack.peek();
+          theType.addMethod( theType.getName(), md, true );
+        } else if( "extend".equals( classPartName ) ) {
+          setSuperClass( field.getInitializer() );
+        }
+      }
+      if( prevClassModStackSize == classModificationStack.size() ) {
+        classModificationStack.push( new ClassModifier() );
+      }
+      result = true;
     }
-    if( "statics".equals( getName( field.getFieldName() ) ) ) {
-      classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
-                                                           true ) );
-    } else if( "members".equals( getName( field.getFieldName() ) ) ) {
-      classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
-                                                           false ) );
-    } else if( "properties".equals( getName( field.getFieldName() ) ) ) {
-      classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
-    } else if( "construct".equals( getName( field.getFieldName() ) ) ) {
-      MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
-      md.modifiers = ClassFileConstants.AccPublic;
-      InferredType theType = classDefinitionStack.peek();
-      theType.addMethod( theType.getName(), md, true );
-    } else if( "extend".equals( getName( field.getFieldName() ) ) ) {
-      setSuperClass( field.getInitializer() );
-    }
-    if( prevClassModStackSize == classModificationStack.size() ) {
-      classModificationStack.push( new ClassModifier() );
-    }
-    return true;
+    return result;
   }
 
   @Override
   public boolean visit( IThisReference tr ) {
-    InferredType type = getTypeOf( tr );
-    if( !type.equals( classDefinitionStack.peek())) {
-      type.superClass = classDefinitionStack.peek();
+    boolean result = super.visit( tr );
+    if( isInQooxdooClass() ) {
+      result = false;
+      InferredType type = getTypeOf( tr );
+      if( !type.equals( classDefinitionStack.peek() ) ) {
+        type.superClass = classDefinitionStack.peek();
+      }
     }
-    return true;
+    return result;
   }
 
   @Override
   public void endVisit( IObjectLiteralField field ) {
+    if( isInQooxdooClass() ) {
+      endQooxdooClassDefinition( field );
+    }
+  }
+
+  // helper methods
+  // //////////////////
+  private void endQooxdooClassDefinition( IObjectLiteralField field ) {
     IObjectLiteralField pop = memberTypeStack.pop();
     if( classModificationStack.size() > 0 ) {
       classModificationStack.pop();
     }
     Assert.isLegal( field.equals( pop ), field + " is not " + pop );
-    super.endVisit( field );
   }
-  
-  // helper methods
-  ////////////////////
+
+  private boolean isInQooxdooClass() {
+    return !classDefinitionStack.isEmpty();
+  }
 
   private InferredType getTypeWithNamespace( String fullName, IASTNode definiter )
   {
@@ -155,9 +174,10 @@ public class QooxdooInferrenceSupport extends InferEngine {
            && "define".equals( new String( messageSend.getSelector() ) );
   }
 
-  private String getName( IExpression expression ) {
-    ISingleNameReference nameref = ( ISingleNameReference )expression;
-    return new String( nameref.getToken() );
+  private String getName( ISingleNameReference expression ) {
+    String result;
+    result = new String( expression.getToken() );
+    return result;
   }
 
   private void setSuperClass( IExpression initializer ) {
@@ -165,25 +185,17 @@ public class QooxdooInferrenceSupport extends InferEngine {
     if( initializer instanceof ISingleNameReference ) {
       ISingleNameReference snr = ( ISingleNameReference )initializer;
       name = snr.getToken();
-      InferredType superType = addType( name );
-      superType.addMethod( "base".toCharArray(),
-                           MethodCreator.createFakeMethodNoArgs( snr,
-                                                   "base".toCharArray() ),
-                           false );
-      classDefinitionStack.peek().superClass = superType;
     } else if( initializer instanceof IFieldReference ) {
       IFieldReference fr = ( IFieldReference )initializer;
       name = fr.toString().toCharArray();
     } else {
       throw new PleaseOpenBugException( "can't handle type (yet):"
-                                               + initializer
-                                                 .getClass()
-                                               );
+                                        + initializer.getClass() );
     }
     InferredType superType = addType( name );
     superType.addMethod( "base".toCharArray(),
                          MethodCreator.createFakeMethodNoArgs( ( IReference )initializer,
-                                                 "base".toCharArray() ),
+                                                               "base".toCharArray() ),
                          false );
     classDefinitionStack.peek().superClass = superType;
   }
