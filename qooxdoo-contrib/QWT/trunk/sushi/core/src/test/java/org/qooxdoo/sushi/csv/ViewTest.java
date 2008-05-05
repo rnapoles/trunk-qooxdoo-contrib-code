@@ -192,9 +192,9 @@ public class ViewTest extends ModelBase {
     private View view(String str) {
         try {
             return View.fromXml(new IO().stringNode(str));
-        } catch (IOException e) {
-            throw new RuntimeException("TODO", e);
         } catch (LoaderException e) {
+            throw new RuntimeException("TODO", e);
+        } catch (IOException e) {
             throw new RuntimeException("TODO", e);
         }
     }

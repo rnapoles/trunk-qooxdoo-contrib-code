@@ -69,10 +69,10 @@ public class Instance<T> {
         try {
             toXml(tmp);
             return type.loadXml(io.stringNode(tmp.getBuffer().toString()));
-        } catch (IOException e) {
-            throw new RuntimeException("io exception from memory!?", e);
         } catch (LoaderException e) {
             throw new RuntimeException("invalid!?", e);
+        } catch (IOException e) {
+            throw new RuntimeException("io exception from memory!?", e);
         }
     }
 
