@@ -1480,7 +1480,7 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
-              this.__insertParagraphOnLinebreak();
+              this.__commandManager.insertParagraphOnLinebreak();
               e.preventDefault();
               e.stopPropagation();
             }
@@ -1675,68 +1675,6 @@ qx.Class.define("htmlarea.HtmlArea",
        }
 
        this.__currentEvent = null;
-    },
-
-
-
-
-
-    /**
-     * Inserts a paragraph when hitting the "enter" key
-     *
-     * @type member
-     * @return {Boolean} whether the key event should be stopped or not
-     */
-    __insertParagraphOnLinebreak : function()
-    {
-
-      var doc = this.getContentDocument();
-      var range  = this.getRange();
-      var sel = this.__getSelection();
-
-      /* This nodes are needed to apply the exactly style settings on the paragraph */
-      var styleNodes = this.__commandManager.__commandManager.generateHelperNodes();
-
-      /* Generate unique ids to find the elements later */
-      var spanId = "__placeholder__" + Date.parse(new Date());
-      var paragraphId = "__paragraph__" + Date.parse(new Date());
-
-      var helperString = '<span id="' + spanId + '"></span>';
-      var paragraphString = '<p id="' + paragraphId + '">';
-      
-      var spanNode;
-      var paragraphNode;
-
-      /* 
-       * A paragraph will only be inserted, if the paragraph before it has content.
-       * Therefore we also insert a helper node, then the paragraph and the style
-       * nodes after it.
-       */
-      this.__commandManager.execute("inserthtml", helperString + paragraphString + styleNodes);
-
-      /* Fetch elements */
-      spanNode      = this.getContentWindow().document.getElementById(spanId);
-      paragraphNode = this.getContentWindow().document.getElementById(paragraphId);
-
-      /* We do net need to pollute the generated HTML with IDs */
-      paragraphNode.removeAttribute("id");
-
-      /*
-       * If the previous paragraph only contains the helperString, it was empty before.
-       * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
-       */
-      if(paragraphNode.previousSibling.innerHTML == helperString)
-      {
-        /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-        paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
-      }
-      else
-      {
-        /* We do net need to pollute the generated HTML with IDs */
-        spanNode.removeAttribute("id");
-      }
-
-      return true;
     },
 
 
