@@ -745,20 +745,20 @@ qx.Class.define("htmlarea.command.Manager",
         * <hr> tag.
         */
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-         htmlText += this.generateHelperNodes();
+         htmlText += this.generateHelperString();
        }
   
        return this.__insertHtml(htmlText, commandObject);
      },
 
      /**
-      * Helper function which generates <span>-tags which can be used to apply the
+      * Helper function which generates a string containing HTML which can be used to apply the
       * current style to an element.
       * 
       * @type member
       * @return {String} String containing tags with special style settings.
       */
-     generateHelperNodes : function()
+     generateHelperString : function()
      {
        /* Fetch current styles */
        var collectedStyles = this.getCurrentStyles();
@@ -799,6 +799,61 @@ qx.Class.define("htmlarea.command.Manager",
 
        /* Put it all together */
        return spanString + htmlText;
+     },
+
+     /**
+      * Helper function which generates <span>-tags which can be used to apply the
+      * current style to an element.
+      * 
+      * @type member
+      * @return {Array} Array containing styled elements
+      */
+     generateHelperNodes : function()
+     {
+       /* Fetch current styles */
+       var collectedStyles = this.getCurrentStyles();
+
+       var nodes = [];
+       var styleString = "";
+       var decorationNode;
+
+       /* Create style node */
+       var styleNode = this.__doc.createElement("span");
+
+       /* Cycle over collected styles and generate output string */
+       for(var attribute in collectedStyles)
+       {
+         /* "text-decoration" is special. */
+         if(attribute == "text-decoration")
+         {
+           var textDecorations = collectedStyles[attribute];
+
+           /*
+            * An extra <span> is needed for every text-decoration value,
+            * because the color of a decoration is based on the element's color. 
+            */
+           for(i=0; i<textDecorations.length; i++)
+           {
+             /* Create decoration node and apply style settings */
+             nodes.push(this.__doc.createElement("span"));
+             qx.bom.element.Style.set(nodes[nodes.length - 1], 'color',          textDecorations[i]['color']);
+             qx.bom.element.Style.set(nodes[nodes.length - 1], 'textDecoration', textDecorations[i]['text-decoration']);
+           }
+         }
+         else
+         {
+           /* Put together style string for <span> */
+           styleString += attribute + ":" + collectedStyles[attribute] + "; ";
+         }
+       }
+
+       /* Set styles settings on element */
+       qx.bom.element.Style.setCss(styleNode, styleString);
+
+       /* Add style node: */
+       nodes.push(styleNode);
+
+       return nodes;
      },
 
      
