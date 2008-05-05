@@ -807,7 +807,7 @@ qx.Class.define("htmlarea.command.Manager",
       * on the focus node and saves them on a span element.
       *
       * @type member
-      * @return {String} the span element.
+      * @return {Map} map with all style settings with style attributes as keys.
       */
      getCurrentStyles : function()
      {
