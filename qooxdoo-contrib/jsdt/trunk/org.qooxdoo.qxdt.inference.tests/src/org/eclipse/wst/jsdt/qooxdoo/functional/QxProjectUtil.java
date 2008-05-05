@@ -6,11 +6,13 @@
  ******************************************************************************/
 package org.eclipse.wst.jsdt.qooxdoo.functional;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -33,6 +35,8 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPUserLibraryElement;
 import org.eclipse.wst.jsdt.launching.JavaRuntime;
 import org.eclipse.wst.jsdt.qooxdoo.validation.Activator;
 import org.qooxdoo.qxdt.support.QxSupport;
+
+import de.sammy.mkempka.ide.SammyIDE;
 
 public class QxProjectUtil {
 
@@ -98,6 +102,22 @@ public class QxProjectUtil {
     newNatures[ 0 ] = "org.eclipse.wst.jsdt.core.jsNature";
     desc.setNatureIds( newNatures );
     project.setDescription( desc, new SubProgressMonitor( monitor, 500 ) );
+  }
+
+  public static IFile createQxFileWithContents( SammyIDE sammy,
+                                              String fileName, String fileContents )
+    throws CoreException, JavaModelException
+  {
+    IProject project = sammy.createGenericProject();
+    addJSDTNature( new NullProgressMonitor(), project );
+    addDefaultLibToLibraryPath( new NullProgressMonitor(),
+                                              project );
+    IFile result = project.getFile( fileName );
+    result.create( new ByteArrayInputStream( fileContents.getBytes() ),
+                   true,
+                   new NullProgressMonitor() );
+    createUserLibrary( JavaCore.create( project ) );
+    return result;
   }
 }
 /*******************************************************************************

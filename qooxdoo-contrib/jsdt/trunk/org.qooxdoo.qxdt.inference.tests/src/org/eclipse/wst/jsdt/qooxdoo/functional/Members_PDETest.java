@@ -6,14 +6,9 @@
  ******************************************************************************/
 package org.eclipse.wst.jsdt.qooxdoo.functional;
 
-import java.io.ByteArrayInputStream;
-
 import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.FindReplaceDocumentAdapter;
 import org.eclipse.jface.text.IDocument;
@@ -23,7 +18,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.jsdt.core.JavaCore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +49,9 @@ public class Members_PDETest extends Assert {
   @Before
   public void setUp() throws Exception {
     this.sammy = new SammyIDE();
-    setupProject();
+    this.file = QxProjectUtil.createQxFileWithContents( sammy,
+                                                        "Application.js",
+                                                        fileContents );
   }
 
   @After
@@ -117,18 +113,6 @@ public class Members_PDETest extends Assert {
       }
     }
     return result;
-  }
-
-  private void setupProject() throws CoreException {
-    IProject project = sammy.createGenericProject();
-    QxProjectUtil.addJSDTNature( new NullProgressMonitor(), project );
-    QxProjectUtil.addDefaultLibToLibraryPath( new NullProgressMonitor(),
-                                              project );
-    this.file = project.getFile( "Application.js" );
-    this.file.create( new ByteArrayInputStream( fileContents.getBytes() ),
-                      true,
-                      new NullProgressMonitor() );
-    QxProjectUtil.createUserLibrary( JavaCore.create( project ) );
   }
 }
 /*******************************************************************************
