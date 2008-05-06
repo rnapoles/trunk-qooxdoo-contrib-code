@@ -351,6 +351,16 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     }
     
     @Test
+    public void writeOverExistingFile() throws IOException {
+        Node file;
+        
+        file = work.join("existing");
+        file.writeString("foo");
+        file.createOutputStream().close();
+        assertEquals("", file.readString());
+    }
+
+    @Test
     public void mkdirToNonexistingDirectory() throws IOException {
         try {
             work.join("nosuchdir/file").mkdir();
