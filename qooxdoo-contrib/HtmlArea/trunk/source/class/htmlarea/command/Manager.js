@@ -1027,7 +1027,7 @@ qx.Class.define("htmlarea.command.Manager",
       * and "text-color".
       *
       * @type member
-      * @param value {Array} List with element's parents.
+      * @param parents {Array} List with element's parents.
       * @return {Array} List containing style information about element's parents.
       */
      __getTextDecorations : function(parents)
@@ -1071,7 +1071,7 @@ qx.Class.define("htmlarea.command.Manager",
       * element, if it contains a _real_ color. 
       *
       * @type member
-      * @param value {Array} List with element's parents.
+      * @param parents {Array} List with element's parents.
       * @return {String} Background color value. 
       */
      __getBackgroundColor : function(parents)
@@ -1429,7 +1429,12 @@ qx.Class.define("htmlarea.command.Manager",
 
 
      /**
-      * TODOC
+      * Sets the background image of the document
+      * 
+      * @type member
+      * @param value {Array} Array consisting of url [0], background-repeat [1] and background-position [2]
+      * @param commandObject {Object} command infos
+      * @return {Boolean} Success of operation
       */
      __setBackgroundImage : function(value, commandObject)
      {
@@ -1596,16 +1601,13 @@ qx.Class.define("htmlarea.command.Manager",
      * (Re)-focuses the editor after an execCommand was executed
      *
      * @type member
-     * @param context {Object} current context object for window.setTimeout method
      * @return void
      */
-    __focusAfterExecCommand : function()
-    {
-      var that = this.__editorInstance;
-
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+    __focusAfterExecCommand : qx.core.Variant.select("qx.client", {
+      
+      "mshtml" : function()
       {
-        window.setTimeout(function(e)
+        qx.client.Timer.once(function(e)
         {
           /*
            * IE needs to change the activeChild to the editor component
@@ -1613,30 +1615,32 @@ qx.Class.define("htmlarea.command.Manager",
            * will receive the following events
            * call _visualizeFocus to get the right feedback to the user (editor is active)
            */
-          qx.ui.core.ClientDocument.getInstance().setActiveChild(that);
-          that._visualizeFocus();
-        }, 50);
-      }
-      else if (qx.core.Variant.isSet("qx.client", "webkit"))
+          qx.ui.core.ClientDocument.getInstance().setActiveChild(this);
+          this._visualizeFocus();
+        }, this.__editorInstance, 50);
+      },
+        
+      "webkit" : function()
       {
         /*
          * Webkit needs a mix of both (IE/Gecko). It is needed to (re)set the editor widget
          * as the active child and to focus the editor widget (again).
          */
-         window.setTimeout(function(e)
+         qx.client.Timer.once(function(e)
          {
-           qx.ui.core.ClientDocument.getInstance().setActiveChild(that);
-           that.getContentWindow().focus();
-         }, 50);
-       }
-       else
+           qx.ui.core.ClientDocument.getInstance().setActiveChild(this);
+           this.getContentWindow().focus();
+         }, this.__editorInstance, 50);
+       },
+        
+       "default" : function()
        {
          /* for all other browser a short delayed focus on the contentWindow should do the job */
-         window.setTimeout(function(e) {
-           that.getContentWindow().focus();
-         }, 50);
+         qx.client.Timer.once(function(e) {
+           this.getContentWindow().focus();
+         }, this.__editorInstance, 50);
        }
-    }
+    })
   },
 
 

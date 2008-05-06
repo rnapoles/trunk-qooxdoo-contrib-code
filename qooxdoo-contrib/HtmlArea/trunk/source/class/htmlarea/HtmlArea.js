@@ -711,14 +711,13 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * should be removed if someone find a better way to ensure that the document
+     * Should be removed if someone find a better way to ensure that the document
      * is ready in IE6
      * 
      * @type member
-     * @param handler {Object}
      * @return {void}
      */
-    __waitForDocumentReady : function ()
+    __waitForDocumentReady : function()
     {
       var doc = this.getContentDocument();
 
@@ -738,11 +737,10 @@ qx.Class.define("htmlarea.HtmlArea",
             this.debug('document not available, try again...');
           }
   
-          var self = this;
-          window.setTimeout( function ()
+          qx.client.Timer.once(function()
           {
-            self.__waitForDocumentReady();
-          }, 0);
+            this.__waitForDocumentReady();
+          }, this, 0);
         }
       }
       else
@@ -770,11 +768,10 @@ qx.Class.define("htmlarea.HtmlArea",
       if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
         // we need some thinking time in gecko --> https://bugzilla.mozilla.org/show_bug.cgi?id=191994
-        var self = this;
-        window.setTimeout( function()
+        qx.client.Timer.once(function()
         {
-          self._onDocumentIsReady();
-        }, 10);
+          this._onDocumentIsReady();
+        }, this, 10);
       }
       else if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
@@ -788,11 +785,21 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
-    _onDocumentIsReady : function ()
+    
+    /**
+     * Initializes the command manager, sets the document editable, renders
+     * the content and adds a needed event listeners when the document is ready
+     * for it.
+     * After the successful startup the "ready" event is thrown.
+     * 
+     * @type member
+     * @return {void}
+     */
+    _onDocumentIsReady : function()
     {
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
-       * ******************************************* */
+       * ***************************************** */
 
       /* Create a new command manager instance */
       var cm = new htmlarea.command.Manager(this);
@@ -868,8 +875,8 @@ qx.Class.define("htmlarea.HtmlArea",
      * Returns style attribute as string of a given element
      *
      * @type member
-     * @param elem {Object} TODOC
-     * @return {String} style
+     * @param elem {Element} Element to check for style attribute  
+     * @return {String} Complete style attribute as string
      */
     __getElementStyleAsString : function(elem)
     {
@@ -911,6 +918,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *
      * @type member
      * @param value {String} body.innerHTML
+     * @param useCurrentBodyStyle {Boolean ? null} Whether the style of the body element should be used or not
      * @return {String} content
      */
     __getWrappedContent : function (value, useCurrentBodyStyle)
@@ -1050,13 +1058,13 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * sets the designMode of the document
+     * Sets the designMode of the document
      * 
      * @type member
-     * @param onOrOff {Boolean}
+     * @param onOrOff {Boolean} Set or unset the design mode on the current document
      * @return {void}
      */
-    __setDesignMode : function (onOrOff)
+    __setDesignMode : function(onOrOff)
     {
       var doc = this.getContentDocument();
 
@@ -1794,7 +1802,8 @@ qx.Class.define("htmlarea.HtmlArea",
     */
 
     /**
-     * TODOC
+     * Service method to check if the component is already loaded.
+     * Overrides the base method.
      * 
      * @return {Boolean}
      */
@@ -2277,10 +2286,9 @@ qx.Class.define("htmlarea.HtmlArea",
     __startExamineCursorContext : function()
     {
       /* setting a timeout is important to get the right result */
-      var o = this;
-      window.setTimeout(function(e) {
-        o.__examineCursorContext();
-      }, 200);
+      qx.client.Timer.once(function(e) {
+        this.__examineCursorContext();
+      }, this, 200);
     },
 
 
