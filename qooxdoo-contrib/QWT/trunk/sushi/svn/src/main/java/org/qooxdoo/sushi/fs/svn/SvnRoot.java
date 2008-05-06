@@ -28,10 +28,20 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 public class SvnRoot implements Root {
     private final SvnFilesystem filesystem;
     private final SVNRepository repository;
+    private String comment;
     
     public SvnRoot(SvnFilesystem filesystem, SVNRepository repository) {
         this.filesystem = filesystem;
         this.repository = repository;
+        this.comment = "sushi commit";
+    }
+    
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+    
+    public String getComment() {
+        return comment;
     }
     
     public SvnFilesystem getFilesystem() {
