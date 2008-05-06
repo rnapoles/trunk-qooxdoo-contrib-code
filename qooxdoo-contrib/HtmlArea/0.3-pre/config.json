@@ -20,7 +20,7 @@
         },
 
         {
-          "manifest" : "Manifest.js",
+          "manifest" : "Manifest.json",
           "uri"      : ".."
         }
       ],
