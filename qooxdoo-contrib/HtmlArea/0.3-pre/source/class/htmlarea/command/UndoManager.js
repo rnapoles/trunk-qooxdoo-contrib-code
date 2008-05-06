@@ -1008,8 +1008,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __updateUndoRedoState : function() 
     {
-      qx.event.Timer.once(
 
+      qx.event.Timer.once(
         function(e) {
           this.dispatchEvent(
             new qx.event.type.Data(
