@@ -47,6 +47,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNFileRevision;
 import org.tmatesoft.svn.core.io.SVNRepository;
@@ -313,6 +314,7 @@ public class SvnNode extends Node {
         }
         editor = repository.getCommitEditor(comment, null);
         editor.openRoot(-1);
+        editor.openDir(SVNPathUtil.removeTail(path), -1);
         if (exists) {
             editor.openFile(path, -1);
         } else {
