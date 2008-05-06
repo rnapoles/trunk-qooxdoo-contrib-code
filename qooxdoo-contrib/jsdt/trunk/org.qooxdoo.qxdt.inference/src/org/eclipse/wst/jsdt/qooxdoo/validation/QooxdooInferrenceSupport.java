@@ -49,7 +49,7 @@ public class QooxdooInferrenceSupport extends InferEngine {
 
   @Override
   public void endVisit( IFunctionCall messageSend ) {
-    if( isQxClassDefined( messageSend ) ) {
+    if( isInQooxdooClass() && isQxClassDefined( messageSend ) ) {
       InferredType obj = classDefinitionStack.pop();
       Assert.isNotNull( obj );
     }
@@ -166,8 +166,13 @@ public class QooxdooInferrenceSupport extends InferEngine {
   }
 
   private void handleQxClassDefinition( IFunctionCall messageSend ) {
-    IExpression firstArg = messageSend.getArguments()[ 0 ];
-    startClassDefinition( firstArg );
+    if( hasArguments( messageSend ) ) {
+      startClassDefinition( messageSend.getArguments()[ 0 ] );
+    }
+  }
+
+  private boolean hasArguments( IFunctionCall messageSend ) {
+    return messageSend.getArguments() != null && messageSend.getArguments().length > 0;
   }
 
   private boolean isQxClassDefined( IFunctionCall messageSend ) {
