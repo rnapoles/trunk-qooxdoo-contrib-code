@@ -79,10 +79,12 @@ public class QooxdooInferrenceSupport extends InferEngine {
         } else if( "properties".equals( classPartName ) ) {
           classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
         } else if( "construct".equals( classPartName ) ) { 
-          MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
-          md.modifiers = ClassFileConstants.AccPublic;
-          InferredType theType = classDefinitionStack.peek();
-          theType.addMethod( theType.getName(), md, true );
+          if( field.getInitializer() instanceof IFunctionExpression ) {
+            MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
+            md.modifiers = ClassFileConstants.AccPublic;
+            InferredType theType = classDefinitionStack.peek();
+            theType.addMethod( theType.getName(), md, true );
+          }
         } else if( "extend".equals( classPartName ) ) {
           setSuperClass( field.getInitializer() );
         }
