@@ -1,4 +1,6 @@
-2008-04-29;
+2008-05-06:
+  - Improved stability: no more runtime exceptions when inferring Qooxdoo class library.
+2008-04-29:
   - validate "this.base()" (fixed bug 829)
 2008-04-28:
   - validate "this" correctly in members (fixed Bug 828)
