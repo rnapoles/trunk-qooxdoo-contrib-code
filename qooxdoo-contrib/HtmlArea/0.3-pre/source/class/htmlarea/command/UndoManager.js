@@ -1008,11 +1008,24 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __updateUndoRedoState : function() 
     {
-      var self = this;      
-      window.setTimeout(function(e) {
-        self.dispatchEvent(new qx.event.type.DataEvent("undoRedoState", { undo : self.isUndoPossible() ? 0 : -1,
-                                                                          redo : self.isRedoPossible() ? 0 : -1 }));
-      }, 200);
+      qx.event.Timer.once(
+
+        function(e) {
+          this.dispatchEvent(
+            new qx.event.type.Data(
+              "undoRedoState",
+              {
+                undo : this.isUndoPossible() ? 0 : -1,
+                redo : this.isRedoPossible() ? 0 : -1
+              }
+            )
+          );
+        },
+
+        this,
+        200
+      );
+
     }
   },
 
