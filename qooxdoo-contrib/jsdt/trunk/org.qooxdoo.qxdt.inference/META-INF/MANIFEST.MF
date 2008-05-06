@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Validation Plug-in
 Bundle-SymbolicName: org.qooxdoo.qxdt.inference;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.wst.jsdt.qooxdoo.validation.Activator
 Bundle-Vendor: Innoopract GmbH
 Require-Bundle: org.eclipse.ui,
