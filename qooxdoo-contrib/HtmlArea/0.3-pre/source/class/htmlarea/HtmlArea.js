@@ -2723,7 +2723,6 @@ qx.Class.define("htmlarea.HtmlArea",
   {
     /* TODO: complete disposing */
     var doc = this.getDocument();
-    debugger;
 
     // ************************************************************************
     //   WIDGET KEY EVENTS

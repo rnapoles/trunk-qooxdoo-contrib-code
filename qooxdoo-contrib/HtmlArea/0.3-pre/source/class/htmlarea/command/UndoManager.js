@@ -835,7 +835,8 @@ qx.Class.define("htmlarea.command.UndoManager",
     _handleMouseDown : qx.core.Variant.select("qx.client", {
       "mshtml" : function(e)
       {
-        var checkNode = e.srcElement;
+        //var checkNode = e.srcElement;
+        var checkNode = e.getOriginalTarget();
         
         if (checkNode && checkNode.nodeName.toLowerCase() == "img" || checkNode.nodeName.toLowerCase() == "table" )
         {
