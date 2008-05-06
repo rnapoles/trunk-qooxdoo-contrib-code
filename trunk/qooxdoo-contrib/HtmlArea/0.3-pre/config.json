@@ -32,7 +32,7 @@
       {
         "qx.application" : "htmlarea.Application",
         "qx.resourceUri" : "${QOOXDOO_URI}/framework/source/resource",
-        "${APPLICATION_NAMESPACE}.resourceUri" : "./resource/${APPLICATION_NAMESPACE}"
+        "${APPLICATION_NAMESPACE}.resourceUri" : "./resource"
       },
 
       "localize" :
