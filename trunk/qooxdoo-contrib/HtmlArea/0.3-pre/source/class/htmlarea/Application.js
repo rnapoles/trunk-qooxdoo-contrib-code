@@ -39,8 +39,6 @@
 
 #use(qx.log.appender.Native)
 #use(qx.log.appender.Console)
-#asset(htmlarea/image/undo.gif)
-
 
 ************************************************************************ */
 /**
@@ -80,8 +78,8 @@ qx.Class.define("htmlarea.Application",
       
       qx.util.AliasManager.getInstance().add("htmlarea", qx.core.Setting.get("htmlarea.resourceUri"));
 
-      var htmlArea = new htmlarea.HtmlArea(demoContent, debugStyles);
-      htmlArea.set( { height: 400 } );
+      var htmlArea = new htmlarea.HtmlArea(demoContent);
+      //htmlArea.set( { height: 400 } );
       ha = htmlArea;
 
       var vb = new qx.ui.layout.VBox;
@@ -178,8 +176,11 @@ qx.Class.define("htmlarea.Application",
       var button;
       for (var entry in toolbarEntries)
       {
-        button = new qx.ui.form.Button("", toolbarEntries[entry].image, 23, 22);
+        button = new qx.ui.form.Button("", toolbarEntries[entry].image);
+        this.debug(button.getAppearance());
         button.addListener("execute", toolbarEntries[entry].action, htmlArea);
+        button.setFocusable(false);
+        button.setKeepFocus(true);
         hbContainer.add(button);
       }
 
