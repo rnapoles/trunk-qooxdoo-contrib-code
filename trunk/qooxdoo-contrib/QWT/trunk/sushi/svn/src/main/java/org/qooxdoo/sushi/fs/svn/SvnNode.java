@@ -61,24 +61,17 @@ public class SvnNode extends Node {
     private final SvnRoot root;
     private final boolean directory;
     private final String path;
-    private String comment;
     
     public SvnNode(SvnRoot root, boolean directory, String path) {
         super();
         this.root = root;
         this.directory = directory;
         this.path = path;
-        this.comment = "sushi commit";
     }
 
     @Override
     public SvnRoot getRoot() {
         return root;
-    }
-    
-    /** use when closing an output stream */
-    public void setComment(String comment) {
-        this.comment = comment;
     }
     
     @Override
@@ -170,7 +163,7 @@ public class SvnNode extends Node {
             public void close() throws IOException {
                 super.close();
                 try {
-                    save(toByteArray(), comment);
+                    save(toByteArray(), root.getComment());
                 } catch (SVNException e) {
                     throw Misc.exception("close failed", e);
                 }
