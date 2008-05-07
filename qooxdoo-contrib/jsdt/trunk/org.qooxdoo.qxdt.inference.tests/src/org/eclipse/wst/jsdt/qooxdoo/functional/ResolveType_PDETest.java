@@ -58,7 +58,7 @@ public class ResolveType_PDETest extends Assert {
     teo.setCurserAfter( " Applica" );
     teo.type( "tion.PI" );
     teo.save();
-    List<IMarker> errorMarkers = teo.getMarkers( IMarker.SEVERITY_ERROR );
+    List<IMarker> errorMarkers = teo.getMarkers();
     assertTrue( getFirstErrorMessage( errorMarkers ), errorMarkers.isEmpty() );
   }
 
