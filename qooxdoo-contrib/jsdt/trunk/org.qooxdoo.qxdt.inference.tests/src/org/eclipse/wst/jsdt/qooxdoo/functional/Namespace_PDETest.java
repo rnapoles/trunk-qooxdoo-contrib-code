@@ -24,6 +24,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import abbot.swt.finder.WidgetFinderImpl;
@@ -83,8 +84,8 @@ public class Namespace_PDETest extends Assert {
     assertTrue( getFirstErrorMessage( markers ), markers.isEmpty() );
   }
 
-  // demonstration of a feature that does not work yet
   @Test
+  @Ignore("demonstration of a feature that does not work yet ")
   public void getFullyQualifiedNameInAutoCompletion() throws Exception {
     sammy.openEditor( new FileEditorInput( this.file ) );
     TextEditorOperator teo = new TextEditorOperator( "Application.js",
