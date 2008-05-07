@@ -172,7 +172,8 @@ public class QooxdooInferrenceSupport extends InferEngine {
   }
 
   private boolean hasArguments( IFunctionCall messageSend ) {
-    return messageSend.getArguments() != null && messageSend.getArguments().length > 0;
+    return messageSend.getArguments() != null
+           && messageSend.getArguments().length > 0;
   }
 
   private boolean isQxClassDefined( IFunctionCall messageSend ) {
