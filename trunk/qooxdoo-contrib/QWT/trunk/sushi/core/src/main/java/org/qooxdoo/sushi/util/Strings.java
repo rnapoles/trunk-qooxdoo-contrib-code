@@ -57,7 +57,41 @@ public class Strings {
         }
         return buffer.toString();
     }
+
+    // TODO
+    private static final char SEPARATOR = '\n';
     
+    public static List<String> lines(String all) {
+        int ofs;
+        int prev;
+        List<String> result;
+        
+        ofs = all.indexOf(SEPARATOR);
+        prev = 0;
+        result = new ArrayList<String>();
+        while (ofs != -1) {
+            ofs++;
+            result.add(all.substring(prev, ofs));
+            prev = ofs;
+            ofs = all.indexOf(SEPARATOR, prev);
+        }
+        if (prev < all.length()) {
+            result.add(all.substring(prev));
+        }
+        return result;
+    }
+    
+    public static String indent(String str, String space) {
+        StringBuilder builder;
+        
+        builder = new StringBuilder();
+        for (String line : lines(str)) {
+            builder.append(space);
+            builder.append(line);
+        }
+        return builder.toString();
+    }
+
     public static String replaceStart(String str, String old, String replaced) {
         if (str.startsWith(old)) {
             return replaced + str.substring(old.length());
