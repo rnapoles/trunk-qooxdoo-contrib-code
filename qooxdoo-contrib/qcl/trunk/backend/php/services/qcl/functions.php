@@ -160,4 +160,14 @@ function is_valid_file($str)
   return true;
 }
 
+/**
+ * Simple function to replicate PHP5 behaviour
+ * from http://www.php.net/manual/de/function.microtime.php
+ */
+function microtime_float()
+{
+    list($usec, $sec) = explode(" ", microtime());
+    return ((float)$usec + (float)$sec);
+}
+
 ?>

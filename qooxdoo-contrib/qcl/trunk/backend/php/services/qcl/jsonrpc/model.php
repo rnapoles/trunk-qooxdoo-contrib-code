@@ -5,17 +5,32 @@ require_once ("qcl/jsonrpc/object.php");
 
 /**
  * simple controller-model architecture for jsonrpc
- * common base class for models
+ * common base class for data models
  */
 
 class qcl_jsonrpc_model extends qcl_jsonrpc_object
 {
-	//-------------------------------------------------------------
+
+  //-------------------------------------------------------------
+  // class variables
+  //-------------------------------------------------------------
+
+  var $key_id                 = "id";         // attribute of record tag with unique numeric id 
+  var $key_namedId            = null;         // unique string id, optional  
+  var $key_modified           = "modified";   // the model SHOULD have a "modified" column with a timestamp
+  var $key_created            = null;         // the model CAN have "created" column with a timestamp  
+  
+  //-------------------------------------------------------------
   // instance variables
   //-------------------------------------------------------------
-    
-	var $controller; // the controller object 
-	
+
+	var $controller             = null;         // the controller object 
+  var $datasource             = null;         // name of, or path to datasource from which this model gets its data
+	var $currentRecord          = array();      // the current record cached for perfomance
+  var $emptyRecord            = array();      // you can pre-insert static values here
+  var $metaColumns            = array();      // assoc. array containing the metadata fields  => columns
+  var $metaFields             = array();      // assoc. array containing the metadata columns => fields	
+
 	//-------------------------------------------------------------
   // internal methods
   //-------------------------------------------------------------
@@ -27,6 +42,9 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
   {
 		parent::__construct();
     $this->setController(&$controller);	
+    
+    // generate list of metadata columns ($key_ ...)
+    $this->_initMetaColumns(); 
 	}   	
 
 	//-------------------------------------------------------------
@@ -70,6 +88,64 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  		}
  	}	
 
+  //-------------------------------------------------------------
+  // model data handling
+  //------------------------------------------------------------- 	
+ 	
+  /**
+   * read class vars starting with "key_" into an array object property
+   * @return void
+   */
+  function _initMetaColumns()
+  {
+    $classVars = get_class_vars(get_class($this));
+    foreach ( $classVars as $key => $value )
+    {
+      if ( substr( $key,0,4) == "key_" )
+      {
+        $key = substr($key,4);
+        $this->metaColumns[$key] = $value;
+      }
+    }
+    $this->metaFields = array_flip( $this->metaColumns );
+  } 	
+ 	
+  /**
+   * sets datasource name or path. 
+   * override this method and then call it by parent::setDatasource( $name );
+   * @return void
+   * @param $datasource string
+   */
+  function setDatasource ( $datasource )
+  {
+    if ( ! $datasource )
+    {
+      $this->raiseError( get_class($this) . ": No datasource!");
+    }
+    $this->datasource = $datasource;
+  }
+  
+  /**
+   * getter for datasource
+   * @return string
+   */
+  function getDatasource()
+  {
+    return $this->datasource;
+  }
+
+  /**
+   * checks if model has a property.
+   * @return boolean
+   * @param string $name
+   */
+  function hasProperty($name)
+  {
+    $key_name = "key_{$name}";
+    return ( isset( $this->$key_name ) and $this->$key_name !== null ) ; 
+  }  
+
+  
 	//-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------

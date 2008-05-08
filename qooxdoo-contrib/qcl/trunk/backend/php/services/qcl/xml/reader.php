@@ -1,19 +1,19 @@
 <?php
 
 // dependencies
-require_once ("qcl/jsonrpc/model.php");
+require_once ("qcl/object.php");
 
 /**
  * Component to do XSLT - Transformations
+ * @todo: php5 compatibility
  **/
-class qcl_xml_reader extends qcl_jsonrpc_model
+class qcl_xml_reader extends qcl_object
 {
-    var $error;
     
   /**
 	 * constructor
 	 **/
-  function __construct( $controller )
+  function __construct()
   {
     if ( ! function_exists("domxml_open_mem") )
     {
@@ -27,7 +27,7 @@ class qcl_xml_reader extends qcl_jsonrpc_model
    * @return boolean
    * @param $xmlstr string
    */
-  function loadFromString ( $xmlstr )
+  function load_string ( $xmlstr )
   {
     if ( ! $dom = domxml_open_mem($xmlstr, DOMXML_LOAD_RECOVERING, &$error ) ) 
     {
@@ -43,7 +43,7 @@ class qcl_xml_reader extends qcl_jsonrpc_model
    * @return boolean
    * @param $file string
    */
-  function loadFromFile ( $file )
+  function load_file ( $file )
   {
     if ( ! $dom = domxml_open_file( $file, DOMXML_LOAD_RECOVERING, &$error ) ) 
     {
@@ -59,9 +59,9 @@ class qcl_xml_reader extends qcl_jsonrpc_model
    * @return boolean
    * @param $doc DomDocument
    */
-  function loadDocument ( $doc )
+  function load_document ( $doc )
   {
-    if ( ! stristr( $doc, "DomDocument" ) ) 
+    if ( ! stristr( get_class($doc), "DomDocument" ) ) 
     {
       $this->error = "qcl_xml_reader::loadDocument: Passed argument is not a DomDocument";
       return false;

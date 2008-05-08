@@ -106,19 +106,7 @@ class qcl_db_model extends qcl_jsonrpc_model
  			$this->db->setController(&$controller);	
  		} 
  	}
-  
-  /**
-   * checks if model has a property. in simple db models, properties are
-   * equivalent to fields / columns, but more complicated modedls could
-   * differentiate between metadata, normalized data fields, and column implementations 
-   * @return boolean
-   * @param string $name
-   */
-  function hasProperty($name)
-  {
-    return $this->hasColumn($name);
-  }
-  
+ 
   /**
    * checks if model has a corresponding column in the table (normatively,
    * doesn't check whether the column really exists)
@@ -162,9 +150,9 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param string|null 		$orderBy 	(optional) order by field
    * @return Array Array of db record sets
    */
- 	function getAllRows($orderBy=null)
+ 	function getAllRecords($orderBy=null)
   {  
-    return $this->getRowsWhere(null,$orderBy);
+    return $this->getRecordsWhere(null,$orderBy);
   }  
   
  	/**
@@ -175,7 +163,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param array|null		$fields		(optional) Array of fields to retrieve 
    * @return Array Array of db record sets
    */
- 	function getRowsWhere($where=null,$orderBy=null,$fields=null)
+ 	function getRecordsWhere($where=null,$orderBy=null,$fields=null)
  	{
 		if ( $fields )
 		{
@@ -197,7 +185,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 			$orderBy = implode("`,`", (array) $orderBy );
       $sql .= "ORDER BY `$orderBy`"; 
 		}
-      return $this->db->getAllRows($sql);   	
+      return $this->db->getAllRecords($sql);   	
  	}
  	
  	/**
@@ -216,7 +204,7 @@ class qcl_db_model extends qcl_jsonrpc_model
  	  $rowIds = implode(",", (array) $ids );
  	  if ( ! empty($rowIds) )
  	  {
- 	    return $this->getRowsWhere( "`{$this->key_id}` IN ($rowIds)", $orderBy, $fields );
+ 	    return $this->getRecordsWhere( "`{$this->key_id}` IN ($rowIds)", $orderBy, $fields );
  	  }  
  	}
  	
@@ -1103,7 +1091,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->raiseError("Table {$this->table} has no timestamp column");
     }
     
-    $rows = $this->db->getAllRows("
+    $rows = $this->db->getAllRecords("
       SELECT 
         {$this->key_id}       AS id,
         {$this->key_modified} AS timestamp

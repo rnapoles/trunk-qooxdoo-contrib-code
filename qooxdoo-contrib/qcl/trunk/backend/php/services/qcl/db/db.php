@@ -260,7 +260,7 @@ class qcl_db extends qcl_jsonrpc_object
 	/**
 	 * gets whole result set mapped to array
 	 */
-	function &getAllRows ( $sql ) {}
+	function &getAllRecords( $sql ) {}
 	
 	/**
 	 * inserts a record into a table and returns last_insert_id()
