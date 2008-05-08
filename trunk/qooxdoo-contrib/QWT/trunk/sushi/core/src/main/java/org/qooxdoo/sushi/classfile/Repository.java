@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
-import org.qooxdoo.sushi.fs.zip.ZipFilesystem;
 
 /** A set of class definitions */
 public class Repository {
@@ -55,8 +54,7 @@ public class Repository {
     }
 
     private Node getDir(Node file) throws IOException {
-        return file.isFile() && (file instanceof FileNode) ? 
-                new ZipFilesystem(file.getIO()).node((FileNode) file, "") : file;
+        return file.isFile() && (file instanceof FileNode) ? ((FileNode) file).readZip() : file;
     }
     
     public void addAll(Node file) throws IOException {
