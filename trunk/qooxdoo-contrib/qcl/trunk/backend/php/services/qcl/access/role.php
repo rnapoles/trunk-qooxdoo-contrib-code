@@ -59,7 +59,7 @@ class qcl_access_role extends qcl_access_common
 
 		if ($getNamedIds === null)
 		{
-			return $this->db->getAllRows("
+			return $this->db->getAllRecords("
 				SELECT
 					p.*
 				FROM 
@@ -71,7 +71,7 @@ class qcl_access_role extends qcl_access_common
 			"); 
 
 		}
-		$rows = $this->db->getAllRows("
+		$rows = $this->db->getAllRecords("
 			SELECT
 				p.`{$permModel->key_id}` as id,
 				p.`{$permModel->key_namedId}` as namedId
@@ -108,7 +108,7 @@ class qcl_access_role extends qcl_access_common
 			$userIdList = implode (",", (array) $userId );
 			$sql .= "WHERE `{$userModel->foreignKey}` IN ($userIdList)";
 		}
-		$rows = $this->db->getAllRows($sql);
+		$rows = $this->db->getAllRecords($sql);
 		foreach ( $rows as $row )
 		{
 			$userId = $row[$userModel->foreignKey];

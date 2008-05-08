@@ -55,7 +55,7 @@ class qcl_access_permission extends qcl_access_common
 			$roleIdList = implode (",", (array) $roleId );
 			$sql .= "WHERE `{$roleModel->foreignKey}` IN ($roleIdList)";
 		}
-		$rows = $this->db->getAllRows($sql);
+		$rows = $this->db->getAllRecords($sql);
 		foreach ( $rows as $row )
 		{
 			$permissionId = $row[$this->foreignKey];

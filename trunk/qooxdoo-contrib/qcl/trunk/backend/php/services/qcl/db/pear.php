@@ -146,7 +146,7 @@ class qcl_db_pear extends qcl_db
 	 */
 	function getValues ( $sql )
 	{
-		$rows = $this->getAllRows ( $sql, false );
+		$rows = $this->getAllRecords( $sql, false );
 		$result= array();
 		foreach($rows as $row) $result[] = $row[0];
 		return $result;
@@ -157,7 +157,7 @@ class qcl_db_pear extends qcl_db
 	 * @param string 	$sql 				sql query
 	 * @param boolean  	$withColumnNames	if true (default), map values to column names
 	 */
-	function getAllRows ( $sql, $withColumnNames=true )
+	function getAllRecords( $sql, $withColumnNames=true )
 	{
 		$this->log($sql,QCL_LOG_DEBUG);
 		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
@@ -327,7 +327,7 @@ class qcl_db_pear extends qcl_db
   function getColumnMetaData($table)
   {
     $schema = substr($this->dsn,strrpos($this->dsn,"/")+1);
-    return $this->getAllRows("
+    return $this->getAllRecords("
       SELECT
         COLUMN_NAME as name,
         COLUMN_DEFAULT as `default`,

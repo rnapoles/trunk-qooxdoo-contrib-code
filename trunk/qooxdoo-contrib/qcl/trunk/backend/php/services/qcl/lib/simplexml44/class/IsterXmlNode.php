@@ -218,9 +218,8 @@ class IsterXmlNode extends IsterObject
       return $this->log('not implemented', E_USER_WARNING, 'xpath');
     }
 
-
     /**
-     * Append an element.
+     * Append an element. 
      *
      * @param object IsterXmlNode
      * @return boolean

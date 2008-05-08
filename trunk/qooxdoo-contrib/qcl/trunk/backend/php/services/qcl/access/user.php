@@ -58,7 +58,7 @@ class qcl_access_user extends qcl_access_common
 
 		if ($getNamedIds === null)
 		{
-			return $this->db->getAllRows("
+			return $this->db->getAllRecords("
 				SELECT 
 					r.*
 				FROM 
@@ -71,7 +71,7 @@ class qcl_access_user extends qcl_access_common
 
 		}
 		
-		$rows = $this->db->getAllRows("
+		$rows = $this->db->getAllRecords("
 			SELECT
 				r.`{$roleModel->key_id}` as id,
 				r.`{$roleModel->key_namedId}` as nameId

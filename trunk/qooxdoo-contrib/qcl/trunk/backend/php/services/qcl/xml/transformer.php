@@ -33,10 +33,10 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 			{
 				return $this->_useDomXml($xml,$xsl,$params=null,$debugfile=null);	
 			}
-		else
-		{
-			$this->raiseError("dom_xml extension is not installed.");
-		}	
+  		else
+  		{
+  			$this->raiseError("dom_xml extension is not installed.");
+  		}	
 		}
 		else
 		{
@@ -54,7 +54,7 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 	 */
   function _useDomXml($xml,$xsl,$params=null,$debugfile=null)
   {
-		$domXmlObj 	= @is_file($xml) ? 
+		$domXmlObj 	= is_valid_file($xml) ? 
 			domxml_open_file($xml): 
 			domxml_open_mem ($xml);
 		if ( ! is_object($domXmlObj) )
@@ -64,7 +64,7 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 			return false;			
 		}
 		
-		$domXsltObj = @is_file($xsl) ? 
+		$domXsltObj = is_valid_file($xsl) ? 
 			domxml_xslt_stylesheet_file($xsl) : 
 			domxml_xslt_stylesheet_doc(domxml_open_mem ($xsl));
 		
@@ -103,7 +103,7 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 		$doc = new DOMDocument();
     
 		// xsl
-		if ( @is_file($xsl) )
+		if ( is_valid_file($xsl) )
     {
 		  $doc->load($xsl);
     }
@@ -115,7 +115,7 @@ class qcl_xml_transformer extends qcl_jsonrpc_model
 		$xsl->importStyleSheet($doc);
 		
 		// xml
-    if ( @is_file($xml) )
+    if ( is_valid_file($xml) )
     {
       $doc->load($xml);
     }

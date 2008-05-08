@@ -307,7 +307,7 @@ class qcl_config_db extends qcl_db_model
 		if ( $mask )
 		{
 			// get all rows containing mask
-			$rows = $this->db->getAllRows("
+			$rows = $this->db->getAllRecords("
 				SELECT * 
 				FROM `{$this->table}`
 				WHERE `{$this->key_name}` LIKE '$mask%'
@@ -317,7 +317,7 @@ class qcl_config_db extends qcl_db_model
 		else
 		{
 			// get all rows 
-			$rows = $this->db->getAllRows("
+			$rows = $this->db->getAllRecords("
 				SELECT * 
 				FROM `{$this->table}`
 				ORDER BY `{$this->key_name}`			

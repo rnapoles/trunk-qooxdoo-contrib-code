@@ -47,7 +47,7 @@ class qcl_db_tree extends qcl_db_model
 	function getChildren ( $parentId )
 	{
 		$parentId = (int) $parentId;
-		return $this->getRowsWhere("{$this->key_parentId} = $parentId", $this->key_position );
+		return $this->getRecordsWhere("{$this->key_parentId} = $parentId", $this->key_position );
 	}
 	
 	/**

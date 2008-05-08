@@ -97,7 +97,7 @@ class IsterSimpleXMLElement extends IsterXmlNode
         continue;
       }
       if( $child->___t == ISTER_XML_TAG) {
-		$this->addSimpleNode($child->___n, $this->___c[$idx]);
+		    $this->addSimpleNode($child->___n, $this->___c[$idx]);
       }//if type
     }//foreach
     return true;
@@ -191,7 +191,7 @@ class IsterSimpleXMLElement extends IsterXmlNode
   function addSimpleNode($name, &$child)
   {
     $new      =  $child;
-	$new->ref =& $child;
+	  $new->ref =& $child;
     if( isset($this->$name) ) {
       if(! is_array($this->$name) ) {
         $first       = $this->$name;
@@ -206,5 +206,30 @@ class IsterSimpleXMLElement extends IsterXmlNode
     return true;
   }
 
+  /**
+   * php5-simpleXML-compliant alias of addSimpleNode
+   */
+  function &addChild($name,$value=null)
+  {
+    $node  =& new IsterXmlNode(ISTER_XML_TAG, $this.___l+1, $name);
+    $child =& $node->toSimpleXML();
+    if ( $value ) 
+    {
+      $child->setCDATA($value);
+    }    
+    $this->append(&$child);
+    if ($this->ref) $this->ref->append(&$child);
+    $this->addSimpleNode($name,&$child);
+    return $child;
+  }
+  
+  /**
+   * php5-simpleXML-compliant alias of setAttribute
+   */
+  function addAttribute($name, $value)
+  {
+    return $this->setAttribute($name, $value);
+  }
+    
 }
 ?>
