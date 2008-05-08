@@ -32,6 +32,8 @@ import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.zip.ZipFilesystem;
+import org.qooxdoo.sushi.fs.zip.ZipNode;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Program;
@@ -114,6 +116,10 @@ public class FileNode extends Node {
         return file.canRead();
     }
     
+    public ZipNode readZip() throws IOException {
+        return new ZipFilesystem(getIO()).node(this, "");
+    }
+
     @Override
     public long length() {
         return file.length();
