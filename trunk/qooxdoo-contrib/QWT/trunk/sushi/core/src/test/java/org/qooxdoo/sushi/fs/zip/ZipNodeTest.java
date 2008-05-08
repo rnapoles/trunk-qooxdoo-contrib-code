@@ -21,6 +21,7 @@ package org.qooxdoo.sushi.fs.zip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -70,6 +71,14 @@ public class ZipNodeTest {
         object = (ZipNode) lang.join("Object.class");
         assertTrue(object.exists());
         assertTrue(object.isFile());
+    }
+    
+    @Test
+    public void manifest() throws IOException {
+        FileNode jar;
+            
+        jar = ioObj.locateClasspathItem(Object.class);
+        assertNotNull(jar.openZip().getRoot().readManifest());
     }
 }
 
