@@ -54,7 +54,7 @@ public class Repository {
     }
 
     private Node getDir(Node file) throws IOException {
-        return file.isFile() && (file instanceof FileNode) ? ((FileNode) file).readZip() : file;
+        return file.isFile() && (file instanceof FileNode) ? ((FileNode) file).openZip() : file;
     }
     
     public void addAll(Node file) throws IOException {

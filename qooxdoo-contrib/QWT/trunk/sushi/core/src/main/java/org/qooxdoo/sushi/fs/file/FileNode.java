@@ -116,7 +116,7 @@ public class FileNode extends Node {
         return file.canRead();
     }
     
-    public ZipNode readZip() throws IOException {
+    public ZipNode openZip() throws IOException {
         return new ZipFilesystem(getIO()).node(this, "");
     }
 

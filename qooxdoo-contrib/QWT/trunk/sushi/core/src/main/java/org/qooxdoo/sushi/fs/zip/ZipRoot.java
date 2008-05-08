@@ -20,8 +20,12 @@
 package org.qooxdoo.sushi.fs.zip;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipFile;
 
+import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Root;
 
 public class ZipRoot implements Root {
@@ -67,5 +71,15 @@ public class ZipRoot implements Root {
 
     public ZipNode node(String path) {
         return new ZipNode(this, path);
+    }
+    
+    public Manifest readManifest() throws IOException {
+        InputStream src;
+        Manifest result;
+        
+        src = node(Archive.MANIFEST).createInputStream();
+        result = new Manifest(src);
+        src.close();
+        return result;
     }
 }
