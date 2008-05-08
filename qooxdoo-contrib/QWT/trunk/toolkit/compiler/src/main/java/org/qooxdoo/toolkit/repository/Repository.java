@@ -28,8 +28,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.qooxdoo.sushi.archive.Archive;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.toolkit.compiler.Naming;
 
@@ -191,8 +191,9 @@ public class Repository implements Iterable<Module> {
     public void loadDir(Node dir) throws IOException {
         doLoad(dir);
     }
-    public void loadFile(Node dir) throws IOException {
-        doLoad(Archive.loadZip(dir).data);
+    
+    public void loadFile(Node file) throws IOException {
+        doLoad(((FileNode) file).openZip());
     }
 
     public void doLoad(Node src) throws IOException {
