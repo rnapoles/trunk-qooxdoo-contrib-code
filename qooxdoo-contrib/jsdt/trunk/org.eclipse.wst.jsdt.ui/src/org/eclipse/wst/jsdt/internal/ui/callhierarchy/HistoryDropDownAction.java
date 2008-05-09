@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IMethod;
+import org.eclipse.wst.jsdt.core.IFunction;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 
@@ -36,7 +36,7 @@ class HistoryDropDownAction extends Action implements IMenuCreator {
 		}
 			
 		public void run() {
-			fView.setHistoryEntries(new IMethod[0]);
+			fView.setHistoryEntries(new IFunction[0]);
 			fView.setMethod(null);
 		}
 	}
@@ -65,7 +65,7 @@ class HistoryDropDownAction extends Action implements IMenuCreator {
             fMenu.dispose();
         }
         fMenu= new Menu(parent);
-        IMethod[] elements= fView.getHistoryEntries();
+        IFunction[] elements= fView.getHistoryEntries();
         addEntries(fMenu, elements);
 		new MenuItem(fMenu, SWT.SEPARATOR);
 		addActionToMenu(fMenu, new HistoryListAction(fView));
@@ -87,7 +87,7 @@ class HistoryDropDownAction extends Action implements IMenuCreator {
         item.fill(parent, -1);
     }
 
-    private boolean addEntries(Menu menu, IMethod[] elements) {
+    private boolean addEntries(Menu menu, IFunction[] elements) {
         boolean checked = false;
 
         int min = Math.min(elements.length, RESULTS_IN_DROP_DOWN);

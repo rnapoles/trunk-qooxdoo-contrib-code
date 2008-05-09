@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,13 +17,13 @@ import org.eclipse.wst.jsdt.core.dom.ASTNode;
 import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
 import org.eclipse.wst.jsdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.wst.jsdt.core.dom.AnnotationTypeMemberDeclaration;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.wst.jsdt.core.dom.EnumDeclaration;
 import org.eclipse.wst.jsdt.core.dom.FieldDeclaration;
 import org.eclipse.wst.jsdt.core.dom.ImportDeclaration;
 import org.eclipse.wst.jsdt.core.dom.Initializer;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.PackageDeclaration;
 import org.eclipse.wst.jsdt.core.dom.SimpleName;
 import org.eclipse.wst.jsdt.core.dom.SingleVariableDeclaration;
@@ -55,13 +55,13 @@ class JavaParseTreeBuilder extends ASTVisitor {
         return false;
     }
 
-    public boolean visit(CompilationUnit node) {
+    public boolean visit(JavaScriptUnit node) {
         if (fShowCU)
             push(JavaNode.CU, null, node.getStartPosition(), node.getLength());
         return true;
     }
 
-    public void endVisit(CompilationUnit node) {
+    public void endVisit(JavaScriptUnit node) {
         if (fShowCU)
             pop();
     }
@@ -102,13 +102,13 @@ class JavaParseTreeBuilder extends ASTVisitor {
 		pop();
 	}
 
-    public boolean visit(MethodDeclaration node) {
+    public boolean visit(FunctionDeclaration node) {
         String signature= getSignature(node);
         push(node.isConstructor() ? JavaNode.CONSTRUCTOR : JavaNode.METHOD, signature, node.getStartPosition(), node.getLength());
         return false;
     }
 
-    public void endVisit(MethodDeclaration node) {
+    public void endVisit(FunctionDeclaration node) {
         pop();
     }
 
@@ -205,7 +205,7 @@ class JavaParseTreeBuilder extends ASTVisitor {
         return buffer.toString();
     }
 
-    private String getSignature(MethodDeclaration node) {
+    private String getSignature(FunctionDeclaration node) {
     	StringBuffer buffer= new StringBuffer();
         SimpleName name = node.getName();
         if (name!=null)

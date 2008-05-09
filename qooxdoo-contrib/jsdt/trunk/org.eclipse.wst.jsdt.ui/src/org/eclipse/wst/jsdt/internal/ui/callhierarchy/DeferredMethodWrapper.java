@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.ui.progress.IDeferredWorkbenchAdapter;
 import org.eclipse.ui.progress.IElementCollector;
 import org.eclipse.wst.jsdt.internal.corext.callhierarchy.MethodWrapper;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 public class DeferredMethodWrapper extends MethodWrapperWorkbenchAdapter implements IDeferredWorkbenchAdapter {
     private final CallHierarchyContentProvider fProvider;
@@ -76,7 +76,7 @@ public class DeferredMethodWrapper extends MethodWrapperWorkbenchAdapter impleme
         } catch (OperationCanceledException e) {
             collector.add(new Object[] { TreeTermination.SEARCH_CANCELED }, monitor);
         } catch (Exception e) {
-            JavaPlugin.log(e);
+            JavaScriptPlugin.log(e);
         } finally {
             fProvider.doneFetching();
         }
