@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,8 +23,8 @@ import org.eclipse.wst.jsdt.core.dom.IBinding;
 import org.eclipse.wst.jsdt.core.dom.IPackageBinding;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 import org.eclipse.wst.jsdt.core.dom.MemberRef;
-import org.eclipse.wst.jsdt.core.dom.MethodInvocation;
-import org.eclipse.wst.jsdt.core.dom.MethodRef;
+import org.eclipse.wst.jsdt.core.dom.FunctionInvocation;
+import org.eclipse.wst.jsdt.core.dom.FunctionRef;
 import org.eclipse.wst.jsdt.core.dom.Name;
 import org.eclipse.wst.jsdt.core.dom.QualifiedName;
 import org.eclipse.wst.jsdt.core.dom.SimpleName;
@@ -102,13 +102,13 @@ import org.eclipse.wst.jsdt.internal.corext.refactoring.base.JavaStatusContext;
 		fProcessed.add(node.getName());
 	}
 	
-	protected void rewrite(MethodInvocation node, ITypeBinding type) {
+	protected void rewrite(FunctionInvocation node, ITypeBinding type) {
 		Expression exp= node.getExpression();
 		if (exp == null) {
 			Type result= fCuRewrite.getImportRewrite().addImport(type, fCuRewrite.getAST());
 			fCuRewrite.getImportRemover().registerAddedImport(type.getQualifiedName());
 			exp= ASTNodeFactory.newName(fCuRewrite.getAST(), ASTFlattener.asString(result));
-			fCuRewrite.getASTRewrite().set(node, MethodInvocation.EXPRESSION_PROPERTY, exp, fCuRewrite.createGroupDescription(REFERENCE_UPDATE));
+			fCuRewrite.getASTRewrite().set(node, FunctionInvocation.EXPRESSION_PROPERTY, exp, fCuRewrite.createGroupDescription(REFERENCE_UPDATE));
 			fNeedsImport= true;
 		} else if (exp instanceof Name) {
 			rewriteName((Name)exp, type);
@@ -132,13 +132,13 @@ import org.eclipse.wst.jsdt.internal.corext.refactoring.base.JavaStatusContext;
 		fProcessed.add(node.getName());
 	}
 	
-	protected void rewrite(MethodRef node, ITypeBinding type) {
+	protected void rewrite(FunctionRef node, ITypeBinding type) {
 		Name qualifier= node.getQualifier();
 		if (qualifier == null) {
 			Type result= fCuRewrite.getImportRewrite().addImport(type, fCuRewrite.getAST());
 			fCuRewrite.getImportRemover().registerAddedImport(type.getQualifiedName());
 			qualifier= ASTNodeFactory.newName(fCuRewrite.getAST(), ASTFlattener.asString(result));
-			fCuRewrite.getASTRewrite().set(node, MethodRef.QUALIFIER_PROPERTY, qualifier, fCuRewrite.createGroupDescription(REFERENCE_UPDATE));
+			fCuRewrite.getASTRewrite().set(node, FunctionRef.QUALIFIER_PROPERTY, qualifier, fCuRewrite.createGroupDescription(REFERENCE_UPDATE));
 			fNeedsImport= true;
 		} else {
 			rewriteName(qualifier, type);
