@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,36 +17,42 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.wst.jsdt.core.IMember;
-import org.eclipse.wst.jsdt.core.IMethod;
+import org.eclipse.wst.jsdt.core.IFunction;
 import org.eclipse.wst.jsdt.core.ISourceRange;
 import org.eclipse.wst.jsdt.core.IType;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
 import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
 import org.eclipse.wst.jsdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.wst.jsdt.core.dom.ClassInstanceCreation;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.ConstructorInvocation;
-import org.eclipse.wst.jsdt.core.dom.IMethodBinding;
+import org.eclipse.wst.jsdt.core.dom.IFunctionBinding;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
-import org.eclipse.wst.jsdt.core.dom.MethodInvocation;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionInvocation;
 import org.eclipse.wst.jsdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.wst.jsdt.core.dom.SuperMethodInvocation;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.internal.corext.dom.Bindings;
 import org.eclipse.wst.jsdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
-
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
+/**
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 class CalleeAnalyzerVisitor extends ASTVisitor {
     private CallSearchResultCollector fSearchResults;
-    private IMethod fMethod;
-    private CompilationUnit fCompilationUnit;
+    private IFunction fMethod;
+    private JavaScriptUnit fCompilationUnit;
     private IProgressMonitor fProgressMonitor;
     private int fMethodEndPosition;
     private int fMethodStartPosition;
 
-    CalleeAnalyzerVisitor(IMethod method, CompilationUnit compilationUnit, IProgressMonitor progressMonitor) {
+    CalleeAnalyzerVisitor(IFunction method, JavaScriptUnit compilationUnit, IProgressMonitor progressMonitor) {
         fSearchResults = new CallSearchResultCollector();
         this.fMethod = method;
         this.fCompilationUnit= compilationUnit;
@@ -56,8 +62,8 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
             ISourceRange sourceRange = method.getSourceRange();
             this.fMethodStartPosition = sourceRange.getOffset();
             this.fMethodEndPosition = fMethodStartPosition + sourceRange.getLength();
-        } catch (JavaModelException jme) {
-            JavaPlugin.log(jme);
+        } catch (JavaScriptModelException jme) {
+            JavaScriptPlugin.log(jme);
         }
     }
 
@@ -107,9 +113,9 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
     }
 
     /**
-     * @see org.eclipse.wst.jsdt.core.dom.ASTVisitor#visit(org.eclipse.wst.jsdt.core.dom.MethodDeclaration)
+     * @see org.eclipse.wst.jsdt.core.dom.ASTVisitor#visit(org.eclipse.wst.jsdt.core.dom.FunctionDeclaration)
      */
-    public boolean visit(MethodDeclaration node) {
+    public boolean visit(FunctionDeclaration node) {
         progressMonitorWorked(1);
         return isFurtherTraversalNecessary(node);
     }
@@ -119,9 +125,9 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
      * the AST on the wanted method declaration, this method should not hit on more
      * method invocations than those in the wanted method.
      *
-     * @see org.eclipse.wst.jsdt.core.dom.ASTVisitor#visit(org.eclipse.wst.jsdt.core.dom.MethodInvocation)
+     * @see org.eclipse.wst.jsdt.core.dom.ASTVisitor#visit(org.eclipse.wst.jsdt.core.dom.FunctionInvocation)
      */
-    public boolean visit(MethodInvocation node) {
+    public boolean visit(FunctionInvocation node) {
         progressMonitorWorked(1);
         if (!isFurtherTraversalNecessary(node)) {
             return false;
@@ -160,7 +166,7 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
      * the AST on the wanted method declaration, this method should not hit on more
      * method invocations than those in the wanted method.
      *
-     * @see org.eclipse.wst.jsdt.core.dom.ASTVisitor#visit(org.eclipse.wst.jsdt.core.dom.MethodInvocation)
+     * @see org.eclipse.wst.jsdt.core.dom.ASTVisitor#visit(org.eclipse.wst.jsdt.core.dom.FunctionInvocation)
      */
     public boolean visit(SuperMethodInvocation node) {
         progressMonitorWorked(1);
@@ -192,7 +198,7 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
      * @param calledMethodBinding
      * @param node
      */
-    protected void addMethodCall(IMethodBinding calledMethodBinding, ASTNode node) {
+    protected void addMethodCall(IFunctionBinding calledMethodBinding, ASTNode node) {
         try {
             if (calledMethodBinding != null) {
                 fProgressMonitor.worked(1);
@@ -210,7 +216,7 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
                     }
                 }
 
-                IMethod calledMethod = findIncludingSupertypes(calledMethodBinding,
+                IFunction calledMethod = findIncludingSupertypes(calledMethodBinding,
                         calledType, fProgressMonitor);
 
                 IMember referencedMember= null;
@@ -231,25 +237,25 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
 				final int number= fCompilationUnit.getLineNumber(position);
 				fSearchResults.addMember(fMethod, referencedMember, position, position + node.getLength(), number < 1 ? 1 : number);
             }
-        } catch (JavaModelException jme) {
-            JavaPlugin.log(jme);
+        } catch (JavaScriptModelException jme) {
+            JavaScriptPlugin.log(jme);
         }
     }
     
-    private static IMethod findIncludingSupertypes(IMethodBinding method, IType type, IProgressMonitor pm) throws JavaModelException {
-		IMethod inThisType= Bindings.findMethod(method, type);
+    private static IFunction findIncludingSupertypes(IFunctionBinding method, IType type, IProgressMonitor pm) throws JavaScriptModelException {
+		IFunction inThisType= Bindings.findMethod(method, type);
 		if (inThisType != null)
 			return inThisType;
 		IType[] superTypes= JavaModelUtil.getAllSuperTypes(type, pm);
 		for (int i= 0; i < superTypes.length; i++) {
-			IMethod m= Bindings.findMethod(method, superTypes[i]);
+			IFunction m= Bindings.findMethod(method, superTypes[i]);
 			if (m != null)
 				return m;
 		}
 		return null;
 	}
 
-    private boolean isIgnoredBySearchScope(IMethod enclosingElement) {
+    private boolean isIgnoredBySearchScope(IFunction enclosingElement) {
         if (enclosingElement != null) {
             return !getSearchScope().encloses(enclosingElement);
         } else {
@@ -257,7 +263,7 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
         }
     }
 
-    private IJavaSearchScope getSearchScope() {
+    private IJavaScriptSearchScope getSearchScope() {
         return CallHierarchy.getDefault().getSearchScope();
     }
 
@@ -291,14 +297,14 @@ class CalleeAnalyzerVisitor extends ASTVisitor {
         return isNodeWithinMethod(node) || isNodeEnclosingMethod(node);
     }
 
-    private IMethod findImplementingMethods(IMethod calledMethod) {
+    private IFunction findImplementingMethods(IFunction calledMethod) {
         Collection implementingMethods = CallHierarchy.getDefault()
                                                         .getImplementingMethods(calledMethod);
 
         if ((implementingMethods.size() == 0) || (implementingMethods.size() > 1)) {
             return calledMethod;
         } else {
-            return (IMethod) implementingMethods.iterator().next();
+            return (IFunction) implementingMethods.iterator().next();
         }
     }
     
