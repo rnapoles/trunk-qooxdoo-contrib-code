@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import org.eclipse.jface.text.formatter.IContentFormatterExtension;
 import org.eclipse.jface.text.formatter.IFormattingContext;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.jsdt.internal.ui.IJavaStatusConstants;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingContext;
 
 
@@ -58,9 +58,9 @@ public class CompilationUnitPreview extends JavaPreview {
 			} else
 				formatter.format(fPreviewDocument, new Region(0, fPreviewDocument.getLength()));
 		} catch (Exception e) {
-			final IStatus status= new Status(IStatus.ERROR, JavaPlugin.getPluginId(), IJavaStatusConstants.INTERNAL_ERROR, 
+			final IStatus status= new Status(IStatus.ERROR, JavaScriptPlugin.getPluginId(), IJavaStatusConstants.INTERNAL_ERROR, 
 				FormatterMessages.JavaPreview_formatter_exception, e); 
-			JavaPlugin.log(status);
+			JavaScriptPlugin.log(status);
 		} finally {
 		    context.dispose();
 		    fSourceViewer.setRedraw(true);

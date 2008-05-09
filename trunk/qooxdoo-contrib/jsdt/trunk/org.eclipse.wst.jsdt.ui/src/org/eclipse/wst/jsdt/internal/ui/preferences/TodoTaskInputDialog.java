@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.wst.jsdt.internal.ui.preferences.TodoTaskConfigurationBlock.TodoTask;
@@ -81,9 +81,9 @@ public class TodoTaskInputDialog extends StatusDialog {
 		fPriorityDialogField.setLabelText(PreferencesMessages.TodoTaskInputDialog_priority_label); 
 		fPriorityDialogField.setItems(items);
 		if (task != null) {
-			if (JavaCore.COMPILER_TASK_PRIORITY_HIGH.equals(task.priority)) {
+			if (JavaScriptCore.COMPILER_TASK_PRIORITY_HIGH.equals(task.priority)) {
 				fPriorityDialogField.selectItem(0);
-			} else if (JavaCore.COMPILER_TASK_PRIORITY_NORMAL.equals(task.priority)) {
+			} else if (JavaScriptCore.COMPILER_TASK_PRIORITY_NORMAL.equals(task.priority)) {
 				fPriorityDialogField.selectItem(1);
 			} else {
 				fPriorityDialogField.selectItem(2);
@@ -98,13 +98,13 @@ public class TodoTaskInputDialog extends StatusDialog {
 		task.name= fNameDialogField.getText().trim();
 		switch (fPriorityDialogField.getSelectionIndex()) {
 			case 0 :
-					task.priority= JavaCore.COMPILER_TASK_PRIORITY_HIGH;
+					task.priority= JavaScriptCore.COMPILER_TASK_PRIORITY_HIGH;
 				break;
 			case 1 :
-					task.priority= JavaCore.COMPILER_TASK_PRIORITY_NORMAL;
+					task.priority= JavaScriptCore.COMPILER_TASK_PRIORITY_NORMAL;
 				break;
 			default :
-					task.priority= JavaCore.COMPILER_TASK_PRIORITY_LOW;
+					task.priority= JavaScriptCore.COMPILER_TASK_PRIORITY_LOW;
 				break;				
 		}
 		return task;

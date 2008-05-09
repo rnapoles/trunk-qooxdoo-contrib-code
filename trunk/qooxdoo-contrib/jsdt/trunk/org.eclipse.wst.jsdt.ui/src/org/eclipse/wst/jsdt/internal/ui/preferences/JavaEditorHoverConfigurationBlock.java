@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,7 +53,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusUtil;
 import org.eclipse.wst.jsdt.internal.ui.text.java.hover.JavaEditorTextHoverDescriptor;
@@ -371,7 +371,7 @@ class JavaEditorHoverConfigurationBlock implements IPreferenceConfigurationBlock
 	}
 
 	private JavaEditorTextHoverDescriptor[] getContributedHovers() {
-		return JavaPlugin.getDefault().getJavaEditorTextHoverDescriptors();
+		return JavaScriptPlugin.getDefault().getJavaEditorTextHoverDescriptors();
 	}
 
 	public void initialize() {
@@ -422,7 +422,7 @@ class JavaEditorHoverConfigurationBlock implements IPreferenceConfigurationBlock
 		fStore.setValue(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIERS, buf.toString());
 		fStore.setValue(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS, maskBuf.toString());
 		
-		JavaPlugin.getDefault().resetJavaEditorTextHoverDescriptors();
+		JavaScriptPlugin.getDefault().resetJavaEditorTextHoverDescriptors();
 	}
 
 	public void performDefaults() {
@@ -443,7 +443,7 @@ class JavaEditorHoverConfigurationBlock implements IPreferenceConfigurationBlock
 				idToModifier.put(id, tokenizer.nextToken());
 		}
 
-		String compiledTextHoverModifierMasks= JavaPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS);
+		String compiledTextHoverModifierMasks= JavaScriptPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS);
 
 		tokenizer= new StringTokenizer(compiledTextHoverModifierMasks, JavaEditorTextHoverDescriptor.VALUE_SEPARATOR);
 		HashMap idToModifierMask= new HashMap(tokenizer.countTokens() / 2);

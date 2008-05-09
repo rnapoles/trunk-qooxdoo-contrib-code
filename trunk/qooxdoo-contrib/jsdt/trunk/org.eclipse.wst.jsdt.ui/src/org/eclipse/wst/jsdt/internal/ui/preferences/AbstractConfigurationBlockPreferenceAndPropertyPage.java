@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.eclipse.ui.preferences.IWorkingCopyManager;
 import org.eclipse.ui.preferences.WorkingCopyManager;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -95,7 +95,7 @@ public abstract class AbstractConfigurationBlockPreferenceAndPropertyPage extend
 		try {
 	        fAccess.applyChanges();
         } catch (BackingStoreException e) {
-	        JavaPlugin.log(e);
+	        JavaScriptPlugin.log(e);
         }
 		
 		return true;
