@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ import org.eclipse.wst.jsdt.core.dom.EnumDeclaration;
 import org.eclipse.wst.jsdt.core.dom.FieldAccess;
 import org.eclipse.wst.jsdt.core.dom.FieldDeclaration;
 import org.eclipse.wst.jsdt.core.dom.IBinding;
-import org.eclipse.wst.jsdt.core.dom.IMethodBinding;
+import org.eclipse.wst.jsdt.core.dom.IFunctionBinding;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 import org.eclipse.wst.jsdt.core.dom.ImportDeclaration;
 import org.eclipse.wst.jsdt.core.dom.MemberRef;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
-import org.eclipse.wst.jsdt.core.dom.MethodInvocation;
-import org.eclipse.wst.jsdt.core.dom.MethodRef;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionInvocation;
+import org.eclipse.wst.jsdt.core.dom.FunctionRef;
 import org.eclipse.wst.jsdt.core.dom.QualifiedName;
 import org.eclipse.wst.jsdt.core.dom.SimpleName;
 import org.eclipse.wst.jsdt.core.dom.TypeDeclaration;
@@ -29,7 +29,7 @@ import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
 
 /**
  * Updates references to moved static members.
- * Accepts <code>CompilationUnit</code>s.
+ * Accepts <code>JavaScriptUnit</code>s.
  */
 /* package */ class ReferenceAnalyzer extends MoveStaticMemberAnalyzer {
 	
@@ -67,7 +67,7 @@ import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
 		return super.visit(node);
 	}
 	
-	public boolean visit(MethodDeclaration node) {
+	public boolean visit(FunctionDeclaration node) {
 		if (isMovedMember(node.resolveBinding()))
 			return false;
 		return super.visit(node);
@@ -107,8 +107,8 @@ import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
 	
 	//---- method invocations ----------------------------------
 	
-	public boolean visit(MethodInvocation node) {
-		IMethodBinding binding= node.resolveMethodBinding();
+	public boolean visit(FunctionInvocation node) {
+		IFunctionBinding binding= node.resolveMethodBinding();
 		if (binding != null) {
 			binding= binding.getMethodDeclaration();
 			if (isMovedMember(binding))
@@ -125,7 +125,7 @@ import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
 		return false;
 	}
 	
-	public boolean visit(MethodRef node) {
+	public boolean visit(FunctionRef node) {
 		if (isMovedMember(node.resolveBinding()))
 			rewrite(node, fTarget);
 		return false;
