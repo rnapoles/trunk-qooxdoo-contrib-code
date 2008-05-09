@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests Fragment
+Bundle-SymbolicName: org.qooxdoo.qxdt.support.tests
+Bundle-Version: 1.0.0
+Fragment-Host: org.qooxdoo.qxdt.support;bundle-version="1.0.0"
+Require-Bundle: org.junit4
