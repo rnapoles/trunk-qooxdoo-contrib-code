@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.internal.ui.browsing;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.core.ISourceRange;
 import org.eclipse.wst.jsdt.core.ISourceReference;
 import org.eclipse.wst.jsdt.core.IType;
@@ -40,7 +40,7 @@ class TopLevelTypeProblemsLabelDecorator extends ProblemsLabelDecorator {
 		if (!(sourceElement instanceof IType) || ((IType)sourceElement).getDeclaringType() != null)
 			return false;
 
-		ICompilationUnit cu= ((IType)sourceElement).getCompilationUnit();
+		IJavaScriptUnit cu= ((IType)sourceElement).getJavaScriptUnit();
 		if (cu == null)
 			return false;
 		IType[] types= cu.getTypes();

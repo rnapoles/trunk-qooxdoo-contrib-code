@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 
 public class ResourceAdapterFactory implements IAdapterFactory {
 
 	private static Class[] PROPERTIES= new Class[] {
-		IJavaElement.class
+		IJavaScriptElement.class
 	};
 		
 	public Class[] getAdapterList() {
@@ -29,16 +29,16 @@ public class ResourceAdapterFactory implements IAdapterFactory {
 	}
 	
 	public Object getAdapter(Object element, Class key) {
-		if (IJavaElement.class.equals(key)) {
+		if (IJavaScriptElement.class.equals(key)) {
 			
 			// Performance optimization, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=133141
 			if (element instanceof IFile) {
-				IJavaElement je= JavaPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(new FileEditorInput((IFile)element));
+				IJavaScriptElement je= JavaScriptPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(new FileEditorInput((IFile)element));
 				if (je != null)
 					return je;
 			}
 			
-			return JavaCore.create((IResource)element);
+			return JavaScriptCore.create((IResource)element);
 		}
 		return null;
 	}	
