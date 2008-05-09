@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.internal.corext.refactoring.typeconstraints.types;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 
 
@@ -19,13 +19,13 @@ import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 public final class CaptureType extends AbstractTypeVariable {
 	
 	private WildcardType fWildcard;
-	private IJavaProject fJavaProject;
+	private IJavaScriptProject fJavaProject;
 	
 	protected CaptureType(TypeEnvironment environment) {
 		super(environment);
 	}
 
-	protected void initialize(ITypeBinding binding, IJavaProject javaProject) {
+	protected void initialize(ITypeBinding binding, IJavaScriptProject javaProject) {
 		Assert.isTrue(binding.isCapture());
 		super.initialize(binding);
 		fWildcard= (WildcardType) getEnvironment().create(binding.getWildcard());
