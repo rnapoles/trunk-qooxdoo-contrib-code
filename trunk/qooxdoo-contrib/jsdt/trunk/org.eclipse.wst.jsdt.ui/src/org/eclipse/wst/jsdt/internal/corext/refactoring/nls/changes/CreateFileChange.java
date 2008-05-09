@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,8 +31,8 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.wst.jsdt.core.IJavaModelStatusConstants;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptModelStatusConstants;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.base.JDTChange;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 
@@ -161,14 +161,14 @@ public class CreateFileChange extends JDTChange {
 				}
 				return new DeleteFileChange(file);
 			} catch (UnsupportedEncodingException e) {
-				throw new JavaModelException(e, IJavaModelStatusConstants.IO_EXCEPTION);
+				throw new JavaScriptModelException(e, IJavaScriptModelStatusConstants.IO_EXCEPTION);
 			}
 		} finally {
 			try {
 				if (is != null)
 					is.close();
 			} catch (IOException ioe) {
-				throw new JavaModelException(ioe, IJavaModelStatusConstants.IO_EXCEPTION);
+				throw new JavaScriptModelException(ioe, IJavaScriptModelStatusConstants.IO_EXCEPTION);
 			} finally {
 				pm.done();
 			}
