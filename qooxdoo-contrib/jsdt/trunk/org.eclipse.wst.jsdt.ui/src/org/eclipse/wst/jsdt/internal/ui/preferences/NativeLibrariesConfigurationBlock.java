@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,7 +35,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.wst.jsdt.internal.ui.util.PixelConverter;
@@ -60,12 +60,12 @@ public class NativeLibrariesConfigurationBlock {
 	private StringDialogField fPathField;
 	private SelectionButtonDialogField fBrowseWorkspace;
 	private SelectionButtonDialogField fBrowseExternal;
-	private final IClasspathEntry fEntry;
+	private final IIncludePathEntry fEntry;
 	private Shell fShell;
 	private final IStatusChangeListener fListener;
 	private final String fOrginalValue;
 	
-	public NativeLibrariesConfigurationBlock(IStatusChangeListener listener, Shell parent, String nativeLibPath, IClasspathEntry parentEntry) {
+	public NativeLibrariesConfigurationBlock(IStatusChangeListener listener, Shell parent, String nativeLibPath, IIncludePathEntry parentEntry) {
 		fListener= listener;
 		fEntry= parentEntry;
 		

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.launching.JavaRuntime;
 
 /**
@@ -31,7 +31,7 @@ public class CompliancePreferencePage extends PropertyAndPreferencePage {
 	private ComplianceConfigurationBlock fConfigurationBlock;
 
 	public CompliancePreferencePage() {
-		setPreferenceStore(JavaPlugin.getDefault().getPreferenceStore());
+		setPreferenceStore(JavaScriptPlugin.getDefault().getPreferenceStore());
 		//setDescription(PreferencesMessages.CompliancePreferencePage_description); 
 		
 		// only used when page is shown programatically

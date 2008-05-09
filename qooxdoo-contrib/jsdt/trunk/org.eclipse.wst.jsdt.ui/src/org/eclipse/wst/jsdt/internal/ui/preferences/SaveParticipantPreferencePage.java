@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * Configures Java Editor save participant preferences.
@@ -58,6 +58,6 @@ public final class SaveParticipantPreferencePage extends AbstractConfigurationBl
 	 * {@inheritDoc}
 	 */
 	protected boolean hasProjectSpecificOptions(IProject project) {
-		return JavaPlugin.getDefault().getSaveParticipantRegistry().hasSettingsInScope(new ProjectScope(project));
+		return JavaScriptPlugin.getDefault().getSaveParticipantRegistry().hasSettingsInScope(new ProjectScope(project));
 	}
 }

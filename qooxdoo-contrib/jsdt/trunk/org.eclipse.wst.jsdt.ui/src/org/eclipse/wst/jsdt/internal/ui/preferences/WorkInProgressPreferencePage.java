@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * Preference page for work in progress.
@@ -105,7 +105,7 @@ public class WorkInProgressPreferencePage extends PreferencePage implements IWor
 	 * @see org.eclipse.jface.preference.PreferencePage#doGetPreferenceStore()
 	 */
 	protected IPreferenceStore doGetPreferenceStore() {
-		return JavaPlugin.getDefault().getPreferenceStore();
+		return JavaScriptPlugin.getDefault().getPreferenceStore();
 	}
 
 	/*
@@ -155,7 +155,7 @@ public class WorkInProgressPreferencePage extends PreferencePage implements IWor
 			store.setValue(key, text.getText());
 		}
 		
-		JavaPlugin.getDefault().savePluginPreferences();
+		JavaScriptPlugin.getDefault().savePluginPreferences();
 		return super.performOk();
 	}
 

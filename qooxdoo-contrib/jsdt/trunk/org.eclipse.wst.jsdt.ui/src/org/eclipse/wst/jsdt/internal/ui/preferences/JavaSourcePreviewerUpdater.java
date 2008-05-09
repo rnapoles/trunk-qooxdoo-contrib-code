@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.wst.jsdt.ui.PreferenceConstants;
-import org.eclipse.wst.jsdt.ui.text.JavaSourceViewerConfiguration;
+import org.eclipse.wst.jsdt.ui.text.JavaScriptSourceViewerConfiguration;
 
 /**
  * Handles Java editor font changes for Java source preview viewers.
@@ -37,7 +37,7 @@ class JavaSourcePreviewerUpdater {
 	 * @param configuration the configuration
 	 * @param preferenceStore the preference store
 	 */
-	JavaSourcePreviewerUpdater(final SourceViewer viewer, final JavaSourceViewerConfiguration configuration, final IPreferenceStore preferenceStore) {
+	JavaSourcePreviewerUpdater(final SourceViewer viewer, final JavaScriptSourceViewerConfiguration configuration, final IPreferenceStore preferenceStore) {
 		Assert.isNotNull(viewer);
 		Assert.isNotNull(configuration);
 		Assert.isNotNull(preferenceStore);

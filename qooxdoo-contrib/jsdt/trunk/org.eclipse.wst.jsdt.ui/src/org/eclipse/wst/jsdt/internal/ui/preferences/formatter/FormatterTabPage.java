@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,12 +19,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
-import org.eclipse.wst.jsdt.ui.JavaUI;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
+import org.eclipse.wst.jsdt.ui.JavaScriptUI;
 
 public abstract class FormatterTabPage extends ModifyDialogTabPage {
 	
-	private final static String SHOW_INVISIBLE_PREFERENCE_KEY= JavaUI.ID_PLUGIN + ".formatter_page.show_invisible_characters"; //$NON-NLS-1$
+	private final static String SHOW_INVISIBLE_PREFERENCE_KEY= JavaScriptUI.ID_PLUGIN + ".formatter_page.show_invisible_characters"; //$NON-NLS-1$
 	
 	private JavaPreview fPreview;
 	private final IDialogSettings fDialogSettings;
@@ -33,7 +33,7 @@ public abstract class FormatterTabPage extends ModifyDialogTabPage {
 	public FormatterTabPage(IModificationListener modifyListener, Map workingValues) {
 		super(modifyListener, workingValues);
 		
-		fDialogSettings= JavaPlugin.getDefault().getDialogSettings();
+		fDialogSettings= JavaScriptPlugin.getDefault().getDialogSettings();
 	}
 
 	protected Composite doCreatePreviewPane(Composite composite, int numColumns) {

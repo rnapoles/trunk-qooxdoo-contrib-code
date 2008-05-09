@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.formatter.CodeFormatter;
 import org.eclipse.wst.jsdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.wst.jsdt.internal.ui.preferences.formatter.SnippetPreview.PreviewSnippet;
@@ -129,11 +129,11 @@ public final class WhiteSpaceOptions {
 	    }
 	    
         public void setChecked(boolean checked) {
-        	fWorkingValues.put(fKey, checked ? JavaCore.INSERT : JavaCore.DO_NOT_INSERT);
+        	fWorkingValues.put(fKey, checked ? JavaScriptCore.INSERT : JavaScriptCore.DO_NOT_INSERT);
         }
         
         public boolean getChecked() {
-            return JavaCore.INSERT.equals(fWorkingValues.get(fKey));
+            return JavaScriptCore.INSERT.equals(fWorkingValues.get(fKey));
         }
         
         public List getSnippets() {
@@ -236,7 +236,7 @@ public final class WhiteSpaceOptions {
     "value= condition ? TRUE : FALSE;"); //$NON-NLS-1$
 
 //    private final PreviewSnippet CLASS_DECL_PREVIEW= new PreviewSnippet(
-//    CodeFormatter.K_COMPILATION_UNIT, 
+//    CodeFormatter.K_JAVASCRIPT_UNIT, 
 //    "class MyClass implements I0, I1, I2 {}"); //$NON-NLS-1$
 
 //    private final PreviewSnippet ANON_CLASS_PREVIEW= new PreviewSnippet(

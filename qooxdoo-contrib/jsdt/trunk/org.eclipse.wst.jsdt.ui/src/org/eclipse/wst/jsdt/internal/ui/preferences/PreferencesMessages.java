@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,8 +23,6 @@ public final class PreferencesMessages extends NLS {
 	}
 
 	public static String AppearancePreferencePage_coloredlabels_label;
-	public static String BuildPathDialog_error_title;
-	public static String BuildPathDialog_error_message;
 	public static String BuildPathsPropertyPage_error_message;
 	public static String BuildPathsPropertyPage_error_title;
 	public static String BuildPathsPropertyPage_job_title;
@@ -117,22 +115,14 @@ public final class PreferencesMessages extends NLS {
 	public static String JavadocConfigurationPropertyPage_not_supported;
 	public static String JavadocConfigurationPropertyPage_read_only;
 	public static String JavaEditorPropertyPage_SaveActionLink_Text;
-	public static String NativeLibrariesPropertyPage_invalid_container;
-	public static String NativeLibrariesPropertyPage_not_supported;
-	public static String NativeLibrariesPropertyPage_read_only;
 	public static String NewJavaProjectPreferencePage_title;
 	public static String NewJavaProjectPreferencePage_description;
 	public static String NewJavaProjectPreferencePage_sourcefolder_label;
 	public static String NewJavaProjectPreferencePage_sourcefolder_project;
 	public static String NewJavaProjectPreferencePage_sourcefolder_folder;
 	public static String NewJavaProjectPreferencePage_folders_src;
-	public static String NewJavaProjectPreferencePage_folders_bin;
-	public static String NewJavaProjectPreferencePage_jrelibrary_label;
-	public static String NewJavaProjectPreferencePage_jre_variable_description;
-	public static String NewJavaProjectPreferencePage_jre_container_description;
 	public static String NewJavaProjectPreferencePage_folders_error_namesempty;
 	public static String NewJavaProjectPreferencePage_folders_error_invalidsrcname;
-	public static String NewJavaProjectPreferencePage_folders_error_invalidbinname;
 	public static String NewJavaProjectPreferencePage_folders_error_invalidcp;
 	public static String NewJavaProjectPreferencePage_error_decode;
 	public static String JavaEditorPreferencePage_showQuickFixables;
@@ -309,16 +299,13 @@ public final class PreferencesMessages extends NLS {
 	public static String SourceAttachmentPropertyPage_invalid_container;
 	public static String SourceAttachmentPropertyPage_noarchive_message;
 	public static String SourceAttachmentPropertyPage_containerentry_message;
-	public static String NativeLibrariesPropertyPage_invalidElementSelection_desription;
-	public static String NativeLibrariesPropertyPage_errorAttaching_title;
-	public static String NativeLibrariesPropertyPage_errorAttaching_message;
 	public static String AppearancePreferencePage_description;
 	//public static String AppearancePreferencePage_methodreturntype_label;
 	public static String AppearancePreferencePage_inferredmethodreturntype_label;
 	public static String AppearancePreferencePage_showCategory_label;
-	public static String AppearancePreferencePage_methodtypeparams_label;
-	public static String AppearancePreferencePage_pkgNamePatternEnable_label;
-	public static String AppearancePreferencePage_pkgNamePattern_label;
+//	public static String AppearancePreferencePage_methodtypeparams_label;
+//	public static String AppearancePreferencePage_pkgNamePatternEnable_label;
+//	public static String AppearancePreferencePage_pkgNamePattern_label;
 	public static String AppearancePreferencePage_showMembersInPackagesView;
 	public static String AppearancePreferencePage_stackViewsVerticallyInTheJavaBrowsingPerspective;
 //	public static String AppearancePreferencePage_note;
@@ -712,21 +699,6 @@ public final class PreferencesMessages extends NLS {
 	public static String FoldingConfigurationBlock_info_no_preferences;
 	public static String FoldingConfigurationBlock_error_not_exist;
 	public static String FoldingConfigurationBlock_warning_providerNotFound_resetToDefault;
-	public static String PropertiesFileEditorPreferencePage_key;
-	public static String PropertiesFileEditorPreferencePage_value;
-	public static String PropertiesFileEditorPreferencePage_assignment;
-	public static String PropertiesFileEditorPreferencePage_argument;
-	public static String PropertiesFileEditorPreferencePage_comment;
-	public static String PropertiesFileEditorPreferencePage_foreground;
-	public static String PropertiesFileEditorPreferencePage_color;
-	public static String PropertiesFileEditorPreferencePage_bold;
-	public static String PropertiesFileEditorPreferencePage_italic;
-	public static String PropertiesFileEditorPreferencePage_strikethrough;
-	public static String PropertiesFileEditorPreferencePage_underline;
-	public static String PropertiesFileEditorPreferencePage_enable;
-	public static String PropertiesFileEditorPreferencePage_preview;
-	public static String PropertiesFileEditorPreferencePage_link;
-	public static String PropertiesFileEditorPreferencePage_link_tooltip;
 	public static String SmartTypingConfigurationBlock_autoclose_title;
 	public static String SmartTypingConfigurationBlock_automove_title;
 	public static String SmartTypingConfigurationBlock_tabs_title;
