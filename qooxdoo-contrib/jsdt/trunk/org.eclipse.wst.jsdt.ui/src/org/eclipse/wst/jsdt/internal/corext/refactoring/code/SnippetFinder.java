@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,11 +23,11 @@ import org.eclipse.wst.jsdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.wst.jsdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.wst.jsdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.wst.jsdt.core.dom.Assignment;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.EnumDeclaration;
 import org.eclipse.wst.jsdt.core.dom.IBinding;
 import org.eclipse.wst.jsdt.core.dom.IVariableBinding;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.SimpleName;
 import org.eclipse.wst.jsdt.core.dom.TypeDeclaration;
 import org.eclipse.wst.jsdt.internal.corext.dom.ASTNodes;
@@ -89,14 +89,14 @@ import org.eclipse.wst.jsdt.internal.corext.dom.GenericVisitor;
 			if (first.getParent() == null)
 				return false;
 			ASTNode candidate= first.getParent().getParent();
-			if (candidate == null || candidate.getNodeType() != ASTNode.METHOD_DECLARATION)
+			if (candidate == null || candidate.getNodeType() != ASTNode.FUNCTION_DECLARATION)
 				return false;
-			MethodDeclaration method= (MethodDeclaration)candidate;
+			FunctionDeclaration method= (FunctionDeclaration)candidate;
 			return method.getBody().statements().size() == fNodes.size();
 		}
-		public MethodDeclaration getEnclosingMethod() {
+		public FunctionDeclaration getEnclosingMethod() {
 			ASTNode first= (ASTNode)fNodes.get(0);
-			return (MethodDeclaration)ASTNodes.getParent(first, ASTNode.METHOD_DECLARATION);
+			return (FunctionDeclaration)ASTNodes.getParent(first, ASTNode.FUNCTION_DECLARATION);
 		}
 	}
 	
@@ -146,7 +146,7 @@ import org.eclipse.wst.jsdt.internal.corext.dom.GenericVisitor;
 	}
 	
 	public static Match[] perform(ASTNode start, ASTNode[] snippet) {
-		Assert.isTrue(start instanceof CompilationUnit || start instanceof AbstractTypeDeclaration || start instanceof AnonymousClassDeclaration);
+		Assert.isTrue(start instanceof JavaScriptUnit || start instanceof AbstractTypeDeclaration || start instanceof AnonymousClassDeclaration);
 		SnippetFinder finder= new SnippetFinder(snippet);
 		start.accept(finder);
 		for (Iterator iter = finder.fResult.iterator(); iter.hasNext();) {
