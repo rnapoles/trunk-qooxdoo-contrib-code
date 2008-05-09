@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,9 +20,9 @@ import org.eclipse.search.ui.text.Match;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
-import org.eclipse.wst.jsdt.ui.JavaUI;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
+import org.eclipse.wst.jsdt.ui.JavaScriptUI;
 
 
 public class OccurrencesSearchResultPage extends AbstractTextSearchViewPage {
@@ -38,16 +38,16 @@ public class OccurrencesSearchResultPage extends AbstractTextSearchViewPage {
 	 */
 	protected void showMatch(Match match, int currentOffset, int currentLength, boolean activate) throws PartInitException {
 		JavaElementLine element= (JavaElementLine) match.getElement();
-		IJavaElement javaElement= element.getJavaElement();
+		IJavaScriptElement javaElement= element.getJavaElement();
 		try {
-			IEditorPart editor= JavaUI.openInEditor(javaElement, activate, false);
+			IEditorPart editor= JavaScriptUI.openInEditor(javaElement, activate, false);
 			if (editor instanceof ITextEditor) {
 				ITextEditor textEditor= (ITextEditor) editor;
 				textEditor.selectAndReveal(currentOffset, currentLength);
 			}
 		} catch (PartInitException e1) {
 			return;
-		} catch (JavaModelException e1) {
+		} catch (JavaScriptModelException e1) {
 			return;
 		}
 

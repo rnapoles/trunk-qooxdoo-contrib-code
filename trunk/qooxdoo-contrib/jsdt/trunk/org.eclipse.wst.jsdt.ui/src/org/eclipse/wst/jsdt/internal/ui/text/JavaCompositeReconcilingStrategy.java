@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.text.java.IProblemRequestorExtension;
 import org.eclipse.wst.jsdt.internal.ui.text.java.JavaReconcilingStrategy;
 import org.eclipse.wst.jsdt.internal.ui.text.spelling.JavaSpellingReconcileStrategy;
@@ -58,7 +58,7 @@ public class JavaCompositeReconcilingStrategy  extends CompositeReconcilingStrat
 		IDocumentProvider p= fEditor.getDocumentProvider();
 		if (p == null) {
 			// work around for https://bugs.eclipse.org/bugs/show_bug.cgi?id=51522
-			p= JavaPlugin.getDefault().getCompilationUnitDocumentProvider();
+			p= JavaScriptPlugin.getDefault().getCompilationUnitDocumentProvider();
 		}
 		IAnnotationModel m= p.getAnnotationModel(fEditor.getEditorInput());
 		if (m instanceof IProblemRequestorExtension)
