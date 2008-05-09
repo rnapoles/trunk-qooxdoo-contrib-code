@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.wst.jsdt.core.ICodeAssist;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.ui.text.JavaWordFinder;
 
 
@@ -44,7 +44,7 @@ public class JavaElementHyperlinkDetector extends AbstractHyperlinkDetector {
 
 		int offset= region.getOffset();
 
-		IJavaElement input= EditorUtility.getEditorInputJavaElement(textEditor, false);
+		IJavaScriptElement input= EditorUtility.getEditorInputJavaElement(textEditor, false);
 		if (input == null)
 			return null;
 
@@ -54,11 +54,11 @@ public class JavaElementHyperlinkDetector extends AbstractHyperlinkDetector {
 			if (wordRegion == null)
 				return null;
 			
-			IJavaElement[] elements= null;
+			IJavaScriptElement[] elements= null;
 			elements= ((ICodeAssist) input).codeSelect(wordRegion.getOffset(), wordRegion.getLength());
 			if (elements != null && elements.length > 0)
 				return new IHyperlink[] {new JavaElementHyperlink(wordRegion, openAction)};
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			return null;
 		}
 

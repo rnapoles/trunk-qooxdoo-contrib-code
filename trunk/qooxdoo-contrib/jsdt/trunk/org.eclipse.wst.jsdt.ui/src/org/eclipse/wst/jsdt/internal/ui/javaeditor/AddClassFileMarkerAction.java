@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AddMarkerAction;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.wst.jsdt.core.IClassFile;
-import org.eclipse.wst.jsdt.core.JavaCore;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.ui.IResourceLocator;
 
 
@@ -49,7 +49,7 @@ class AddClassFileMarkerAction extends AddMarkerAction {
 			if (locator != null) {
 				try {
 					resource= locator.getContainingResource(c);
-				} catch (JavaModelException x) {
+				} catch (JavaScriptModelException x) {
 					// ignore but should inform
 				}
 			}
@@ -69,7 +69,7 @@ class AddClassFileMarkerAction extends AddMarkerAction {
 		if (input instanceof IClassFileEditorInput) {
 
 			IClassFile classFile= ((IClassFileEditorInput) input).getClassFile();
-			JavaCore.addJavaElementMarkerAttributes(attributes, classFile);
+			JavaScriptCore.addJavaScriptElementMarkerAttributes(attributes, classFile);
 		}
 
 		return attributes;

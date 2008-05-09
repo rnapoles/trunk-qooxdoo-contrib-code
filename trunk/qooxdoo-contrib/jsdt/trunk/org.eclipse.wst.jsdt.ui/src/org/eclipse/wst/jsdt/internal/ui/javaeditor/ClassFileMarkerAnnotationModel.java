@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.wst.jsdt.core.IClassFile;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 
 
 /**
@@ -52,7 +52,7 @@ public class ClassFileMarkerAnnotationModel extends AbstractMarkerAnnotationMode
 	 */
 	protected boolean isAcceptable(IMarker marker) {
 		try {
-			return JavaCore.isReferencedBy(fClassFile, marker);
+			return JavaScriptCore.isReferencedBy(fClassFile, marker);
 		} catch (CoreException x) {
 			handleCoreException(x, JavaEditorMessages.ClassFileMarkerAnnotationModel_error_isAcceptable);
 			return false;
@@ -61,7 +61,7 @@ public class ClassFileMarkerAnnotationModel extends AbstractMarkerAnnotationMode
 
 	protected boolean isAffected(IMarkerDelta markerDelta) {
 		try {
-			return JavaCore.isReferencedBy(fClassFile, markerDelta);
+			return JavaScriptCore.isReferencedBy(fClassFile, markerDelta);
 		} catch (CoreException x) {
 			handleCoreException(x, JavaEditorMessages.ClassFileMarkerAnnotationModel_error_isAffected);
 			return false;

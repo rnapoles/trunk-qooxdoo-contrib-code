@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.wst.jsdt.internal.ui.javaeditor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.jsdt.core.IClassFile;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 
 
 /**
@@ -41,7 +41,7 @@ public class ExternalClassFileEditorInput extends FileEditorInput implements ICl
 	 * Refreshes this input element. Workaround for non-updating class file elements.
 	 */
 	public void refresh() {
-		Object element= JavaCore.create(getFile());
+		Object element= JavaScriptCore.create(getFile());
 		if (element instanceof IClassFile)
 			fClassFile= (IClassFile) element;
 	}

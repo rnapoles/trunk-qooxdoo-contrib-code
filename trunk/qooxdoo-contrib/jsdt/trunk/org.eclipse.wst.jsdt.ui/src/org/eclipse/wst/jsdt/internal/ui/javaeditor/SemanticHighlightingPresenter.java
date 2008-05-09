@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,7 +29,7 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.SemanticHighlightingManager.HighlightedPosition;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.SemanticHighlightingManager.Highlighting;
 import org.eclipse.wst.jsdt.internal.ui.text.JavaPresentationReconciler;
@@ -435,10 +435,10 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 			}
 		} catch (BadPositionCategoryException e) {
 			// Should not happen
-			JavaPlugin.log(e);
+			JavaScriptPlugin.log(e);
 		} catch (BadLocationException e) {
 			// Should not happen
-			JavaPlugin.log(e);
+			JavaScriptPlugin.log(e);
 		}
 //		checkOrdering("new positions: ", fPositions); //$NON-NLS-1$
 
@@ -716,10 +716,10 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 			document.addPosition(positionCategory, position);
 		} catch (BadLocationException e) {
 			// Should not happen
-			JavaPlugin.log(e);
+			JavaScriptPlugin.log(e);
 		} catch (BadPositionCategoryException e) {
 			// Should not happen
-			JavaPlugin.log(e);
+			JavaScriptPlugin.log(e);
 		}
 	}
 
@@ -758,7 +758,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 				document.removePositionCategory(getPositionCategory());
 			} catch (BadPositionCategoryException e) {
 				// Should not happen
-				JavaPlugin.log(e);
+				JavaScriptPlugin.log(e);
 			}
 		}
 	}
