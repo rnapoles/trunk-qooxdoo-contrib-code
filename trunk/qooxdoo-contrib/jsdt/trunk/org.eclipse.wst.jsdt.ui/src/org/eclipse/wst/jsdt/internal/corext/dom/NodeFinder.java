@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,17 +13,19 @@ package org.eclipse.wst.jsdt.internal.corext.dom;
 import org.eclipse.wst.jsdt.core.IBuffer;
 import org.eclipse.wst.jsdt.core.ISourceRange;
 import org.eclipse.wst.jsdt.core.ITypeRoot;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.ToolFactory;
 import org.eclipse.wst.jsdt.core.compiler.IScanner;
 import org.eclipse.wst.jsdt.core.compiler.ITerminalSymbols;
 import org.eclipse.wst.jsdt.core.compiler.InvalidInputException;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
 /**
- * For a give range finds the node covered and the node covering.
- * 
- * @since		2.1
- */
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class NodeFinder extends GenericVisitor {
 
 	/**
@@ -81,11 +83,11 @@ public class NodeFinder extends GenericVisitor {
 	 * @param source the source of the compilation unit
 	 * 
 	 * @return the result node
-	 * @throws JavaModelException if an error occurs in the Java model
+	 * @throws JavaScriptModelException if an error occurs in the Java model
 	 * 
 	 * @since		3.0
 	 */
-	public static ASTNode perform(ASTNode root, int start, int length, ITypeRoot source) throws JavaModelException {
+	public static ASTNode perform(ASTNode root, int start, int length, ITypeRoot source) throws JavaScriptModelException {
 		NodeFinder finder= new NodeFinder(start, length);
 		root.accept(finder);
 		ASTNode result= finder.getCoveredNode();

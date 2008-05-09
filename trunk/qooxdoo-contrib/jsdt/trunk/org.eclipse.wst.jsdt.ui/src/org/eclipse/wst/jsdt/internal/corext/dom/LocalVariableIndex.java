@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,11 +16,17 @@ import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
 import org.eclipse.wst.jsdt.core.dom.BodyDeclaration;
 import org.eclipse.wst.jsdt.core.dom.IVariableBinding;
 import org.eclipse.wst.jsdt.core.dom.Initializer;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
 
-
+/**
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class LocalVariableIndex extends ASTVisitor {
 	
 	private int fTopIndex;
@@ -36,8 +42,8 @@ public class LocalVariableIndex extends ASTVisitor {
 	public static int perform(BodyDeclaration declaration) {
 		Assert.isTrue(declaration != null);
 		switch (declaration.getNodeType()) {
-			case ASTNode.METHOD_DECLARATION:
-				return internalPerform((MethodDeclaration)declaration);
+			case ASTNode.FUNCTION_DECLARATION:
+				return internalPerform((FunctionDeclaration)declaration);
 			case ASTNode.INITIALIZER:
 				return internalPerform((Initializer)declaration);
 			default:
@@ -46,12 +52,12 @@ public class LocalVariableIndex extends ASTVisitor {
 		return -1;
 	}
 	
-	private static int internalPerform(MethodDeclaration method) {
+	private static int internalPerform(FunctionDeclaration method) {
 		// we have to find the outermost method declaration since a local or anonymous
 		// type can reference final variables from the outer scope.
-		MethodDeclaration target= method;
-		while (ASTNodes.getParent(target, ASTNode.METHOD_DECLARATION) != null) {
-			target= (MethodDeclaration)ASTNodes.getParent(target, ASTNode.METHOD_DECLARATION);
+		FunctionDeclaration target= method;
+		while (ASTNodes.getParent(target, ASTNode.FUNCTION_DECLARATION) != null) {
+			target= (FunctionDeclaration)ASTNodes.getParent(target, ASTNode.FUNCTION_DECLARATION);
 		}
 		return doPerform(target);
 	}
