@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.internal.corext.refactoring.rename;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.core.IType;
 import org.eclipse.wst.jsdt.core.compiler.IScanner;
 import org.eclipse.wst.jsdt.core.compiler.ITerminalSymbols;
@@ -29,11 +29,11 @@ public class TypeOccurrenceCollector extends CuCollectingSearchRequestor {
 		fOldQualifiedName= type.getFullyQualifiedName('.');
 	}
 
-	public void acceptSearchMatch(ICompilationUnit unit, SearchMatch match) throws CoreException {
+	public void acceptSearchMatch(IJavaScriptUnit unit, SearchMatch match) throws CoreException {
 		collectMatch(acceptSearchMatch2(unit, match));
 	}
 	
-	public SearchMatch acceptSearchMatch2(ICompilationUnit unit, SearchMatch match) throws CoreException {
+	public SearchMatch acceptSearchMatch2(IJavaScriptUnit unit, SearchMatch match) throws CoreException {
 		int start= match.getOffset();
 		int length= match.getLength();
 		

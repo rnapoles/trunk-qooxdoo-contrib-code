@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.IMember;
 import org.eclipse.wst.jsdt.internal.corext.util.JdtFlags;
 
@@ -24,18 +24,18 @@ import org.eclipse.wst.jsdt.internal.corext.util.JdtFlags;
  */
 public class JavaProcessors {
 
-	public static String[] computeAffectedNatures(IJavaElement element) throws CoreException {
+	public static String[] computeAffectedNatures(IJavaScriptElement element) throws CoreException {
 		if (element instanceof IMember) {
 			IMember member= (IMember)element;
 			if (JdtFlags.isPrivate(member)) {
-				return element.getJavaProject().getProject().getDescription().getNatureIds();
+				return element.getJavaScriptProject().getProject().getDescription().getNatureIds();
 			}
 		}
-		IJavaProject project= element.getJavaProject();
+		IJavaScriptProject project= element.getJavaScriptProject();
 		return ResourceProcessors.computeAffectedNatures(project.getProject());
 	}
 	
-	public static String[] computeAffectedNaturs(IJavaElement[] elements) throws CoreException {
+	public static String[] computeAffectedNaturs(IJavaScriptElement[] elements) throws CoreException {
 		Set result= new HashSet();
 		for (int i= 0; i < elements.length; i++) {
 			String[] natures= computeAffectedNatures(elements[i]);

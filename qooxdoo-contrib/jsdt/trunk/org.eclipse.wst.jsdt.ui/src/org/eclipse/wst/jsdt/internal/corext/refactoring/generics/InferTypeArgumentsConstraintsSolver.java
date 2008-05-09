@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.typeconstraints.types.ArrayType;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.typeconstraints.types.HierarchyType;
@@ -350,7 +350,7 @@ public class InferTypeArgumentsConstraintsSolver {
 		if (unresolvedTypes.size() != 0) {
 			TType[] interfaces= (TType[]) unresolvedTypes.toArray(new TType[unresolvedTypes.size()]);
 			HierarchyType firstInterface= (HierarchyType) interfaces[0];
-			IJavaProject javaProject= firstInterface.getJavaElementType().getJavaProject();
+			IJavaScriptProject javaProject= firstInterface.getJavaElementType().getJavaScriptProject();
 			ITypeBinding[] interfaceBindings= TypeEnvironment.createTypeBindings(interfaces, javaProject); //expensive...
 			for (int i= 0; i < interfaceBindings.length; i++) {
 				if (interfaceBindings[i].getDeclaredMethods().length == 0) {
