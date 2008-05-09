@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,9 +19,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusInfo;
@@ -109,26 +109,26 @@ public class JsGlobalScopeContainerDefaultPage extends NewElementWizardPage impl
 	/* (non-Javadoc)
 	 * @see IJsGlobalScopeContainerPage#getSelection()
 	 */
-	public IClasspathEntry getSelection() {
-		return JavaCore.newContainerEntry(new Path(fEntryField.getText()));
+	public IIncludePathEntry getSelection() {
+		return JavaScriptCore.newContainerEntry(new Path(fEntryField.getText()));
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.wst.jsdt.ui.wizards.IJsGlobalScopeContainerPageExtension#initialize(org.eclipse.wst.jsdt.core.IJavaProject, org.eclipse.wst.jsdt.core.IClasspathEntry)
+	 * @see org.eclipse.wst.jsdt.ui.wizards.IJsGlobalScopeContainerPageExtension#initialize(org.eclipse.wst.jsdt.core.IJavaScriptProject, org.eclipse.wst.jsdt.core.IIncludePathEntry)
 	 */
-	public void initialize(IJavaProject project, IClasspathEntry[] currentEntries) {
+	public void initialize(IJavaScriptProject project, IIncludePathEntry[] currentEntries) {
 		for (int i= 0; i < currentEntries.length; i++) {
-			IClasspathEntry curr= currentEntries[i];
-			if (curr.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+			IIncludePathEntry curr= currentEntries[i];
+			if (curr.getEntryKind() == IIncludePathEntry.CPE_CONTAINER) {
 				fUsedPaths.add(curr.getPath());
 			}
 		}
 	}		
 
 	/* (non-Javadoc)
-	 * @see IJsGlobalScopeContainerPage#setSelection(IClasspathEntry)
+	 * @see IJsGlobalScopeContainerPage#setSelection(IIncludePathEntry)
 	 */
-	public void setSelection(IClasspathEntry containerEntry) {
+	public void setSelection(IIncludePathEntry containerEntry) {
 		if (containerEntry != null) {
 			fUsedPaths.remove(containerEntry.getPath());
 			fEntryField.setText(containerEntry.getPath().toString());

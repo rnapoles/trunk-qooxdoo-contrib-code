@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.wst.jsdt.internal.ui.viewsupport;
 
 import org.eclipse.wst.jsdt.core.IPackageFragment;
 import org.eclipse.wst.jsdt.internal.ui.browsing.LogicalPackage;
-import org.eclipse.wst.jsdt.ui.JavaElementImageDescriptor;
+import org.eclipse.wst.jsdt.ui.JavaScriptElementImageDescriptor;
 import org.eclipse.wst.jsdt.ui.ProblemsLabelDecorator;
 
 /**
@@ -56,7 +56,7 @@ public class TreeHierarchyLayoutProblemsDecorator extends ProblemsLabelDecorator
 			int res= 0;
 			for (int i= 0; i < fragments.length; i++) {
 				int flags= computePackageAdornmentFlags(fragments[i]);
-				if (flags == JavaElementImageDescriptor.ERROR) {
+				if (flags == JavaScriptElementImageDescriptor.ERROR) {
 					return flags;
 				} else if (flags != 0) {
 					res= flags;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.wizards.IStatusChangeListener;
 import org.eclipse.wst.jsdt.internal.ui.wizards.NewWizardMessages;
@@ -39,7 +39,7 @@ public class SourceAttachmentDialog extends StatusDialog {
 	 * @param parent Parent shell for the dialog
 	 * @param entry The entry to edit.
 	 */
-	public SourceAttachmentDialog(Shell parent, IClasspathEntry entry) {
+	public SourceAttachmentDialog(Shell parent, IIncludePathEntry entry) {
 		super(parent);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 
@@ -83,7 +83,7 @@ public class SourceAttachmentDialog extends StatusDialog {
 	/**
 	 * Returns the configured class path entry
 	 */
-	public IClasspathEntry getResult() {
+	public IIncludePathEntry getResult() {
 		return fSourceAttachmentBlock.getNewEntry();
 	}
 }	
