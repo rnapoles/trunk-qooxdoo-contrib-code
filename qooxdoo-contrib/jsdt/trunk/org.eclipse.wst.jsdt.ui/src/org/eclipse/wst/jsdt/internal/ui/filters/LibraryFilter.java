@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,7 +35,7 @@ public class LibraryFilter extends ViewerFilter {
 				IResource resource= root.getResource();
 				if (resource != null) {
 					IProject jarProject= resource.getProject();
-					IProject container= root.getJavaProject().getProject();
+					IProject container= root.getJavaScriptProject().getProject();
 					return container.equals(jarProject);
 				}
 				return false;
