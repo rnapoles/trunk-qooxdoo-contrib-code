@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.base.JDTChange;
 
 public abstract class AbstractJavaElementRenameChange extends JDTChange {
@@ -51,7 +51,7 @@ public abstract class AbstractJavaElementRenameChange extends JDTChange {
 	protected abstract void doRename(IProgressMonitor pm) throws CoreException;
 
 	public Object getModifiedElement() {
-		return JavaCore.create(getResource());
+		return JavaScriptCore.create(getResource());
 	}
 
 	public String getNewName() {
