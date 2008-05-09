@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.mapping.ResourceMapping;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.participants.ReorgExecutionLog;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.core.IPackageFragment;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
 import org.eclipse.wst.jsdt.internal.corext.util.JavaElementResourceMapping;
@@ -28,7 +28,7 @@ public class MonitoringNewNameQueries implements INewNameQueries {
 		fDelegate= delegate;
 		fExecutionLog= log;
 	}
-	public INewNameQuery createNewCompilationUnitNameQuery(final ICompilationUnit cu, final String initialSuggestedName) {
+	public INewNameQuery createNewCompilationUnitNameQuery(final IJavaScriptUnit cu, final String initialSuggestedName) {
 		return new INewNameQuery() {
 			public String getNewName() throws OperationCanceledException {
 				String result= fDelegate.createNewCompilationUnitNameQuery(cu, initialSuggestedName).getNewName();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,10 +14,10 @@ import java.util.Map;
 
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
-import org.eclipse.wst.jsdt.core.IMethod;
-import org.eclipse.wst.jsdt.core.JavaModelException;
-import org.eclipse.wst.jsdt.core.refactoring.IJavaRefactorings;
-import org.eclipse.wst.jsdt.core.refactoring.descriptors.RenameJavaElementDescriptor;
+import org.eclipse.wst.jsdt.core.IFunction;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
+import org.eclipse.wst.jsdt.core.refactoring.IJavaScriptRefactorings;
+import org.eclipse.wst.jsdt.core.refactoring.descriptors.RenameJavaScriptElementDescriptor;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.JDTRefactoringContribution;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.JDTRefactoringDescriptor;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.rename.JavaRenameProcessor;
@@ -36,11 +36,11 @@ public final class RenameMethodRefactoringContribution extends JDTRefactoringCon
 	/**
 	 * {@inheritDoc}
 	 */
-	public Refactoring createRefactoring(final RefactoringDescriptor descriptor) throws JavaModelException {
+	public Refactoring createRefactoring(final RefactoringDescriptor descriptor) throws JavaScriptModelException {
 		String project= descriptor.getProject();
 		Map arguments= ((JDTRefactoringDescriptor) descriptor).getArguments();
 		String input= (String) arguments.get(JDTRefactoringDescriptor.ATTRIBUTE_INPUT);
-		IMethod method= (IMethod) JDTRefactoringDescriptor.handleToElement(project, input);
+		IFunction method= (IFunction) JDTRefactoringDescriptor.handleToElement(project, input);
 		
 		JavaRenameProcessor processor;
 		if (MethodChecks.isVirtual(method)) {
@@ -55,6 +55,6 @@ public final class RenameMethodRefactoringContribution extends JDTRefactoringCon
 	 * {@inheritDoc}
 	 */
 	public RefactoringDescriptor createDescriptor() {
-		return new RenameJavaElementDescriptor(IJavaRefactorings.RENAME_METHOD);
+		return new RenameJavaScriptElementDescriptor(IJavaScriptRefactorings.RENAME_METHOD);
 	}
 }
