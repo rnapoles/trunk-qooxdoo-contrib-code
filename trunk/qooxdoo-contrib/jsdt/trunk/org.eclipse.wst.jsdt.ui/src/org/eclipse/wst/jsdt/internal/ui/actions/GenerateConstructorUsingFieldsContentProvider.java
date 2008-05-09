@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,9 +20,9 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.wst.jsdt.core.IField;
 import org.eclipse.wst.jsdt.core.IType;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.dom.AST;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 import org.eclipse.wst.jsdt.core.dom.IVariableBinding;
 import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
@@ -40,11 +40,11 @@ public class GenerateConstructorUsingFieldsContentProvider implements ITreeConte
 
 	private ITypeBinding fType= null;
 
-	private final CompilationUnit fUnit;
+	private final JavaScriptUnit fUnit;
 
-	public GenerateConstructorUsingFieldsContentProvider(IType type, List fields, List selected) throws JavaModelException {
+	public GenerateConstructorUsingFieldsContentProvider(IType type, List fields, List selected) throws JavaScriptModelException {
 		RefactoringASTParser parser= new RefactoringASTParser(AST.JLS3);
-		fUnit= parser.parse(type.getCompilationUnit(), true);
+		fUnit= parser.parse(type.getJavaScriptUnit(), true);
 		fType= ASTNodes.getTypeBinding(fUnit, type);
 		if (fType != null) {
 			IField field= null;
@@ -69,7 +69,7 @@ public class GenerateConstructorUsingFieldsContentProvider implements ITreeConte
 		}
 	}
 
-	public CompilationUnit getCompilationUnit() {
+	public JavaScriptUnit getCompilationUnit() {
 		return fUnit;
 	}
 

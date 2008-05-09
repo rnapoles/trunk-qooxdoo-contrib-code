@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.jsdt.ui.text.IJavaPartitions;
+import org.eclipse.wst.jsdt.ui.text.IJavaScriptPartitions;
 
 
 /**
@@ -53,23 +53,23 @@ public class RemoveBlockCommentAction extends BlockCommentAction {
 		int offset= selection.getOffset();
 		int endOffset= offset + selection.getLength();
 
-		ITypedRegion partition= docExtension.getPartition(IJavaPartitions.JAVA_PARTITIONING, offset, false);
+		ITypedRegion partition= docExtension.getPartition(IJavaScriptPartitions.JAVA_PARTITIONING, offset, false);
 		int partOffset= partition.getOffset();
 		int partEndOffset= partOffset + partition.getLength();
 		
 		while (partEndOffset < endOffset) {
 			
-			if (partition.getType() == IJavaPartitions.JAVA_MULTI_LINE_COMMENT) {
+			if (partition.getType() == IJavaScriptPartitions.JAVA_MULTI_LINE_COMMENT) {
 				edits.add(factory.createEdit(partOffset, tokenLength, "")); //$NON-NLS-1$
 				edits.add(factory.createEdit(partEndOffset - tokenLength, tokenLength, "")); //$NON-NLS-1$
 			}
 			
-			partition= docExtension.getPartition(IJavaPartitions.JAVA_PARTITIONING, partEndOffset, false);
+			partition= docExtension.getPartition(IJavaScriptPartitions.JAVA_PARTITIONING, partEndOffset, false);
 			partOffset= partition.getOffset();
 			partEndOffset= partOffset + partition.getLength();
 		}
 
-		if (partition.getType() == IJavaPartitions.JAVA_MULTI_LINE_COMMENT) {
+		if (partition.getType() == IJavaScriptPartitions.JAVA_MULTI_LINE_COMMENT) {
 			edits.add(factory.createEdit(partOffset, tokenLength, "")); //$NON-NLS-1$
 			edits.add(factory.createEdit(partEndOffset - tokenLength, tokenLength, "")); //$NON-NLS-1$
 		}

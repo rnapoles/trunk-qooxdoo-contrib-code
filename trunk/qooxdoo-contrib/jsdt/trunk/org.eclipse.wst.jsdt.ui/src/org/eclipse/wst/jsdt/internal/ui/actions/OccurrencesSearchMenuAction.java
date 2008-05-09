@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 import org.eclipse.ui.actions.RetargetAction;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.wst.jsdt.internal.ui.search.SearchMessages;
 import org.eclipse.wst.jsdt.ui.actions.IJavaEditorActionDefinitionIds;
@@ -120,7 +120,7 @@ public class OccurrencesSearchMenuAction implements IWorkbenchWindowPulldownDele
 	 */
 	public void run(IAction action) {
 		JavaEditor editor= null;
-		IWorkbenchPart activePart= JavaPlugin.getActivePage().getActivePart();
+		IWorkbenchPart activePart= JavaScriptPlugin.getActivePage().getActivePart();
 		if (activePart instanceof JavaEditor)
 			editor= (JavaEditor) activePart;
 		

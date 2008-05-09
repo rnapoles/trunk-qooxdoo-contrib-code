@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.actions.ActionGroup;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * A MultiActionGroup will display a list of IActions in a menu by transforming them
@@ -96,7 +96,7 @@ public class MultiActionGroup extends ActionGroup {
 					
 					MenuItem mi= new MenuItem(menu, style, index);
 					ImageDescriptor d= fActions[j].getImageDescriptor();
-					mi.setImage(JavaPlugin.getImageDescriptorRegistry().get(d));
+					mi.setImage(JavaScriptPlugin.getImageDescriptorRegistry().get(d));
 					fItems[j]= mi;
 					mi.setText(fActions[j].getText());
 					mi.setSelection(fCurrentSelection == j);

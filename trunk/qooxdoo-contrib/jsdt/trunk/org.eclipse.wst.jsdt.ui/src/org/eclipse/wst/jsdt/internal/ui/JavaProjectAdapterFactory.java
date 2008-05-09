@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ package org.eclipse.wst.jsdt.internal.ui;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 
 /**
  * An adapter factory for IJavaProjects.
@@ -31,7 +31,7 @@ public class JavaProjectAdapterFactory implements IAdapterFactory {
 	
 	public Object getAdapter(Object element, Class key) {
 		if (IProject.class.equals(key)) {
-			IJavaProject javaProject= (IJavaProject)element;
+			IJavaScriptProject javaProject= (IJavaScriptProject)element;
 			return javaProject.getProject();
 		} 
 		return null; 
