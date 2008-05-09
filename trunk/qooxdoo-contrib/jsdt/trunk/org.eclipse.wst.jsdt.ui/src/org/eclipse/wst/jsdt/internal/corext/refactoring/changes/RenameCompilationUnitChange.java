@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,15 +17,15 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.AbstractJavaElementRenameChange;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringCoreMessages;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 
 public final class RenameCompilationUnitChange extends AbstractJavaElementRenameChange {
 
-	public RenameCompilationUnitChange(ICompilationUnit unit, String newName) {
+	public RenameCompilationUnitChange(IJavaScriptUnit unit, String newName) {
 		this(unit.getResource().getFullPath(), unit.getElementName(), newName, IResource.NULL_STAMP);
 		Assert.isTrue(!unit.isReadOnly(), "compilation unit must not be read-only"); //$NON-NLS-1$
 	}
@@ -42,12 +42,12 @@ public final class RenameCompilationUnitChange extends AbstractJavaElementRename
 			return path.removeLastSegments(1).append(getNewName());
 	}
 
-	protected Change createUndoChange(long stampToRestore) throws JavaModelException {
+	protected Change createUndoChange(long stampToRestore) throws JavaScriptModelException {
 		return new RenameCompilationUnitChange(createNewPath(), getNewName(), getOldName(), stampToRestore);
 	}
 
 	protected void doRename(IProgressMonitor pm) throws CoreException {
-		ICompilationUnit cu= (ICompilationUnit) getModifiedElement();
+		IJavaScriptUnit cu= (IJavaScriptUnit) getModifiedElement();
 		if (cu != null)
 			cu.rename(getNewName(), false, pm);
 	}
