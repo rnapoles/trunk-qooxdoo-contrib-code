@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,12 +15,18 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.wst.jsdt.core.IBuffer;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IMember;
 import org.eclipse.wst.jsdt.core.IOpenable;
-import org.eclipse.wst.jsdt.core.JavaModelException;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
-
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
+/**
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class CallLocation implements IAdaptable {
     public static final int UNKNOWN_LINE_NUMBER= -1;
     private IMember fMember;
@@ -40,7 +46,7 @@ public class CallLocation implements IAdaptable {
     }
 
     /**
-     * @return IMethod
+     * @return IFunction
      */
     public IMember getCalledMember() {
         return fCalledMember;
@@ -92,7 +98,7 @@ public class CallLocation implements IAdaptable {
             try {
                 fLineNumber= document.getLineOfOffset(fStart) + 1;
             } catch (BadLocationException e) {
-                JavaPlugin.log(e);
+                JavaScriptPlugin.log(e);
             }
         }
     }
@@ -110,8 +116,8 @@ public class CallLocation implements IAdaptable {
             if (openable != null && fMember.exists()) {
                 buffer = openable.getBuffer();
             }
-        } catch (JavaModelException e) {
-            JavaPlugin.log(e);
+        } catch (JavaScriptModelException e) {
+            JavaScriptPlugin.log(e);
         }
         return buffer;
     }
@@ -121,7 +127,7 @@ public class CallLocation implements IAdaptable {
     }
     
     public Object getAdapter(Class adapter) {
-        if (IJavaElement.class.isAssignableFrom(adapter)) {
+        if (IJavaScriptElement.class.isAssignableFrom(adapter)) {
             return getMember();
         }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.IMethod;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
-
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.IFunction;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
+/**
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 class CalleeMethodWrapper extends MethodWrapper {
     private Comparator fMethodWrapperComparator = new MethodWrapperComparator();
 
@@ -83,14 +89,14 @@ class CalleeMethodWrapper extends MethodWrapper {
 	 * @see org.eclipse.wst.jsdt.internal.corext.callhierarchy.MethodWrapper#findChildren(org.eclipse.core.runtime.IProgressMonitor)
      */
     protected Map findChildren(IProgressMonitor progressMonitor) {
-    	if (getMember().exists() && getMember().getElementType() == IJavaElement.METHOD) {
-        	CompilationUnit cu= CallHierarchy.getCompilationUnitNode(getMember(), true);
+    	if (getMember().exists() && getMember().getElementType() == IJavaScriptElement.METHOD) {
+        	JavaScriptUnit cu= CallHierarchy.getCompilationUnitNode(getMember(), true);
             if (progressMonitor != null) {
                 progressMonitor.worked(5);
             }
 
         	if (cu != null) {
-        		CalleeAnalyzerVisitor visitor = new CalleeAnalyzerVisitor((IMethod) getMember(),
+        		CalleeAnalyzerVisitor visitor = new CalleeAnalyzerVisitor((IFunction) getMember(),
         				cu, progressMonitor);
         
         		cu.accept(visitor);

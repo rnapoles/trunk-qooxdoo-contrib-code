@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,15 +20,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IMember;
 import org.eclipse.wst.jsdt.internal.ui.callhierarchy.MethodWrapperWorkbenchAdapter;
 
 /**
- * This class represents the general parts of a method call (either to or from a
- * method).
- *
- */
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public abstract class MethodWrapper extends PlatformObject {
     private Map fElements = null;
 
@@ -61,7 +63,7 @@ public abstract class MethodWrapper extends PlatformObject {
     }
 
     public Object getAdapter(Class adapter) {
-		if (adapter == IJavaElement.class) {
+		if (adapter == IJavaScriptElement.class) {
 	        return getMember();
 	    } else if (adapter == IWorkbenchAdapter.class){
 	    	return new MethodWrapperWorkbenchAdapter(this);
@@ -232,7 +234,7 @@ public abstract class MethodWrapper extends PlatformObject {
     }
 
     /**
-     * This method finds the children of the current IMethod (either callers or
+     * This method finds the children of the current IFunction (either callers or
      * callees, depending on the concrete subclass.
      * @return The result of the search for children
      */
