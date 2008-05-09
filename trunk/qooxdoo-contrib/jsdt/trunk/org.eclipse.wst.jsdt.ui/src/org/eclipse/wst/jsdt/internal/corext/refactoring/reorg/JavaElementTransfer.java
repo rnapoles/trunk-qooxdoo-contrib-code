@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,8 +18,8 @@ import java.io.IOException;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 
 public class JavaElementTransfer extends ByteArrayTransfer {
 
@@ -65,10 +65,10 @@ public class JavaElementTransfer extends ByteArrayTransfer {
 	 * @see org.eclipse.swt.dnd.Transfer#javaToNative(java.lang.Object, org.eclipse.swt.dnd.TransferData)
 	 */
 	protected void javaToNative(Object data, TransferData transferData) {
-		if (!(data instanceof IJavaElement[]))
+		if (!(data instanceof IJavaScriptElement[]))
 			return;
 
-		IJavaElement[] javaElements= (IJavaElement[]) data;
+		IJavaScriptElement[] javaElements= (IJavaScriptElement[]) data;
 		/*
 		 * The element serialization format is:
 		 *  (int) number of element
@@ -115,7 +115,7 @@ public class JavaElementTransfer extends ByteArrayTransfer {
 		DataInputStream in= new DataInputStream(new ByteArrayInputStream(bytes));
 		try {
 			int count= in.readInt();
-			IJavaElement[] results= new IJavaElement[count];
+			IJavaScriptElement[] results= new IJavaScriptElement[count];
 			for (int i= 0; i < count; i++) {
 				results[i]= readJavaElement(in);
 			}
@@ -125,12 +125,12 @@ public class JavaElementTransfer extends ByteArrayTransfer {
 		}
 	}
 
-	private IJavaElement readJavaElement(DataInputStream dataIn) throws IOException {
+	private IJavaScriptElement readJavaElement(DataInputStream dataIn) throws IOException {
 		String handleIdentifier= dataIn.readUTF();
-		return JavaCore.create(handleIdentifier);
+		return JavaScriptCore.create(handleIdentifier);
 	}
 
-	private static void writeJavaElement(DataOutputStream dataOut, IJavaElement element) throws IOException {
+	private static void writeJavaElement(DataOutputStream dataOut, IJavaScriptElement element) throws IOException {
 		dataOut.writeUTF(element.getHandleIdentifier());
 	}
 }

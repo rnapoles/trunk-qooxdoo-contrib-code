@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 import org.eclipse.ltk.core.refactoring.participants.ValidateEditChecker;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IPackageFragment;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
 import org.eclipse.wst.jsdt.internal.core.JavaProject;
@@ -58,20 +58,20 @@ public abstract class RefactoringModifications {
 	}
 
 	protected IResource[] collectResourcesOfInterest(IPackageFragment source) throws CoreException {
-		IJavaElement[] children = source.getChildren();
-		int childOfInterest = IJavaElement.COMPILATION_UNIT;
+		IJavaScriptElement[] children = source.getChildren();
+		int childOfInterest = IJavaScriptElement.JAVASCRIPT_UNIT;
 		if (source.getKind() == IPackageFragmentRoot.K_BINARY) {
-			childOfInterest = IJavaElement.CLASS_FILE;
+			childOfInterest = IJavaScriptElement.CLASS_FILE;
 		}
 		ArrayList result = new ArrayList(children.length);
 		for (int i = 0; i < children.length; i++) {
-			IJavaElement child = children[i];
+			IJavaScriptElement child = children[i];
 			if (child.getElementType() == childOfInterest && child.getResource() != null) {
 				result.add(child.getResource());
 			}
 		}
 		// Gather non-java resources
-		Object[] nonJavaResources = source.getNonJavaResources();
+		Object[] nonJavaResources = source.getNonJavaScriptResources();
 		for (int i= 0; i < nonJavaResources.length; i++) {
 			Object element= nonJavaResources[i];
 			if (element instanceof IResource) {

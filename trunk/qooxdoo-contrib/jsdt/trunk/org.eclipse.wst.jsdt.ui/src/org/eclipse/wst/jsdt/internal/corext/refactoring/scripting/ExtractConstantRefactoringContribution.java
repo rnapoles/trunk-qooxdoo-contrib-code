@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package org.eclipse.wst.jsdt.internal.corext.refactoring.scripting;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.JDTRefactoringContribution;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.code.ExtractConstantRefactoring;
 
@@ -28,6 +28,6 @@ public final class ExtractConstantRefactoringContribution extends JDTRefactoring
 	 * {@inheritDoc}
 	 */
 	public final Refactoring createRefactoring(final RefactoringDescriptor descriptor) throws CoreException {
-		return new ExtractConstantRefactoring((ICompilationUnit) null, 0, 0);
+		return new ExtractConstantRefactoring((IJavaScriptUnit) null, 0, 0);
 	}
 }
