@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,13 +41,13 @@ public class JavaNoTypeCompletionProposalComputer extends JavaCompletionProposal
 		collector.setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, false);
 		collector.setIgnored(CompletionProposal.VARIABLE_DECLARATION, false);
 		
-		collector.setIgnored(CompletionProposal.JAVADOC_BLOCK_TAG, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_FIELD_REF, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_INLINE_TAG, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_METHOD_REF, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_PARAM_REF, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_TYPE_REF, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_VALUE_REF, true);
+		collector.setIgnored(CompletionProposal.JSDOC_BLOCK_TAG, true);
+		collector.setIgnored(CompletionProposal.JSDOC_FIELD_REF, true);
+		collector.setIgnored(CompletionProposal.JSDOC_INLINE_TAG, true);
+		collector.setIgnored(CompletionProposal.JSDOC_METHOD_REF, true);
+		collector.setIgnored(CompletionProposal.JSDOC_PARAM_REF, true);
+		collector.setIgnored(CompletionProposal.JSDOC_TYPE_REF, true);
+		collector.setIgnored(CompletionProposal.JSDOC_VALUE_REF, true);
 		
 		collector.setIgnored(CompletionProposal.TYPE_REF, true);
 		return collector;

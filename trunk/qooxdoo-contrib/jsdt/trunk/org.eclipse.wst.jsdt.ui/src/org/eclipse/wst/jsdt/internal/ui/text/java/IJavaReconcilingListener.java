@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.internal.ui.text.java;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 
 
 /**
@@ -33,5 +33,5 @@ public interface IJavaReconcilingListener {
 	 * @param forced			<code>true</code> iff this reconciliation was forced
 	 * @param progressMonitor	the progress monitor
 	 */
-	void reconciled(CompilationUnit ast, boolean forced, IProgressMonitor progressMonitor);
+	void reconciled(JavaScriptUnit ast, boolean forced, IProgressMonitor progressMonitor);
 }

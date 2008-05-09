@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.preferences.OverlayPreferenceStore;
 import org.eclipse.wst.jsdt.internal.ui.preferences.OverlayPreferenceStore.OverlayKey;
 import org.eclipse.wst.jsdt.ui.PreferenceConstants;
@@ -54,7 +54,7 @@ public class DefaultJavaFoldingPreferenceBlock implements IJavaFoldingPreference
 
 
 	public DefaultJavaFoldingPreferenceBlock() {
-		fStore= JavaPlugin.getDefault().getPreferenceStore();
+		fStore= JavaScriptPlugin.getDefault().getPreferenceStore();
 		fKeys= createKeys();
 		fOverlayStore= new OverlayPreferenceStore(fStore, fKeys);
 	}
