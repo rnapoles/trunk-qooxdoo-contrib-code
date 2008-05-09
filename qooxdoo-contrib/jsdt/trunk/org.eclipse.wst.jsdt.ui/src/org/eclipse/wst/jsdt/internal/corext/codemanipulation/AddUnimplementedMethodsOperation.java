@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,16 +22,16 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.AST;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
 import org.eclipse.wst.jsdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.wst.jsdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.wst.jsdt.core.dom.ChildListPropertyDescriptor;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
-import org.eclipse.wst.jsdt.core.dom.IMethodBinding;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
+import org.eclipse.wst.jsdt.core.dom.IFunctionBinding;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ImportRewrite;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ListRewrite;
@@ -40,10 +40,12 @@ import org.eclipse.wst.jsdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.wst.jsdt.internal.ui.preferences.JavaPreferencesSettings;
 
 /**
- * Workspace runnable to add unimplemented methods.
- * 
- * @since 3.1
- */
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnable {
 
 	/** Should the resulting edit be applied? */
@@ -62,7 +64,7 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 	private final int fInsertPos;
 
 	/** The method bindings to implement */
-	private final IMethodBinding[] fMethodsToImplement;
+	private final IFunctionBinding[] fMethodsToImplement;
 
 	/** Should the compilation unit content be saved? */
 	private final boolean fSave;
@@ -74,7 +76,7 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 	private final ITypeBinding fType;
 
 	/** The compilation unit AST node */
-	private final CompilationUnit fASTRoot;
+	private final JavaScriptUnit fASTRoot;
 
 	/**
 	 * Creates a new add unimplemented methods operation.
@@ -87,9 +89,9 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 	 * @param apply <code>true</code> if the resulting edit should be applied, <code>false</code> otherwise
 	 * @param save <code>true</code> if the changed compilation unit should be saved, <code>false</code> otherwise
 	 */
-	public AddUnimplementedMethodsOperation(CompilationUnit astRoot, ITypeBinding type, IMethodBinding[] methodsToImplement, int insertPos, final boolean imports, final boolean apply, final boolean save) {
-		if (astRoot == null || !(astRoot.getJavaElement() instanceof ICompilationUnit)) {
-			throw new IllegalArgumentException("AST must not be null and has to be created from a ICompilationUnit"); //$NON-NLS-1$
+	public AddUnimplementedMethodsOperation(JavaScriptUnit astRoot, ITypeBinding type, IFunctionBinding[] methodsToImplement, int insertPos, final boolean imports, final boolean apply, final boolean save) {
+		if (astRoot == null || !(astRoot.getJavaElement() instanceof IJavaScriptUnit)) {
+			throw new IllegalArgumentException("AST must not be null and has to be created from a IJavaScriptUnit"); //$NON-NLS-1$
 		}
 		if (type == null) {
 			throw new IllegalArgumentException("The type must not be null"); //$NON-NLS-1$
@@ -107,7 +109,7 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 		fApply= apply;
 		fImports= imports;
 		
-		fDoCreateComments= StubUtility.doAddComments(astRoot.getJavaElement().getJavaProject());
+		fDoCreateComments= StubUtility.doAddComments(astRoot.getJavaElement().getJavaScriptProject());
 	}
 	
 	public void setCreateComments(boolean createComments) {
@@ -157,7 +159,7 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 			monitor.beginTask("", 2); //$NON-NLS-1$
 			monitor.setTaskName(CodeGenerationMessages.AddUnimplementedMethodsOperation_description);
 			fCreatedMethods.clear();
-			ICompilationUnit cu= (ICompilationUnit) fASTRoot.getJavaElement();
+			IJavaScriptUnit cu= (IJavaScriptUnit) fASTRoot.getJavaElement();
 			
 			AST ast= fASTRoot.getAST();
 			
@@ -178,12 +180,12 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 				// not possible, we checked this in the constructor
 			}
 			
-			final CodeGenerationSettings settings= JavaPreferencesSettings.getCodeGenerationSettings(cu.getJavaProject());
+			final CodeGenerationSettings settings= JavaPreferencesSettings.getCodeGenerationSettings(cu.getJavaScriptProject());
 			settings.createComments= fDoCreateComments;
 
 			ASTNode insertion= getNodeToInsertBefore(memberRewriter);
 			
-			IMethodBinding[] methodsToImplement= fMethodsToImplement;
+			IFunctionBinding[] methodsToImplement= fMethodsToImplement;
 			if (methodsToImplement == null) {
 				methodsToImplement= StubUtility2.getUnimplementedMethods(currTypeBinding);
 			}
@@ -199,8 +201,8 @@ public final class AddUnimplementedMethodsOperation implements IWorkspaceRunnabl
 			}
 
 			for (int i= 0; i < methodsToImplement.length; i++) {
-				IMethodBinding curr= methodsToImplement[i];
-				MethodDeclaration stub= StubUtility2.createImplementationStub(cu, astRewrite, importRewrite, ast, curr, currTypeBinding.getName(), settings, currTypeBinding.isInterface(), context);
+				IFunctionBinding curr= methodsToImplement[i];
+				FunctionDeclaration stub= StubUtility2.createImplementationStub(cu, astRewrite, importRewrite, ast, curr, currTypeBinding.getName(), settings, currTypeBinding.isInterface(), context);
 				if (stub != null) {
 					fCreatedMethods.add(curr.getKey());
 					if (insertion != null)

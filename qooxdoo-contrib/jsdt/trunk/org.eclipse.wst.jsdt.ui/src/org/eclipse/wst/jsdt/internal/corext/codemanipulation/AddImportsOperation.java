@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,19 +28,19 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.jsdt.core.Flags;
 import org.eclipse.wst.jsdt.core.IBuffer;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.Signature;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
 import org.eclipse.wst.jsdt.core.dom.Annotation;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.IBinding;
-import org.eclipse.wst.jsdt.core.dom.IMethodBinding;
+import org.eclipse.wst.jsdt.core.dom.IFunctionBinding;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 import org.eclipse.wst.jsdt.core.dom.IVariableBinding;
 import org.eclipse.wst.jsdt.core.dom.MarkerAnnotation;
-import org.eclipse.wst.jsdt.core.dom.MethodInvocation;
+import org.eclipse.wst.jsdt.core.dom.FunctionInvocation;
 import org.eclipse.wst.jsdt.core.dom.Modifier;
 import org.eclipse.wst.jsdt.core.dom.Name;
 import org.eclipse.wst.jsdt.core.dom.QualifiedName;
@@ -49,8 +49,8 @@ import org.eclipse.wst.jsdt.core.dom.SimpleName;
 import org.eclipse.wst.jsdt.core.dom.Type;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ImportRewrite;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchConstants;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchConstants;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.core.search.SearchEngine;
 import org.eclipse.wst.jsdt.core.search.SearchPattern;
 import org.eclipse.wst.jsdt.core.search.TypeNameMatch;
@@ -59,18 +59,19 @@ import org.eclipse.wst.jsdt.internal.corext.dom.NodeFinder;
 import org.eclipse.wst.jsdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 import org.eclipse.wst.jsdt.internal.corext.util.TypeNameMatchCollector;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.JavaUIStatus;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.ASTProvider;
 import org.eclipse.wst.jsdt.internal.ui.text.correction.ASTResolving;
 import org.eclipse.wst.jsdt.internal.ui.text.correction.SimilarElementsRequestor;
 
 /**
- * Add imports to a compilation unit.
- * The input is an array of full qualified type names. No elimination of unnecessary
- * imports is done (use ImportStructure for this). Duplicates are not added.
- * If the compilation unit is open in an editor, be sure to pass over its working copy.
- */
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class AddImportsOperation implements IWorkspaceRunnable {
 	
 	public static interface IChooseImportQuery {
@@ -84,7 +85,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 		TypeNameMatch chooseImport(TypeNameMatch[] openChoices, String containerName);
 	}
 	
-	private ICompilationUnit fCompilationUnit;
+	private IJavaScriptUnit fCompilationUnit;
 	private final int fSelectionOffset;
 	private final int fSelectionLength;
 	private final IChooseImportQuery fQuery;
@@ -103,7 +104,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 	 * when multiple possibilities are available
 	 * @param save If set, the result will be saved
 	 */
-	public AddImportsOperation(ICompilationUnit cu, int selectionOffset, int selectionLength, IChooseImportQuery query, boolean save) {
+	public AddImportsOperation(IJavaScriptUnit cu, int selectionOffset, int selectionLength, IChooseImportQuery query, boolean save) {
 		super();
 		Assert.isNotNull(cu);
 		
@@ -135,7 +136,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 		try {
 			monitor.beginTask(CodeGenerationMessages.AddImportsOperation_description, 4); 
 			
-			CompilationUnit astRoot= JavaPlugin.getDefault().getASTProvider().getAST(fCompilationUnit, ASTProvider.WAIT_YES, new SubProgressMonitor(monitor, 1));
+			JavaScriptUnit astRoot= JavaScriptPlugin.getDefault().getASTProvider().getAST(fCompilationUnit, ASTProvider.WAIT_YES, new SubProgressMonitor(monitor, 1));
 
 			ImportRewrite importRewrite= StubUtility.createImportRewrite(astRoot, true);
 			
@@ -158,7 +159,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 		}
 	}
 	
-	private TextEdit evaluateEdits(CompilationUnit root, ImportRewrite importRewrite, int offset, int length, IProgressMonitor monitor) throws BadLocationException, JavaModelException {
+	private TextEdit evaluateEdits(JavaScriptUnit root, ImportRewrite importRewrite, int offset, int length, IProgressMonitor monitor) throws BadLocationException, JavaScriptModelException {
 		SimpleName nameNode= null;
 		if (root != null) { // got an AST
 			ASTNode node= NodeFinder.perform(root, offset, length);
@@ -188,8 +189,8 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 				containerName= ASTNodes.asString(qualifier);
 				name= JavaModelUtil.concatenateName(containerName, simpleName);
 				qualifierStart= qualifier.getStartPosition();
-			} else if (nameNode.getLocationInParent() == MethodInvocation.NAME_PROPERTY) {
-				ASTNode qualifier= ((MethodInvocation) nameNode.getParent()).getExpression();
+			} else if (nameNode.getLocationInParent() == FunctionInvocation.NAME_PROPERTY) {
+				ASTNode qualifier= ((FunctionInvocation) nameNode.getParent()).getExpression();
 				if (qualifier instanceof Name) {
 					containerName= ASTNodes.asString(qualifier);
 					name= JavaModelUtil.concatenateName(containerName, simpleName);
@@ -218,9 +219,9 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 						return null;
 					}
 					return new ReplaceEdit(qualifierStart, simpleNameStart - qualifierStart, new String());
-				} else if (binding instanceof IVariableBinding || binding instanceof IMethodBinding) {
+				} else if (binding instanceof IVariableBinding || binding instanceof IFunctionBinding) {
 					boolean isField= binding instanceof IVariableBinding;
-					ITypeBinding declaringClass= isField ? ((IVariableBinding) binding).getDeclaringClass() : ((IMethodBinding) binding).getDeclaringClass();
+					ITypeBinding declaringClass= isField ? ((IVariableBinding) binding).getDeclaringClass() : ((IFunctionBinding) binding).getDeclaringClass();
 					if (declaringClass == null) {
 						return null; // variableBinding.getDeclaringClass() is null for array.length
 					}
@@ -275,7 +276,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 				return new ReplaceEdit(qualifierStart, simpleNameStart - qualifierStart, ""); //$NON-NLS-1$
 			}
 		}
-		IJavaSearchScope searchScope= SearchEngine.createJavaSearchScope(new IJavaElement[] { fCompilationUnit.getJavaProject() });
+		IJavaScriptSearchScope searchScope= SearchEngine.createJavaSearchScope(new IJavaScriptElement[] { fCompilationUnit.getJavaScriptProject() });
 		
 		TypeNameMatch[] types= findAllTypes(simpleName, searchScope, nameNode, new SubProgressMonitor(monitor, 1));
 		if (types.length == 0) {
@@ -351,13 +352,13 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 		final int ANNOTATIONS= SimilarElementsRequestor.ANNOTATIONS;
 
 		switch (typeKinds & (CLASSES | INTERFACES | ENUMS | ANNOTATIONS)) {
-			case CLASSES: return IJavaSearchConstants.CLASS;
-			case INTERFACES: return IJavaSearchConstants.INTERFACE;
-			case ENUMS: return IJavaSearchConstants.ENUM;
-			case ANNOTATIONS: return IJavaSearchConstants.ANNOTATION_TYPE;
-			case CLASSES | INTERFACES: return IJavaSearchConstants.CLASS_AND_INTERFACE;
-			case CLASSES | ENUMS: return IJavaSearchConstants.CLASS_AND_ENUM;
-			default: return IJavaSearchConstants.TYPE;
+			case CLASSES: return IJavaScriptSearchConstants.CLASS;
+			case INTERFACES: return IJavaScriptSearchConstants.INTERFACE;
+			case ENUMS: return IJavaScriptSearchConstants.ENUM;
+			case ANNOTATIONS: return IJavaScriptSearchConstants.ANNOTATION_TYPE;
+			case CLASSES | INTERFACES: return IJavaScriptSearchConstants.CLASS_AND_INTERFACE;
+			case CLASSES | ENUMS: return IJavaScriptSearchConstants.CLASS_AND_ENUM;
+			default: return IJavaScriptSearchConstants.TYPE;
 		}
 	}
 	
@@ -365,8 +366,8 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 	/*
 	 * Finds a type by the simple name.
 	 */
-	private TypeNameMatch[] findAllTypes(String simpleTypeName, IJavaSearchScope searchScope, SimpleName nameNode, IProgressMonitor monitor) throws JavaModelException {
-		boolean is50OrHigher= JavaModelUtil.is50OrHigher(fCompilationUnit.getJavaProject());
+	private TypeNameMatch[] findAllTypes(String simpleTypeName, IJavaScriptSearchScope searchScope, SimpleName nameNode, IProgressMonitor monitor) throws JavaScriptModelException {
+		boolean is50OrHigher= JavaModelUtil.is50OrHigher(fCompilationUnit.getJavaScriptProject());
 		
 		int typeKinds= SimilarElementsRequestor.ALL_TYPES;
 		if (nameNode != null) {
@@ -376,7 +377,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 		ArrayList typeInfos= new ArrayList();
 		TypeNameMatchCollector requestor= new TypeNameMatchCollector(typeInfos);
 		int matchMode= SearchPattern.R_EXACT_MATCH | SearchPattern.R_CASE_SENSITIVE;
-		new SearchEngine().searchAllTypeNames(null, matchMode, simpleTypeName.toCharArray(), matchMode, getSearchForConstant(typeKinds), searchScope, requestor, IJavaSearchConstants.WAIT_UNTIL_READY_TO_SEARCH, monitor);
+		new SearchEngine().searchAllTypeNames(null, matchMode, simpleTypeName.toCharArray(), matchMode, getSearchForConstant(typeKinds), searchScope, requestor, IJavaScriptSearchConstants.WAIT_UNTIL_READY_TO_SEARCH, monitor);
 
 		ArrayList typeRefsFound= new ArrayList(typeInfos.size());
 		for (int i= 0, len= typeInfos.size(); i < len; i++) {
@@ -421,7 +422,7 @@ public class AddImportsOperation implements IWorkspaceRunnable {
 	 * @return Returns the scheduling rule for this operation
 	 */
 	public ISchedulingRule getScheduleRule() {
-		return fCompilationUnit.getJavaProject().getResource();
+		return fCompilationUnit.getJavaScriptProject().getResource();
 	}
 		
 }
