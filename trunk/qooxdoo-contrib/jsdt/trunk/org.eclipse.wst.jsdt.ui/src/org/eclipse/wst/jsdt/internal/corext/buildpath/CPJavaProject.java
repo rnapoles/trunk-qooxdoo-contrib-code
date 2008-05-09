@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,13 +16,19 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPListElement;
-
+/**
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class CPJavaProject {
 
-	public static CPJavaProject createFromExisting(IJavaProject javaProject) throws CoreException {
+	public static CPJavaProject createFromExisting(IJavaScriptProject javaProject) throws CoreException {
 		List classpathEntries= ClasspathModifier.getExistingEntries(javaProject);
 		return new CPJavaProject(classpathEntries, javaProject.getOutputLocation());
     }
@@ -48,8 +54,8 @@ public class CPJavaProject {
     	return (CPListElement)fCPListElements.get(index);
     }
 
-    public IClasspathEntry[] getClasspathEntries() {
-    	IClasspathEntry[] result= new IClasspathEntry[fCPListElements.size()];
+    public IIncludePathEntry[] getClasspathEntries() {
+    	IIncludePathEntry[] result= new IIncludePathEntry[fCPListElements.size()];
     	int i= 0;
     	for (Iterator iterator= fCPListElements.iterator(); iterator.hasNext();) {
 	        CPListElement element= (CPListElement)iterator.next();
@@ -71,7 +77,7 @@ public class CPJavaProject {
 	    return fDefaultOutputLocation;
     }
     
-    public IJavaProject getJavaProject() {
+    public IJavaScriptProject getJavaProject() {
 	    return ((CPListElement)fCPListElements.get(0)).getJavaProject();
     }
 
