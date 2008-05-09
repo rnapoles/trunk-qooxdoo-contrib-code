@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.spelling.SpellingProblem;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 import org.eclipse.wst.jsdt.internal.ui.JavaUIMessages;
 import org.eclipse.wst.jsdt.internal.ui.text.spelling.engine.ISpellCheckEngine;
@@ -80,7 +80,7 @@ public class AddWordProposal implements IJavaCompletionProposal {
 			if (editor != null)
 				shell= editor.getEditorSite().getShell();
 			else
-				shell= JavaPlugin.getActiveWorkbenchShell();
+				shell= JavaScriptPlugin.getActiveWorkbenchShell();
 			
 			if (!canAskToConfigure() || !askUserToConfigureUserDictionary(shell))
 				return;
@@ -129,7 +129,7 @@ public class AddWordProposal implements IJavaCompletionProposal {
 	}
 
 	private ITextEditor getEditor() {
-		IWorkbenchPage activePage= JavaPlugin.getActivePage();
+		IWorkbenchPage activePage= JavaScriptPlugin.getActivePage();
 		if (activePage == null)
 			return null;
 	

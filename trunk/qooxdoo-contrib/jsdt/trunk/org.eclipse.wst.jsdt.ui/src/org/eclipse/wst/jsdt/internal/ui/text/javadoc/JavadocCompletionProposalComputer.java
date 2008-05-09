@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,11 +37,11 @@ public class JavadocCompletionProposalComputer extends JavaCompletionProposalCom
 		collector.setIgnored(CompletionProposal.PACKAGE_REF, true);
 		collector.setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, true);
 		collector.setIgnored(CompletionProposal.VARIABLE_DECLARATION, true);
-		collector.setIgnored(CompletionProposal.JAVADOC_TYPE_REF, false);
-		collector.setIgnored(CompletionProposal.JAVADOC_FIELD_REF, false);
-		collector.setIgnored(CompletionProposal.JAVADOC_METHOD_REF, false);
-		collector.setIgnored(CompletionProposal.JAVADOC_PARAM_REF, false);
-		collector.setIgnored(CompletionProposal.JAVADOC_VALUE_REF, false);
+		collector.setIgnored(CompletionProposal.JSDOC_TYPE_REF, false);
+		collector.setIgnored(CompletionProposal.JSDOC_FIELD_REF, false);
+		collector.setIgnored(CompletionProposal.JSDOC_METHOD_REF, false);
+		collector.setIgnored(CompletionProposal.JSDOC_PARAM_REF, false);
+		collector.setIgnored(CompletionProposal.JSDOC_VALUE_REF, false);
 		collector.setIgnored(CompletionProposal.TYPE_REF, false);
 		return collector;
 	}

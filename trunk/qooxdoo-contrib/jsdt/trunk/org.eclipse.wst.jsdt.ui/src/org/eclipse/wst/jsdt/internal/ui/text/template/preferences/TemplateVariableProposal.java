@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.jface.text.templates.TemplateVariableResolver;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * A proposal for insertion of template variables.
@@ -70,7 +70,7 @@ public class TemplateVariableProposal implements ICompletionProposal {
 			fSelection= new Point(fOffset + variable.length(), 0);
 
 		} catch (BadLocationException e) {
-			JavaPlugin.log(e);
+			JavaScriptPlugin.log(e);
 
 			Shell shell= fViewer.getTextWidget().getShell();
 			MessageDialog.openError(shell, TemplatePreferencesMessages.TemplateVariableProposal_error_title, e.getMessage());
