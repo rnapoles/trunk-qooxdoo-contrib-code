@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -85,7 +85,7 @@ public final class RenameSourceFolderChange extends AbstractJavaElementRenameCha
 	}
 
 	private int getJavaModelUpdateFlags() {
-		return IPackageFragmentRoot.DESTINATION_PROJECT_CLASSPATH | IPackageFragmentRoot.ORIGINATING_PROJECT_CLASSPATH | IPackageFragmentRoot.OTHER_REFERRING_PROJECTS_CLASSPATH | IPackageFragmentRoot.REPLACE;
+		return IPackageFragmentRoot.DESTINATION_PROJECT_INCLUDEPATH | IPackageFragmentRoot.ORIGINATING_PROJECT_INCLUDEPATH | IPackageFragmentRoot.OTHER_REFERRING_PROJECTS_INCLUDEPATH | IPackageFragmentRoot.REPLACE;
 	}
 
 	public String getName() {
