@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
 import org.eclipse.wst.jsdt.core.search.TypeNameMatch;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 import org.eclipse.wst.jsdt.internal.ui.JavaUIMessages;
-import org.eclipse.wst.jsdt.ui.JavaElementLabels;
+import org.eclipse.wst.jsdt.ui.JavaScriptElementLabels;
 
 public class TypeNameMatchLabelProvider extends LabelProvider {
 	
@@ -76,7 +76,7 @@ public class TypeNameMatchLabelProvider extends LabelProvider {
 				buf.append(typeRef.getSimpleTypeName());
 				String containerName= typeRef.getTypeContainerName();
 				if (containerName != null && containerName.length() > 0) {
-					buf.append(JavaElementLabels.CONCAT_STRING);
+					buf.append(JavaScriptElementLabels.CONCAT_STRING);
 					buf.append(containerName);
 				}
 			} else {
@@ -84,15 +84,15 @@ public class TypeNameMatchLabelProvider extends LabelProvider {
 			}
 
 			if (isSet(SHOW_PACKAGE_POSTFIX)) {
-				buf.append(JavaElementLabels.CONCAT_STRING);
+				buf.append(JavaScriptElementLabels.CONCAT_STRING);
 				String packName= typeRef.getPackageName();
 				buf.append(getPackageName(packName));
 			}
 		}
 		if (isSet(SHOW_ROOT_POSTFIX)) {
-			buf.append(JavaElementLabels.CONCAT_STRING);
+			buf.append(JavaScriptElementLabels.CONCAT_STRING);
 			IPackageFragmentRoot root= typeRef.getPackageFragmentRoot();
-			JavaElementLabels.getPackageFragmentRootLabel(root, JavaElementLabels.ROOT_QUALIFIED, buf);
+			JavaScriptElementLabels.getPackageFragmentRootLabel(root, JavaScriptElementLabels.ROOT_QUALIFIED, buf);
 		}
 		return buf.toString();				
 	}
