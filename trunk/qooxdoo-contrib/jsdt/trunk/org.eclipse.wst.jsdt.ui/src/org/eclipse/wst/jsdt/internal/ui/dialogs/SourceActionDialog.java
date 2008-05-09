@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,22 +38,22 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.CheckedTreeSelectionDialog;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IFunction;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IMember;
-import org.eclipse.wst.jsdt.core.IMethod;
 import org.eclipse.wst.jsdt.core.ISourceRange;
 import org.eclipse.wst.jsdt.core.ISourceReference;
 import org.eclipse.wst.jsdt.core.IType;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.dom.Modifier;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionMessages;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.wst.jsdt.internal.ui.preferences.CodeTemplatePreferencePage;
 import org.eclipse.wst.jsdt.internal.ui.preferences.JavaPreferencesSettings;
 import org.eclipse.wst.jsdt.internal.ui.refactoring.IVisibilityChangeListener;
-import org.eclipse.wst.jsdt.ui.JavaElementLabels;
+import org.eclipse.wst.jsdt.ui.JavaScriptElementLabels;
 
 /**
  * An advanced version of CheckedTreeSelectionDialog with right-side button layout and
@@ -61,34 +61,34 @@ import org.eclipse.wst.jsdt.ui.JavaElementLabels;
  */
 public class SourceActionDialog extends CheckedTreeSelectionDialog {
 	
-	private List fInsertPositions;
-	private List fLabels;
-	private int fCurrentPositionIndex;
+	protected List fInsertPositions;
+	protected List fLabels;
+	protected int fCurrentPositionIndex;
 	
-	private IDialogSettings fSettings;
-	private CompilationUnitEditor fEditor;
-	private ITreeContentProvider fContentProvider;
-	private boolean fGenerateComment;
-	private IType fType;
-	private int fWidth, fHeight;
-	private String fCommentString;
-	private boolean fEnableInsertPosition= true;
+	protected IDialogSettings fSettings;
+	protected CompilationUnitEditor fEditor;
+	protected ITreeContentProvider fContentProvider;
+	protected boolean fGenerateComment;
+	protected IType fType;
+	protected int fWidth, fHeight;
+	protected String fCommentString;
+	protected boolean fEnableInsertPosition= true;
 		
-	private int fVisibilityModifier;
-	private boolean fFinal;
-	private boolean fSynchronized;
+	protected int fVisibilityModifier;
+	protected boolean fFinal;
+	protected boolean fSynchronized;
 	
-	private final String SETTINGS_SECTION_METHODS= "SourceActionDialog.methods"; //$NON-NLS-1$
-	private final String SETTINGS_SECTION_CONSTRUCTORS= "SourceActionDialog.constructors"; //$NON-NLS-1$
+	protected final String SETTINGS_SECTION_METHODS= "SourceActionDialog.methods"; //$NON-NLS-1$
+	protected final String SETTINGS_SECTION_CONSTRUCTORS= "SourceActionDialog.constructors"; //$NON-NLS-1$
 	
-	private final String SETTINGS_INSERTPOSITION= "InsertPosition"; //$NON-NLS-1$
-	private final String SETTINGS_VISIBILITY_MODIFIER= "VisibilityModifier"; //$NON-NLS-1$
-	private final String SETTINGS_FINAL_MODIFIER= "FinalModifier"; //$NON-NLS-1$
-	private final String SETTINGS_SYNCHRONIZED_MODIFIER= "SynchronizedModifier"; //$NON-NLS-1$
-	private final String SETTINGS_COMMENTS= "Comments"; //$NON-NLS-1$
-	private Composite fInsertPositionComposite;
+	protected final String SETTINGS_INSERTPOSITION= "InsertPosition"; //$NON-NLS-1$
+	protected final String SETTINGS_VISIBILITY_MODIFIER= "VisibilityModifier"; //$NON-NLS-1$
+	protected final String SETTINGS_FINAL_MODIFIER= "FinalModifier"; //$NON-NLS-1$
+	protected final String SETTINGS_SYNCHRONIZED_MODIFIER= "SynchronizedModifier"; //$NON-NLS-1$
+	protected final String SETTINGS_COMMENTS= "Comments"; //$NON-NLS-1$
+	protected Composite fInsertPositionComposite;
 	
-	public SourceActionDialog(Shell parent, ILabelProvider labelProvider, ITreeContentProvider contentProvider, CompilationUnitEditor editor, IType type, boolean isConstructor) throws JavaModelException {
+	public SourceActionDialog(Shell parent, ILabelProvider labelProvider, ITreeContentProvider contentProvider, CompilationUnitEditor editor, IType type, boolean isConstructor) throws JavaScriptModelException {
 		super(parent, labelProvider, contentProvider);
 		fEditor= editor;
 		fContentProvider= contentProvider;		
@@ -100,9 +100,9 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 		fHeight= 18;
 		
 		int insertionDefault= isConstructor ? 0 : 1;
-		boolean generateCommentsDefault= JavaPreferencesSettings.getCodeGenerationSettings(type.getJavaProject()).createComments;
+		boolean generateCommentsDefault= JavaPreferencesSettings.getCodeGenerationSettings(type.getJavaScriptProject()).createComments;
 		
-		IDialogSettings dialogSettings= JavaPlugin.getDefault().getDialogSettings();
+		IDialogSettings dialogSettings= JavaScriptPlugin.getDefault().getDialogSettings();
 		String sectionId= isConstructor ? SETTINGS_SECTION_CONSTRUCTORS : SETTINGS_SECTION_METHODS;
 		fSettings= dialogSettings.getSection(sectionId);		
 		if (fSettings == null)  {
@@ -114,11 +114,23 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 		fSynchronized= asBoolean(fSettings.get(SETTINGS_SYNCHRONIZED_MODIFIER), false);
 		fCurrentPositionIndex= asInt(fSettings.get(SETTINGS_INSERTPOSITION), insertionDefault);
 		fGenerateComment= asBoolean(fSettings.get(SETTINGS_COMMENTS), generateCommentsDefault);
+		setupInsertPostions();
+	}
+
+	public void setupInsertPostions(){
 		fInsertPositions= new ArrayList();
 		fLabels= new ArrayList(); 
 		
-		IJavaElement[] members= fType.getChildren();
-		IMethod[] methods= fType.getMethods();
+		IJavaScriptElement[] members = new IJavaScriptElement[0];
+		IFunction[] methods = new IFunction[0];
+		try {
+			members = fType.getChildren();
+			methods= fType.getMethods();
+		} catch (JavaScriptModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		fInsertPositions.add(methods.length > 0 ? methods[0]: null); // first
 		fInsertPositions.add(null); // last
@@ -126,24 +138,34 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 		fLabels.add(ActionMessages.SourceActionDialog_first_method); 
 		fLabels.add(ActionMessages.SourceActionDialog_last_method); 
 
-		if (hasCursorPositionElement(fEditor, members, fInsertPositions)) {
-			fLabels.add(ActionMessages.SourceActionDialog_cursor); 
-			fCurrentPositionIndex= 2;
-		} else {
-			// code is needed to deal with bogus values already present in the dialog store.
-			fCurrentPositionIndex= Math.max(fCurrentPositionIndex, 0);
-			fCurrentPositionIndex= Math.min(fCurrentPositionIndex, 1);
+		try {
+			if (hasCursorPositionElement(fEditor, members, fInsertPositions)) {
+				fLabels.add(ActionMessages.SourceActionDialog_cursor); 
+				fCurrentPositionIndex= 2;
+			} else {
+				// code is needed to deal with bogus values already present in the dialog store.
+				fCurrentPositionIndex= Math.max(fCurrentPositionIndex, 0);
+				fCurrentPositionIndex= Math.min(fCurrentPositionIndex, 1);
+			}
+		} catch (JavaScriptModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		for (int i = 0; i < methods.length; i++) {
-			IMethod curr= methods[i];
-			String methodLabel= JavaElementLabels.getElementLabel(curr, JavaElementLabels.M_PARAMETER_TYPES);
+			IFunction curr= methods[i];
+			String methodLabel= JavaScriptElementLabels.getElementLabel(curr, JavaScriptElementLabels.M_PARAMETER_TYPES);
 			fLabels.add(Messages.format(ActionMessages.SourceActionDialog_after, methodLabel)); 
-			fInsertPositions.add(findSibling(curr, members));
+			try {
+				fInsertPositions.add(findSibling(curr, members));
+			} catch (JavaScriptModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		fInsertPositions.add(null);
 	}
-
+	
 	protected IType getType() {
 		return fType;
 	}
@@ -162,8 +184,8 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 		return defaultValue;
 	}
 
-	private IJavaElement findSibling(IMethod curr, IJavaElement[] members) throws JavaModelException {
-		IJavaElement res= null;
+	private IJavaScriptElement findSibling(IFunction curr, IJavaScriptElement[] members) throws JavaScriptModelException {
+		IJavaScriptElement res= null;
 		int methodStart= curr.getSourceRange().getOffset();
 		for (int i= members.length-1; i >= 0; i--) {
 			IMember member= (IMember) members[i];
@@ -175,7 +197,7 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 		return null;
 	}
 
-	private boolean hasCursorPositionElement(CompilationUnitEditor editor, IJavaElement[] members, List insertPositions) throws JavaModelException {
+	protected boolean hasCursorPositionElement(CompilationUnitEditor editor, IJavaScriptElement[] members, List insertPositions) throws JavaScriptModelException {
 		if (editor == null) {
 			return false;
 		}
@@ -369,7 +391,7 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 	protected void openCodeTempatePage(String id) {
 		HashMap arg= new HashMap();
 		arg.put(CodeTemplatePreferencePage.DATA_SELECT_TEMPLATE, id);
-		PreferencesUtil.createPropertyDialogOn(getShell(), fType.getJavaProject().getProject(), CodeTemplatePreferencePage.PROP_ID, null, arg).open();
+		PreferencesUtil.createPropertyDialogOn(getShell(), fType.getJavaScriptProject().getProject(), CodeTemplatePreferencePage.PROP_ID, null, arg).open();
 	}
 	
 
@@ -615,12 +637,12 @@ public class SourceActionDialog extends CheckedTreeSelectionDialog {
 	/*
 	 * Determine where in the file to enter the newly created methods.
 	 */
-	public IJavaElement getElementPosition() {
-		return (IJavaElement) fInsertPositions.get(fCurrentPositionIndex);	
+	public IJavaScriptElement getElementPosition() {
+		return (IJavaScriptElement) fInsertPositions.get(fCurrentPositionIndex);	
 	}
 	
-	public int getInsertOffset() throws JavaModelException {
-		IJavaElement elementPosition= getElementPosition();
+	public int getInsertOffset() throws JavaScriptModelException {
+		IJavaScriptElement elementPosition= getElementPosition();
 		if (elementPosition instanceof ISourceReference) {
 			return ((ISourceReference) elementPosition).getSourceRange().getOffset();
 		}

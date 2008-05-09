@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +43,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.text.JavaWordIterator;
 import org.eclipse.wst.jsdt.ui.PreferenceConstants;
 
@@ -70,7 +70,7 @@ public class TextFieldNavigationHandler {
 	}
 	
 	private static boolean isSubWordNavigationEnabled() {
-		IPreferenceStore preferenceStore= JavaPlugin.getDefault().getCombinedPreferenceStore();
+		IPreferenceStore preferenceStore= JavaScriptPlugin.getDefault().getCombinedPreferenceStore();
 		return preferenceStore.getBoolean(PreferenceConstants.EDITOR_SUB_WORD_NAVIGATION);
 	}
 	
@@ -365,7 +365,7 @@ public class TextFieldNavigationHandler {
 									localSchemeCopy.define(scheme.getName(), scheme.getDescription(), scheme.getParentId());
 								}
 							} catch (final NotDefinedException e) {
-								JavaPlugin.log(e);
+								JavaScriptPlugin.log(e);
 							}
 						}
 						localBindingManager.setLocale(bindingService.getLocale());
@@ -377,7 +377,7 @@ public class TextFieldNavigationHandler {
 							if (activeScheme != null)
 								localBindingManager.setActiveScheme(activeScheme);
 						} catch (NotDefinedException e) {
-							JavaPlugin.log(e);
+							JavaScriptPlugin.log(e);
 						}
 						
 						fSubmissions.add(new Submission(getKeyBindings(localBindingManager, commandService, ITextEditorActionDefinitionIds.SELECT_WORD_NEXT)) {
