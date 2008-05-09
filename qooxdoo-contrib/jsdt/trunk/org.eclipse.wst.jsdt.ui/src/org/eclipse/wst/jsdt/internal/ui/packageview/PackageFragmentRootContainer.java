@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
 
 public abstract class PackageFragmentRootContainer implements IAdaptable {
@@ -60,9 +60,9 @@ public abstract class PackageFragmentRootContainer implements IAdaptable {
 		}
 	}
 	
-	private IJavaProject fProject;
+	private IJavaScriptProject fProject;
 
-	public PackageFragmentRootContainer(IJavaProject project) {
+	public PackageFragmentRootContainer(IJavaScriptProject project) {
 		Assert.isNotNull(project);
 		fProject= project;
 	}
@@ -81,7 +81,7 @@ public abstract class PackageFragmentRootContainer implements IAdaptable {
 	
 	public abstract ImageDescriptor getImageDescriptor();
 	
-	public IJavaProject getJavaProject() {
+	public IJavaScriptProject getJavaProject() {
 		return fProject;
 	}
 }
