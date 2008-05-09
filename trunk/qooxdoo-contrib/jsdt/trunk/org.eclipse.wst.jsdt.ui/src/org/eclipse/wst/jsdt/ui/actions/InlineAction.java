@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,9 +17,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.core.ITypeRoot;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.util.RefactoringASTParser;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionUtil;
@@ -36,7 +36,11 @@ import org.eclipse.wst.jsdt.internal.ui.refactoring.actions.InlineMethodAction;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.1
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class InlineAction extends SelectionDispatchAction {
 
@@ -98,10 +102,10 @@ public class InlineAction extends SelectionDispatchAction {
 		if (typeRoot == null)
 			return;
 
-		CompilationUnit node= RefactoringASTParser.parseWithASTProvider(typeRoot, true, null);
+		JavaScriptUnit node= RefactoringASTParser.parseWithASTProvider(typeRoot, true, null);
 		
-		if (typeRoot instanceof ICompilationUnit) {
-			ICompilationUnit cu= (ICompilationUnit) typeRoot;
+		if (typeRoot instanceof IJavaScriptUnit) {
+			IJavaScriptUnit cu= (IJavaScriptUnit) typeRoot;
 			if (fInlineTemp.isEnabled() && fInlineTemp.tryInlineTemp(cu, node, selection, getShell()))
 				return;
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.wst.jsdt.ui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 
 /**
- * Interface for accessing working copies of <code>ICompilationUnit</code>
+ * Interface for accessing working copies of <code>IJavaScriptUnit</code>
  * objects. The original compilation unit is only given indirectly by means
  * of an <code>IEditorInput</code>. The life cycle is as follows:
  * <ul>
@@ -38,8 +38,11 @@ import org.eclipse.wst.jsdt.core.ICompilationUnit;
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
- *
- * @see JavaUI#getWorkingCopyManager()
+ * * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
+ * @see JavaScriptUI#getWorkingCopyManager()
  * @see org.eclipse.wst.jsdt.ui.IWorkingCopyManagerExtension
  */
 public interface IWorkingCopyManager {
@@ -75,7 +78,7 @@ public interface IWorkingCopyManager {
 	 *   input does not encode an editor input, or if there is no remembered working
 	 *   copy for this compilation unit
 	 */
-	ICompilationUnit getWorkingCopy(IEditorInput input);
+	IJavaScriptUnit getWorkingCopy(IEditorInput input);
 	
 	/**
 	 * Shuts down this working copy manager. All working copies still remembered

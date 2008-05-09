@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,12 +23,12 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionMessages;
 import org.eclipse.wst.jsdt.internal.ui.actions.WorkbenchRunnableAdapter;
 import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
@@ -42,7 +42,11 @@ import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.1
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class RemoveFromClasspathAction extends SelectionDispatchAction {
 
@@ -88,7 +92,7 @@ public class RemoveFromClasspathAction extends SelectionDispatchAction {
 						IPackageFragmentRoot[] roots= getRootsToRemove(selection);
 						pm.beginTask(ActionMessages.RemoveFromClasspathAction_Removing, roots.length); 
 						for (int i= 0; i < roots.length; i++) {
-							int jCoreFlags= IPackageFragmentRoot.NO_RESOURCE_MODIFICATION | IPackageFragmentRoot.ORIGINATING_PROJECT_CLASSPATH;
+							int jCoreFlags= IPackageFragmentRoot.NO_RESOURCE_MODIFICATION | IPackageFragmentRoot.ORIGINATING_PROJECT_INCLUDEPATH;
 							roots[i].delete(IResource.NONE, jCoreFlags, new SubProgressMonitor(pm, 1));
 						}
 					} finally {
@@ -120,13 +124,13 @@ public class RemoveFromClasspathAction extends SelectionDispatchAction {
 			return false;
 		IPackageFragmentRoot root= (IPackageFragmentRoot)element;
 		try {
-			IClasspathEntry cpe= root.getRawClasspathEntry();
-			if (cpe == null || cpe.getEntryKind() == IClasspathEntry.CPE_CONTAINER)
+			IIncludePathEntry cpe= root.getRawIncludepathEntry();
+			if (cpe == null || cpe.getEntryKind() == IIncludePathEntry.CPE_CONTAINER)
 				return false; // don't want to remove the container if only a child is selected
 			return true;
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			if (JavaModelUtil.isExceptionToBeLogged(e))
-				JavaPlugin.log(e);
+				JavaScriptPlugin.log(e);
 		}
 		return false;
 	}	

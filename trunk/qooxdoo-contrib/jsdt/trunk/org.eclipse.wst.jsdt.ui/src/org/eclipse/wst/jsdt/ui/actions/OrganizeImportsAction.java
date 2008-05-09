@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,11 +36,11 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.ISourceRange;
 import org.eclipse.wst.jsdt.core.compiler.IProblem;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.search.TypeNameMatch;
 import org.eclipse.wst.jsdt.internal.corext.codemanipulation.CodeGenerationSettings;
 import org.eclipse.wst.jsdt.internal.corext.codemanipulation.OrganizeImportsOperation;
@@ -49,7 +49,7 @@ import org.eclipse.wst.jsdt.internal.corext.util.History;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 import org.eclipse.wst.jsdt.internal.corext.util.QualifiedTypeNameHistory;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionMessages;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionUtil;
 import org.eclipse.wst.jsdt.internal.ui.actions.MultiOrganizeImportAction;
@@ -62,7 +62,7 @@ import org.eclipse.wst.jsdt.internal.ui.preferences.JavaPreferencesSettings;
 import org.eclipse.wst.jsdt.internal.ui.util.ElementValidator;
 import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
 import org.eclipse.wst.jsdt.internal.ui.util.TypeNameMatchLabelProvider;
-import org.eclipse.wst.jsdt.ui.JavaUI;
+import org.eclipse.wst.jsdt.ui.JavaScriptUI;
 
 import com.ibm.icu.text.Collator;
 
@@ -70,14 +70,18 @@ import com.ibm.icu.text.Collator;
  * Organizes the imports of a compilation unit.
  * <p>
  * The action is applicable to selections containing elements of
- * type <code>ICompilationUnit</code> or <code>IPackage
+ * type <code>IJavaScriptUnit</code> or <code>IPackage
  * </code>.
  *
  * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class OrganizeImportsAction extends SelectionDispatchAction {
 
@@ -186,25 +190,25 @@ public class OrganizeImportsAction extends SelectionDispatchAction {
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(ITextSelection selection) {
-		ICompilationUnit cu= getCompilationUnit(fEditor);
+		IJavaScriptUnit cu= getCompilationUnit(fEditor);
 		if (cu != null) {
 			run(cu);
 		}
 	}
 
-	private static ICompilationUnit getCompilationUnit(JavaEditor editor) {
-		IJavaElement element= JavaUI.getEditorInputJavaElement(editor.getEditorInput());
-		if (!(element instanceof ICompilationUnit))
+	private static IJavaScriptUnit getCompilationUnit(JavaEditor editor) {
+		IJavaScriptElement element= JavaScriptUI.getEditorInputJavaElement(editor.getEditorInput());
+		if (!(element instanceof IJavaScriptUnit))
 			return null;
 		
-		return (ICompilationUnit)element;
+		return (IJavaScriptUnit)element;
 	}
 	
 	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(IStructuredSelection selection) {
-		ICompilationUnit[] cus= fCleanUpDelegate.getCompilationUnits(selection);
+		IJavaScriptUnit[] cus= fCleanUpDelegate.getCompilationUnits(selection);
 		if (cus.length == 0) {
 			MessageDialog.openInformation(getShell(), ActionMessages.OrganizeImportsAction_EmptySelection_title, ActionMessages.OrganizeImportsAction_EmptySelection_description);
 		} else if (cus.length == 1) {
@@ -218,7 +222,7 @@ public class OrganizeImportsAction extends SelectionDispatchAction {
 	 * Perform organize import on multiple compilation units. No editors are opened.
 	 * @param cus The compilation units to run on
 	 */
-	public void runOnMultiple(final ICompilationUnit[] cus) {
+	public void runOnMultiple(final IJavaScriptUnit[] cus) {
 		if (cus.length == 0)
 			return;
 		
@@ -229,7 +233,7 @@ public class OrganizeImportsAction extends SelectionDispatchAction {
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * @param cu The compilation unit to process
 	 */
-	public void run(ICompilationUnit cu) {
+	public void run(IJavaScriptUnit cu) {
 		if (!ElementValidator.check(cu, getShell(), ActionMessages.OrganizeImportsAction_error_title, fEditor != null)) 
 			return;
 		if (!ActionUtil.isEditable(fEditor, getShell(), cu))
@@ -237,16 +241,16 @@ public class OrganizeImportsAction extends SelectionDispatchAction {
 		
 		IEditingSupport helper= createViewerHelper();
 		try {
-			CodeGenerationSettings settings= JavaPreferencesSettings.getCodeGenerationSettings(cu.getJavaProject());
+			CodeGenerationSettings settings= JavaPreferencesSettings.getCodeGenerationSettings(cu.getJavaScriptProject());
 			
 			if (fEditor == null && EditorUtility.isOpenInEditor(cu) == null) {
-				IEditorPart editor= JavaUI.openInEditor(cu);
+				IEditorPart editor= JavaScriptUI.openInEditor(cu);
 				if (editor instanceof JavaEditor) {
 					fEditor= (JavaEditor) editor;
 				}			
 			}
 			
-			CompilationUnit astRoot= JavaPlugin.getDefault().getASTProvider().getAST(cu, ASTProvider.WAIT_ACTIVE_ONLY, null);
+			JavaScriptUnit astRoot= JavaScriptPlugin.getDefault().getASTProvider().getAST(cu, ASTProvider.WAIT_ACTIVE_ONLY, null);
 			
 			OrganizeImportsOperation op= new OrganizeImportsOperation(cu, astRoot, settings.importIgnoreLowercase, !cu.isWorkingCopy(), true, createChooseImportQuery());
 		

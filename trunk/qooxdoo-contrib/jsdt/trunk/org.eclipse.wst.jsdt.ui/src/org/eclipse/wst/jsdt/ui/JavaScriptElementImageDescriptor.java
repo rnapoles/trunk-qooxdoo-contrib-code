@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,21 +16,24 @@ import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 
 /**
- * A {@link JavaElementImageDescriptor} consists of a base image and several adornments. The adornments
+ * A {@link JavaScriptElementImageDescriptor} consists of a base image and several adornments. The adornments
  * are computed according to the flags either passed during creation or set via the method
  *{@link #setAdornments(int)}. 
  * 
  * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
- *
+ * * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  * @since 2.0 
  */
-public class JavaElementImageDescriptor extends CompositeImageDescriptor {
+public class JavaScriptElementImageDescriptor extends CompositeImageDescriptor {
 	
 	/** Flag to render the abstract adornment. */
 	public final static int ABSTRACT= 		0x001;
@@ -86,14 +89,14 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 	private Point fSize;
 
 	/**
-	 * Creates a new JavaElementImageDescriptor.
+	 * Creates a new JavaScriptElementImageDescriptor.
 	 * 
 	 * @param baseImage an image descriptor used as the base image
 	 * @param flags flags indicating which adornments are to be rendered. See {@link #setAdornments(int)}
 	 * 	for valid values.
 	 * @param size the size of the resulting image
 	 */
-	public JavaElementImageDescriptor(ImageDescriptor baseImage, int flags, Point size) {
+	public JavaScriptElementImageDescriptor(ImageDescriptor baseImage, int flags, Point size) {
 		fBaseImage= baseImage;
 		Assert.isNotNull(fBaseImage);
 		fFlags= flags;
@@ -155,10 +158,10 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 	 * Method declared on Object.
 	 */
 	public boolean equals(Object object) {
-		if (object == null || !JavaElementImageDescriptor.class.equals(object.getClass()))
+		if (object == null || !JavaScriptElementImageDescriptor.class.equals(object.getClass()))
 			return false;
 			
-		JavaElementImageDescriptor other= (JavaElementImageDescriptor)object;
+		JavaScriptElementImageDescriptor other= (JavaScriptElementImageDescriptor)object;
 		return (fBaseImage.equals(other.fBaseImage) && fFlags == other.fFlags && fSize.equals(other.fSize));
 	}
 	
@@ -193,7 +196,7 @@ public class JavaElementImageDescriptor extends CompositeImageDescriptor {
 		ImageData data= descriptor.getImageData(); // see bug 51965: getImageData can return null
 		if (data == null) {
 			data= DEFAULT_IMAGE_DATA;
-			JavaPlugin.logErrorMessage("Image data not available: " + descriptor.toString()); //$NON-NLS-1$
+			JavaScriptPlugin.logErrorMessage("Image data not available: " + descriptor.toString()); //$NON-NLS-1$
 		}
 		return data;
 	}

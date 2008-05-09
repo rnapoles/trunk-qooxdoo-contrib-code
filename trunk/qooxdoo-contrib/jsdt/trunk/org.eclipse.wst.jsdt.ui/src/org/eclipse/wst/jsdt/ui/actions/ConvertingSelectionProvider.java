@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 
 
 
@@ -32,10 +32,14 @@ import org.eclipse.wst.jsdt.core.IJavaElement;
  * A converting selection provider is a special selection provider which converts
  * a selection before notifying any listeners. Additional it converts the selection
  * on <code>getSelection</code> and <code>setSelection</code>. The default strategy
- * used to adapt the elements of the selection to {@link IJavaElement} or a {@link IResource},
+ * used to adapt the elements of the selection to {@link IJavaScriptElement} or a {@link IResource},
  * but implementors can override this behavior.
  *   
- * @since 3.2
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class ConvertingSelectionProvider implements ISelectionProvider {
 
@@ -79,7 +83,7 @@ public class ConvertingSelectionProvider implements ISelectionProvider {
 	/**
 	 * Converts the given original viewer selection into a new
 	 * selection. The default behavior adapts the elements in the selection
-	 * first to {@link IJavaElement} then to {@link IResource}.
+	 * first to {@link IJavaScriptElement} then to {@link IResource}.
 	 * Implementors want to override this method. 
 	 * 
 	 * @param viewerSelection the original viewer selection
@@ -98,11 +102,11 @@ public class ConvertingSelectionProvider implements ISelectionProvider {
 		List result= new ArrayList(selection.size());
 		for (Iterator iter= selection.iterator(); iter.hasNext();) {
 			Object element= iter.next();
-			if (element instanceof IResource || element instanceof IJavaElement) {
+			if (element instanceof IResource || element instanceof IJavaScriptElement) {
 				result.add(element);
 			} else if (element instanceof IAdaptable) {
 				IAdaptable adaptable= (IAdaptable)element;
-				IJavaElement jElement= (IJavaElement)adaptable.getAdapter(IJavaElement.class);
+				IJavaScriptElement jElement= (IJavaScriptElement)adaptable.getAdapter(IJavaScriptElement.class);
 				if (jElement != null) {
 					result.add(jElement);
 				} else {

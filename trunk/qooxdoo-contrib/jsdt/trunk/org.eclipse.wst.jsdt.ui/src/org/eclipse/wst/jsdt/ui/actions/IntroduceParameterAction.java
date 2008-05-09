@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package org.eclipse.wst.jsdt.ui.actions;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringAvailabilityTester;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringExecutionStarter;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
@@ -31,7 +31,11 @@ import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 3.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */ 
 public class IntroduceParameterAction extends SelectionDispatchAction {
 
@@ -70,7 +74,7 @@ public class IntroduceParameterAction extends SelectionDispatchAction {
 		if (!ActionUtil.isEditable(fEditor))
 			return;
 		try{
-			ICompilationUnit unit= SelectionConverter.getInputAsCompilationUnit(fEditor);
+			IJavaScriptUnit unit= SelectionConverter.getInputAsCompilationUnit(fEditor);
 			RefactoringExecutionStarter.startIntroduceParameter(unit, selection.getOffset(), selection.getLength(), getShell());
 		} catch (CoreException e){
 			ExceptionHandler.handle(e, RefactoringMessages.IntroduceParameterAction_dialog_title, RefactoringMessages.NewTextRefactoringAction_exception); 
