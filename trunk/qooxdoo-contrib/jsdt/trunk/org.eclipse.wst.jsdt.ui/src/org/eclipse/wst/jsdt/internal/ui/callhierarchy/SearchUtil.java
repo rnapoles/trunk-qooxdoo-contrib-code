@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.search.LRUWorkingSetsList;
 import org.eclipse.wst.jsdt.internal.ui.search.WorkingSetComparator;
 
@@ -70,9 +70,9 @@ public class SearchUtil {
 	
 	static void restoreState() {
 		SearchUtil.fgLRUWorkingSets= new LRUWorkingSetsList(SearchUtil.LRU_WORKINGSET_LIST_SIZE);
-		SearchUtil.fgSettingsStore= JavaPlugin.getDefault().getDialogSettings().getSection(SearchUtil.DIALOG_SETTINGS_KEY);
+		SearchUtil.fgSettingsStore= JavaScriptPlugin.getDefault().getDialogSettings().getSection(SearchUtil.DIALOG_SETTINGS_KEY);
 		if (SearchUtil.fgSettingsStore == null)
-			SearchUtil.fgSettingsStore= JavaPlugin.getDefault().getDialogSettings().addNewSection(SearchUtil.DIALOG_SETTINGS_KEY);
+			SearchUtil.fgSettingsStore= JavaScriptPlugin.getDefault().getDialogSettings().addNewSection(SearchUtil.DIALOG_SETTINGS_KEY);
 		
 		boolean foundLRU= false;
 		for (int i= SearchUtil.LRU_WORKINGSET_LIST_SIZE - 1; i >= 0; i--) {
@@ -97,9 +97,9 @@ public class SearchUtil {
 	
 	private static void restoreFromOldFormat() {
 		SearchUtil.fgLRUWorkingSets= new LRUWorkingSetsList(SearchUtil.LRU_WORKINGSET_LIST_SIZE);
-		SearchUtil.fgSettingsStore= JavaPlugin.getDefault().getDialogSettings().getSection(SearchUtil.DIALOG_SETTINGS_KEY);
+		SearchUtil.fgSettingsStore= JavaScriptPlugin.getDefault().getDialogSettings().getSection(SearchUtil.DIALOG_SETTINGS_KEY);
 		if (SearchUtil.fgSettingsStore == null)
-			SearchUtil.fgSettingsStore= JavaPlugin.getDefault().getDialogSettings().addNewSection(SearchUtil.DIALOG_SETTINGS_KEY);
+			SearchUtil.fgSettingsStore= JavaScriptPlugin.getDefault().getDialogSettings().addNewSection(SearchUtil.DIALOG_SETTINGS_KEY);
 		
 		boolean foundLRU= false;
 		String[] lruWorkingSetNames= SearchUtil.fgSettingsStore.getArray(SearchUtil.STORE_LRU_WORKING_SET_NAMES);

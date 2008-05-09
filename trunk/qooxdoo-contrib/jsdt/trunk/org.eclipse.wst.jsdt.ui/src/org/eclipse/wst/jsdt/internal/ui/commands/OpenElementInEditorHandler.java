@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,9 +15,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
-import org.eclipse.wst.jsdt.ui.JavaUI;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
+import org.eclipse.wst.jsdt.ui.JavaScriptUI;
 
 /**
  * A command handler to open a java element in its editor.
@@ -30,12 +30,12 @@ public class OpenElementInEditorHandler extends AbstractHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		IJavaElement javaElement= (IJavaElement) event.getObjectParameterForExecution(PARAM_ID_ELEMENT_REF);
+		IJavaScriptElement javaElement= (IJavaScriptElement) event.getObjectParameterForExecution(PARAM_ID_ELEMENT_REF);
 
 		try {
-			IEditorPart editorPart= JavaUI.openInEditor(javaElement);
-			JavaUI.revealInEditor(editorPart, javaElement);
-		} catch (JavaModelException ex) {
+			IEditorPart editorPart= JavaScriptUI.openInEditor(javaElement);
+			JavaScriptUI.revealInEditor(editorPart, javaElement);
+		} catch (JavaScriptModelException ex) {
 			throw new ExecutionException("Error opening java element in editor", ex); //$NON-NLS-1$
 		} catch (PartInitException ex) {
 			throw new ExecutionException("Error opening java element in editor", ex); //$NON-NLS-1$

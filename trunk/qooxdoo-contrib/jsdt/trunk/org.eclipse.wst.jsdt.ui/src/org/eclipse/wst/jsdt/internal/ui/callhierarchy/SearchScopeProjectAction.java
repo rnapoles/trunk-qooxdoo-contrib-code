@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 package org.eclipse.wst.jsdt.internal.ui.callhierarchy;
 
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IMethod;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.IFunction;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.search.JavaSearchScopeFactory;
 
@@ -30,14 +30,14 @@ class SearchScopeProjectAction extends SearchScopeAction {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IJavaHelpContextIds.CALL_HIERARCHY_SEARCH_SCOPE_ACTION);
 	}
 	
-	public IJavaSearchScope getSearchScope() {
-		IMethod method = this.fGroup.getView().getMethod();
+	public IJavaScriptSearchScope getSearchScope() {
+		IFunction method = this.fGroup.getView().getMethod();
 		if (method == null) {
 			return null;
 		}
 		
 		JavaSearchScopeFactory factory= JavaSearchScopeFactory.getInstance();
-		return factory.createJavaProjectSearchScope(method.getJavaProject(), true);
+		return factory.createJavaProjectSearchScope(method.getJavaScriptProject(), true);
 	}
 	
 	/* (non-Javadoc)
@@ -51,10 +51,10 @@ class SearchScopeProjectAction extends SearchScopeAction {
 	 * @see org.eclipse.wst.jsdt.internal.ui.callhierarchy.SearchScopeAction#getFullDescription()
 	 */
 	public String getFullDescription() {
-		IMethod method = this.fGroup.getView().getMethod();
+		IFunction method = this.fGroup.getView().getMethod();
 		if (method != null) {
 			JavaSearchScopeFactory factory= JavaSearchScopeFactory.getInstance();
-			return factory.getProjectScopeDescription(method.getJavaProject(), true);
+			return factory.getProjectScopeDescription(method.getJavaScriptProject(), true);
 		}
 		return ""; //$NON-NLS-1$
 	}
