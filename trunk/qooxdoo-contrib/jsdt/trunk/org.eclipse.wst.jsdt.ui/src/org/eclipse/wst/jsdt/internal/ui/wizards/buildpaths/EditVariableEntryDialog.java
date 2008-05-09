@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusInfo;
@@ -180,7 +180,7 @@ public class EditVariableEntryDialog extends StatusDialog {
 		if (path != null) {
 			String varName= path.segment(0);
 			if (varName != null) {
-				IPath varPath= JavaCore.getClasspathVariable(varName);
+				IPath varPath= JavaScriptCore.getIncludepathVariable(varName);
 				if (varPath != null) {
 					return varPath.append(path.removeFirstSegments(1));
 				}
@@ -201,7 +201,7 @@ public class EditVariableEntryDialog extends StatusDialog {
 			return new Path(varName);
 		}
 		
-		IPath varPath= JavaCore.getClasspathVariable(varName);
+		IPath varPath= JavaScriptCore.getIncludepathVariable(varName);
 		if (varPath != null) {
 			if (varPath.isPrefixOf(path)) {
 				path= path.removeFirstSegments(varPath.segmentCount());
@@ -240,7 +240,7 @@ public class EditVariableEntryDialog extends StatusDialog {
 				status.setError(NewWizardMessages.EditVariableEntryDialog_filename_error_notvalid); 
 				return status;
 			}
-			fFileVariablePath= JavaCore.getClasspathVariable(varName);
+			fFileVariablePath= JavaScriptCore.getIncludepathVariable(varName);
 			if (fFileVariablePath == null) {
 				status.setError(NewWizardMessages.EditVariableEntryDialog_filename_error_varnotexists); 
 				return status;

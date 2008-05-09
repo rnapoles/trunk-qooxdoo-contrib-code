@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,7 +35,7 @@ public class JavadocLocationDialog extends StatusDialog {
 	
 	/**
 	 * Shows the UI for configuring a javadoc location.
-	 * Use {@link org.eclipse.wst.jsdt.ui.JavaUI} to access and configure Javadoc locations.
+	 * Use {@link org.eclipse.wst.jsdt.ui.JavaScriptUI} to access and configure Javadoc locations.
 	 * 
 	 * @param parent The parent shell for the dialog.
 	 * @param libraryName Name of of the library to which configured javadoc location belongs.

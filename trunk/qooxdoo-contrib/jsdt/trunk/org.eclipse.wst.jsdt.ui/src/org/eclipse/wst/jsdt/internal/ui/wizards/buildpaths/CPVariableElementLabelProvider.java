@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 import org.eclipse.wst.jsdt.internal.ui.wizards.NewWizardMessages;
 
@@ -43,7 +43,7 @@ public class CPVariableElementLabelProvider extends LabelProvider implements ICo
 	private boolean fHighlightReadOnly;
 	
 	public CPVariableElementLabelProvider(boolean highlightReadOnly) {
-		ImageRegistry reg= JavaPlugin.getDefault().getImageRegistry();
+		ImageRegistry reg= JavaScriptPlugin.getDefault().getImageRegistry();
 		fJARImage= reg.get(JavaPluginImages.IMG_OBJS_EXTJAR);
 		fFolderImage= PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 		

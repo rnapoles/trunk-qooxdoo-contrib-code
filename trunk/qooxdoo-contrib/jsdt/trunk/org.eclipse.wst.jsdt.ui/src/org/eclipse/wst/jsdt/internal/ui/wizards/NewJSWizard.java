@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 
 public class NewJSWizard extends Wizard implements INewWizard {
@@ -56,7 +56,7 @@ setDefaultPageImageDescriptor(JavaPluginImages.DESC_WIZBAN_NEWENUM);
 					}
 					catch (PartInitException e) {
 // STP						Logger.log(Logger.WARNING_DEBUG, e.getMessage(), e);
-JavaPlugin.log(e);
+JavaScriptPlugin.log(e);
 					}
 				}
 			});
