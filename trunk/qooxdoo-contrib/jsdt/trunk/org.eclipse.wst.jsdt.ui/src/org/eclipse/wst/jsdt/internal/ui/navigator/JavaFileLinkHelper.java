@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,10 +19,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.navigator.ILinkHelper;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.EditorUtility;
-import org.eclipse.wst.jsdt.ui.JavaUI;
+import org.eclipse.wst.jsdt.ui.JavaScriptUI;
 
 public class JavaFileLinkHelper implements ILinkHelper {
 
@@ -33,18 +33,18 @@ public class JavaFileLinkHelper implements ILinkHelper {
 		IEditorPart part= EditorUtility.isOpenInEditor(element);
 		if (part != null) {
 			page.bringToTop(part);
-			if (element instanceof IJavaElement)
-				EditorUtility.revealInEditor(part, (IJavaElement) element);
+			if (element instanceof IJavaScriptElement)
+				EditorUtility.revealInEditor(part, (IJavaScriptElement) element);
 		}
 
 	}
 
 	public IStructuredSelection findSelection(IEditorInput input) {
-		IJavaElement element= JavaUI.getEditorInputJavaElement(input);
+		IJavaScriptElement element= JavaScriptUI.getEditorInputJavaElement(input);
 		if (element == null) {
 			IFile file = ResourceUtil.getFile(input);
 			if (file != null) {
-				element= JavaCore.create(file);
+				element= JavaScriptCore.create(file);
 			}
 		}
 		return (element != null) ? new StructuredSelection(element) : StructuredSelection.EMPTY;
