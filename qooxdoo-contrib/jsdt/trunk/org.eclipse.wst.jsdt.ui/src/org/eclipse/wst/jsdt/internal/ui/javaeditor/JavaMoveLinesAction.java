@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,9 +34,9 @@ import org.eclipse.ui.texteditor.IEditorStatusLine;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextEditorAction;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaProject;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.IndentUtil.IndentResult;
 
 /**
@@ -406,11 +406,11 @@ public class JavaMoveLinesAction extends TextEditorAction {
 		}
 	}
 
-	private IJavaProject getProject() {
+	private IJavaScriptProject getProject() {
 		IEditorInput editorInput= fSharedState.fEditor.getEditorInput();
-		ICompilationUnit unit= JavaPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(editorInput);
+		IJavaScriptUnit unit= JavaScriptPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(editorInput);
 		if (unit != null)
-			return unit.getJavaProject();
+			return unit.getJavaScriptProject();
 		return null;
 	}
 

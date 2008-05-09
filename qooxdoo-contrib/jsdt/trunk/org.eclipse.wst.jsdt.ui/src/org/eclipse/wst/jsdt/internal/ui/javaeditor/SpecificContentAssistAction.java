@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,7 +26,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.wst.jsdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.wst.jsdt.internal.ui.text.java.CompletionProposalComputerRegistry;
-import org.eclipse.wst.jsdt.ui.text.IJavaPartitions;
+import org.eclipse.wst.jsdt.ui.text.IJavaScriptPartitions;
 
 /**
  * Action to run content assist on a specific proposal category.
@@ -121,7 +121,7 @@ final class SpecificContentAssistAction extends Action implements IUpdate {
     	
     	String contentType;
     	try {
-	        contentType= TextUtilities.getContentType(document, IJavaPartitions.JAVA_PARTITIONING, offset, true);
+	        contentType= TextUtilities.getContentType(document, IJavaScriptPartitions.JAVA_PARTITIONING, offset, true);
         } catch (BadLocationException x) {
         	return false;
         }
