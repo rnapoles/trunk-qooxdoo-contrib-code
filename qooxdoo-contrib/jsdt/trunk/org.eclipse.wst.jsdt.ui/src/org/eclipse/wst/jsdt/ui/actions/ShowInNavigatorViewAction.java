@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,8 @@ import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ISetSelectionTarget;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionMessages;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionUtil;
@@ -43,7 +43,11 @@ import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class ShowInNavigatorViewAction extends SelectionDispatchAction {
 
@@ -89,17 +93,17 @@ public class ShowInNavigatorViewAction extends SelectionDispatchAction {
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(ITextSelection selection) {
-		IJavaElement input= SelectionConverter.getInput(fEditor);
+		IJavaScriptElement input= SelectionConverter.getInput(fEditor);
 		if (!ActionUtil.isProcessable(getShell(), input))
 			return;		
 		
 		
 		try {
-			IJavaElement[] elements= SelectionConverter.codeResolveOrInputForked(fEditor);
+			IJavaScriptElement[] elements= SelectionConverter.codeResolveOrInputForked(fEditor);
 			if (elements == null || elements.length == 0)
 				return;
 			
-			IJavaElement candidate= elements[0];
+			IJavaScriptElement candidate= elements[0];
 			if (elements.length > 1) {
 				candidate= SelectionConverter.selectJavaElement(elements, getShell(), getDialogTitle(), ActionMessages.ShowInNavigatorView_dialog_message);
 			}
@@ -145,18 +149,18 @@ public class ShowInNavigatorViewAction extends SelectionDispatchAction {
 		Object element= selection.getFirstElement();
 		if (element instanceof IResource)
 			return (IResource)element;
-		if (element instanceof IJavaElement)
-			return getResource((IJavaElement)element);
+		if (element instanceof IJavaScriptElement)
+			return getResource((IJavaScriptElement)element);
 		return null;
 	}
 	
-	private IResource getResource(IJavaElement element) {
+	private IResource getResource(IJavaScriptElement element) {
 		if (element == null)
 			return null;
 		
-		element= (IJavaElement) element.getOpenable();
-		if (element instanceof ICompilationUnit) {
-			element= ((ICompilationUnit) element).getPrimary();
+		element= (IJavaScriptElement) element.getOpenable();
+		if (element instanceof IJavaScriptUnit) {
+			element= ((IJavaScriptUnit) element).getPrimary();
 		}
 		return element.getResource();
 	}

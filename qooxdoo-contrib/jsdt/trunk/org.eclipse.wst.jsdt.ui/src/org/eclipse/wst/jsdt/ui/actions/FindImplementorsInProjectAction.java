@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,9 +12,9 @@ package org.eclipse.wst.jsdt.ui.actions;
 
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 import org.eclipse.wst.jsdt.internal.ui.javaeditor.JavaEditor;
@@ -31,7 +31,11 @@ import org.eclipse.wst.jsdt.ui.search.QuerySpecification;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 3.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class FindImplementorsInProjectAction extends FindImplementorsAction {
 
@@ -61,19 +65,19 @@ public class FindImplementorsInProjectAction extends FindImplementorsAction {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IJavaHelpContextIds.FIND_IMPLEMENTORS_IN_PROJECT_ACTION);
 	}
 	
-	QuerySpecification createQuery(IJavaElement element) throws JavaModelException {
+	QuerySpecification createQuery(IJavaScriptElement element) throws JavaScriptModelException {
 		JavaSearchScopeFactory factory= JavaSearchScopeFactory.getInstance();
 		JavaEditor editor= getEditor();
 		
-		IJavaSearchScope scope;
+		IJavaScriptSearchScope scope;
 		String description;
 		boolean isInsideJRE= factory.isInsideJRE(element);
 		if (editor != null) {
 			scope= factory.createJavaProjectSearchScope(editor.getEditorInput(), isInsideJRE);
 			description= factory.getProjectScopeDescription(editor.getEditorInput(), isInsideJRE);
 		} else {
-			scope= factory.createJavaProjectSearchScope(element.getJavaProject(), isInsideJRE);
-			description=  factory.getProjectScopeDescription(element.getJavaProject(), isInsideJRE);
+			scope= factory.createJavaProjectSearchScope(element.getJavaScriptProject(), isInsideJRE);
+			description=  factory.getProjectScopeDescription(element.getJavaScriptProject(), isInsideJRE);
 		}
 		return new ElementQuerySpecification(element, getLimitTo(), scope, description);
 	}

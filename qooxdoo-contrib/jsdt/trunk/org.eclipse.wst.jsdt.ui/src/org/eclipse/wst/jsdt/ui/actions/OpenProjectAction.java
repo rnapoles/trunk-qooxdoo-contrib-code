@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,11 +37,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.OpenResourceAction;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.actions.ActionMessages;
 import org.eclipse.wst.jsdt.internal.ui.actions.WorkbenchRunnableAdapter;
 import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
-import org.eclipse.wst.jsdt.ui.JavaElementLabelProvider;
+import org.eclipse.wst.jsdt.ui.JavaScriptElementLabelProvider;
 
 /**
  * Action to open a closed project. Action either opens the closed projects
@@ -52,7 +52,11 @@ import org.eclipse.wst.jsdt.ui.JavaElementLabelProvider;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class OpenProjectAction extends SelectionDispatchAction implements IResourceChangeListener {
 	
@@ -160,7 +164,7 @@ public class OpenProjectAction extends SelectionDispatchAction implements IResou
 	}
 	
 	private void internalRun(List initialSelection) {
-		ListSelectionDialog dialog= new ListSelectionDialog(getShell(), getClosedProjectsInWorkspace(), new ArrayContentProvider(), new JavaElementLabelProvider(), ActionMessages.OpenProjectAction_dialog_message);
+		ListSelectionDialog dialog= new ListSelectionDialog(getShell(), getClosedProjectsInWorkspace(), new ArrayContentProvider(), new JavaScriptElementLabelProvider(), ActionMessages.OpenProjectAction_dialog_message);
 		dialog.setTitle(ActionMessages.OpenProjectAction_dialog_title); 
 		if (initialSelection != null && !initialSelection.isEmpty()) {
 			dialog.setInitialElementSelections(initialSelection);
@@ -190,7 +194,7 @@ public class OpenProjectAction extends SelectionDispatchAction implements IResou
 						project.open(new SubProgressMonitor(monitor, 1));
 					} catch (CoreException e) {
 						if (errorStatus == null)
-							errorStatus = new MultiStatus(JavaPlugin.getPluginId(), IStatus.ERROR, ActionMessages.OpenProjectAction_error_message, null); 
+							errorStatus = new MultiStatus(JavaScriptPlugin.getPluginId(), IStatus.ERROR, ActionMessages.OpenProjectAction_error_message, null); 
 						errorStatus.add(e.getStatus());
 					}
 				}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,8 +33,8 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.IWorkingSetUpdater;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 
 public class WorkingSetModel {
 
@@ -132,9 +132,9 @@ public class WorkingSetModel {
 		}
 		public List getAllWorkingSets(Object element) {
 			 List allElements= getAllElements(fElementToWorkingSet, element);
-			 if (allElements.isEmpty() && element instanceof IJavaElement) {
+			 if (allElements.isEmpty() && element instanceof IJavaScriptElement) {
 				 // try a second time in case the working set was manually updated (bug 168032)
-				 allElements= getAllElements(fElementToWorkingSet, ((IJavaElement) element).getResource());
+				 allElements= getAllElements(fElementToWorkingSet, ((IJavaScriptElement) element).getResource());
 			 }
 			 return allElements;
 		}
@@ -155,7 +155,7 @@ public class WorkingSetModel {
 			for (int i= 0; i < elements.length; i++) {
 				IAdaptable element= elements[i];
 				addElement(element, ws);
-				if (!(element instanceof IProject) && !(element instanceof IJavaProject)) {
+				if (!(element instanceof IProject) && !(element instanceof IJavaScriptProject)) {
 					fNonProjectTopLevelElements.add(element);
 				}
 			}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,8 @@ package org.eclipse.wst.jsdt.ui.actions;
 
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringAvailabilityTester;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.code.PromoteTempToFieldRefactoring;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
@@ -33,7 +33,11 @@ import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.1
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class ConvertLocalToFieldAction extends SelectionDispatchAction {
 
@@ -65,7 +69,7 @@ public class ConvertLocalToFieldAction extends SelectionDispatchAction {
 	public void selectionChanged(JavaTextSelection selection) {
 		try {
 			setEnabled(RefactoringAvailabilityTester.isPromoteTempAvailable(selection));
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			setEnabled(false);
 		}
 	}
@@ -77,10 +81,10 @@ public class ConvertLocalToFieldAction extends SelectionDispatchAction {
 		if (!ActionUtil.isEditable(fEditor))
 			return;
 		try{
-			ICompilationUnit cunit= SelectionConverter.getInputAsCompilationUnit(fEditor);
+			IJavaScriptUnit cunit= SelectionConverter.getInputAsCompilationUnit(fEditor);
 			final PromoteTempToFieldRefactoring refactoring= new PromoteTempToFieldRefactoring(cunit, selection.getOffset(), selection.getLength());
 			new RefactoringStarter().activate(refactoring, new PromoteTempWizard(refactoring), getShell(), RefactoringMessages.ConvertLocalToField_title, RefactoringSaveHelper.SAVE_NOTHING);
-		} catch (JavaModelException e){
+		} catch (JavaScriptModelException e){
 			ExceptionHandler.handle(e, RefactoringMessages.ConvertLocalToField_title, RefactoringMessages.NewTextRefactoringAction_exception); 
 		}	
 	}

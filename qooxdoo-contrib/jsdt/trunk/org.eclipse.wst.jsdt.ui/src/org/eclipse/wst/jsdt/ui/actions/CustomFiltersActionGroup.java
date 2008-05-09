@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,8 +45,8 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.actions.ActionGroup;
-import org.eclipse.wst.jsdt.core.IJavaModel;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.core.IJavaScriptModel;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.JavaPluginImages;
 import org.eclipse.wst.jsdt.internal.ui.filters.CustomFiltersDialog;
 import org.eclipse.wst.jsdt.internal.ui.filters.FilterDescriptor;
@@ -60,7 +60,11 @@ import org.eclipse.wst.jsdt.internal.ui.filters.NamePatternFilter;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  * 
- * @since 2.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class CustomFiltersActionGroup extends ActionGroup {
 
@@ -255,7 +259,7 @@ public class CustomFiltersActionGroup extends ActionGroup {
 			FilterItem item= new FilterItem(filterDescriptors[i]);
 			Object existing= fFilterItems.put(item.id, item);
 			if (existing != null) {
-				JavaPlugin.logErrorMessage("WARNING: Duplicate id for extension-point \"org.eclipse.wst.jsdt.ui.javaElementFilters\" in " + ownerId); //$NON-NLS-1$		
+				JavaScriptPlugin.logErrorMessage("WARNING: Duplicate id for extension-point \"org.eclipse.wst.jsdt.ui.javaElementFilters\" in " + ownerId); //$NON-NLS-1$		
 			}
 		}
 		
@@ -332,7 +336,7 @@ public class CustomFiltersActionGroup extends ActionGroup {
 	    if (contentProvider instanceof ITreeContentProvider) {
 	        // the element and all its parents have to be selected
 	        ITreeContentProvider provider = (ITreeContentProvider) contentProvider;
-	        while (element != null && !(element instanceof IJavaModel)) {
+	        while (element != null && !(element instanceof IJavaScriptModel)) {
 	            if (!filter.select(fViewer, parent, element)) 
 	                return false;
 	            element= provider.getParent( element);
@@ -552,7 +556,7 @@ public class CustomFiltersActionGroup extends ActionGroup {
 		
 	private void initializeWithViewDefaults() {
 		// get default values for view
-		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore store= JavaScriptPlugin.getDefault().getPreferenceStore();
 
 		// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=22533
 		if (!store.contains(getPreferenceKey(TAG_DUMMY_TO_TEST_EXISTENCE)))
@@ -581,7 +585,7 @@ public class CustomFiltersActionGroup extends ActionGroup {
 
 	private void storeViewDefaults() {
 		// get default values for view
-		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore store= JavaScriptPlugin.getDefault().getPreferenceStore();
 
 		// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=22533
 		store.setValue(getPreferenceKey(TAG_DUMMY_TO_TEST_EXISTENCE), "storedViewPreferences");//$NON-NLS-1$

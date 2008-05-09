@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IWorkingSetSelectionDialog;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * Displays an IWorkingSetSelectionDialog and sets the selected 
@@ -79,7 +79,7 @@ public class SelectWorkingSetAction extends Action {
 		} else if (fShell != null) {
 			return fShell;
 		} else {
-			return JavaPlugin.getActiveWorkbenchShell();
+			return JavaScriptPlugin.getActiveWorkbenchShell();
 		}
 	}
 }

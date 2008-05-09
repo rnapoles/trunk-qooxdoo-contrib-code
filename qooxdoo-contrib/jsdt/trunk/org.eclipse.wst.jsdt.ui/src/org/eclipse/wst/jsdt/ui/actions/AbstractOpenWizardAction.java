@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,8 +27,8 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.NewProjectAction;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
 import org.eclipse.wst.jsdt.internal.ui.util.PixelConverter;
 import org.eclipse.wst.jsdt.internal.ui.wizards.NewElementWizard;
@@ -40,13 +40,16 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.NewWizardMessages;
  * <p>
  * Note: This class is for internal use only. Clients should not use this class.
  * </p>
- * @since 3.2
+  * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public abstract class AbstractOpenWizardAction extends Action {
 	
 	private Shell fShell;
 	private IStructuredSelection fSelection;
-	private IJavaElement fCreatedElement;
+	private IJavaScriptElement fCreatedElement;
 	
 	/**
 	 * Creates the action.
@@ -106,7 +109,7 @@ public abstract class AbstractOpenWizardAction extends Action {
 	}
 			
 	private IStructuredSelection evaluateCurrentSelection() {
-		IWorkbenchWindow window= JavaPlugin.getActiveWorkbenchWindow();
+		IWorkbenchWindow window= JavaScriptPlugin.getActiveWorkbenchWindow();
 		if (window != null) {
 			ISelection selection= window.getSelectionService().getSelection();
 			if (selection instanceof IStructuredSelection) {
@@ -131,7 +134,7 @@ public abstract class AbstractOpenWizardAction extends Action {
 	 */
 	protected Shell getShell() {
 		if (fShell == null) {
-			return JavaPlugin.getActiveWorkbenchShell();
+			return JavaScriptPlugin.getActiveWorkbenchShell();
 		}
 		return fShell;
 	}
@@ -168,7 +171,7 @@ public abstract class AbstractOpenWizardAction extends Action {
 	 * Returns the created element or <code>null</code> if the wizard has not run or was canceled.
 	 * @return the created element or <code>null</code>
 	 */
-	public IJavaElement getCreatedElement() {
+	public IJavaScriptElement getCreatedElement() {
 		return fCreatedElement;
 	}
 	
