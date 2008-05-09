@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.internal.ui.text.javadoc.IHtmlTagConstants;
 import org.eclipse.wst.jsdt.internal.ui.text.javadoc.IJavaDocTagConstants;
 import org.eclipse.wst.jsdt.internal.ui.text.spelling.engine.ISpellCheckEngine;
@@ -116,9 +116,9 @@ public class WordQuickFixProcessor implements IQuickFixProcessor {
 	}
 
 	/*
-	 * @see org.eclipse.wst.jsdt.ui.text.java.IQuickFixProcessor#hasCorrections(org.eclipse.wst.jsdt.core.ICompilationUnit,int)
+	 * @see org.eclipse.wst.jsdt.ui.text.java.IQuickFixProcessor#hasCorrections(org.eclipse.wst.jsdt.core.IJavaScriptUnit,int)
 	 */
-	public final boolean hasCorrections(ICompilationUnit unit, int id) {
+	public final boolean hasCorrections(IJavaScriptUnit unit, int id) {
 		return id == JavaSpellingReconcileStrategy.SPELLING_PROBLEM_ID;
 	}
 }
