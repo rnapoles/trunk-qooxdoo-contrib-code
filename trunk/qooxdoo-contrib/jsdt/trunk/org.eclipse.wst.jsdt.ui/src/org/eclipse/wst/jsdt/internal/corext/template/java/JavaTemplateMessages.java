@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,11 +36,11 @@ final class JavaTemplateMessages extends NLS {
 	public static String JavaContextType_variable_description_array_type;
 	public static String JavaContextType_variable_description_array_element;
 	public static String JavaContextType_variable_description_index;
-	public static String JavaContextType_variable_description_collection;
-	public static String JavaContextType_variable_description_iterable;
-	public static String JavaContextType_variable_description_iterable_type;
-	public static String JavaContextType_variable_description_iterable_element;
-	public static String JavaContextType_variable_description_iterator;
+//	public static String JavaContextType_variable_description_collection;
+//	public static String JavaContextType_variable_description_iterable;
+//	public static String JavaContextType_variable_description_iterable_type;
+//	public static String JavaContextType_variable_description_iterable_element;
+//	public static String JavaContextType_variable_description_iterator;
 	public static String JavaContextType_variable_description_todo;
 	public static String JavaContext_error_title;
 	public static String JavaContext_error_message;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * <code>Templates</code> gives access to the available templates.
@@ -33,7 +33,7 @@ public class Templates extends org.eclipse.wst.jsdt.internal.corext.template.jav
 	 * 
 	 * @return an instance of templates
 	 * @deprecated As of 3.0, replaced by
-	 *             {@link org.eclipse.wst.jsdt.internal.ui.JavaPlugin#getTemplateStore()}
+	 *             {@link org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin#getTemplateStore()}
 	 */
 	public static Templates getInstance() {
 		if (fgTemplates == null)
@@ -43,7 +43,7 @@ public class Templates extends org.eclipse.wst.jsdt.internal.corext.template.jav
 	}
 	
 	public Templates() {
-		super("template", JavaPlugin.getDefault().getTemplateContextRegistry()); //$NON-NLS-1$
+		super("template", JavaScriptPlugin.getDefault().getTemplateContextRegistry()); //$NON-NLS-1$
 		create();
 	}
 	
@@ -57,7 +57,7 @@ public class Templates extends org.eclipse.wst.jsdt.internal.corext.template.jav
 			}
 
 		} catch (CoreException e) {
-			JavaPlugin.log(e);
+			JavaScriptPlugin.log(e);
 			clear();
 		}
 
@@ -88,7 +88,7 @@ public class Templates extends org.eclipse.wst.jsdt.internal.corext.template.jav
 	}
 
 	private static File getTemplateFile() {
-		IPath path= JavaPlugin.getDefault().getStateLocation();
+		IPath path= JavaScriptPlugin.getDefault().getStateLocation();
 		path= path.append(TEMPLATE_FILE);
 		
 		return path.toFile();
