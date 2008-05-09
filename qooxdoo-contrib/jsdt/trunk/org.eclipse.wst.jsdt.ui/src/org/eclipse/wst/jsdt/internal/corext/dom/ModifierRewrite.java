@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import org.eclipse.wst.jsdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.wst.jsdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.wst.jsdt.core.dom.EnumDeclaration;
 import org.eclipse.wst.jsdt.core.dom.FieldDeclaration;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.Modifier;
 import org.eclipse.wst.jsdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.wst.jsdt.core.dom.TypeDeclaration;
@@ -27,10 +27,13 @@ import org.eclipse.wst.jsdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.wst.jsdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.wst.jsdt.core.dom.rewrite.ListRewrite;
-
 /**
- *
- */
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class ModifierRewrite {
 	
 	public static final int VISIBILITY_MODIFIERS= Modifier.PUBLIC | Modifier.PRIVATE | Modifier.PROTECTED;
@@ -50,8 +53,8 @@ public class ModifierRewrite {
 
 	private ListRewrite evaluateListRewrite(ASTRewrite rewrite, ASTNode declNode) {
 		switch (declNode.getNodeType()) {
-			case ASTNode.METHOD_DECLARATION:
-				return rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
+			case ASTNode.FUNCTION_DECLARATION:
+				return rewrite.getListRewrite(declNode, FunctionDeclaration.MODIFIERS2_PROPERTY);
 			case ASTNode.FIELD_DECLARATION:
 				return rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY);
 			case ASTNode.VARIABLE_DECLARATION_EXPRESSION:

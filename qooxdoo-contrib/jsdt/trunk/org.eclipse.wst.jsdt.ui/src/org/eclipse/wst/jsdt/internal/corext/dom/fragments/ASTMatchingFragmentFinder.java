@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
-import org.eclipse.wst.jsdt.core.dom.Javadoc;
+import org.eclipse.wst.jsdt.core.dom.JSdoc;
 import org.eclipse.wst.jsdt.internal.corext.dom.GenericVisitor;
 
 class ASTMatchingFragmentFinder extends GenericVisitor {
@@ -39,7 +39,7 @@ class ASTMatchingFragmentFinder extends GenericVisitor {
 		return (IASTFragment[]) fMatches.toArray(new IASTFragment[fMatches.size()]);
 	}
 	
-	public boolean visit(Javadoc node) {
+	public boolean visit(JSdoc node) {
 		return false;
 	}
 	

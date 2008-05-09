@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,10 +15,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaProject;
-import org.eclipse.wst.jsdt.core.JavaCore;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.ToolFactory;
 import org.eclipse.wst.jsdt.core.compiler.IScanner;
 import org.eclipse.wst.jsdt.core.compiler.ITerminalSymbols;
@@ -26,8 +26,12 @@ import org.eclipse.wst.jsdt.core.compiler.InvalidInputException;
 import org.eclipse.wst.jsdt.internal.ui.JavaUIStatus;
 
 /**
- * Wraps a scanner and offers convenient methods for finding tokens 
- */
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class TokenScanner {
 	
 	public static final int END_OF_FILE= 20001;
@@ -62,9 +66,9 @@ public class TokenScanner {
 	 * Creates a TokenScanner
 	 * @param document The textbuffer to create the scanner on
 	 */
-	public TokenScanner(IDocument document, IJavaProject project) {
-		String sourceLevel= project.getOption(JavaCore.COMPILER_SOURCE, true);
-		String complianceLevel= project.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+	public TokenScanner(IDocument document, IJavaScriptProject project) {
+		String sourceLevel= project.getOption(JavaScriptCore.COMPILER_SOURCE, true);
+		String complianceLevel= project.getOption(JavaScriptCore.COMPILER_COMPLIANCE, true);
 		fScanner= ToolFactory.createScanner(true, false, false, sourceLevel, complianceLevel); // no line info required
 		fScanner.setSource(document.get().toCharArray());
 		fDocument= document;
@@ -74,12 +78,12 @@ public class TokenScanner {
 	/**
 	 * Creates a TokenScanner
 	 * @param cu The compliation unit to can on
-	 * @throws JavaModelException thorwn if the buffer cannot be accessed
+	 * @throws JavaScriptModelException thorwn if the buffer cannot be accessed
 	 */
-	public TokenScanner(ICompilationUnit cu) throws JavaModelException {
-		IJavaProject project= cu.getJavaProject();
-		String sourceLevel= project.getOption(JavaCore.COMPILER_SOURCE, true);
-		String complianceLevel= project.getOption(JavaCore.COMPILER_COMPLIANCE, true);
+	public TokenScanner(IJavaScriptUnit cu) throws JavaScriptModelException {
+		IJavaScriptProject project= cu.getJavaScriptProject();
+		String sourceLevel= project.getOption(JavaScriptCore.COMPILER_SOURCE, true);
+		String complianceLevel= project.getOption(JavaScriptCore.COMPILER_COMPLIANCE, true);
 		fScanner= ToolFactory.createScanner(true, false, true, sourceLevel, complianceLevel); // line info required
 		fScanner.setSource(cu.getBuffer().getCharacters());
 		fDocument= null; // use scanner for line information
@@ -440,7 +444,7 @@ public class TokenScanner {
 	
 	private IStatus createError(int code, String message, Throwable e) {
 		return JavaUIStatus.createError(DOCUMENT_ERROR, message, e);
-		//		return new Status(IStatus.ERROR, JavaCore.PLUGIN_ID, code, message, throwable);
+		//		return new Status(IStatus.ERROR, JavaScriptCore.PLUGIN_ID, code, message, throwable);
 	}
 
 }

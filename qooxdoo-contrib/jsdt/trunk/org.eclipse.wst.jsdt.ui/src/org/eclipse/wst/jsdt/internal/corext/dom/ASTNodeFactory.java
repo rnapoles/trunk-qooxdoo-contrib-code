@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,11 +16,11 @@ import java.util.List;
 import org.eclipse.wst.jsdt.core.dom.AST;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
 import org.eclipse.wst.jsdt.core.dom.ASTParser;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.Expression;
 import org.eclipse.wst.jsdt.core.dom.ITypeBinding;
 import org.eclipse.wst.jsdt.core.dom.InfixExpression;
-import org.eclipse.wst.jsdt.core.dom.MethodDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.Modifier;
 import org.eclipse.wst.jsdt.core.dom.Name;
 import org.eclipse.wst.jsdt.core.dom.PrimitiveType;
@@ -29,7 +29,13 @@ import org.eclipse.wst.jsdt.core.dom.TypeDeclaration;
 import org.eclipse.wst.jsdt.core.dom.TypeParameter;
 import org.eclipse.wst.jsdt.core.dom.VariableDeclaration;
 import org.eclipse.wst.jsdt.core.dom.InfixExpression.Operator;
-
+/**
+*
+* Provisional API: This class/interface is part of an interim API that is still under development and expected to
+* change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+* from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+* (repeatedly) as the API evolves.
+*/
 public class ASTNodeFactory {
 
 	private static final String STATEMENT_HEADER= "class __X__ { void __x__() { "; //$NON-NLS-1$
@@ -63,7 +69,7 @@ public class ASTNodeFactory {
 		buffer.append(STATEMENT_FOOTER);
 		ASTParser p= ASTParser.newParser(ast.apiLevel());
 		p.setSource(buffer.toString().toCharArray());
-		CompilationUnit root= (CompilationUnit) p.createAST(null);
+		JavaScriptUnit root= (JavaScriptUnit) p.createAST(null);
 		ASTNode result= ASTNode.copySubtree(ast, NodeFinder.perform(root, STATEMENT_HEADER.length(), content.length()));
 		result.accept(new PositionClearer());
 		return result;
@@ -79,10 +85,10 @@ public class ASTNodeFactory {
 		buffer.append(TYPEPARAM_FOOTER);
 		ASTParser p= ASTParser.newParser(ast.apiLevel());
 		p.setSource(buffer.toString().toCharArray());
-		CompilationUnit root= (CompilationUnit) p.createAST(null);
+		JavaScriptUnit root= (JavaScriptUnit) p.createAST(null);
 		List list= root.types();
 		TypeDeclaration typeDecl= (TypeDeclaration) list.get(0);
-		MethodDeclaration methodDecl= typeDecl.getMethods()[0];
+		FunctionDeclaration methodDecl= typeDecl.getMethods()[0];
 		TypeParameter tp= (TypeParameter) methodDecl.typeParameters().get(0);
 		ASTNode result= ASTNode.copySubtree(ast, tp);
 		result.accept(new PositionClearer());
@@ -96,10 +102,10 @@ public class ASTNodeFactory {
 		buffer.append(TYPE_FOOTER);
 		ASTParser p= ASTParser.newParser(ast.apiLevel());
 		p.setSource(buffer.toString().toCharArray());
-		CompilationUnit root= (CompilationUnit) p.createAST(null);
+		JavaScriptUnit root= (JavaScriptUnit) p.createAST(null);
 		List list= root.types();
 		TypeDeclaration typeDecl= (TypeDeclaration) list.get(0);
-		MethodDeclaration methodDecl= typeDecl.getMethods()[0];
+		FunctionDeclaration methodDecl= typeDecl.getMethods()[0];
 		ASTNode type= methodDecl.getReturnType2();
 		ASTNode result= ASTNode.copySubtree(ast, type);
 		result.accept(new PositionClearer());
