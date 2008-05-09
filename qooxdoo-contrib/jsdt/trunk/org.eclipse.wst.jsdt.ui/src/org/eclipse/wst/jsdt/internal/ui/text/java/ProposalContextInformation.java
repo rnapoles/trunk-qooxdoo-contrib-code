@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationExtension;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.jsdt.core.CompletionProposal;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.ui.text.java.CompletionProposalLabelProvider;
 
 
@@ -41,7 +41,7 @@ public final class ProposalContextInformation implements IContextInformation, IC
 		fInformationDisplayString= labelProvider.createParameterList(proposal);
 		ImageDescriptor descriptor= labelProvider.createImageDescriptor(proposal);
 		if (descriptor != null)
-			fImage= JavaPlugin.getImageDescriptorRegistry().get(descriptor);
+			fImage= JavaScriptPlugin.getImageDescriptorRegistry().get(descriptor);
 		else
 			fImage= null;
 		if (proposal.getCompletion().length == 0)
