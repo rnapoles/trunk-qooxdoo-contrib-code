@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension4;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringCoreMessages;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 import org.eclipse.wst.jsdt.internal.corext.util.Resources;
@@ -210,9 +210,9 @@ public abstract class JDTChange extends Change {
 		} else if (element instanceof IResource && !((IResource)element).exists()) {
 			status.addFatalError(Messages.format(
 				RefactoringCoreMessages.Change_does_not_exist, ((IResource)element).getFullPath().toString())); 
-		} else if (element instanceof IJavaElement && !((IJavaElement)element).exists()) {
+		} else if (element instanceof IJavaScriptElement && !((IJavaScriptElement)element).exists()) {
 			status.addFatalError(Messages.format(
-				RefactoringCoreMessages.Change_does_not_exist, ((IJavaElement)element).getElementName())); 
+				RefactoringCoreMessages.Change_does_not_exist, ((IJavaScriptElement)element).getElementName())); 
 		}
 	}
 
@@ -220,11 +220,11 @@ public abstract class JDTChange extends Change {
 		if (element instanceof IResource) {
 			return (IResource)element;
 		}
-		if (element instanceof ICompilationUnit) {
-			return ((ICompilationUnit)element).getPrimary().getResource();
+		if (element instanceof IJavaScriptUnit) {
+			return ((IJavaScriptUnit)element).getPrimary().getResource();
 		}
-		if (element instanceof IJavaElement) {
-			return ((IJavaElement)element).getResource();
+		if (element instanceof IJavaScriptElement) {
+			return ((IJavaScriptElement)element).getResource();
 		}
 		if (element instanceof IAdaptable) {
 			return (IResource)((IAdaptable)element).getAdapter(IResource.class);
