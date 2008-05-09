@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,7 +31,13 @@ import org.eclipse.wst.jsdt.internal.corext.refactoring.reorg.JavaMoveProcessor;
  * implemented.
  * </p>
  * 
- * @since 3.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
+ * 
+ * 
  */
 public interface IRefactoringProcessorIds {
 
@@ -41,7 +47,7 @@ public interface IRefactoringProcessorIds {
 	 * 
 	 * The rename Java project processor loads the following participants:
 	 * <ul>
-	 *   <li>participants registered for renaming <code>IJavaProject</code>.</li>
+	 *   <li>participants registered for renaming <code>IJavaScriptProject</code>.</li>
 	 *   <li>participants registered for renaming <code>IProject</code>.</li>
 	 * </ul>
 	 */
@@ -80,7 +86,7 @@ public interface IRefactoringProcessorIds {
 	 * <p>The refactoring processor moves and renames Java elements and resources.
 	 * Rename package fragment participants can retrieve the new location of
 	 * Java elements and resources through the interfaces
-	 * {@link org.eclipse.wst.jsdt.core.refactoring.IJavaElementMapper} and {@link org.eclipse.ltk.core.refactoring.IResourceMapper}, which can be
+	 * {@link org.eclipse.wst.jsdt.core.refactoring.IJavaScriptElementMapper} and {@link org.eclipse.ltk.core.refactoring.IResourceMapper}, which can be
 	 * retrieved from the processor using the getAdapter() method.</p>
 	 */
 	public static String RENAME_PACKAGE_FRAGMENT_PROCESSOR= RenamePackageProcessor.IDENTIFIER;
@@ -91,7 +97,7 @@ public interface IRefactoringProcessorIds {
 	 * 
 	 * The rename compilation unit processor loads the following participants:
 	 * <ul>
-	 *   <li>participants registered for renaming <code>ICompilationUnit</code>.</li>
+	 *   <li>participants registered for renaming <code>IJavaScriptUnit</code>.</li>
 	 *   <li>participants registered for renaming <code>IFile</code>.</li>
 	 *   <li>participants registered for renaming <code>IType</code> if the
 	 *       compilation unit contains a top level type.</li>
@@ -106,7 +112,7 @@ public interface IRefactoringProcessorIds {
 	 * The rename type processor loads the following participants:
 	 * <ul>
 	 *   <li>participants registered for renaming <code>IType</code>.</li>
-	 *   <li>participants registered for renaming <code>ICompilationUnit</code> if the
+	 *   <li>participants registered for renaming <code>IJavaScriptUnit</code> if the
 	 *       type is a public top level type.</li>
 	 *   <li>participants registered for renaming <code>IFile</code> if the compilation 
 	 *       unit gets rename as well.</li>
@@ -121,7 +127,7 @@ public interface IRefactoringProcessorIds {
 	 * <p>Rename type participants can retrieve information about similar declarations by casting the
 	 * RenameArguments to RenameTypeArguments. The new signatures of similar declarations
 	 * (and of other Java elements or resources) are available 
-	 * through the interfaces {@link org.eclipse.wst.jsdt.core.refactoring.IJavaElementMapper} and {@link org.eclipse.ltk.core.refactoring.IResourceMapper}, which can be retrieved from the 
+	 * through the interfaces {@link org.eclipse.wst.jsdt.core.refactoring.IJavaScriptElementMapper} and {@link org.eclipse.ltk.core.refactoring.IResourceMapper}, which can be retrieved from the 
 	 * processor using the getAdapter() method.</p>
 	 * 
 	 */
@@ -133,7 +139,7 @@ public interface IRefactoringProcessorIds {
 	 * 
 	 * The rename method processor loads the following participants:
 	 * <ul>
-	 *   <li>participants registered for renaming <code>IMethod</code>. Renaming
+	 *   <li>participants registered for renaming <code>IFunction</code>. Renaming
 	 *       virtual methods will rename methods with the same name in the type
 	 *       hierarchy of the type declaring the method to be renamed as well.
 	 *       For those derived methods participants will be loaded as well.</li>
@@ -148,7 +154,7 @@ public interface IRefactoringProcessorIds {
 	 * The rename filed processor loads the following participants:
 	 * <ul>
 	 *   <li>participants registered for renaming <code>IField</code>.</li>
-	 *   <li>participants registered for renaming <code>IMethod</code> if 
+	 *   <li>participants registered for renaming <code>IFunction</code> if 
 	 *       corresponding setter and getter methods are renamed as well.</li>
 	 * </ul>
 	 */
@@ -191,7 +197,7 @@ public interface IRefactoringProcessorIds {
 	 *       package fragments. Additionally move file, create folder and delete
 	 *       folder participants are loaded to reflect the resource changes
 	 *       caused by a moving a package fragment.</li>
-	 *   <li><code>ICompilationUnit</code>: participants registered for moving
+	 *   <li><code>IJavaScriptUnit</code>: participants registered for moving
 	 *       compilation units and <code>IFile</code>. If the compilation unit 
 	 *       contains top level types, participants for these types are loaded
 	 *       as well.</li>
@@ -217,7 +223,7 @@ public interface IRefactoringProcessorIds {
 	 * The delete processor loads the following participants, depending on the type of
 	 * element that gets deleted:
 	 * <ul>
-	 *   <li><code>IJavaProject</code>: participants registered for deleting <code>IJavaProject
+	 *   <li><code>IJavaScriptProject</code>: participants registered for deleting <code>IJavaScriptProject
 	 *       </code> and <code>IProject</code></li>.
 	 *   <li><code>IPackageFragmentRoot</code>: participants registered for deleting 
 	 *       <code>IPackageFragmentRoot</code> and <code>IFolder</code>.
@@ -225,7 +231,7 @@ public interface IRefactoringProcessorIds {
 	 *       <code>IPackageFragment</code>. Additionally delete file and  delete folder
 	 *       participants are loaded to reflect the resource changes caused by 
 	 *       deleting a package fragment.</li>
-	 *   <li><code>ICompilationUnit</code>: participants registered for deleting compilation
+	 *   <li><code>IJavaScriptUnit</code>: participants registered for deleting compilation
 	 *       units and files. Additionally type delete participants are loaded to reflect the
 	 *       deletion of the top level types declared in the compilation unit.</li>
 	 *   <li><code>IType</code>: participants registered for deleting types. Additional 
@@ -244,14 +250,14 @@ public interface IRefactoringProcessorIds {
 	 * elements from the clipboard. The copy processor loads the following participants,
 	 * depending on the type of the element that gets copied:
 	 * <ul>
-	 *   <li><code>IJavaProject</code>: no participants are loaded.</li>
+	 *   <li><code>IJavaScriptProject</code>: no participants are loaded.</li>
 	 *   <li><code>IPackageFragmentRoot</code>: participants registered for copying 
 	 *       <code>IPackageFragmentRoot</code> and <code>org.eclipse.core.resources.mapping.ResourceMapping</code>.</li>
 	 *   <li><code>IPackageFragment</code>: participants registered for copying 
 	 *       <code>IPackageFragment</code> and <code>org.eclipse.core.resources.mapping.ResourceMapping</code>.</li>
-	 *   <li><code>ICompilationUnit</code>: participants registered for copying 
-	 *       <code>ICompilationUnit</code> and <code>org.eclipse.core.resources.mapping.ResourceMapping</code>.</li>
-	 *   <li><code>IType</code>: like ICompilationUnit if the primary top level type is copied.
+	 *   <li><code>IJavaScriptUnit</code>: participants registered for copying 
+	 *       <code>IJavaScriptUnit</code> and <code>org.eclipse.core.resources.mapping.ResourceMapping</code>.</li>
+	 *   <li><code>IType</code>: like IJavaScriptUnit if the primary top level type is copied.
 	 *       Otherwise no participants are loaded.</li>
 	 *   <li><code>IMember</code>: no participants are loaded.</li>
 	 *   <li><code>IFolder</code>: participants registered for copying folders.</li>
