@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,14 +11,14 @@
 package org.eclipse.wst.jsdt.internal.ui.refactoring.nls.search;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 
 public class CompilationUnitEntry implements IAdaptable {
 	
 	private final String fMessage;
-	private final ICompilationUnit fCompilationUnit;
+	private final IJavaScriptUnit fCompilationUnit;
 
-	public CompilationUnitEntry(String message, ICompilationUnit compilationUnit) {
+	public CompilationUnitEntry(String message, IJavaScriptUnit compilationUnit) {
 		fMessage= message;
 		fCompilationUnit= compilationUnit;
 	}
@@ -27,12 +27,12 @@ public class CompilationUnitEntry implements IAdaptable {
 		return fMessage;
 	}
 
-	public ICompilationUnit getCompilationUnit() {
+	public IJavaScriptUnit getCompilationUnit() {
 		return fCompilationUnit;
 	}
 	
 	public Object getAdapter(Class adapter) {
-		if (ICompilationUnit.class.equals(adapter))
+		if (IJavaScriptUnit.class.equals(adapter))
 			return getCompilationUnit();
 		return null;
 	}

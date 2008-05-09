@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.jsdt.internal.ui.text.java.hover.SourceViewerInformationControl;
-import org.eclipse.wst.jsdt.ui.text.IJavaPartitions;
+import org.eclipse.wst.jsdt.ui.text.IJavaScriptPartitions;
 
 /**
  * Specialized source viewer information control used to display quick diff hovers.
@@ -143,9 +143,9 @@ class ChangeHoverInformationControl extends SourceViewerInformationControl {
 		ensureScrollable();
 
 		String start= null;
-		if (IJavaPartitions.JAVA_DOC.equals(fPartition)) {
+		if (IJavaScriptPartitions.JAVA_DOC.equals(fPartition)) {
 			start= "/**" + doc.getLegalLineDelimiters()[0]; //$NON-NLS-1$
-		} else if (IJavaPartitions.JAVA_MULTI_LINE_COMMENT.equals(fPartition)) {
+		} else if (IJavaScriptPartitions.JAVA_MULTI_LINE_COMMENT.equals(fPartition)) {
 			start= "/*" + doc.getLegalLineDelimiters()[0]; //$NON-NLS-1$
 		}
 		if (start != null) {

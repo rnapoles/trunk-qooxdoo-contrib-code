@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.jsdt.internal.ui.search;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 
 public class OccurrencesGroupKey extends JavaElementLine {
 	private boolean fIsWriteAccess;
@@ -20,13 +20,13 @@ public class OccurrencesGroupKey extends JavaElementLine {
 	/**
 	 * Create a new occurrences group key.
 	 * 
-	 * @param element either an ICompilationUnit or an IClassFile
+	 * @param element either an IJavaScriptUnit or an IClassFile
 	 * @param line the line number
 	 * @param lineContents the line contents
 	 * @param isWriteAccess <code>true</code> if it groups writable occurrences
 	 * @param isVariable <code>true</code> if it groups variable occurrences
 	 */
-	public OccurrencesGroupKey(IJavaElement element, int line, String lineContents, boolean isWriteAccess, boolean isVariable) {
+	public OccurrencesGroupKey(IJavaScriptElement element, int line, String lineContents, boolean isWriteAccess, boolean isVariable) {
 		super(element, line, lineContents);
 		fIsWriteAccess= isWriteAccess;
 		fIsVariable= isVariable;

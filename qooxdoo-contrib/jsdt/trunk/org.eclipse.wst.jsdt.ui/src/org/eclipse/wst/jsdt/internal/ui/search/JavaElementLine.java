@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,23 +11,23 @@
 
 package org.eclipse.wst.jsdt.internal.ui.search;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 
 public class JavaElementLine {
-	private IJavaElement fElement;
+	private IJavaScriptElement fElement;
 	private int fLine;
 	private String fLineContents;
 	
 	/**
-	 * @param element either an ICompilationUnit or an IClassFile
+	 * @param element either an IJavaScriptUnit or an IClassFile
 	 */
-	public JavaElementLine(IJavaElement element, int line, String lineContents) {
+	public JavaElementLine(IJavaScriptElement element, int line, String lineContents) {
 		fElement= element;
 		fLine= line;
 		fLineContents= lineContents;
 	}
 	
-	public IJavaElement getJavaElement() {
+	public IJavaScriptElement getJavaElement() {
 		return fElement;
 	}
 	

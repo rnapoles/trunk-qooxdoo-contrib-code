@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,14 +17,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.CopyProjectAction;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringAvailabilityTester;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.RefactoringExecutionStarter;
 import org.eclipse.wst.jsdt.internal.corext.refactoring.reorg.ReorgUtils;
 import org.eclipse.wst.jsdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.refactoring.RefactoringMessages;
 import org.eclipse.wst.jsdt.internal.ui.util.ExceptionHandler;
 import org.eclipse.wst.jsdt.ui.actions.SelectionDispatchAction;
@@ -49,16 +49,16 @@ public class ReorgCopyAction extends SelectionDispatchAction {
 			try {
 				List elements= selection.toList();
 				IResource[] resources= ReorgUtils.getResources(elements);
-				IJavaElement[] javaElements= ReorgUtils.getJavaElements(elements);
+				IJavaScriptElement[] javaElements= ReorgUtils.getJavaElements(elements);
 				if (elements.size() != resources.length + javaElements.length)
 					setEnabled(false);
 				else
 					setEnabled(RefactoringAvailabilityTester.isCopyAvailable(resources, javaElements));
-			} catch (JavaModelException e) {
+			} catch (JavaScriptModelException e) {
 				// no ui here - this happens on selection changes
 				// http://bugs.eclipse.org/bugs/show_bug.cgi?id=19253
 				if (JavaModelUtil.isExceptionToBeLogged(e))
-					JavaPlugin.log(e);
+					JavaScriptPlugin.log(e);
 				setEnabled(false);
 			}
 		} else
@@ -79,10 +79,10 @@ public class ReorgCopyAction extends SelectionDispatchAction {
 		try {
 			List elements= selection.toList();
 			IResource[] resources= ReorgUtils.getResources(elements);
-			IJavaElement[] javaElements= ReorgUtils.getJavaElements(elements);
+			IJavaScriptElement[] javaElements= ReorgUtils.getJavaElements(elements);
 			if (RefactoringAvailabilityTester.isCopyAvailable(resources, javaElements)) 
 				RefactoringExecutionStarter.startCopyRefactoring(resources, javaElements, getShell());
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			ExceptionHandler.handle(e, RefactoringMessages.OpenRefactoringWizardAction_refactoring, RefactoringMessages.OpenRefactoringWizardAction_exception); 
 		}
 	}

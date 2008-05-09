@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 
 /**
  * Adapts {@link org.eclipse.core.runtime.Preferences} to
@@ -115,7 +115,7 @@ public class PreferencesAdapter implements IPreferenceStore {
 					runnable.run();
 				else {
 					// Post runnable into UI thread
-					Shell shell= JavaPlugin.getActiveWorkbenchShell();
+					Shell shell= JavaScriptPlugin.getActiveWorkbenchShell();
 					Display display;
 					if (shell != null)
 						display= shell.getDisplay();

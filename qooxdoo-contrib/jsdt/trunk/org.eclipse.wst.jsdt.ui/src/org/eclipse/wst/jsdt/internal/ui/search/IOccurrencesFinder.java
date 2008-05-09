@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,12 +14,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 
 public interface IOccurrencesFinder {
 	
-	public String initialize(CompilationUnit root, int offset, int length);
+	public String initialize(JavaScriptUnit root, int offset, int length);
 	
 	public List perform();
 	
@@ -53,5 +53,5 @@ public interface IOccurrencesFinder {
 	 */
 	public String getElementName();
 	
-	public void collectOccurrenceMatches(IJavaElement element, IDocument document, Collection resultingMatches);
+	public void collectOccurrenceMatches(IJavaScriptElement element, IDocument document, Collection resultingMatches);
 }
