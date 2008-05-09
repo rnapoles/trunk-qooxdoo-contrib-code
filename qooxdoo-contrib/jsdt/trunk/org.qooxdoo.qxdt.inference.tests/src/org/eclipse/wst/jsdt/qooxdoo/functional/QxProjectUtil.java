@@ -23,11 +23,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer;
-import org.eclipse.wst.jsdt.core.JavaCore;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 import org.eclipse.wst.jsdt.internal.core.UserLibrary;
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPListElement;
@@ -42,15 +42,15 @@ public class QxProjectUtil {
 
   private static final Path QX_JS = new Path( getLibBundleLocation() );
 
-  public static void createUserLibrary( IJavaProject jproject )
+  public static void createUserLibrary( IJavaScriptProject jproject )
     throws CoreException
   {
-    IClasspathEntry[] entries = new IClasspathEntry[ 0 ];
+    IIncludePathEntry[] entries = new IIncludePathEntry[ 0 ];
     UserLibrary library = new UserLibrary( entries, false );
-    JsGlobalScopeContainerInitializer initializer = JavaCore.getJsGlobalScopeContainerInitializer( JavaCore.USER_LIBRARY_CONTAINER_ID );
+    JsGlobalScopeContainerInitializer initializer = JavaScriptCore.getJsGlobalScopeContainerInitializer( JavaScriptCore.USER_LIBRARY_CONTAINER_ID );
     for( int i = 0; i < 1; i++ ) {
       CPListElement[] children = new CPListElement[]{
-        new CPListElement( jproject, IClasspathEntry.CPE_LIBRARY, QX_JS, null )
+        new CPListElement( jproject, IIncludePathEntry.CPE_LIBRARY, QX_JS, null )
       };
       CPUserLibraryElement element = new CPUserLibraryElement( "myQx",
                                                                false,
@@ -75,20 +75,20 @@ public class QxProjectUtil {
     return result.getFile();
   }
 
-  public static void addDefaultLibToLibraryPath( NullProgressMonitor monitor,
+  public static void addDefaultLibToLibraryPath( IProgressMonitor monitor,
                                                  IProject project )
-    throws JavaModelException
+    throws JavaScriptModelException
   {
-    IJavaProject jp = JavaCore.create( project );
-    List<IClasspathEntry> cp = new ArrayList<IClasspathEntry>();
-    cp.add( JavaCore.newSourceEntry( project.getFullPath() ) );
-    cp.add( JavaCore.newContainerEntry( JavaRuntime.newDefaultJREContainerPath() ) );
-    cp.add( JavaCore.newContainerEntry( new Path( "org.eclipse.wst.jsdt.USER_LIBRARY/myQx" ),
-                                        false ) );
+    IJavaScriptProject jp = JavaScriptCore.create( project );
+    List<IIncludePathEntry> cp = new ArrayList<IIncludePathEntry>();
+    cp.add( JavaScriptCore.newSourceEntry( project.getFullPath() ) );
+    cp.add( JavaScriptCore.newContainerEntry( JavaRuntime.newDefaultJREContainerPath() ) );
+    cp.add( JavaScriptCore.newContainerEntry( new Path( "org.eclipse.wst.jsdt.USER_LIBRARY/myQx" ),
+                                              false ) );
     IPath outputLocation = project.getFolder( "bin" ).getFullPath();
-    jp.setRawClasspath( cp.toArray( new IClasspathEntry[ cp.size() ] ),
-                        outputLocation,
-                        monitor );
+    jp.setRawIncludepath( cp.toArray( new IIncludePathEntry[ cp.size() ] ),
+                          outputLocation,
+                          monitor );
   }
 
   public static void addJSDTNature( final IProgressMonitor monitor,
@@ -105,18 +105,18 @@ public class QxProjectUtil {
   }
 
   public static IFile createQxFileWithContents( SammyIDE sammy,
-                                              String fileName, String fileContents )
-    throws CoreException, JavaModelException
+                                                String fileName,
+                                                String fileContents )
+    throws CoreException, JavaScriptModelException
   {
     IProject project = sammy.createGenericProject();
     addJSDTNature( new NullProgressMonitor(), project );
-    addDefaultLibToLibraryPath( new NullProgressMonitor(),
-                                              project );
+    addDefaultLibToLibraryPath( new NullProgressMonitor(), project );
     IFile result = project.getFile( fileName );
     result.create( new ByteArrayInputStream( fileContents.getBytes() ),
                    true,
                    new NullProgressMonitor() );
-    createUserLibrary( JavaCore.create( project ) );
+    createUserLibrary( JavaScriptCore.create( project ) );
     return result;
   }
 }
