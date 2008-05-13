@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchConstants;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchConstants;
 import org.eclipse.wst.jsdt.internal.compiler.ASTVisitor;
 import org.eclipse.wst.jsdt.internal.compiler.ast.ASTNode;
 import org.eclipse.wst.jsdt.internal.compiler.ast.ArrayQualifiedTypeReference;
@@ -492,7 +492,7 @@ public class MissingTypesGuesser extends ASTVisitor {
 			}
 
 		};
-		nameEnvironment.findExactTypes(missingSimpleName, true, IJavaSearchConstants.TYPE, storage);
+		nameEnvironment.findExactTypes(missingSimpleName, true, IJavaScriptSearchConstants.TYPE, storage);
 		if(results.size() == 0) return null;
 		return (char[][][])results.toArray(new char[results.size()][0][0]);
 	}

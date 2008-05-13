@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,11 +17,11 @@ import java.util.Comparator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.dom.AST;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 import org.eclipse.wst.jsdt.internal.core.SortElementsOperation;
 
 /**
@@ -31,14 +31,18 @@ import org.eclipse.wst.jsdt.internal.core.SortElementsOperation;
  * intended to be instantiated or subclassed.
  * </p>
  *
- * @since 2.1
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public final class CompilationUnitSorter {
+public final class JavaScriptUnitSorter {
 
  	/**
  	 * Private constructor to prevent instantiation.
  	 */
-	private CompilationUnitSorter() {
+	private JavaScriptUnitSorter() {
 		// Not instantiable
 	}
 
@@ -62,7 +66,7 @@ public final class CompilationUnitSorter {
 	 * body declarations when required.
 	 * <p>
 	 * All body declarations passed to the comparator's <code>compare</code>
-	 * method by <code>CompilationUnitSorter.sort</code> carry an
+	 * method by <code>JavaScriptUnitSorter.sort</code> carry an
 	 * Integer-valued property. The body declaration with the lower value
 	 * comes before the one with the higher value. The exact numeric value
 	 * of these properties is unspecified.
@@ -78,7 +82,7 @@ public final class CompilationUnitSorter {
 	 * </pre>
 	 * </p>
 	 *
-	 * @see #sort(ICompilationUnit, int[], Comparator, int, IProgressMonitor)
+	 * @see #sort(IJavaScriptUnit, int[], Comparator, int, IProgressMonitor)
 	 * @see org.eclipse.wst.jsdt.core.dom.BodyDeclaration
 	 */
 	public static final String RELATIVE_ORDER = "relativeOrder"; //$NON-NLS-1$
@@ -134,7 +138,7 @@ public final class CompilationUnitSorter {
      *		  RELATIVE_ORDER property</code></td>
 	 *	  </tr>
 	 *	  <tr>
-	 *	    <td width="20%"><code>MethodDeclaration</code></td>
+	 *	    <td width="20%"><code>FunctionDeclaration</code></td>
 	 *	    <td width="50%"><code>modifiers, isConstructor, returnType, name,
 	 *		  parameters
 	 *	      (SingleVariableDeclarations with name and type only),
@@ -169,7 +173,7 @@ public final class CompilationUnitSorter {
 	 * behavior (reserved for future growth)
 	 * @param monitor the progress monitor to notify, or <code>null</code> if
 	 * none
-	 * @exception JavaModelException if the compilation unit could not be
+	 * @exception JavaScriptModelException if the compilation unit could not be
 	 * sorted. Reasons include:
 	 * <ul>
 	 * <li> The given compilation unit does not exist (ELEMENT_DOES_NOT_EXIST)</li>
@@ -182,15 +186,15 @@ public final class CompilationUnitSorter {
 	 * @see org.eclipse.wst.jsdt.core.dom.BodyDeclaration
 	 * @see #RELATIVE_ORDER
      * @deprecated Clients should port their code to use the new JLS3 AST API and call
-     *    {@link #sort(int, ICompilationUnit, int[], Comparator, int, IProgressMonitor)
-     *    CompilationUnitSorter.sort(AST.JLS3, compilationUnit, positions, comparator, options, monitor)}
+     *    {@link #sort(int, IJavaScriptUnit, int[], Comparator, int, IProgressMonitor)
+     *    JavaScriptUnitSorter.sort(AST.JLS3, compilationUnit, positions, comparator, options, monitor)}
      *    instead of using this method.
 	 */
-	public static void sort(ICompilationUnit compilationUnit,
+	public static void sort(IJavaScriptUnit compilationUnit,
 	        int[] positions,
 	        Comparator comparator,
 	        int options,
-	        IProgressMonitor monitor) throws JavaModelException {
+	        IProgressMonitor monitor) throws JavaScriptModelException {
 		sort(AST.JLS2, compilationUnit, positions, comparator, options, monitor);
 	}
 
@@ -249,7 +253,7 @@ public final class CompilationUnitSorter {
      *        RELATIVE_ORDER property</code></td>
      *    </tr>
      *    <tr>
-     *      <td width="20%"><code>MethodDeclaration</code></td>
+     *      <td width="20%"><code>FunctionDeclaration</code></td>
      *      <td width="50%"><code>modifiers, isConstructor, returnType, name,
      *        typeParameters, parameters
      *        (SingleVariableDeclarations with name, type, and modifiers only),
@@ -305,7 +309,7 @@ public final class CompilationUnitSorter {
      * behavior (reserved for future growth)
      * @param monitor the progress monitor to notify, or <code>null</code> if
      * none
-     * @exception JavaModelException if the compilation unit could not be
+     * @exception JavaScriptModelException if the compilation unit could not be
      * sorted. Reasons include:
      * <ul>
      * <li> The given compilation unit does not exist (ELEMENT_DOES_NOT_EXIST)</li>
@@ -320,16 +324,16 @@ public final class CompilationUnitSorter {
      * @see #RELATIVE_ORDER
      * @since 3.1
      */
-    public static void sort(int level, ICompilationUnit compilationUnit,
+    public static void sort(int level, IJavaScriptUnit compilationUnit,
             int[] positions,
             Comparator comparator,
             int options,
-            IProgressMonitor monitor) throws JavaModelException {
+            IProgressMonitor monitor) throws JavaScriptModelException {
         if (compilationUnit == null || comparator == null) {
             throw new IllegalArgumentException();
         }
         checkASTLevel(level);
-        ICompilationUnit[] compilationUnits = new ICompilationUnit[] { compilationUnit };
+        IJavaScriptUnit[] compilationUnits = new IJavaScriptUnit[] { compilationUnit };
         SortElementsOperation operation = new SortElementsOperation(level, compilationUnits, positions, comparator);
         operation.runOperation(monitor);
     }
@@ -378,7 +382,7 @@ public final class CompilationUnitSorter {
 	 *        RELATIVE_ORDER property</code></td>
 	 * </tr>
 	 * <tr>
-	 * <td width="20%"><code>MethodDeclaration</code></td>
+	 * <td width="20%"><code>FunctionDeclaration</code></td>
 	 * <td width="50%"><code>modifiers, isConstructor, returnType, name,
 	 *        typeParameters, parameters
 	 *        (SingleVariableDeclarations with name, type, and modifiers only),
@@ -414,7 +418,7 @@ public final class CompilationUnitSorter {
 	 * </p>
 	 *
 	 * @param unit
-	 *            the CompilationUnit to sort
+	 *            the JavaScriptUnit to sort
 	 * @param comparator
 	 *            the comparator capable of ordering
 	 *            <code>BodyDeclaration</code>s; this comparator is passed
@@ -428,11 +432,11 @@ public final class CompilationUnitSorter {
 	 *            the progress monitor to notify, or <code>null</code> if none
 	 * @return a TextEdit describing the required edits to do the sort, or <code>null</code>
 	 *            if sorting is not required
-	 * @exception JavaModelException
+	 * @exception JavaScriptModelException
 	 *                if the compilation unit could not be sorted. Reasons
 	 *                include:
 	 *                <ul>
-	 *                <li> The given unit was not created from a ICompilationUnit (INVALID_ELEMENT_TYPES)</li>
+	 *                <li> The given unit was not created from a IJavaScriptUnit (INVALID_ELEMENT_TYPES)</li>
 	 *                </ul>
 	 * @exception IllegalArgumentException
 	 *                if the given compilation unit is null or if the given
@@ -442,15 +446,15 @@ public final class CompilationUnitSorter {
 	 * @see #RELATIVE_ORDER
 	 * @since 3.3
 	 */
-	public static TextEdit sort(CompilationUnit unit,
+	public static TextEdit sort(JavaScriptUnit unit,
 			Comparator comparator,
 			int options,
 			TextEditGroup group,
-			IProgressMonitor monitor) throws JavaModelException {
+			IProgressMonitor monitor) throws JavaScriptModelException {
 		if (unit == null || comparator == null) {
 			throw new IllegalArgumentException();
 		}
-		SortElementsOperation operation = new SortElementsOperation(AST.JLS3, new IJavaElement[] { unit.getJavaElement() }, null, comparator);
+		SortElementsOperation operation = new SortElementsOperation(AST.JLS3, new IJavaScriptElement[] { unit.getJavaElement() }, null, comparator);
 		return operation.calculateEdit(unit, group);
 	}
 }
