@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,9 +32,13 @@ package org.eclipse.wst.jsdt.core.dom;
  * </p>
  *
  * @see ITypeBinding#getDeclaredMethods()
- * @since 2.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface IMethodBinding extends IBinding {
+public interface IFunctionBinding extends IBinding {
 
 	/**
 	 * Returns whether this binding is for a constructor or a method.
@@ -270,7 +274,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return the method binding
 	 * @since 3.1
 	 */
-	public IMethodBinding getMethodDeclaration();
+	public IFunctionBinding getMethodDeclaration();
 
 	/**
 	 * Returns whether this method binding represents an instance of
@@ -297,7 +301,7 @@ public interface IMethodBinding extends IBinding {
 	 * @return <code>true</code> if this method's signature is a subsignature of the given method
 	 * @since 3.1
 	 */
-	public boolean isSubsignature(IMethodBinding otherMethod);
+	public boolean isSubsignature(IFunctionBinding otherMethod);
 
 	/**
 	 * Returns whether this is a variable arity method.
@@ -321,5 +325,5 @@ public interface IMethodBinding extends IBinding {
 	 * and <code>false</code> otherwise
 	 * @since 3.1
 	 */
-	public boolean overrides(IMethodBinding method);
+	public boolean overrides(IFunctionBinding method);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,8 +31,11 @@ import java.util.List;
  * Call the <code>reset</code> method to clear the previous result before reusing an
  * existing instance.
  * </p>
- *
- * @since 2.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 class NaiveASTFlattener extends ASTVisitor {
 
@@ -412,9 +415,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 
 	/*
-	 * @see ASTVisitor#visit(CompilationUnit)
+	 * @see ASTVisitor#visit(JavaScriptUnit)
 	 */
-	public boolean visit(CompilationUnit node) {
+	public boolean visit(JavaScriptUnit node) {
 		if (node.getPackage() != null) {
 			node.getPackage().accept(this);
 		}
@@ -774,7 +777,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	/*
 	 * @see ASTVisitor#visit(Javadoc)
 	 */
-	public boolean visit(Javadoc node) {
+	public boolean visit(JSdoc node) {
 		printIndent();
 		this.buffer.append("/** ");//$NON-NLS-1$
 		for (Iterator it = node.tags().iterator(); it.hasNext(); ) {
@@ -851,10 +854,10 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 
 	/*
-	 * @see ASTVisitor#visit(MethodRef)
+	 * @see ASTVisitor#visit(FunctionRef)
 	 * @since 3.0
 	 */
-	public boolean visit(MethodRef node) {
+	public boolean visit(FunctionRef node) {
 		if (node.getQualifier() != null) {
 			node.getQualifier().accept(this);
 		}
@@ -862,7 +865,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getName().accept(this);
 		this.buffer.append("(");//$NON-NLS-1$
 		for (Iterator it = node.parameters().iterator(); it.hasNext(); ) {
-			MethodRefParameter e = (MethodRefParameter) it.next();
+			FunctionRefParameter e = (FunctionRefParameter) it.next();
 			e.accept(this);
 			if (it.hasNext()) {
 				this.buffer.append(",");//$NON-NLS-1$
@@ -873,10 +876,10 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 
 	/*
-	 * @see ASTVisitor#visit(MethodRefParameter)
+	 * @see ASTVisitor#visit(FunctionRefParameter)
 	 * @since 3.0
 	 */
-	public boolean visit(MethodRefParameter node) {
+	public boolean visit(FunctionRefParameter node) {
 		node.getType().accept(this);
 		if (node.getAST().apiLevel() >= AST.JLS3) {
 			if (node.isVarargs()) {
@@ -891,9 +894,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 
 	/*
-	 * @see ASTVisitor#visit(MethodDeclaration)
+	 * @see ASTVisitor#visit(FunctionDeclaration)
 	 */
-	public boolean visit(MethodDeclaration node) {
+	public boolean visit(FunctionDeclaration node) {
 		if (node.getJavadoc() != null) {
 			node.getJavadoc().accept(this);
 		}
@@ -964,9 +967,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 
 	/*
-	 * @see ASTVisitor#visit(MethodInvocation)
+	 * @see ASTVisitor#visit(FunctionInvocation)
 	 */
-	public boolean visit(MethodInvocation node) {
+	public boolean visit(FunctionInvocation node) {
 		if (node.getExpression() != null) {
 			node.getExpression().accept(this);
 			if (node.getName()!=null)
@@ -1392,7 +1395,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		for (Iterator it = node.fragments().iterator(); it.hasNext(); ) {
 			ASTNode e = (ASTNode) it.next();
 			// assume text elements include necessary leading and trailing whitespace
-			// but Name, MemberRef, MethodRef, and nested TagElement do not include white space
+			// but Name, MemberRef, FunctionRef, and nested TagElement do not include white space
 			boolean currentIncludesWhiteSpace = (e instanceof TextElement);
 			if (previousRequiresNewLine && currentIncludesWhiteSpace) {
 				this.buffer.append("\n * ");//$NON-NLS-1$

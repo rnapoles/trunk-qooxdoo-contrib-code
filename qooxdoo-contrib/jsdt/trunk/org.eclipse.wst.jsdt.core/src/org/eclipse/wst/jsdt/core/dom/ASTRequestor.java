@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.core.dom;
 
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 
 /**
  * An AST requestor handles ASTs for compilation units passed to
@@ -28,8 +28,12 @@ import org.eclipse.wst.jsdt.core.ICompilationUnit;
  * thread-safe.
  * </p>
  *
- * @see ASTParser#createASTs(ICompilationUnit[], String[], ASTRequestor, org.eclipse.core.runtime.IProgressMonitor)
- * @since 3.1
+ * @see ASTParser#createASTs(IJavaScriptUnit[], String[], ASTRequestor, org.eclipse.core.runtime.IProgressMonitor)
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class ASTRequestor {
 
@@ -39,7 +43,7 @@ public abstract class ASTRequestor {
 	 * only within the dynamic scope of a call to
 	 * <code>ASTParser.createASTs</code>.
 	 */
-	CompilationUnitResolver compilationUnitResolver = null;
+	JavaScriptUnitResolver compilationUnitResolver = null;
 
 	/**
 	 * Creates a new instance.
@@ -59,7 +63,7 @@ public abstract class ASTRequestor {
 	 * @param source the compilation unit the ast is coming from
 	 * @param ast the requested abtract syntax tree
 	 */
-	public void acceptAST(ICompilationUnit source, CompilationUnit ast) {
+	public void acceptAST(IJavaScriptUnit source, JavaScriptUnit ast) {
 		// do nothing
 	}
 

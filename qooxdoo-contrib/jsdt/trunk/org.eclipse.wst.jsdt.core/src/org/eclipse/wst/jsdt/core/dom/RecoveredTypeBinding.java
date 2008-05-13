@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,8 @@ package org.eclipse.wst.jsdt.core.dom;
 
 import java.util.List;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.wst.jsdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.wst.jsdt.internal.compiler.util.Util;
@@ -22,6 +22,11 @@ import org.eclipse.wst.jsdt.internal.core.CompilationUnit;
 
 /**
  * This class represents the recovered binding for a type
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 class RecoveredTypeBinding implements ITypeBinding {
 
@@ -103,7 +108,7 @@ class RecoveredTypeBinding implements ITypeBinding {
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.jsdt.core.dom.ITypeBinding#getDeclaredMethods()
 	 */
-	public IMethodBinding[] getDeclaredMethods() {
+	public IFunctionBinding[] getDeclaredMethods() {
 		return TypeBinding.NO_METHOD_BINDINGS;
 	}
 
@@ -131,7 +136,7 @@ class RecoveredTypeBinding implements ITypeBinding {
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.jsdt.core.dom.ITypeBinding#getDeclaringMethod()
 	 */
-	public IMethodBinding getDeclaringMethod() {
+	public IFunctionBinding getDeclaringMethod() {
 		return null;
 	}
 
@@ -493,10 +498,10 @@ class RecoveredTypeBinding implements ITypeBinding {
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.jsdt.core.dom.IBinding#getJavaElement()
 	 */
-	public IJavaElement getJavaElement() {
+	public IJavaScriptElement getJavaElement() {
 		try {
 			return new CompilationUnit(null, this.getInternalName(), this.resolver.getWorkingCopyOwner()).getWorkingCopy(this.resolver.getWorkingCopyOwner(), null);
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			//ignore
 		}
 		return null;

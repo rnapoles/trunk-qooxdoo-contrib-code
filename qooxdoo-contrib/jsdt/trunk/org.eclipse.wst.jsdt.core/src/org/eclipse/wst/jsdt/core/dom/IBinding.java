@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.jsdt.core.dom;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 
 /**
  * A binding represents a named entity in the Java language. The world of
@@ -26,9 +26,13 @@ import org.eclipse.wst.jsdt.core.IJavaElement;
  * @see IPackageBinding
  * @see ITypeBinding
  * @see IVariableBinding
- * @see IMethodBinding
- * @since 2.0
- */
+ * @see IFunctionBinding
+  * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+*/
 public interface IBinding {
 
 	/**
@@ -60,10 +64,10 @@ public interface IBinding {
 
 	/**
 	 * Kind constant (value 4) indicating a method or constructor binding.
-	 * Bindings of this kind can be safely cast to <code>IMethodBinding</code>.
+	 * Bindings of this kind can be safely cast to <code>IFunctionBinding</code>.
 	 *
 	 * @see #getKind()
-	 * @see IMethodBinding
+	 * @see IFunctionBinding
 	 */
 	public static final int METHOD = 4;
 
@@ -175,13 +179,13 @@ public interface IBinding {
 	 * the compiler generates for class declarations with no explicit constructors
 	 * declarations) are not generally considered synthetic (although they
 	 * may be if the class itself is synthetic).
-	 * But see {@link IMethodBinding#isDefaultConstructor() IMethodBinding.isDefaultConstructor}
+	 * But see {@link IFunctionBinding#isDefaultConstructor() IFunctionBinding.isDefaultConstructor}
 	 * for cases where the compiled-generated default constructor can be recognized
 	 * instead.
 	 *
 	 * @return <code>true</code> if this binding is synthetic, and
 	 *    <code>false</code> otherwise
-	 * @see IMethodBinding#isDefaultConstructor()
+	 * @see IFunctionBinding#isDefaultConstructor()
 	 */
 	public boolean isSynthetic();
 
@@ -216,7 +220,7 @@ public interface IBinding {
 	 * 		or <code>null</code> if none
 	 * @since 3.1
 	 */
-	public IJavaElement getJavaElement();
+	public IJavaScriptElement getJavaElement();
 
 	/**
 	 * Returns the key for this binding.

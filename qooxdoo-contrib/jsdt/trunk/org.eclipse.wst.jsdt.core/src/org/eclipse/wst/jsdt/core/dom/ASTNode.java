@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -107,7 +107,7 @@ import java.util.Map;
  * Compilation units created by <code>ASTParser</code> from a
  * source document can be serialized after arbitrary modifications
  * with minimal loss of original formatting. See
- * {@link CompilationUnit#recordModifications()} for details.
+ * {@link JavaScriptUnit#recordModifications()} for details.
  * See also {@link org.eclipse.wst.jsdt.core.dom.rewrite.ASTRewrite} for
  * an alternative way to describe and serialize changes to a
  * read-only AST.
@@ -116,7 +116,11 @@ import java.util.Map;
  *
  * @see ASTParser
  * @see ASTVisitor
- * @since 2.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class ASTNode {
 	/*
@@ -254,10 +258,10 @@ public abstract class ASTNode {
 
 	/**
 	 * Node type constant indicating a node of type
-	 * <code>CompilationUnit</code>.
-	 * @see CompilationUnit
+	 * <code>JavaScriptUnit</code>.
+	 * @see JavaScriptUnit
 	 */
-	public static final int COMPILATION_UNIT = 15;
+	public static final int JAVASCRIPT_UNIT = 15;
 
 	/**
 	 * Node type constant indicating a node of type
@@ -353,9 +357,9 @@ public abstract class ASTNode {
 	/**
 	 * Node type constant indicating a node of type
 	 * <code>Javadoc</code>.
-	 * @see Javadoc
+	 * @see JSdoc
 	 */
-	public static final int JAVADOC = 29;
+	public static final int JSDOC = 29;
 
 	/**
 	 * Node type constant indicating a node of type
@@ -366,17 +370,17 @@ public abstract class ASTNode {
 
 	/**
 	 * Node type constant indicating a node of type
-	 * <code>MethodDeclaration</code>.
-	 * @see MethodDeclaration
+	 * <code>FunctionDeclaration</code>.
+	 * @see FunctionDeclaration
 	 */
-	public static final int METHOD_DECLARATION = 31;
+	public static final int FUNCTION_DECLARATION = 31;
 
 	/**
 	 * Node type constant indicating a node of type
-	 * <code>MethodInvocation</code>.
-	 * @see MethodInvocation
+	 * <code>FunctionInvocation</code>.
+	 * @see FunctionInvocation
 	 */
-	public static final int METHOD_INVOCATION = 32;
+	public static final int FUNCTION_INVOCATION = 32;
 
 	/**
 	 * Node type constant indicating a node of type
@@ -623,19 +627,19 @@ public abstract class ASTNode {
 
 	/**
 	 * Node type constant indicating a node of type
-	 * <code>MethodRef</code>.
-	 * @see MethodRef
+	 * <code>FunctionRef</code>.
+	 * @see FunctionRef
 	 * @since 3.0
 	 */
-	public static final int METHOD_REF = 68;
+	public static final int FUNCTION_REF = 68;
 
 	/**
 	 * Node type constant indicating a node of type
-	 * <code>MethodRefParameter</code>.
-	 * @see MethodRefParameter
+	 * <code>FunctionRefParameter</code>.
+	 * @see FunctionRefParameter
 	 * @since 3.0
 	 */
-	public static final int METHOD_REF_PARAMETER = 69;
+	public static final int FUNCTION_REF_PARAMETER = 69;
 
 	/**
 	 * Node type constant indicating a node of type
@@ -811,8 +815,8 @@ public abstract class ASTNode {
 				return CharacterLiteral.class;
 			case CLASS_INSTANCE_CREATION :
 				return ClassInstanceCreation.class;
-			case COMPILATION_UNIT :
-				return CompilationUnit.class;
+			case JAVASCRIPT_UNIT :
+				return JavaScriptUnit.class;
 			case CONDITIONAL_EXPRESSION :
 				return ConditionalExpression.class;
 			case CONSTRUCTOR_INVOCATION :
@@ -849,8 +853,8 @@ public abstract class ASTNode {
 				return Initializer.class;
 			case INSTANCEOF_EXPRESSION :
 				return InstanceofExpression.class;
-			case JAVADOC :
-				return Javadoc.class;
+			case JSDOC :
+				return JSdoc.class;
 			case LABELED_STATEMENT :
 				return LabeledStatement.class;
 			case LINE_COMMENT :
@@ -861,14 +865,14 @@ public abstract class ASTNode {
 				return MemberRef.class;
 			case MEMBER_VALUE_PAIR :
 				return MemberValuePair.class;
-			case METHOD_DECLARATION :
-				return MethodDeclaration.class;
-			case METHOD_INVOCATION :
-				return MethodInvocation.class;
-			case METHOD_REF :
-				return MethodRef.class;
-			case METHOD_REF_PARAMETER :
-				return MethodRefParameter.class;
+			case FUNCTION_DECLARATION :
+				return FunctionDeclaration.class;
+			case FUNCTION_INVOCATION :
+				return FunctionInvocation.class;
+			case FUNCTION_REF :
+				return FunctionRef.class;
+			case FUNCTION_REF_PARAMETER :
+				return FunctionRefParameter.class;
 			case MODIFIER :
 				return Modifier.class;
 			case NORMAL_ANNOTATION :

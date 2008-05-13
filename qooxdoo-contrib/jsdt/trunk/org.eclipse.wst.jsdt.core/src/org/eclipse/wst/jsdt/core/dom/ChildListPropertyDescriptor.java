@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,14 +15,17 @@ package org.eclipse.wst.jsdt.core.dom;
  * A child list property is one whose value is a list of
  * {@link ASTNode}.
  *
- * @see org.eclipse.wst.jsdt.core.dom.ASTNode#getStructuralProperty(StructuralPropertyDescriptor)
- * @since 3.0
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public final class ChildListPropertyDescriptor extends StructuralPropertyDescriptor {
 
 	/**
 	 * Element type. For example, for a node type like
-	 * CompilationUnit, the "imports" property is ImportDeclaration.class.
+	 * JavaScriptUnit, the "imports" property is ImportDeclaration.class.
 	 * <p>
 	 * Field is private, but marked package-visible for fast
 	 * access from ASTNode.
@@ -63,7 +66,7 @@ public final class ChildListPropertyDescriptor extends StructuralPropertyDescrip
 	/**
 	 * Returns the element type of this list property.
 	 * <p>
-	 * For example, for a node type like CompilationUnit,
+	 * For example, for a node type like JavaScriptUnit,
 	 * the "imports" property returns <code>ImportDeclaration.class</code>.
 	 * </p>
 	 *
@@ -80,12 +83,12 @@ public final class ChildListPropertyDescriptor extends StructuralPropertyDescrip
 	 * type (that is, the type that owns this property) could legally
 	 * appear in the AST subtree below this property. For example,
 	 * the body property of a
-	 * {@link MethodDeclaration} node
+	 * {@link FunctionDeclaration} node
 	 * admits a body which might include statement that embeds
-	 * another {@link MethodDeclaration} node.
+	 * another {@link FunctionDeclaration} node.
 	 * On the other hand, the name property of a
-	 * MethodDeclaration node admits only names, and thereby excludes
-	 * another MethodDeclaration node.
+	 * FunctionDeclaration node admits only names, and thereby excludes
+	 * another FunctionDeclaration node.
 	 * </p>
 	 *
 	 * @return <code>true</code> if cycles are possible,

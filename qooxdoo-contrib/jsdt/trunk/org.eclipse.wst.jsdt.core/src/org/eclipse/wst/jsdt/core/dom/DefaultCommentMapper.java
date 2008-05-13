@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2007 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,8 +19,12 @@ import org.eclipse.wst.jsdt.internal.compiler.util.Util;
 /**
  * Internal class for associating comments with AST nodes.
  *
- * @since 3.0
- */
+  *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+*/
 class DefaultCommentMapper {
 	Comment[] comments;
 	Scanner scanner;
@@ -221,7 +225,7 @@ class DefaultCommentMapper {
 	 * Scanner is necessary to scan between nodes and comments and verify if there's
 	 * nothing else than white spaces.
 	 */
-	void initialize(CompilationUnit unit, Scanner sc) {
+	void initialize(JavaScriptUnit unit, Scanner sc) {
 
 		// Init array pointers
 		this.leadingPtr = -1;
@@ -597,7 +601,7 @@ class DefaultCommentMapper {
 					System.arraycopy(this.parentLineRange, 0, this.parentLineRange = new int[this.siblingPtr*2][], 0, this.siblingPtr);
 				}
 				if (this.topSiblingParent == null) {
-					// node is a CompilationUnit
+					// node is a JavaScriptUnit
 					this.parentLineRange[this.siblingPtr] = previousLineRange;
 				} else {
 					int parentStart = parent.getStartPosition();
@@ -631,14 +635,14 @@ class DefaultCommentMapper {
 				}
 			}
 			// Remove sibling if needed
-			if (this.topSiblingParent != null /*not a CompilationUnit*/
+			if (this.topSiblingParent != null /*not a JavaScriptUnit*/
 					&& this.topSiblingParent == node) {
 				this.siblingPtr--;
 				this.topSiblingParent = node.getParent();
 			}
 		}
 
-		public boolean visit ( CompilationUnit node) {
+		public boolean visit ( JavaScriptUnit node) {
 			// do nothing special, just go down in sub-levels
 			return true;
 		}
