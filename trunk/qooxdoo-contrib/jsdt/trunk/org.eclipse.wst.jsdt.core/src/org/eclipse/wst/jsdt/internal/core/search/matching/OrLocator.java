@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.internal.core.search.matching;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredMethod;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
@@ -241,7 +241,7 @@ protected void matchLevelAndReportImportRef(ImportReference importRef, Binding b
 		closestPattern.matchLevelAndReportImportRef(importRef, binding, locator);
 	}
 }
-protected void matchReportImportRef(ImportReference importRef, Binding binding, IJavaElement element, int accuracy, MatchLocator locator) throws CoreException {
+protected void matchReportImportRef(ImportReference importRef, Binding binding, IJavaScriptElement element, int accuracy, MatchLocator locator) throws CoreException {
 	PatternLocator closestPattern = null;
 	int level = IMPOSSIBLE_MATCH;
 	for (int i = 0, length = this.patternLocators.length; i < length; i++) {
@@ -255,7 +255,7 @@ protected void matchReportImportRef(ImportReference importRef, Binding binding, 
 	if (closestPattern != null)
 		closestPattern.matchReportImportRef(importRef, binding, element, accuracy, locator);
 }
-protected void matchReportReference(ASTNode reference, IJavaElement element, Binding elementBinding, int accuracy, MatchLocator locator) throws CoreException {
+protected void matchReportReference(ASTNode reference, IJavaScriptElement element, Binding elementBinding, int accuracy, MatchLocator locator) throws CoreException {
 	PatternLocator closestPattern = null;
 	int level = IMPOSSIBLE_MATCH;
 	for (int i = 0, length = this.patternLocators.length; i < length; i++) {
@@ -270,7 +270,7 @@ protected void matchReportReference(ASTNode reference, IJavaElement element, Bin
 	if (closestPattern != null)
 		closestPattern.matchReportReference(reference, element, elementBinding, accuracy, locator);
 }
-public SearchMatch newDeclarationMatch(ASTNode reference, IJavaElement element, Binding elementBinding, int accuracy, int length, MatchLocator locator) {
+public SearchMatch newDeclarationMatch(ASTNode reference, IJavaScriptElement element, Binding elementBinding, int accuracy, int length, MatchLocator locator) {
 	PatternLocator closestPattern = null;
 	int level = IMPOSSIBLE_MATCH;
 	for (int i = 0, pl = this.patternLocators.length; i < pl; i++) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.internal.core.search.matching;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.internal.compiler.ast.ASTNode;
 import org.eclipse.wst.jsdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.ast.NameReference;
@@ -48,7 +48,7 @@ public int match(LocalDeclaration node, MatchingNodeSet nodeSet) {
 //}
 
 
-protected void matchReportReference(ASTNode reference, IJavaElement element, Binding elementBinding, int accuracy, MatchLocator locator) throws CoreException {
+protected void matchReportReference(ASTNode reference, IJavaScriptElement element, Binding elementBinding, int accuracy, MatchLocator locator) throws CoreException {
 	int offset = -1;
 	int length = -1;
 	if (reference instanceof SingleNameReference) {
@@ -91,7 +91,7 @@ protected int matchLocalVariable(LocalVariableBinding variable, boolean matchNam
 		: IMPOSSIBLE_MATCH;
 }
 protected int referenceType() {
-	return IJavaElement.LOCAL_VARIABLE;
+	return IJavaScriptElement.LOCAL_VARIABLE;
 }
 public int resolveLevel(ASTNode possiblelMatchingNode) {
 	if (this.pattern.findReferences)

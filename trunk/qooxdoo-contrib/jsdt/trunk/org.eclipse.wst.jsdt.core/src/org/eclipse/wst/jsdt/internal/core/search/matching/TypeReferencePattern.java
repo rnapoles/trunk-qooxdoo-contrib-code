@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,13 @@ import org.eclipse.wst.jsdt.internal.core.util.Util;
 	public TypeReferencePattern(char[] qualification, char[] simpleName, int matchRule) {
 		this(matchRule);
 
+		int index;
+		if (simpleName!=null &&  (index=CharOperation.lastIndexOf('.',simpleName)) >0)
+		{
+			qualification=CharOperation.subarray(simpleName, 0, index);
+			simpleName=CharOperation.subarray(simpleName, index+1, simpleName.length);
+		}		
+		
 		this.qualification = isCaseSensitive() ? qualification : CharOperation.toLowerCase(qualification);
 		this.simpleName = (isCaseSensitive() || isCamelCase())  ? simpleName : CharOperation.toLowerCase(simpleName);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,9 +37,10 @@ class AddLibraryFolderToIndex extends IndexRequest {
 	}
 
 	private void indexFile(IFile resource) {
-		AddLibraryFileToIndex request = new AddLibraryFileToIndex(resource,this.manager);
-		if (!this.manager.isJobWaiting(request))
-			this.manager.request(request);
+//		AddLibraryFileToIndex request = new AddLibraryFileToIndex(resource,this.manager);
+//		if (!this.manager.isJobWaiting(request))
+//			this.manager.request(request);
+		this.manager.addSource(resource, folderPath, null);
 	}
 //	private void indexFile(IPath resource) {
 //		AddLibraryFileToIndex request = new AddLibraryFileToIndex(resource,this.manager);
@@ -65,13 +66,14 @@ class AddLibraryFolderToIndex extends IndexRequest {
 
 //			final IPath container = this.containerPath;
 //			final IndexManager indexManager = this.manager;
-//			final SourceElementParser parser = indexManager.getSourceElementParser(JavaCore.create(this.project), null/*requestor will be set by indexer*/);
+//			final SourceElementParser parser = indexManager.getSourceElementParser(JavaScriptCore.create(this.project), null/*requestor will be set by indexer*/);
 			if (this.exclusionPatterns == null && this.inclusionPatterns == null) {
 				folder.accept(
 					new IResourceProxyVisitor() {
 						public boolean visit(IResourceProxy proxy) /* throws CoreException */{
 							if (proxy.getType() == IResource.FILE) {
-								if (org.eclipse.wst.jsdt.internal.core.util.Util.isJavaLikeFileName(proxy.getName()))
+								if (org.eclipse.wst.jsdt.internal.core.util.Util.isJavaLikeFileName(proxy.getName())
+										||org.eclipse.wst.jsdt.internal.core.util.Util.isMetadataFileName(proxy.getName()))
 									indexFile((IFile) proxy.requestResource());
 									//indexManager.addSource((IFile) proxy.requestResource(), container, parser);
 								return false;
@@ -87,7 +89,8 @@ class AddLibraryFolderToIndex extends IndexRequest {
 						public boolean visit(IResourceProxy proxy) /* throws CoreException */{
 							switch(proxy.getType()) {
 								case IResource.FILE :
-									if (org.eclipse.wst.jsdt.internal.core.util.Util.isJavaLikeFileName(proxy.getName())) {
+									if (org.eclipse.wst.jsdt.internal.core.util.Util.isJavaLikeFileName(proxy.getName())
+											||org.eclipse.wst.jsdt.internal.core.util.Util.isMetadataFileName(proxy.getName())){
 										IResource resource = proxy.requestResource();
 										if (!Util.isExcluded(resource, inclusionPatterns, exclusionPatterns))
 											indexFile((IFile) proxy.requestResource());

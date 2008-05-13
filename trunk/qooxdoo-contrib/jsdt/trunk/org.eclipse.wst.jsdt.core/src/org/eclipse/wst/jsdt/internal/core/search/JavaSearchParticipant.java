@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.core.search.SearchDocument;
 import org.eclipse.wst.jsdt.core.search.SearchParticipant;
 import org.eclipse.wst.jsdt.core.search.SearchPattern;
@@ -77,16 +77,19 @@ public class JavaSearchParticipant extends SearchParticipant {
 		if (org.eclipse.wst.jsdt.internal.core.util.Util.isJavaLikeFileName(documentPath)) {
 			new SourceIndexer(document).indexDocument();
 		} 
+		else if (org.eclipse.wst.jsdt.internal.core.util.Util.isMetadataFileName(documentPath)) {
+			new SourceIndexer(document).indexMetadata();
+		} 
 //		else if (org.eclipse.wst.jsdt.internal.compiler.util.Util.isClassFileName(documentPath)) {
 //			new BinaryIndexer(document).indexDocument();
 //		}
 	}
 
 	/* (non-Javadoc)
-	 * @see SearchParticipant#locateMatches(SearchDocument[], SearchPattern, IJavaSearchScope, SearchRequestor, IProgressMonitor)
+	 * @see SearchParticipant#locateMatches(SearchDocument[], SearchPattern, IJavaScriptSearchScope, SearchRequestor, IProgressMonitor)
 	 */
 	public void locateMatches(SearchDocument[] indexMatches, SearchPattern pattern,
-			IJavaSearchScope scope, SearchRequestor requestor, IProgressMonitor monitor) throws CoreException {
+			IJavaScriptSearchScope scope, SearchRequestor requestor, IProgressMonitor monitor) throws CoreException {
 
 		MatchLocator matchLocator =
 			new MatchLocator(
@@ -111,7 +114,7 @@ public class JavaSearchParticipant extends SearchParticipant {
 	 */
 	public IPath[] selectIndexes(
 		SearchPattern pattern,
-		IJavaSearchScope scope) {
+		IJavaScriptSearchScope scope) {
 
 		if (this.indexSelector == null) {
 			this.indexSelector = new IndexSelector(scope, pattern);

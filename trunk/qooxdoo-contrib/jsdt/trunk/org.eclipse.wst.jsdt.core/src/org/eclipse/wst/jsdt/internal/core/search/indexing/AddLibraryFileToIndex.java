@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,8 +26,10 @@ import org.eclipse.wst.jsdt.internal.core.search.processing.JobManager;
 
 class AddLibraryFileToIndex extends IndexRequest {
 
+	IPath absolutePath;
 	public AddLibraryFileToIndex(IFile resource, IndexManager manager) {
 		super(resource.getFullPath(), manager);
+		this.absolutePath=resource.getLocation();
 	}
 	public AddLibraryFileToIndex(IPath jarPath, IndexManager manager) {
 		// external JAR scenario - no resource
@@ -155,7 +157,8 @@ class AddLibraryFileToIndex extends IndexRequest {
 //						this.manager.indexDocument(entryDocument, participant, index, this.containerPath);
 //					}
 //				}
-				File file = new File(libraryFilePath.toOSString());
+				IPath filePath=(this.absolutePath!=null)?this.absolutePath : this.containerPath;
+				File file = new File(filePath.toOSString());
 				final char[] classFileChars = org.eclipse.wst.jsdt.internal.compiler.util.Util.getFileCharContent(file,null);
 				String packageName=libraryFilePath.lastSegment();
 				JavaSearchDocument entryDocument = new JavaSearchDocument(  libraryFilePath, classFileChars, participant,packageName);
