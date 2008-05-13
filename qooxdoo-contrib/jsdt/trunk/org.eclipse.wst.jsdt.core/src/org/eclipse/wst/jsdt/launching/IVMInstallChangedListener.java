@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.wst.jsdt.launching;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 
  
  
@@ -22,7 +22,11 @@ import org.eclipse.wst.jsdt.core.JavaCore;
  * <p>
  * Clients may implement this interface.
  * </p>
- * @since 2.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface IVMInstallChangedListener {
 	
@@ -30,25 +34,25 @@ public interface IVMInstallChangedListener {
 	 * Property constant indicating the library locations associated
 	 * with a VM install have changed.
 	 */
-	public static final String PROPERTY_LIBRARY_LOCATIONS = JavaCore.PLUGIN_ID + ".PROPERTY_LIBRARY_LOCATIONS"; //$NON-NLS-1$
+	public static final String PROPERTY_LIBRARY_LOCATIONS = JavaScriptCore.PLUGIN_ID + ".PROPERTY_LIBRARY_LOCATIONS"; //$NON-NLS-1$
 
 	/**
 	 * Property constant indicating the name associated
 	 * with a VM install has changed.
 	 */
-	public static final String PROPERTY_NAME = JavaCore.PLUGIN_ID + ".PROPERTY_NAME"; //$NON-NLS-1$
+	public static final String PROPERTY_NAME = JavaScriptCore.PLUGIN_ID + ".PROPERTY_NAME"; //$NON-NLS-1$
 	
 	/**
 	 * Property constant indicating the install location of
 	 * a VM install has changed.
 	 */
-	public static final String PROPERTY_INSTALL_LOCATION =JavaCore.PLUGIN_ID + ".PROPERTY_INSTALL_LOCATION";	 //$NON-NLS-1$
+	public static final String PROPERTY_INSTALL_LOCATION =JavaScriptCore.PLUGIN_ID + ".PROPERTY_INSTALL_LOCATION";	 //$NON-NLS-1$
 			
 	/**
 	 * Property constant indicating the Javadoc location associated
 	 * with a VM install has changed.
 	 */
-	public static final String PROPERTY_JAVADOC_LOCATION = JavaCore.PLUGIN_ID+ ".PROPERTY_JAVADOC_LOCATION"; //$NON-NLS-1$
+	public static final String PROPERTY_JAVADOC_LOCATION = JavaScriptCore.PLUGIN_ID+ ".PROPERTY_JAVADOC_LOCATION"; //$NON-NLS-1$
 
 	/**
 	 * Property constant indicating the VM arguments associated
@@ -56,7 +60,7 @@ public interface IVMInstallChangedListener {
      * 
      * @since 3.2
 	 */
-	public static final String PROPERTY_VM_ARGUMENTS = JavaCore.PLUGIN_ID + ".PROPERTY_VM_ARGUMENTS"; //$NON-NLS-1$
+	public static final String PROPERTY_VM_ARGUMENTS = JavaScriptCore.PLUGIN_ID + ".PROPERTY_VM_ARGUMENTS"; //$NON-NLS-1$
 
 	/**
 	 * Notification that the workspace default VM install

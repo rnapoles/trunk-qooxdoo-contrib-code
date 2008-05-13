@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.jsdt.libraries;
 
 import org.eclipse.core.runtime.CoreException;
@@ -6,16 +16,23 @@ import org.eclipse.core.runtime.Path;
 
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 import org.eclipse.wst.jsdt.core.IAccessRule;
-import org.eclipse.wst.jsdt.core.IClasspathAttribute;
+import org.eclipse.wst.jsdt.core.IIncludePathAttribute;
 import org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.compiler.libraries.LibraryLocation;
 import org.eclipse.wst.jsdt.core.compiler.libraries.SystemLibraryLocation;
 import org.eclipse.wst.jsdt.core.infer.DefaultInferrenceProvider;
 
 
+/**
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+ */
 public class BasicBrowserLibraryJsGlobalScopeContainerInitializer extends JsGlobalScopeContainerInitializer implements IJsGlobalScopeContainer {
 	private static final String CONTAINER_ID = "org.eclipse.wst.jsdt.launching.baseBrowserLibrary"; //$NON-NLS-1$
 	private static final String ContainerDescription = Messages.BasicBrowserLibraryJsGlobalScopeContainerInitializer_ECMA3Browser;
@@ -41,27 +58,34 @@ public class BasicBrowserLibraryJsGlobalScopeContainerInitializer extends JsGlob
 		return new BasicLibLocation();
 	}
 
-	public IClasspathEntry[] getClasspathEntries() {
+	/**
+	 * @deprecated Use {@link #getIncludepathEntries()} instead
+	 */
+	public IIncludePathEntry[] getClasspathEntries() {
+		return getIncludepathEntries();
+	}
+
+	public IIncludePathEntry[] getIncludepathEntries() {
 		LibraryLocation libLocation =  getLibraryLocation();
 		char[][] filesInLibs = libLocation.getLibraryFileNames();
-		IClasspathEntry[] entries = new IClasspathEntry[filesInLibs.length];
+		IIncludePathEntry[] entries = new IIncludePathEntry[filesInLibs.length];
 		for (int i = 0; i < entries.length; i++) {
 			IPath workingLibPath = new Path(libLocation.getLibraryPath(filesInLibs[i]));
-			entries[i] = JavaCore.newLibraryEntry(workingLibPath.makeAbsolute(), null, null, new IAccessRule[0], new IClasspathAttribute[0], true);
+			entries[i] = JavaScriptCore.newLibraryEntry(workingLibPath.makeAbsolute(), null, null, new IAccessRule[0], new IIncludePathAttribute[0], true);
 		}
 		return entries;
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer#canUpdateJsGlobalScopeContainer(org.eclipse.core.runtime.IPath, org.eclipse.wst.jsdt.core.IJavaProject)
+	 * @see org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer#canUpdateJsGlobalScopeContainer(org.eclipse.core.runtime.IPath, org.eclipse.wst.jsdt.core.IJavaScriptProject)
 	 */
-	public boolean canUpdateJsGlobalScopeContainer(IPath containerPath, IJavaProject project) {
+	public boolean canUpdateJsGlobalScopeContainer(IPath containerPath, IJavaScriptProject project) {
 		return true;
 		
 		
 	}
 
-	protected IJsGlobalScopeContainer getContainer(IPath containerPath, IJavaProject project) {
+	protected IJsGlobalScopeContainer getContainer(IPath containerPath, IJavaScriptProject project) {
 		return this;
 	}
 	
@@ -69,7 +93,7 @@ public class BasicBrowserLibraryJsGlobalScopeContainerInitializer extends JsGlob
 		return BasicBrowserLibraryJsGlobalScopeContainerInitializer.LibraryDescription;
 	}
 	
-	public String getDescription(IPath containerPath, IJavaProject project) {
+	public String getDescription(IPath containerPath, IJavaScriptProject project) {
 		
 		if(containerPath==null) return null;
 		
@@ -92,8 +116,8 @@ public class BasicBrowserLibraryJsGlobalScopeContainerInitializer extends JsGlob
 		return new Path(BasicBrowserLibraryJsGlobalScopeContainerInitializer.CONTAINER_ID);
 	}
 	
-	public void initialize(IPath containerPath, IJavaProject project) throws CoreException {
-		JavaCore.setJsGlobalScopeContainer(containerPath, new IJavaProject[] { project }, new IJsGlobalScopeContainer[] { getContainer(containerPath, project) }, null);
+	public void initialize(IPath containerPath, IJavaScriptProject project) throws CoreException {
+		JavaScriptCore.setJsGlobalScopeContainer(containerPath, new IJavaScriptProject[] { project }, new IJsGlobalScopeContainer[] { getContainer(containerPath, project) }, null);
 	}
 
 	/* (non-Javadoc)
