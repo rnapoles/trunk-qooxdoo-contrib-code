@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,8 +53,11 @@ import org.eclipse.wst.jsdt.internal.compiler.problem.DefaultProblem;
  * markers resulting from compiler participants' problems that do not have the
  * IMarker#GENERATED_BY extra attribute set do not have the IMarker#GENERATED_BY
  * attribute set either.
- *
- * @since 3.2
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class CategorizedProblem implements IProblem {
 
@@ -121,12 +124,12 @@ public abstract String getMarkerType();
  * <li>	<code>IMarker#MESSAGE</code> -&gt; {@link IProblem#getMessage()}</li>
  * <li>	<code>IMarker#SEVERITY</code> -&gt; <code> IMarker#SEVERITY_ERROR</code> or
  *         <code>IMarker#SEVERITY_WARNING</code> depending on {@link IProblem#isError()} or {@link IProblem#isWarning()}</li>
- * <li>	<code>IJavaModelMarker#ID</code> -&gt; {@link IProblem#getID()}</li>
+ * <li>	<code>IJavaScriptModelMarker#ID</code> -&gt; {@link IProblem#getID()}</li>
  * <li>	<code>IMarker#CHAR_START</code>  -&gt; {@link IProblem#getSourceStart()}</li>
  * <li>	<code>IMarker#CHAR_END</code>  -&gt; {@link IProblem#getSourceEnd()}</li>
  * <li>	<code>IMarker#LINE_NUMBER</code>  -&gt; {@link IProblem#getSourceLineNumber()}</li>
- * <li>	<code>IJavaModelMarker#ARGUMENTS</code>  -&gt; some <code>String[]</code> used to compute quickfixes </li>
- * <li>	<code>IJavaModelMarker#CATEGORY_ID</code> -&gt; {@link CategorizedProblem#getCategoryID()}</li>
+ * <li>	<code>IJavaScriptModelMarker#ARGUMENTS</code>  -&gt; some <code>String[]</code> used to compute quickfixes </li>
+ * <li>	<code>IJavaScriptModelMarker#CATEGORY_ID</code> -&gt; {@link CategorizedProblem#getCategoryID()}</li>
  * </ul>
  * The names must be eligible for marker creation, as defined by <code>IMarker#setAttributes(String[], Object[])</code>,
  * and there must be as many names as values according to {@link #getExtraMarkerAttributeValues()}.

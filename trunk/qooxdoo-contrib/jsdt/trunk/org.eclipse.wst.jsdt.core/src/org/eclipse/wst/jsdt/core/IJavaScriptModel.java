@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <em>the</em> Java model element.
  * The Java model element needs to be opened before it can be navigated or manipulated.
  * The Java model element has no parent (it is the root of the Java element
- * hierarchy). Its children are <code>IJavaProject</code>s.
+ * hierarchy). Its children are <code>IJavaScriptProject</code>s.
  * <p>
  * This interface provides methods for performing copy, move, rename, and
  * delete operations on multiple Java elements.
@@ -28,14 +28,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <p>
  * This interface is not intended to be implemented by clients. An instance
  * of one of these handles can be created via
- * <code>JavaCore.create(workspace.getRoot())</code>.
+ * <code>JavaScriptCore.create(workspace.getRoot())</code>.
  * </p>
  *
- * @see JavaCore#create(org.eclipse.core.resources.IWorkspaceRoot)
+ * @see JavaScriptCore#create(org.eclipse.core.resources.IWorkspaceRoot)
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface IJavaModel extends IJavaElement, IOpenable, IParent {
+public interface IJavaScriptModel extends IJavaScriptElement, IOpenable, IParent {
 /**
- * Returns whether this Java model contains an <code>IJavaElement</code> whose
+ * Returns whether this Java model contains an <code>IJavaScriptElement</code> whose
  * resource is the given resource or a non-Java resource which is the given resource.
  * <p>
  * Note: no existency check is performed on the argument resource. If it is not accessible
@@ -83,7 +88,7 @@ boolean contains(IResource resource);
  *   with the target name should be replaced, and <code>false</code> to throw an
  *   exception in the event of a name collision
  * @param monitor a progress monitor
- * @exception JavaModelException if an element could not be copied. Reasons include:
+ * @exception JavaScriptModelException if an element could not be copied. Reasons include:
  * <ul>
  * <li> There is no element to process (NO_ELEMENTS_TO_PROCESS). The given elements is null or empty</li>
  * <li> A specified element, container, or sibling does not exist (ELEMENT_DOES_NOT_EXIST)</li>
@@ -96,7 +101,7 @@ boolean contains(IResource resource);
  * <li> A container or element is read-only (<code>READ_ONLY</code>) </li>
  * </ul>
  */
-void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+void copy(IJavaScriptElement[] elements, IJavaScriptElement[] containers, IJavaScriptElement[] siblings, String[] renamings, boolean replace, IProgressMonitor monitor) throws JavaScriptModelException;
 /**
  * Deletes the given elements, forcing the operation if necessary and specified.
  *
@@ -104,7 +109,7 @@ void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] sib
  * @param force a flag controlling whether underlying resources that are not
  *    in sync with the local file system will be tolerated
  * @param monitor a progress monitor
- * @exception JavaModelException if an element could not be deleted. Reasons include:
+ * @exception JavaScriptModelException if an element could not be deleted. Reasons include:
  * <ul>
  * <li> There is no element to process (NO_ELEMENTS_TO_PROCESS). The given elements is null or empty</li>
  * <li> A specified element does not exist (ELEMENT_DOES_NOT_EXIST)</li>
@@ -112,7 +117,7 @@ void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] sib
  * <li> An element is read-only (<code>READ_ONLY</code>) </li>
  * </ul>
  */
-void delete(IJavaElement[] elements, boolean force, IProgressMonitor monitor) throws JavaModelException;
+void delete(IJavaScriptElement[] elements, boolean force, IProgressMonitor monitor) throws JavaScriptModelException;
 /**
  * Returns the Java project with the given name. This is a handle-only method.
  * The project may or may not exist.
@@ -120,16 +125,16 @@ void delete(IJavaElement[] elements, boolean force, IProgressMonitor monitor) th
  * @param name the name of the Java project
  * @return the Java project with the given name
  */
-IJavaProject getJavaProject(String name);
+IJavaScriptProject getJavaScriptProject(String name);
 /**
  * Returns the Java projects in this Java model, or an empty array if there
  * are none.
  *
  * @return the Java projects in this Java model, or an empty array if there
  * are none
- * @exception JavaModelException if this request fails.
+ * @exception JavaScriptModelException if this request fails.
  */
-IJavaProject[] getJavaProjects() throws JavaModelException;
+IJavaScriptProject[] getJavaScriptProjects() throws JavaScriptModelException;
 /**
  * Returns an array of non-Java resources (that is, non-Java projects) in
  * the workspace.
@@ -140,11 +145,11 @@ IJavaProject[] getJavaProjects() throws JavaModelException;
  *
  * @return an array of non-Java projects (<code>IProject</code>s) contained
  *              in the workspace.
- * @throws JavaModelException if this element does not exist or if an
+ * @throws JavaScriptModelException if this element does not exist or if an
  *		exception occurs while accessing its corresponding resource
  * @since 2.1
  */
-Object[] getNonJavaResources() throws JavaModelException;
+Object[] getNonJavaScriptResources() throws JavaScriptModelException;
 /**
  * Returns the workspace associated with this Java model.
  *
@@ -184,7 +189,7 @@ IWorkspace getWorkspace();
  *   with the target name should be replaced, and <code>false</code> to throw an
  *   exception in the event of a name collision
  * @param monitor a progress monitor
- * @exception JavaModelException if an element could not be moved. Reasons include:
+ * @exception JavaScriptModelException if an element could not be moved. Reasons include:
  * <ul>
  * <li> There is no element to process (NO_ELEMENTS_TO_PROCESS). The given elements is null or empty</li>
  * <li> A specified element, container, or sibling does not exist (ELEMENT_DOES_NOT_EXIST)</li>
@@ -199,7 +204,7 @@ IWorkspace getWorkspace();
  *
  * @exception IllegalArgumentException any element or container is <code>null</code>
  */
-void move(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+void move(IJavaScriptElement[] elements, IJavaScriptElement[] containers, IJavaScriptElement[] siblings, String[] renamings, boolean replace, IProgressMonitor monitor) throws JavaScriptModelException;
 
 /**
  * Triggers an update of the JavaModel with respect to the referenced external archives.
@@ -219,15 +224,15 @@ void move(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] sib
  * <p>
  * @param elementsScope - a collection of elements defining the scope of the refresh
  * @param monitor - a progress monitor used to report progress
- * @exception JavaModelException in one of the corresponding situation:
+ * @exception JavaScriptModelException in one of the corresponding situation:
  * <ul>
  *    <li> an exception occurs while accessing project resources </li>
  * </ul>
  *
- * @see IJavaElementDelta
+ * @see IJavaScriptElementDelta
  * @since 2.0
  */
-void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonitor monitor) throws JavaModelException;
+void refreshExternalArchives(IJavaScriptElement[] elementsScope, IProgressMonitor monitor) throws JavaScriptModelException;
 
 /**
  * Renames the given elements as specified.
@@ -243,7 +248,7 @@ void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonitor moni
  *   with the target name should be replaced, and <code>false</code> to throw an
  *   exception in the event of a name collision
  * @param monitor a progress monitor
- * @exception JavaModelException if an element could not be renamed. Reasons include:
+ * @exception JavaScriptModelException if an element could not be renamed. Reasons include:
  * <ul>
  * <li> There is no element to process (NO_ELEMENTS_TO_PROCESS). The given elements is null or empty</li>
  * <li> A specified element does not exist (ELEMENT_DOES_NOT_EXIST)</li>
@@ -253,6 +258,6 @@ void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonitor moni
  * <li> An element is read-only (<code>READ_ONLY</code>)
  * </ul>
  */
-void rename(IJavaElement[] elements, IJavaElement[] destinations, String[] names, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+void rename(IJavaScriptElement[] elements, IJavaScriptElement[] destinations, String[] names, boolean replace, IProgressMonitor monitor) throws JavaScriptModelException;
 
 }

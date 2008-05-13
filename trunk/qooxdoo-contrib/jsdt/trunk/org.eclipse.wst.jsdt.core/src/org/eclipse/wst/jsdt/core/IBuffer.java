@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <p>
  * This interface may be implemented by clients.
  * </p>
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface IBuffer {
 
@@ -221,12 +226,12 @@ public void replace(int position, int length, String text);
  * @param force a <code> boolean </code> flag indicating how to deal with resource
  *   inconsistencies.
  *
- * @exception JavaModelException if an error occurs writing the buffer
+ * @exception JavaScriptModelException if an error occurs writing the buffer
  *	to the underlying resource
  *
  * @see org.eclipse.core.resources.IFile#setContents(java.io.InputStream, boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
  */
-public void save(IProgressMonitor progress, boolean force) throws JavaModelException;
+public void save(IProgressMonitor progress, boolean force) throws JavaScriptModelException;
 /**
  * Sets the contents of this buffer to the given character array.
  * This buffer will now have unsaved changes.

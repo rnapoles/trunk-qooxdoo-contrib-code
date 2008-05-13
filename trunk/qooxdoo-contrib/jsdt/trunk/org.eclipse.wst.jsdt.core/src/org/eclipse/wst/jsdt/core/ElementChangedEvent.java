@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,53 +14,56 @@ import java.util.EventObject;
 
 /**
  * An element changed event describes a change to the structure or contents
- * of a tree of Java elements. The changes to the elements are described by
+ * of a tree of JavaScript elements. The changes to the elements are described by
  * the associated delta object carried by this event.
  * <p>
  * This class is not intended to be instantiated or subclassed by clients.
- * Instances of this class are automatically created by the Java model.
+ * Instances of this class are automatically created by the JavaScript model.
  * </p>
  *
  * @see IElementChangedListener
- * @see IJavaElementDelta
+ * @see IJavaScriptElementDelta
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class ElementChangedEvent extends EventObject {
 
 	/**
 	 * Event type constant (bit mask) indicating an after-the-fact
 	 * report of creations, deletions, and modifications
-	 * to one or more Java element(s) expressed as a hierarchical
+	 * to one or more JavaScript element(s) expressed as a hierarchical
 	 * java element delta as returned by <code>getDelta()</code>.
 	 *
 	 * Note: this notification occurs during the corresponding POST_CHANGE
 	 * resource change notification, and contains a full delta accounting for
-	 * any JavaModel operation  and/or resource change.
+	 * any JavaScriptModel operation  and/or resource change.
 	 *
-	 * @see IJavaElementDelta
+	 * @see IJavaScriptElementDelta
 	 * @see org.eclipse.core.resources.IResourceChangeEvent
 	 * @see #getDelta()
-	 * @since 2.0
 	 */
 	public static final int POST_CHANGE = 1;
 
 	/**
 	 * Event type constant (bit mask) indicating an after-the-fact
 	 * report of creations, deletions, and modifications
-	 * to one or more Java element(s) expressed as a hierarchical
+	 * to one or more JavaScript element(s) expressed as a hierarchical
 	 * java element delta as returned by <code>getDelta</code>.
 	 *
 	 * Note: this notification occurs during the corresponding PRE_AUTO_BUILD
 	 * resource change notification. The delta, which is notified here, only contains
-	 * information relative to the previous JavaModel operations (in other words,
-	 * it ignores the possible resources which have changed outside Java operations).
-	 * In particular, it is possible that the JavaModel be inconsistent with respect to
-	 * resources, which got modified outside JavaModel operations (it will only be
+	 * information relative to the previous JavaScriptModel operations (in other words,
+	 * it ignores the possible resources which have changed outside JavaScript operations).
+	 * In particular, it is possible that the JavaScriptModel be inconsistent with respect to
+	 * resources, which got modified outside JavaScriptModel operations (it will only be
 	 * fully consistent once the POST_CHANGE notification has occurred).
 	 *
-	 * @see IJavaElementDelta
+	 * @see IJavaScriptElementDelta
 	 * @see org.eclipse.core.resources.IResourceChangeEvent
 	 * @see #getDelta()
-	 * @since 2.0
 	 * @deprecated - no longer used, such deltas are now notified during POST_CHANGE
 	 */
 	public static final int PRE_AUTO_BUILD = 2;
@@ -68,16 +71,15 @@ public class ElementChangedEvent extends EventObject {
 	/**
 	 * Event type constant (bit mask) indicating an after-the-fact
 	 * report of creations, deletions, and modifications
-	 * to one or more Java element(s) expressed as a hierarchical
+	 * to one or more JavaScript element(s) expressed as a hierarchical
 	 * java element delta as returned by <code>getDelta</code>.
 	 *
 	 * Note: this notification occurs as a result of a working copy reconcile
 	 * operation.
 	 *
-	 * @see IJavaElementDelta
+	 * @see IJavaScriptElementDelta
 	 * @see org.eclipse.core.resources.IResourceChangeEvent
 	 * @see #getDelta()
-	 * @since 2.0
 	 */
 	public static final int 	POST_RECONCILE = 4;
 
@@ -93,12 +95,12 @@ public class ElementChangedEvent extends EventObject {
 	private int type;
 
 	/**
-	 * Creates an new element changed event (based on a <code>IJavaElementDelta</code>).
+	 * Creates an new element changed event (based on a <code>IJavaScriptElementDelta</code>).
 	 *
-	 * @param delta the Java element delta.
+	 * @param delta the JavaScript element delta.
 	 * @param type the type of delta (ADDED, REMOVED, CHANGED) this event contains
 	 */
-	public ElementChangedEvent(IJavaElementDelta delta, int type) {
+	public ElementChangedEvent(IJavaScriptElementDelta delta, int type) {
 		super(delta);
 		this.type = type;
 	}
@@ -107,8 +109,8 @@ public class ElementChangedEvent extends EventObject {
 	 *
 	 * @return the delta describing the change
 	 */
-	public IJavaElementDelta getDelta() {
-		return (IJavaElementDelta) this.source;
+	public IJavaScriptElementDelta getDelta() {
+		return (IJavaScriptElementDelta) this.source;
 	}
 
 	/**
@@ -118,7 +120,6 @@ public class ElementChangedEvent extends EventObject {
 	 * @see #POST_CHANGE
 	 * @see #PRE_AUTO_BUILD
 	 * @see #POST_RECONCILE
-	 * @since 2.0
 	 */
 	public int getType() {
 		return this.type;

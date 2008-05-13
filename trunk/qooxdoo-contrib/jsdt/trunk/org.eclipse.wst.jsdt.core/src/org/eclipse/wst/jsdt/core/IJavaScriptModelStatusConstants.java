@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *
  * TODO missing 2.1 and subsequent contributions
- * COMPILER_FAILURE
+ * VALIDATION_FAILURE
  *******************************************************************************/
 package org.eclipse.wst.jsdt.core;
 
@@ -20,10 +20,15 @@ package org.eclipse.wst.jsdt.core;
  * or extended.
  * </p>
  *
- * @see IJavaModelStatus
+ * @see IJavaScriptModelStatus
  * @see org.eclipse.core.runtime.IStatus#getCode()
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface IJavaModelStatusConstants {
+public interface IJavaScriptModelStatusConstants {
 
 	/**
 	 * Status constant indicating that a container path was resolved
@@ -44,7 +49,7 @@ public interface IJavaModelStatusConstants {
 	/**
 	 * Status constant indicating that a classpath entry was invalid
 	 */
-	public static final int INVALID_CLASSPATH = 964;
+	public static final int INVALID_INCLUDEPATH = 964;
 
 	/**
 	 * Status constant indicating that a variable path was not resolvable
@@ -78,7 +83,7 @@ public interface IJavaModelStatusConstants {
 	 * supplied do not exist.
 	 * The element(s) can be retrieved using <code>getElements</code> on the status object.
 	 *
-	 * @see IJavaModelStatus#isDoesNotExist()
+	 * @see IJavaScriptModelStatus#isDoesNotExist()
 	 */
 	public static final int ELEMENT_DOES_NOT_EXIST = 969;
 
@@ -219,29 +224,29 @@ public interface IJavaModelStatusConstants {
 	/**
 	 * Status indicating that a Java element could not be created because
 	 * the underlying resource is invalid.
-	 * @see JavaCore
+	 * @see JavaScriptCore
 	 */
 	 public static final int INVALID_RESOURCE = 995;
 
 	/**
 	 * Status indicating that a Java element could not be created because
 	 * the underlying resource is not of an appropriate type.
-	 * @see JavaCore
+	 * @see JavaScriptCore
 	 */
 	 public static final int INVALID_RESOURCE_TYPE = 996;
 
 	/**
 	 * Status indicating that a Java element could not be created because
 	 * the project owning underlying resource does not have the Java nature.
-	 * @see JavaCore
+	 * @see JavaScriptCore
 	 */
 	 public static final int INVALID_PROJECT = 997;
 
 	/**
-	 * Status indicating that the package declaration in a <code>ICompilationUnit</code>
+	 * Status indicating that the package declaration in a <code>IJavaScriptUnit</code>
 	 * does not correspond to the <code>IPackageFragment</code> it belongs to.
 	 * The <code>getString</code> method of the associated status object
-	 * gives the name of the package in which the <code>ICompilationUnit</code> is
+	 * gives the name of the package in which the <code>IJavaScriptUnit</code> is
 	 * declared.
 	 */
 	 public static final int INVALID_PACKAGE = 998;
@@ -258,19 +263,19 @@ public interface IJavaModelStatusConstants {
 	  * be read/written successfully.
 	  * @since 2.1
 	  */
-	 public static final int INVALID_CLASSPATH_FILE_FORMAT = 1000;
+	 public static final int INVALID_INCLUDEPATH_FILE_FORMAT = 1000;
 
 	 /**
 	  * Status indicating that a project is involved in a build path cycle.
 	  * @since 2.1
 	  */
-	 public static final int CLASSPATH_CYCLE = 1001;
+	 public static final int INCLUDEPATH_CYCLE = 1001;
 
 	/**
 	 * Status constant indicating that an inclusion or an exclusion pattern got specified
 	 * on a classpath source entry, though it was explicitely disabled
 	 * according to its project preference settings.
-	 * @see org.eclipse.wst.jsdt.core.IJavaProject#getOptions(boolean)
+	 * @see org.eclipse.wst.jsdt.core.IJavaScriptProject#getOptions(boolean)
 	 * @since 2.1
 	 */
 	public static final int DISABLED_CP_EXCLUSION_PATTERNS = 1002;
@@ -279,7 +284,7 @@ public interface IJavaModelStatusConstants {
 	 * Status constant indicating that a specific output location got associated
 	 * with a source entry, though it was explicitely disabled according to its project
 	 * preference settings.
-	 * @see org.eclipse.wst.jsdt.core.IJavaProject#getOptions(boolean)
+	 * @see org.eclipse.wst.jsdt.core.IJavaScriptProject#getOptions(boolean)
 	 * @since 2.1
 	 */
 	public static final int DISABLED_CP_MULTIPLE_OUTPUT_LOCATIONS = 1003;
@@ -296,7 +301,7 @@ public interface IJavaModelStatusConstants {
 	 * Status constant indicating that a compiler failure occurred.
 	 * @since 3.0
 	 */
-	public static final int COMPILER_FAILURE	= 1005;
+	public static final int VALIDATION_FAILURE	= 1005;
 	/**
 	 * Status constant indicating that an element is not on its project's claspath.
 	 * @since 3.1
@@ -313,13 +318,13 @@ public interface IJavaModelStatusConstants {
 	 *
 	 * @since 3.2
 	 */
-	public static final int CANNOT_RETRIEVE_ATTACHED_JAVADOC = 1008;
+	public static final int CANNOT_RETRIEVE_ATTACHED_JSDOC = 1008;
 	/**
 	 * <p>Status constant indicating that the attached javadoc content format is unrecognized.</p>
 	 *
 	 * @since 3.2
 	 */
-	public static final int UNKNOWN_JAVADOC_FORMAT = 1009;
+	public static final int UNKNOWN_JSDOC_FORMAT = 1009;
 	/**
 	 * <p>Status constant indicating that the variable is deprecated.</p>
 	 *

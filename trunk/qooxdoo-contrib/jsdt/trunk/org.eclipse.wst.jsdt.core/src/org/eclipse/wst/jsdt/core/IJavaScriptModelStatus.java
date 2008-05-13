@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,13 +15,13 @@ import org.eclipse.core.runtime.IStatus;
 
 /**
  * Represents the outcome of an Java model operation. Status objects are
- * used inside <code>JavaModelException</code> objects to indicate what went
+ * used inside <code>JavaScriptModelException</code> objects to indicate what went
  * wrong.
  * <p>
  * Java model status object are distinguished by their plug-in id:
  * <code>getPlugin</code> returns <code>"org.eclipse.wst.jsdt.core"</code>.
  * <code>getCode</code> returns one of the status codes declared in
- * <code>IJavaModelStatusConstants</code>.
+ * <code>IJavaScriptModelStatusConstants</code>.
  * </p>
  * <p>
  * A Java model status may also carry additional information (that is, in
@@ -35,18 +35,23 @@ import org.eclipse.core.runtime.IStatus;
  * </p>
  *
  * @see org.eclipse.core.runtime.IStatus
- * @see IJavaModelStatusConstants
+ * @see IJavaScriptModelStatusConstants
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface IJavaModelStatus extends IStatus {
+public interface IJavaScriptModelStatus extends IStatus {
 /**
  * Returns any Java elements associated with the failure (see specification
  * of the status code), or an empty array if no elements are related to this
  * particular status code.
  *
  * @return the list of Java element culprits
- * @see IJavaModelStatusConstants
+ * @see IJavaScriptModelStatusConstants
  */
-IJavaElement[] getElements();
+IJavaScriptElement[] getElements();
 /**
  * Returns the path associated with the failure (see specification
  * of the status code), or <code>null</code> if the failure is not
@@ -54,10 +59,10 @@ IJavaElement[] getElements();
  * <code>PATH_OUTSIDE_PROJECT</code>, or <code>RELATIVE_PATH</code>.
  *
  * @return the path that caused the failure, or <code>null</code> if none
- * @see IJavaModelStatusConstants#DEVICE_PATH
- * @see IJavaModelStatusConstants#INVALID_PATH
- * @see IJavaModelStatusConstants#PATH_OUTSIDE_PROJECT
- * @see IJavaModelStatusConstants#RELATIVE_PATH
+ * @see IJavaScriptModelStatusConstants#DEVICE_PATH
+ * @see IJavaScriptModelStatusConstants#INVALID_PATH
+ * @see IJavaScriptModelStatusConstants#PATH_OUTSIDE_PROJECT
+ * @see IJavaScriptModelStatusConstants#RELATIVE_PATH
  */
 IPath getPath();
 /**
@@ -66,18 +71,18 @@ IPath getPath();
  * particular status code.
  *
  * @return the string culprit, or <code>null</code> if none
- * @see IJavaModelStatusConstants
+ * @see IJavaScriptModelStatusConstants
  * @deprecated Use {@link IStatus#getMessage()} instead
  */
 String getString();
 /**
  * Returns whether this status indicates that a Java model element does not exist.
  * This convenience method is equivalent to
- * <code>getCode() == IJavaModelStatusConstants.ELEMENT_DOES_NOT_EXIST</code>.
+ * <code>getCode() == IJavaScriptModelStatusConstants.ELEMENT_DOES_NOT_EXIST</code>.
  *
  * @return <code>true</code> if the status code indicates that a Java model
  *   element does not exist
- * @see IJavaModelStatusConstants#ELEMENT_DOES_NOT_EXIST
+ * @see IJavaScriptModelStatusConstants#ELEMENT_DOES_NOT_EXIST
  */
 boolean isDoesNotExist();
 }

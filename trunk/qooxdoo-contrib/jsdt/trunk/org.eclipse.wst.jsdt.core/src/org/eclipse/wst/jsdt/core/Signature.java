@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import org.eclipse.wst.jsdt.internal.core.util.Util;
  * Provides methods for encoding and decoding type and method signature strings.
  * <p>
  * Signatures obtained from parsing source files (i.e. files with one of the
- * {@link JavaCore#getJavaLikeExtensions() Java-like extensions}) differ subtly
+ * {@link JavaScriptCore#getJavaScriptLikeExtensions() Java-like extensions}) differ subtly
  * from ones obtained from pre-compiled binary (".class") files in class names are
  * usually left unresolved in the former. For example, the normal resolved form
  * of the type "String" embeds the class's package name ("Ljava.lang.String;"
@@ -139,6 +139,11 @@ import org.eclipse.wst.jsdt.internal.core.util.Util;
  * This class provides static methods and constants only; it is not intended to be
  * instantiated or subclassed by clients.
  * </p>
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public final class Signature {
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,51 +22,70 @@ import org.eclipse.wst.jsdt.internal.codeassist.complete.CompletionOnJavadoc;
  * </p>
  *
  * @see CompletionRequestor#acceptContext(CompletionContext)
- * @since 3.1
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public final class CompletionContext extends InternalCompletionContext {
 
 	/**
 	 * The completion token is unknown.
-	 * @since 3.2
 	 */
 	public static final int TOKEN_KIND_UNKNOWN = 0;
 
 	/**
 	 * The completion token is a name.
-	 * @since 3.2
 	 */
 	public static final int TOKEN_KIND_NAME = 1;
 	/**
 	 * The completion token is a string literal.
 	 * The string literal ends quote can be not present the source.
 	 * <code>"foo"</code> or <code>"foo</code>.
-	 * @since 3.2
 	 */
 
 	public static final int TOKEN_KIND_STRING_LITERAL = 2;
 	/**
-	 * Tell user whether completion takes place in a javadoc comment or not.
+	 * Tell user whether completion takes place in a jSdoc comment or not.
 	 *
-	 * @return boolean true if completion takes place in a javadoc comment, false otherwise.
-	 * @since 3.2
+	 * @return boolean true if completion takes place in a jsdoc comment, false otherwise.
+	 * @deprecated Use {@link #isInJsdoc()} instead
 	 */
 	public boolean isInJavadoc() {
+		return isInJsdoc();
+	}
+
+	/**
+	 * Tell user whether completion takes place in a jsdoc comment or not.
+	 *
+	 * @return boolean true if completion takes place in a jsdoc comment, false otherwise.
+	 */
+	public boolean isInJsdoc() {
 		return this.javadoc != 0;
 	}
 
 	/**
-	 * Tell user whether completion takes place in text area of a javadoc comment or not.
+	 * Tell user whether completion takes place in text area of a jsdoc comment or not.
 	 *
-	 * @return boolean true if completion takes place in a text area of a javadoc comment, false otherwise.
-	 * @since 3.2
+	 * @return boolean true if completion takes place in a text area of a jsdoc comment, false otherwise.
+	 * @deprecated Use {@link #isInJsdocText()} instead
 	 */
 	public boolean isInJavadocText() {
+		return isInJsdocText();
+	}
+
+	/**
+	 * Tell user whether completion takes place in text area of a jsdoc comment or not.
+	 *
+	 * @return boolean true if completion takes place in a text area of a jsdoc comment, false otherwise.
+	 */
+	public boolean isInJsdocText() {
 		return (this.javadoc & CompletionOnJavadoc.TEXT) != 0;
 	}
 
 	/**
-	 * Tell user whether completion takes place in a formal reference of a javadoc tag or not.
+	 * Tell user whether completion takes place in a formal reference of a jsdoc tag or not.
 	 * Tags with formal reference are:
 	 * <ul>
 	 * 	<li>&#64;see</li>
@@ -77,10 +96,28 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * 	<li>{&#64;value} when compiler compliance is set at leats to 1.5</li>
 	 * </ul>
 	 *
-	 * @return boolean true if completion takes place in formal reference of a javadoc tag, false otherwise.
-	 * @since 3.2
+	 * @return boolean true if completion takes place in formal reference of a jsdoc tag, false otherwise.
+	 * @deprecated Use {@link #isInJsdocFormalReference()} instead
 	 */
 	public boolean isInJavadocFormalReference() {
+		return isInJsdocFormalReference();
+	}
+
+	/**
+	 * Tell user whether completion takes place in a formal reference of a jsdoc tag or not.
+	 * Tags with formal reference are:
+	 * <ul>
+	 * 	<li>&#64;see</li>
+	 * 	<li>&#64;throws</li>
+	 * 	<li>&#64;exception</li>
+	 * 	<li>{&#64;link Object}</li>
+	 * 	<li>{&#64;linkplain Object}</li>
+	 * 	<li>{&#64;value} when compiler compliance is set at leats to 1.5</li>
+	 * </ul>
+	 *
+	 * @return boolean true if completion takes place in formal reference of a jsdoc tag, false otherwise.
+	 */
+	public boolean isInJsdocFormalReference() {
 		return (this.javadoc & CompletionOnJavadoc.FORMAL_REFERENCE) != 0;
 	}
 
@@ -105,7 +142,7 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * @return keys of expected types of a potential completion proposal at the completion position or
 	 * <code>null</code> if there is no expected types.
 	 *
-	 * @see org.eclipse.wst.jsdt.core.dom.ASTParser#createASTs(ICompilationUnit[], String[], org.eclipse.wst.jsdt.core.dom.ASTRequestor, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.wst.jsdt.core.dom.ASTParser#createASTs(IJavaScriptUnit[], String[], org.eclipse.wst.jsdt.core.dom.ASTRequestor, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public char[][] getExpectedTypesKeys() {
 		return this.expectedTypesKeys;
@@ -113,14 +150,13 @@ public final class CompletionContext extends InternalCompletionContext {
 
 	/**
 	 * Returns the completed token.
-	 * This token is either the identifier or Java language keyword
+	 * This token is either the identifier or JavaScript language keyword
 	 * or the string literal under, immediately preceding,
 	 * the original request offset. If the original request offset
 	 * is not within or immediately after an identifier or keyword or
 	 * a string literal then the returned value is <code>null</code>.
 	 *
 	 * @return completed token or <code>null</code>
-	 * @since 3.2
 	 */
 	public char[] getToken() {
 		return this.token;
@@ -139,7 +175,6 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * @return the kind; one of the kind constants declared on
 	 * this class whose name starts with <code>TOKEN_KIND</code>,
 	 * or possibly a kind unknown to the caller
-	 * @since 3.2
 	 */
 	public int getTokenKind() {
 		return this.tokenKind;
@@ -149,7 +184,7 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * Returns the character index of the start of the
 	 * subrange in the source file buffer containing the
 	 * relevant token being completed. This
-	 * token is either the identifier or Java language keyword
+	 * token is either the identifier or JavaScript language keyword
 	 * under, or immediately preceding, the original request
 	 * offset. If the original request offset is not within
 	 * or immediately after an identifier or keyword, then the
@@ -157,7 +192,6 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * token range is empty.
 	 *
 	 * @return character index of token start position (inclusive)
-	 * @since 3.2
 	 */
 	public int getTokenStart() {
 		return this.tokenStart;
@@ -171,9 +205,7 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * (<code>getTokenEnd() == getTokenStart() - 1</code>).
 	 *
 	 * @return character index of token end position (exclusive)
-	 * @since 3.2
 	 */
-	// TODO (david) https://bugs.eclipse.org/bugs/show_bug.cgi?id=132558
 	public int getTokenEnd() {
 		return this.tokenEnd;
 	}
@@ -183,7 +215,6 @@ public final class CompletionContext extends InternalCompletionContext {
 	 * after which code assist is requested.
 	 *
 	 * @return offset position in the source file buffer
-	 * @since 3.2
 	 */
 	public int getOffset() {
 		return this.offset;

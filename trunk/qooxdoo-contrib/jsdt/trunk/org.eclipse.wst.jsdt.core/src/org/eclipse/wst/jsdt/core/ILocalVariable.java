@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ package org.eclipse.wst.jsdt.core;
  * Represents a local variable declared in a method or an initializer.
  * <code>ILocalVariable</code> are pseudo-elements created as the result of a <code>ICodeAssist.codeSelect(...)</code>
  * operation. They are not part of the Java model (<code>exists()</code> returns whether the parent exists rather than
- * whether the local variable exists in the parent) and they are not included in the children of an <code>IMethod</code>
+ * whether the local variable exists in the parent) and they are not included in the children of an <code>IFunction</code>
  * or an <code>IInitializer</code>.
  * <p>
  * In particular such a pseudo-element should not be used as a handle. For example its name range won't be updated
@@ -22,9 +22,13 @@ package org.eclipse.wst.jsdt.core;
  * </p><p>
  * This interface is not intended to be implemented by clients.
  * </p>
- * @since 3.0
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface ILocalVariable extends IJavaElement, ISourceReference {
+public interface ILocalVariable extends IJavaScriptElement, ISourceReference {
 
 	/**
 	 * Returns the name of this local variable.
