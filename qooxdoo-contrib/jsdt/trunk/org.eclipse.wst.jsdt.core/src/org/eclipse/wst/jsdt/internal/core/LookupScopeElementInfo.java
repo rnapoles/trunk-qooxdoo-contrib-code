@@ -1,12 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.jsdt.internal.core;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.core.util.HashtableOfArrayToObject;
 
 public class LookupScopeElementInfo extends PackageFragmentRootInfo {
@@ -66,7 +76,7 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 					projectRoots[lastGood++]=projectRoots[i];
 				}
 			}
-		} catch (JavaModelException ex) {
+		} catch (JavaScriptModelException ex) {
 			projectRoots = new IPackageFragmentRoot[0];
 		}
 
@@ -89,7 +99,7 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 					projectRoots[lastGood++]=projectRoots[i];
 				}
 			}
-		} catch (JavaModelException ex) {
+		} catch (JavaScriptModelException ex) {
 			projectRoots = new IPackageFragmentRoot[0];
 		}
 
@@ -107,7 +117,7 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 
 	}
 
-	NameLookup newNameLookup(ICompilationUnit[] workingCopies) {
+	NameLookup newNameLookup(IJavaScriptUnit[] workingCopies) {
 		BuildLookupScopeCache(getAllRoots());
 
 		return new NameLookup(cache.allPkgFragmentRootsCache, cache.allPkgFragmentsCache, workingCopies, cache.rootToResolvedEntries);
@@ -122,9 +132,9 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 //		for(int i = 0;i<rootsInScope.length;i++) {
 //			try {
 //
-//				IClasspathEntry entry = javaProject.getClasspathEntryFor(rootsInScope[i].getPath());
+//				IIncludePathEntry entry = javaProject.getClasspathEntryFor(rootsInScope[i].getPath());
 //				reverseMap.put(rootsInScope[i],entry);
-//			} catch (JavaModelException ex) {
+//			} catch (JavaScriptModelException ex) {
 //				// TODO Auto-generated catch block
 //				ex.printStackTrace();
 //			}
@@ -133,7 +143,7 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 
 //		try {
 //			roots = javaProject.getAllPackageFragmentRoots(reverseMap);
-//		} catch (JavaModelException e) {
+//		} catch (JavaScriptModelException e) {
 //			// project does not exist: cannot happen since this is the info of the project
 //			roots = new IPackageFragmentRoot[0];
 //			reverseMap.clear();
@@ -142,7 +152,7 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 		HashtableOfArrayToObject isPackageCache = new HashtableOfArrayToObject();
 			for (int i = 0, length = rootsInScope.length; i < length; i++) {
 				IPackageFragmentRoot root = rootsInScope[i];
-				IJavaElement[] frags = null;
+				IJavaScriptElement[] frags = null;
 				try {
 					if(root instanceof DocumentContextFragmentRoot) {
 						LibraryFragmentRootInfo info = new LibraryFragmentRootInfo();
@@ -162,7 +172,7 @@ public class LookupScopeElementInfo extends PackageFragmentRootInfo {
 						frags = info.children;
 					}else
 						frags = root.getChildren();
-				} catch (JavaModelException e) {
+				} catch (JavaScriptModelException e) {
 					// root doesn't exist: ignore
 					continue;
 				}

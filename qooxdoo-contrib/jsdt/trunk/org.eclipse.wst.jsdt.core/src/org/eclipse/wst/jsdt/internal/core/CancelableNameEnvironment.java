@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.wst.jsdt.internal.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.WorkingCopyOwner;
 import org.eclipse.wst.jsdt.internal.codeassist.ISearchRequestor;
 import org.eclipse.wst.jsdt.internal.compiler.env.NameEnvironmentAnswer;
@@ -24,11 +24,11 @@ import org.eclipse.wst.jsdt.internal.core.search.IRestrictedAccessBindingRequest
 public class CancelableNameEnvironment extends SearchableEnvironment {
 	public IProgressMonitor monitor;
 
-	public CancelableNameEnvironment(JavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
+	public CancelableNameEnvironment(JavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaScriptModelException {
 		super(project, owner);
 		this.monitor = monitor;
 	}
-	public CancelableNameEnvironment(JavaProject project, IRestrictedAccessBindingRequestor scope, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
+	public CancelableNameEnvironment(JavaProject project, IRestrictedAccessBindingRequestor scope, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaScriptModelException {
 		super(project,scope, owner);
 		this.monitor = monitor;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -362,8 +362,8 @@ public class Util implements SuffixConstants {
 	 * Returns whether the given resource path matches one of the inclusion/exclusion
 	 * patterns.
 	 * NOTE: should not be asked directly using pkg root pathes
-	 * @see IClasspathEntry#getInclusionPatterns
-	 * @see IClasspathEntry#getExclusionPatterns
+	 * @see IIncludePathEntry#getInclusionPatterns
+	 * @see IIncludePathEntry#getExclusionPatterns
 	 */
 	public final static boolean isExcluded(char[] path, char[][] inclusionPatterns, char[][] exclusionPatterns, boolean isFolderPath) {
 		if (inclusionPatterns == null && exclusionPatterns == null) return false;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.wst.jsdt.internal.core;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 
 /**
  * Element info for PackageFragments.
@@ -43,11 +43,11 @@ Object[] getNonJavaResources(IResource underlyingResource, PackageFragmentRoot r
 		try {
 			this.nonJavaResources =
 				PackageFragmentRootInfo.computeFolderNonJavaResources(
-					(JavaProject)rootHandle.getJavaProject(),
+					(JavaProject)rootHandle.getJavaScriptProject(),
 					(IContainer)underlyingResource,
 					rootHandle.fullInclusionPatternChars(),
 					rootHandle.fullExclusionPatternChars());
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			// root doesn't exist: consider package has no nonJavaResources
 			this.nonJavaResources = NO_NON_JAVA_RESOURCES;
 		}

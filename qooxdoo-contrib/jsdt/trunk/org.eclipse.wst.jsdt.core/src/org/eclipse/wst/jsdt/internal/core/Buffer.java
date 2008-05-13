@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,9 +25,9 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.wst.jsdt.core.BufferChangedEvent;
 import org.eclipse.wst.jsdt.core.IBuffer;
 import org.eclipse.wst.jsdt.core.IBufferChangedListener;
-import org.eclipse.wst.jsdt.core.IJavaModelStatusConstants;
+import org.eclipse.wst.jsdt.core.IJavaScriptModelStatusConstants;
 import org.eclipse.wst.jsdt.core.IOpenable;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.internal.core.util.Util;
 
 /**
@@ -332,7 +332,7 @@ public void replace(int position, int length, String text) {
 /**
  * @see IBuffer
  */
-public void save(IProgressMonitor progress, boolean force) throws JavaModelException {
+public void save(IProgressMonitor progress, boolean force) throws JavaScriptModelException {
 
 	// determine if saving is required
 	if (isReadOnly() || this.file == null) {
@@ -384,9 +384,9 @@ public void save(IProgressMonitor progress, boolean force) throws JavaModelExcep
 			this.file.create(stream, force, null);
 		}
 	} catch (IOException e) {
-		throw new JavaModelException(e, IJavaModelStatusConstants.IO_EXCEPTION);
+		throw new JavaScriptModelException(e, IJavaScriptModelStatusConstants.IO_EXCEPTION);
 	} catch (CoreException e) {
-		throw new JavaModelException(e);
+		throw new JavaScriptModelException(e);
 	}
 
 	// the resource no longer has unsaved changes

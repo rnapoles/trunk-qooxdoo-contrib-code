@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.internal.core;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IPackageDeclaration;
 
 /**
@@ -37,7 +37,7 @@ public String getElementName() {
 	return this.name;
 }
 /**
- * @see IJavaElement
+ * @see IJavaScriptElement
  */
 public int getElementType() {
 	return PACKAGE_DECLARATION;
@@ -51,8 +51,8 @@ protected char getHandleMementoDelimiter() {
 /*
  * @see JavaElement#getPrimaryElement(boolean)
  */
-public IJavaElement getPrimaryElement(boolean checkOwner) {
-	CompilationUnit cu = (CompilationUnit)getAncestor(COMPILATION_UNIT);
+public IJavaScriptElement getPrimaryElement(boolean checkOwner) {
+	CompilationUnit cu = (CompilationUnit)getAncestor(JAVASCRIPT_UNIT);
 	if (checkOwner && cu.isPrimary()) return this;
 	return cu.getPackageDeclaration(this.name);
 }

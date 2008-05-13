@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import java.io.IOException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.core.search.SearchPattern;
 import org.eclipse.wst.jsdt.internal.compiler.util.HashtableOfObject;
 import org.eclipse.wst.jsdt.internal.compiler.util.SimpleSet;
@@ -100,7 +100,7 @@ public void addIndexEntry(char[] category, char[] key, String containerRelativeP
 	this.memoryIndex.addIndexEntry(category, key, containerRelativePath);
 }
 public String containerRelativePath(String documentPath) {
-	int index = documentPath.indexOf(IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR);
+	int index = documentPath.indexOf(IJavaScriptSearchScope.JAR_FILE_ENTRY_SEPARATOR);
 	if (index == -1) {
 
 		IPath containerPath = new Path(this.containerPath);
