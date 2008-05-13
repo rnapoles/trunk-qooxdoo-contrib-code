@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IType;
 import org.eclipse.wst.jsdt.core.Signature;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
@@ -39,8 +39,11 @@ import org.eclipse.wst.jsdt.ui.CodeGeneration;
  * To implement a different kind of a new class wizard page, extend <code>NewTypeWizardPage</code>.
  * </p>
  * 
- * @since 2.0
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public class NewClassWizardPage extends NewTypeWizardPage {
 	
 	private final static String PAGE_NAME= "NewClassWizardPage"; //$NON-NLS-1$
@@ -78,7 +81,7 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 	 * @param selection used to initialize the fields
 	 */
 	public void init(IStructuredSelection selection) {
-		IJavaElement jelem= getInitialJavaElement(selection);
+		IJavaScriptElement jelem= getInitialJavaElement(selection);
 		initContainerPage(jelem);
 		initTypePage(jelem);
 		doStatusUpdate();
@@ -258,7 +261,7 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 		if (doMain) {
 			StringBuffer buf= new StringBuffer();
 			final String lineDelim= "\n"; // OK, since content is formatted afterwards //$NON-NLS-1$
-			String comment= CodeGeneration.getMethodComment(type.getCompilationUnit(), type.getTypeQualifiedName('.'), "main", new String[] {"args"}, new String[0], Signature.createTypeSignature("void", true), null, lineDelim); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String comment= CodeGeneration.getMethodComment(type.getJavaScriptUnit(), type.getTypeQualifiedName('.'), "main", new String[] {"args"}, new String[0], Signature.createTypeSignature("void", true), null, lineDelim); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if (comment != null) {
 				buf.append(comment);
 				buf.append(lineDelim);
@@ -267,7 +270,7 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 			buf.append(imports.addImport("java.lang.String")); //$NON-NLS-1$
 			buf.append("[] args) {"); //$NON-NLS-1$
 			buf.append(lineDelim);
-			final String content= CodeGeneration.getMethodBodyContent(type.getCompilationUnit(), type.getTypeQualifiedName('.'), "main", false, "", lineDelim); //$NON-NLS-1$ //$NON-NLS-2$
+			final String content= CodeGeneration.getMethodBodyContent(type.getJavaScriptUnit(), type.getTypeQualifiedName('.'), "main", false, "", lineDelim); //$NON-NLS-1$ //$NON-NLS-2$
 			if (content != null && content.length() != 0)
 				buf.append(content);
 			buf.append(lineDelim);

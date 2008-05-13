@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,11 +38,11 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.LibrarySuperType;
 import org.eclipse.wst.jsdt.internal.ui.IUIConstants;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.wizards.NewWizardMessages;
 import org.eclipse.wst.jsdt.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.wst.jsdt.internal.ui.wizards.TypedViewerFilter;
@@ -54,7 +54,7 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.JavadocLocationDialog
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.MultipleFolderSelectionDialog;
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.NewVariableEntryDialog;
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.SourceAttachmentDialog;
-import org.eclipse.wst.jsdt.ui.JavaUI;
+import org.eclipse.wst.jsdt.ui.JavaScriptUI;
 
 /**
  * Class that gives access to dialogs used by the Java build path page to configure classpath entries
@@ -71,8 +71,11 @@ import org.eclipse.wst.jsdt.ui.JavaUI;
  * <p>
  * This class is not intended to be instantiated or subclassed by clients.
  * </p>
- * @since 3.0
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public final class BuildPathDialogAccess {
 
 	private BuildPathDialogAccess() {
@@ -85,18 +88,18 @@ public final class BuildPathDialogAccess {
 	 * 
 	 * @param shell The parent shell for the dialog
 	 * @param initialEntry The entry to edit. The kind of the classpath entry must be either
-	 * <code>IClasspathEntry.CPE_LIBRARY</code> or <code>IClasspathEntry.CPE_VARIABLE</code>.
+	 * <code>IIncludePathEntry.CPE_LIBRARY</code> or <code>IIncludePathEntry.CPE_VARIABLE</code>.
 	 * @return Returns the resulting classpath entry containing a potentially modified source attachment path and
 	 * source attachment root. The resulting entry can be used to replace the original entry on the classpath.
 	 * Note that the dialog does not make any changes on the passed entry nor on the classpath that
 	 * contains it.
 	 */
-	public static IClasspathEntry configureSourceAttachment(Shell shell, IClasspathEntry initialEntry) {
+	public static IIncludePathEntry configureSourceAttachment(Shell shell, IIncludePathEntry initialEntry) {
 		if (initialEntry == null) {
 			throw new IllegalArgumentException();
 		}
 		int entryKind= initialEntry.getEntryKind();
-		if (entryKind != IClasspathEntry.CPE_LIBRARY && entryKind != IClasspathEntry.CPE_VARIABLE) {
+		if (entryKind != IIncludePathEntry.CPE_LIBRARY && entryKind != IIncludePathEntry.CPE_VARIABLE) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -112,7 +115,7 @@ public final class BuildPathDialogAccess {
 	 * if the user cancels the dialog. If OK is pressed, an array of length 1 containing the configured URL is
 	 * returned. Note that the configured URL can be <code>null</code> when the user
 	 * wishes to have no URL location specified. The dialog does not apply any changes.
-	 * Use {@link org.eclipse.wst.jsdt.ui.JavaUI} to access and configure
+	 * Use {@link org.eclipse.wst.jsdt.ui.JavaScriptUI} to access and configure
 	 * Javadoc locations.
 	 * 
 	 * @param shell The parent shell for the dialog.
@@ -140,7 +143,7 @@ public final class BuildPathDialogAccess {
 	 * 
 	 * @param shell The parent shell for the dialog.
 	 * @param initialEntry The entry to edit. The kind of the classpath entry must be either
-	 * <code>IClasspathEntry.CPE_LIBRARY</code> or <code>IClasspathEntry.CPE_VARIABLE</code>.
+	 * <code>IIncludePathEntry.CPE_LIBRARY</code> or <code>IIncludePathEntry.CPE_VARIABLE</code>.
 	 * @return Returns the resulting classpath entry containing a potentially modified javadoc location attribute 
 	 * The resulting entry can be used to replace the original entry on the classpath.
 	 * Note that the dialog does not make any changes on the passed entry nor on the classpath that
@@ -148,16 +151,16 @@ public final class BuildPathDialogAccess {
 	 * 
 	 * @since 3.1
 	 */
-	public static IClasspathEntry configureJavadocLocation(Shell shell, IClasspathEntry initialEntry) {
+	public static IIncludePathEntry configureJavadocLocation(Shell shell, IIncludePathEntry initialEntry) {
 		if (initialEntry == null) {
 			throw new IllegalArgumentException();
 		}
 		int entryKind= initialEntry.getEntryKind();
-		if (entryKind != IClasspathEntry.CPE_LIBRARY && entryKind != IClasspathEntry.CPE_VARIABLE) {
+		if (entryKind != IIncludePathEntry.CPE_LIBRARY && entryKind != IIncludePathEntry.CPE_VARIABLE) {
 			throw new IllegalArgumentException();
 		}
 		
-		URL location= JavaUI.getLibraryJavadocLocation(initialEntry);
+		URL location= JavaScriptUI.getLibraryJSdocLocation(initialEntry);
 		JavadocLocationDialog dialog=  new JavadocLocationDialog(shell, initialEntry.getPath().toString(), location);
 		if (dialog.open() == Window.OK) {
 			CPListElement element= CPListElement.createFromExisting(initialEntry, null);
@@ -169,7 +172,7 @@ public final class BuildPathDialogAccess {
 	}
 	
 	/**
-	 * Shows the UI for configuring a variable classpath entry. See {@link IClasspathEntry#CPE_VARIABLE} for
+	 * Shows the UI for configuring a variable classpath entry. See {@link IIncludePathEntry#CPE_VARIABLE} for
 	 * details about variable classpath entries.
 	 * The dialog returns the configured classpath entry path or <code>null</code> if the dialog has
 	 * been canceled. The dialog does not apply any changes.
@@ -195,7 +198,7 @@ public final class BuildPathDialogAccess {
 	}
 	
 	/**
-	 * Shows the UI for selecting new variable classpath entries. See {@link IClasspathEntry#CPE_VARIABLE} for
+	 * Shows the UI for selecting new variable classpath entries. See {@link IIncludePathEntry#CPE_VARIABLE} for
 	 * details about variable classpath entries.
 	 * The dialog returns an array of the selected variable entries or <code>null</code> if the dialog has
 	 * been canceled. The dialog does not apply any changes.
@@ -218,7 +221,7 @@ public final class BuildPathDialogAccess {
 	}
 	
 	/**
-	 * Shows the UI to configure a classpath container classpath entry. See {@link IClasspathEntry#CPE_CONTAINER} for
+	 * Shows the UI to configure a classpath container classpath entry. See {@link IIncludePathEntry#CPE_CONTAINER} for
 	 * details about container classpath entries.
 	 * The dialog returns the configured classpath entry or <code>null</code> if the dialog has
 	 * been canceled. The dialog does not apply any changes.
@@ -233,14 +236,14 @@ public final class BuildPathDialogAccess {
 	 * @return Returns the configured classpath container entry or <code>null</code> if the dialog has
 	 * been canceled by the user.
 	 */
-	public static IClasspathEntry configureContainerEntry(Shell shell, IClasspathEntry initialEntry, IJavaProject project, IClasspathEntry[] currentClasspath) {
+	public static IIncludePathEntry configureContainerEntry(Shell shell, IIncludePathEntry initialEntry, IJavaScriptProject project, IIncludePathEntry[] currentClasspath) {
 		if (initialEntry == null || currentClasspath == null) {
 			throw new IllegalArgumentException();
 		}
 		
 		JsGlobalScopeContainerWizard wizard= new JsGlobalScopeContainerWizard(initialEntry, project, currentClasspath);
 		if (JsGlobalScopeContainerWizard.openWizard(shell, wizard) == Window.OK) {
-			IClasspathEntry[] created= wizard.getNewEntries();
+			IIncludePathEntry[] created= wizard.getNewEntries();
 			if (created != null && created.length == 1) {
 				return created[0];
 			}
@@ -249,7 +252,7 @@ public final class BuildPathDialogAccess {
 	}
 	
 	/**
-	 * Shows the UI to choose new classpath container classpath entries. See {@link IClasspathEntry#CPE_CONTAINER} for
+	 * Shows the UI to choose new classpath container classpath entries. See {@link IIncludePathEntry#CPE_CONTAINER} for
 	 * details about container classpath entries.
 	 * The dialog returns the selected classpath entries or <code>null</code> if the dialog has
 	 * been canceled. The dialog does not apply any changes.
@@ -264,12 +267,12 @@ public final class BuildPathDialogAccess {
 	 * @return Returns the selected classpath container entries or <code>null</code> if the dialog has
 	 * been canceled by the user.
 	 */
-	public static IClasspathEntry[] chooseContainerEntries(Shell shell, IJavaProject project, IClasspathEntry[] currentClasspath) {
+	public static IIncludePathEntry[] chooseContainerEntries(Shell shell, IJavaScriptProject project, IIncludePathEntry[] currentClasspath) {
 		if (currentClasspath == null) {
 			throw new IllegalArgumentException();
 		}
 		
-		JsGlobalScopeContainerWizard wizard= new JsGlobalScopeContainerWizard((IClasspathEntry) null, project, currentClasspath);
+		JsGlobalScopeContainerWizard wizard= new JsGlobalScopeContainerWizard((IIncludePathEntry) null, project, currentClasspath);
 		if (JsGlobalScopeContainerWizard.openWizard(shell, wizard) == Window.OK) {
 			return wizard.getNewEntries();
 		}
@@ -381,7 +384,7 @@ public final class BuildPathDialogAccess {
 	
 	
 	
-	public static LibrarySuperType chooseSuperType(Shell shell, CPListElement[] cpEntries, LibrarySuperType initialSelection, IJavaProject project) {
+	public static LibrarySuperType chooseSuperType(Shell shell, CPListElement[] cpEntries, LibrarySuperType initialSelection, IJavaScriptProject project) {
 		if (cpEntries == null) {
 			throw new IllegalArgumentException();
 		}
@@ -457,13 +460,13 @@ public final class BuildPathDialogAccess {
 			
 			public IStatus validate(Object[] selection) {
 				if(selection==null || selection.length!=1) { 
-					return new Status(IStatus.ERROR, JavaPlugin.getPluginId(), IStatus.ERROR, null, null);
+					return new Status(IStatus.ERROR, JavaScriptPlugin.getPluginId(), IStatus.ERROR, null, null);
 				}else if( ! (selection[0]  instanceof LibrarySuperType)     ){
-					return new Status(IStatus.ERROR, JavaPlugin.getPluginId(), IStatus.ERROR,null, null);
+					return new Status(IStatus.ERROR, JavaScriptPlugin.getPluginId(), IStatus.ERROR,null, null);
 				}else if(((LibrarySuperType)selection[0]).isParent()) {
-					return new Status(IStatus.ERROR, JavaPlugin.getPluginId(), IStatus.ERROR, null, null);
+					return new Status(IStatus.ERROR, JavaScriptPlugin.getPluginId(), IStatus.ERROR, null, null);
 				}
-				return new Status(IStatus.OK, JavaPlugin.getPluginId(), IStatus.OK, "", null); //$NON-NLS-1$
+				return new Status(IStatus.OK, JavaScriptPlugin.getPluginId(), IStatus.OK, "", null); //$NON-NLS-1$
 			}
 			
 		}
@@ -527,7 +530,7 @@ public final class BuildPathDialogAccess {
 		if (res == null) {
 			return null;
 		}
-		JavaPlugin.getDefault().getDialogSettings().put(IUIConstants.DIALOGSTORE_LASTEXTJAR, dialog.getFilterPath());
+		JavaScriptPlugin.getDefault().getDialogSettings().put(IUIConstants.DIALOGSTORE_LASTEXTJAR, dialog.getFilterPath());
 
 		return Path.fromOSString(res).makeAbsolute();	
 	}
@@ -542,7 +545,7 @@ public final class BuildPathDialogAccess {
 	 * been canceled by the user.
 	 */
 	public static IPath[] chooseExternalJAREntries(Shell shell) {
-		String lastUsedPath= JavaPlugin.getDefault().getDialogSettings().get(IUIConstants.DIALOGSTORE_LASTEXTJAR);
+		String lastUsedPath= JavaScriptPlugin.getDefault().getDialogSettings().get(IUIConstants.DIALOGSTORE_LASTEXTJAR);
 		if (lastUsedPath == null) {
 			lastUsedPath= ""; //$NON-NLS-1$
 		}
@@ -563,7 +566,7 @@ public final class BuildPathDialogAccess {
 		for (int i= 0; i < nChosen; i++) {
 			elems[i]= filterPath.append(fileNames[i]).makeAbsolute();	
 		}
-		JavaPlugin.getDefault().getDialogSettings().put(IUIConstants.DIALOGSTORE_LASTEXTJAR, dialog.getFilterPath());
+		JavaScriptPlugin.getDefault().getDialogSettings().put(IUIConstants.DIALOGSTORE_LASTEXTJAR, dialog.getFilterPath());
 		
 		return elems;
 	}

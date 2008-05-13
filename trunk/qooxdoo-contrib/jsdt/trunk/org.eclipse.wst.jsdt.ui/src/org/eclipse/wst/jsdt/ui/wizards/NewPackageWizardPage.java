@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,15 +31,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.IPackageFragment;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
-import org.eclipse.wst.jsdt.core.JavaConventions;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptConventions;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.corext.util.Messages;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
-import org.eclipse.wst.jsdt.internal.ui.JavaPlugin;
+import org.eclipse.wst.jsdt.internal.ui.JavaScriptPlugin;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.wst.jsdt.internal.ui.dialogs.TextFieldNavigationHandler;
 import org.eclipse.wst.jsdt.internal.ui.wizards.NewWizardMessages;
@@ -56,8 +56,11 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.dialogfields.StringDialogField;
  * To implement a different kind of a new package wizard page, extend <code>NewContainerWizardPage</code>.
  * </p>
  * 
- * @since 2.0
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public class NewPackageWizardPage extends NewContainerWizardPage {
 	
 	private static final String PAGE_NAME= "NewPackageWizardPage"; //$NON-NLS-1$
@@ -103,12 +106,12 @@ public class NewPackageWizardPage extends NewContainerWizardPage {
 	 * @param selection used to initialize the fields
 	 */
 	public void init(IStructuredSelection selection) {
-		IJavaElement jelem= getInitialJavaElement(selection);	
+		IJavaScriptElement jelem= getInitialJavaElement(selection);	
 		
 		initContainerPage(jelem);
 		String pName= ""; //$NON-NLS-1$
 		if (jelem != null) {
-			IPackageFragment pf= (IPackageFragment) jelem.getAncestor(IJavaElement.PACKAGE_FRAGMENT);
+			IPackageFragment pf= (IPackageFragment) jelem.getAncestor(IJavaScriptElement.PACKAGE_FRAGMENT);
 			if (pf != null && !pf.isDefaultPackage())
 				pName= pf.getElementName();
 		}
@@ -205,13 +208,13 @@ public class NewPackageWizardPage extends NewContainerWizardPage {
 	// ----------- validation ----------
 	
 	private IStatus validatePackageName(String text) {
-		IJavaProject project= getJavaProject();
+		IJavaScriptProject project= getJavaProject();
 		if (project == null || !project.exists()) {
-			return JavaConventions.validatePackageName(text, JavaCore.VERSION_1_3, JavaCore.VERSION_1_3);
+			return JavaScriptConventions.validatePackageName(text, JavaScriptCore.VERSION_1_3, JavaScriptCore.VERSION_1_3);
 		}
-		String sourceLevel= project.getOption(JavaCore.COMPILER_SOURCE, true);
-		String compliance= project.getOption(JavaCore.COMPILER_COMPLIANCE, true);
-		return JavaConventions.validatePackageName(text, sourceLevel, compliance);
+		String sourceLevel= project.getOption(JavaScriptCore.COMPILER_SOURCE, true);
+		String compliance= project.getOption(JavaScriptCore.COMPILER_COMPLIANCE, true);
+		return JavaScriptConventions.validatePackageName(text, sourceLevel, compliance);
 	}
 	
 	/*
@@ -234,11 +237,11 @@ public class NewPackageWizardPage extends NewContainerWizardPage {
 		}			
 
 		IPackageFragmentRoot root= getPackageFragmentRoot();
-		if (root != null && root.getJavaProject().exists()) {
+		if (root != null && root.getJavaScriptProject().exists()) {
 			IPackageFragment pack= root.getPackageFragment(packName);
 			try {
 				IPath rootPath= root.getPath();
-				IPath outputPath= root.getJavaProject().getOutputLocation();
+				IPath outputPath= root.getJavaScriptProject().getOutputLocation();
 				if (rootPath.isPrefixOf(outputPath) && !rootPath.equals(outputPath)) {
 					// if the bin folder is inside of our root, don't allow to name a package
 					// like the bin folder
@@ -264,7 +267,7 @@ public class NewPackageWizardPage extends NewContainerWizardPage {
 					}
 				}
 			} catch (CoreException e) {
-				JavaPlugin.log(e);
+				JavaScriptPlugin.log(e);
 			}
 		}
 		return status;
