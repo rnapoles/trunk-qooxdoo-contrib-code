@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,12 +17,17 @@ import java.net.URL;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 /**
  * Abstract implementation of a VM install.
  * <p>
  * Clients implementing VM installs must subclass this class.
  * </p>
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class AbstractVMInstall implements IVMInstall, IVMInstall2, IVMInstall3 {
 
@@ -328,9 +333,9 @@ public abstract class AbstractVMInstall implements IVMInstall, IVMInstall2, IVMI
 //				boolean hasXMLSupport = false;
 //				if (javaVersion != null) {
 //					hasXMLSupport = true;
-//					if (javaVersion.startsWith(JavaCore.VERSION_1_1) ||
-//							javaVersion.startsWith(JavaCore.VERSION_1_2) ||
-//							javaVersion.startsWith(JavaCore.VERSION_1_3)) {
+//					if (javaVersion.startsWith(JavaScriptCore.VERSION_1_1) ||
+//							javaVersion.startsWith(JavaScriptCore.VERSION_1_2) ||
+//							javaVersion.startsWith(JavaScriptCore.VERSION_1_3)) {
 //						hasXMLSupport = false;
 //					}
 //				}
@@ -461,7 +466,7 @@ public abstract class AbstractVMInstall implements IVMInstall, IVMInstall2, IVMI
 	 * @since 3.2
 	 */
 	protected void abort(String message, Throwable exception, int code) throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, JavaCore.PLUGIN_ID, code, message, exception));
+		throw new CoreException(new Status(IStatus.ERROR, JavaScriptCore.PLUGIN_ID, code, message, exception));
 	}	
     
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -13,8 +13,8 @@ package org.eclipse.wst.jsdt.launching;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 
 /**
  * Resolves variable and/or container runtime classpath entries in
@@ -55,7 +55,11 @@ import org.eclipse.wst.jsdt.core.IJavaProject;
  * <p>
  * Clients may implement this interface.
  * </p>
- * @since 2.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface IRuntimeClasspathEntryResolver {
 	
@@ -83,7 +87,7 @@ public interface IRuntimeClasspathEntryResolver {
 	 * @return resolved entries (zero or more)
 	 * @exception CoreException if unable to resolve the entry  
 	 */
-	public IRuntimeClasspathEntry[] resolveRuntimeClasspathEntry(IRuntimeClasspathEntry entry, IJavaProject project) throws CoreException;	
+	public IRuntimeClasspathEntry[] resolveRuntimeClasspathEntry(IRuntimeClasspathEntry entry, IJavaScriptProject project) throws CoreException;	
 	
 	/**
 	 * Returns a VM install associated with the given classpath entry,
@@ -93,5 +97,5 @@ public interface IRuntimeClasspathEntryResolver {
 	 * @return vm install associated with entry or <code>null</code> if none
 	 * @exception CoreException if unable to resolve a VM
 	 */
-	public IVMInstall resolveVMInstall(IClasspathEntry entry) throws CoreException;
+	public IVMInstall resolveVMInstall(IIncludePathEntry entry) throws CoreException;
 }

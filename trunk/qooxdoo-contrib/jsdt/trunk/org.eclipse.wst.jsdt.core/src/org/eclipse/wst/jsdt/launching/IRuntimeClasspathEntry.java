@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -14,8 +14,8 @@ package org.eclipse.wst.jsdt.launching;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 
 /**
  * Represents an entry on a runtime classpath. A runtime classpath entry
@@ -44,6 +44,11 @@ import org.eclipse.wst.jsdt.core.IJavaProject;
  * </p>
  * @since 2.0
  * @see org.eclipse.jdt.launching.IRuntimeClasspathEntry2
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface IRuntimeClasspathEntry {
 	
@@ -155,7 +160,7 @@ public interface IRuntimeClasspathEntry {
 	 * Since 3.0, this method may return <code>null</code>.
 	 * </p>
 	 * @return the path associated with this entry, or <code>null</code>
-	 * @see org.eclipse.jdt.core.IClasspathEntry#getPath()
+	 * @see org.eclipse.IIncludePathEntry.core.IClasspathEntry#getPath()
 	 */
 	public IPath getPath();
 		
@@ -311,7 +316,7 @@ public interface IRuntimeClasspathEntry {
 	 *  or <code>null</code>
 	 * @since 2.1
 	 */
-	public IClasspathEntry getClasspathEntry();
+	public IIncludePathEntry getClasspathEntry();
 	
 	/**
 	 * Returns the Java project associated with this runtime classpath entry
@@ -323,5 +328,5 @@ public interface IRuntimeClasspathEntry {
 	 * or <code>null</code> if none
 	 * @since 3.0
 	 */
-	public IJavaProject getJavaProject();
+	public IJavaScriptProject getJavaProject();
 }
