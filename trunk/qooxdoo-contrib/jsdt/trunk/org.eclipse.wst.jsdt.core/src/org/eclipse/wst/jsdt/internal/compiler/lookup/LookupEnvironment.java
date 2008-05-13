@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
 import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.ast.Wildcard;
@@ -29,6 +29,8 @@ import org.eclipse.wst.jsdt.internal.compiler.impl.ITypeRequestor;
 import org.eclipse.wst.jsdt.internal.compiler.problem.ProblemReporter;
 import org.eclipse.wst.jsdt.internal.compiler.util.HashtableOfPackage;
 import org.eclipse.wst.jsdt.internal.compiler.util.SimpleLookupTable;
+import org.eclipse.wst.jsdt.internal.oaametadata.ClassData;
+import org.eclipse.wst.jsdt.internal.oaametadata.LibraryAPIs;
 
 public class LookupEnvironment implements ProblemReasons, TypeConstants {
 
@@ -119,7 +121,19 @@ public ReferenceBinding askForType(char[][] compoundName) {
 	} else if (answer.isSourceType())
 		// the type was found as a source model
 		typeRequestor.accept(answer.getSourceTypes(), computePackageFrom(compoundName), answer.getAccessRestriction());
+	else if (answer.isMetaData())
+		{
+			LibraryAPIs metadata= answer.getLibraryMetadata();
+			if (!acceptedCompilationUnits.contains(metadata.fileName))
+			{
+				// the type was found as a .js file, try to build it then search the cache
+				acceptedCompilationUnits.add(metadata.fileName);
+				typeRequestor.accept(metadata);
+			}
+			
+		}
 
+	
 	return getCachedType(compoundName);
 }
 /* Ask the oracle for a type named name in the packageBinding.
@@ -200,6 +214,17 @@ Binding askForBinding(PackageBinding packageBinding, char[] name, int mask) {
 	} else if (answer.isSourceType())
 		// the type was found as a source model
 		typeRequestor.accept(answer.getSourceTypes(), packageBinding, answer.getAccessRestriction());
+	else if (answer.isMetaData())
+	{
+		LibraryAPIs metadata= answer.getLibraryMetadata();
+		if (!acceptedCompilationUnits.contains(metadata.fileName))
+		{
+			// the type was found as a .js file, try to build it then search the cache
+			acceptedCompilationUnits.add(metadata.fileName);
+			typeRequestor.accept(metadata);
+		}
+		
+	}
 
 	return packageBinding.getBinding0(name,mask);
 }
@@ -485,7 +510,7 @@ public ReferenceBinding convertToParameterizedType(ReferenceBinding originalType
 }
 
 public TypeBinding convertToRawType(TypeBinding type) {
-	if (JavaCore.IS_ECMASCRIPT4)
+	if (JavaScriptCore.IS_ECMASCRIPT4)
 	{
 		int dimension;
 		TypeBinding originalType;
@@ -1374,4 +1399,39 @@ void updateCaches(UnresolvedReferenceBinding unresolvedType, ReferenceBinding re
 		}
 	}
 }
+
+public void buildTypeBindings(LibraryAPIs libraryMetaData) {
+
+	ClassData[] classes = libraryMetaData.classes;
+	PackageBinding packageBinding = this.defaultPackage;
+	int typeLength=(classes!=null ? classes.length:0);
+	int count = 0;
+
+	LibraryAPIsScope scope=new LibraryAPIsScope(libraryMetaData,this);
+	SourceTypeBinding[] topLevelTypes = new SourceTypeBinding[typeLength];
+
+		for (int i = 0; i < typeLength; i++) {
+			ClassData clazz=classes[i];
+			char[][] className = CharOperation.arrayConcat(packageBinding.compoundName,clazz.type.toCharArray());
+
+			SourceTypeBinding binding = new MetatdataTypeBinding(className, packageBinding, clazz,  scope) ;
+			this.defaultPackage.addType(binding);
+			binding.fPackage.addType(binding);
+			topLevelTypes[count++] = binding;
+
+		}
+		if (count != topLevelTypes.length)
+			System.arraycopy(topLevelTypes, 0, topLevelTypes = new SourceTypeBinding[count], 0, count);
+		
+		char [] fullFileName=libraryMetaData.fileName.toCharArray();
+
+		LibraryAPIsBinding libraryAPIsBinding=new LibraryAPIsBinding(null,defaultPackage,fullFileName);
+
+		if (packageBinding!=this.defaultPackage)
+			packageBinding.addBinding(libraryAPIsBinding, libraryAPIsBinding.shortReadableName(), Binding.COMPILATION_UNIT);
+
+
+}
+
+
 }

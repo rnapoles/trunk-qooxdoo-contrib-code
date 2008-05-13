@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package org.eclipse.wst.jsdt.internal.compiler.lookup;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
@@ -1024,7 +1024,7 @@ public boolean isThrowable() {
  * @see org.eclipse.wst.jsdt.internal.compiler.lookup.TypeBinding#isUncheckedException(boolean)
  */
 public boolean isUncheckedException(boolean includeSupertype) {
-	if (JavaCore.IS_ECMASCRIPT4)	// no checked exceptions for now
+	if (JavaScriptCore.IS_ECMASCRIPT4)	// no checked exceptions for now
 	{
 	switch (this.id) {
 			case TypeIds.T_JavaLangError :
