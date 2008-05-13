@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,15 +12,15 @@ package org.eclipse.wst.jsdt.internal.core.search.matching;
 
 //import java.util.HashSet;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.internal.compiler.util.SimpleSet;
 
 public class DeclarationOfReferencedMethodsPattern extends MethodPattern {
 
-protected IJavaElement enclosingElement;
+protected IJavaScriptElement enclosingElement;
 protected SimpleSet knownMethods;
 
-public DeclarationOfReferencedMethodsPattern(IJavaElement enclosingElement) {
+public DeclarationOfReferencedMethodsPattern(IJavaScriptElement enclosingElement) {
 	super(false, true, false,null, null, null, null, null, null, null, null, R_PATTERN_MATCH);
 
 	this.enclosingElement = enclosingElement;

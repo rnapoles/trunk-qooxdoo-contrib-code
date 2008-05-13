@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.search.SearchDocument;
 import org.eclipse.wst.jsdt.internal.compiler.SourceElementParser;
 import org.eclipse.wst.jsdt.internal.compiler.util.SuffixConstants;
@@ -22,6 +22,9 @@ import org.eclipse.wst.jsdt.internal.core.BasicCompilationUnit;
 import org.eclipse.wst.jsdt.internal.core.JavaModelManager;
 import org.eclipse.wst.jsdt.internal.core.search.JavaSearchDocument;
 import org.eclipse.wst.jsdt.internal.core.search.processing.JobManager;
+import org.eclipse.wst.jsdt.internal.oaametadata.LibraryAPIs;
+import org.eclipse.wst.jsdt.internal.oaametadata.MetadataReader;
+import org.eclipse.wst.jsdt.internal.oaametadata.MetadataSourceElementNotifier;
 
 /**
  * A SourceIndexer indexes java files using a java parser. The following items are indexed:
@@ -49,7 +52,7 @@ public class SourceIndexer extends AbstractIndexer implements SuffixConstants {
 		if (parser == null) {
 			IPath path = new Path(documentPath);
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
-			parser = JavaModelManager.getJavaModelManager().indexManager.getSourceElementParser(JavaCore.create(project), requestor);
+			parser = JavaModelManager.getJavaModelManager().indexManager.getSourceElementParser(JavaScriptCore.create(project), requestor);
 		} else {
 			parser.requestor = requestor;
 		}
@@ -80,4 +83,33 @@ public class SourceIndexer extends AbstractIndexer implements SuffixConstants {
 			}
 		}
 	}
+	public void indexMetadata() {
+		// Create a new Parser
+		SourceIndexerRequestor requestor = new SourceIndexerRequestor(this);
+		String documentPath = this.document.getPath();
+
+		
+		// Launch the parser
+		char[] source = null;
+		char[] name = null;
+		try {
+			source = document.getCharContents();
+			name = documentPath.toCharArray();
+		} catch(Exception e){
+			// ignore
+		}
+		if (source == null || name == null) return; // could not retrieve document info (e.g. resource was discarded)
+		String pkgName=((JavaSearchDocument)document).getPackageName();
+		char [][]packageName=null;
+		if (pkgName!=null)
+		{
+			packageName=new char[1][];
+			packageName[0]=pkgName.toCharArray();
+		}
+		
+		LibraryAPIs apis = MetadataReader.readAPIsFromString(new String(source));
+		new MetadataSourceElementNotifier(apis,requestor).notifyRequestor();
+		
+	}
+
 }

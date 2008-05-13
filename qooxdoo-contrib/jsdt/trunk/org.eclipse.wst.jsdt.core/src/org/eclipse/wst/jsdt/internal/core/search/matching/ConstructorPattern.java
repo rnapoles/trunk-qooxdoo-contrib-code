@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@ import java.io.IOException;
 
 import org.eclipse.wst.jsdt.core.BindingKey;
 import org.eclipse.wst.jsdt.core.Flags;
-import org.eclipse.wst.jsdt.core.IMethod;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IFunction;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
 import org.eclipse.wst.jsdt.core.search.SearchPattern;
 import org.eclipse.wst.jsdt.internal.core.index.EntryResult;
@@ -106,7 +106,7 @@ public ConstructorPattern(
 	char[][] parameterQualifications,
 	char[][] parameterSimpleNames,
 	String[] parameterSignatures,
-	IMethod method,
+	IFunction method,
 //	boolean varargs,
 	int matchRule) {
 
@@ -121,7 +121,7 @@ public ConstructorPattern(
 	// Set flags
 	try {
 		this.varargs = (method.getFlags() & Flags.AccVarargs) != 0;
-	} catch (JavaModelException e) {
+	} catch (JavaScriptModelException e) {
 		// do nothing
 	}
 

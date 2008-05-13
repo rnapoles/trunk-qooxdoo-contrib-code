@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.wst.jsdt.internal.core.search.matching;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.jsdt.core.IField;
-import org.eclipse.wst.jsdt.core.IMethod;
+import org.eclipse.wst.jsdt.core.IFunction;
 import org.eclipse.wst.jsdt.core.Signature;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
 import org.eclipse.wst.jsdt.core.search.SearchMatch;
@@ -87,7 +87,7 @@ public void locateMatches(MatchLocator locator, ClassFile classFile, IBinaryType
 					if (locator.patternLocator.resolveLevel(method) == PatternLocator.ACCURATE_MATCH) {
 						char[] methodSignature = method.genericSignature();
 						if (methodSignature == null) methodSignature = method.signature();
-						IMethod methodHandle = binaryType.getMethod(
+						IFunction methodHandle = binaryType.getFunction(
 							new String(method.isConstructor() ? binding.compoundName[binding.compoundName.length-1] : method.selector),
 							CharOperation.toStrings(Signature.getParameterTypes(convertClassFileFormat(methodSignature))));
 						locator.reportBinaryMemberDeclaration(null, methodHandle, method, info, SearchMatch.A_ACCURATE);
@@ -129,7 +129,7 @@ public void locateMatches(MatchLocator locator, ClassFile classFile, IBinaryType
 				}
 				String selector = new String(name);
 				String[] parameterTypes = CharOperation.toStrings(Signature.getParameterTypes(convertClassFileFormat(method.getMethodDescriptor())));
-				IMethod methodHandle = binaryType.getMethod(selector, parameterTypes);
+				IFunction methodHandle = binaryType.getFunction(selector, parameterTypes);
 				methodHandle = new ResolvedBinaryMethod(binaryType, selector, parameterTypes, methodHandle.getKey());
 				locator.reportBinaryMemberDeclaration(null, methodHandle, null, info, accuracy);
 			}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,7 +21,7 @@ import org.eclipse.wst.jsdt.internal.compiler.env.AccessRestriction;
  * 	char[] typeName,
  * 	int typeMatchRule,
  * 	int searchFor,
- * 	org.eclipse.wst.jsdt.core.search.IJavaSearchScope scope,
+ * 	org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope scope,
  * 	IRestrictedAccessTypeRequestor nameRequestor,
  * 	int waitingPolicy,
  * 	org.eclipse.core.runtime.IProgressMonitor monitor) }.
@@ -31,7 +31,7 @@ import org.eclipse.wst.jsdt.internal.compiler.env.AccessRestriction;
  * 	char[] typeName,
  * 	int matchRule,
  * 	int searchFor,
- * 	org.eclipse.wst.jsdt.core.search.IJavaSearchScope scope,
+ * 	org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope scope,
  * 	TypeNameRequestor nameRequestor,
  * 	int waitingPolicy,
  * 	org.eclipse.core.runtime.IProgressMonitor monitor) }.

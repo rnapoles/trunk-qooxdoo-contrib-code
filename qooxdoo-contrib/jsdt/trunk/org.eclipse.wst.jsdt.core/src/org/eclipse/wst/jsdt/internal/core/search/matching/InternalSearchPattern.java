@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 import org.eclipse.wst.jsdt.core.search.SearchParticipant;
 import org.eclipse.wst.jsdt.core.search.SearchPattern;
 import org.eclipse.wst.jsdt.internal.compiler.env.AccessRuleSet;
@@ -35,12 +35,12 @@ public abstract class InternalSearchPattern {
 	/**
 	 *  The focus element (used for reference patterns)
 	 */
-	IJavaElement focus;
+	IJavaScriptElement focus;
 
 	int kind;
 	boolean mustResolve = true;
 
-	void acceptMatch(String relativePath, String containerPath, SearchPattern pattern, IndexQueryRequestor requestor, SearchParticipant participant, IJavaSearchScope scope) {
+	void acceptMatch(String relativePath, String containerPath, SearchPattern pattern, IndexQueryRequestor requestor, SearchParticipant participant, IJavaScriptSearchScope scope) {
 
 		if (scope instanceof JavaSearchScope) {
 			JavaSearchScope javaSearchScope = (JavaSearchScope) scope;
@@ -74,7 +74,7 @@ public abstract class InternalSearchPattern {
 			}
 		}
 
-		String separator = Util.isArchiveFileName(containerPath) ? IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR : "/"; //$NON-NLS-1$
+		String separator = Util.isArchiveFileName(containerPath) ? IJavaScriptSearchScope.JAR_FILE_ENTRY_SEPARATOR : "/"; //$NON-NLS-1$
 		StringBuffer buffer = new StringBuffer(containerPath.length() + separator.length() + relativePath.length());
 		buffer.append(containerPath);
 		buffer.append(separator);
@@ -84,7 +84,7 @@ public abstract class InternalSearchPattern {
 	/**
 	 * Query a given index for matching entries. Assumes the sender has opened the index and will close when finished.
 	 */
-	public void findIndexMatches(Index index, IndexQueryRequestor requestor, SearchParticipant participant, IJavaSearchScope scope, IProgressMonitor monitor) throws IOException {
+	public void findIndexMatches(Index index, IndexQueryRequestor requestor, SearchParticipant participant, IJavaScriptSearchScope scope, IProgressMonitor monitor) throws IOException {
 		if (monitor != null && monitor.isCanceled()) throw new OperationCanceledException();
 		try {
 			index.startQuery();

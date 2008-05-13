@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.compiler.SourceElementParser;
 import org.eclipse.wst.jsdt.internal.core.index.Index;
 import org.eclipse.wst.jsdt.internal.core.search.processing.JobManager;
@@ -55,7 +55,7 @@ class AddFolderToIndex extends IndexRequest {
 
 			final IPath container = this.containerPath;
 			final IndexManager indexManager = this.manager;
-			final SourceElementParser parser = indexManager.getSourceElementParser(JavaCore.create(this.project), null/*requestor will be set by indexer*/);
+			final SourceElementParser parser = indexManager.getSourceElementParser(JavaScriptCore.create(this.project), null/*requestor will be set by indexer*/);
 			if (this.exclusionPatterns == null && this.inclusionPatterns == null) {
 				folder.accept(
 					new IResourceProxyVisitor() {
