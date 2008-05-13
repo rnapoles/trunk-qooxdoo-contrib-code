@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,11 @@ import org.eclipse.wst.jsdt.internal.compiler.util.Util;
 
 /**
  * Helper class to provide String manipulation functions dealing with indentations.
- *
- * @since 3.2
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public final class IndentManipulation {
 
@@ -380,7 +383,7 @@ public final class IndentManipulation {
 
 	/**
 	 * Returns the tab width as configured in the given map.
-	 * <p>Use {@link org.eclipse.wst.jsdt.core.IJavaProject#getOptions(boolean)} to get the most current project options.</p>
+	 * <p>Use {@link org.eclipse.wst.jsdt.core.IJavaScriptProject#getOptions(boolean)} to get the most current project options.</p>
 	 *
 	 * @param options the map to get the formatter settings from.
 	 *
@@ -396,7 +399,7 @@ public final class IndentManipulation {
 
 	/**
 	 * Returns the tab width as configured in the given map.
-	 * <p>Use {@link org.eclipse.wst.jsdt.core.IJavaProject#getOptions(boolean)} to get the most current project options.</p>
+	 * <p>Use {@link org.eclipse.wst.jsdt.core.IJavaScriptProject#getOptions(boolean)} to get the most current project options.</p>
 	 *
 	 * @param options the map to get the formatter settings from
 	 *

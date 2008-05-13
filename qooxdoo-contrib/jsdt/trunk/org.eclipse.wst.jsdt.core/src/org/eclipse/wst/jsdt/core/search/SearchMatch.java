@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.wst.jsdt.core.search;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.internal.core.JavaElement;
 
 /**
@@ -25,8 +25,12 @@ import org.eclipse.wst.jsdt.internal.core.JavaElement;
  * This class is intended to be instantiated and subclassed by clients.
  * </p>
  *
- * @see SearchEngine#search(SearchPattern, SearchParticipant[], IJavaSearchScope, SearchRequestor, org.eclipse.core.runtime.IProgressMonitor)
- * @since 3.0
+ * @see SearchEngine#search(SearchPattern, SearchParticipant[], IJavaScriptSearchScope, SearchRequestor, org.eclipse.core.runtime.IProgressMonitor)
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class SearchMatch {
 
@@ -81,7 +85,7 @@ public class SearchMatch {
 	 * @param resource the resource of the element, or <code>null</code> if none
 	 */
 	public SearchMatch(
-			IJavaElement element,
+			IJavaScriptElement element,
 			int accuracy,
 			int offset,
 			int length,

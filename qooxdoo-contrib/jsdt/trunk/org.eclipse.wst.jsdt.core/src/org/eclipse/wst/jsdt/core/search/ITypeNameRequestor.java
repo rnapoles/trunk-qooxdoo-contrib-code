@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,11 @@ package org.eclipse.wst.jsdt.core.search;
  * This interface may be implemented by clients.
  * </p>
  * @deprecated Use abstract class {@link TypeNameRequestor} instead.
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface ITypeNameRequestor {
 /**
@@ -34,7 +39,7 @@ public interface ITypeNameRequestor {
  * @param path the full path to the resource containing the class. If the resource is a .class file
  *          or a source file, this is the full path in the workspace to this resource. If the
  *          resource is an archive (that is, a .zip or .jar file), the path is composed of 2 paths separated
- *		 	 by <code>IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR</code>:
+ *		 	 by <code>IJavaScriptSearchScope.JAR_FILE_ENTRY_SEPARATOR</code>:
  *			 the first path is the full OS path to the archive (if it is an external archive),
  *			 or the workspace relative <code>IPath</code> to the archive (if it is an internal archive),
  * 		 the second path is the path to the resource inside the archive.
@@ -53,7 +58,7 @@ void acceptClass(char[] packageName, char[] simpleTypeName, char[][] enclosingTy
  * @param path the full path to the resource containing the interface. If the resource is a .class file
  *          or a source file, this is the full path in the workspace to this resource. If the
  *          resource is an archive (that is, a .zip or .jar file), the path is composed of 2 paths separated
- *		 	 by <code>IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR</code>:
+ *		 	 by <code>IJavaScriptSearchScope.JAR_FILE_ENTRY_SEPARATOR</code>:
  *			 the first path is the full OS path to the archive (if it is an external archive),
  *			 or the workspace relative <code>IPath</code> to the archive (if it is an internal archive),
  * 		 the second path is the path to the resource inside the archive.
