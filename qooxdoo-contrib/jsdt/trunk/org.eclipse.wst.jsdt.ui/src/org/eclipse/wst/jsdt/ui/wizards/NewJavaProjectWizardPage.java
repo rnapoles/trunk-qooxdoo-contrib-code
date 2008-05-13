@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,9 +32,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.internal.ui.IJavaHelpContextIds;
 import org.eclipse.wst.jsdt.internal.ui.preferences.NewJavaProjectPreferencePage;
 import org.eclipse.wst.jsdt.internal.ui.util.BusyIndicatorRunnableContext;
@@ -54,6 +54,11 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.BuildPathsBlock;
  * <p>
  * Clients may instantiate or subclass.
  * </p>
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
 public class NewJavaProjectWizardPage extends NewElementWizardPage {
 	
@@ -62,7 +67,7 @@ public class NewJavaProjectWizardPage extends NewElementWizardPage {
 	private WizardNewProjectCreationPage fMainPage;
 	
 //	private IPath fOutputLocation;
-	private IClasspathEntry[] fClasspathEntries;
+	private IIncludePathEntry[] fClasspathEntries;
 	private BuildPathsBlock fBuildPathsBlock;
 
 	private boolean fProjectModified;
@@ -136,7 +141,7 @@ public class NewJavaProjectWizardPage extends NewElementWizardPage {
 	 * Sets the default classpath to be used for the new Java project.
 	 * <p>
 	 * The caller of this method is responsible for creating the classpath entries 
-	 * for the <code>IJavaProject</code> that corresponds to the created project.
+	 * for the <code>IJavaScriptProject</code> that corresponds to the created project.
 	 * The caller is responsible for creating any new folders that might be mentioned
 	 * on the classpath.
 	 * </p>
@@ -150,10 +155,10 @@ public class NewJavaProjectWizardPage extends NewElementWizardPage {
 	 * @param appendDefaultJRE <code>true</code> a variable entry for the
 	 *  default JRE (specified in the preferences) will be added to the classpath.
 	 */
-	public void setDefaultClassPath(IClasspathEntry[] entries, boolean appendDefaultJRE) {
+	public void setDefaultClassPath(IIncludePathEntry[] entries, boolean appendDefaultJRE) {
 		if (entries != null && appendDefaultJRE) {
-			IClasspathEntry[] jreEntry= NewJavaProjectPreferencePage.getDefaultJRELibrary();
-			IClasspathEntry[] newEntries= new IClasspathEntry[entries.length + jreEntry.length];
+			IIncludePathEntry[] jreEntry= NewJavaProjectPreferencePage.getDefaultJRELibrary();
+			IIncludePathEntry[] newEntries= new IIncludePathEntry[entries.length + jreEntry.length];
 			System.arraycopy(entries, 0, newEntries, 0, entries.length);
 			System.arraycopy(jreEntry, 0, newEntries, entries.length, jreEntry.length);
 			entries= newEntries;
@@ -203,8 +208,8 @@ public class NewJavaProjectWizardPage extends NewElementWizardPage {
 	 * @return the Java project handle
 	 * @see #getProjectHandle()
 	 */	
-	public IJavaProject getNewJavaProject() {
-		return JavaCore.create(getProjectHandle());
+	public IJavaScriptProject getNewJavaProject() {
+		return JavaScriptCore.create(getProjectHandle());
 	}	
 
 	/* (non-Javadoc)
@@ -280,7 +285,7 @@ public class NewJavaProjectWizardPage extends NewElementWizardPage {
 	 * 
 	 * @since 2.0
 	 */	
-	public IClasspathEntry[] getRawClassPath() {
+	public IIncludePathEntry[] getRawClassPath() {
 		return fBuildPathsBlock.getRawClassPath();
 	}
 	

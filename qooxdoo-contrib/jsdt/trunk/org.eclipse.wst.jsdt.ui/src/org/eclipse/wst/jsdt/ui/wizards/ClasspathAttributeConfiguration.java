@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,12 +12,12 @@ package org.eclipse.wst.jsdt.ui.wizards;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.wst.jsdt.core.IClasspathAttribute;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IIncludePathAttribute;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 
 /**
- * A {@link ClasspathAttributeConfiguration} specifies how a {@link IClasspathAttribute class path attribute} is presented and configured
+ * A {@link ClasspathAttributeConfiguration} specifies how a {@link IIncludePathAttribute class path attribute} is presented and configured
  * in the Java build path dialog. 
  * <p>
  * Clients should implement this interface and include the name of their 
@@ -26,8 +26,11 @@ import org.eclipse.wst.jsdt.core.IJavaProject;
  * </code>).
  * </p>
  *
- * @since 3.3
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public abstract class ClasspathAttributeConfiguration {
 	
 	/**
@@ -39,19 +42,19 @@ public abstract class ClasspathAttributeConfiguration {
 		 * Returns the classpath attribute
 		 * @return the classpath attribute
 		 */
-		public abstract IClasspathAttribute getClasspathAttribute();
+		public abstract IIncludePathAttribute getClasspathAttribute();
 		
 		/**
 		 * Returns the classpath entry the current attribute is part of
 		 * @return the parent classpath entry
 		 */
-		public abstract IClasspathEntry getParentClasspassEntry();
+		public abstract IIncludePathEntry getParentClasspassEntry();
 		
 		/**
 		 * Returns the Java project the current attribute is part of. 
 		 * @return the parent Java project
 		 */
-		public abstract IJavaProject getJavaProject();	
+		public abstract IJavaScriptProject getJavaProject();	
 		
 	}
 	
@@ -106,7 +109,7 @@ public abstract class ClasspathAttributeConfiguration {
 	 * @param attribute access to the attribute to configure
 	 * @return returns the configured attribute or <code>null</code> if the action has been cancelled.
 	 */
-	public abstract IClasspathAttribute performEdit(Shell shell, ClasspathAttributeAccess attribute);
+	public abstract IIncludePathAttribute performEdit(Shell shell, ClasspathAttributeAccess attribute);
 	
 	/**
 	 * This method is invoked when the <em>Remove</em> is pressed. The method should not show a dialog.
@@ -114,7 +117,7 @@ public abstract class ClasspathAttributeConfiguration {
 	 * @param attribute access to the attribute to configure
 	 * @return returns the configured attribute
 	 */
-	public abstract IClasspathAttribute performRemove(ClasspathAttributeAccess attribute);
+	public abstract IIncludePathAttribute performRemove(ClasspathAttributeAccess attribute);
 	
 
 }

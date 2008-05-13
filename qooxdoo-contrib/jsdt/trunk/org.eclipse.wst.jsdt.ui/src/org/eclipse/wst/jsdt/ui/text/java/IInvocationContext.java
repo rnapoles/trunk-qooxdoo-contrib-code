@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.ui.text.java;
 
-import org.eclipse.wst.jsdt.core.ICompilationUnit;
+import org.eclipse.wst.jsdt.core.IJavaScriptUnit;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
-import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 
 /**
  * Context information for quick fix and quick assist processors.
@@ -20,14 +20,17 @@ import org.eclipse.wst.jsdt.core.dom.CompilationUnit;
  * Note: this interface is not intended to be implemented.
  * </p>
  *
- * @since 3.0
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public interface IInvocationContext {
 
 	/**
 	 * @return Returns the current compilation unit.
 	 */
-	ICompilationUnit getCompilationUnit();
+	IJavaScriptUnit getCompilationUnit();
 
 	/**
 	 * @return Returns the offset of the current selection
@@ -47,7 +50,7 @@ public interface IInvocationContext {
 	 * they can't handle. (see {@link org.eclipse.wst.jsdt.core.dom.AST#apiLevel()}).
 	 * @return Returns the root of the AST corresponding to the current compilation unit.
 	 */
-	CompilationUnit getASTRoot();
+	JavaScriptUnit getASTRoot();
 
 	/**
 	 * Convenience method to evaluate the AST node covering the current selection.

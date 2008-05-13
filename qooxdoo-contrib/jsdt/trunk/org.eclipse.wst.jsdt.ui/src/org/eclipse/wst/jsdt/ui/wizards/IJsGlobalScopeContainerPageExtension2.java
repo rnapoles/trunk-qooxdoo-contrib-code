@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.ui.wizards;
 
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 
 /**
  * Classpath container pages that implement {@link IJsGlobalScopeContainerPage} can 
@@ -20,8 +20,11 @@ import org.eclipse.wst.jsdt.core.IClasspathEntry;
  * newly selected containers. {@link IJsGlobalScopeContainerPage#getSelection() } is still used
  * for edited elements.
  *
- * @since 3.0
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public interface IJsGlobalScopeContainerPageExtension2 {
 	
 	/**
@@ -29,8 +32,8 @@ public interface IJsGlobalScopeContainerPageExtension2 {
 	 * to get the newly added containers. {@link IJsGlobalScopeContainerPage#getSelection() } is still used
 	 * to get the edited elements.
 	 * @return the classpath entries created on the page. All returned entries must be on kind
-	 * {@link IClasspathEntry#CPE_CONTAINER}
+	 * {@link IIncludePathEntry#CPE_CONTAINER}
 	 */
-	public IClasspathEntry[] getNewContainers();
+	public IIncludePathEntry[] getNewContainers();
 
 }
