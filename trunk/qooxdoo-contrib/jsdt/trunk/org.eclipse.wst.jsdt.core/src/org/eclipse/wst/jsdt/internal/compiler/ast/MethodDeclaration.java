@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.internal.compiler.ast;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.ast.IASTNode;
 import org.eclipse.wst.jsdt.core.ast.IFunctionDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.ASTVisitor;
@@ -35,7 +35,7 @@ public class MethodDeclaration extends AbstractMethodDeclaration implements IFun
 	public TypeParameter[] typeParameters;
 
 	/**
-	 * MethodDeclaration constructor comment.
+	 * FunctionDeclaration constructor comment.
 	 */
 	public MethodDeclaration(CompilationResult compilationResult) {
 		super(compilationResult);
@@ -110,7 +110,7 @@ public class MethodDeclaration extends AbstractMethodDeclaration implements IFun
 			}
 			this.scope.reportUnusedDeclarations();
 			// check unreachable catch blocks
-			if (JavaCore.IS_ECMASCRIPT4)
+			if (JavaScriptCore.IS_ECMASCRIPT4)
 				methodContext.complainIfUnusedExceptionHandlers(this);
 		} catch (AbortMethod e) {
 			this.ignoreFurtherInvestigation = true;
