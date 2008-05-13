@@ -1,3 +1,5 @@
+2008-05-13:
+  - synchronized JSDT plug-ins with Eclipse CVS Head
 2008-05-06:
   - Improved stability: no more runtime exceptions when inferring Qooxdoo class library.
 2008-04-29:
