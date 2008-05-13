@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,8 +31,11 @@ import java.util.List;
  * immediately preceding the package declaration when it occurs in the
  * special <code>package-info.js</code> compilation unit (JLS3 7.4.1.1).
  * The Javadoc comment in that file contains the package description.
- *
- * @since 2.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class PackageDeclaration extends ASTNode {
 
@@ -41,7 +44,7 @@ public class PackageDeclaration extends ASTNode {
 	 * @since 3.0
 	 */
 	public static final ChildPropertyDescriptor JAVADOC_PROPERTY =
-		new ChildPropertyDescriptor(PackageDeclaration.class, "javadoc", Javadoc.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(PackageDeclaration.class, "javadoc", JSdoc.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "annotations" structural property of this node type (added in JLS3 API).
@@ -111,7 +114,7 @@ public class PackageDeclaration extends ASTNode {
 	 * Defaults to none.
 	 * @since 3.0
 	 */
-	Javadoc optionalDocComment = null;
+	JSdoc optionalDocComment = null;
 
 	/**
 	 * The annotations (element type: <code>Annotation</code>).
@@ -161,7 +164,7 @@ public class PackageDeclaration extends ASTNode {
 			if (get) {
 				return getJavadoc();
 			} else {
-				setJavadoc((Javadoc) child);
+				setJavadoc((JSdoc) child);
 				return null;
 			}
 		}
@@ -202,7 +205,7 @@ public class PackageDeclaration extends ASTNode {
 		PackageDeclaration result = new PackageDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		if (this.ast.apiLevel >= AST.JLS3) {
-			result.setJavadoc((Javadoc) ASTNode.copySubtree(target, getJavadoc()));
+			result.setJavadoc((JSdoc) ASTNode.copySubtree(target, getJavadoc()));
 			result.annotations().addAll(ASTNode.copySubtrees(target, annotations()));
 		}
 		result.setName((Name) getName().clone(target));
@@ -258,7 +261,7 @@ public class PackageDeclaration extends ASTNode {
 	 * a JLS2 AST
 	 * @since 3.0
 	 */
-	public Javadoc getJavadoc() {
+	public JSdoc getJavadoc() {
 		// more efficient than just calling unsupportedIn2() to check
 		if (this.annotations == null) {
 			unsupportedIn2();
@@ -275,7 +278,7 @@ public class PackageDeclaration extends ASTNode {
 	 * a JLS2 AST
 	 * @since 3.0
 	 */
-	public void setJavadoc(Javadoc docComment) {
+	public void setJavadoc(JSdoc docComment) {
 		// more efficient than just calling unsupportedIn2() to check
 		if (this.annotations == null) {
 			unsupportedIn2();

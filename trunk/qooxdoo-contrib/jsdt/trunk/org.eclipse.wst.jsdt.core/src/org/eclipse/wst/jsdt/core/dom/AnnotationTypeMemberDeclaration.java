@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,10 @@ import java.util.List;
  * ";" token.
  * </p>
  *
- * @since 3.1
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class AnnotationTypeMemberDeclaration extends BodyDeclaration {
 
@@ -148,7 +151,7 @@ public class AnnotationTypeMemberDeclaration extends BodyDeclaration {
 			if (get) {
 				return getJavadoc();
 			} else {
-				setJavadoc((Javadoc) child);
+				setJavadoc((JSdoc) child);
 				return null;
 			}
 		}
@@ -235,7 +238,7 @@ public class AnnotationTypeMemberDeclaration extends BodyDeclaration {
 		AnnotationTypeMemberDeclaration result = new AnnotationTypeMemberDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc(
-			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
+			(JSdoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setType((Type) ASTNode.copySubtree(target, getType()));
 		result.setName((SimpleName) getName().clone(target));
@@ -389,7 +392,7 @@ public class AnnotationTypeMemberDeclaration extends BodyDeclaration {
 	 * @return the binding, or <code>null</code> if the binding cannot be
 	 *    resolved
 	 */
-	public IMethodBinding resolveBinding() {
+	public IFunctionBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveMember(this);
 	}
 

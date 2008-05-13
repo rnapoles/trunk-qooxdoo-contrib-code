@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,8 +37,11 @@ import java.util.List;
  * modifiers or annotations). The source range extends through the last
  * character of the "}" token following the body declarations.
  * </p>
- *
- * @since 3.1
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class EnumDeclaration extends AbstractTypeDeclaration {
 
@@ -159,7 +162,7 @@ public class EnumDeclaration extends AbstractTypeDeclaration {
 			if (get) {
 				return getJavadoc();
 			} else {
-				setJavadoc((Javadoc) child);
+				setJavadoc((JSdoc) child);
 				return null;
 			}
 		}
@@ -245,7 +248,7 @@ public class EnumDeclaration extends AbstractTypeDeclaration {
 		EnumDeclaration result = new EnumDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc(
-			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
+			(JSdoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((SimpleName) getName().clone(target));
 		result.superInterfaceTypes().addAll(

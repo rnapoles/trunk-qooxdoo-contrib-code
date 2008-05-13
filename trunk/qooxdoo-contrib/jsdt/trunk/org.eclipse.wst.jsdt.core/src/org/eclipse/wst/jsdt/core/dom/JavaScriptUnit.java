@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.ITypeRoot;
 import org.eclipse.wst.jsdt.core.compiler.IProblem;
 import org.eclipse.wst.jsdt.internal.compiler.parser.Scanner;
@@ -33,7 +33,7 @@ import org.eclipse.wst.jsdt.internal.compiler.util.Util;
  * </p>
  * For JLS2:
  * <pre>
- * CompilationUnit:
+ * JavaScriptUnit:
  *    [ PackageDeclaration ]
  *        { ImportDeclaration }
  *        { TypeDeclaration | <b>;</b> }
@@ -41,15 +41,18 @@ import org.eclipse.wst.jsdt.internal.compiler.util.Util;
  * For JLS3, the kinds of type declarations
  * grew to include enum and annotation type declarations:
  * <pre>
- * CompilationUnit:
+ * JavaScriptUnit:
  *    [ PackageDeclaration ]
  *        { ImportDeclaration }
  *        { TypeDeclaration | EnumDeclaration | AnnotationTypeDeclaration | <b>;</b> }
  * </pre>
- *
- * @since 2.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public class CompilationUnit extends ASTNode {
+public class JavaScriptUnit extends ASTNode {
 
 	/**
 	 * Canonical empty list of messages.
@@ -67,7 +70,7 @@ public class CompilationUnit extends ASTNode {
 	 * @since 3.0
 	 */
 	public static final ChildListPropertyDescriptor IMPORTS_PROPERTY =
-		new ChildListPropertyDescriptor(CompilationUnit.class, "imports", ImportDeclaration.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(JavaScriptUnit.class, "imports", ImportDeclaration.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "package" structural property of this node type.
@@ -75,7 +78,7 @@ public class CompilationUnit extends ASTNode {
 	 * @since 3.0
 	 */
 	public static final ChildPropertyDescriptor PACKAGE_PROPERTY =
-		new ChildPropertyDescriptor(CompilationUnit.class, "package", PackageDeclaration.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(JavaScriptUnit.class, "package", PackageDeclaration.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type:
@@ -91,14 +94,14 @@ public class CompilationUnit extends ASTNode {
 	 * @since 3.0
 	 */
 	public static final ChildListPropertyDescriptor TYPES_PROPERTY =
-		new ChildListPropertyDescriptor(CompilationUnit.class, "types", AbstractTypeDeclaration.class, CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(JavaScriptUnit.class, "types", AbstractTypeDeclaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	public static final ChildListPropertyDescriptor STATEMENTS_PROPERTY =
-		new ChildListPropertyDescriptor(CompilationUnit.class, "statements", ProgramElement.class, CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(JavaScriptUnit.class, "statements", ProgramElement.class, CYCLE_RISK); //$NON-NLS-1$
 
 	static {
 		List properyList = new ArrayList(4);
-		createPropertyList(CompilationUnit.class, properyList);
+		createPropertyList(JavaScriptUnit.class, properyList);
 		addProperty(PACKAGE_PROPERTY, properyList);
 		addProperty(IMPORTS_PROPERTY, properyList);
 		addProperty(TYPES_PROPERTY, properyList);
@@ -129,7 +132,7 @@ public class CompilationUnit extends ASTNode {
 	private DefaultCommentMapper commentMapper = null;
 
 	/**
-	 * The Java type root (an <code>org.eclipse.wst.jsdt.core.ICompilationUnit</code> or an <code>org.eclipse.wst.jsdt.core.IClassFile</code>)
+	 * The Java type root (an <code>org.eclipse.wst.jsdt.core.IJavaScriptUnit</code> or an <code>org.eclipse.wst.jsdt.core.IClassFile</code>)
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java type root.
 	 */
 	private ITypeRoot typeRoot = null;
@@ -205,7 +208,7 @@ public class CompilationUnit extends ASTNode {
 	 *
 	 * @param ast the AST that is to own this node
 	 */
-	CompilationUnit(AST ast) {
+	JavaScriptUnit(AST ast) {
 		super(ast);
 	}
 
@@ -228,7 +231,7 @@ public class CompilationUnit extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		CompilationUnit result = new CompilationUnit(target);
+		JavaScriptUnit result = new JavaScriptUnit(target);
 		// n.b do not copy line number table or messages
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setPackage(
@@ -301,8 +304,8 @@ public class CompilationUnit extends ASTNode {
 	 *    a <code>VariableDeclarationFragment</code> in a
 	 *    <code>VariableDeclarationStatement</code> or
 	 *    <code>VariableDeclarationExpression</code></li>
-	 * <li>method - a <code>MethodDeclaration</code> </li>
-	 * <li>constructor - a <code>MethodDeclaration</code> </li>
+	 * <li>method - a <code>FunctionDeclaration</code> </li>
+	 * <li>constructor - a <code>FunctionDeclaration</code> </li>
      * <li>annotation type - an <code>AnnotationTypeDeclaration</code></li>
      * <li>annotation type member - an <code>AnnotationTypeMemberDeclaration</code></li>
      * <li>enum type - an <code>EnumDeclaration</code></li>
@@ -358,8 +361,8 @@ public class CompilationUnit extends ASTNode {
 	 *    a <code>VariableDeclarationFragment</code> in a
 	 *    <code>VariableDeclarationStatement</code> or
 	 *    <code>VariableDeclarationExpression</code></li>
-	 * <li>method - a <code>MethodDeclaration</code> </li>
-	 * <li>constructor - a <code>MethodDeclaration</code> </li>
+	 * <li>method - a <code>FunctionDeclaration</code> </li>
+	 * <li>constructor - a <code>FunctionDeclaration</code> </li>
      * <li>annotation type - an <code>AnnotationTypeDeclaration</code></li>
      * <li>annotation type member - an <code>AnnotationTypeMemberDeclaration</code></li>
      * <li>enum type - an <code>EnumDeclaration</code></li>
@@ -496,14 +499,14 @@ public class CompilationUnit extends ASTNode {
 	}
 
 	/**
-	 * The Java element (an <code>org.eclipse.wst.jsdt.core.ICompilationUnit</code> or an <code>org.eclipse.wst.jsdt.core.IClassFile</code>)
+	 * The Java element (an <code>org.eclipse.wst.jsdt.core.IJavaScriptUnit</code> or an <code>org.eclipse.wst.jsdt.core.IClassFile</code>)
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
 	 *
 	 * @return the Java element this compilation unit was created from, or <code>null</code> if none
 	 * @since 3.1
 	 * @see #getTypeRoot()
 	 */
-	public IJavaElement getJavaElement() {
+	public IJavaScriptElement getJavaElement() {
 		return this.typeRoot;
 	}
 
@@ -544,7 +547,7 @@ public class CompilationUnit extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return COMPILATION_UNIT;
+		return JAVASCRIPT_UNIT;
 	}
 
 	/**
@@ -624,7 +627,7 @@ public class CompilationUnit extends ASTNode {
 	}
 
 	/**
-	 * The Java type root (a {@link org.eclipse.wst.jsdt.core.ICompilationUnit compilation unit} or a {@link org.eclipse.wst.jsdt.core.IClassFile class file})
+	 * The Java type root (a {@link org.eclipse.wst.jsdt.core.IJavaScriptUnit compilation unit} or a {@link org.eclipse.wst.jsdt.core.IClassFile class file})
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java type root.
 	 *
 	 * @return the Java type root this compilation unit was created from, or <code>null</code> if none
@@ -904,7 +907,7 @@ public class CompilationUnit extends ASTNode {
 	 * @param options the table of formatter options
 	 * (key type: <code>String</code>; value type: <code>String</code>);
 	 * or <code>null</code> to use the standard global options
-	 * {@link org.eclipse.wst.jsdt.core.JavaCore#getOptions() JavaCore.getOptions()}.
+	 * {@link org.eclipse.wst.jsdt.core.JavaScriptCore#getOptions() JavaScriptCore.getOptions()}.
 	 * @return text edit object describing the changes to the
 	 * document corresponding to the recorded AST modifications
 	 * @exception IllegalArgumentException if the document passed is
@@ -959,7 +962,7 @@ public class CompilationUnit extends ASTNode {
 	}
 
 	/**
-	 * Sets the Java type root (a {@link org.eclipse.wst.jsdt.core.ICompilationUnit compilation unit} or a {@link org.eclipse.wst.jsdt.core.IClassFile class file})
+	 * Sets the Java type root (a {@link org.eclipse.wst.jsdt.core.IJavaScriptUnit compilation unit} or a {@link org.eclipse.wst.jsdt.core.IClassFile class file})
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java type root.
 	 *
 	 * @param typeRoot the Java type root this compilation unit was created from

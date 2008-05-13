@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,11 @@ import org.eclipse.wst.jsdt.internal.compiler.lookup.LookupEnvironment;
  * </p>
  *
  * @see AST#getBindingResolver
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 class BindingResolver {
 
@@ -57,14 +62,14 @@ class BindingResolver {
 	 *    a <code>VariableDeclarationFragment</code> in a
 	 *    <code>VariableDeclarationStatement</code> or
 	 *    <code>VariableDeclarationExpression</code></li>
-	 * <li>method - a <code>MethodDeclaration</code> </li>
-	 * <li>constructor - a <code>MethodDeclaration</code> </li>
+	 * <li>method - a <code>FunctionDeclaration</code> </li>
+	 * <li>constructor - a <code>FunctionDeclaration</code> </li>
 	 * <li>annotation type - an <code>AnnotationTypeDeclaration</code>
 	 * <li>annotation type member - an <code>AnnotationTypeMemberDeclaration</code>
 	 * </ul>
 	 * </p>
 	 * <p>
-	 * The implementation of <code>CompilationUnit.findDeclaringNode</code>
+	 * The implementation of <code>JavaScriptUnit.findDeclaringNode</code>
 	 * forwards to this method.
 	 * </p>
 	 * <p>
@@ -135,7 +140,7 @@ class BindingResolver {
 	 * @param methodBinding the old method binding
 	 * @return the new method binding
 	 */
-	IMethodBinding getMethodBinding(org.eclipse.wst.jsdt.internal.compiler.lookup.MethodBinding methodBinding) {
+	IFunctionBinding getMethodBinding(org.eclipse.wst.jsdt.internal.compiler.lookup.MethodBinding methodBinding) {
 		return null;
 	}
 
@@ -268,7 +273,7 @@ class BindingResolver {
 		return null;
 	}
 
-	boolean isResolvedTypeInferredFromExpectedType(MethodInvocation methodInvocation) {
+	boolean isResolvedTypeInferredFromExpectedType(FunctionInvocation methodInvocation) {
 		return false;
 	}
 
@@ -377,7 +382,7 @@ class BindingResolver {
 	 * @return the binding for the constructor being invoked, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveConstructor(ClassInstanceCreation expression) {
+	IFunctionBinding resolveConstructor(ClassInstanceCreation expression) {
 		return null;
 	}
 
@@ -399,7 +404,7 @@ class BindingResolver {
 	 * @return the binding for the constructor being invoked, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveConstructor(ConstructorInvocation expression) {
+	IFunctionBinding resolveConstructor(ConstructorInvocation expression) {
 		return null;
 	}
 	/**
@@ -420,7 +425,7 @@ class BindingResolver {
 	 * @return the binding for the constructor being invoked, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveConstructor(EnumConstantDeclaration enumConstantDeclaration) {
+	IFunctionBinding resolveConstructor(EnumConstantDeclaration enumConstantDeclaration) {
 		return null;
 	}
 	/**
@@ -441,7 +446,7 @@ class BindingResolver {
 	 * @return the binding for the constructor being invoked, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveConstructor(SuperConstructorInvocation expression) {
+	IFunctionBinding resolveConstructor(SuperConstructorInvocation expression) {
 		return null;
 	}
 	/**
@@ -548,14 +553,14 @@ class BindingResolver {
 	 *    if no binding is available
 	 * @since 3.0
 	 */
-	IMethodBinding resolveMember(AnnotationTypeMemberDeclaration member) {
+	IFunctionBinding resolveMember(AnnotationTypeMemberDeclaration member) {
 		return null;
 	}
 
 	/**
 	 * Resolves the given method declaration and returns the binding for it.
 	 * <p>
-	 * The implementation of <code>MethodDeclaration.resolveBinding</code>
+	 * The implementation of <code>FunctionDeclaration.resolveBinding</code>
 	 * forwards to this method. How the method resolves is often a function of
 	 * the context in which the method declaration node is embedded as well as
 	 * the method declaration subtree itself.
@@ -569,14 +574,14 @@ class BindingResolver {
 	 * @return the binding for the given method declaration, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveMethod(MethodDeclaration method) {
+	IFunctionBinding resolveMethod(FunctionDeclaration method) {
 		return null;
 	}
 
 	/**
 	 * Resolves the given method invocation and returns the binding for it.
 	 * <p>
-	 * The implementation of <code>MethodInvocation.resolveMethodBinding</code>
+	 * The implementation of <code>FunctionInvocation.resolveMethodBinding</code>
 	 * forwards to this method. How the method resolves is often a function of
 	 * the context in which the method invocation node is embedded as well as
 	 * the method invocation subtree itself.
@@ -590,14 +595,14 @@ class BindingResolver {
 	 * @return the binding for the given method invocation, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveMethod(MethodInvocation method) {
+	IFunctionBinding resolveMethod(FunctionInvocation method) {
 		return null;
 	}
 
 	/**
 	 * Resolves the given method invocation and returns the binding for it.
 	 * <p>
-	 * The implementation of <code>MethodInvocation.resolveMethodBinding</code>
+	 * The implementation of <code>FunctionInvocation.resolveMethodBinding</code>
 	 * forwards to this method. How the method resolves is often a function of
 	 * the context in which the method invocation node is embedded as well as
 	 * the method invocation subtree itself.
@@ -611,7 +616,7 @@ class BindingResolver {
 	 * @return the binding for the given method invocation, or
 	 *    <code>null</code> if no binding is available
 	 */
-	IMethodBinding resolveMethod(SuperMethodInvocation method) {
+	IFunctionBinding resolveMethod(SuperMethodInvocation method) {
 		return null;
 	}
 
@@ -699,7 +704,7 @@ class BindingResolver {
 	/**
 	 * Resolves the given reference and returns the binding for it.
 	 * <p>
-	 * The implementation of <code>MethodRef.resolveBinding</code> forwards to
+	 * The implementation of <code>FunctionRef.resolveBinding</code> forwards to
 	 * this method. How the name resolves is often a function of the context
 	 * in which the name node is embedded as well as the name itself.
 	 * </p>
@@ -713,7 +718,7 @@ class BindingResolver {
 	 *    available
 	 * @since 3.0
 	 */
-	IBinding resolveReference(MethodRef ref) {
+	IBinding resolveReference(FunctionRef ref) {
 		return null;
 	}
 
@@ -830,7 +835,7 @@ class BindingResolver {
 	}
 
 
-	ITypeBinding resolveType(CompilationUnit compilationUnit) {
+	ITypeBinding resolveType(JavaScriptUnit compilationUnit) {
 		return null;
 	}
 

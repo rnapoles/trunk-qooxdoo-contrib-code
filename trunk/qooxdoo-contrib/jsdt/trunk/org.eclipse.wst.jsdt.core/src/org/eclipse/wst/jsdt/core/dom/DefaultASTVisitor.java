@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.core.dom;
 /**
- */
+  *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
+*/
 class DefaultASTVisitor extends ASTVisitor {
 
 
@@ -84,7 +89,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	public void endVisit(ClassInstanceCreation node) {
 		endVisitNode(node);
 	}
-	public void endVisit(CompilationUnit node) {
+	public void endVisit(JavaScriptUnit node) {
 		endVisitNode(node);
 	}
 	public void endVisit(ConditionalExpression node) {
@@ -148,7 +153,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	public void endVisit(InstanceofExpression node) {
 		endVisitNode(node);
 	}
-	public void endVisit(Javadoc node) {
+	public void endVisit(JSdoc node) {
 		endVisitNode(node);
 	}
 	public void endVisit(LabeledStatement node) {
@@ -166,16 +171,16 @@ class DefaultASTVisitor extends ASTVisitor {
 	public void endVisit(MemberValuePair node) {
 		endVisitNode(node);
 	}
-	public void endVisit(MethodDeclaration node) {
+	public void endVisit(FunctionDeclaration node) {
 		endVisitNode(node);
 	}
-	public void endVisit(MethodInvocation node) {
+	public void endVisit(FunctionInvocation node) {
 		endVisitNode(node);
 	}
-	public void endVisit(MethodRef node) {
+	public void endVisit(FunctionRef node) {
 		endVisitNode(node);
 	}
-	public void endVisit(MethodRefParameter node) {
+	public void endVisit(FunctionRefParameter node) {
 		endVisitNode(node);
 	}
 	public void endVisit(NullLiteral node) {
@@ -343,7 +348,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	public boolean visit(ClassInstanceCreation node) {
 		return visitNode(node);
 	}
-	public boolean visit(CompilationUnit node) {
+	public boolean visit(JavaScriptUnit node) {
 		return visitNode(node);
 	}
 
@@ -409,7 +414,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	public boolean visit(InstanceofExpression node) {
 		return visitNode(node);
 	}
-	public boolean visit(Javadoc node) {
+	public boolean visit(JSdoc node) {
 		//	do not visit Javadoc tags by default. Use constructor with boolean to enable.
 		if (super.visit(node)) {
 			return visitNode(node);
@@ -431,16 +436,16 @@ class DefaultASTVisitor extends ASTVisitor {
 	public boolean visit(MemberValuePair node) {
 		return visitNode(node);
 	}
-	public boolean visit(MethodDeclaration node) {
+	public boolean visit(FunctionDeclaration node) {
 		return visitNode(node);
 	}
-	public boolean visit(MethodInvocation node) {
+	public boolean visit(FunctionInvocation node) {
 		return visitNode(node);
 	}
-	public boolean visit(MethodRef node) {
+	public boolean visit(FunctionRef node) {
 		return visitNode(node);
 	}
-	public boolean visit(MethodRefParameter node) {
+	public boolean visit(FunctionRefParameter node) {
 		return visitNode(node);
 	}
 	public boolean visit(NullLiteral node) {

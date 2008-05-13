@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,8 +62,11 @@ import java.util.List;
  * modifiers or annotations). The source range extends through the last character of the "}"
  * token following the body declarations.
  * </p>
- *
- * @since 2.0
+  * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class TypeDeclaration extends AbstractTypeDeclaration {
 
@@ -323,7 +326,7 @@ public class TypeDeclaration extends AbstractTypeDeclaration {
 			if (get) {
 				return getJavadoc();
 			} else {
-				setJavadoc((Javadoc) child);
+				setJavadoc((JSdoc) child);
 				return null;
 			}
 		}
@@ -428,7 +431,7 @@ public class TypeDeclaration extends AbstractTypeDeclaration {
 		TypeDeclaration result = new TypeDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc(
-			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
+			(JSdoc) ASTNode.copySubtree(target, getJavadoc()));
 		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
 			result.internalSetModifiers(getModifiers());
 			result.setSuperclass(
@@ -742,20 +745,20 @@ public class TypeDeclaration extends AbstractTypeDeclaration {
 	 * @return the (possibly empty) list of method (and constructor)
 	 *    declarations
 	 */
-	public MethodDeclaration[] getMethods() {
+	public FunctionDeclaration[] getMethods() {
 		List bd = bodyDeclarations();
 		int methodCount = 0;
 		for (Iterator it = bd.listIterator(); it.hasNext(); ) {
-			if (it.next() instanceof MethodDeclaration) {
+			if (it.next() instanceof FunctionDeclaration) {
 				methodCount++;
 			}
 		}
-		MethodDeclaration[] methods = new MethodDeclaration[methodCount];
+		FunctionDeclaration[] methods = new FunctionDeclaration[methodCount];
 		int next = 0;
 		for (Iterator it = bd.listIterator(); it.hasNext(); ) {
 			Object decl = it.next();
-			if (decl instanceof MethodDeclaration) {
-				methods[next++] = (MethodDeclaration) decl;
+			if (decl instanceof FunctionDeclaration) {
+				methods[next++] = (FunctionDeclaration) decl;
 			}
 		}
 		return methods;

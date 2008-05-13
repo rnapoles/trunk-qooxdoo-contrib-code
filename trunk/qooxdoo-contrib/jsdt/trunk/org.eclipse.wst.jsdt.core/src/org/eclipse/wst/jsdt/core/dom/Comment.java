@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@ package org.eclipse.wst.jsdt.core.dom;
  * There are exactly three kinds of comment:
  * line comments ({@link LineComment}),
  * block comments ({@link BlockComment}), and
- * doc comments ({@link Javadoc}).
+ * doc comments ({@link JSdoc}).
  * <p>
  * <pre>
  * Comment:
@@ -25,7 +25,10 @@ package org.eclipse.wst.jsdt.core.dom;
  * </pre>
  * </p>
  *
- * @since 3.0
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class Comment extends ASTNode {
 
@@ -77,7 +80,7 @@ public abstract class Comment extends ASTNode {
 	 *    <code>false</code> otherwise
 	 */
 	public final boolean isDocComment() {
-		return (this instanceof Javadoc);
+		return (this instanceof JSdoc);
 	}
 
 	/**
@@ -86,7 +89,7 @@ public abstract class Comment extends ASTNode {
 	 * <p>
 	 * Typically, the comment nodes created while parsing a compilation
 	 * unit are not considered descendents of the normal AST
-	 * root, namely an {@link CompilationUnit}. Instead, these
+	 * root, namely an {@link JavaScriptUnit}. Instead, these
 	 * comment nodes exist outside the normal AST and each is
 	 * a root in its own right. This optional property provides
 	 * a well-known way to navigate from the comment to the
