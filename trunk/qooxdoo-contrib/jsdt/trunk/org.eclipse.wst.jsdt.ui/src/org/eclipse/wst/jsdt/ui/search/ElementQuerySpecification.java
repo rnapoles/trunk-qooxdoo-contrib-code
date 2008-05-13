@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.ui.search;
 
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.search.IJavaScriptSearchScope;
 
 /**
  * <p>
- * Describes a search query by giving the {@link IJavaElement} to search
+ * Describes a search query by giving the {@link IJavaScriptElement} to search
  * for.
  * </p>
  * <p>
@@ -24,10 +24,13 @@ import org.eclipse.wst.jsdt.core.search.IJavaSearchScope;
  * 
  * @see org.eclipse.wst.jsdt.ui.search.QuerySpecification
  *
- * @since 3.0
- */
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves. */
 public class ElementQuerySpecification extends QuerySpecification {
-	private IJavaElement fElement;
+	private IJavaScriptElement fElement;
 
 	/**
 	 * A constructor.
@@ -36,7 +39,7 @@ public class ElementQuerySpecification extends QuerySpecification {
 	 * @param scope		  The scope to search in.
 	 * @param scopeDescription A human readable description of the search scope.
 	 */
-	public ElementQuerySpecification(IJavaElement javaElement, int limitTo, IJavaSearchScope scope, String scopeDescription) {
+	public ElementQuerySpecification(IJavaScriptElement javaElement, int limitTo, IJavaScriptSearchScope scope, String scopeDescription) {
 		super(limitTo, scope, scopeDescription);
 		fElement= javaElement;
 	}
@@ -45,7 +48,7 @@ public class ElementQuerySpecification extends QuerySpecification {
 	 * Returns the element to search for.
 	 * @return The element to search for.
 	 */
-	public IJavaElement getElement() {
+	public IJavaScriptElement getElement() {
 		return fElement;
 	}
 }

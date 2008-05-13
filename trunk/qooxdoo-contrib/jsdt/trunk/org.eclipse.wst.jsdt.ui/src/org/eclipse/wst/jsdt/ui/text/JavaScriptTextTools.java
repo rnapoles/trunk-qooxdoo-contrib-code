@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,19 +36,24 @@ import org.eclipse.wst.jsdt.internal.ui.text.javadoc.JavaDocScanner;
  * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
+ *
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
  */
-public class JavaTextTools {
+public class JavaScriptTextTools {
 
 	/**
 	 * Array with legal content types.
 	 * @since 3.0
 	 */
 	private final static String[] LEGAL_CONTENT_TYPES= new String[] {
-		IJavaPartitions.JAVA_DOC,
-		IJavaPartitions.JAVA_MULTI_LINE_COMMENT,
-		IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
-		IJavaPartitions.JAVA_STRING,
-		IJavaPartitions.JAVA_CHARACTER
+		IJavaScriptPartitions.JAVA_DOC,
+		IJavaScriptPartitions.JAVA_MULTI_LINE_COMMENT,
+		IJavaScriptPartitions.JAVA_SINGLE_LINE_COMMENT,
+		IJavaScriptPartitions.JAVA_STRING,
+		IJavaScriptPartitions.JAVA_CHARACTER
 	};
 
 	/**
@@ -96,7 +101,7 @@ public class JavaTextTools {
 	 * @see org.eclipse.wst.jsdt.ui.PreferenceConstants#getPreferenceStore()
 	 * @since 2.0
 	 */
-	public JavaTextTools(IPreferenceStore store) {
+	public JavaScriptTextTools(IPreferenceStore store) {
 		this(store, null, true);
 	}
 
@@ -113,7 +118,7 @@ public class JavaTextTools {
 	 * @see org.eclipse.wst.jsdt.ui.PreferenceConstants#getPreferenceStore()
 	 * @since 2.1
 	 */
-	public JavaTextTools(IPreferenceStore store, boolean autoDisposeOnDisplayDispose) {
+	public JavaScriptTextTools(IPreferenceStore store, boolean autoDisposeOnDisplayDispose) {
 		this(store, null, autoDisposeOnDisplayDispose);
 	}
 
@@ -129,7 +134,7 @@ public class JavaTextTools {
 	 * @see org.eclipse.wst.jsdt.ui.PreferenceConstants#getPreferenceStore()
 	 * @since 2.1
 	 */
-	public JavaTextTools(IPreferenceStore store, Preferences coreStore) {
+	public JavaScriptTextTools(IPreferenceStore store, Preferences coreStore) {
 		this(store, coreStore, true);
 	}
 
@@ -149,7 +154,7 @@ public class JavaTextTools {
 	 * @see org.eclipse.wst.jsdt.ui.PreferenceConstants#getPreferenceStore()
 	 * @since 2.1
 	 */
-	public JavaTextTools(IPreferenceStore store, Preferences coreStore, boolean autoDisposeOnDisplayDispose) {
+	public JavaScriptTextTools(IPreferenceStore store, Preferences coreStore, boolean autoDisposeOnDisplayDispose) {
 		fPreferenceStore= store;
 		fPreferenceStore.addPropertyChangeListener(fPreferenceListener);
 
@@ -159,9 +164,9 @@ public class JavaTextTools {
 
 		fColorManager= new JavaColorManager(autoDisposeOnDisplayDispose);
 		fCodeScanner= new JavaCodeScanner(fColorManager, store);
-		fMultilineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaColorConstants.JAVA_MULTI_LINE_COMMENT);
-		fSinglelineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT);
-		fStringScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaColorConstants.JAVA_STRING);
+		fMultilineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaScriptColorConstants.JAVA_MULTI_LINE_COMMENT);
+		fSinglelineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaScriptColorConstants.JAVA_SINGLE_LINE_COMMENT);
+		fStringScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaScriptColorConstants.JAVA_STRING);
 		fJavaDocScanner= new JavaDocScanner(fColorManager, store, coreStore);
 	}
 
@@ -199,11 +204,11 @@ public class JavaTextTools {
 	 * any Java-specific colors needed for such things like syntax highlighting.
 	 * <p>
 	 * Clients which are only interested in the color manager of the Java UI
-	 * plug-in should use {@link org.eclipse.wst.jsdt.ui.JavaUI#getColorManager()}.
+	 * plug-in should use {@link org.eclipse.wst.jsdt.ui.JavaScriptUI#getColorManager()}.
 	 * </p>
 	 *
 	 * @return the color manager to be used for Java text viewers
-	 * @see org.eclipse.wst.jsdt.ui.JavaUI#getColorManager()
+	 * @see org.eclipse.wst.jsdt.ui.JavaScriptUI#getColorManager()
 	 */
 	public IColorManager getColorManager() {
 		return fColorManager;
@@ -213,7 +218,7 @@ public class JavaTextTools {
 	 * Returns a scanner which is configured to scan Java source code.
 	 *
 	 * @return a Java source code scanner
-	 * @deprecated As of 3.0, replaced by {@link JavaSourceViewerConfiguration#getCodeScanner()}
+	 * @deprecated As of 3.0, replaced by {@link JavaScriptSourceViewerConfiguration#getCodeScanner()}
 	 */
 	public RuleBasedScanner getCodeScanner() {
 		return fCodeScanner;
@@ -224,7 +229,7 @@ public class JavaTextTools {
 	 *
 	 * @return a Java multi-line comment scanner
 	 * @since 2.0
-	 * @deprecated As of 3.0, replaced by {@link JavaSourceViewerConfiguration#getMultilineCommentScanner()}
+	 * @deprecated As of 3.0, replaced by {@link JavaScriptSourceViewerConfiguration#getMultilineCommentScanner()}
 	 */
 	public RuleBasedScanner getMultilineCommentScanner() {
 		return fMultilineCommentScanner;
@@ -235,7 +240,7 @@ public class JavaTextTools {
 	 *
 	 * @return a Java single-line comment scanner
 	 * @since 2.0
-	 * @deprecated As of 3.0, replaced by {@link JavaSourceViewerConfiguration#getSinglelineCommentScanner()}
+	 * @deprecated As of 3.0, replaced by {@link JavaScriptSourceViewerConfiguration#getSinglelineCommentScanner()}
 	 */
 	public RuleBasedScanner getSinglelineCommentScanner() {
 		return fSinglelineCommentScanner;
@@ -246,7 +251,7 @@ public class JavaTextTools {
 	 *
 	 * @return a Java string scanner
 	 * @since 2.0
-	 * @deprecated As of 3.0, replaced by {@link JavaSourceViewerConfiguration#getStringScanner()}
+	 * @deprecated As of 3.0, replaced by {@link JavaScriptSourceViewerConfiguration#getStringScanner()}
 	 */
 	public RuleBasedScanner getStringScanner() {
 		return fStringScanner;
@@ -259,7 +264,7 @@ public class JavaTextTools {
 	 * are part of the Javadoc comment.</p>
 	 *
 	 * @return a Javadoc scanner
-	 * @deprecated As of 3.0, replaced by {@link JavaSourceViewerConfiguration#getJavaDocScanner()}
+	 * @deprecated As of 3.0, replaced by {@link JavaScriptSourceViewerConfiguration#getJavaDocScanner()}
 	 */
 	public RuleBasedScanner getJavaDocScanner() {
 		return fJavaDocScanner;
@@ -308,7 +313,7 @@ public class JavaTextTools {
 	 * @param event the event to be investigated
 	 * @return <code>true</code> if event causes a behavioral change
 	 * @since 2.0
-	 * @deprecated As of 3.0, replaced by {@link org.eclipse.wst.jsdt.ui.text.JavaSourceViewerConfiguration#affectsTextPresentation(PropertyChangeEvent)}
+	 * @deprecated As of 3.0, replaced by {@link org.eclipse.wst.jsdt.ui.text.JavaScriptSourceViewerConfiguration#affectsTextPresentation(PropertyChangeEvent)}
 	 */
 	public boolean affectsBehavior(PropertyChangeEvent event) {
 		return  fCodeScanner.affectsBehavior(event) ||
