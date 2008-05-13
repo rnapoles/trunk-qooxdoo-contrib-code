@@ -32,6 +32,7 @@ public class NoQxConstructsToTolerate_PDETest extends Assert {
                                                        + "              })\n"
                                                        + "});\n";
   private static final String WRONG_NUMBER_OF_ARGUMENTS = "qx.Class.define();\n";
+  private static final String SINGLE_NAME_REFERENCE = "qx.Class.define(name, config);\n";
 
   // methods for parameterized test
   // //////////////////////////////
@@ -47,6 +48,8 @@ public class NoQxConstructsToTolerate_PDETest extends Assert {
         VARIANT_IN_CONSTRUCTOR
       }, {
         WRONG_NUMBER_OF_ARGUMENTS
+      }, {
+        SINGLE_NAME_REFERENCE
       }
     } );
   }

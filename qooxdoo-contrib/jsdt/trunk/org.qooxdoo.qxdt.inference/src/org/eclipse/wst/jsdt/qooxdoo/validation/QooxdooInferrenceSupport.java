@@ -78,7 +78,7 @@ public class QooxdooInferrenceSupport extends InferEngine {
                                                                false ) );
         } else if( "properties".equals( classPartName ) ) {
           classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
-        } else if( "construct".equals( classPartName ) ) { 
+        } else if( "construct".equals( classPartName ) ) {
           if( field.getInitializer() instanceof IFunctionExpression ) {
             MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
             md.modifiers = ClassFileConstants.AccPublic;
@@ -166,14 +166,15 @@ public class QooxdooInferrenceSupport extends InferEngine {
   }
 
   private void handleQxClassDefinition( IFunctionCall messageSend ) {
-    if( hasArguments( messageSend ) ) {
+    if( hasQxClassDefineArguments( messageSend ) ) {
       startClassDefinition( messageSend.getArguments()[ 0 ] );
     }
   }
 
-  private boolean hasArguments( IFunctionCall messageSend ) {
+  private boolean hasQxClassDefineArguments( IFunctionCall messageSend ) {
     return messageSend.getArguments() != null
-           && messageSend.getArguments().length > 0;
+           && messageSend.getArguments().length == 2
+           && messageSend.getArguments()[ 0 ] instanceof IStringLiteral;
   }
 
   private boolean isQxClassDefined( IFunctionCall messageSend ) {
