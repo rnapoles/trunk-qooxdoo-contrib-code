@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,52 +14,56 @@ import org.eclipse.wst.jsdt.internal.core.ClasspathAttribute;
 
 /**
  * A classpath attribute defines a name/value pair that can be persisted with a classpath entry. Such an attribute
- * can be created using the factory method {@link JavaCore#newClasspathAttribute(String, String) newClasspathAttribute(String name, String value)}.
+ * can be created using the factory method {@link JavaScriptCore#newIncludepathAttribute(String, String) newClasspathAttribute(String name, String value)}.
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
  *
- * @see JavaCore#newContainerEntry(
+ * @see JavaScriptCore#newContainerEntry(
  *			org.eclipse.core.runtime.IPath containerPath,
  *			IAccessRule[] accessRules,
- *			IClasspathAttribute[] extraAttributes,
+ *			IIncludePathAttribute[] extraAttributes,
  *			boolean isExported)
- * @see JavaCore#newLibraryEntry(
+ * @see JavaScriptCore#newLibraryEntry(
  *			org.eclipse.core.runtime.IPath path,
  *			org.eclipse.core.runtime.IPath sourceAttachmentPath,
  *			org.eclipse.core.runtime.IPath sourceAttachmentRootPath,
  *			IAccessRule[] accessRules,
- *			IClasspathAttribute[] extraAttributes,
+ *			IIncludePathAttribute[] extraAttributes,
  *			boolean isExported)
- * @see JavaCore#newProjectEntry(
+ * @see JavaScriptCore#newProjectEntry(
  *			org.eclipse.core.runtime.IPath path,
  *			IAccessRule[] accessRules,
  *			boolean combineAccessRestrictions,
- *			IClasspathAttribute[] extraAttributes,
+ *			IIncludePathAttribute[] extraAttributes,
  *			boolean isExported)
- * @see JavaCore#newSourceEntry(
+ * @see JavaScriptCore#newSourceEntry(
  * 			org.eclipse.core.runtime.IPath path,
  * 			org.eclipse.core.runtime.IPath[] inclusionPatterns,
  * 			org.eclipse.core.runtime.IPath[] exclusionPatterns,
  * 			org.eclipse.core.runtime.IPath specificOutputLocation,
- * 			IClasspathAttribute[] extraAttributes)
- * @see JavaCore#newVariableEntry(
+ * 			IIncludePathAttribute[] extraAttributes)
+ * @see JavaScriptCore#newVariableEntry(
  *			org.eclipse.core.runtime.IPath variablePath,
  *			org.eclipse.core.runtime.IPath variableSourceAttachmentPath,
  *			org.eclipse.core.runtime.IPath variableSourceAttachmentRootPath,
  *			IAccessRule[] accessRules,
- *			IClasspathAttribute[] extraAttributes,
+ *			IIncludePathAttribute[] extraAttributes,
  *			boolean isExported)
- * @since 3.1
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface IClasspathAttribute {
+public interface IIncludePathAttribute {
 
 	/**
 	 * Constant for the name of the javadoc location attribute.
 	 *
 	 * @since 3.1
 	 */
-	String JAVADOC_LOCATION_ATTRIBUTE_NAME = "javadoc_location"; //$NON-NLS-1$
+	String JSDOC_LOCATION_ATTRIBUTE_NAME = "javadoc_location"; //$NON-NLS-1$
 
 	/**
 	 * Constant for the name of the optional attribute. The possible values

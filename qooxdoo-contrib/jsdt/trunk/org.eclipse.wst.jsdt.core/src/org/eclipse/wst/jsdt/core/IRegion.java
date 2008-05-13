@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,10 +23,15 @@ package org.eclipse.wst.jsdt.core;
  * </p>
  * <p>
  * This interface is not intended to be implemented by clients.
- * Instances can be created via the <code>JavaCore.newRegion</code>.
+ * Instances can be created via the <code>JavaScriptCore.newRegion</code>.
  * </p>
  *
- * @see JavaCore#newRegion()
+ * @see JavaScriptCore#newRegion()
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface IRegion {
 	/**
@@ -38,21 +43,21 @@ public interface IRegion {
 	 *
 	 * @param element the given element
 	 */
-	void add(IJavaElement element);
+	void add(IJavaScriptElement element);
 	/**
 	 * Returns whether the given element is contained in this region.
 	 *
 	 * @param element the given element
 	 * @return true if the given element is contained in this region, false otherwise
 	 */
-	boolean contains(IJavaElement element);
+	boolean contains(IJavaScriptElement element);
 	/**
 	 * Returns the top level elements in this region.
 	 * All descendents of these elements are also included in this region.
 	 *
 	 * @return the top level elements in this region
 	 */
-	IJavaElement[] getElements();
+	IJavaScriptElement[] getElements();
 	/**
 	 * Removes the specified element from the region and returns
 	 * <code>true</code> if successful, <code>false</code> if the remove
@@ -63,5 +68,5 @@ public interface IRegion {
 	 * @param element the given element
 	 * @return <code>true</code> if successful, <code>false</code> if the remove fails
 	 */
-	boolean remove(IJavaElement element);
+	boolean remove(IJavaScriptElement element);
 }

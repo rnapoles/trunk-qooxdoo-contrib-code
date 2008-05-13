@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,11 @@ import org.eclipse.wst.jsdt.internal.core.util.Util;
  *
  * This class is not intended to be subclassed by clients. This class is intended to be instantiated by clients.
  *
- * @since 2.0
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public class CorrectionEngine implements ProblemReasons {
 
@@ -49,7 +53,7 @@ public class CorrectionEngine implements ProblemReasons {
 	/**
 	 * This field is not intended to be used by client.
 	 */
-	protected ICompilationUnit compilationUnit;
+	protected IJavaScriptUnit compilationUnit;
 	/**
 	 * This field is not intended to be used by client.
 	 */
@@ -109,21 +113,20 @@ public class CorrectionEngine implements ProblemReasons {
 	 * @param requestor
 	 * 		the given correction requestor
 	 * @exception IllegalArgumentException if <code>requestor</code> is <code>null</code>
-	 * @exception JavaModelException currently this exception is never thrown, but the opportunity to thrown an exception
+	 * @exception JavaScriptModelException currently this exception is never thrown, but the opportunity to thrown an exception
 	 * 	when the correction failed is kept for later.
-	 * @since 2.0
 	 */
-	public void computeCorrections(IMarker marker, ICompilationUnit targetUnit, int positionOffset, ICorrectionRequestor requestor) throws JavaModelException {
+	public void computeCorrections(IMarker marker, IJavaScriptUnit targetUnit, int positionOffset, ICorrectionRequestor requestor) throws JavaScriptModelException {
 
-		IJavaElement element = targetUnit == null ? JavaCore.create(marker.getResource()) : targetUnit;
+		IJavaScriptElement element = targetUnit == null ? JavaScriptCore.create(marker.getResource()) : targetUnit;
 
-		if(!(element instanceof ICompilationUnit))
+		if(!(element instanceof IJavaScriptUnit))
 			return;
 
-		ICompilationUnit unit = (ICompilationUnit) element;
+		IJavaScriptUnit unit = (IJavaScriptUnit) element;
 
-		int id = marker.getAttribute(IJavaModelMarker.ID, -1);
-		String[] args = Util.getProblemArgumentsFromMarker(marker.getAttribute(IJavaModelMarker.ARGUMENTS, "")); //$NON-NLS-1$
+		int id = marker.getAttribute(IJavaScriptModelMarker.ID, -1);
+		String[] args = Util.getProblemArgumentsFromMarker(marker.getAttribute(IJavaScriptModelMarker.ARGUMENTS, "")); //$NON-NLS-1$
 		int start = marker.getAttribute(IMarker.CHAR_START, -1);
 		int end = marker.getAttribute(IMarker.CHAR_END, -1);
 
@@ -143,11 +146,10 @@ public class CorrectionEngine implements ProblemReasons {
 	 * @param requestor
 	 * 		the given correction requestor
 	 * @exception IllegalArgumentException if <code>targetUnit</code> or <code>requestor</code> is <code>null</code>
-	 * @exception JavaModelException currently this exception is never thrown, but the opportunity to thrown an exception
+	 * @exception JavaScriptModelException currently this exception is never thrown, but the opportunity to thrown an exception
 	 * 	when the correction failed is kept for later.
-	 * @since 2.0
 	 */
-	public void computeCorrections(IProblem problem, ICompilationUnit targetUnit, ICorrectionRequestor requestor) throws JavaModelException {
+	public void computeCorrections(IProblem problem, IJavaScriptUnit targetUnit, ICorrectionRequestor requestor) throws JavaScriptModelException {
 		if (requestor == null) {
 			throw new IllegalArgumentException(Messages.correction_nullUnit);
 		}
@@ -180,11 +182,10 @@ public class CorrectionEngine implements ProblemReasons {
 	 * 		arguments of the problem.
 	 *
 	 * @exception IllegalArgumentException if <code>requestor</code> is <code>null</code>
-	 * @exception JavaModelException currently this exception is never thrown, but the opportunity to thrown an exception
+	 * @exception JavaScriptModelException currently this exception is never thrown, but the opportunity to thrown an exception
 	 * 	when the correction failed is kept for later.
-	 * @since 2.0
 	 */
-	private void computeCorrections(ICompilationUnit unit, int id, int start, int end, String[] arguments, ICorrectionRequestor requestor) {
+	private void computeCorrections(IJavaScriptUnit unit, int id, int start, int end, String[] arguments, ICorrectionRequestor requestor) {
 
 		if(id == -1 || arguments == null || start == -1 || end == -1)
 			return;
@@ -278,20 +279,20 @@ public class CorrectionEngine implements ProblemReasons {
 					break;
 				}
 			}
-			Hashtable oldOptions = JavaCore.getOptions();
+			Hashtable oldOptions = JavaScriptCore.getOptions();
 			try {
 				Hashtable options = new Hashtable(oldOptions);
-				options.put(JavaCore.CODEASSIST_CAMEL_CASE_MATCH, JavaCore.DISABLED);
-				JavaCore.setOptions(options);
+				options.put(JavaScriptCore.CODEASSIST_CAMEL_CASE_MATCH, JavaScriptCore.DISABLED);
+				JavaScriptCore.setOptions(options);
 
 				this.compilationUnit.codeComplete(
 					completionPosition,
 					this.completionRequestor
 				);
 			} finally {
-				JavaCore.setOptions(oldOptions);
+				JavaScriptCore.setOptions(oldOptions);
 			}
-		} catch (JavaModelException e) {
+		} catch (JavaScriptModelException e) {
 			return;
 		} catch (InvalidInputException e) {
 			return;
@@ -407,14 +408,13 @@ public class CorrectionEngine implements ProblemReasons {
 	 * neither null nor empty, it contains at least the String <code>all</code>.
 	 * It should not be modified by the caller (please take a copy if modifications
 	 * are needed).<br>
-	 * <b>Note:</b> The tokens returned are not necessarily standardized across Java
-	 * compilers. If you were to use one of these tokens in a <code>@SuppressWarnings</code>
-	 * annotation in the Java source code, the effects (if any) may vary from
-	 * compiler to compiler.
+	 * <b>Note:</b> The tokens returned are not necessarily standardized across JavaScript
+	 * validators. If you were to use one of these tokens in a <code>@SuppressWarnings</code>
+	 * annotation in the JavaScript source code, the effects (if any) may vary from
+	 * validator to validator.
 	 *
 	 * @return an array of strings which contains one entry per warning token
 	 * 			accepted by the <code>@SuppressWarnings</code> annotation.
-	 * @since 3.2
 	 */
 	public static String[] getAllWarningTokens() {
 		return CompilerOptions.warningTokens;
@@ -428,10 +428,9 @@ public class CorrectionEngine implements ProblemReasons {
 	 * @param problemMarker
 	 * 		the problem marker to decode arguments from.
 	 * @return an array of String arguments, or <code>null</code> if unable to extract arguments
-	 * @since 2.1
 	 */
 	public static String[] getProblemArguments(IMarker problemMarker){
-		String argumentsString = problemMarker.getAttribute(IJavaModelMarker.ARGUMENTS, null);
+		String argumentsString = problemMarker.getAttribute(IJavaScriptModelMarker.ARGUMENTS, null);
 		return Util.getProblemArgumentsFromMarker(argumentsString);
 	}
 
@@ -443,7 +442,7 @@ public class CorrectionEngine implements ProblemReasons {
 	 * <p>
 	 * <b>Note:</b> <code>@SuppressWarnings</code> can only suppress warnings,
 	 * which means that if some problems got promoted to ERROR using custom compiler
-	 * settings ({@link IJavaProject#setOption(String, String)}), the
+	 * settings ({@link IJavaScriptProject#setOption(String, String)}), the
 	 * <code>@SuppressWarnings</code> annotation will be ineffective.
 	 * </p>
 	 * <p>
@@ -451,16 +450,15 @@ public class CorrectionEngine implements ProblemReasons {
 	 * <code>"all"</code> so as to suppress all possible warnings at once.
 	 * </p>
 	 * <p>
-	 * <b>Note:</b> The tokens returned are not necessarily standardized across Java
-	 * compilers. If you were to use one of these tokens in an @SuppressWarnings
-	 * annotation in the Java source code, the effects (if any) may vary from
-	 * compiler to compiler.
+	 * <b>Note:</b> The tokens returned are not necessarily standardized across JavaScript
+	 * validators. If you were to use one of these tokens in an @SuppressWarnings
+	 * annotation in the JavaScript source code, the effects (if any) may vary from
+	 * validator to validator.
 	 * </p>
 	 * @param problemID
 	 *         the ID of a given warning to suppress
 	 * @return a String which can be used in <code>@SuppressWarnings</code> annotation,
 	 * or <code>null</code> if unable to suppress this warning.
-	 * @since 3.1
 	 */
 	public static String getWarningToken(int problemID){
 		long irritant = ProblemReporter.getIrritant(problemID);

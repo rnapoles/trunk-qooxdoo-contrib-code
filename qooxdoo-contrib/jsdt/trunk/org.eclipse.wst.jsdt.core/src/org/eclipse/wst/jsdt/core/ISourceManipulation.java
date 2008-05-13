@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface ISourceManipulation {
 /**
@@ -33,7 +38,7 @@ public interface ISourceManipulation {
  *   the target name should be replaced, and <code>false</code> to throw an
  *   exception in the event of a name collision
  * @param monitor a progress monitor
- * @exception JavaModelException if this element could not be copied. Reasons include:
+ * @exception JavaScriptModelException if this element could not be copied. Reasons include:
  * <ul>
  * <li> This Java element, container element, or sibling does not exist (ELEMENT_DOES_NOT_EXIST)</li>
  * <li> A <code>CoreException</code> occurred while updating an underlying resource
@@ -47,7 +52,7 @@ public interface ISourceManipulation {
  *
  * @exception IllegalArgumentException if container is <code>null</code>
  */
-void copy(IJavaElement container, IJavaElement sibling, String rename, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+void copy(IJavaScriptElement container, IJavaScriptElement sibling, String rename, boolean replace, IProgressMonitor monitor) throws JavaScriptModelException;
 /**
  * Deletes this element, forcing if specified and necessary.
  *
@@ -55,14 +60,14 @@ void copy(IJavaElement container, IJavaElement sibling, String rename, boolean r
  *    in sync with the local file system will be tolerated (same as the force flag
  *	  in IResource operations).
  * @param monitor a progress monitor
- * @exception JavaModelException if this element could not be deleted. Reasons include:
+ * @exception JavaScriptModelException if this element could not be deleted. Reasons include:
  * <ul>
  * <li> This Java element does not exist (ELEMENT_DOES_NOT_EXIST)</li>
  * <li> A <code>CoreException</code> occurred while updating an underlying resource (CORE_EXCEPTION)</li>
  * <li> This element is read-only (READ_ONLY)</li>
  * </ul>
  */
-void delete(boolean force, IProgressMonitor monitor) throws JavaModelException;
+void delete(boolean force, IProgressMonitor monitor) throws JavaScriptModelException;
 /**
  * Moves this element to the given container.
  *
@@ -76,7 +81,7 @@ void delete(boolean force, IProgressMonitor monitor) throws JavaModelException;
  *   the target name should be replaced, and <code>false</code> to throw an
  *   exception in the event of a name collision
  * @param monitor a progress monitor
- * @exception JavaModelException if this element could not be moved. Reasons include:
+ * @exception JavaScriptModelException if this element could not be moved. Reasons include:
  * <ul>
  * <li> This Java element, container element, or sibling does not exist (ELEMENT_DOES_NOT_EXIST)</li>
  * <li> A <code>CoreException</code> occurred while updating an underlying resource
@@ -90,7 +95,7 @@ void delete(boolean force, IProgressMonitor monitor) throws JavaModelException;
  *
  * @exception IllegalArgumentException if container is <code>null</code>
  */
-void move(IJavaElement container, IJavaElement sibling, String rename, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+void move(IJavaScriptElement container, IJavaScriptElement sibling, String rename, boolean replace, IProgressMonitor monitor) throws JavaScriptModelException;
 /**
  * Renames this element to the given name.
  *
@@ -99,7 +104,7 @@ void move(IJavaElement container, IJavaElement sibling, String rename, boolean r
  *   should be replaced, and <code>false</code> to throw an exception in the
  *   event of a name collision
  * @param monitor a progress monitor
- * @exception JavaModelException if this element could not be renamed. Reasons include:
+ * @exception JavaScriptModelException if this element could not be renamed. Reasons include:
  * <ul>
  * <li> This Java element does not exist (ELEMENT_DOES_NOT_EXIST)</li>
  * <li> A <code>CoreException</code> occurred while updating an underlying resource
@@ -109,5 +114,5 @@ void move(IJavaElement container, IJavaElement sibling, String rename, boolean r
  * <li> This element is read-only (READ_ONLY)
  * </ul>
  */
-void rename(String name, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+void rename(String name, boolean replace, IProgressMonitor monitor) throws JavaScriptModelException;
 }

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 /**
  *
  */
@@ -7,13 +17,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.jsdt.internal.core.ClassFile;
 
 /**
- * @author childsb
- *
+ *  (mostly) static methods to figure out classpath entries and container initializers *
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 
-/* (mostly) static methods to figure out classpath entries and container initializers *
- *
- */
 public class JSDScopeUtil {
 
 
@@ -22,34 +33,34 @@ public class JSDScopeUtil {
 
 	public static JsGlobalScopeContainerInitializer getContainerInitializer(IPath classPathEntry) {
 		if(classPathEntry==null ) return null;
-		JsGlobalScopeContainerInitializer initializer= JavaCore.getJsGlobalScopeContainerInitializer(classPathEntry.segment(0));
+		JsGlobalScopeContainerInitializer initializer= JavaScriptCore.getJsGlobalScopeContainerInitializer(classPathEntry.segment(0));
 		return initializer ;
 	}
 
-	public IClasspathEntry[] getClasspathEntries(IJsGlobalScopeContainer container) {
+	public IIncludePathEntry[] getIncludepathEntries(IJsGlobalScopeContainer container) {
 
 
-		if(container!=null) return	container.getClasspathEntries();
+		if(container!=null) return	container.getIncludepathEntries();
 
-		return new IClasspathEntry[0];
+		return new IIncludePathEntry[0];
 	}
 
-	public  IJsGlobalScopeContainer getLibraryContainer(IPath cpEntry, IJavaProject javaProject) {
+	public  IJsGlobalScopeContainer getLibraryContainer(IPath cpEntry, IJavaScriptProject javaProject) {
 		IJsGlobalScopeContainer container=null;
 		try {
-			container = JavaCore.getJsGlobalScopeContainer(cpEntry, javaProject);
-		} catch (JavaModelException ex) {
+			container = JavaScriptCore.getJsGlobalScopeContainer(cpEntry, javaProject);
+		} catch (JavaScriptModelException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 		return	container;
 	}
 
-	public static JsGlobalScopeContainerInitializer findLibraryInitializer(IPath compUnitPath, IJavaProject javaProject) {
+	public static JsGlobalScopeContainerInitializer findLibraryInitializer(IPath compUnitPath, IJavaScriptProject javaProject) {
 		IPackageFragmentRoot[] roots = new IPackageFragmentRoot[0];
 		try {
 			roots = javaProject.getAllPackageFragmentRoots();
-		} catch (JavaModelException ex) {
+		} catch (JavaScriptModelException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}

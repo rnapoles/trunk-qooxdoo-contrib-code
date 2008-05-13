@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@
 
 package org.eclipse.wst.jsdt.core.compiler;
 
-import org.eclipse.wst.jsdt.core.IJavaProject;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 
 /**
  * A validation participant is notified of events occuring during the validation process.
@@ -22,12 +22,16 @@ import org.eclipse.wst.jsdt.core.IJavaProject;
  * (for a working copy), etc.
  * <p>
  * Clients wishing to participate in the validation process must subclass this class, and implement
- * {@link #isActive(IJavaProject)}, {@link #aboutToBuild(IJavaProject)},
+ * {@link #isActive(IJavaScriptProject)}, {@link #aboutToBuild(IJavaScriptProject)},
  * {@link #reconcile(ReconcileContext)}, etc.
 * </p><p>
  * This class is intended to be subclassed by clients.
  * </p>
- * @since 3.2
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class ValidationParticipant {
 
@@ -45,7 +49,7 @@ public static int NEEDS_FULL_BUILD = 2;
  * @param project the project about to build
  * @return READY_FOR_BUILD or NEEDS_FULL_BUILD
  */
-public int aboutToBuild(IJavaProject project) {
+public int aboutToBuild(IJavaScriptProject project) {
 	return READY_FOR_BUILD;
 }
 
@@ -68,7 +72,7 @@ public void buildStarting(BuildContext[] files, boolean isBatch) {
  * Only sent to participants interested in the project.
  * @param project the project about to be cleaned
  */
-public void cleanStarting(IJavaProject project) {
+public void cleanStarting(IJavaScriptProject project) {
 	// do nothing by default
 }
 
@@ -83,7 +87,7 @@ public void cleanStarting(IJavaProject project) {
  * @param project the project to participate in
  * @return whether this participant is active for a given project
  */
-public boolean isActive(IJavaProject project) {
+public boolean isActive(IJavaScriptProject project) {
 	return false;
 }
 

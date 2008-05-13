@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,11 @@ package org.eclipse.wst.jsdt.core;
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface IField extends IMember {
 /**
@@ -85,10 +90,10 @@ public interface IField extends IMember {
  * </table>
  *
  * @return  the constant value associated with this field or <code>null</code> if this field has none.
- * @exception JavaModelException if this element does not exist or if an
+ * @exception JavaScriptModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  */
-public Object getConstant() throws JavaModelException;
+public Object getConstant() throws JavaScriptModelException;
 /**
  * Returns the simple name of this field.
  * @return the simple name of this field.
@@ -115,20 +120,20 @@ String getKey();
  * </p>
  *
  * @return the type signature of this field
- * @exception JavaModelException if this element does not exist or if an
+ * @exception JavaScriptModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  * @see Signature
  */
-String getTypeSignature() throws JavaModelException;
+String getTypeSignature() throws JavaScriptModelException;
 /**
  * Returns whether this field represents an enum constant.
  *
  * @return whether this field represents an enum constant
- * @exception JavaModelException if this element does not exist or if an
+ * @exception JavaScriptModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  * @since 3.1
  */
-boolean isEnumConstant() throws JavaModelException;
+boolean isEnumConstant() throws JavaScriptModelException;
 /**
  * Returns whether this field represents a resolved field.
  * If a field is resoved, its key contains resolved information.

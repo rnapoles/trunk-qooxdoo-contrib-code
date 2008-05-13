@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,10 +12,10 @@ package org.eclipse.wst.jsdt.core;
 
 /**
  * Common protocol for Java elements that have associated source code.
- * This set consists of <code>IClassFile</code>, <code>ICompilationUnit</code>,
+ * This set consists of <code>IClassFile</code>, <code>IJavaScriptUnit</code>,
  * <code>IPackageDeclaration</code>, <code>IImportDeclaration</code>,
  * <code>IImportContainer</code>, <code>IType</code>, <code>IField</code>,
- * <code>IMethod</code>, and <code>IInitializer</code>.
+ * <code>IFunction</code>, and <code>IInitializer</code>.
  * <p>
  * Note: For <code>IClassFile</code>, <code>IType</code> and other members
  * derived from a binary type, the implementation returns source iff the
@@ -30,6 +30,11 @@ package org.eclipse.wst.jsdt.core;
  * </p>
  *
  * @see IPackageFragmentRoot#attachSource(org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IProgressMonitor)
+ *  
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public interface ISourceReference {
 /**
@@ -52,9 +57,9 @@ boolean exists();
  *
  * @return the source code, or <code>null</code> if this element has no
  *   associated source code
- * @exception JavaModelException if an exception occurs while accessing its corresponding resource
+ * @exception JavaScriptModelException if an exception occurs while accessing its corresponding resource
  */
-String getSource() throws JavaModelException;
+String getSource() throws JavaScriptModelException;
 /**
  * Returns the source range associated with this element.
  * <p>
@@ -64,7 +69,7 @@ String getSource() throws JavaModelException;
  *
  * @return the source range, or <code>null</code> if this element has no
  *   associated source code
- * @exception JavaModelException if an exception occurs while accessing its corresponding resource
+ * @exception JavaScriptModelException if an exception occurs while accessing its corresponding resource
  */
-ISourceRange getSourceRange() throws JavaModelException;
+ISourceRange getSourceRange() throws JavaScriptModelException;
 }
