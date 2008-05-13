@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,14 +53,14 @@ public abstract class Binding {
 	public abstract int kind();
 	/*
 	 * Computes a key that uniquely identifies this binding.
-	 * Returns null if binding is not a TypeBinding, a MethodBinding, a FieldBinding or a PackageBinding.
+	 * Returns null if binding is not a TypeBinding, a FunctionBinding, a FieldBinding or a PackageBinding.
 	 */
 	public char[] computeUniqueKey() {
 		return computeUniqueKey(true/*leaf*/);
 	}
 	/*
 	 * Computes a key that uniquely identifies this binding. Optinaly include access flags.
-	 * Returns null if binding is not a TypeBinding, a MethodBinding, a FieldBinding or a PackageBinding.
+	 * Returns null if binding is not a TypeBinding, a FunctionBinding, a FieldBinding or a PackageBinding.
 	 */
 	public char[] computeUniqueKey(boolean isLeaf) {
 		return null;

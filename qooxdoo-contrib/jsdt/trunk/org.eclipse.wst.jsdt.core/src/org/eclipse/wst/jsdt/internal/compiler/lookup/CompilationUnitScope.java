@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -137,6 +137,24 @@ public CompilationUnitScope(CompilationUnitDeclaration unit, LookupEnvironment e
 
 }
 
+protected CompilationUnitScope(LookupEnvironment environment)
+{
+	super(COMPILATION_UNIT_SCOPE, null);
+	this.environment = environment;
+	
+	this.referencedTypes = new ObjectVector();
+	if (compilerOptions().produceReferenceInfo) {
+		this.qualifiedReferences = new CompoundNameVector();
+		this.simpleNameReferences = new SimpleNameVector();
+		this.referencedSuperTypes = new ObjectVector();
+	} else {
+		this.qualifiedReferences = null; // used to test if dependencies should be recorded
+		this.simpleNameReferences = null;
+//		this.referencedTypes = null;
+		this.referencedSuperTypes = null;
+	}
+}
+
 public MethodScope methodScope() {
 	if(superBinding!=null && methodScope==null) {
 		methodScope = new MethodScope(classScope,referenceContext(),false);
@@ -218,7 +236,7 @@ void buildTypeBindings(AccessRestriction accessRestriction) {
 //
 //		if ((typeDecl.modifiers & ClassFileConstants.AccPublic) != 0) {
 //			char[] mainTypeName;
-//			if ((mainTypeName = referenceContext.getMainTypeName()) != null // mainTypeName == null means that implementor of ICompilationUnit decided to return null
+//			if ((mainTypeName = referenceContext.getMainTypeName()) != null // mainTypeName == null means that implementor of IJavaScriptUnit decided to return null
 //					&& !CharOperation.equals(mainTypeName, typeDecl.name)) {
 //				problemReporter().publicClassMustMatchFileName(referenceContext, typeDecl);
 //				// tolerate faulty main type name (91091), allow to proceed into type construction
@@ -265,7 +283,7 @@ void buildTypeBindings(AccessRestriction accessRestriction) {
 	/* may need to get the actual binding here */
 //	if(libSuperType!=null) {
 //		//JsGlobalScopeContainerInitializer cinit = libSuperType.getContainerInitializer();
-//		//IClasspathEntry[] entries = libSuperType.getClasspathEntries();
+//		//IIncludePathEntry[] entries = libSuperType.getClasspathEntries();
 //		IPackageFragment[] fragments = libSuperType.getPackageFragments();
 //		for(int i = 0;i<fragments.length;i++) {
 //			String packageName = fragments[i].getElementName();
@@ -650,7 +668,7 @@ void connectTypeHierarchy() {
 //			}
 //			ReferenceBinding[] memberTypes = superType.memberTypes();
 //			ReferenceBinding[] memberFields = superType.typeVariables();
-//			MethodBinding[] memberMethods = superType.availableMethods();
+//			FunctionBinding[] memberMethods = superType.availableMethods();
 //			for(int i=0;i<memberTypes.length;i++) {
 //				recordReference(memberTypes[i], memberTypes[i].sourceName);
 //			}
@@ -1191,7 +1209,7 @@ public void storeDependencyInfo() {
 	referenceContext.compilationResult.simpleNameReferences = simpleRefs;
 }
 public String toString() {
-	return "--- CompilationUnit Scope : " + new String(referenceContext.getFileName()); //$NON-NLS-1$
+	return "--- JavaScriptUnit Scope : " + new String(referenceContext.getFileName()); //$NON-NLS-1$
 }
 private ReferenceBinding typeToRecord(TypeBinding type) {
 	while (type.isArrayType())

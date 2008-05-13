@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2007 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -575,7 +575,7 @@ public class ParameterizedTypeBinding extends ReferenceBinding implements Substi
 	}
 
 	/**
-	 * @see org.eclipse.wst.jsdt.internal.compiler.lookup.ReferenceBinding#implementsMethod(MethodBinding)
+	 * @see org.eclipse.wst.jsdt.internal.compiler.lookup.ReferenceBinding#implementsMethod(FunctionBinding)
 	 */
 	public boolean implementsMethod(MethodBinding method) {
 		return this.type.implementsMethod(method); // erasure
