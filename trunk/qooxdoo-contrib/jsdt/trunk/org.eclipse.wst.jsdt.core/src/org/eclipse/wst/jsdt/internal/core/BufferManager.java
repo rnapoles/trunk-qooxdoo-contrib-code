@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import java.util.Enumeration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.wst.jsdt.core.IBuffer;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IOpenable;
 
 /**
@@ -64,7 +64,7 @@ protected void addBuffer(IBuffer buffer) {
 	}
 }
 public static IBuffer createBuffer(IOpenable owner) {
-	IJavaElement element = (IJavaElement)owner;
+	IJavaScriptElement element = (IJavaScriptElement)owner;
 	IResource resource = element.getResource();
 	return
 		new Buffer(
@@ -73,7 +73,7 @@ public static IBuffer createBuffer(IOpenable owner) {
 			element.isReadOnly());
 }
 public static IBuffer createNullBuffer(IOpenable owner) {
-	IJavaElement element = (IJavaElement)owner;
+	IJavaScriptElement element = (IJavaScriptElement)owner;
 	IResource resource = element.getResource();
 	return
 		new NullBuffer(

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.jsdt.internal.core;
 
 import java.util.Map;
@@ -5,10 +15,10 @@ import java.util.Map;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 import org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer;
 import org.eclipse.wst.jsdt.core.IPackageFragmentRoot;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 
 
@@ -53,7 +63,7 @@ public class LibraryFragmentRoot extends PackageFragmentRoot{
 		}
 	}
 
-	public IResource getUnderlyingResource() throws JavaModelException {
+	public IResource getUnderlyingResource() throws JavaScriptModelException {
 		if (isExternal()) {
 			if (!exists()) throw newNotPresentException();
 			return null;
@@ -73,7 +83,7 @@ public class LibraryFragmentRoot extends PackageFragmentRoot{
 		}
 	}
 
-	protected boolean computeChildren(OpenableElementInfo info, Map newElements) throws JavaModelException {
+	protected boolean computeChildren(OpenableElementInfo info, Map newElements) throws JavaScriptModelException {
 
 		String name[]={""};//libraryPath.lastSegment()}; //$NON-NLS-1$
 		LibraryPackageFragment packFrag=  new LibraryPackageFragment(this, name);
@@ -84,7 +94,7 @@ public class LibraryFragmentRoot extends PackageFragmentRoot{
 
 		newElements.put(packFrag, fragInfo);
 
-		IJavaElement[] children= new IJavaElement[]{packFrag};
+		IJavaScriptElement[] children= new IJavaScriptElement[]{packFrag};
 		info.setChildren(children);
 		return true;
 	}
@@ -143,7 +153,7 @@ protected boolean resourceExists() {
 
 //private ClassFile getLibraryClassFile(){
 //	try {
-//		ArrayList childrenOfType = getChildrenOfType(IJavaElement.PACKAGE_FRAGMENT);
+//		ArrayList childrenOfType = getChildrenOfType(IJavaScriptElement.PACKAGE_FRAGMENT);
 //		if (!childrenOfType.isEmpty())
 //		{
 //			IPackageFragment child=(IPackageFragment)childrenOfType.get(0);
@@ -151,7 +161,7 @@ protected boolean resourceExists() {
 //			if (classFiles!=null && classFiles.length>0)
 //				return (ClassFile)classFiles[0];
 //		}
-//	} catch (JavaModelException e) {
+//	} catch (JavaScriptModelException e) {
 //		// TODO Auto-generated catch block
 //		e.printStackTrace();
 //	}
@@ -175,7 +185,7 @@ protected boolean resourceExists() {
 	public String getDisplayName() {
 
 		JsGlobalScopeContainerInitializer containerInitializer = getContainerInitializer();
-		if(containerInitializer!=null) return containerInitializer.getDescription(getPath(), getJavaProject());
+		if(containerInitializer!=null) return containerInitializer.getDescription(getPath(), getJavaScriptProject());
 		return super.getDisplayName();
 
 	}

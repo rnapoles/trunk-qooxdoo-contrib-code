@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,8 @@ package org.eclipse.wst.jsdt.internal.core;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 
 /**
  *
@@ -34,12 +34,22 @@ public class UserLibraryJsGlobalScopeContainer implements IJsGlobalScopeContaine
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer#getClasspathEntries()
 	 */
-	public IClasspathEntry[] getClasspathEntries() {
+	/**
+	 * @deprecated Use {@link #getIncludepathEntries()} instead
+	 */
+	public IIncludePathEntry[] getClasspathEntries() {
+		return getIncludepathEntries();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer#getClasspathEntries()
+	 */
+	public IIncludePathEntry[] getIncludepathEntries() {
 		UserLibrary library= getUserLibrary();
 		if (library != null) {
 			return library.getEntries();
 		}
-		return new IClasspathEntry[0];
+		return new IIncludePathEntry[0];
 
 	}
 
@@ -65,7 +75,7 @@ public class UserLibraryJsGlobalScopeContainer implements IJsGlobalScopeContaine
 	 * @see org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer#getPath()
 	 */
 	public IPath getPath() {
-		return new Path(JavaCore.USER_LIBRARY_CONTAINER_ID).append(this.name);
+		return new Path(JavaScriptCore.USER_LIBRARY_CONTAINER_ID).append(this.name);
 	}
 
 	/* (non-Javadoc)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,17 +17,17 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.jsdt.core.IClasspathEntry;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
 import org.eclipse.wst.jsdt.internal.core.util.Util;
 
 public class ProjectReferenceChange {
 
 	private JavaProject project;
-	private IClasspathEntry[] oldResolvedClasspath;
+	private IIncludePathEntry[] oldResolvedClasspath;
 
-	public ProjectReferenceChange(JavaProject project, IClasspathEntry[] oldResolvedClasspath) {
+	public ProjectReferenceChange(JavaProject project, IIncludePathEntry[] oldResolvedClasspath) {
 		this.project = project;
 		this.oldResolvedClasspath = oldResolvedClasspath;
 	}
@@ -35,10 +35,10 @@ public class ProjectReferenceChange {
 	/*
 	 * Update projects references so that the build order is consistent with the classpath
 	 */
-	public void updateProjectReferencesIfNecessary() throws JavaModelException {
+	public void updateProjectReferencesIfNecessary() throws JavaScriptModelException {
 
 		String[] oldRequired = this.oldResolvedClasspath == null ? CharOperation.NO_STRINGS : this.project.projectPrerequisites(this.oldResolvedClasspath);
-		IClasspathEntry[] newResolvedClasspath = this.project.getResolvedClasspath();
+		IIncludePathEntry[] newResolvedClasspath = this.project.getResolvedClasspath();
 		String[] newRequired = this.project.projectPrerequisites(newResolvedClasspath);
 		try {
 			IProject projectResource = this.project.getProject();
@@ -94,7 +94,7 @@ public class ProjectReferenceChange {
 
 		} catch(CoreException e){
 			if (!ExternalJavaProject.EXTERNAL_PROJECT_NAME.equals(this.project.getElementName()))
-				throw new JavaModelException(e);
+				throw new JavaScriptModelException(e);
 		}
 	}
 	public String toString() {

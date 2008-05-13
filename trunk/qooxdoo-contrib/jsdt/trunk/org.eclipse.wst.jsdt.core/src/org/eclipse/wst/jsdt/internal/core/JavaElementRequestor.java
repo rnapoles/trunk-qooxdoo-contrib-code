@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import org.eclipse.wst.jsdt.core.IField;
 import org.eclipse.wst.jsdt.core.IInitializer;
-import org.eclipse.wst.jsdt.core.IMethod;
+import org.eclipse.wst.jsdt.core.IFunction;
 import org.eclipse.wst.jsdt.core.IPackageFragment;
 import org.eclipse.wst.jsdt.core.IType;
 
@@ -72,7 +72,7 @@ public class JavaElementRequestor implements IJavaElementRequestor {
 	protected static IInitializer[] fgEmptyInitializerArray= new IInitializer[0];
 	protected static IType[] fgEmptyTypeArray= new IType[0];
 	protected static IPackageFragment[] fgEmptyPackageFragmentArray= new IPackageFragment[0];
-	protected static IMethod[] fgEmptyMethodArray= new IMethod[0];
+	protected static IFunction[] fgEmptyMethodArray= new IFunction[0];
 /**
  * @see IJavaElementRequestor
  */
@@ -103,7 +103,7 @@ public void acceptMemberType(IType type) {
 /**
  * @see IJavaElementRequestor
  */
-public void acceptMethod(IMethod method) {
+public void acceptMethod(IFunction method) {
 	if (fMethods == null) {
 		fMethods = new ArrayList();
 	}
@@ -166,12 +166,12 @@ public IType[] getMemberTypes() {
 /**
  * @see IJavaElementRequestor
  */
-public IMethod[] getMethods() {
+public IFunction[] getMethods() {
 	if (fMethods == null) {
 		return fgEmptyMethodArray;
 	}
 	int size = fMethods.size();
-	IMethod[] results = new IMethod[size];
+	IFunction[] results = new IFunction[size];
 	fMethods.toArray(results);
 	return results;
 }

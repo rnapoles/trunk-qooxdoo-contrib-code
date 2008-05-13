@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,8 @@ package org.eclipse.wst.jsdt.internal.core;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.wst.jsdt.core.IJavaElement;
-import org.eclipse.wst.jsdt.core.JavaModelException;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
+import org.eclipse.wst.jsdt.core.JavaScriptModelException;
 
 /*
  * Abstract class for operations that change the classpath
@@ -22,7 +22,7 @@ public abstract class ChangeClasspathOperation extends JavaModelOperation {
 
 	protected boolean canChangeResources;
 
-	public ChangeClasspathOperation(IJavaElement[] elements, boolean canChangeResources) {
+	public ChangeClasspathOperation(IJavaScriptElement[] elements, boolean canChangeResources) {
 		super(elements);
 		this.canChangeResources = canChangeResources;
 	}
@@ -39,7 +39,7 @@ public abstract class ChangeClasspathOperation extends JavaModelOperation {
 	 * - update project references
 	 * - create resolved classpath markers
 	 */
-	protected void classpathChanged(JavaProject project) throws JavaModelException {
+	protected void classpathChanged(JavaProject project) throws JavaScriptModelException {
 		DeltaProcessingState state = JavaModelManager.getJavaModelManager().deltaState;
 		DeltaProcessor deltaProcessor = state.getDeltaProcessor();
 		ClasspathChange change = (ClasspathChange) deltaProcessor.classpathChanges.get(project.getProject());
