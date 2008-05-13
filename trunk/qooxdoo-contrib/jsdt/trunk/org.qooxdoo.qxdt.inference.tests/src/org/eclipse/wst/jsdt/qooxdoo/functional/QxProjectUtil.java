@@ -71,7 +71,7 @@ public class QxProjectUtil {
     } catch( IOException e ) {
       Activator.getDefault().log( e );
     }
-    System.out.println( "Bundle location: " + result.getFile() );
+    System.out.println( "Library location: " + result.getFile() );
     return result.getFile();
   }
 
