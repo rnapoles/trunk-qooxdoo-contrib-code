@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ import org.eclipse.wst.jsdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.eclipse.wst.jsdt.internal.compiler.impl.ITypeRequestor;
 import org.eclipse.wst.jsdt.internal.compiler.util.SuffixConstants;
 import org.eclipse.wst.jsdt.internal.compiler.util.Util;
+import org.eclipse.wst.jsdt.internal.oaametadata.IOAAMetaDataConstants;
 
 public class FileSystem implements INameEnvironment, SuffixConstants {
 
@@ -174,6 +175,13 @@ static Classpath getClasspath(String classpathName, String encoding,
 						destinationPath : // keep == comparison valid
 						convertPathSeparators(destinationPath));
 		}
+			else if (lowercaseClasspathName.endsWith(IOAAMetaDataConstants.METADATA_FILE.toLowerCase()))
+			{
+				result=new ClasspathMetadataFile(file, encoding,accessRuleSet,destinationPath == null || destinationPath == Main.NONE ?
+						destinationPath : // keep == comparison valid
+						convertPathSeparators(destinationPath));
+				
+			}
 	}
 	return result;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.jsdt.internal.compiler.ast;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.ast.IASTNode;
 import org.eclipse.wst.jsdt.core.ast.ILocalDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.ASTVisitor;
@@ -298,7 +298,7 @@ public FlowInfo analyseCode(BlockScope currentScope, FlowContext flowContext, Fl
 		}
 
 		// only resolve annotation at the end, for constant to be positionned before (96991)
-		if (JavaCore.IS_ECMASCRIPT4)
+		if (JavaScriptCore.IS_ECMASCRIPT4)
 		resolveAnnotations(scope, this.annotations, this.binding);
 	}
 	public StringBuffer printStatement(int indent, StringBuffer output) {

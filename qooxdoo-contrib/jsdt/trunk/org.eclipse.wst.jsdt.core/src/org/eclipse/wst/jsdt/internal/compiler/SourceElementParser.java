@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -573,7 +573,7 @@ protected void consumeMethodHeaderNameWithTypeParameters(boolean isAnnotationMet
  * INTERNAL USE-ONLY
  */
 protected void consumeMethodInvocationName() {
-	// MethodInvocation ::= Name '(' ArgumentListopt ')'
+	// FunctionInvocation ::= Name '(' ArgumentListopt ')'
 	super.consumeMethodInvocationName();
 
 	// when the name is only an identifier...we have a message send to "this" (implicit)
@@ -587,7 +587,7 @@ protected void consumeMethodInvocationName() {
 	}
 }
 protected void consumeMethodInvocationNameWithTypeArguments() {
-	// MethodInvocation ::= Name '.' TypeArguments 'Identifier' '(' ArgumentListopt ')'
+	// FunctionInvocation ::= Name '.' TypeArguments 'Identifier' '(' ArgumentListopt ')'
 	super.consumeMethodInvocationNameWithTypeArguments();
 
 	// when the name is only an identifier...we have a message send to "this" (implicit)
@@ -635,7 +635,7 @@ protected void consumeMethodInvocationPrimaryWithTypeArguments() {
  * INTERNAL USE-ONLY
  */
 protected void consumeMethodInvocationSuper() {
-	// MethodInvocation ::= 'super' '.' 'Identifier' '(' ArgumentListopt ')'
+	// FunctionInvocation ::= 'super' '.' 'Identifier' '(' ArgumentListopt ')'
 	super.consumeMethodInvocationSuper();
 	MessageSend messageSend = (MessageSend) expressionStack[expressionPtr];
 	Expression[] args = messageSend.arguments;
@@ -647,7 +647,7 @@ protected void consumeMethodInvocationSuper() {
 	}
 }
 protected void consumeMethodInvocationSuperWithTypeArguments() {
-	// MethodInvocation ::= 'super' '.' TypeArguments 'Identifier' '(' ArgumentListopt ')'
+	// FunctionInvocation ::= 'super' '.' TypeArguments 'Identifier' '(' ArgumentListopt ')'
 	super.consumeMethodInvocationSuperWithTypeArguments();
 	MessageSend messageSend = (MessageSend) expressionStack[expressionPtr];
 	Expression[] args = messageSend.arguments;

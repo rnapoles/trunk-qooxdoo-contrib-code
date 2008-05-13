@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package org.eclipse.wst.jsdt.internal.compiler.ast;
 
 import java.util.ArrayList;
 
-import org.eclipse.wst.jsdt.core.JavaCore;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.ast.IASTNode;
 import org.eclipse.wst.jsdt.core.ast.IFieldReference;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
@@ -45,8 +45,9 @@ public class FieldReference extends Reference implements InvocationSite, IFieldR
 	public Expression receiver;
 	public char[] token;
 	public FieldBinding binding;															// exact binding resulting from lookup
+	public TypeBinding typeBinding;															// exact binding resulting from lookup
 //	protected FieldBinding codegenBinding;									// actual binding used for code generation (if no synthetic accessor)
-//	public MethodBinding[] syntheticAccessors; // [0]=read accessor [1]=write accessor
+//	public FunctionBinding[] syntheticAccessors; // [0]=read accessor [1]=write accessor
 
 	public long nameSourcePosition; //(start<<32)+end
 	public TypeBinding receiverType;
@@ -64,16 +65,16 @@ public FieldReference(char[] source, long pos) {
 
 public FlowInfo analyseAssignment(BlockScope currentScope, 	FlowContext flowContext, 	FlowInfo flowInfo, Assignment assignment, boolean isCompound) {
 	// compound assignment extra work
-	if (isCompound) { // check the variable part is initialized if blank final
-		if (binding.isBlankFinal()
-			&& receiver.isThis()
-			&& currentScope.allowBlankFinalFieldAssignment(binding)
-			&& (!flowInfo.isDefinitelyAssigned(binding))) {
-			currentScope.problemReporter().uninitializedBlankFinalField(binding, this);
-			// we could improve error msg here telling "cannot use compound assignment on final blank field"
-		}
-		manageSyntheticAccessIfNecessary(currentScope, flowInfo, true /*read-access*/);
-	}
+//	if (isCompound) { // check the variable part is initialized if blank final
+//		if (binding.isBlankFinal()
+//			&& receiver.isThis()
+//			&& currentScope.allowBlankFinalFieldAssignment(binding)
+//			&& (!flowInfo.isDefinitelyAssigned(binding))) {
+//			currentScope.problemReporter().uninitializedBlankFinalField(binding, this);
+//			// we could improve error msg here telling "cannot use compound assignment on final blank field"
+//		}
+//		manageSyntheticAccessIfNecessary(currentScope, flowInfo, true /*read-access*/);
+//	}
 	if (receiver instanceof SingleNameReference && ((SingleNameReference)receiver).binding instanceof LocalVariableBinding)
 	{
 		flowInfo.markAsDefinitelyNonNull((LocalVariableBinding)((SingleNameReference)receiver).binding);
@@ -189,7 +190,7 @@ public void manageSyntheticAccessIfNecessary(BlockScope currentScope, FlowInfo f
 //		if ((currentScope.enclosingSourceType() != this.codegenBinding.declaringClass)
 //				&& binding.constant() == Constant.NotAConstant) {
 //			if (syntheticAccessors == null)
-//				syntheticAccessors = new MethodBinding[2];
+//				syntheticAccessors = new FunctionBinding[2];
 //			syntheticAccessors[isReadAccess ? READ : WRITE] =
 //				((SourceTypeBinding) this.codegenBinding.declaringClass).addSyntheticMethod(this.codegenBinding, isReadAccess);
 //			currentScope.problemReporter().needToEmulateFieldAccess(this.codegenBinding, this, isReadAccess);
@@ -203,7 +204,7 @@ public void manageSyntheticAccessIfNecessary(BlockScope currentScope, FlowInfo f
 //			(SourceTypeBinding) (((QualifiedSuperReference) receiver)
 //				.currentCompatibleType);
 //		if (syntheticAccessors == null)
-//			syntheticAccessors = new MethodBinding[2];
+//			syntheticAccessors = new FunctionBinding[2];
 //		syntheticAccessors[isReadAccess ? READ : WRITE] = destinationType.addSyntheticMethod(this.codegenBinding, isReadAccess);
 //		currentScope.problemReporter().needToEmulateFieldAccess(this.codegenBinding, this, isReadAccess);
 //		return;
@@ -219,7 +220,7 @@ public void manageSyntheticAccessIfNecessary(BlockScope currentScope, FlowInfo f
 //				(SourceTypeBinding) enclosingSourceType.enclosingTypeAt(
 //					(bits & DepthMASK) >> DepthSHIFT);
 //			if (syntheticAccessors == null)
-//				syntheticAccessors = new MethodBinding[2];
+//				syntheticAccessors = new FunctionBinding[2];
 //			syntheticAccessors[isReadAccess ? READ : WRITE] = currentCompatibleType.addSyntheticMethod(this.codegenBinding, isReadAccess);
 //			currentScope.problemReporter().needToEmulateFieldAccess(this.codegenBinding, this, isReadAccess);
 //			return;
@@ -355,9 +356,22 @@ public TypeBinding resolveType(BlockScope scope, boolean define, TypeBinding use
 
 	this.receiverType = receiver.resolveType(scope);
 	if (this.receiverType == null) {
-		this.binding=new ProblemFieldBinding(null,this.token,ProblemReasons.NotFound);
-		constant = Constant.NotAConstant;
-		this.resolvedType=TypeBinding.ANY;
+		char [] possibleTypeName = Util.getTypeName( this );
+		Binding possibleTypeBinding =null;
+		if (possibleTypeName!=null)
+		   possibleTypeBinding = scope.getBinding( possibleTypeName, Binding.TYPE  & RestrictiveFlagMASK, this, true /*resolve*/);
+		if (possibleTypeBinding!=null && possibleTypeBinding.isValidBinding())
+		{
+			this.typeBinding=(TypeBinding)possibleTypeBinding;
+			this.bits|=Binding.TYPE;
+			return this.typeBinding;
+		}
+		else
+		{
+			this.binding=new ProblemFieldBinding(null,this.token,ProblemReasons.NotFound);
+			constant = Constant.NotAConstant;
+			this.resolvedType=TypeBinding.ANY;
+		}
 		return null;
 	}
 //	if (receiverCast) {
@@ -380,7 +394,8 @@ public TypeBinding resolveType(BlockScope scope, boolean define, TypeBinding use
 	}
 	
 	Binding memberBinding = scope.getFieldOrMethod(this.receiverType, token, this);
-	boolean receiverIsType=   receiver instanceof NameReference && ( ((NameReference) receiver).bits & Binding.TYPE) != 0;
+	boolean receiverIsType = (receiver instanceof NameReference || receiver instanceof FieldReference)
+		&& ( receiver.bits & Binding.TYPE) != 0;
 	if (!memberBinding.isValidBinding() && (this.receiverType!=null && this.receiverType.isFunctionType()))
 	{
 		   Binding alternateBinding = receiver.alternateBinding();
@@ -413,7 +428,7 @@ public TypeBinding resolveType(BlockScope scope, boolean define, TypeBinding use
 			}
 	//		return this.resolvedType=TypeBinding.UNKNOWN;
 		}
-		if (JavaCore.IS_ECMASCRIPT4)
+		if (JavaScriptCore.IS_ECMASCRIPT4)
 		{
 			TypeBinding receiverErasure = this.receiverType.erasure();
 			if (receiverErasure instanceof ReferenceBinding) {

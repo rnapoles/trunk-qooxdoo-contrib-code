@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -194,13 +194,13 @@ public MethodDeclaration addMissingAbstractMethodFor(MethodBinding methodBinding
 	methodDeclaration.bindArguments();
 
 /*		if (binding.methods == null) {
-			binding.methods = new MethodBinding[] { methodDeclaration.binding };
+			binding.methods = new FunctionBinding[] { methodDeclaration.binding };
 		} else {
-			MethodBinding[] newMethods;
+			FunctionBinding[] newMethods;
 			System.arraycopy(
 				binding.methods,
 				0,
-				newMethods = new MethodBinding[binding.methods.length + 1],
+				newMethods = new FunctionBinding[binding.methods.length + 1],
 				1,
 				binding.methods.length);
 			newMethods[0] = methodDeclaration.binding;

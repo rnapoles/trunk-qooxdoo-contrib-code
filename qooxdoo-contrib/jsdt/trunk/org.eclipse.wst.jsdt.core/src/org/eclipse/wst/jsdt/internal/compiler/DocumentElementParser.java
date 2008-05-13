@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -262,7 +262,7 @@ protected void consumeClassHeaderName1() {
  * INTERNAL USE-ONLY
  */
 protected void consumeCompilationUnit() {
-	// CompilationUnit ::= EnterCompilationUnit PackageDeclarationopt ImportDeclarationsopt
+	// JavaScriptUnit ::= EnterCompilationUnit PackageDeclarationopt ImportDeclarationsopt
 	requestor.exitCompilationUnit(scanner.source.length - 1);
 }
 /*
@@ -749,7 +749,7 @@ protected void consumeLocalVariableDeclaration() {
  * INTERNAL USE-ONLY
  */
 protected void consumeMethodDeclaration(boolean isNotAbstract) {
-	// MethodDeclaration ::= MethodHeader MethodBody
+	// FunctionDeclaration ::= MethodHeader MethodBody
 	// AbstractMethodDeclaration ::= MethodHeader ';'
 	super.consumeMethodDeclaration(isNotAbstract);
 	if (isLocalDeclaration()) {

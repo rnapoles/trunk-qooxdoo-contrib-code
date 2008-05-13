@@ -16,28 +16,25 @@ import java.util.Hashtable;
 
 import org.eclipse.wst.jsdt.core.UnimplementedException;
 import org.eclipse.wst.jsdt.core.compiler.CharOperation;
-import org.eclipse.wst.jsdt.core.infer.InferredType;
-import org.eclipse.wst.jsdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.wst.jsdt.internal.compiler.ast.AbstractVariableDeclaration;
-import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.env.AccessRuleSet;
 import org.eclipse.wst.jsdt.internal.compiler.env.NameEnvironmentAnswer;
 import org.eclipse.wst.jsdt.internal.compiler.impl.ITypeRequestor;
 import org.eclipse.wst.jsdt.internal.compiler.lookup.Binding;
-import org.eclipse.wst.jsdt.internal.compiler.util.HashtableOfObject;
+import org.eclipse.wst.jsdt.internal.oaametadata.LibraryAPIs;
+import org.eclipse.wst.jsdt.internal.oaametadata.MetadataReader;
 
-public class ClasspathFile extends ClasspathLocation {
+public class ClasspathMetadataFile extends ClasspathLocation {
 
 protected File file;
 protected Hashtable packageCache;
 String packageName;
 protected char[] normalizedPath;
 String encoding;
-HashtableOfObject definedItems[] = new HashtableOfObject[Binding.NUMBER_BASIC_BINDING];
+LibraryAPIs apis;
 
 NameEnvironmentAnswer foundAnswer;
 
-public ClasspathFile(File file, String encoding,
+public ClasspathMetadataFile(File file, String encoding,
 		AccessRuleSet accessRuleSet, String destinationPath) {
 	super(accessRuleSet,destinationPath);
 	this.file = file;
@@ -52,24 +49,23 @@ public NameEnvironmentAnswer findBinding(char[] typeName, String qualifiedPackag
 	{
 		parseFile(requestor);
 	}
-	NameEnvironmentAnswer answer=null;
+	if (this.apis==null)
+		return null;
+	String name = new String(typeName);
 	if ((type&(Binding.VARIABLE|Binding.FIELD))!=0)
 	{
-		answer= (NameEnvironmentAnswer)definedItems[Binding.VARIABLE|Binding.FIELD].get(typeName);
-		if (answer!=null)
-			return answer;
+		if (this.apis.getGlobalVar(name)!=null)
+			return foundAnswer;
 	}
 	if ((type&Binding.TYPE)!=0)
 	{
-		answer= (NameEnvironmentAnswer)definedItems[Binding.TYPE].get(typeName);
-		if (answer!=null)
-			return answer;
+		if (this.apis.getClass(name)!=null)
+			return foundAnswer;
 	}
 	if ((type&Binding.METHOD)!=0)
 	{
-		answer= (NameEnvironmentAnswer)definedItems[Binding.METHOD].get(typeName);
-		if (answer!=null)
-			return answer;
+		if (this.apis.getGlobalMethod(name)!=null)
+			return foundAnswer;
 	}
 	return null;
 	}
@@ -78,39 +74,12 @@ private void parseFile(ITypeRequestor requestor) {
 	CompilationUnit compilationUnit = new CompilationUnit(null,
 			file.getAbsolutePath(), this.encoding);
 	compilationUnit.packageName=new char [][]{packageName.toCharArray()};
-	for (int i = 0; i < definedItems.length; i++) {
-		definedItems[i]=new HashtableOfObject();
-	}
 
 
+
+		apis=MetadataReader.readAPIsFromFile(this.file.getAbsolutePath());
 		foundAnswer =
-		 new NameEnvironmentAnswer(compilationUnit,
-			fetchAccessRestriction(file.getAbsolutePath()));
-
-		if (requestor!=null)
-	{
-		CompilationUnitDeclaration declaration = requestor.doParse(compilationUnit,null);
-		for (int i = 0; i < declaration.statements.length; i++) {
-			if (declaration.statements[i] instanceof AbstractMethodDeclaration) {
-				AbstractMethodDeclaration method = (AbstractMethodDeclaration) declaration.statements[i];
-				definedItems[Binding.METHOD].put(method.selector, foundAnswer);
-			}
-			else if (declaration.statements[i] instanceof AbstractVariableDeclaration) {
-				AbstractVariableDeclaration var = (AbstractVariableDeclaration) declaration.statements[i];
-				definedItems[Binding.VARIABLE].put(var.name, foundAnswer);
-
-			}
-		}
-		for (int inx=0;inx<declaration.numberInferredTypes;inx++) {
-			InferredType inferredType = declaration.inferredTypes[inx];
-			if (inferredType.isDefinition)
-				definedItems[Binding.TYPE].put(inferredType.getName(), foundAnswer);
-		}
-
-	}
-	else
-		//TODO: implement
-		throw new org.eclipse.wst.jsdt.core.UnimplementedException();
+			 new NameEnvironmentAnswer(apis);
 
 }
 
