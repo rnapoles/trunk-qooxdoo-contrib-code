@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,17 +11,22 @@
 package org.eclipse.wst.jsdt.core.search;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.wst.jsdt.core.IJavaElement;
+import org.eclipse.wst.jsdt.core.IJavaScriptElement;
 
 /**
- * An <code>IJavaSearchScope</code> defines where search result should be found by a
+ * An <code>IJavaScriptSearchScope</code> defines where search result should be found by a
  * <code>SearchEngine</code>. Clients must pass an instance of this interface
  * to the <code>search(...)</code> methods. Such an instance can be created using the
  * following factory methods on <code>SearchEngine</code>: <code>createHierarchyScope(IType)</code>,
  * <code>createJavaSearchScope(IResource[])</code>, <code>createWorkspaceScope()</code>, or
  * clients may choose to implement this interface.
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
-public interface IJavaSearchScope {
+public interface IJavaScriptSearchScope {
 /**
  * This constant defines the separator of the resourcePath string of the <code>encloses(String)</code>
  * method. If present in the string, it separates the path to the jar file from the path
@@ -66,7 +71,7 @@ public boolean encloses(String resourcePath);
  * @param element the given element
  * @return <code>true</code> if the element is in this scope
  */
-public boolean encloses(IJavaElement element);
+public boolean encloses(IJavaScriptElement element);
 /**
  * Returns the paths to the enclosing projects and JARs for this search scope.
  * <ul>
@@ -93,7 +98,7 @@ IPath[] enclosingProjectsAndJars();
  *
  * @return whether this scope contains any <code>.class</code> files
  * @deprecated Use
- * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaElement[])}
+ * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaScriptElement[])}
  * with the package fragment roots that correspond to the binaries instead.
  */
 boolean includesBinaries();
@@ -103,7 +108,7 @@ boolean includesBinaries();
  *
  * @return whether this scope includes classpaths
  * @deprecated Use
- * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaElement[])}
+ * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaScriptElement[])}
  * with a Java project instead.
  */
 boolean includesClasspaths();
@@ -113,7 +118,7 @@ boolean includesClasspaths();
  *
  * @param includesBinaries whether this scope contains any <code>.class</code> files
  * @deprecated Use
- * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaElement[])}
+ * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaScriptElement[])}
  * with the package fragment roots that correspond to the binaries instead.
  */
 public void setIncludesBinaries(boolean includesBinaries);
@@ -123,7 +128,7 @@ public void setIncludesBinaries(boolean includesBinaries);
  *
  * @param includesClasspaths whether this scope includes classpaths
  * @deprecated Use
- * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaElement[])}
+ * {@link org.eclipse.wst.jsdt.core.search.SearchEngine#createJavaSearchScope(IJavaScriptElement[])}
  * with a Java project instead.
  */
 public void setIncludesClasspaths(boolean includesClasspaths);

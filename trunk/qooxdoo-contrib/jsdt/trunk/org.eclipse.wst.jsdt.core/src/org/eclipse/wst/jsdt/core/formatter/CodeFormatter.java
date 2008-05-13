@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,11 @@ import org.eclipse.wst.jsdt.internal.compiler.util.Util;
 /**
  * Specification for a generic source code formatter.
  *
- * @since 3.0
+ * 
+ * Provisional API: This class/interface is part of an interim API that is still under development and expected to 
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback 
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken 
+ * (repeatedly) as the API evolves.
  */
 public abstract class CodeFormatter {
 
@@ -43,7 +47,7 @@ public abstract class CodeFormatter {
 	/**
 	 * Kind used to format a compilation unit
 	 */
-	public static final int K_COMPILATION_UNIT = 0x08;
+	public static final int K_JAVASCRIPT_UNIT = 0x08;
 
 	/**
 	 * Kind used to format a single-line comment
@@ -70,7 +74,7 @@ public abstract class CodeFormatter {
 	 * caller to get rid of preceeding whitespaces.</p>
 	 *
 	 * @param kind Use to specify the kind of the code snippet to format. It can be any of these:
-	 *        K_EXPRESSION, K_STATEMENTS, K_CLASS_BODY_DECLARATIONS, K_COMPILATION_UNIT, K_UNKNOWN,
+	 *        K_EXPRESSION, K_STATEMENTS, K_CLASS_BODY_DECLARATIONS, K_JAVASCRIPT_UNIT, K_UNKNOWN,
 	 *        K_SINGLE_LINE_COMMENT, K_MULTI_LINE_COMMENT, K_JAVA_DOC
 	 * @param source the source to format
 	 * @param offset the given offset to start recording the edits (inclusive).
