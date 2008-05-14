@@ -6,7 +6,7 @@ import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
 
 public class ClassModifier implements IClassModifier {
 
-  public void add( IObjectLiteralField field ) {
+  public void visit( IObjectLiteralField field ) {
   }
 
   public IClassModifier getDetailsModifier( IObjectLiteralField field ) {

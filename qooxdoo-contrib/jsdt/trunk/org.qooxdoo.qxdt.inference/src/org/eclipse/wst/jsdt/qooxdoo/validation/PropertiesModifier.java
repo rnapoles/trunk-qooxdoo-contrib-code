@@ -24,7 +24,7 @@ public class PropertiesModifier implements IClassModifier {
     }
 
     @Override
-    public void add( IObjectLiteralField field ) {
+    public void visit( IObjectLiteralField field ) {
       if( field.getFieldName() instanceof ISingleNameReference ) {
         ISingleNameReference name = ( ISingleNameReference ) field.getFieldName();
         if( "check".equals( new String( name.getToken() ) ) ) {
@@ -52,7 +52,7 @@ public class PropertiesModifier implements IClassModifier {
     this.itype = itype;
   }
 
-  public void add( IObjectLiteralField field ) {
+  public void visit( IObjectLiteralField field ) {
     ISingleNameReference name = ( ISingleNameReference )field.getFieldName();
     createSetter( name );
     createGetter( name );

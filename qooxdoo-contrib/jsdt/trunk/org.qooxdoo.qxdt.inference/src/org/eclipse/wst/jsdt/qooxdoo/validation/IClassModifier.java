@@ -4,7 +4,7 @@ import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
 
 public interface IClassModifier {
 
-  void add( IObjectLiteralField field );
+  void visit( IObjectLiteralField field );
 
   /**
    * Example: The modifier is the PropertiesModifier reacts on a property. To

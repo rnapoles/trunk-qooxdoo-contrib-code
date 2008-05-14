@@ -20,7 +20,7 @@ public class AttributesModifier extends ClassModifier {
     this.isStatic = isStatic;
   }
 
-  public void add( IObjectLiteralField literal ) {
+  public void visit( IObjectLiteralField literal ) {
     if( literal.getInitializer() instanceof IFunctionExpression ) {
       addMethod( literal,
                  ( ( IFunctionExpression )literal.getInitializer() ).getMethodDeclaration() );
