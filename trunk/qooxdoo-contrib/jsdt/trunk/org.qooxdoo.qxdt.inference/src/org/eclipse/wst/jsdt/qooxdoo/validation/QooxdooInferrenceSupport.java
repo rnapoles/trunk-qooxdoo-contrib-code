@@ -65,7 +65,7 @@ public class QooxdooInferrenceSupport extends InferEngine
     if( isInQooxdooClass() ) {
       InferredType classDef = classDefinitionStack.peek();
       memberTypeStack.push( field );
-      typeassembler.addToType( field, classDef );
+      typeassembler.visit( field, classDef );
       result = true;
     }
     return result;
@@ -87,16 +87,10 @@ public class QooxdooInferrenceSupport extends InferEngine
   @Override
   public void endVisit( IObjectLiteralField field ) {
     if( isInQooxdooClass() ) {
-      endQooxdooClassDefinition( field );
+      IObjectLiteralField pop = memberTypeStack.pop();
+      Assert.isLegal( field.equals( pop ), field + " is not " + pop );
+      typeassembler.endVisit( field );
     }
-  }
-
-  // helper methods
-  // //////////////////
-  private void endQooxdooClassDefinition( IObjectLiteralField field ) {
-    IObjectLiteralField pop = memberTypeStack.pop();
-    Assert.isLegal( field.equals( pop ), field + " is not " + pop );
-    typeassembler.endQooxdooClassDefinition( field );
   }
 
   private boolean isInQooxdooClass() {

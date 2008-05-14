@@ -23,26 +23,39 @@ public class TypeAssembler {
     this.classModificationStack = new Stack<IClassModifier>();
   }
 
-  public void endQooxdooClassDefinition( IObjectLiteralField field ) {
+  public void endVisit( IObjectLiteralField field ) {
     if( classModificationStack.size() > 0 ) {
       classModificationStack.pop();
     }
   }
 
-  public void addToType( final IObjectLiteralField field, InferredType classDef )
+  public void visit( final IObjectLiteralField field, InferredType classDef )
   {
     int prevClassModStackSize = classModificationStack.size();
     if( classModificationStack.size() > 0 ) {
-      IClassModifier mod = classModificationStack.peek();
-      mod.add( field );
-      classModificationStack.push( mod.getDetailsModifier( field ) );
+      modifyTypeBasedOn( field, classModificationStack.peek() );
+      prepareForSubsequentObjectLiterals( field, classModificationStack.peek() );
     }
     if( field.getFieldName() instanceof ISingleNameReference ) {
       handleTypeConfiguration( field, classDef );
     }
+    // in endQooxdooClassDefinition() there is always a pop,
+    // thus we have to
     if( prevClassModStackSize == classModificationStack.size() ) {
       classModificationStack.push( new ClassModifier() );
     }
+  }
+
+  private void prepareForSubsequentObjectLiterals( final IObjectLiteralField field,
+                                                   IClassModifier currentType )
+  {
+    classModificationStack.push( currentType.getDetailsModifier( field ) );
+  }
+
+  private void modifyTypeBasedOn( final IObjectLiteralField field,
+                                  IClassModifier currentType )
+  {
+    currentType.visit( field );
   }
 
   private Map<String, IKeyReaction> createConfigurationTypeMap( ITypeManagement typeManager )
