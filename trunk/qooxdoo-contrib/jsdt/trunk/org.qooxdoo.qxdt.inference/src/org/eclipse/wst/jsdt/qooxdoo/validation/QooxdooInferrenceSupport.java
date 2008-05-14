@@ -1,78 +1,37 @@
 package org.eclipse.wst.jsdt.qooxdoo.validation;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.wst.jsdt.core.ast.IASTNode;
 import org.eclipse.wst.jsdt.core.ast.IExpression;
-import org.eclipse.wst.jsdt.core.ast.IFieldReference;
 import org.eclipse.wst.jsdt.core.ast.IFunctionCall;
-import org.eclipse.wst.jsdt.core.ast.IFunctionExpression;
 import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
-import org.eclipse.wst.jsdt.core.ast.IReference;
-import org.eclipse.wst.jsdt.core.ast.ISingleNameReference;
 import org.eclipse.wst.jsdt.core.ast.IStringLiteral;
 import org.eclipse.wst.jsdt.core.ast.IThisReference;
 import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
-import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.MethodCreator;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.TypeAssembler;
 
-public class QooxdooInferrenceSupport extends InferEngine {
+public class QooxdooInferrenceSupport extends InferEngine
+  implements ITypeManagement
+{
 
-  private final class ExtendHandler implements IKeyReaction {
-
-    public void react( IObjectLiteralField field ) {
-      setSuperClass( field.getInitializer() );
-    }
-  }
-  private final class ConstructHandler implements IKeyReaction {
-
-    public void react( IObjectLiteralField field ) {
-      if( field.getInitializer() instanceof IFunctionExpression ) {
-        MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
-        md.modifiers = ClassFileConstants.AccPublic;
-        InferredType theType = classDefinitionStack.peek();
-        theType.addMethod( theType.getName(), md, true );
-      }
-    }
-  }
-  private final class PropertiesHandler implements IKeyReaction {
-
-    public void react( IObjectLiteralField field ) {
-      classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
-    }
-  }
-  private final class MembersHandler implements IKeyReaction {
-
-    public void react( IObjectLiteralField field ) {
-      classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
-                                                           false ) );
-    }
-  }
-  private final class StaticsHandler implements IKeyReaction {
-
-    public void react( IObjectLiteralField field ) {
-      classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
-                                                           true ) );
-    }
-  }
-  public interface IKeyReaction {
-
-    public void react( IObjectLiteralField field );
-  }
   private CompilationUnitDeclaration compilationUnit;
+  private TypeAssembler typeassembler = new TypeAssembler( this );
   private Stack<InferredType> classDefinitionStack = new Stack<InferredType>();
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
-  private Stack<IClassModifier> classModificationStack = new Stack<IClassModifier>();
-  private final Map<String, IKeyReaction> configurationTypeMap = createConfigurationTypeMap();
 
   public QooxdooInferrenceSupport() {
+  }
+
+  // interface methods from ITypeManagement
+  // //////////////////////////////////////////////
+  @Override
+  public InferredType addType( char[] className ) {
+    return super.addType( className );
   }
 
   // interface methods from InferEngine
@@ -104,43 +63,12 @@ public class QooxdooInferrenceSupport extends InferEngine {
   public boolean visit( final IObjectLiteralField field ) {
     boolean result = false;
     if( isInQooxdooClass() ) {
+      InferredType classDef = classDefinitionStack.peek();
       memberTypeStack.push( field );
-      int prevClassModStackSize = classModificationStack.size();
-      if( classModificationStack.size() > 0 ) {
-        modifyClass( field );
-      }
-      if( field.getFieldName() instanceof ISingleNameReference ) {
-        handleConfigurationType( field );
-      }
-      if( prevClassModStackSize == classModificationStack.size() ) {
-        classModificationStack.push( new ClassModifier() );
-      }
+      typeassembler.addToType( field, classDef );
       result = true;
     }
     return result;
-  }
-
-  private void modifyClass( final IObjectLiteralField field ) {
-    IClassModifier mod = classModificationStack.peek();
-    mod.add( field );
-    classModificationStack.push( mod.getDetailsModifier( field ) );
-  }
-
-  private void handleConfigurationType( final IObjectLiteralField field ) {
-    String configTypeKey = getName( ( ISingleNameReference )field.getFieldName() );
-    if( configurationTypeMap.containsKey( configTypeKey ) ) {
-      configurationTypeMap.get( configTypeKey ).react( field );
-    }
-  }
-
-  private Map<String, IKeyReaction> createConfigurationTypeMap() {
-    Map<String, IKeyReaction> map = new HashMap<String, IKeyReaction>();
-    map.put( "statics", new StaticsHandler() );
-    map.put( "members", new MembersHandler() );
-    map.put( "properties", new PropertiesHandler() );
-    map.put( "construct", new ConstructHandler() );
-    map.put( "extend", new ExtendHandler() );
-    return map;
   }
 
   @Override
@@ -167,10 +95,8 @@ public class QooxdooInferrenceSupport extends InferEngine {
   // //////////////////
   private void endQooxdooClassDefinition( IObjectLiteralField field ) {
     IObjectLiteralField pop = memberTypeStack.pop();
-    if( classModificationStack.size() > 0 ) {
-      classModificationStack.pop();
-    }
     Assert.isLegal( field.equals( pop ), field + " is not " + pop );
+    typeassembler.endQooxdooClassDefinition( field );
   }
 
   private boolean isInQooxdooClass() {
@@ -227,31 +153,5 @@ public class QooxdooInferrenceSupport extends InferEngine {
     return messageSend.getReceiver() != null
            && "qx.Class".equals( messageSend.getReceiver().toString() )
            && "define".equals( new String( messageSend.getSelector() ) );
-  }
-
-  private String getName( ISingleNameReference expression ) {
-    String result;
-    result = new String( expression.getToken() );
-    return result;
-  }
-
-  private void setSuperClass( IExpression initializer ) {
-    char[] name;
-    if( initializer instanceof ISingleNameReference ) {
-      ISingleNameReference snr = ( ISingleNameReference )initializer;
-      name = snr.getToken();
-    } else if( initializer instanceof IFieldReference ) {
-      IFieldReference fr = ( IFieldReference )initializer;
-      name = fr.toString().toCharArray();
-    } else {
-      throw new PleaseOpenBugException( "can't handle type (yet):"
-                                        + initializer.getClass() );
-    }
-    InferredType superType = addType( name );
-    superType.addMethod( "base".toCharArray(),
-                         MethodCreator.createFakeMethodNoArgs( ( IReference )initializer,
-                                                               "base".toCharArray() ),
-                         false );
-    classDefinitionStack.peek().superClass = superType;
   }
 }
