@@ -15,7 +15,7 @@ import org.eclipse.wst.jsdt.qooxdoo.validation.PropertiesModifier;
 
 public class TypeAssembler {
 
-  private final Map<String, IKeyReaction> configurationTypeMap;
+  private final Map<String, ITypeConfigurationHandler> configurationTypeMap;
   private final Stack<IClassModifier> classModificationStack;
 
   public TypeAssembler( ITypeManagement typeManager ) {
@@ -29,8 +29,7 @@ public class TypeAssembler {
     }
   }
 
-  public void visit( final IObjectLiteralField field, InferredType classDef )
-  {
+  public void visit( final IObjectLiteralField field, InferredType classDef ) {
     int prevClassModStackSize = classModificationStack.size();
     if( classModificationStack.size() > 0 ) {
       modifyTypeBasedOn( field, classModificationStack.peek() );
@@ -58,15 +57,22 @@ public class TypeAssembler {
     currentType.visit( field );
   }
 
-  private Map<String, IKeyReaction> createConfigurationTypeMap( ITypeManagement typeManager )
+  private Map<String, ITypeConfigurationHandler> createConfigurationTypeMap( ITypeManagement typeManager )
   {
-    Map<String, IKeyReaction> map = new HashMap<String, IKeyReaction>();
-    map.put( "statics", new StaticsHandler() );
-    map.put( "members", new MembersHandler() );
-    map.put( "properties", new PropertiesHandler() );
-    map.put( "construct", new ConstructHandler() );
-    map.put( "extend", new ExtendHandler( typeManager ) );
+    Map<String, ITypeConfigurationHandler> map = new HashMap<String, ITypeConfigurationHandler>();
+    addToMap( map, new StaticsHandler() );
+    addToMap( map, new MembersHandler() );
+    addToMap( map, new PropertiesHandler() );
+    addToMap( map, new ConstructHandler() );
+    addToMap( map, new ExtendHandler( typeManager ) );
+    addToMap( map, new IncludeMixinHandler() );
     return map;
+  }
+
+  private void addToMap( Map<String, ITypeConfigurationHandler> map,
+                         AbstractTypeConfigurationHandler handler )
+  {
+    map.put( handler.getKey(), handler );
   }
 
   private void handleTypeConfiguration( final IObjectLiteralField field,
@@ -74,7 +80,7 @@ public class TypeAssembler {
   {
     String configTypeKey = getName( ( ISingleNameReference )field.getFieldName() );
     if( configurationTypeMap.containsKey( configTypeKey ) ) {
-      configurationTypeMap.get( configTypeKey ).react( field, currentClassDef );
+      configurationTypeMap.get( configTypeKey ).visit( field, currentClassDef );
     }
   }
 
@@ -83,21 +89,35 @@ public class TypeAssembler {
   }
   // internal helper classes.
   // //////////////////////////////
-  private final class PropertiesHandler implements IKeyReaction {
+  private final class PropertiesHandler
+    extends AbstractTypeConfigurationHandler
+  {
 
-    public void react( IObjectLiteralField field, InferredType classDef ) {
+    public PropertiesHandler() {
+      super( "properties" );
+    }
+
+    public void visit( IObjectLiteralField field, InferredType classDef ) {
       classModificationStack.push( new PropertiesModifier( classDef ) );
     }
   }
-  private final class MembersHandler implements IKeyReaction {
+  private final class MembersHandler extends AbstractTypeConfigurationHandler {
 
-    public void react( IObjectLiteralField field, InferredType classDef ) {
+    public MembersHandler() {
+      super( "members" );
+    }
+
+    public void visit( IObjectLiteralField field, InferredType classDef ) {
       classModificationStack.push( new AttributesModifier( classDef, false ) );
     }
   }
-  private final class StaticsHandler implements IKeyReaction {
+  private final class StaticsHandler extends AbstractTypeConfigurationHandler {
 
-    public void react( IObjectLiteralField field, InferredType classDef ) {
+    public StaticsHandler() {
+      super( "statics" );
+    }
+
+    public void visit( IObjectLiteralField field, InferredType classDef ) {
       classModificationStack.push( new AttributesModifier( classDef, true ) );
     }
   }

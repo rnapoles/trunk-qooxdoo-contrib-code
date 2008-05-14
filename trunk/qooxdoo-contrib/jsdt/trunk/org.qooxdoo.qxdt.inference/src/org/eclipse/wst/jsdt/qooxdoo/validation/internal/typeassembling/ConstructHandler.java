@@ -6,9 +6,13 @@ import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
 
-final class ConstructHandler implements IKeyReaction {
+final class ConstructHandler extends AbstractTypeConfigurationHandler {
 
-  public void react( IObjectLiteralField field, InferredType classDef ) {
+  public ConstructHandler() {
+    super( "construct" );
+  }
+
+  public void visit( IObjectLiteralField field, InferredType classDef ) {
     if( field.getInitializer() instanceof IFunctionExpression ) {
       MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
       md.modifiers = ClassFileConstants.AccPublic;
