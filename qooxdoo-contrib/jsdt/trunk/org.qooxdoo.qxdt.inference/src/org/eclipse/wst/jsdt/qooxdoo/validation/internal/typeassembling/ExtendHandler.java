@@ -10,15 +10,16 @@ import org.eclipse.wst.jsdt.qooxdoo.validation.ITypeManagement;
 import org.eclipse.wst.jsdt.qooxdoo.validation.PleaseOpenBugException;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.MethodCreator;
 
-final class ExtendHandler implements IKeyReaction {
+final class ExtendHandler extends AbstractTypeConfigurationHandler {
 
   private final ITypeManagement typeManager;
 
   public ExtendHandler( ITypeManagement typeManager ) {
+    super( "extend" );
     this.typeManager = typeManager;
   }
 
-  public void react( IObjectLiteralField field, InferredType currentClassDef ) {
+  public void visit( IObjectLiteralField field, InferredType currentClassDef ) {
     setSuperClass( field.getInitializer(), currentClassDef );
   }
 
