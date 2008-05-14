@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -22,7 +21,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer;
@@ -34,6 +32,7 @@ import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPListElement;
 import org.eclipse.wst.jsdt.internal.ui.wizards.buildpaths.CPUserLibraryElement;
 import org.eclipse.wst.jsdt.launching.JavaRuntime;
 import org.eclipse.wst.jsdt.qooxdoo.validation.Activator;
+import org.eclipse.wst.jsdt.ui.project.JsNature;
 import org.qooxdoo.qxdt.support.QxSupport;
 
 import de.sammy.mkempka.ide.SammyIDE;
@@ -85,23 +84,11 @@ public class QxProjectUtil {
     cp.add( JavaScriptCore.newContainerEntry( JavaRuntime.newDefaultJREContainerPath() ) );
     cp.add( JavaScriptCore.newContainerEntry( new Path( "org.eclipse.wst.jsdt.USER_LIBRARY/myQx" ),
                                               false ) );
+    cp.add( JavaScriptCore.newContainerEntry( new Path( "org.eclipse.wst.jsdt.launching.baseBrowserLibrary" ) ) );
     IPath outputLocation = project.getFolder( "bin" ).getFullPath();
     jp.setRawIncludepath( cp.toArray( new IIncludePathEntry[ cp.size() ] ),
                           outputLocation,
                           monitor );
-  }
-
-  public static void addJSDTNature( final IProgressMonitor monitor,
-                                    final IProject project )
-    throws CoreException
-  {
-    IProjectDescription desc = project.getDescription();
-    String[] natures = desc.getNatureIds();
-    String[] newNatures = new String[ natures.length + 1 ];
-    System.arraycopy( natures, 0, newNatures, 1, natures.length );
-    newNatures[ 0 ] = "org.eclipse.wst.jsdt.core.jsNature";
-    desc.setNatureIds( newNatures );
-    project.setDescription( desc, new SubProgressMonitor( monitor, 500 ) );
   }
 
   public static IFile createQxFileWithContents( SammyIDE sammy,
@@ -110,7 +97,7 @@ public class QxProjectUtil {
     throws CoreException, JavaScriptModelException
   {
     IProject project = sammy.createGenericProject();
-    addJSDTNature( new NullProgressMonitor(), project );
+    JsNature.addJsNature( project, new NullProgressMonitor() );
     addDefaultLibToLibraryPath( new NullProgressMonitor(), project );
     IFile result = project.getFile( fileName );
     result.create( new ByteArrayInputStream( fileContents.getBytes() ),
