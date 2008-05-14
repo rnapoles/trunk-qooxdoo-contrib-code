@@ -13,7 +13,7 @@ import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.TypeAssembler;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.typeassembling.TypeAssembler;
 
 public class QooxdooInferrenceSupport extends InferEngine
   implements ITypeManagement
