@@ -1167,16 +1167,17 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _visualizeFocus : function()
     {
-      if (qx.core.Client.getInstance().isGecko() ||
-          qx.core.Client.getInstance().isWebkit())
+      if (qx.core.Variant.isSet("qx.client", "webkit|gecko"))
       {
-        if (this.__isLoaded) {
+        if (this.__isLoaded)
+        {
           this.getContentWindow().focus();
         }
       }
       else
       {
-        if (this.__isLoaded) {
+        if (this.__isLoaded)
+        {
           this.getContentDocument().body.focus();
         }
       }
