@@ -1,5 +1,7 @@
 package org.eclipse.wst.jsdt.qooxdoo.validation;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
@@ -23,10 +25,52 @@ import org.eclipse.wst.jsdt.qooxdoo.validation.internal.MethodCreator;
 
 public class QooxdooInferrenceSupport extends InferEngine {
 
+  private final class ExtendHandler implements IKeyReaction {
+
+    public void react( IObjectLiteralField field ) {
+      setSuperClass( field.getInitializer() );
+    }
+  }
+  private final class ConstructHandler implements IKeyReaction {
+
+    public void react( IObjectLiteralField field ) {
+      if( field.getInitializer() instanceof IFunctionExpression ) {
+        MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
+        md.modifiers = ClassFileConstants.AccPublic;
+        InferredType theType = classDefinitionStack.peek();
+        theType.addMethod( theType.getName(), md, true );
+      }
+    }
+  }
+  private final class PropertiesHandler implements IKeyReaction {
+
+    public void react( IObjectLiteralField field ) {
+      classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
+    }
+  }
+  private final class MembersHandler implements IKeyReaction {
+
+    public void react( IObjectLiteralField field ) {
+      classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
+                                                           false ) );
+    }
+  }
+  private final class StaticsHandler implements IKeyReaction {
+
+    public void react( IObjectLiteralField field ) {
+      classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
+                                                           true ) );
+    }
+  }
+  public interface IKeyReaction {
+
+    public void react( IObjectLiteralField field );
+  }
   private CompilationUnitDeclaration compilationUnit;
   private Stack<InferredType> classDefinitionStack = new Stack<InferredType>();
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
   private Stack<IClassModifier> classModificationStack = new Stack<IClassModifier>();
+  private final Map<String, IKeyReaction> configurationTypeMap = createConfigurationTypeMap();
 
   public QooxdooInferrenceSupport() {
   }
@@ -57,37 +101,16 @@ public class QooxdooInferrenceSupport extends InferEngine {
   }
 
   @Override
-  public boolean visit( IObjectLiteralField field ) {
+  public boolean visit( final IObjectLiteralField field ) {
     boolean result = false;
     if( isInQooxdooClass() ) {
       memberTypeStack.push( field );
       int prevClassModStackSize = classModificationStack.size();
       if( classModificationStack.size() > 0 ) {
-        classModificationStack.peek().add( field );
-        classModificationStack.push( classModificationStack.peek()
-          .getDetailsModifier( field ) );
+        modifyClass( field );
       }
       if( field.getFieldName() instanceof ISingleNameReference ) {
-        ISingleNameReference fieldName = ( ISingleNameReference )field.getFieldName();
-        String classPartName = getName( fieldName );
-        if( "statics".equals( classPartName ) ) {
-          classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
-                                                               true ) );
-        } else if( "members".equals( classPartName ) ) {
-          classModificationStack.push( new AttributesModifier( classDefinitionStack.peek(),
-                                                               false ) );
-        } else if( "properties".equals( classPartName ) ) {
-          classModificationStack.push( new PropertiesModifier( classDefinitionStack.peek() ) );
-        } else if( "construct".equals( classPartName ) ) {
-          if( field.getInitializer() instanceof IFunctionExpression ) {
-            MethodDeclaration md = ( ( IFunctionExpression )field.getInitializer() ).getMethodDeclaration();
-            md.modifiers = ClassFileConstants.AccPublic;
-            InferredType theType = classDefinitionStack.peek();
-            theType.addMethod( theType.getName(), md, true );
-          }
-        } else if( "extend".equals( classPartName ) ) {
-          setSuperClass( field.getInitializer() );
-        }
+        handleConfigurationType( field );
       }
       if( prevClassModStackSize == classModificationStack.size() ) {
         classModificationStack.push( new ClassModifier() );
@@ -95,6 +118,29 @@ public class QooxdooInferrenceSupport extends InferEngine {
       result = true;
     }
     return result;
+  }
+
+  private void modifyClass( final IObjectLiteralField field ) {
+    IClassModifier mod = classModificationStack.peek();
+    mod.add( field );
+    classModificationStack.push( mod.getDetailsModifier( field ) );
+  }
+
+  private void handleConfigurationType( final IObjectLiteralField field ) {
+    String configTypeKey = getName( ( ISingleNameReference )field.getFieldName() );
+    if( configurationTypeMap.containsKey( configTypeKey ) ) {
+      configurationTypeMap.get( configTypeKey ).react( field );
+    }
+  }
+
+  private Map<String, IKeyReaction> createConfigurationTypeMap() {
+    Map<String, IKeyReaction> map = new HashMap<String, IKeyReaction>();
+    map.put( "statics", new StaticsHandler() );
+    map.put( "members", new MembersHandler() );
+    map.put( "properties", new PropertiesHandler() );
+    map.put( "construct", new ConstructHandler() );
+    map.put( "extend", new ExtendHandler() );
+    return map;
   }
 
   @Override
