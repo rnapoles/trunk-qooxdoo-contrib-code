@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import org.junit.Test;
@@ -76,6 +77,26 @@ public class IOTest {
         node = io.node("mem://1/foo");
         assertTrue(node instanceof MemoryNode);
     }
+
+    @Test
+    public void nodeForUrl() throws IOException {
+        URL url;
+        Node node;
+        IO io;
+        
+        io = new IO();
+        url = new URL("http://foo.bar:1234/foo");
+        node = io.node(url);
+        assertTrue(node instanceof HttpNode);
+        assertEquals("foo", node.getPath());
+        assertEquals(url, ((HttpNode) node).getUrl());
+
+        url = new URL("file:/home/mhm/bar.txt");
+        node = io.node(url);
+        assertTrue(node instanceof FileNode);
+        assertEquals("home/mhm/bar.txt", node.getPath());
+    }
+
     //--
     
     @Test
