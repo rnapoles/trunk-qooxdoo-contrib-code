@@ -25,11 +25,14 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
 public class IOSample {
-    private static final IO IO_OBJ = new IO();
-    
     /** print all Java files in your curring working directory */
     public static void main(String[] args) throws IOException {
-        for (Node node : IO_OBJ.getWorking().find("**/*.java")) {
+        IO io;
+        Node dir;
+        
+        io = new IO();
+        dir = io.node("src/main/java");
+        for (Node node : dir.find("**/*.java")) {
             System.out.println(node.readString());
         }
     }
