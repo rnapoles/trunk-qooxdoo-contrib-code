@@ -136,6 +136,10 @@ public class HttpNode extends Node {
 
     @Override
     public String getPath() {
+        return getPath(url);
+    }
+
+    public static String getPath(URL url) {
         String result;
         
         result = url.getPath();

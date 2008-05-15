@@ -37,6 +37,8 @@ import java.util.Map;
 import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.fs.http.HttpFilesystem;
+import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
 import org.qooxdoo.sushi.io.Buffer;
@@ -46,14 +48,19 @@ import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.sushi.xml.Xml;
 
 /**
- * <p>Access to file systems, various default settings and default nodes. 
- * Not thread save, every thread should have it's own instance. </p>
+ * <p>Configures and creates nodes. You'll usually create a single IO instance in your application, configure it and 
+ * afterwards use it through-out your application to create nodes via IO.node or 
+ * IO.file. </p>
  * 
- * <p>IO is a thread which executes on shutdown.</p>
+ * <p>Sushi's FS subsystem forms a tree: An IO object is the root, having filesystems as it's children, roots as 
+ * grand-children and nodes as leafes. This tree is traversable from nodes up to the IO object via Node.getRoot(), 
+ * Root.getFilesystem() and Filesystem.getIO(), which is used internally e.g. to pick default encoding settings 
+ * from IO. (Traversing in reverse order is not implemented - to resource consuming)</p>
  * 
- * <p>Name: I used to call this class Context, but there are way to many context classes around. 
- * Calling it Settings is not appropriate because of the various read and write methods.
- * </p>
+ * <p>You can creates as many IO objects as you which, but using nodes from different IO objectes cannot interact
+ * so you'll usually stick with a single IO instance.</p>  
+ * 
+ * <p>Technically, IO is a thread which executes on shutdown. </p>
  */
 public class IO extends Thread {
     public final OS os;
@@ -260,12 +267,23 @@ public class IO extends Thread {
      *
      * @return the file
      */
-    public FileNode node(URL url) {
-        try {
-            return (FileNode) node(URLDecoder.decode(url.getFile(), 
-                    Settings.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("expected on every platform", e);
+    public Node node(URL url) {
+        String protocol;
+        HttpFilesystem fs;
+        
+        protocol = url.getProtocol();
+        if ("http".equals(protocol)) {
+            fs = getFilesystem(HttpFilesystem.class);
+            return fs.root(url).node(HttpNode.getPath(url));
+        } else if ("file".equals(protocol)) {
+            try {
+                return (FileNode) node(URLDecoder.decode(url.getFile(), 
+                        Settings.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("expected on every platform", e);
+            }
+        } else {
+            throw new UnsupportedOperationException("" + url);
         }
     }
     
@@ -395,7 +413,7 @@ public class IO extends Thread {
         }
         protocol = url.getProtocol();
         if ("file".equals(protocol)) {
-            file = node(url);
+            file = (FileNode) node(url);
             filename = file.getAbsolute();
             if (!filename.endsWith(resourcename.replace('/', File.separatorChar))) {
                 throw new RuntimeException("classname not found in file url: " + filename + " " + resourcename);
@@ -409,7 +427,7 @@ public class IO extends Thread {
             }
             filename = filename.substring(0, idx);
             try {
-                file = node(new URL(filename));
+                file = (FileNode) node(new URL(filename));
             } catch (MalformedURLException e) {
                 throw new RuntimeException(filename, e);
             }
