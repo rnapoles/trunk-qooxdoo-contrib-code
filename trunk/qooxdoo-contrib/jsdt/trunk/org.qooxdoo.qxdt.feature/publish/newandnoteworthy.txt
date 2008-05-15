@@ -1,3 +1,5 @@
+2008-05-15:
+  - included fix for bug 875 ("qx.html.Window" invalidates "window")
 2008-05-13:
   - synchronized JSDT plug-ins with Eclipse CVS Head
 2008-05-06:
