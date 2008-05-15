@@ -60,6 +60,9 @@ import org.qooxdoo.sushi.xml.Xml;
  * <p>You can creates as many IO objects as you which, but using nodes from different IO objectes cannot interact
  * so you'll usually stick with a single IO instance.</p>  
  * 
+ * <p>TODO: Multi-Threading. Currently, you need to know fs system internals to propertly synchronized
+ * multi-threaded applications.</p>
+ * 
  * <p>Technically, IO is a thread which executes on shutdown. </p>
  */
 public class IO extends Thread {
