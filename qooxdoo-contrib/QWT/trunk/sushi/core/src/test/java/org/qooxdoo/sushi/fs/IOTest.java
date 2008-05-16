@@ -36,6 +36,7 @@ import org.qooxdoo.sushi.fs.file.FileFilesystem;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.zip.ZipNode;
 import org.qooxdoo.sushi.util.Reflect;
 
 public class IOTest {
@@ -95,6 +96,11 @@ public class IOTest {
         node = io.node(url);
         assertTrue(node instanceof FileNode);
         assertEquals("home/mhm/bar.txt", node.getPath());
+
+        url = getClass().getClassLoader().getResource("java/lang/Object.class");
+        node = io.node(url);
+        assertTrue(node instanceof ZipNode);
+        assertEquals("java/lang/Object.class", node.getPath());
     }
 
     //--
@@ -206,6 +212,8 @@ public class IOTest {
         io.locateClasspathItem(Reflect.resourceName(IOTest.class)).checkDirectory();
         io.locateClasspathItem(Object.class).checkFile();
         io.locateClasspathItem("/java/lang/Object.class").checkFile();
+        io.locateClasspathItem("/java/lang/Object.class").checkFile();
+        assertEquals("foo+bar.jar", io.locateClasspathItem(new URL("jar:file:/foo+bar.jar!/some/file.txt"), "/some/file.txt").getPath());
         try {
             assertNull(io.locateClasspathItem("/nosuchresource"));
             fail();
