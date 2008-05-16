@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -41,6 +40,7 @@ import org.qooxdoo.sushi.fs.http.HttpFilesystem;
 import org.qooxdoo.sushi.fs.http.HttpNode;
 import org.qooxdoo.sushi.fs.memory.MemoryFilesystem;
 import org.qooxdoo.sushi.fs.memory.MemoryNode;
+import org.qooxdoo.sushi.fs.zip.ZipNode;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.io.OS;
 import org.qooxdoo.sushi.util.Reflect;
@@ -273,6 +273,9 @@ public class IO extends Thread {
     public Node node(URL url) {
         String protocol;
         HttpFilesystem fs;
+        String filename;
+        int idx;
+        ZipNode zip;
         
         protocol = url.getProtocol();
         if ("http".equals(protocol)) {
@@ -285,6 +288,26 @@ public class IO extends Thread {
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException("expected on every platform", e);
             }
+        } else if (url.getProtocol().equals("jar")) {
+            filename = url.getFile();
+            if (!filename.startsWith("file:")) {
+                throw new IllegalArgumentException(filename);
+            }
+            filename = filename.substring(5);
+            idx = filename.indexOf('!');
+            if (idx == -1) {
+                throw new RuntimeException("! not found: " + filename);
+            }
+            try {
+                zip = file(filename.substring(0, idx)).openZip();
+            } catch (IOException e) {
+                throw new InstantiateException(url.toString() + ": " + e.getMessage(), e);
+            }
+            filename = filename.substring(idx + 1);
+            if (!filename.startsWith("/")) {
+                throw new IllegalArgumentException(filename);
+            }
+            return zip.join(filename.substring(1));
         } else {
             throw new UnsupportedOperationException("" + url);
         }
@@ -424,16 +447,16 @@ public class IO extends Thread {
             file = file(filename.substring(0, filename.length() - resourcename.length()));
         } else if ("jar".equals(protocol)) {
             filename = url.getFile();
+            if (!filename.startsWith("file:")) {
+                throw new IllegalArgumentException(filename);
+            }
+            filename = filename.substring(5);
             idx = filename.indexOf('!');
             if (idx == -1) {
                 throw new RuntimeException("! not found: " + filename);
             }
             filename = filename.substring(0, idx);
-            try {
-                file = (FileNode) node(new URL(filename));
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(filename, e);
-            }
+            file = file(filename);
         } else {
             throw new RuntimeException("protocol not supported: " + protocol);
         }
