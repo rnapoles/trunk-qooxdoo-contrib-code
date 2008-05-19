@@ -1,10 +1,4 @@
-/*******************************************************************************
- * Deutsche Post Com GmbH Tulpenfeld 9 53113 Bonn Germany (c) Copyright 2008 by
- * Deutsche Post Com GmbH ALL RIGHTS RESERVED
- * -----------------------------------------------------------------------------
- * $Id: QxProjectUtil.java,v 1.0 Feb 19, 2008 user Exp $
- ******************************************************************************/
-package org.eclipse.wst.jsdt.qooxdoo.functional;
+package org.eclipse.wst.jsdt.qooxdoo.functional.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
