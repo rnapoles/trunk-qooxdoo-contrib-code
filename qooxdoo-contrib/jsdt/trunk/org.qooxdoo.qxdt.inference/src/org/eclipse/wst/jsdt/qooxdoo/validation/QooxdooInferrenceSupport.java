@@ -15,7 +15,6 @@ import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.MixinManager;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.typeassembling.TypeAssembler;
 
 public class QooxdooInferrenceSupport extends InferEngine
@@ -26,16 +25,14 @@ public class QooxdooInferrenceSupport extends InferEngine
   private TypeAssembler typeassembler = new TypeAssembler( this );
   private Stack<InferredType> classDefinitionStack = new Stack<InferredType>();
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
-  private MixinManager mixinManager;
 
-  public QooxdooInferrenceSupport( MixinManager mm ) {
-    this.mixinManager = mm;
+  public QooxdooInferrenceSupport() {
   }
 
   // interface methods from ITypeManagement
   // //////////////////////////////////////////////
   public Mixin getMixin( InferredType type ) {
-    return mixinManager.getMixin( type );
+    return new Mixin( type );
   }
 
   @Override

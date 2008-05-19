@@ -5,11 +5,8 @@ import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferrenceProvider;
 import org.eclipse.wst.jsdt.core.infer.RefactoringSupport;
 import org.eclipse.wst.jsdt.core.infer.ResolutionConfiguration;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.MixinManager;
 
 public class QxInferenceProvider implements InferrenceProvider {
-
-  private static final MixinManager mixinManager = new MixinManager();
 
   public int applysTo( IInferenceFile scriptFile ) {
     char[] fileNameChars = scriptFile.getFileName();
@@ -28,7 +25,7 @@ public class QxInferenceProvider implements InferrenceProvider {
   }
 
   public InferEngine getInferEngine() {
-    return new QooxdooInferrenceSupport( mixinManager );
+    return new QooxdooInferrenceSupport();
   }
 
   public String getID() {
