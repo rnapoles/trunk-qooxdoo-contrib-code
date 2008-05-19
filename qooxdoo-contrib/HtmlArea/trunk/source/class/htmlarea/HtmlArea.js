@@ -183,11 +183,19 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     "focused"          : "qx.event.type.Event",
 
-
     /**
      * This event is dispatched when the document receives an "focusout" event
      */
-    "focusOut"         : "qx.event.type.Event"
+    "focusOut"         : "qx.event.type.Event",
+    
+    /** 
+      * Holds information about the state of undo/redo
+      * Keys are "undo" and "redo".
+      * Possible values are 0 and -1 to stay in sync with
+      * the kind the "cursorContext" event works.
+      * (1 = active/pressed, 0 = possible/not pressed, -1 = disabled)
+      */
+    "undoRedoState"    : "qx.event.type.DataEvent"
   },
 
 
@@ -624,7 +632,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * returns the complete content of the editor
+     * Returns the complete content of the editor
      *
      * @type member
      * @return {String}
@@ -636,7 +644,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * returns the body of the document
+     * Returns the body of the document
      *
      * @type member
      * @return {Object}
