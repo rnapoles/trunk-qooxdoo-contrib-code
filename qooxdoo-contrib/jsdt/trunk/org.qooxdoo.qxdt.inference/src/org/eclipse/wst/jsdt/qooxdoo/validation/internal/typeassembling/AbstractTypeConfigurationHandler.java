@@ -1,7 +1,7 @@
 package org.eclipse.wst.jsdt.qooxdoo.validation.internal.typeassembling;
 
 public abstract class AbstractTypeConfigurationHandler
-  implements ITypeConfigurationHandler
+  implements ITypeConfigurationVisitor
 {
 
   private String key;

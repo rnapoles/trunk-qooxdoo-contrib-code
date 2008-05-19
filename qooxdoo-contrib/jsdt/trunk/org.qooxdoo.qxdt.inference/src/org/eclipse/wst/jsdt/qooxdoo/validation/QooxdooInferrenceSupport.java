@@ -13,6 +13,9 @@ import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.MixinManager;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.typeassembling.TypeAssembler;
 
 public class QooxdooInferrenceSupport extends InferEngine
@@ -23,12 +26,18 @@ public class QooxdooInferrenceSupport extends InferEngine
   private TypeAssembler typeassembler = new TypeAssembler( this );
   private Stack<InferredType> classDefinitionStack = new Stack<InferredType>();
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
+  private MixinManager mixinManager;
 
-  public QooxdooInferrenceSupport() {
+  public QooxdooInferrenceSupport( MixinManager mm ) {
+    this.mixinManager = mm;
   }
 
   // interface methods from ITypeManagement
   // //////////////////////////////////////////////
+  public Mixin getMixin( InferredType type ) {
+    return mixinManager.getMixin( type );
+  }
+
   @Override
   public InferredType addType( char[] className ) {
     return super.addType( className );
@@ -44,7 +53,7 @@ public class QooxdooInferrenceSupport extends InferEngine
 
   @Override
   protected boolean handleFunctionCall( IFunctionCall messageSend ) {
-    if( isQxClassDefined( messageSend ) ) {
+    if( isClassDefinition( messageSend ) ) {
       handleQxClassDefinition( messageSend );
     }
     return true;
@@ -52,7 +61,7 @@ public class QooxdooInferrenceSupport extends InferEngine
 
   @Override
   public void endVisit( IFunctionCall messageSend ) {
-    if( isInQooxdooClass() && isQxClassDefined( messageSend ) ) {
+    if( isInQooxdooClass() && isClassDefinition( messageSend ) ) {
       InferredType obj = classDefinitionStack.pop();
       Assert.isNotNull( obj );
     }
@@ -65,7 +74,11 @@ public class QooxdooInferrenceSupport extends InferEngine
     if( isInQooxdooClass() ) {
       InferredType classDef = classDefinitionStack.peek();
       memberTypeStack.push( field );
-      typeassembler.visit( field, classDef );
+      if( "my.cool.MMixin".equals( new String( classDef.getName() ) ) ) {
+        typeassembler.visit( field, getMixin( classDef ) );
+      } else {
+        typeassembler.visit( field, classDef );
+      }
       result = true;
     }
     return result;
@@ -143,7 +156,17 @@ public class QooxdooInferrenceSupport extends InferEngine
            && messageSend.getArguments()[ 0 ] instanceof IStringLiteral;
   }
 
-  private boolean isQxClassDefined( IFunctionCall messageSend ) {
+  private boolean isClassDefinition( IFunctionCall messageSend ) {
+    return isQxClassDefine( messageSend ) || isMixinDefine( messageSend );
+  }
+
+  private boolean isMixinDefine( IFunctionCall messageSend ) {
+    return messageSend.getReceiver() != null
+           && "qx.Mixin".equals( messageSend.getReceiver().toString() )
+           && "define".equals( new String( messageSend.getSelector() ) );
+  }
+
+  private boolean isQxClassDefine( IFunctionCall messageSend ) {
     return messageSend.getReceiver() != null
            && "qx.Class".equals( messageSend.getReceiver().toString() )
            && "define".equals( new String( messageSend.getSelector() ) );

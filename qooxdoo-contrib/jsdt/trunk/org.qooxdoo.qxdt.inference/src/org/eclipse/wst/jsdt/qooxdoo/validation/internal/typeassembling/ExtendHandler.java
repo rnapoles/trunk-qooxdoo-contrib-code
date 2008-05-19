@@ -6,9 +6,10 @@ import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
 import org.eclipse.wst.jsdt.core.ast.IReference;
 import org.eclipse.wst.jsdt.core.ast.ISingleNameReference;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
-import org.eclipse.wst.jsdt.qooxdoo.validation.ITypeManagement;
 import org.eclipse.wst.jsdt.qooxdoo.validation.PleaseOpenBugException;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.MethodCreator;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
 
 final class ExtendHandler extends AbstractTypeConfigurationHandler {
 
@@ -21,6 +22,10 @@ final class ExtendHandler extends AbstractTypeConfigurationHandler {
 
   public void visit( IObjectLiteralField field, InferredType currentClassDef ) {
     setSuperClass( field.getInitializer(), currentClassDef );
+  }
+
+  public void visit( IObjectLiteralField field, Mixin type ) {
+    // FIXME m_kempka IMPLEMENT ME May 15, 2008
   }
 
   private void setSuperClass( IExpression initializer,

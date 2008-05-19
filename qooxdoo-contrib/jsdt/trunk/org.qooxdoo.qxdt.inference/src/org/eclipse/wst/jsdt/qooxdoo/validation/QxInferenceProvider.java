@@ -5,30 +5,30 @@ import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferrenceProvider;
 import org.eclipse.wst.jsdt.core.infer.RefactoringSupport;
 import org.eclipse.wst.jsdt.core.infer.ResolutionConfiguration;
-
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.MixinManager;
 
 public class QxInferenceProvider implements InferrenceProvider {
 
+  private static final MixinManager mixinManager = new MixinManager();
 
-  public int applysTo(IInferenceFile scriptFile) {
-      char[] fileNameChars = scriptFile.getFileName();
-      if (fileNameChars!=null)
+  public int applysTo( IInferenceFile scriptFile ) {
+    char[] fileNameChars = scriptFile.getFileName();
+    if( fileNameChars != null ) {
+      // String inferenceID = compilationUnit.getInferenceID();
+      // if (ID.equals(inferenceID))
+      // return InferrenceProvider.ONLY_THIS;
+
+      String fileName = new String( fileNameChars );
+      if( fileName.indexOf( "org.eclipse.wst.jsdt.qooxdoo.validation/libraries" ) >= 0 )
       {
-//        String inferenceID = compilationUnit.getInferenceID();
-//        if (ID.equals(inferenceID))
-//          return InferrenceProvider.ONLY_THIS;
-
-          String fileName = new String(fileNameChars);
-          if (fileName.indexOf("org.eclipse.wst.jsdt.qooxdoo.validation/libraries")>=0)
-          {
-                return InferrenceProvider.ONLY_THIS;
-          }
+        return InferrenceProvider.ONLY_THIS;
       }
-      return InferrenceProvider.MAYBE_THIS;
+    }
+    return InferrenceProvider.MAYBE_THIS;
   }
 
   public InferEngine getInferEngine() {
-    return new QooxdooInferrenceSupport();
+    return new QooxdooInferrenceSupport( mixinManager );
   }
 
   public String getID() {

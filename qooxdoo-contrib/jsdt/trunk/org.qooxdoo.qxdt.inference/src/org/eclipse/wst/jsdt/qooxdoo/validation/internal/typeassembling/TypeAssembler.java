@@ -10,16 +10,18 @@ import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.qooxdoo.validation.AttributesModifier;
 import org.eclipse.wst.jsdt.qooxdoo.validation.ClassModifier;
 import org.eclipse.wst.jsdt.qooxdoo.validation.IClassModifier;
-import org.eclipse.wst.jsdt.qooxdoo.validation.ITypeManagement;
 import org.eclipse.wst.jsdt.qooxdoo.validation.PropertiesModifier;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
+import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.MixinAttributesModifier;
 
 public class TypeAssembler {
 
-  private final Map<String, ITypeConfigurationHandler> configurationTypeMap;
   private final Stack<IClassModifier> classModificationStack;
+  private final ITypeManagement typeManager;
 
   public TypeAssembler( ITypeManagement typeManager ) {
-    this.configurationTypeMap = createConfigurationTypeMap( typeManager );
+    this.typeManager = typeManager;
     this.classModificationStack = new Stack<IClassModifier>();
   }
 
@@ -29,17 +31,26 @@ public class TypeAssembler {
     }
   }
 
+  public void visit( final IObjectLiteralField field, Mixin type ) {
+    doVisit( field, new MixinConfigurationDelegator( typeManager, type ) );
+  }
+
   public void visit( final IObjectLiteralField field, InferredType classDef ) {
+    doVisit( field, new TypeConfigurationDelegator( typeManager, classDef ) );
+  }
+
+  private void doVisit( final IObjectLiteralField field, AbstractDelegator tch )
+  {
     int prevClassModStackSize = classModificationStack.size();
     if( classModificationStack.size() > 0 ) {
       modifyTypeBasedOn( field, classModificationStack.peek() );
       prepareForSubsequentObjectLiterals( field, classModificationStack.peek() );
     }
     if( field.getFieldName() instanceof ISingleNameReference ) {
-      handleTypeConfiguration( field, classDef );
+      tch.handleTypeConfiguration( field );
     }
     // in endQooxdooClassDefinition() there is always a pop,
-    // thus we have to
+    // thus we have to push a new ClassModifier even for the same behavior
     if( prevClassModStackSize == classModificationStack.size() ) {
       classModificationStack.push( new ClassModifier() );
     }
@@ -57,38 +68,83 @@ public class TypeAssembler {
     currentType.visit( field );
   }
 
-  private Map<String, ITypeConfigurationHandler> createConfigurationTypeMap( ITypeManagement typeManager )
-  {
-    Map<String, ITypeConfigurationHandler> map = new HashMap<String, ITypeConfigurationHandler>();
-    addToMap( map, new StaticsHandler() );
-    addToMap( map, new MembersHandler() );
-    addToMap( map, new PropertiesHandler() );
-    addToMap( map, new ConstructHandler() );
-    addToMap( map, new ExtendHandler( typeManager ) );
-    addToMap( map, new IncludeMixinHandler() );
-    return map;
-  }
-
-  private void addToMap( Map<String, ITypeConfigurationHandler> map,
+  private void addToMap( Map<String, ITypeConfigurationVisitor> map,
                          AbstractTypeConfigurationHandler handler )
   {
     map.put( handler.getKey(), handler );
   }
 
-  private void handleTypeConfiguration( final IObjectLiteralField field,
-                                        InferredType currentClassDef )
-  {
-    String configTypeKey = getName( ( ISingleNameReference )field.getFieldName() );
-    if( configurationTypeMap.containsKey( configTypeKey ) ) {
-      configurationTypeMap.get( configTypeKey ).visit( field, currentClassDef );
-    }
-  }
-
   private String getName( ISingleNameReference expression ) {
     return new String( expression.getToken() );
   }
+
   // internal helper classes.
   // //////////////////////////////
+  private abstract class AbstractDelegator {
+
+    private final Map<String, ITypeConfigurationVisitor> configurationTypeMap;
+
+    public AbstractDelegator() {
+      this.configurationTypeMap = createConfigurationTypeMap( typeManager );
+    }
+
+    public abstract void handleTypeConfiguration( final IObjectLiteralField field );
+
+    private Map<String, ITypeConfigurationVisitor> createConfigurationTypeMap( ITypeManagement typeManager )
+    {
+      Map<String, ITypeConfigurationVisitor> map = new HashMap<String, ITypeConfigurationVisitor>();
+      addToMap( map, new StaticsHandler() );
+      addToMap( map, new MembersHandler() );
+      addToMap( map, new PropertiesHandler() );
+      addToMap( map, new ConstructHandler() );
+      addToMap( map, new ExtendHandler( typeManager ) );
+      addToMap( map, new IncludeHandler( typeManager ) );
+      return map;
+    }
+
+    public Map<String, ITypeConfigurationVisitor> getConfigurationTypeMap() {
+      return configurationTypeMap;
+    }
+  }
+
+  private class TypeConfigurationDelegator extends AbstractDelegator {
+
+    private final InferredType classDef;
+
+    public TypeConfigurationDelegator( ITypeManagement typeManager,
+                                       InferredType classDef )
+    {
+      super();
+      this.classDef = classDef;
+    }
+
+    public void handleTypeConfiguration( final IObjectLiteralField field ) {
+      String configTypeKey = getName( ( ISingleNameReference )field.getFieldName() );
+      if( getConfigurationTypeMap().containsKey( configTypeKey ) ) {
+        getConfigurationTypeMap().get( configTypeKey ).visit( field, classDef );
+      }
+    }
+  }
+
+  private class MixinConfigurationDelegator extends AbstractDelegator {
+
+    private Mixin type;
+
+    public MixinConfigurationDelegator( ITypeManagement typeManager,
+                                        Mixin classDef )
+    {
+      super();
+      this.type = classDef;
+    }
+
+    public void handleTypeConfiguration( final IObjectLiteralField field ) {
+      String configTypeKey = getName( ( ISingleNameReference )field.getFieldName() );
+      if( getConfigurationTypeMap().containsKey( configTypeKey ) ) {
+        getConfigurationTypeMap().get( configTypeKey ).visit( field, type );
+      }
+    }
+  }
+
   private final class PropertiesHandler
     extends AbstractTypeConfigurationHandler
   {
@@ -100,7 +156,12 @@ public class TypeAssembler {
     public void visit( IObjectLiteralField field, InferredType classDef ) {
       classModificationStack.push( new PropertiesModifier( classDef ) );
     }
+
+    public void visit( IObjectLiteralField field, Mixin type ) {
+      // FIXME m_kempka IMPLEMENT ME May 15, 2008
+    }
   }
+
   private final class MembersHandler extends AbstractTypeConfigurationHandler {
 
     public MembersHandler() {
@@ -110,7 +171,12 @@ public class TypeAssembler {
     public void visit( IObjectLiteralField field, InferredType classDef ) {
       classModificationStack.push( new AttributesModifier( classDef, false ) );
     }
+
+    public void visit( IObjectLiteralField field, Mixin type ) {
+      classModificationStack.push( new MixinAttributesModifier( type ) );
+    }
   }
+
   private final class StaticsHandler extends AbstractTypeConfigurationHandler {
 
     public StaticsHandler() {
@@ -119,6 +185,10 @@ public class TypeAssembler {
 
     public void visit( IObjectLiteralField field, InferredType classDef ) {
       classModificationStack.push( new AttributesModifier( classDef, true ) );
+    }
+
+    public void visit( IObjectLiteralField field, Mixin type ) {
+      // FIXME m_kempka IMPLEMENT ME May 15, 2008
     }
   }
 }
