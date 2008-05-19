@@ -26,7 +26,7 @@
  */
 qx.Class.define("htmlarea.command.UndoManager",
 {
-  extend : qx.core.Target,
+  extend : qx.core.Object,
 
   construct : function(commandManager, editorInstance)
   {
@@ -55,18 +55,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     }
   },
   
-  events : 
-  {
-    /** 
-      * Holds information about the state of undo/redo
-      * Keys are "undo" and "redo".
-      * Possible values are 0 and -1 to stay in sync with
-      * the kind the "cursorContext" event works.
-      * (1 = active/pressed, 0 = possible/not pressed, -1 = disabled)
-      */
-    "undoRedoState" : "qx.event.type.DataEvent"
-  },
-
 
   members :
   {
@@ -1034,7 +1022,8 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Fires the "undoRedoState" event to inform external components (like a toolbar)
      * about the current state of the undo/redo.
-     * The event itself it fired with a timeout to not interfere with the current key event.
+     * The event itself is fired from the HtmlArea instance and with a timeout 
+     * to not interfere with the current key event.
      * 
      * @type member
      * @return {void} 
@@ -1042,8 +1031,8 @@ qx.Class.define("htmlarea.command.UndoManager",
     __updateUndoRedoState : function() 
     {
       qx.client.Timer.once(function(e) {
-        this.dispatchEvent(new qx.event.type.DataEvent("undoRedoState", { undo : this.isUndoPossible() ? 0 : -1,
-                                                                          redo : this.isRedoPossible() ? 0 : -1 }));
+        this.__editorInstance.dispatchEvent(new qx.event.type.DataEvent("undoRedoState", { undo : this.isUndoPossible() ? 0 : -1,
+                                                                                           redo : this.isRedoPossible() ? 0 : -1 }));
       }, this, 200);
     }
   },
