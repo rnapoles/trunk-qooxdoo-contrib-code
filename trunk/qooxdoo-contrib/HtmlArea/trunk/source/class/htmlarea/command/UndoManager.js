@@ -164,6 +164,22 @@ qx.Class.define("htmlarea.command.UndoManager",
 
           /* (re)set the focus in the editor */
           this.__commandManager.__focusAfterExecCommand();
+          
+          /* Check if undo/redo steps are possible */
+          if (command == "undo" && this.__undoStack.length == 0)
+          {
+            this.__undoPossible = false;
+            
+            /* Fire an undo/redo state event */
+            this.__updateUndoRedoState();
+          }
+          else if (command == "redo" && this.__redoStack.length == 0)
+          {
+            this.__redoPossible = false;
+            
+            /* Fire an undo/redo state event */
+            this.__updateUndoRedoState();            
+          }
         }
       }
       else
@@ -173,6 +189,9 @@ qx.Class.define("htmlarea.command.UndoManager",
         
         /* Execute the command */
         result = this.__commandManager.execute(command, value);
+        
+        /* Undo is now possible */
+       this.__undoPossible = true;
       }
       
       return result;
@@ -795,7 +814,6 @@ qx.Class.define("htmlarea.command.UndoManager",
         case "end":
           /* Indicate end of typing */
           this.__startTyping  = false;
-          this.__undoPossible = true;
           
           /* Fire an update event  */
           this.__updateUndoRedoState();
