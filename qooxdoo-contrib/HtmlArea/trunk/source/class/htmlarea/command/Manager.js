@@ -639,7 +639,12 @@ qx.Class.define("htmlarea.command.Manager",
        var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.getCurrentRange() : this.__doc; 
 
        /* Execute command on it */
-       return commandTarget.execCommand(commandObject.identifier, false, value);
+       var returnValue = commandTarget.execCommand(commandObject.identifier, false, value);
+
+       /* Focus the editor */
+       this.__focusAfterExecCommand();
+
+       return returnValue;
      },
      
 
@@ -1310,13 +1315,14 @@ qx.Class.define("htmlarea.command.Manager",
        {
          /* Body element must have focus before executing command */
          this.__doc.body.focus();
-         
+
          this.__doc.execCommand("BackColor", false, value);
-         
+
          /* Focus the editor */
          this.__focusAfterExecCommand();
+         return true;
        },
-       
+
        "gecko|opera" : function(value, commandObject)
        {
          /* Body element must have focus before executing command */
