@@ -1,9 +1,3 @@
-/*******************************************************************************
- * Deutsche Post Com GmbH Tulpenfeld 9 53113 Bonn Germany (c) Copyright 2008 by
- * Deutsche Post Com GmbH ALL RIGHTS RESERVED
- * -----------------------------------------------------------------------------
- * $Id: StaticMembers_PDETest.java,v 1.0 Feb 11, 2008 user Exp $
- ******************************************************************************/
 package org.eclipse.wst.jsdt.qooxdoo.functional;
 
 import java.util.List;
@@ -22,6 +16,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.wst.jsdt.qooxdoo.functional.util.ContentAssistAssert;
+import org.eclipse.wst.jsdt.qooxdoo.functional.util.QxProjectUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -73,11 +69,12 @@ public class Namespace_PDETest extends Assert {
     teo.triggerAutoCompletion();
     ShellOperator autoCompletionShell = new ShellOperator();
     Table suggestions = findTable( autoCompletionShell );
-    TableItem suggestion = findItem( suggestions, "a.b.App" );
+    String string = "a.b.App";
+    TableItem suggestion = findItem( suggestions, string );
     assertNotNull( suggestion );
     suggestions.setSelection( suggestion );
     teo.type( SammyKey.ENTER );
-    assertEquals( "a.b.App", teo.getLineContent( 7 ) );
+    assertEquals( string, teo.getLineContent( 7 ) );
     teo.type( ".PI;" );
     teo.save();
     List<IMarker> markers = teo.getMarkers();
@@ -93,10 +90,7 @@ public class Namespace_PDETest extends Assert {
     moveCursorToPosition( teo );
     teo.type( "." );
     teo.triggerAutoCompletion();
-    ShellOperator autoCompletionShell = new ShellOperator();
-    Table suggestions = findTable( autoCompletionShell );
-    TableItem suggestion = findItem( suggestions, "a.b.App" );
-    assertNotNull( suggestion );
+    ContentAssistAssert.assertAutoCompletionResultsContain( "a.b.App" );
   }
 
   private String getFirstErrorMessage( List<IMarker> markers )

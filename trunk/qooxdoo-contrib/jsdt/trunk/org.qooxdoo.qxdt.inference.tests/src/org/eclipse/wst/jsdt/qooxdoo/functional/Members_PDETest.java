@@ -1,9 +1,3 @@
-/*******************************************************************************
- * Deutsche Post Com GmbH Tulpenfeld 9 53113 Bonn Germany (c) Copyright 2008 by
- * Deutsche Post Com GmbH ALL RIGHTS RESERVED
- * -----------------------------------------------------------------------------
- * $Id: StaticMembers_PDETest.java,v 1.0 Feb 11, 2008 user Exp $
- ******************************************************************************/
 package org.eclipse.wst.jsdt.qooxdoo.functional;
 
 import junit.framework.Assert;
@@ -18,6 +12,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.wst.jsdt.qooxdoo.functional.util.QxProjectUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
