@@ -30,14 +30,24 @@ public class AttributesModifier extends ClassModifier {
     }
   }
 
-  private void addMethod( IObjectLiteralField literal,
-                          MethodDeclaration methodDeclaration )
+  protected InferredMethod addMethod( IObjectLiteralField literal,
+                                      MethodDeclaration methodDeclaration )
   {
     char[] name = ( ( ISingleNameReference )literal.getFieldName() ).getToken();
-    InferredMethod im = type.addMethod( name, methodDeclaration, false );
-    im.isStatic = isStatic;
-    setPosition( literal, im );
+    InferredMethod result = type.addMethod( name, methodDeclaration, false );
+    result.isStatic = isStatic;
+    setPosition( literal, result );
     setVisibility( name, methodDeclaration );
+    return result;
+  }
+
+  protected InferredAttribute addAttribute( IObjectLiteralField literal,
+                                            char[] attrName )
+  {
+    InferredAttribute result = type.addAttribute( attrName, literal );
+    result.isStatic = isStatic;
+    setPosition( literal, result );
+    return result;
   }
 
   private void setVisibility( char[] name, MethodDeclaration methodDeclaration )
@@ -49,14 +59,8 @@ public class AttributesModifier extends ClassModifier {
         result = ClassFileConstants.AccPrivate;
       }
     }
-//    methodDeclaration.selector = name;
+    // methodDeclaration.selector = name;
     methodDeclaration.modifiers = result;
-  }
-
-  private void addAttribute( IObjectLiteralField literal, char[] attrName ) {
-    InferredAttribute ia = type.addAttribute( attrName, literal );
-    ia.isStatic = isStatic;
-    setPosition( literal, ia );
   }
 
   private void setPosition( IObjectLiteralField literal, InferredMember im ) {
