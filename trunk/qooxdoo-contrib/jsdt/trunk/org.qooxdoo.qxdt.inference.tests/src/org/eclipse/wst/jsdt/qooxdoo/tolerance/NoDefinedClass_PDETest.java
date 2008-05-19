@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.wst.jsdt.qooxdoo.functional.QxProjectUtil;
+import org.eclipse.wst.jsdt.qooxdoo.functional.util.QxProjectUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

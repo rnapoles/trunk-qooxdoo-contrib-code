@@ -33,6 +33,10 @@ public class NoQxConstructsToTolerate_PDETest extends Assert {
                                                        + "});\n";
   private static final String WRONG_NUMBER_OF_ARGUMENTS = "qx.Class.define();\n";
   private static final String SINGLE_NAME_REFERENCE = "qx.Class.define(name, config);\n";
+  private static final String MIXIN_WITHOUT_METHODS = "qx.Mixin.define(\"MyMixin\", {})\n"
+                                                      + "qx.Class.define(\"my.cool.Class\", {\n"
+                                                      + "    include :MyMixin\n"
+                                                      + "});\n";
 
   // methods for parameterized test
   // //////////////////////////////
@@ -50,6 +54,8 @@ public class NoQxConstructsToTolerate_PDETest extends Assert {
         WRONG_NUMBER_OF_ARGUMENTS
       }, {
         SINGLE_NAME_REFERENCE
+      }, {
+        MIXIN_WITHOUT_METHODS
       }
     } );
   }
