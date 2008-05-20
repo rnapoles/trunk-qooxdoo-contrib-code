@@ -29,6 +29,9 @@ public class TypeAssembler {
     if( classModificationStack.size() > 0 ) {
       classModificationStack.pop();
     }
+    if( classModificationStack.size() > 0 ) {
+      classModificationStack.peek().endVisit( field );
+    }
   }
 
   public void visit( final IObjectLiteralField field, Mixin type ) {

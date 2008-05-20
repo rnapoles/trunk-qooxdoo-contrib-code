@@ -6,6 +6,8 @@ public interface IClassModifier {
 
   void visit( IObjectLiteralField field );
 
+  void endVisit( IObjectLiteralField field );
+
   /**
    * Example: The modifier is the PropertiesModifier reacts on a property. To
    * really add the methods, it is necessary to know the type of a property,
@@ -14,4 +16,5 @@ public interface IClassModifier {
    * ClassModifier that can handle this information is a details modifier.
    */
   IClassModifier getDetailsModifier( IObjectLiteralField field );
+
 }
