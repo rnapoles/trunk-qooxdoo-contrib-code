@@ -185,14 +185,14 @@ public class CopyBuffer implements Compare {
      * specified symbol.
      */
     public Attribute merge(List<CopyBuffer> copyBuffers, int symbol, Type mergedType) {
-        Map mapping;    // map old attribute to merger objects. null: don't merge.
-        List mergers;   // List of Merger
+        Map<Attribute, Merger> mapping;    // map old attribute to merger objects. null: don't merge.
+        List<Merger> mergers;
         Merger merger;
         int i;
         int max;
 
-        mapping = new HashMap();
-        mergers = new ArrayList();
+        mapping = new HashMap<Attribute, Merger>();
+        mergers = new ArrayList<Merger>();
         max = copyBuffers.size();
         for (i = 0; i < max; i++) {
             ((CopyBuffer) copyBuffers.get(i)).createMergers(mergers, mapping, mergedType);
@@ -244,8 +244,8 @@ public class CopyBuffer implements Compare {
      * @return LT, GT, or NE
      */
     public int compare(CopyBuffer rightSemantics) {
-        List lefts; // list of left attributes compared
-        List rights;  // list of attributes compared
+        List<Attribute> lefts; // list of left attributes compared
+        List<Attribute> rights;  // list of attributes compared
         int i;  // index of the current attributes to be compared
         int cmp;
         int result;
@@ -259,9 +259,9 @@ public class CopyBuffer implements Compare {
             throw new IllegalArgumentException();
         }
 
-        lefts = new ArrayList();
+        lefts = new ArrayList<Attribute>();
         lefts.add(left);
-        rights = new ArrayList();
+        rights = new ArrayList<Attribute>();
         rights.add(right);
 
         result = EQ;
