@@ -4,13 +4,13 @@ import org.eclipse.wst.jsdt.core.ast.IReference;
 import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
 
-
 public class MethodCreator {
 
   // FIXME c&p from PropertiesModifier
   public static MethodDeclaration createFakeMethodNoArgs( IReference name,
-                                                    char[] methodName )
+                                                          char[] methodName )
   {
+    Assert.isNotNull( methodName );
     MethodDeclaration fakeMd = new MethodDeclaration( null );
     fakeMd.sourceStart = name.sourceStart();
     fakeMd.sourceEnd = name.sourceEnd();
@@ -21,4 +21,3 @@ public class MethodCreator {
     return fakeMd;
   }
 }
-
