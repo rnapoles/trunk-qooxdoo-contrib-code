@@ -22,17 +22,15 @@ package org.qooxdoo.sushi.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.qooxdoo.sushi.util.IntBitSet;
-
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.StringArrayList;
+import org.qooxdoo.sushi.util.IntBitSet;
 
 /** LR-PDAs are generated using these states */
 
@@ -40,12 +38,11 @@ public class State {
     /** number representing this state in the resulting table. */
     public final int id;
 
-    /** Set of Items. Contains core. */
-    private final Set<Item> closure;
-
-    /** Set of Items. Subset of closure. Sorted in order to
-        speed up equals(). */
+    /** Set of Items. Subset of closure. Sorted in order to speed up equals(). */
     private final SortedSet<Item> core;
+
+    /** Contains core. */
+    private final List<Item> closure;
 
     /** List of Shifts. */
     private final List<Shift> shifts;
@@ -74,16 +71,17 @@ public class State {
 
         core = new TreeSet<Item>(coreCol); // adds, sorts and removes duplicates
         todo = new ArrayList<Item>(core); // avoid duplicates - don't use coreCol
-        closure = new HashSet<Item>();
+        closure = new ArrayList<Item>();
 
         // start loop with empty closure
         // note: loop grows its upper bound
         for (i = 0; i < todo.size(); i++) {
             item = todo.get(i);
-            if (closure.add(item)) {
-                item.addExpansion(env, todo);
-            } else {
+            if (closure.contains(item)) {
                 // item is already known: do nothing
+            } else {
+                closure.add(item);
+                item.addExpansion(env, todo);
             }
         }
     }
