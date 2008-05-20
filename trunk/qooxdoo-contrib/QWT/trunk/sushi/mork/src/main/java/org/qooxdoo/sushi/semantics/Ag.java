@@ -38,17 +38,17 @@ public class Ag {
     /**
      * Attributes created from internal constructors. List of Attribute, Integer, ...
      */
-    private final List internals;
+    private final List<Object> internals;
 
     /**
      * List of Attributions or Object[] { Attribute, Integer }.
      */
-    private final List attributions;
+    private final List<Object> attributions;
 
     public Ag(Grammar grammar) {
         this.grammar = grammar;
-        this.internals = new ArrayList();
-        this.attributions = new ArrayList();
+        this.internals = new ArrayList<Object>();
+        this.attributions = new ArrayList<Object>();
     }
 
     public Grammar getGrammar() {
@@ -69,7 +69,7 @@ public class Ag {
 
     // firstAttrs are layed out first because the start symbol expects
     // them in a certain order
-    public Oag createSemantics(List firstAttrs) throws GenericException {
+    public Oag createSemantics(List<Attribute> firstAttrs) throws GenericException {
         Layout layout;
         int[][] internalAttrs;
         Visits[] visits;
@@ -80,7 +80,7 @@ public class Ag {
         return new Oag(visits, internalAttrs);
     }
 
-    private Layout createLayout(List firstAttrs) {
+    private Layout createLayout(List<Attribute> firstAttrs) {
         int i;
         int max;
         Layout layout;
@@ -88,7 +88,7 @@ public class Ag {
         layout = new Layout();
         max = firstAttrs.size();
         for (i = 0; i < max; i++) {
-            layout.add((Attribute) firstAttrs.get(i));
+            layout.add(firstAttrs.get(i));
         }
         max = attributions.size();
         for (i = 0; i < max; i++) {
@@ -140,7 +140,7 @@ public class Ag {
         return (AttributionBuffer) attributions.get(i);
     }
 
-    public void getProduction(int prod, Collection result) {
+    public void getProduction(int prod, Collection<AttributionBuffer> result) {
         int i;
         int max;
         AttributionBuffer ab;
@@ -162,11 +162,11 @@ public class Ag {
         int i;
         int max;
         AttributionBuffer ab;
-        List tmp;
+        List<AttributionBuffer> tmp;
 
         buffer = new StringBuilder();
         maxProds = grammar.getProductionCount();
-        tmp = new ArrayList();
+        tmp = new ArrayList<AttributionBuffer>();
         for (prod = 0; prod < maxProds; prod++) {
             buffer.append("[" + prod + "]\t");
             grammar.prodToString(buffer, prod);
@@ -212,7 +212,7 @@ public class Ag {
      * Besides the classic synthesized and inherited attributes, I have internal attributes.
      * Internal attributes are computed when creating the node, a better name might be 'initial'.
      */
-    public void getAttributes(int symbol, Set internal, Set synthesized, Set inherited) {
+    public void getAttributes(int symbol, Set<Attribute> internal, Set<Attribute> synthesized, Set<Attribute> inherited) {
         int i;
         int max;
         AttributionBuffer ab;
