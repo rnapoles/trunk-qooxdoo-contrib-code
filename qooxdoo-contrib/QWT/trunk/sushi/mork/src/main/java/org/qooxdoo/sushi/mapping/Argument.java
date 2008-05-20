@@ -45,10 +45,10 @@ public class Argument implements Compare {
     private final CopyBuffer copyBuffer;
 
     /** list of definitions */
-    private final List sources;
+    private final List<Definition> sources;
 
     /** non-local argument */
-    public Argument(int modifier, CopyBuffer buffer, List sources) {
+    public Argument(int modifier, CopyBuffer buffer, List<Definition> sources) {
         this.modifier = modifier;
         this.attr = buffer.getStart();
         this.copyBuffer = buffer;
@@ -126,16 +126,16 @@ public class Argument implements Compare {
     /**
      * @param args  List of Arguments
      */
-    public static List sortAndMergeArgs(Definition target, List args) throws GenericException {
-        List seq; // list of args;
+    public static List<Argument> sortAndMergeArgs(Definition target, List<Argument> args) throws GenericException {
+        List<Argument> seq;
         int i;
         int max;
         Argument arg;
-        List sort;
+        List<Argument> sort;
 
         max = args.size();
-        seq = new ArrayList();
-        sort = new ArrayList();
+        seq = new ArrayList<Argument>();
+        sort = new ArrayList<Argument>();
         for (i = 0; i < max; i++) {
             arg = (Argument) args.get(i);
             if (arg.modifier == Path.MERGEABLE) {

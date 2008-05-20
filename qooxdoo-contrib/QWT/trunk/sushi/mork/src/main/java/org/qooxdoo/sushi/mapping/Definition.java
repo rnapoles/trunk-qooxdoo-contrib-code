@@ -155,7 +155,7 @@ public class Definition {
         }
     }
 
-    private static AttributionBuffer createAB(Attribute result, int prod, int ofs, Function fn, List argAttrs) {
+    private static AttributionBuffer createAB(Attribute result, int prod, int ofs, Function fn, List<Attribute> argAttrs) {
         AttributionBuffer ab;
         int i;
 
@@ -166,8 +166,8 @@ public class Definition {
         return ab;
     }
 
-    private void translateArguments(Transport transport, Ag semantics, List args) throws GenericException {
-        List sorted;
+    private void translateArguments(Transport transport, Ag semantics, List<Argument> args) throws GenericException {
+        List<Argument> sorted;
         int i;
         int max;
         Argument arg;
