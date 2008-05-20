@@ -43,7 +43,7 @@ public class PDA {
     // change over time
     public final Grammar grm;      // grammar
     public final IntBitSet nullable;  // nullable symbols
-    public final List states;      // states built so far
+    public final List<State> states;      // states built so far
 
 
     private State end;
@@ -51,17 +51,17 @@ public class PDA {
     //----------------------------------------------------------------
 
     public PDA(Grammar grm, int start) {
-        List allShifts;
+        List<Shift> allShifts;
 
         this.grm = grm;
         this.nullable = new IntBitSet();
-        this.states = new ArrayList();
+        this.states = new ArrayList<State>();
         this.start = start;
         this.eof = grm.getSymbolCount();
         this.grm.addRemoveable(nullable);
 
         calcLR0();
-        allShifts = new ArrayList();
+        allShifts = new ArrayList<Shift>();
         prepare(allShifts);
         calc(allShifts);
         finish();
@@ -83,7 +83,7 @@ public class PDA {
         end.createShifted(this, eof);
     }
 
-    private void prepare(List shifts) {
+    private void prepare(List<Shift> shifts) {
         int i, max;
         State state;
 
@@ -94,34 +94,34 @@ public class PDA {
         }
     }
 
-    private void calc(List shifts) {
+    private void calc(List<Shift> shifts) {
         int i, max;
         Shift sh;
-        List stack;
+        List<Shift> stack;
 
         max = shifts.size();
         for (i = 0; i < max; i++) {
-            sh = (Shift) shifts.get(i);
+            sh = shifts.get(i);
             sh.initReadCalc();
         }
-        stack = new ArrayList();
+        stack = new ArrayList<Shift>();
         for (i = 0; i < max; i++) {
-            sh = (Shift) shifts.get(i);
+            sh = shifts.get(i);
             sh.digraph(stack);
         }
         for (i = 0; i < max; i++) {
-            sh = (Shift) shifts.get(i);
+            sh = shifts.get(i);
             sh.saveReadCalc();
             sh.initFollowCalc();
         }
 
-        stack = new ArrayList();
+        stack = new ArrayList<Shift>();
         for (i = 0; i < max; i++) {
-            sh = (Shift) shifts.get(i);
+            sh = shifts.get(i);
             sh.digraph(stack);
         }
         for (i = 0; i < max; i++) {
-            sh = (Shift) shifts.get(i);
+            sh = shifts.get(i);
             sh.saveFollowCalc();
         }
     }

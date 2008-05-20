@@ -212,13 +212,13 @@ public class ParserTable implements Serializable {
     private static final int MAX_UTF8_LENGTH = 0xffff - 2 / 3;
     
     public String[] packValue(StringBuilder difs, StringBuilder vals) {
-        List lst = new ArrayList();
+        List<String> lst = new ArrayList<String>();
         String[] array;
         
         if (difs.length() != vals.length()) {
             throw new IllegalArgumentException();
         }
-        lst = new ArrayList();
+        lst = new ArrayList<String>();
         split(difs, MAX_UTF8_LENGTH, lst);
         split(vals, MAX_UTF8_LENGTH, lst);
         array = new String[lst.size()];
@@ -226,7 +226,7 @@ public class ParserTable implements Serializable {
         return array;
     }
     
-    private static void split(StringBuilder str, int chunkLength, List result) {
+    private static void split(StringBuilder str, int chunkLength, List<String> result) {
         int i;
         int max;
         

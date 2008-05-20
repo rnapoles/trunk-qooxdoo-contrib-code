@@ -25,7 +25,7 @@ import java.util.Collection;
 
 /** Immutable. */
 
-public class Item implements Comparable {
+public class Item implements Comparable<Item> {
     public final int production;
     public final int dot;
 
@@ -53,26 +53,22 @@ public class Item implements Comparable {
         }
     }
 
-    public int compareTo(Object obj) {
+    public int compareTo(Item obj) {
         Item item;
 
-        if (obj instanceof Item) {
-            item = (Item) obj;
-            if (production < item.production) {
+        item = (Item) obj;
+        if (production < item.production) {
+            return -1;
+        } else if (production > item.production) {
+            return 1;
+        } else {
+            if (dot < item.dot) {
                 return -1;
-            } else if (production > item.production) {
+            } else if (dot > item.dot) {
                 return 1;
             } else {
-                if (dot < item.dot) {
-                    return -1;
-                } else if (dot > item.dot) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+                return 0;
             }
-        } else {
-            throw new ClassCastException();
         }
     }
 
@@ -90,7 +86,7 @@ public class Item implements Comparable {
         return new Item(production, dot + 1);
     }
 
-    public void addExpansion(PDA env, Collection result) {
+    public void addExpansion(PDA env, Collection<Item> result) {
         int symbol;
 
         symbol = getShift(env);
@@ -101,7 +97,7 @@ public class Item implements Comparable {
         }
     }
 
-    public static void addExpansion(PDA env, int symbol, Collection result) {
+    public static void addExpansion(PDA env, int symbol, Collection<Item> result) {
         int alt, maxAlt;
 
         maxAlt = env.grm.getAlternativeCount(symbol);
