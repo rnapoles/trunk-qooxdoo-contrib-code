@@ -39,16 +39,16 @@ public class CopyBuffer implements Compare {
     /**
      * List of States
      */
-    private List states;
+    private List<State> states;
 
     private Attribute start;
 
     public CopyBuffer(Attribute start) {
         this.start = start;
-        states = new ArrayList();
+        states = new ArrayList<State>();
     }
 
-    public CopyBuffer(List states) {
+    public CopyBuffer(List<State> states) {
         this.states = states;
     }
 
@@ -61,7 +61,7 @@ public class CopyBuffer implements Compare {
     }
 
     public void append(CopyBuffer right) {
-        Iterator iter;
+        Iterator<State> iter;
         State rightState;
 
         iter = right.states.iterator();
@@ -84,7 +84,7 @@ public class CopyBuffer implements Compare {
     }
 
     public void createSemanticsBuffer(Ag sems, Transport transport) {
-        Iterator iter;
+        Iterator<State> iter;
         State state;
 
         iter = states.iterator();
@@ -101,14 +101,14 @@ public class CopyBuffer implements Compare {
      * new attributes" ...
      */
     public CopyBuffer createReduced(Attribute start) {
-        List attrs;
+        List<Attribute> attrs;
         int i;
         Attribute attr;
         State state;
         CopyBuffer reduced;
 
         reduced = new CopyBuffer(start);
-        attrs = new ArrayList();
+        attrs = new ArrayList<Attribute>();
         attrs.add(start);
         // size usually grows
         for (i = 0; i < attrs.size(); i++) {
@@ -128,8 +128,7 @@ public class CopyBuffer implements Compare {
      */
     public boolean isDownOptional() {
         State state;
-        int i;
-        Iterator iter;
+        Iterator<State> iter;
 
         iter = states.iterator();
         while (iter.hasNext()) {
@@ -149,13 +148,13 @@ public class CopyBuffer implements Compare {
      *
      * @return all attributes being result or argument of at least one attribution.
      */
-    public List getTransportAttributes() {
-        List result;
+    public List<Attribute> getTransportAttributes() {
+        List<Attribute> result;
         int i;
         int max;
         State state;
 
-        result = new ArrayList();
+        result = new ArrayList<Attribute>();
         max = states.size();
         for (i = 0; i < max; i++) {
             state = (State) states.get(i);
@@ -185,7 +184,7 @@ public class CopyBuffer implements Compare {
      * Merge all attributes with >0 attributions buffers. Return the merged attribute of the
      * specified symbol.
      */
-    public Attribute merge(List copyBuffers, int symbol, Type mergedType) {
+    public Attribute merge(List<CopyBuffer> copyBuffers, int symbol, Type mergedType) {
         Map mapping;    // map old attribute to merger objects. null: don't merge.
         List mergers;   // List of Merger
         Merger merger;
@@ -206,11 +205,11 @@ public class CopyBuffer implements Compare {
         return merger.dest;
     }
 
-    private void createMergers(List mergers, Map mapping, Type mergedType) {
+    private void createMergers(List<Merger> mergers, Map<Attribute, Merger> mapping, Type mergedType) {
         Attribute attr;
         Merger merger;
         State state;
-        Iterator iter;
+        Iterator<State> iter;
 
         iter = states.iterator();
         while (iter.hasNext()) {
@@ -226,7 +225,7 @@ public class CopyBuffer implements Compare {
         }
     }
 
-    private void runMergers(List mergers, Map mapping) {
+    private void runMergers(List<Merger> mergers, Map<Attribute, Merger> mapping) {
         int i;
         int max;
         Merger merger;
