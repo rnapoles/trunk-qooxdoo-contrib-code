@@ -112,7 +112,7 @@ public class State {
     public State createShifted(PDA env, int symbol) {
         State end;
 
-        end = new State(env, Collections.EMPTY_LIST);
+        end = new State(env, Collections.<Item>emptyList());
         shifts.add(new Shift(symbol, end));
         env.states.add(end);
         return end;

@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conflicts extends Exception {
-    private List conflicts;
+    private List<int[]> conflicts;
 
     public Conflicts() {
-        conflicts = new ArrayList();
+        conflicts = new ArrayList<int[]>();
     }
 
     public boolean isEmpty() {
@@ -41,15 +41,10 @@ public class Conflicts extends Exception {
 
     public String toString(StringArrayList symbolTable) {
         StringBuilder result;
-        int i, max;
-        int[] c;
 
         result = new StringBuilder();
-        max = conflicts.size();
-        for (i = 0; i < max; i++) {
-            c = (int[]) conflicts.get(i);
-            result.append("state " + c[0] + " on symbol "
-                          + symbolTable.getOrIndex(c[1]) + "\n");
+        for (int[] c : conflicts) {
+            result.append("state " + c[0] + " on symbol " + symbolTable.getOrIndex(c[1]) + "\n");
         }
         return result.toString();
     }
