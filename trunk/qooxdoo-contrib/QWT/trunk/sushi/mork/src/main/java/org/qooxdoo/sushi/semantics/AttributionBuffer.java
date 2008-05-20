@@ -38,7 +38,7 @@ public class AttributionBuffer {
     public Function function;
 
     public final AttributeOccurrence result;
-    private final List args;
+    private final List<AttributeOccurrence> args;
 
     public AttributionBuffer(AttributionBuffer orig) {
         this(orig.production, orig.function, orig.result);
@@ -49,7 +49,7 @@ public class AttributionBuffer {
         this.production = production;
         this.function = function;
         this.result = resultAttr;
-        this.args = new ArrayList();
+        this.args = new ArrayList<AttributeOccurrence>();
     }
 
     public void add(AttributeOccurrence attr) {
@@ -68,7 +68,7 @@ public class AttributionBuffer {
     /**
      * @param args list of AttributeOccurrence objects
      */
-    public void addAll(List args) {
+    public void addAll(List<AttributeOccurrence> args) {
         int i;
         int max;
 
@@ -88,7 +88,6 @@ public class AttributionBuffer {
 
     @Override
     public String toString() {
-        int a;
         StringBuilder buf;
         int max;
         int i;
