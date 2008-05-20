@@ -120,7 +120,7 @@ public class State {
 
     /** one step in LR(0) construction */
     public void expand(PDA env) {
-        Set<Item> todo;
+        List<Item> remaining;
         Item item;
         List<Item> lst;
         State next;
@@ -128,9 +128,9 @@ public class State {
         Iterator<Item> pos;
         int shift;
 
-        todo = new HashSet<Item>(closure);
-        while (!todo.isEmpty()) {
-            pos = todo.iterator();
+        remaining = new ArrayList<Item>(closure);
+        while (!remaining.isEmpty()) {
+            pos = remaining.iterator();
             item = pos.next();
             pos.remove();
             shift = item.getShift(env);
