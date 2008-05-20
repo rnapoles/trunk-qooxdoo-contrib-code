@@ -84,8 +84,14 @@ public abstract class AbstractFileContentsValidates_PDETest extends Assert {
     TextEditorOperator teo = new TextEditorOperator( getFileName(),
                                                      getProperties() );
     triggerAutoBuild( teo );
-    List<IMarker> errorMarkers = teo.getMarkers();
+    List<IMarker> errorMarkers = getErrorMarkers( teo );
     assertTrue( getFirstErrorMessage( errorMarkers ), errorMarkers.isEmpty() );
+  }
+
+  protected List<IMarker> getErrorMarkers( TextEditorOperator teo )
+    throws CoreException
+  {
+    return teo.getMarkers();
   }
 
   private void triggerAutoBuild( TextEditorOperator teo ) {
