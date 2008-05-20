@@ -216,7 +216,7 @@ public class State implements Compare {
         return false;
     }
 
-    public int compare(State rightState, List nextLefts, List nextRights) {
+    public int compare(State rightState, List<Attribute> nextLefts, List<Attribute> nextRights) {
         Alternative left;
         Alternative right;
         int result;

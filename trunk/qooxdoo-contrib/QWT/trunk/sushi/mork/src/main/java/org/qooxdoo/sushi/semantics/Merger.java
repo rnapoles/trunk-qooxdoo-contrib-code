@@ -25,8 +25,7 @@ import java.util.Map;
 
 /** Stupid data container for CopyBuffer */
 public class Merger {
-    /** List of Copy */
-    public final List source;
+    public final List<State> source;
 
     /** attribute resulting from the merger */
     public final Attribute dest;
@@ -35,12 +34,12 @@ public class Merger {
     private static int count = 0;
 
     public Merger(int destSymbol, Type destType) {
-        source = new ArrayList();
+        source = new ArrayList<State>();
         dest = new Attribute(destSymbol, "merged" + count, destType);
         count++;
     }
 
-    public static Merger forSymbol(List mergers, int symbol) {
+    public static Merger forSymbol(List<Merger> mergers, int symbol) {
         int i;
         int max;
         Merger merger;
@@ -55,10 +54,10 @@ public class Merger {
         return null;
     }
 
-    public static Attribute map(Map mapping, Attribute attr) {
+    public static Attribute map(Map<Attribute, Merger> mapping, Attribute attr) {
         Merger merger;
 
-        merger = (Merger) mapping.get(attr);
+        merger = mapping.get(attr);
         if (merger != null) {
             return merger.dest;
         } else {
