@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.qooxdoo.sushi.util.IntArrayList;
 
-// TODO: public final
 public class Alternative implements Compare {
     public int production;
 
@@ -32,7 +31,7 @@ public class Alternative implements Compare {
     public int resultOfs;
 
     private IntArrayList argsOfs;
-    private ArrayList argsCopy;
+    private ArrayList<Attribute> argsCopy;
 
     public Alternative(Alternative orig) {
         this(orig.production, orig.resultOfs);
@@ -43,13 +42,12 @@ public class Alternative implements Compare {
         this.production = production;
         this.resultOfs = resultOfs;
         this.argsOfs = new IntArrayList();
-        this.argsCopy = new ArrayList();
+        this.argsCopy = new ArrayList<Attribute>();
     }
 
     public void add(int ofs, Attribute copy) {
         int i;
         int max;
-        List lst;
 
         max = argsOfs.size();
         for (i = 0; i < max; i++) {
@@ -61,7 +59,7 @@ public class Alternative implements Compare {
         argsCopy.add(i, copy);
     }
 
-    public void addAll(IntArrayList argsOfs, List argsCopy) {
+    public void addAll(IntArrayList argsOfs, List<Attribute> argsCopy) {
         int i;
         int max;
 
@@ -76,8 +74,6 @@ public class Alternative implements Compare {
      * @return NE: neither LT nor GT. EQ: maybe.  ALT: equal, but don't add follow states
      */
     public int compare(Alternative ab) {
-        int i;
-
         if (production != ab.production) {
             throw new IllegalArgumentException();
         }
@@ -145,7 +141,7 @@ public class Alternative implements Compare {
     }
 
     /** Add all argument attributes to next (if not already contained in next) */
-    public void addArgAttrs(List next) {
+    public void addArgAttrs(List<Attribute> next) {
         int i;
         int max;
         Attribute attr;
@@ -218,5 +214,15 @@ public class Alternative implements Compare {
         }
         buf.append(')');
         return buf.toString();
+    }
+    
+    @Override
+    public int hashCode() {
+        return production;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 }

@@ -57,7 +57,7 @@ public class Attribute {
         this.type = orig.type;
     }
 
-    public static Attribute find(List attrs, int symbol, String name) {
+    public static Attribute find(List<Attribute> attrs, int symbol, String name) {
         int i;
         int max;
         Attribute attr;
@@ -72,6 +72,16 @@ public class Attribute {
         return null;
     }
 
+    @Override
+    public int hashCode() {
+        return symbol;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this;
+    }
+    
     @Override
     public String toString() {
         return "symbol=" + symbol + ", name=" + name + ", " + type;
