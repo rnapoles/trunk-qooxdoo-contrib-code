@@ -62,6 +62,7 @@
                   </classpath>
                   <arg value="-d"/>
                   <arg path="${basedir}/target/classes" />
+                  <arg value="-lst"/>
                   <arg value="-mapper"/>
                   <arg value="org.qooxdoo.sushi.bootstrap.Loader.loadMapper" />
                   <arg line="${mapper.bs2}" />
@@ -80,6 +81,7 @@
                   </classpath>
                   <arg value="-d"/>
                   <arg path="${basedir}/target/classes" />
+                  <arg value="-lst"/>
                   <arg line="${mapper.bs3}"/>
                 </java>
                 <!-- TODO: broken with Java 6 ! -->

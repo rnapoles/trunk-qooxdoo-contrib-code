@@ -35,11 +35,11 @@ public class Shift {
     public final State end;
 
     private IntBitSet readInit;     // DR: directly reads
-    private Set readImplies;       // READS: set of Shifts
+    private Set<Shift> readImplies;       // READS: set of Shifts
     private IntBitSet read;         // read
 
     // read is followImplies
-    private Set followImplies;    // INCLUDES: set of Shifts
+    private Set<Shift> followImplies;    // INCLUDES: set of Shifts
     private IntBitSet follow;      // follow
 
     public Shift(int symbolInit, State endInit) {
@@ -47,9 +47,9 @@ public class Shift {
         end = endInit;
 
         readInit = new IntBitSet();
-        readImplies = new HashSet();
+        readImplies = new HashSet<Shift>();
         read = new IntBitSet();
-        followImplies = new HashSet();
+        followImplies = new HashSet<Shift>();
         follow = new IntBitSet();
     }
 
@@ -60,7 +60,7 @@ public class Shift {
     public void prepare(PDA env, State start) {
         int prod, alt, maxAlt;
         int i;
-        List lst;
+        List<Shift> lst;
         Shift t;
 
         // read implies
@@ -74,7 +74,7 @@ public class Shift {
             maxAlt = env.grm.getAlternativeCount(symbol);
             for (alt = 0; alt < maxAlt; alt++) {
                 prod = env.grm.getAlternative(symbol, alt);
-                lst = new ArrayList();
+                lst = new ArrayList<Shift>();
                 if (start.trace(env, prod, lst)) {
                     for (i = lst.size() - 1; i >= 0; i--) {
                         t = (Shift) lst.get(i);
@@ -100,7 +100,7 @@ public class Shift {
 
     // for closure computation
     private IntBitSet clInit;
-    private Set clImplies;
+    private Set<Shift> clImplies;
     private IntBitSet clResult;
     private int clN;
 
@@ -132,16 +132,16 @@ public class Shift {
     /**
      * @param stack of Shifts
      */
-    public void digraph(List stack) {
+    public void digraph(List<Shift> stack) {
         if (clN == 0) {
             traverse(stack);
         }
     }
 
-    private void traverse(List stack) {
+    private void traverse(List<Shift> stack) {
         int d;  // initial stack size
         Shift t;
-        Iterator pos;
+        Iterator<Shift> pos;
 
         // initialize
         stack.add(this);
@@ -181,8 +181,8 @@ public class Shift {
         return result.toString();
     }
 
-    public static void toStringShiftSet(StringArrayList symbolTable, Set set, StringBuilder result) {
-        Iterator pos;
+    public static void toStringShiftSet(StringArrayList symbolTable, Set<Shift> set, StringBuilder result) {
+        Iterator<Shift> pos;
         Shift sh;
 
         result.append('{');
@@ -195,5 +195,15 @@ public class Shift {
             result.append("" + sh.end.id);
         }
         result.append(" }");
+    }
+    
+    @Override
+    public int hashCode() {
+        return symbol;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 }

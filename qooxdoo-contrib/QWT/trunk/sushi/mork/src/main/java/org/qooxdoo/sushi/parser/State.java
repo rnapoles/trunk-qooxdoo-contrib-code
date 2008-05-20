@@ -41,47 +41,45 @@ public class State {
     public final int id;
 
     /** Set of Items. Contains core. */
-    private final Set closure;
+    private final Set<Item> closure;
 
     /** Set of Items. Subset of closure. Sorted in order to
         speed up equals(). */
-    private final SortedSet core;
+    private final SortedSet<Item> core;
 
     /** List of Shifts. */
-    private final List shifts;
+    private final List<Shift> shifts;
 
     /** List of Reduces. */
-    private final List reduces;
+    private final List<Reduce> reduces;
 
     //------------------------------------------------------------------
 
     public static State create(PDA env, int symbol) {
-        Collection coreCol;
-        State result;
+        Collection<Item> coreCol;
 
-        coreCol = new ArrayList();
+        coreCol = new ArrayList<Item>();
         Item.addExpansion(env, symbol, coreCol);
         return new State(env, coreCol);
     }
 
-    public State(PDA env, Collection coreCol) {
-        int i, max;
-        Iterator pos;
-        List todo;
+    public State(PDA env, Collection<Item> coreCol) {
+        int i;
+        List<Item> todo;
         Item item;
 
         id = env.states.size();
-        shifts = new ArrayList();
-        reduces = new ArrayList();
+        shifts = new ArrayList<Shift>();
+        reduces = new ArrayList<Reduce>();
 
-        core = new TreeSet(coreCol); // adds, sorts and removes duplicates
-        todo = new ArrayList(core); // avoid duplicates - don't use coreCol
-        closure = new HashSet();
+        core = new TreeSet<Item>(coreCol); // adds, sorts and removes duplicates
+        todo = new ArrayList<Item>(core); // avoid duplicates - don't use coreCol
+        closure = new HashSet<Item>();
 
         // start loop with empty closure
         // note: loop grows its upper bound
         for (i = 0; i < todo.size(); i++) {
-            item = (Item) todo.get(i);
+            item = todo.get(i);
             if (closure.add(item)) {
                 item.addExpansion(env, todo);
             } else {
@@ -122,24 +120,24 @@ public class State {
 
     /** one step in LR(0) construction */
     public void expand(PDA env) {
-        Set todo;
+        Set<Item> todo;
         Item item;
-        List lst;
+        List<Item> lst;
         State next;
         int idx;
-        Iterator pos;
+        Iterator<Item> pos;
         int shift;
 
-        todo = new HashSet(closure);
+        todo = new HashSet<Item>(closure);
         while (!todo.isEmpty()) {
             pos = todo.iterator();
-            item = (Item) pos.next();
+            item = pos.next();
             pos.remove();
             shift = item.getShift(env);
             if (shift == -1) {
                 reduces.add(new Reduce(item.production));
             } else {
-                lst = new ArrayList();
+                lst = new ArrayList<Item>();
                 lst.add(item.createShifted());
                 while (pos.hasNext()) {
                     item = (Item) pos.next();
@@ -165,8 +163,8 @@ public class State {
     // prepare follow calc
 
     /** Calculate anything available after LR(0) automaton is complete. */
-    public void prepare(PDA env, List allShifts) {
-        Iterator pos;
+    public void prepare(PDA env, List<Shift> allShifts) {
+        Iterator<Shift> pos;
         Shift sh;
         int prod, alt, maxAlt;
         State end;
@@ -174,7 +172,7 @@ public class State {
 
         pos = shifts.iterator();
         while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+            sh = pos.next();
             sh.prepare(env, this);
 
             allShifts.add(sh);
@@ -198,12 +196,12 @@ public class State {
     }
 
     public void addReadInit(PDA env, IntBitSet result) {
-        Iterator pos;
+        Iterator<Shift> pos;
         Shift sh;
 
         pos = shifts.iterator();
         while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+            sh = pos.next();
             if (!(sh.isSymbol(env.grm) && env.grm.isNonterminal(sh.symbol))) {
                 // negative test - eof!
                 result.add(sh.symbol);
@@ -211,13 +209,13 @@ public class State {
         }
     }
 
-    public void addReadImplies(PDA env, Set result) {
-        Iterator pos;
+    public void addReadImplies(PDA env, Set<Shift> result) {
+        Iterator<Shift> pos;
         Shift sh;
 
         pos = shifts.iterator();
         while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+            sh = pos.next();
             if (env.nullable.contains(sh.symbol)) {
                 result.add(sh);
             }
@@ -228,11 +226,11 @@ public class State {
 
     public void addLookahead() {
         Reduce r;
-        Iterator pos;
+        Iterator<Reduce> pos;
 
         pos = reduces.iterator();
         while (pos.hasNext()) {
-            r = (Reduce) pos.next();
+            r = pos.next();
             r.calcLookahead();
         }
     }
@@ -241,11 +239,11 @@ public class State {
 
     public Shift findShift(int symbol) {
         Shift sh;
-        Iterator pos;
+        Iterator<Shift> pos;
 
         pos = shifts.iterator();
         while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+            sh = pos.next();
             if (sh.symbol == symbol) {
                 return sh;
             }
@@ -255,11 +253,11 @@ public class State {
 
     public Reduce findReduce(int prod) {
         Reduce r;
-        Iterator pos;
+        Iterator<Reduce> pos;
 
         pos = reduces.iterator();
         while (pos.hasNext()) {
-            r = (Reduce) pos.next();
+            r = pos.next();
             if (r.production == prod) {
                 return r;
             }
@@ -270,7 +268,7 @@ public class State {
     /**
      * @param result  list of Shifts
      */
-    public boolean trace(PDA env, int prod, List result) {
+    public boolean trace(PDA env, int prod, List<Shift> result) {
         int ofs, len;
         State state;
         Shift t;
@@ -308,19 +306,20 @@ public class State {
     //------------------------------------------------------------------
 
     public void addActions(PDA env, ParserTable result, Conflicts conflicts) {
-        Iterator pos;
+        Iterator<Shift> p1;
+        Iterator<Reduce> p2;
         Shift sh;
         Reduce r;
         int term;
 
-        pos = shifts.iterator();
-        while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+        p1 = shifts.iterator();
+        while (p1.hasNext()) {
+            sh = p1.next();
             result.addShift(id, sh.symbol, sh.end.id, conflicts);
         }
-        pos = reduces.iterator();
-        while (pos.hasNext()) {
-            r = (Reduce) pos.next();
+        p2 = reduces.iterator();
+        while (p2.hasNext()) {
+            r = p2.next();
             for (term = r.lookahead.first(); term != -1; term = r.lookahead.next(term)) {
                 result.addReduce(id, term, r.production, conflicts);
             }
@@ -330,7 +329,7 @@ public class State {
     //-------------------------------------------------------------------
 
     public void calcLookahead(PDA env) {
-        Iterator pos;
+        Iterator<Reduce> pos;
         Reduce r;
 
         pos = reduces.iterator();
@@ -345,7 +344,9 @@ public class State {
     public String toString(PDA env, Grammar grammar) {
         StringBuilder result;
         Item item;
-        Iterator pos;
+        Iterator<Item> p1;
+        Iterator<Shift> p2;
+        Iterator<Reduce> p3;
         Shift sh;
         Reduce r;
         StringArrayList symbolTable;
@@ -354,29 +355,29 @@ public class State {
         result = new StringBuilder();
         result.append("\n------------------------------\n");
         result.append("[state " + id + "]\n");
-        pos = core.iterator();
-        while (pos.hasNext()) {
-            item = (Item) pos.next();
+        p1 = core.iterator();
+        while (p1.hasNext()) {
+            item = (Item) p1.next();
             result.append(item.toString(env, symbolTable));
         }
         result.append('\n');
-        pos = closure.iterator();
-        while (pos.hasNext()) {
-            item = (Item) pos.next();
+        p1 = closure.iterator();
+        while (p1.hasNext()) {
+            item = (Item) p1.next();
             if (!core.contains(item)) {
                 result.append(item.toString(env, symbolTable));
             }
         }
         result.append('\n');
-        pos = shifts.iterator();
-        while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+        p2 = shifts.iterator();
+        while (p2.hasNext()) {
+            sh = p2.next();
             result.append(sh.toString(env, symbolTable));
         }
         result.append('\n');
-        pos = reduces.iterator();
-        while (pos.hasNext()) {
-            r = (Reduce) pos.next();
+        p3 = reduces.iterator();
+        while (p3.hasNext()) {
+            r = p3.next();
             result.append(r.toString(grammar));
         }
         result.append("\n");

@@ -31,22 +31,22 @@ public class Reduce {
     public final int production;
     public final IntBitSet lookahead;
 
-    public final Set lookback;
+    public final Set<Shift> lookback;
 
     public Reduce(int productionInit) {
         production = productionInit;
         lookahead = new IntBitSet();
 
-        lookback = new HashSet();
+        lookback = new HashSet<Shift>();
     }
 
     public void calcLookahead() {
-        Iterator pos;
+        Iterator<Shift> pos;
         Shift sh;
 
         pos = lookback.iterator();
         while (pos.hasNext()) {
-            sh = (Shift) pos.next();
+            sh = pos.next();
             sh.addFollow(lookahead);
         }
     }
@@ -64,5 +64,15 @@ public class Reduce {
         buffer.append('\n');
 
         return buffer.toString();
+    }
+    
+    @Override
+    public int hashCode() {
+        return production;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 }
