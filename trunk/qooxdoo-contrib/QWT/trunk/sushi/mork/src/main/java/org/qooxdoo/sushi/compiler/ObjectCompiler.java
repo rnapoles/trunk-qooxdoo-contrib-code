@@ -115,7 +115,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
             if (type.isPrimitive()) {
                 throw new IllegalArgumentException("primitive null");
             }
-            // it is not a string, but otherwise it is ambiguous
+            // null is not a string, but otherwise it is ambiguous
             dest.emit(LDC, (String) null);
         } else if (val instanceof String) {
             dest.emit(LDC, (String) val);
@@ -319,8 +319,8 @@ public class ObjectCompiler implements Bytecodes, Constants {
     //-----------------------------------------------------------------
     // non-null, non-String object
 
-    private void object(Class type, Object obj, int limit) {
-        Class[] types;
+    private void object(Class<?> type, Object obj, int limit) {
+        Class<?>[] types;
         Object[] objects;
         int i;
         CustomCompiler decl;
@@ -377,7 +377,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
         }
     }
 
-    private CustomCompiler findDecl(Class type) {
+    private CustomCompiler findDecl(Class<?> type) {
         int i;
 
         for (i = 0; i < customs.length; i++) {
@@ -389,7 +389,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
     }
 
     /** @param obj != null */
-    private void pushMethod(Class returnTypeClass) {
+    private void pushMethod(Class<?> returnTypeClass) {
         ClassRef returnType;
         Code nextDest;
         MethodDef def;
