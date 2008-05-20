@@ -6875,12 +6875,20 @@ public void unusedPrivateMethod(AbstractMethodDeclaration methodDecl) {
 			IProblem.UnusedPrivateMethod,
 		new String[] {
 			new String(method.declaringClass.readableName()),
-			new String(method.selector),
+			// 2008-05-20 mkempka: prevent a NPE in certain circumstances.
+			// See test org.eclipse.wst.jsdt.qooxdoo.tolerance.PrivateUnusedMethod_PDETest
+			// Check if it is resolved after bugfix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=219476
+//			 new String(method.selector),
+			new String(method.selector == null ? "<unresolved>".toCharArray() : method.selector),
 			typesAsString(method.isVarargs(), method.parameters, false)
 		 },
 		new String[] {
 			new String(method.declaringClass.shortReadableName()),
-			new String(method.selector),
+			// 2008-05-20 mkempka: prevent a NPE in certain circumstances.
+			// See test org.eclipse.wst.jsdt.qooxdoo.tolerance.PrivateUnusedMethod_PDETest
+			// Check if it is resolved after bugfix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=219476
+			// new String(method.selector)
+			new String(method.selector == null ? "<unresolved>".toCharArray() : method.selector),
 			typesAsString(method.isVarargs(), method.parameters, true)
 		 },
 		severity,
