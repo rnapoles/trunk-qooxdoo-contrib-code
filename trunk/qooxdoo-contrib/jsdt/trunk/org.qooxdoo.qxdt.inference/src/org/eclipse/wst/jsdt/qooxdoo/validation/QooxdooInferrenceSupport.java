@@ -12,7 +12,6 @@ import org.eclipse.wst.jsdt.core.ast.IThisReference;
 import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
-import org.eclipse.wst.jsdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.typeassembling.TypeAssembler;
@@ -21,7 +20,6 @@ public class QooxdooInferrenceSupport extends InferEngine
   implements ITypeManagement
 {
 
-  private CompilationUnitDeclaration compilationUnit;
   private TypeAssembler typeassembler = new TypeAssembler( this );
   private Stack<InferredType> classDefinitionStack = new Stack<InferredType>();
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
@@ -42,11 +40,6 @@ public class QooxdooInferrenceSupport extends InferEngine
 
   // interface methods from InferEngine
   // /////////////////////////////////////////////////
-  @Override
-  public void setCompilationUnit( CompilationUnitDeclaration compilationUnit ) {
-    this.compilationUnit = compilationUnit;
-    super.setCompilationUnit( compilationUnit );
-  }
 
   @Override
   protected boolean handleFunctionCall( IFunctionCall messageSend ) {

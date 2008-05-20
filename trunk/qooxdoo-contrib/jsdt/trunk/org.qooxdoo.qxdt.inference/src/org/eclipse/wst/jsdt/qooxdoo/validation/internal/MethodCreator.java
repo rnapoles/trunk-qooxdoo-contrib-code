@@ -14,6 +14,8 @@ public class MethodCreator {
     MethodDeclaration fakeMd = new MethodDeclaration( null );
     fakeMd.sourceStart = name.sourceStart();
     fakeMd.sourceEnd = name.sourceEnd();
+    fakeMd.bodyEnd = name.sourceEnd();
+    fakeMd.bodyStart = name.sourceStart();
     fakeMd.selector = methodName;
     // @see SourceElementParser#notifySourceElementRequestor( InferredType type
     // );

@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.jsdt.qooxdoo.functional.util.QxProjectUtil;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import abbot.swt.finder.WidgetFinderImpl;
@@ -24,36 +24,118 @@ import de.sammy.mkempka.ide.operators.TextEditorOperator;
 
 public class DynamicProperties_PDETest extends Assert {
 
-  private SammyIDE sammy;
-  private IFile file;
-  private String fileContents = "qx.Class.define(\"Application\", {\n"
-                                + "construct : function() {},\n"
-                                + "properties : {\n"
-                                + "    width : { check : \"Number\", apply : \"applyWidth\" },\n"
-                                + "    checked : { check : \"Boolean\" }\n"
-                                + "  },\n"
-                                + "members : { PI : 3.14 }\n"
-                                + "});\n"
-                                + "\n"
-                                + " Application;\n"
-                                + "a.\n";
+  private static SammyIDE sammy;
+  private static IFile file;
+  private static String fileContents = "qx.Class.define(\"Application\", {\n"
+                                       + "construct : function() {},\n"
+                                       + "properties : {\n"
+                                       + "    width : { check : \"Number\", apply : \"applyWidth\", init : 3 },\n"
+                                       + "    checked : { check : \"Boolean\" },\n"
+                                       + "    inherit : { check : \"Number\", inheritable : true },\n"
+                                       + "    themed : { themeable : true }\n"
+                                       + "  }\n"
+                                       + "});\n"
+                                       + "\n"
+                                       + " Application;\n"
+                                       + "a.\n";
+  private static Table suggestions;
 
-  @Before
-  public void setUp() throws Exception {
-    this.sammy = new SammyIDE();
-    this.file = QxProjectUtil.createQxFileWithContents( sammy,
-                                                        "Application.js",
-                                                        fileContents );
+  @BeforeClass
+  public static void setUp() throws Exception {
+    sammy = new SammyIDE();
+    file = QxProjectUtil.createQxFileWithContents( sammy,
+                                                   "Application.js",
+                                                   fileContents );
+    triggerAutoCompletion();
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void tearDown() throws Exception {
     sammy.cleanUp();
   }
 
   @Test
-  public void triggerAutoCompletion() throws Exception {
-    sammy.openEditor( new FileEditorInput( this.file ) );
+  public void noRecursion() {
+    assertNull( findItem( suggestions, "getCheck(" ) );
+    assertNull( findItem( suggestions, "setCheck(" ) );
+    assertNull( findItem( suggestions, "getApply(" ) );
+    assertNull( findItem( suggestions, "setApply(" ) );
+  }
+
+  @Test
+  public void is() {
+    assertNotNull( findItem( suggestions, "isChecked()" ) );
+    assertNull( findItem( suggestions, "isWidth()" ) );
+    assertNull( findItem( suggestions, "isInherit()" ) );
+    assertNull( findItem( suggestions, "isThemed()" ) );
+  }
+
+  @Test
+  public void toggle() {
+    assertNotNull( findItem( suggestions, "toggleChecked()" ) );
+    assertNull( findItem( suggestions, "toggleWidth()" ) );
+    assertNull( findItem( suggestions, "toggleInherit()" ) );
+    assertNull( findItem( suggestions, "toggleThemed()" ) );
+  }
+
+  @Test
+  public void refresh() {
+    assertNull( findItem( suggestions, "refreshWidth()" ) );
+    assertNull( findItem( suggestions, "refreshChecked()" ) );
+    assertNotNull( findItem( suggestions, "refreshInherit()" ) );
+    assertNull( findItem( suggestions, "refreshThemed()" ) );
+  }
+
+  @Test
+  public void set() {
+    assertNotNull( findItem( suggestions, "setWidth( width)" ) );
+    assertNotNull( findItem( suggestions, "setChecked( checked)" ) );
+    assertNotNull( findItem( suggestions, "setInherit( inherit)" ) );
+    assertNotNull( findItem( suggestions, "setThemed( themed)" ) );
+  }
+
+  @Test
+  public void reset() {
+    assertNotNull( findItem( suggestions, "resetWidth()" ) );
+    assertNotNull( findItem( suggestions, "resetChecked()" ) );
+    assertNotNull( findItem( suggestions, "resetInherit()" ) );
+    assertNotNull( findItem( suggestions, "resetThemed()" ) );
+  }
+
+  @Test
+  public void get() {
+    assertNotNull( findItem( suggestions, "getWidth()" ) );
+    assertNotNull( findItem( suggestions, "getChecked()" ) );
+    assertNotNull( findItem( suggestions, "getInherit()" ) );
+    assertNotNull( findItem( suggestions, "getThemed()" ) );
+  }
+
+  @Test
+  public void style() {
+    assertNull( findItem( suggestions, "styleWidth()" ) );
+    assertNull( findItem( suggestions, "styleChecked()" ) );
+    assertNull( findItem( suggestions, "styleInherit()" ) );
+    assertNotNull( findItem( suggestions, "styleThemed()" ) );
+  }
+
+  @Test
+  public void unstyle() {
+    assertNull( findItem( suggestions, "unstyleWidth()" ) );
+    assertNull( findItem( suggestions, "unstyleChecked()" ) );
+    assertNull( findItem( suggestions, "unstyleInherit()" ) );
+    assertNotNull( findItem( suggestions, "unstyleThemed()" ) );
+  }
+
+  @Test
+  public void init() {
+    assertNotNull( findItem( suggestions, "initWidth()" ) );
+    assertNotNull( findItem( suggestions, "initChecked( checked)" ) );
+    assertNotNull( findItem( suggestions, "initInherit( inherit)" ) );
+    assertNotNull( findItem( suggestions, "initThemed( themed)" ) );
+  }
+
+  private static void triggerAutoCompletion() throws Exception {
+    sammy.openEditor( new FileEditorInput( file ) );
     TextEditorOperator teo = new TextEditorOperator( "Application.js",
                                                      getProperties() );
     teo.setCurserAfter( " Application" );
@@ -63,34 +145,10 @@ public class DynamicProperties_PDETest extends Assert {
     teo.setCurserAfter( "a." );
     teo.triggerAutoCompletion();
     ShellOperator autoCompletionShell = new ShellOperator();
-    Table suggestions = findTable( autoCompletionShell );
-    assertTypeIsResolved( suggestions );
-    assertGettersAndSetters( suggestions );
-    assertNotNull( findItem( suggestions, "toggleChecked()" ) );
-    assertNoRecursion( suggestions );
-    assertNull( findItem( suggestions, "toggleWidth()" ) );
-    // assertNull( findItem( suggestions, "toggleWidth()" ) );
+    suggestions = findTable( autoCompletionShell );
   }
 
-  private void assertNoRecursion( Table suggestions ) {
-    assertNull( findItem( suggestions, "getCheck(" ) );
-    assertNull( findItem( suggestions, "setCheck(" ) );
-    assertNull( findItem( suggestions, "getApply(" ) );
-    assertNull( findItem( suggestions, "setApply(" ) );
-  }
-
-  private void assertGettersAndSetters( Table suggestions ) {
-    assertNotNull( findItem( suggestions, "getWidth()" ) );
-    assertNotNull( findItem( suggestions, "getChecked()" ) );
-    assertNotNull( findItem( suggestions, "setWidth( width)" ) );
-    assertNotNull( findItem( suggestions, "setChecked( checked)" ) );
-  }
-
-  private void assertTypeIsResolved( Table suggestions ) {
-    assertNotNull( findItem( suggestions, "PI" ) );
-  }
-
-  private Table findTable( ShellOperator autoCompletionShell )
+  private static Table findTable( ShellOperator autoCompletionShell )
     throws NotFoundException, MultipleFoundException
   {
     Matcher<Widget> matcher = new WidgetClassMatcher( Table.class, true );
@@ -99,7 +157,7 @@ public class DynamicProperties_PDETest extends Assert {
     return suggestions;
   }
 
-  private SammyProperties getProperties() {
+  private static SammyProperties getProperties() {
     SammyProperties properties = new SammyProperties();
     properties.setTimeoutInMillies( 10000L );
     return properties;

@@ -2,10 +2,13 @@ package org.eclipse.wst.jsdt.qooxdoo.functional;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.jsdt.qooxdoo.functional.util.QxProjectUtil;
 import org.junit.After;
@@ -84,7 +87,18 @@ public class ThisBase_PDETest extends Assert {
     sammy.openEditor( new FileEditorInput( this.file ) );
     TextEditorOperator teo = new TextEditorOperator( "Application.js",
                                                      getProperties() );
-    assertTrue( teo.getMarkers().isEmpty() );
+    List<IMarker> markers = teo.getMarkers();
+    assertTrue( getFirstErrorMessage( markers ), markers.isEmpty() );
+  }
+
+  private String getFirstErrorMessage( List<IMarker> errorMarkers )
+    throws CoreException
+  {
+    String result = "";
+    if( !errorMarkers.isEmpty() ) {
+      result = errorMarkers.get( 0 ).getAttribute( "message" ).toString();
+    }
+    return result;
   }
 
   private SammyProperties getProperties() {
