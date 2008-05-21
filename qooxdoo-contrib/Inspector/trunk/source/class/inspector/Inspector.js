@@ -1217,7 +1217,11 @@ qx.Class.define("inspector.Inspector", {
       }
       // check if there is a cookie stored that the property editor was opened
       if (qx.io.local.CookieApi.get("inspector.propertyEditor.PropertyEditor#Open") == "true") {
-        this.openPropertyEditor();
+        // open the properties window in a delay cause of a layout bug
+        var self = this;
+        window.setTimeout(function() {
+          self.openPropertyEditor();          
+        }, 100);
       }
       // check if there is a cookie stored that the widget finder was opened
       if (qx.io.local.CookieApi.get("inspector.widgetFinder.WidgetFinder#Open") == "true") {
