@@ -20,8 +20,6 @@
 package org.qooxdoo.sushi.classfile.attribute;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.Input;
@@ -33,11 +31,6 @@ public abstract class Attribute {
     protected Attribute(String nameInit) {
         name = nameInit;
     }
-
-    private static final List<String> BLACKBOXED = Arrays.asList(
-            "RuntimeVisibleAnnotations", "Signature", "LocalVariableTypeTable", 
-            "AnnotationDefault", "EnclosingMethod"
-    );
 
     public static Attribute create(Input src) throws IOException {
         String name;
@@ -61,10 +54,8 @@ public abstract class Attribute {
             return new LocalVariableTable(src);
         } else if (name.equals("Deprecated")) {
             return new Deprecated(src);
-        } else if (BLACKBOXED.contains(name)) {
-            return new Blackbox(name, src);
         } else {
-            throw new RuntimeException("unkown attribute: " + name);
+            return new Blackbox(name, src);
         }
     }
 

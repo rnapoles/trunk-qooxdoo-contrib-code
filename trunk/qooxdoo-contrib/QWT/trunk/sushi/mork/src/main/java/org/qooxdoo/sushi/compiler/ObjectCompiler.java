@@ -115,7 +115,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
             if (type.isPrimitive()) {
                 throw new IllegalArgumentException("primitive null");
             }
-            // null is not a string, but otherwise it is ambiguous
+            // null is not a string, but otherwise it is  ambiguous
             dest.emit(LDC, (String) null);
         } else if (val instanceof String) {
             dest.emit(LDC, (String) val);

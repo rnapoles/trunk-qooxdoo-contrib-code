@@ -67,6 +67,7 @@
                   <arg value="org.qooxdoo.sushi.bootstrap.Loader.loadMapper" />
                   <arg line="${mapper.bs2}" />
                 </java>
+                <!-- TODO: broken with Java 6 ! 
                 <echo>Bootstrap Pass 3</echo>
                 <fileset id="mapper.bs3" dir="${basedir}">
                    <include name="src/main/java/**/*.map"/>
@@ -84,7 +85,6 @@
                   <arg value="-lst"/>
                   <arg line="${mapper.bs3}"/>
                 </java>
-                <!-- TODO: broken with Java 6 ! -->
                 <java classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/target/classes" />                  
@@ -94,7 +94,7 @@
                   <arg value="-d"/>
                   <arg path="${basedir}/target/classes" />
                   <arg line="${mapper.bs3}"/>
-                </java>
+                </java>-->
               </tasks>
             </configuration>
             <goals>
