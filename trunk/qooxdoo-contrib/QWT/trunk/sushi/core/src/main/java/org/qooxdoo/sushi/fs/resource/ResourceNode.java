@@ -86,7 +86,7 @@ public class ResourceNode extends Node {
     }
 
     @Override
-    public OutputStream createOutputStream() throws IOException {
+    public OutputStream createOutputStream(boolean append) throws IOException {
         throw new IOException("cannot write: " + this);
     }
 

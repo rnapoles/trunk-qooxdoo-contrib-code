@@ -113,9 +113,12 @@ public class HttpNode extends Node {
     }
 
     @Override
-    public OutputStream createOutputStream() throws IOException {
+    public OutputStream createOutputStream(boolean append) throws IOException {
         URLConnection connection;
 
+        if (append) {
+    		unsupported("createOutputStream(true)");
+        }
         connection = url.openConnection();
         connection.connect();
         return connection.getOutputStream();

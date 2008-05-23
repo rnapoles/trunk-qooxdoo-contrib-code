@@ -305,6 +305,24 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         assertEquals("more", file.readString());
     }
 
+
+    @Test
+    public void append() throws IOException {
+        Node file;
+        
+        file = work.join("foo");
+        try {
+        	file.appendBytes((byte) 97, (byte) 98);
+        } catch (UnsupportedOperationException e) {
+        	// ok, don't test:
+        	return;
+        }
+        file.appendLines("", "xyz");
+        file.appendString("1");
+        file.appendChars('A', 'B');
+        assertEquals("ab\nxyz1AB", file.readString());
+    }
+
     @Test
     public void readWriteObject() throws IOException, ClassNotFoundException {
         final String obj = "hello";

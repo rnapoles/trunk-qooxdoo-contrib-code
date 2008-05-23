@@ -85,6 +85,10 @@ public abstract class Node {
         this.base = null;
     }
     
+    protected void unsupported(String op) {
+		throw new UnsupportedOperationException(getLocator() + ":" + op);
+    }
+    
     public abstract Root getRoot();
     
     public IO getIO() {
@@ -92,7 +96,15 @@ public abstract class Node {
     }
 
     public abstract InputStream createInputStream() throws IOException;
-    public abstract OutputStream createOutputStream() throws IOException;
+
+    public OutputStream createOutputStream() throws IOException {
+    	return createOutputStream(false);
+    }
+    public OutputStream createAppendStream() throws IOException {
+    	return createOutputStream(true);
+    }
+    
+    public abstract OutputStream createOutputStream(boolean append) throws IOException;
 
     /** lists child nodes or null if this is not a directory */
     public abstract List<? extends Node> list() throws ListException;
@@ -448,7 +460,15 @@ public abstract class Node {
     //-- output create functionality
     
     public NodeWriter createWriter() throws IOException {
-        return NodeWriter.create(this);
+        return createWriter(false);
+    }
+
+    public NodeWriter createAppender() throws IOException {
+        return createWriter(true);
+    }
+
+    public NodeWriter createWriter(boolean append) throws IOException {
+        return NodeWriter.create(this, append);
     }
 
     public ObjectOutputStream createObjectOutputStream() throws IOException {
@@ -456,24 +476,36 @@ public abstract class Node {
     }
 
     public Node writeBytes(byte ... bytes) throws IOException {
-        return writeBytes(bytes, 0, bytes.length);
+        return writeBytes(bytes, 0, bytes.length, false);
     }
 
-    public Node writeBytes(byte[] bytes, int ofs, int len) throws IOException {
+    public Node appendBytes(byte ... bytes) throws IOException {
+        return writeBytes(bytes, 0, bytes.length, true);
+    }
+
+    public Node writeBytes(byte[] bytes, int ofs, int len, boolean append) throws IOException {
         OutputStream out;
         
-        out = createOutputStream();
+        out = createOutputStream(append);
         out.write(bytes, ofs, len);
         out.close();
         return this;
     }
     
     public Node writeChars(char ... chars) throws IOException {
-        Writer w;
+    	return writeChars(chars, 0, chars.length, false);
+    }
+    
+    public Node appendChars(char ... chars) throws IOException {
+    	return writeChars(chars, 0, chars.length, true);
+    }
+    
+    public Node writeChars(char[] chars, int ofs, int len, boolean append) throws IOException {
+        Writer out;
         
-        w = createWriter();
-        w.write(chars);
-        w.close();
+        out = createWriter(append);
+        out.write(chars, ofs, len);
+        out.close();
         return this;
     }
     
@@ -486,12 +518,29 @@ public abstract class Node {
         return this;
     }
     
+    public Node appendString(String txt) throws IOException {
+        Writer w;
+        
+        w = createAppender();
+        w.write(txt);
+        w.close();
+        return this;
+    }
+    
     public Node writeLines(String ... line) throws IOException {
         return writeLines(Arrays.asList(line));
     }
     
     public Node writeLines(List<String> lines) throws IOException {
         return writeString(Strings.join(getIO().getSettings().lineSeparator, lines));
+    }
+
+    public Node appendLines(String ... line) throws IOException {
+        return appendLines(Arrays.asList(line));
+    }
+    
+    public Node appendLines(List<String> lines) throws IOException {
+        return appendString(Strings.join(getIO().getSettings().lineSeparator, lines));
     }
 
     public Node writeObject(Serializable obj) throws IOException {
