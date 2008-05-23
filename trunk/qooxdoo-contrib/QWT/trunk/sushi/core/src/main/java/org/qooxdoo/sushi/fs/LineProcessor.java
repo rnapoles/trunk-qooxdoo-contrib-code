@@ -27,6 +27,9 @@ public abstract class LineProcessor {
     
     private char[] buffer;
     
+    private boolean trim;
+    private boolean empty;
+    
     private int start;
     private int end;
     
@@ -34,22 +37,28 @@ public abstract class LineProcessor {
     private int line;
     
     public LineProcessor() {
-        this(INITIAL_BUFFER_SIZE);
+        this(false, true);
     }
 
-    public LineProcessor(int bufferSize) {
-        this(new char[bufferSize]);
+    public LineProcessor(boolean trim, boolean empty) {
+        this(INITIAL_BUFFER_SIZE, trim, empty);
     }
-    
-    public LineProcessor(char[] buffer) {
-        this.buffer = buffer;
+
+    public LineProcessor(int bufferSize, boolean trim, boolean empty) {
+        this.buffer = new char[bufferSize];
+        this.trim = trim;
+        this.empty = empty;
     }
     
     public int run(Node node) throws IOException {
+        return run(node, node.getIO().getSettings().lineSeparator);
+    }
+
+    public int run(Node node, String separator) throws IOException {
         Reader src;
 
         src = node.createReader();
-        run(node, 1, src, node.getIO().getSettings().lineSeparator);
+        run(node, 1, src, separator);
         src.close();
         return line;
     }
@@ -70,8 +79,7 @@ public abstract class LineProcessor {
             len = src.read(buffer, end, buffer.length - end);
             if (len == -1) {
                 if (start != end) {
-                    line(new String(buffer, start, end - start));
-                    line++;
+                    doLine(new String(buffer, start, end - start));
                 }
                 return;
             } else {
@@ -82,9 +90,8 @@ public abstract class LineProcessor {
                 if (idx == -1) {
                     break;
                 }
-                line(new String(buffer, start, idx - start));
+                doLine(new String(buffer, start, idx - start));
                 start = idx + sepLen;
-                line++;
             }
             if (end == buffer.length) {
                 if (start == 0) {
@@ -118,7 +125,17 @@ public abstract class LineProcessor {
         return -1;
     }
 
-    public abstract void line(String str) throws IOException;
+    private void doLine(String str) throws IOException {
+        if (trim) {
+            str = str.trim();
+        }
+        if (empty || str.length() > 0) {
+            line(str);
+        }
+        line++;
+    }
+    
+    public abstract void line(String line) throws IOException;
     
     public Node getNode() {
         return node;

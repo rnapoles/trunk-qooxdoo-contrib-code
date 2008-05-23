@@ -23,15 +23,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/** 
+ * Mainly used to Node.readLines and testing; applications should use LineProcessor instead, 
+ * because it's more efficient.
+ */
 public class LineCollector extends LineProcessor {
     private final List<String> result;
     
-    public LineCollector() {
-        this(LineProcessor.INITIAL_BUFFER_SIZE);
-    }
-    
-    public LineCollector(int size) {
-        super(size);
+    public LineCollector(int size, boolean trim, boolean empty) {
+        super(size, trim, empty);
         
         result = new ArrayList<String>();
     }

@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.qooxdoo.sushi.fs.LineProcessor;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.util.Strings;
@@ -196,21 +197,19 @@ public class Repository implements Iterable<Module> {
         doLoad(((FileNode) file).openZip());
     }
 
-    public void doLoad(Node src) throws IOException {
+    public void doLoad(final Node src) throws IOException {
         Node index;
-        Node file;
         
         index = src.join(INDEX_TXT);
         if (!index.exists()) {
             throw new MissingIndexException(this, src);
         }
-        for (String line : Strings.split(LF, index.readString())) {
-            line = line.trim(); 
-            if (line.length() > 0) {
-                file = Module.getNode(src, line);
-                add(Module.fromString(file.readString()));
+        new LineProcessor(true, false) {
+            @Override
+            public void line(String line) throws IOException {
+                add(Module.fromString(Module.getNode(src, line).readString()));
             }
-        }
+        }.run(index, LF);
     }
     
     //--

@@ -69,7 +69,7 @@ public class LineProcessorTest {
         LineCollector collector;
         List<String> result;
         
-        collector = new LineCollector(initialSize);
+        collector = new LineCollector(initialSize, false, true);
         result = collector.collect(io.stringNode(str));
         assertEquals(Arrays.asList(expected), result);
         assertEquals(expected.length + 1, collector.getLine());
