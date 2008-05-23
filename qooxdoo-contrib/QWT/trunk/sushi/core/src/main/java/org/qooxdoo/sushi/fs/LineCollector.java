@@ -27,7 +27,7 @@ public class LineCollector extends LineProcessor {
     private final List<String> result;
     
     public LineCollector() {
-        this(LineProcessor.DEFAULT_BUFFER_SIZE);
+        this(LineProcessor.INITIAL_BUFFER_SIZE);
     }
     
     public LineCollector(int size) {

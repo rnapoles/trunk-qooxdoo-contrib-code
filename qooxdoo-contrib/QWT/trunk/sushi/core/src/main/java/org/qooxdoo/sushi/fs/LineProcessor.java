@@ -23,15 +23,18 @@ import java.io.IOException;
 import java.io.Reader;
 
 public abstract class LineProcessor {
-    public static final int DEFAULT_BUFFER_SIZE = 16384;
+    public static final int INITIAL_BUFFER_SIZE = 2;
     
-    private final char[] buffer;
+    private char[] buffer;
     
-    protected Node node;
-    protected int line;
+    private int start;
+    private int end;
+    
+    private Node node;
+    private int line;
     
     public LineProcessor() {
-        this(DEFAULT_BUFFER_SIZE);
+        this(INITIAL_BUFFER_SIZE);
     }
 
     public LineProcessor(int bufferSize) {
@@ -54,31 +57,74 @@ public abstract class LineProcessor {
     public void run(Node node, int startLine, Reader src, String separator) throws IOException {
         int sepLen;
         int len;
-        StringBuilder working;
         int idx;
+        char[] newBuffer;
         
         sepLen = separator.length();
         this.node = node;
         this.line = startLine;
-        working = new StringBuilder();
+        
+        start = 0;
+        end = 0;
         while (true) {
-            len = src.read(buffer);
+            len = src.read(buffer, end, buffer.length - end);
             if (len == -1) {
-                if (working.length() > 0) {
-                    line(working.toString());
+                if (start != end) {
+                    line(new String(buffer, start, end - start));
+                    line++;
                 }
                 return;
+            } else {
+                end += len;
             }
-            working.append(buffer, 0, len);
-            idx = working.indexOf(separator);
-            while (idx != -1) {
-                line(working.substring(0, idx));
-                working.delete(0, idx + sepLen);
+            while (true) {
+                idx = next(separator);
+                if (idx == -1) {
+                    break;
+                }
+                line(new String(buffer, start, idx - start));
+                start = idx + sepLen;
                 line++;
-                idx = working.indexOf(separator);
+            }
+            if (end == buffer.length) {
+                if (start == 0) {
+                    newBuffer = new char[buffer.length * 3 / 2 + 10];
+                    System.arraycopy(buffer, 0, newBuffer, 0, end);
+                    buffer = newBuffer;
+                } else {
+                    System.arraycopy(buffer, start, buffer, 0, end - start);
+                    end -= start;
+                    start = 0;
+                }
             }
         }
     }
 
+    private int next(String separator) {
+        int j;
+        int max;
+        
+        max = separator.length();
+        for (int i = start; i <= end - max; i++) {
+            for (j = 0; j < max; j++) {
+                if (separator.charAt(j) != buffer[i + j]) {
+                    break;
+                }
+            }
+            if (j == max) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public abstract void line(String str) throws IOException;
+    
+    public Node getNode() {
+        return node;
+    }
+    
+    public int getLine() {
+        return line;
+    }
 }
