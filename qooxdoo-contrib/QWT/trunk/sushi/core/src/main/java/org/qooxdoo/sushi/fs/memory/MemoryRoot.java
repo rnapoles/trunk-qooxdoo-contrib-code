@@ -120,7 +120,7 @@ public class MemoryRoot implements Root {
         }
         if (used > filesystem.maxInMemorySize) {
             file = filesystem.getIO().createTempFile();
-            file.writeBytes(data, 0, used);
+            file.writeBytes(data, 0, used, false);
             store.put(path, file);
         } else {
             copy = new byte[used];

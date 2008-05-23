@@ -53,8 +53,9 @@ public class ConsoleNode extends Node {
         return System.in;
     }
 
+    /** @parem append is ignored */
     @Override
-    public OutputStream createOutputStream() throws IOException {
+    public OutputStream createOutputStream(boolean append) throws IOException {
         return System.out;
     }
 
@@ -90,7 +91,8 @@ public class ConsoleNode extends Node {
 
     @Override
     public long length() {
-        throw new UnsupportedOperationException();
+		unsupported("createOutputStream()");
+		return 0; // dummy
     }
 
     @Override

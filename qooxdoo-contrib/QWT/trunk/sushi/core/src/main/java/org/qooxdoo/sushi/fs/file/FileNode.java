@@ -163,13 +163,13 @@ public class FileNode extends Node {
     //-- read and writeBytes
     
     @Override
-    public FileOutputStream createOutputStream() throws IOException {
-        return new FileOutputStream(file);
+    public FileInputStream createInputStream() throws IOException {
+        return new FileInputStream(file);
     }
 
     @Override
-    public FileInputStream createInputStream() throws IOException {
-        return new FileInputStream(file);
+    public FileOutputStream createOutputStream(boolean append) throws IOException {
+        return new FileOutputStream(file, append);
     }
 
     //-- create

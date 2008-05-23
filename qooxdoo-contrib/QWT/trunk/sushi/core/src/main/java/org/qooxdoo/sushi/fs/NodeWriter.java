@@ -24,8 +24,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 public class NodeWriter extends OutputStreamWriter {
-    public static NodeWriter create(Node node) throws IOException {
-        return new NodeWriter(node, node.createOutputStream(), node.getIO().getSettings().encoding);
+    public static NodeWriter create(Node node, boolean append) throws IOException {
+        return new NodeWriter(node, node.createOutputStream(append), node.getIO().getSettings().encoding);
     }
 
     //--

@@ -128,8 +128,8 @@ public class ZipNode extends Node {
     }
 
     @Override
-    public OutputStream createOutputStream() throws IOException {
-        throw new UnsupportedOperationException();
+    public OutputStream createOutputStream(boolean append) throws IOException {
+    	throw new IOException(this + ": cannot write");
     }
 
     @Override
