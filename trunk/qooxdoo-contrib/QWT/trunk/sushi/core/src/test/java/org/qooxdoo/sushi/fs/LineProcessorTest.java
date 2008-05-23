@@ -49,14 +49,29 @@ public class LineProcessorTest {
         check("abc\n\n123\n", "abc", "", "123");
     }
 
+    @Test
+    public void longline() throws IOException {
+        String ll = "1234567890abcdefghijklmnopqrstuvwxyz";
+        
+        ll = ll + ll + ll;
+        check(ll + "\n" + ll, ll, ll);
+    }
+
     //--
     
     private void check(String str, String ... expected) throws IOException {
-        LineCollector c;
+        check(1024, str, expected);
+        check(10, str, expected);
+        check(1, str, expected);
+    }
+
+    private void check(int initialSize, String str, String ... expected) throws IOException {
+        LineCollector collector;
         List<String> result;
         
-        c = new LineCollector();
-        result = c.collect(io.stringNode(str));
+        collector = new LineCollector(initialSize);
+        result = collector.collect(io.stringNode(str));
         assertEquals(Arrays.asList(expected), result);
+        assertEquals(expected.length + 1, collector.getLine());
     }
 }
