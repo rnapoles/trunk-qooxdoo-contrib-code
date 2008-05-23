@@ -252,7 +252,7 @@ public abstract class Node {
     }
     
     public List<String> readLines() throws IOException {
-        return Strings.split(getIO().getSettings().lineSeparator, readString());
+        return new LineCollector().collect(this);
     }
 
     public Object readObject() throws IOException {

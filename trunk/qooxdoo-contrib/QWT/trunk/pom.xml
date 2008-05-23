@@ -302,7 +302,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     </snapshotRepository>
     <site>
       <id>billy</id>
-      <url>scpexe://devel.schlund.de/home/billy/public_html/sites/qooxdoo-0.2.0</url>
+      <url>scpexe://devel.schlund.de/home/billy/public_html/sites/qooxdoo</url>
     </site>
   </distributionManagement>
 
