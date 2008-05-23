@@ -160,7 +160,7 @@ public class SvnNode extends Node {
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
     	if (append) {
-    		throw new UnsupportedOperationException(getLocator());
+    		unsupported("createOutputStream(true)");
     	}
         return new ByteArrayOutputStream() {
             @Override
