@@ -36,9 +36,6 @@ public class HelpMojo extends Base {
         info("  mvn qx:new -Dpackage=foo.bar.baz     create new hello world application");
         info("  mvn qx:run                           start application");
         info("");
-        info("  mvn qx:install                       add Maven user setting for QWT");
-        info("  mvn qx:uninstall                     remove Maven user settings for QWT");
-        info("");
         info("Standard Maven commands");
         info("  mvn clean                            remove generated files");
         info("  mvn compile                          compile application");
