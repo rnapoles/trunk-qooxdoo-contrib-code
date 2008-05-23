@@ -204,7 +204,7 @@ public class Repository implements Iterable<Module> {
         if (!index.exists()) {
             throw new MissingIndexException(this, src);
         }
-        new LineProcessor(true, false) {
+        new LineProcessor(true, false, null) {
             @Override
             public void line(String line) throws IOException {
                 add(Module.fromString(Module.getNode(src, line).readString()));

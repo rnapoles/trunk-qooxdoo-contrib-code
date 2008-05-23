@@ -35,19 +35,21 @@ public abstract class LineProcessor {
     
     private Node node;
     private int line;
+    private String comment;
     
     public LineProcessor() {
-        this(false, true);
+        this(false, true, null);
     }
 
-    public LineProcessor(boolean trim, boolean empty) {
-        this(INITIAL_BUFFER_SIZE, trim, empty);
+    public LineProcessor(boolean trim, boolean empty, String comment) {
+        this(INITIAL_BUFFER_SIZE, trim, empty, comment);
     }
 
-    public LineProcessor(int bufferSize, boolean trim, boolean empty) {
+    public LineProcessor(int bufferSize, boolean trim, boolean empty, String comment) {
         this.buffer = new char[bufferSize];
         this.trim = trim;
         this.empty = empty;
+        this.comment = comment;
     }
     
     public int run(Node node) throws IOException {
@@ -130,7 +132,9 @@ public abstract class LineProcessor {
             str = str.trim();
         }
         if (empty || str.length() > 0) {
-            line(str);
+            if (comment == null || !str.startsWith(comment)) {
+                line(str);
+            }
         }
         line++;
     }

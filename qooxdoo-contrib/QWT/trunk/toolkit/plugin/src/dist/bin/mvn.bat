@@ -13,7 +13,7 @@ echo.
 goto end
 
 :start
-set QWT_OPTS="-Dmaven.repo.local=%QWT_HOME%\repository" "-Dorg.apache.maven.global-settings=%QWT_HOME%\bin\settings.xml"
+set QWT_OPTS="-Dqwt.repo=file://%QWT_HOME%\repository" "-Dorg.apache.maven.global-settings=%QWT_HOME%\bin\settings.xml"
 "%QWT_HOME%\apache-maven-2.0.9\bin\mvn" %QWT_OPTS% %*
 
 :end
