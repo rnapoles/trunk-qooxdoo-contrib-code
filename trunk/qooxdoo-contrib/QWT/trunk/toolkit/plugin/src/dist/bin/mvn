@@ -26,6 +26,6 @@ case "`uname`" in
 esac 
 
 # TODO: preferIPv4Stack work's around a Tomcat 6.0.14 startup problem on Mac OS 
-QWT_OPTS="-Djava.net.preferIPv4Stack=true -Dmaven.repo.local=$REPO -Dorg.apache.maven.global-settings=$SETTINGS"
+QWT_OPTS="-Dqwt.repo=file://$REPO -Djava.net.preferIPv4Stack=true -Dmaven.repo.local=$REPO -Dorg.apache.maven.global-settings=$SETTINGS"
 
 $MVN $QWT_OPTS "$@"

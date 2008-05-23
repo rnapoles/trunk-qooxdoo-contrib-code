@@ -57,6 +57,9 @@ import com.jcraft.jsch.JSchException;
  *   to place your private key on the build machine. If you use cron to do this: make 
  *   sure it doesn't need a passphrase! 
  *
+ * Note that dist-building should not dependency on deployed jars because I want to 
+ * distribute any state of qwt. 
+ *
  * @goal dist
  */
 public class DistributionMojo extends Base {
@@ -162,7 +165,27 @@ public class DistributionMojo extends Base {
                         "<settings>\n"
                       + "  <pluginGroups>\n"
                       + "    <pluginGroup>org.qooxdoo.toolkit</pluginGroup>\n"
-                      + "  </pluginGroups>\n" 
+                      + "  </pluginGroups>\n"
+                      + "  <profiles>\n" 
+                      + "    <profile>\n"
+                      + "      <id>qwt</id> \n"
+                      + "      <activation>\n"
+                      + "        <activeByDefault>true</activeByDefault>\n"
+                      + "      </activation>\n"
+                      + "      <repositories>\n" 
+                      + "        <repository>\n" 
+                      + "          <id>qwt</id>\n"
+                      + "          <url>${qwt.repo}</url>\n"
+                      + "        </repository>\n" 
+                      + "      </repositories>\n" 
+                      + "      <pluginRepositories>\n" 
+                      + "        <pluginRepository>\n" 
+                      + "          <id>qwt-plugins</id>\n"
+                      + "          <url>${qwt.repo}</url>\n"
+                      + "        </pluginRepository>\n" 
+                      + "      </pluginRepositories>\n" 
+                      + "    </profile>\n"
+                      + "  </profiles>\n"
                       + "</settings>\n");
     }
 
@@ -220,7 +243,7 @@ public class DistributionMojo extends Base {
         filter.exclude("**/toolkit/qooxdoo/src/framework");
         filter.exclude("**/toolkit/qooxdoo/src/framework/**/*");
         
-        // because I cash sf pages here:
+        // because I cache sf pages here:
         filter.exclude("sourceforge/**/*");
 
         // because I ask Hudson to place the local repository here
@@ -240,15 +263,37 @@ public class DistributionMojo extends Base {
     }
 
     private void repository() throws IOException {
-        if (true) {
-            // fast
-            localRepository.copyDirectory(unzipped.join("repository").mkdir());
-        } else {
-            // save
-            mvn((FileNode) unzipped.join("qwt"), "clean", "install");
+        Filter filter;
+        FileNode dest;
+        
+        filter = io.filter().include("org/qooxdoo/**/*", "org/eclipse/base/**/*");
+
+        localRepository.copyDirectory(filter, unzipped.join("repository").mkdir());
+        for (Node node : unzipped.find("**/maven-metadata-local.xml")) {
+            dest = (FileNode) node.getParent().join("maven-metadata.xml");
+            ((FileNode) node).rename(dest);
+            checksum(dest);
+        }
+        for (Node node : unzipped.find("**/maven-metadata-*.xml")) {
+            debug("removing " + node);
+            node.delete();
+        }
+        for (Node node : unzipped.find("**/*.jar")) {
+            checksum(node);
+        }
+        for (Node node : unzipped.find("**/*.pom")) {
+            checksum(node);
         }
     }
 
+    private void checksum(Node node) throws IOException {
+        Node dir;
+        
+        dir = node.getParent();
+        dir.join(node.getName() + ".md5").writeString(node.md5());
+        dir.join(node.getName() + ".sha1").writeString(node.sha());
+    }
+    
     // --
 
     private void xFlags() throws IOException {

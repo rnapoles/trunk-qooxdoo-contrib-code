@@ -30,8 +30,8 @@ import java.util.List;
 public class LineCollector extends LineProcessor {
     private final List<String> result;
     
-    public LineCollector(int size, boolean trim, boolean empty) {
-        super(size, trim, empty);
+    public LineCollector(int size, boolean trim, boolean empty, String comment) {
+        super(size, trim, empty, comment);
         
         result = new ArrayList<String>();
     }

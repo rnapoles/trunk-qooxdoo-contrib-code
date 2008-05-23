@@ -57,6 +57,16 @@ public class LineProcessorTest {
         check(ll + "\n" + ll, ll, ll);
     }
 
+    @Test
+    public void comment() throws IOException {
+        LineCollector collector;
+        List<String> result;
+        
+        collector = new LineCollector(100, true, false, "//");
+        result = collector.collect(io.stringNode("first\n // \n\n//comment\nlast"));
+        assertEquals(Arrays.asList("first", "last"), result);
+    }
+
     //--
     
     private void check(String str, String ... expected) throws IOException {
@@ -69,7 +79,7 @@ public class LineProcessorTest {
         LineCollector collector;
         List<String> result;
         
-        collector = new LineCollector(initialSize, false, true);
+        collector = new LineCollector(initialSize, false, true, null);
         result = collector.collect(io.stringNode(str));
         assertEquals(Arrays.asList(expected), result);
         assertEquals(expected.length + 1, collector.getLine());
