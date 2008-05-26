@@ -1,0 +1,10 @@
+CouchDB 26-05-2008
+
+I'm not yet completely happy with how i've setup the api.
+
+It's esspecially difficult to find an interface that is both trivial to use, yet
+flexible enough to deal with all the possible scenario's that can pop up in the 
+context of asynchronized requests.
+
+If any one has any suggestions, feel free to email me at:
+ralf.nieuwenhuijsen@gmail.com or just use the qooxdoo mailing list.
