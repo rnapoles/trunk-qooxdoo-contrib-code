@@ -149,9 +149,9 @@ public class MemoryNode extends Node {
 
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
-    	if (append) {
-    		unsupported("createOutputStream(true)");
-    	}
+        if (append) {
+            unsupported("createOutputStream(true)");
+        }
         if (type == Type.DIRECTORY) {
             throw new IOException("cannot write file over directory: " + path);
         }
@@ -159,7 +159,7 @@ public class MemoryNode extends Node {
         return new ByteArrayOutputStream() {
             @Override
             public void close() throws IOException {
-            	type = Type.FILE;
+                type = Type.FILE;
                 root.store(path, this.buf, this.count);
                 super.close();
             }

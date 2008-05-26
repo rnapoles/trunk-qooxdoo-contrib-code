@@ -117,7 +117,7 @@ public class HttpNode extends Node {
         URLConnection connection;
 
         if (append) {
-    		unsupported("createOutputStream(true)");
+            unsupported("createOutputStream(true)");
         }
         connection = url.openConnection();
         connection.connect();

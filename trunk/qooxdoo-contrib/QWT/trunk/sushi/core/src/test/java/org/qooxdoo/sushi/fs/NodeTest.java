@@ -312,10 +312,10 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         
         file = work.join("foo");
         try {
-        	file.appendBytes((byte) 97, (byte) 98);
+            file.appendBytes((byte) 97, (byte) 98);
         } catch (UnsupportedOperationException e) {
-        	// ok, don't test:
-        	return;
+            // ok, don't test:
+            return;
         }
         file.appendLines("", "xyz");
         file.appendString("1");
