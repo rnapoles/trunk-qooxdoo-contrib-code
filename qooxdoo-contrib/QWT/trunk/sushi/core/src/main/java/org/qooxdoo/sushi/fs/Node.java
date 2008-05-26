@@ -86,7 +86,7 @@ public abstract class Node {
     }
     
     protected void unsupported(String op) {
-		throw new UnsupportedOperationException(getLocator() + ":" + op);
+        throw new UnsupportedOperationException(getLocator() + ":" + op);
     }
     
     public abstract Root getRoot();
@@ -98,10 +98,10 @@ public abstract class Node {
     public abstract InputStream createInputStream() throws IOException;
 
     public OutputStream createOutputStream() throws IOException {
-    	return createOutputStream(false);
+        return createOutputStream(false);
     }
     public OutputStream createAppendStream() throws IOException {
-    	return createOutputStream(true);
+        return createOutputStream(true);
     }
     
     public abstract OutputStream createOutputStream(boolean append) throws IOException;
@@ -493,11 +493,11 @@ public abstract class Node {
     }
     
     public Node writeChars(char ... chars) throws IOException {
-    	return writeChars(chars, 0, chars.length, false);
+        return writeChars(chars, 0, chars.length, false);
     }
     
     public Node appendChars(char ... chars) throws IOException {
-    	return writeChars(chars, 0, chars.length, true);
+        return writeChars(chars, 0, chars.length, true);
     }
     
     public Node writeChars(char[] chars, int ofs, int len, boolean append) throws IOException {

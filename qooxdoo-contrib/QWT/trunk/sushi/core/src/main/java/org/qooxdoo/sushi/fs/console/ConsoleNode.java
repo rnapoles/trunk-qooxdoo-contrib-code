@@ -91,8 +91,8 @@ public class ConsoleNode extends Node {
 
     @Override
     public long length() {
-		unsupported("createOutputStream()");
-		return 0; // dummy
+        unsupported("length()");
+        return 0; // dummy
     }
 
     @Override

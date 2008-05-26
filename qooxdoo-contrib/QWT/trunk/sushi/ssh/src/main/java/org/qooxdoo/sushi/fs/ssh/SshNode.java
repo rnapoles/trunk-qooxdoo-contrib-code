@@ -218,9 +218,9 @@ public class SshNode extends Node {
     
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
-    	if (append) {
-    		unsupported("createOutputStream(true)");
-    	}
+        if (append) {
+            unsupported("createOutputStream(true)");
+        }
         return new ByteArrayOutputStream() {
             @Override
             public void close() throws IOException {
