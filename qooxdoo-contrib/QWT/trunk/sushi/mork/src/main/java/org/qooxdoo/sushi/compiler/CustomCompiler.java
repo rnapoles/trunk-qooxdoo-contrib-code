@@ -22,7 +22,7 @@ package org.qooxdoo.sushi.compiler;
 import org.qooxdoo.sushi.classfile.Code;
 
 public abstract class CustomCompiler {
-    public abstract boolean matches(Class type);
+    public abstract boolean matches(Class<?> type);
 
     /**
      * The custom compile is allowed to generate at most MIN_INSTRUCTIONS
@@ -34,6 +34,6 @@ public abstract class CustomCompiler {
      */
     public abstract void endTranslation(Object obj, Code dest);
 
-    public abstract Class[] getFieldTypes();
+    public abstract Class<?>[] getFieldTypes();
     public abstract Object[] getFieldObjects(Object obj);
 }

@@ -136,10 +136,10 @@ public class MorkMapper extends Mapper {
         return result;
     }
 
-    public static Function lookupMapperFn(String name, Class resultType) throws GenericException {
+    public static Function lookupMapperFn(String name, Class<?> resultType) throws GenericException {
         Selection selection;
         Function fn;
-        Class[] tmp;
+        Class<?>[] tmp;
 
         selection = Method.forName(name);
         if (selection.isEmpty()) {

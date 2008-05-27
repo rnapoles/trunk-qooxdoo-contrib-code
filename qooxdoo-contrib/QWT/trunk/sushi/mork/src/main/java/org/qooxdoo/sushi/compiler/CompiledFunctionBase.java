@@ -29,15 +29,15 @@ public abstract class CompiledFunctionBase extends Function {
         return "fn" + hashCode();
     }
     @Override
-    public Class getReturnType() {
+    public Class<?> getReturnType() {
         throw new UnsupportedOperationException();
     }
     @Override
-    public Class[] getParameterTypes() {
+    public Class<?>[] getParameterTypes() {
         throw new UnsupportedOperationException();
     }
     @Override
-    public Class[] getExceptionTypes() {
+    public Class<?>[] getExceptionTypes() {
         throw new UnsupportedOperationException();
     }
 

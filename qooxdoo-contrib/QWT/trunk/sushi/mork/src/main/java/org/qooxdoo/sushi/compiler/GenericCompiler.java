@@ -44,7 +44,7 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
             throw new IllegalArgumentException();
         }
     }
-    private final Class type;
+    private final Class<?> type;
 
     /**
      * Reader methods to obtain a field value. Methods have
@@ -52,7 +52,7 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
      */
     private final Function[] fields;
 
-    private final Class[] fieldTypes;
+    private final Class<?>[] fieldTypes;
 
     /** Reference to constructor function. */
     private final MethodRef constr;
@@ -60,7 +60,7 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
     /** Bytecode to invoke constructor. */
     private final int constrType;
 
-    public GenericCompiler(Class typeInit, String[] fieldNames) {
+    public GenericCompiler(Class<?> typeInit, String[] fieldNames) {
         this(typeInit, fieldNames, null);
     }
 
@@ -68,7 +68,7 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
      * @param constrName  name of constructor function or null for
      *        real constructor.
      */
-    public GenericCompiler(Class typeInit, String[] fieldNames, String constrName) {
+    public GenericCompiler(Class<?> typeInit, String[] fieldNames, String constrName) {
         int i;
         ClassRef[] tmp;
 
@@ -94,12 +94,12 @@ public class GenericCompiler extends CustomCompiler implements Bytecodes {
     }
 
     @Override
-    public boolean matches(Class c) {
+    public boolean matches(Class<?> c) {
         return type.equals(c);
     }
 
     @Override
-    public Class[] getFieldTypes() {
+    public Class<?>[] getFieldTypes() {
         return fieldTypes;
     }
 
