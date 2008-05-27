@@ -25,7 +25,7 @@ import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.MethodRef;
 
 public class Util implements Bytecodes {
-    public static void unwrap(Class cl, Code dest) {
+    public static void unwrap(Class<?> cl, Code dest) {
         ClassRef wrapper;
 
         if (cl.isPrimitive()) {

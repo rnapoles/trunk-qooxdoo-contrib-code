@@ -208,23 +208,23 @@ public class MapperCompiler implements Bytecodes {
         return new Integer(i);
     }
 
-    public static String saveClass(Class c) {
+    public static String saveClass(Class<?> c) {
         return new ClassRef(c).toFieldDescriptor();
     }
 
-    public static Class loadClass(String name) {
+    public static Class<?> loadClass(String name) {
         return ClassRef.forFieldDescriptor(name).lookup();
     }
 
-    public static Field loadField(Class type, String name) throws NoSuchFieldException {
+    public static Field loadField(Class<?> type, String name) throws NoSuchFieldException {
         return type.getDeclaredField(name);
     }
 
-    public static Constructor loadConstructor(Class type, Class[] args) throws NoSuchMethodException {
+    public static Constructor<?> loadConstructor(Class<?> type, Class<?>[] args) throws NoSuchMethodException {
         return type.getDeclaredConstructor(args);
     }
 
-    public static Method loadMethod(Class type, String name, Class[] args) throws NoSuchMethodException {
+    public static Method loadMethod(Class<?> type, String name, Class<?>[] args) throws NoSuchMethodException {
         return type.getDeclaredMethod(name, args);
     }
 }

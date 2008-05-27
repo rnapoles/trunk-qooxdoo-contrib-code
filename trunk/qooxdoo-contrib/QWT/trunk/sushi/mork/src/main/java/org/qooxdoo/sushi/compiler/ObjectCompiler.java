@@ -30,7 +30,6 @@ import org.qooxdoo.sushi.classfile.ClassDef;
 import org.qooxdoo.sushi.classfile.ClassRef;
 import org.qooxdoo.sushi.classfile.Code;
 import org.qooxdoo.sushi.classfile.Constants;
-import org.qooxdoo.sushi.classfile.MethodDef;
 import org.qooxdoo.sushi.classfile.MethodRef;
 import org.qooxdoo.sushi.reflect.Arrays;
 
@@ -45,7 +44,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
     private ClassDef destClass;
 
     /** code objects currently pushed. Initialls empty. */
-    private List stack;
+    private List<Object> stack;
 
     /** number of helper methods created. */
     private int helperMethods;
@@ -65,7 +64,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
         this.buffer = buffer;
         this.customs = customs;
         this.destClass = destClass;
-        this.stack = new ArrayList();
+        this.stack = new ArrayList<Object>();
         this.helperMethods = 0;
     }
 
@@ -77,36 +76,13 @@ public class ObjectCompiler implements Bytecodes, Constants {
         }
     }
 
-    private void run(Class[] types, Object[] vals) {
-        int i;
-        int limit;
-        int oldSize;
-        int used;
-        int localLimit;
-
-        limit = MAX_INSTRUCTIONS;
-        for (i = 0; i < vals.length; i++) {
-            localLimit = limit - (vals.length - i - 1);
-            oldSize = dest.getSize();
-            run(types[i], vals[i], localLimit);
-            used = dest.getSize() - oldSize;
-            if (used > localLimit) {
-                throw new IllegalStateException();
-            }
-            limit -= used;
-            if (limit < 0) {
-                throw new IllegalStateException();
-            }
-        }
-    }
-
     /**
      * type is the static type. If type is primitive, the primitive
      * object wrapped by val is compiled.
      *
      * @param limit max number of instactions the value may be compiled to. >= 1.
      */
-    private void run(Class type, Object val, int limit) {
+    private void run(Class<?> type, Object val, int limit) {
         int initial;
 
         initial = dest.getSize();
@@ -165,8 +141,8 @@ public class ObjectCompiler implements Bytecodes, Constants {
 
 
     /** reduce one dimension only, e.g. int[][] -> int[] **/
-    private void array(Class type, Object ar, int limit) {
-        Class compType;
+    private void array(Class<?> type, Object ar, int limit) {
+        Class<?> compType;
 
         compType = type.getComponentType();
         if (compType.equals(Character.TYPE)) {
@@ -176,7 +152,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
         }
     }
 
-    private void nonCharArray(Class compType, Object ar, int limit) {
+    private void nonCharArray(Class<?> compType, Object ar, int limit) {
         int len;
         int i;
         Object comp;
@@ -392,7 +368,6 @@ public class ObjectCompiler implements Bytecodes, Constants {
     private void pushMethod(Class<?> returnTypeClass) {
         ClassRef returnType;
         Code nextDest;
-        MethodDef def;
         MethodRef ref;
         String name;
 
@@ -401,7 +376,7 @@ public class ObjectCompiler implements Bytecodes, Constants {
         helperMethods++;
         nextDest = new Code();
         nextDest.locals = buffer + 1;  // TODO
-        def = destClass.addMethod(new HashSet<Access>(java.util.Arrays.asList(Access.PRIVATE, Access.STATIC)), returnType, name,
+        destClass.addMethod(new HashSet<Access>(java.util.Arrays.asList(Access.PRIVATE, Access.STATIC)), returnType, name,
                                   ClassRef.NONE, nextDest);
         ref = new MethodRef(destClass.thisClass, false, returnType, name, ClassRef.NONE);
         dest.emit(INVOKESTATIC, ref);

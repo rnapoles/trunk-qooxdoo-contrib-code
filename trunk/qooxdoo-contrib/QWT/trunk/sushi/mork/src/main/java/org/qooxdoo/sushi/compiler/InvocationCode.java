@@ -78,10 +78,10 @@ public class InvocationCode implements Bytecodes {
         return labels.size();
     }
 
-    public boolean reuse(Function fn, Code dest, Map done) {
+    public boolean reuse(Function fn, Code dest, Map<Function, Object[]> done) {
         Object[] obj;
 
-        obj = (Object[]) done.get(fn);
+        obj = done.get(fn);
         if (obj == null) {
             return false;
         }
@@ -89,8 +89,8 @@ public class InvocationCode implements Bytecodes {
         return true;
     }
 
-    public void translate(Function fn, Code dest, Map done) {
-        Class[] tmp;
+    public void translate(Function fn, Code dest, Map<Function, Object[]> done) {
+        Class<?>[] tmp;
         int i;
         int id;
 
@@ -171,7 +171,7 @@ public class InvocationCode implements Bytecodes {
         code.exceptions.add(info);
     }
 
-    private void wrap(Class cl) {
+    private void wrap(Class<?> cl) {
         ClassRef wrapper;
 
         if (cl.isPrimitive()) {

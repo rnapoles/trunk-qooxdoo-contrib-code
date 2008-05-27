@@ -224,7 +224,7 @@ public class Stubs {
 
     public static Selection copyFunctionRef(Library lib, String name) throws GenericException {
         Selection sel;
-        Class type;
+        Class<?> type;
         Identity id;
 
         sel = lib.lookupClass(name);

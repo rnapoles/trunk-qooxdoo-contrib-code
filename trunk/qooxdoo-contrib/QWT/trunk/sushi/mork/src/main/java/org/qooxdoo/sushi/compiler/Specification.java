@@ -49,7 +49,7 @@ public class Specification {
 
     private final String mapperName;
 
-    private final List mainDefs;
+    private final List<Definition> mainDefs;
 
     public Specification(String mapperName, Syntax syntax, Definition[] definitions) {
         int i;
@@ -61,7 +61,7 @@ public class Specification {
         this.syntax = syntax;
         this.transport = new Transport();
         this.mainBorder = new IntBitSet();
-        this.mainDefs = new ArrayList();
+        this.mainDefs = new ArrayList<Definition>();
         for (i = 0; i < definitions.length; i++) {
             d = definitions[i];
             a = d.getAttribute();
@@ -148,12 +148,12 @@ public class Specification {
     /**
      * @return list of attributes defined for the specfied symbol (in order of definition)
      */
-    private List getDefinitionAttrs(int symbol) {
-        List lst;
+    private List<Attribute> getDefinitionAttrs(int symbol) {
+        List<Attribute> lst;
         Attribute a;
         int i;
 
-        lst = new ArrayList();
+        lst = new ArrayList<Attribute>();
         for (i = 0; i < definitions.length; i++) {
             a = definitions[i].getAttribute();
             if (a.symbol == symbol) {

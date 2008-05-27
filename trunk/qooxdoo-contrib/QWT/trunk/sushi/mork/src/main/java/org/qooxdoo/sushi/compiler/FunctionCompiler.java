@@ -49,7 +49,7 @@ public class FunctionCompiler extends CustomCompiler implements Bytecodes {
     private String className;
 
     /** Generated classes; list of InvocationCode instances. */
-    private List classes;
+    private List<InvocationCode> classes;
 
     /** null or last element of classes. */
     private InvocationCode current;
@@ -58,27 +58,22 @@ public class FunctionCompiler extends CustomCompiler implements Bytecodes {
      * Functions previously translated.
      * Prevents that the same copy functions is written multiple times.
      */
-    private Map done;
+    private Map<Function, Object[]> done;
 
     public FunctionCompiler(String className) {
         this.className = className;
-        this.classes = new ArrayList();
+        this.classes = new ArrayList<InvocationCode>();
         this.current = null;
-        this.done = new HashMap();
+        this.done = new HashMap<Function, Object[]>();
     }
 
     @Override
-    public boolean matches(Class type) {
+    public boolean matches(Class<?> type) {
         return Function.class.isAssignableFrom(type);
     }
 
     @Override
     public void beginTranslation(Object obj, Code dest) {
-        Function fn;
-        Class[] tmp;
-        int i;
-        int id;
-
         if (current == null) {
             current = new InvocationCode(className + (classes.size() + 1));
             classes.add(current);
@@ -99,7 +94,7 @@ public class FunctionCompiler extends CustomCompiler implements Bytecodes {
     }
 
     @Override
-    public Class[] getFieldTypes() {
+    public Class<?>[] getFieldTypes() {
         return new Class[] {};
     }
 
