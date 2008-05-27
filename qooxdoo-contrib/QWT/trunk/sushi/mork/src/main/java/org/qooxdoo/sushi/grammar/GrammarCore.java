@@ -28,12 +28,12 @@ import java.util.List;
  */
 public class GrammarCore {
     /** List of int[] */
-    private final List productions;
+    private final List<int[]> productions;
 
     private Symbol[] symbols;
 
     public GrammarCore() {
-        this.productions = new ArrayList();
+        this.productions = new ArrayList<int[]>();
         this.symbols = null;
     }
 
@@ -75,13 +75,13 @@ public class GrammarCore {
     }
 
     private void calcSymbols() {
-        List pre;  // list of PreSymbols
+        List<PreSymbol> pre;  // list of PreSymbols
         int prod, maxProd, ofs, sym;
         PreSymbol ps;
         int[] current;
 
         maxProd = productions.size();
-        pre = new ArrayList();
+        pre = new ArrayList<PreSymbol>();
         for (prod = 0; prod < maxProd; prod++) {
             current = getProduction(prod);
             for (ofs = 0; ofs < current.length; ofs++) {
