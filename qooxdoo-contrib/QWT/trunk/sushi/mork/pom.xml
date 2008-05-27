@@ -37,7 +37,7 @@
                    <include name="src/main/java/**/bootstrap/*.map"/>
                 </fileset>
                 <pathconvert property="mapper.bs1" refid="mapper.bs1" pathsep=" "/>
-                <java classname="de.mlhartme.mxxx.compiler.Main"
+                <java fork="true" dir="${basedir}" classname="de.mlhartme.mxxx.compiler.Main"
                       failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/src/bsmork.jar" />
@@ -53,7 +53,7 @@
                    <include name="src/main/java/**/compiler/*.map"/>
                 </fileset>
                 <pathconvert property="mapper.bs2" refid="mapper.bs2" pathsep=" "/>
-                <java classname="org.qooxdoo.sushi.compiler.Main"
+                <java fork="true" dir="${basedir}" classname="org.qooxdoo.sushi.compiler.Main"
                       failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/src/bsmork.jar" />
@@ -73,7 +73,7 @@
                    <exclude name="src/main/java/**/bootstrap/*.map"/>
                 </fileset>
                 <pathconvert property="mapper.bs3" refid="mapper.bs3" pathsep=" "/>
-                <java classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
+                <java fork="true" dir="${basedir}" classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/target/classes" />                  
                     <pathelement path="${basedir}/target/test-classes" />
@@ -84,7 +84,7 @@
                   <arg value="-lst"/>
                   <arg line="${mapper.bs3}"/>
                 </java>
-                <java classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
+                <java fork="true" dir="${basedir}" classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/target/classes" />                  
                     <pathelement path="${basedir}/target/test-classes" />

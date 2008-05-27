@@ -64,13 +64,13 @@ public class Job {
         }
 
         this.source = new File(srcName);
-        if (srcName.endsWith(SRC_SUFFIX)) {
-            baseName = srcName.substring(0, srcName.length() - SRC_SUFFIX.length());
-        } else {
-            baseName = srcName;
-        }
         if (listing) {
-            this.listing = new File(baseName + LST_SUFFIX);
+            baseName = source.getName();
+            if (baseName.endsWith(SRC_SUFFIX)) {
+                baseName = baseName.substring(0, baseName.length() - SRC_SUFFIX.length());
+            }
+            // TODO: configurable target
+            this.listing = new File("target/" + baseName + LST_SUFFIX);
         } else {
             this.listing = null;
         }
