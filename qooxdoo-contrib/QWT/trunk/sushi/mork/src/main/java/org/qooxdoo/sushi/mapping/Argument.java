@@ -76,24 +76,24 @@ public class Argument implements Compare {
      * Merge list of arguments.
      * pre: list.size() > 0  && all arguments have to start with the same attribute
      */
-    public static Argument merge(int symbol, Definition target, List arguments) {
+    public static Argument merge(int symbol, Definition target, List<Argument> arguments) {
         CopyBuffer buffer;
-        List argBuffers; // List of CopyBuffers
+        List<CopyBuffer> argBuffers; // List of CopyBuffers
         int i;
         int max;
         Attribute start;
         Argument arg;
         Type mergedType;
         int card;
-        List resultingSources;
+        List<Definition> resultingSources;
 
         max = arguments.size();
         if (max == 0) {
             throw new IllegalArgumentException();
         }
-        argBuffers = new ArrayList();
+        argBuffers = new ArrayList<CopyBuffer>();
         mergedType = null;
-        resultingSources = new ArrayList();
+        resultingSources = new ArrayList<Definition>();
         for (i = 0; i < max; i++) {
             arg = (Argument) arguments.get(i);
             resultingSources.addAll(arg.sources);
@@ -121,7 +121,7 @@ public class Argument implements Compare {
         return new Argument(Path.ISOLATED, buffer, resultingSources);
     }
 
-    //----------------------------------------------------------
+    //--
 
     /**
      * @param args  List of Arguments
@@ -147,7 +147,7 @@ public class Argument implements Compare {
         sort = RelatedArgument.sort(sort);
         max = sort.size();
         for (i = 0; i < max; i++) {
-            arg = merge(target.getAttribute().symbol, target, (List) sort.get(i));
+            arg = merge(target.getAttribute().symbol, target, (List<Argument>) sort.get(i));
             seq.add(arg);
         }
         return seq;
