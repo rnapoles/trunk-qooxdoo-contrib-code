@@ -36,12 +36,12 @@ public class PreSymbol {
     private IntArrayList users;
 
     /** ofsets in the using productions. List of IntArrayLists. */
-    private List userOfs;
+    private List<IntArrayList> userOfs;
 
     public PreSymbol() {
         alternatives = new IntArrayList();
         users = new IntArrayList();
-        userOfs = new ArrayList();
+        userOfs = new ArrayList<IntArrayList>();
     }
 
     public void addAlternative(int prod) {

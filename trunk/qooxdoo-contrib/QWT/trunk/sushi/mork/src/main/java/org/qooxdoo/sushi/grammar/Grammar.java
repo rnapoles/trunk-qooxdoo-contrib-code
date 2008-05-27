@@ -389,21 +389,22 @@ public class Grammar extends GrammarCore {
     }
 
     public void removeDuplicateSymbols(int first, int last) {
-        List lst, all;
+        List<List<int[]>> all;
+        List<int[]> lst;
         int sym1, sym2;
         int prod, max;
         int[] tmp;
 
-        all = new ArrayList();
+        all = new ArrayList<List<int[]>>();
         for (sym1 = first; sym1 <= last; sym1++) {
-            all.add(new ArrayList());
+            all.add(new ArrayList<int[]>());
         }
         max = getProductionCount();
         for (prod = 0; prod < max; prod++) {
             tmp = getProduction(prod);
             sym1 = tmp[0];
             if ((sym1 >= first) && (sym1 <= last)) {
-                lst = (List) all.get(sym1 - first);
+                lst = all.get(sym1 - first);
                 lst.add(tmp);
             }
         }
@@ -412,10 +413,10 @@ public class Grammar extends GrammarCore {
         // by the use of renameSymbol?
 
         for (sym1 = first; sym1 <= last; sym1++) {
-            lst = (List) all.get(sym1 - first);
+            lst = all.get(sym1 - first);
             if (lst.size() > 0) {
                 for (sym2 = sym1 + 1; sym2 <= last; sym2++) {
-                    if (equivalent(lst, (List) all.get(sym2 - first))) {
+                    if (equivalent(lst, all.get(sym2 - first))) {
                         removeProductions(sym1);
                         renameSymbol(sym1, sym2);
                         break;
@@ -425,7 +426,7 @@ public class Grammar extends GrammarCore {
         }
     }
 
-    private static boolean equivalent(List lst1, List lst2) {
+    private static boolean equivalent(List<int[]> lst1, List<int[]> lst2) {
         int i, j, max;
         IntBitSet rest;
         int[] prod1, prod2;
@@ -437,9 +438,9 @@ public class Grammar extends GrammarCore {
         rest = new IntBitSet();
         rest.addRange(0, max - 1);
         for (i = 0; i < max; i++) {
-            prod1 = (int[]) lst1.get(i);
+            prod1 = lst1.get(i);
             for (j = rest.first(); j != -1; j = rest.next(j)) {
-                prod2 = (int[]) lst2.get(j);
+                prod2 = lst2.get(j);
                 if (equivalent(prod1, prod2)) {
                     break;
                 }
@@ -534,7 +535,7 @@ public class Grammar extends GrammarCore {
         int count, nextCount;
         IntArrayList next;
         int[][] expand;
-        List expandLst;
+        List<int[]> expandLst;
         int right;
 
         maxProd = getProductionCount();
@@ -542,7 +543,7 @@ public class Grammar extends GrammarCore {
         // make an array of the expand prods to easily index them;
         // storing the indexes instead is difficult because the indexes
         // max change
-        expandLst = new ArrayList();
+        expandLst = new ArrayList<int[]>();
         for (prod = 0; prod < maxProd; prod++) {
             if (getLeft(prod) == symbol) {
                 expandLst.add(getProduction(prod));
