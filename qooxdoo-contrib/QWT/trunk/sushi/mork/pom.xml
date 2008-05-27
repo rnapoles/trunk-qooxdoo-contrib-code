@@ -67,7 +67,6 @@
                   <arg value="org.qooxdoo.sushi.bootstrap.Loader.loadMapper" />
                   <arg line="${mapper.bs2}" />
                 </java>
-                <!-- TODO: broken with Java 6 ! 
                 <echo>Bootstrap Pass 3</echo>
                 <fileset id="mapper.bs3" dir="${basedir}">
                    <include name="src/main/java/**/*.map"/>
@@ -94,7 +93,7 @@
                   <arg value="-d"/>
                   <arg path="${basedir}/target/classes" />
                   <arg line="${mapper.bs3}"/>
-                </java>-->
+                </java>
               </tasks>
             </configuration>
             <goals>
@@ -104,7 +103,7 @@
         </executions>
       </plugin>
       <!-- TODO: plugin>
-        <groupId>de.schlund.maven.plugins</groupId>
+        <groupId>de.ui.devel.maven.plugins</groupId>
         <artifactId>launcher</artifactId>
         <configuration>
           <name>mork</name>
@@ -121,9 +120,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.4.2</version>
         <configuration>
-          <useFile>false</useFile>
           <includes>
             <include>**/*Test.java</include>
           </includes>
@@ -134,7 +131,6 @@
           </excludes>
         </configuration>
       </plugin>
- 
     </plugins>
   </build>  
 </project>
