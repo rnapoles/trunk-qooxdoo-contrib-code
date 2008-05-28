@@ -38,7 +38,7 @@ import org.qooxdoo.sushi.classfile.Code;
  */
 
 public abstract class Function implements Serializable {
-    public static final Class[] NO_CLASSES = new Class[0];
+    public static final Class<?>[] NO_CLASSES = new Class[0];
 
     /**
      * Gets the Function name.
@@ -52,15 +52,15 @@ public abstract class Function implements Serializable {
      * method.
      * @return  the return type of the Function
      */
-    public abstract Class getReturnType();
+    public abstract Class<?> getReturnType();
 
     /**
      * Gets the parameter types of this function.
      * @return  parameter types
      */
-    public abstract Class[] getParameterTypes();
+    public abstract Class<?>[] getParameterTypes();
 
-    public abstract Class[] getExceptionTypes();
+    public abstract Class<?>[] getExceptionTypes();
 
     /**
      * Invokes the function.
@@ -97,9 +97,9 @@ public abstract class Function implements Serializable {
      * @param   args  arguement types
      * @return  true, if the function can be called with these types
      */
-    public boolean matches(Class[] args) {
+    public boolean matches(Class<?>[] args) {
         int i;
-        Class[] paras;
+        Class<?>[] paras;
 
         paras = getParameterTypes();
         if (args.length != paras.length) {
@@ -124,7 +124,7 @@ public abstract class Function implements Serializable {
     public String toString() {
         StringBuilder buf;
         int i;
-        Class[] paras;
+        Class<?>[] paras;
 
         buf = new StringBuilder();
         buf.append(getReturnType().getName());
