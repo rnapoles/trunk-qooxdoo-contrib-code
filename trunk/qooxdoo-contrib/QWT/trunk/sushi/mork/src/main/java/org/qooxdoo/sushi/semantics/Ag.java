@@ -180,11 +180,6 @@ public class Ag {
                 buffer.append("\t\t");
                 ab.attrsToString(buffer, grammar.getSymbolTable());
                 buffer.append('\n');
-                if (ab.function != null) {
-                    buffer.append("\t\t\t");
-                    buffer.append(ab.function.toString());
-                    buffer.append('\n');
-                }
             }
             buffer.append("\n");
         }
