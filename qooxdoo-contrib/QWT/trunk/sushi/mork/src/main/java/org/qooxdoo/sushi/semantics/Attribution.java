@@ -83,6 +83,9 @@ public class Attribution implements Serializable {
                 throw (Error) t;
             }
             if (t instanceof Exception) {
+                if (verbose != null) {
+                    log("[FAILURE]", verbose);
+                }
                 pos = new Position();
                 pos.set(ctx.position);
                 throw new SemanticError(pos, (Exception) t);
