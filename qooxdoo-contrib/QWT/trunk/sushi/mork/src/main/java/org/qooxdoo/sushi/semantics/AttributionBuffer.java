@@ -118,12 +118,24 @@ public class AttributionBuffer {
         int max;
         int i;
 
+        if (function != null) {
+            buffer.append(function.getReturnType().getName());
+            buffer.append(' ');
+        }
         buffer.append(result.toString(symbolTable));
-        buffer.append("  <==  (");
+        buffer.append(" = ");
+        if (function != null) {
+            buffer.append(function.getName());
+        }
+        buffer.append('(');
         max = args.size();
         for (i = 0; i < max; i++) {
             if (i > 0) {
                 buffer.append(", ");
+            }
+            if (function != null) {
+                buffer.append(function.getParameterTypes()[i].getName());
+                buffer.append(' ');
             }
             buffer.append(((AttributeOccurrence) args.get(i)).toString(symbolTable));
         }
