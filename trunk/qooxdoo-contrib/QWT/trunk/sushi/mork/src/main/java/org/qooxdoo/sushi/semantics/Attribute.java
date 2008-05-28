@@ -73,16 +73,6 @@ public class Attribute {
     }
 
     @Override
-    public int hashCode() {
-        return symbol;
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        return obj == this;
-    }
-    
-    @Override
     public String toString() {
         return "symbol=" + symbol + ", name=" + name + ", " + type;
     }
