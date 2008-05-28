@@ -38,7 +38,7 @@ public class AttributeOccurrence {
     }
 
     public String toString(StringArrayList symbolTable) {
-        return symbolTable.getOrIndex(attr.symbol) + '[' + ofs + "]." + attr.name;
+        return symbolTable.getOrIndex(attr.symbol) + '[' + ofs + "]." + attr.hashCode();
     }
 
     public boolean matches(AttributeOccurrence ao) {
