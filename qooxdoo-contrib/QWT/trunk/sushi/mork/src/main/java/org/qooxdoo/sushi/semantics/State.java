@@ -68,7 +68,6 @@ public class State implements Compare {
         int i;
         int max;
         Alternative old;
-        Alternative ab;
         Attribute attr;
 
         attr = new Attribute(orig.transportAttribute);
