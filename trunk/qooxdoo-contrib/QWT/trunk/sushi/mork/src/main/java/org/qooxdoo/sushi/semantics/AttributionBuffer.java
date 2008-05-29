@@ -56,16 +56,7 @@ public class AttributionBuffer {
     }
 
     public void add(AttributeOccurrence attr) {
-        int i;
-        int max;
-
-        max = args.size();
-        for (i = 0; i < max; i++) {
-            if (attr.ofs < args.get(i).ofs) {
-                break;
-            }
-        }
-        args.add(i, attr);
+        args.add(attr);
     }
 
     /**

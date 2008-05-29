@@ -24,7 +24,7 @@ import org.qooxdoo.sushi.misc.StringArrayList;
 public class AttributeOccurrence {
     public final Attribute attr;
 
-    /** ofs -1: left hand side */
+    /** references the respective symbol in the production; -1 for left hand side */
     public final int ofs;
 
     public AttributeOccurrence(Attribute attr, int ofs) {
