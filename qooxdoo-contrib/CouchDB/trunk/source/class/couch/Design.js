@@ -66,7 +66,7 @@ construct:function( vName, vDatabase ){
   },
   
   /** fetch a selection of rows for a specified view in this design.
-    @param vFunc1 {Function} called with the row-data as only parameter
+    @param vFunc {Function} called with the row-data as only parameter
     @param vFunc2 {Function} called with the total-rows-count as only parameter
     @param vTarget {Object} target of execution
     @param vName  {String} name of the view

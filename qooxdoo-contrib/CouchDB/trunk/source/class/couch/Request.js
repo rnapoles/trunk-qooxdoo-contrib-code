@@ -103,34 +103,34 @@ construct:function( vUrl, vMethod, vResponseType ){
 },events:{ 
 //////////
 
-  /** 202 Succesfull removed database/document **/
+  /** 202 Succesfull removed database/document */
   "removed":   "qx.event.type.DataEvent", 
   
-  /** 404/410 Database/document/revision was not found **/
+  /** 404/410 Database/document/revision was not found */
   "missing":   "qx.event.type.DataEvent",
    
-  /** 201 Database/document succesfully created/updated **/
+  /** 201 Database/document succesfully created/updated */
   "stored":    "qx.event.type.DataEvent", 
   
-  /** 203 Accepted; request is still being procced **/
+  /** 203 Accepted; request is still being procced */
   "accepted":  "qx.event.type.DataEvent", 
   
-  /** 409/412 Conflict with existing data or more recent revision **/
+  /** 409/412 Conflict with existing data or more recent revision */
   "conflict":  "qx.event.type.DataEvent", 
   
-  /** 200 Succesfully retrieved requested information **/
+  /** 200 Succesfully retrieved requested information */
   "received":  "qx.event.type.DataEvent",
   
-  /** 408/5** Some error with the server, not your fault **/
+  /** 408/5** Some error with the server, not your fault */
   "error":     "qx.event.type.DataEvent",  
 
-  /** 4** Some problem with the request; likely your fault  **/
+  /** 4** Some problem with the request; likely your fault */
   "unsupported":     "qx.event.type.DataEvent" ,
 
-  /** 403 forbidden, no access never  **/
+  /** 403 forbidden, no access never  */
   "forbidden":     "qx.event.type.DataEvent",  
   
-  /** 401/407 unauthorized access, you should use proper username and password  **/
+  /** 401/407 unauthorized access, you should use proper username and password  */
   "unauthorized":  "qx.event.type.DataEvent"
     
 
@@ -144,7 +144,7 @@ construct:function( vUrl, vMethod, vResponseType ){
  it's not entirely clear wether that always returns legal json and wether CouchDB can
  deal with that.
   
-   @param vName {var} any javascript value
+   @param vData {var} any javascript value
    @return {String} (supposedly) legal JSON encoded representation of the supplied data
 
 **/
@@ -192,6 +192,7 @@ construct:function( vUrl, vMethod, vResponseType ){
     ev510: 'error'  
  },
  
+ /** lookup table used to proxy events */
  REQUEST_EVENTS:[
   'timeout','completed', 'failed', 'aborted', 
   'receiving', 'sending', 'created', 'configured',
