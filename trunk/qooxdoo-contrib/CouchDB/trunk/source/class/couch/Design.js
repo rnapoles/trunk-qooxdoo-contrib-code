@@ -31,13 +31,13 @@ construct:function( vName, vDatabase ){
   addView:function( vName, vFunc ){
     var v = this.getKey('views');
     if( !v ){ v = {}; this.setKey('views',v); }
-    v[vName] = vFunc + "";
+    v[vName] = {map: vFunc + "" };
   },
 
   addSort:function( vKey, vType ){
     var f = "function( doc ){";
     if( vType ) f = f + "if( doc.type == '" + vType + "') ";
-    f = f + " map(doc." + vKey + " ? doc." + vKey + ":null, doc); }";
+    f = f + " emit(doc." + vKey + " ? doc." + vKey + ":null, doc); }";
     this.addView( vKey, f );
   },
 
