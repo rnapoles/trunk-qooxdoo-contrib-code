@@ -1,7 +1,7 @@
 /**
 
   Abstract Class for CouchDB related classes. 
-  The abstract methods are <i>url</i> and <i>getServer</i>
+  This provides the default event-system and utility functions to easily catch events.  
 
 **/
 
@@ -45,43 +45,58 @@ construct:function(){
 },events:{
 //////////
 
-  /** 200 Succesfully retrieved requested information **/
+  /** 200 Succesfully retrieved requested information */
   "received":      "qx.event.type.DataEvent",  
 
-  /** 201 Database/document succesfully created/updated **/
+  /** 201 Database/document succesfully created/updated */
   "stored":       "qx.event.type.DataEvent", 
 
-  /** 202 Succesfull removed database/document **/
+  /** 202 Succesfull removed database/document */
   "removed":      "qx.event.type.DataEvent", 
 
-  /** 203 Accepted; request is still being procced **/
+  /** 203 Accepted; request is still being procced */
   "accepted":  "qx.event.type.DataEvent", 
   
-  /** 404/410 Database/document/revision was not found **/
+  /** 404/410 Database/document/revision was not found */
   "missing":      "qx.event.type.DataEvent",
   
-  /** 409/412 Conflict with existing data or more recent revision **/
+  /** 409/412 Conflict with existing data or more recent revision */
   "conflict":      "qx.event.type.DataEvent", 
   
-  /** 408/5** Some error with the server, not your fault **/
+  /** 408/5** Some error with the server, not your fault */
   "error":         "qx.event.type.DataEvent",  
 
-  /** 4** Some problem with the request; likely your fault  **/
+  /** 4** Some problem with the request; likely your fault  */
   "unsupported":   "qx.event.type.DataEvent" ,
 
-  /** 403 forbidden, no access never  **/
+  /** 403 forbidden, no access never  */
   "forbidden":     "qx.event.type.DataEvent",  
   
-  /** 401/407 unauthorized access, you should use proper username and password  **/
+  /** 401/407 unauthorized access, you should use proper username and password  */
   "unauthorized":  "qx.event.type.DataEvent",
   
+  /** the request is finished */
   "completed":  "qx.io.remote.Response",
+  
+  /** something went wrong */  
   "failed":     "qx.io.remote.Response",
+  
+  /** it took too long */
   "timeout":    "qx.io.remote.Response",
+  
+  /** the request was aborted */ 
   "aborted":    "qx.io.remote.Response",
+  
+  /** the request was created */
   "created":    "qx.event.type.Event",
+  
+  /** the request was configured */
   "configured": "qx.event.type.Event",
+  
+  /** sending data to the server */
   "sending":    "qx.event.type.Event",
+  
+  /** receicing data from the server */
   "receiving":  "qx.event.type.Event"
 
 ///////////
@@ -94,7 +109,13 @@ construct:function(){
     for( var i=0; i<l; i++ ) this.addEventListener( vEvents[i], f, this);    
   },
   
-  /** execute a function once on a given status */
+  /** execute a function once on a given status. A use-once event-listener. 
+  
+    @param vStatus {String} status to catch
+    @param vFunc {Function} function to execute
+    @param vTarget {Object} optional execution context
+  
+  */
   once:function( vStatus, vFunc, vTarget ){
     var vTarget = vTarget ? vTarget : this;
     if( this.getStatus() == vStatus ){
@@ -106,7 +127,15 @@ construct:function(){
     }
   },
   
-  /** execute a function everytime a given status occurs */
+  /** execute a function everytime a given status occurs. Event-listener Lite (tm). 
+  
+    @param vStatus {String} status to catch
+    @param vFunc {Function} function to execute
+    @param vTarget {Object} optional execution context
+  
+  */
+
+  /**  */
   whenever:function( vStatus, vFunc, vTarget ){
     var vTarget = vTarget ? vTarget : this;
     this.addEventListener('changeStatus', function(){
@@ -118,7 +147,7 @@ construct:function(){
   refresh:function(){
     this._setOnce({});
     this.createDispatchEvent('refresh');
-    if( this.replay ) this.replay();
+    if( this._replay ) this._replay();
   },  
 
   /** retrieve the current status */
@@ -133,8 +162,8 @@ construct:function(){
     return req;    
   },  
   
-  /** create a get request and use it to set a property. Also proxy all events. */
-  getSet:function( vKey, vUrl, vFallBack, vEvent, vFail ){
+  /** create a get request and use it to set a property. Also proxy all events.  */
+  _getSet:function( vKey, vUrl, vFallBack, vEvent, vFail ){
     if( !vEvent ) vEvent = 'received';
     if( !vFail  ) vFail  = 'failed';
     if( !vFallBack) vFallBack = null;
@@ -153,29 +182,40 @@ construct:function(){
     req.send();
   },  
   
-  /** create a post request */
-  postRequest:function( vUrl, vData, vResponseType ){  
-    var req = this.createRequest( 'POST', vUrl, vResponseType );
+  /** create a post request. 
+    @param vUrl {String} local url
+    @param vData {Map} the data to send with the request
+  **/
+  postRequest:function( vUrl, vData ){  
+    var req = this.createRequest( 'POST', vUrl );
     req.jsonData( vData );                
     return req;    
   }, 
   
-  /** create a put request */
-  putRequest:function( vUrl, vData, vResponseType ){  
-    var req = this.createRequest( 'PUT', vUrl, vResponseType );
+  /** create a put request.
+    @param vUrl {String} local url
+    @param vData {Map} the data to send with the request
+  **/
+  putRequest:function( vUrl, vData ){  
+    var req = this.createRequest( 'PUT', vUrl );
     req.jsonData( vData );            
     return req;    
   }, 
   
-  /** create a delete request */
-  deleteRequest:function( vUrl, vResponseType ){  
-    var req = this.createRequest( 'DELETE', vUrl, vResponseType );      
+  /** create a delete request.
+      @param vUrl {String} local url
+  **/
+  deleteRequest:function( vUrl ){  
+    var req = this.createRequest( 'DELETE', vUrl );      
     return req;    
   },
   
-  /** create a request object */
-  createRequest:function( vMethod, vUrl, vResponseType ){
-    var req  = this.getServer().createRequestObject( vMethod, this.url( vUrl ), vResponseType );         
+  /** create a request object.
+    @param vUrl {String} local url
+
+  **/
+  createRequest:function( vMethod, vUrl ){
+    var req  = this.getServer().createRequestObject( vMethod, this.url( vUrl ) );         
     return req;
   }
   
