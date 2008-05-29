@@ -28,51 +28,17 @@ construct:function( vName, vDatabase ){
 },members:{
 ///////////
 
-  addView:function( vName, vFunc ){
+  addView:function( vName, fMap, fReduce ){
     var v = this.getKey('views');
-    if( !v ){ v = {}; this.setKey('views',v); }
-    v[vName] = {map: vFunc + "" };
-  },
-
-  addSort:function( vKey, vType ){
-    var f = "function( doc ){";
-    if( vType ) f = f + "if( doc.type == '" + vType + "') ";
-    f = f + " emit(doc." + vKey + " ? doc." + vKey + ":null, doc); }";
-    this.addView( vKey, f );
+    if( !v ){ v = {}; this.setKey('views',v); }        
+    v[vName] = {map: fMap + "" };
+    if( fReduce ) v[vName].reduce = fReduce + "";
   },
 
   _fetch:function( vName, vNormal, vJSON ){
     return this.getRequest( '_view/' + this._getDesign() + '/' + vName, vNormal, vJSON );
   },
 
-  fetchInstances:function( vFunc, vTarget, vName, vConstructor ){
-    var req = this._fetch( vName );
-    req.when('received', function( d ){
-      var result = {};
-      var rows = d.rows;
-      var rowsl = rows.length;
-      for( var i=0; i<rowsl; i++ ){
-        var row = rows[i];
-        if( vConstructor ){
-          var rcv = row.value['clazz'];
-          if( rcv ){
-            rcv = row.value.type + '.' + qx.lang.String.toFirstUp( rcv );
-          }else{
-            rcv = qx.lang.String.toFirstUp( row.value.type );
-          }
-          var c = eval(vConstructor + '.' + rcv);
-          if( c instanceof Function )
-            result[row.id] = new c( row.id, couch.Document.cleanMap( row.value ) );
-          else
-            this.warn(vConstructor + '.' + rcv + ' is not a valid class!');
-        }else{
-           result[row.id] = row.value;
-        }
-      }
-      vFunc.call( vTarget, result );
-    },this);
-    req.send();
-  },
 
   fetchRows:function( vFunc1, vFunc2, vTarget, vName, vNormal, vJSON ){
     var req = this._fetch( vName, vNormal, vJSON );
