@@ -37,7 +37,7 @@ import org.qooxdoo.sushi.util.IntArrayList;
  */
 public class State implements Compare {
     /** inv: seed or size() > 0.  Productions are sorted! */
-    private List attributions;
+    private List<Alternative> alternatives;
 
     // TODO: private
     public int minOcc;
@@ -47,7 +47,7 @@ public class State implements Compare {
 
     public State(Attribute attribute) {
         this.transportAttribute = attribute;
-        this.attributions = new ArrayList();
+        this.alternatives = new ArrayList<Alternative>();
     }
 
     // TODO: attributions are shared
@@ -56,10 +56,10 @@ public class State implements Compare {
         int max;
 
         transportAttribute = orig.transportAttribute;
-        attributions = new ArrayList();
-        max = orig.attributions.size();
+        alternatives = new ArrayList<Alternative>();
+        max = orig.alternatives.size();
         for (i = 0; i < max; i++) {
-            attributions.add(orig.attributions.get(i));
+            alternatives.add(orig.alternatives.get(i));
         }
     }
 
@@ -72,17 +72,17 @@ public class State implements Compare {
 
         attr = new Attribute(orig.transportAttribute);
         clone = new State(attr);
-        max = orig.attributions.size();
+        max = orig.alternatives.size();
         for (i = 0; i < max; i++) {
-            old = (Alternative) orig.attributions.get(i);
-            clone.attributions.add(new Alternative(old.production, old.resultOfs));
+            old = (Alternative) orig.alternatives.get(i);
+            clone.alternatives.add(new Alternative(old.production, old.resultOfs));
         }
         return clone;
     }
 
     public State(boolean up, Attribute attr, Grammar grm) {
         transportAttribute = attr;
-        attributions = new ArrayList();
+        alternatives = new ArrayList<Alternative>();
         if (up) {
             addSynthesized(attr.symbol, grm);
         } else {
@@ -98,7 +98,7 @@ public class State implements Compare {
         max = grm.getAlternativeCount(symbol);
         for (i = 0; i < max; i++) {
             ab = new Alternative(grm.getAlternative(symbol, i), -1);
-            attributions.add(ab);
+            alternatives.add(ab);
         }
     }
 
@@ -118,7 +118,7 @@ public class State implements Compare {
             for (idx = 0; idx < maxIdx; idx++) {
                 ofs = grm.getUserOfs(symbol, user, idx);
                 ab = new Alternative(prod, ofs);
-                attributions.add(ab);
+                alternatives.add(ab);
             }
         }
     }
@@ -128,9 +128,9 @@ public class State implements Compare {
         int max;
         Alternative ab;
 
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            ab = (Alternative) attributions.get(i);
+            ab = (Alternative) alternatives.get(i);
             if (ab.production == prod) {
                 ab.add(ofs, child);
             }
@@ -142,9 +142,9 @@ public class State implements Compare {
         int max;
         Alternative ab;
 
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            ab = (Alternative) attributions.get(i);
+            ab = (Alternative) alternatives.get(i);
             if (ab.resultOfs == ofs && ab.production == prod) {
                 ab.add(-1, parent);
             }
@@ -166,15 +166,15 @@ public class State implements Compare {
         Attribute tmp;
         int j;
         int maxJ;
-        List args;
+        List<Attribute> args;
 
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            old = (Alternative) attributions.get(i);
+            old = (Alternative) alternatives.get(i);
             replacement = new AttributionBuffer(old.production, TMP_FUNCTION,
                                         new AttributeOccurrence(transportAttribute, old.resultOfs));
             maxJ = old.getArgCount();
-            args = new ArrayList();  // TODO: improve getTransportFn
+            args = new ArrayList<Attribute>();  // TODO: improve getTransportFn
             for (j = 0; j < maxJ; j++) {
                 tmp = old.getArgAttribute(j);
                 replacement.add(new AttributeOccurrence(tmp, old.getArgOfs(j)));
@@ -186,14 +186,14 @@ public class State implements Compare {
     }
 
     /** Add all argument attributes to next (if not already contained in next) */
-    public void addArgAttrs(List result) {
+    public void addArgAttrs(List<Attribute> result) {
         int i;
         int max;
         Alternative ab;
 
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            ab = (Alternative) attributions.get(i);
+            ab = (Alternative) alternatives.get(i);
             ab.addArgAttrs(result);
         }
     }
@@ -207,9 +207,9 @@ public class State implements Compare {
         int max;
         Alternative ab;
 
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            ab = (Alternative) attributions.get(i);
+            ab = (Alternative) alternatives.get(i);
             if (ab.getArgCount() == 0) {
                 return true;
             }
@@ -224,14 +224,14 @@ public class State implements Compare {
         int i;
         int max;
 
-        max = attributions.size();
-        if (max != rightState.attributions.size()) {
+        max = alternatives.size();
+        if (max != rightState.alternatives.size()) {
             throw new IllegalStateException("different number of productions");
         }
         result = 0;
         for (i = 0; i < max; i++) {
-            left = (Alternative) attributions.get(i);
-            right = (Alternative) rightState.attributions.get(i);
+            left = (Alternative) alternatives.get(i);
+            right = (Alternative) rightState.alternatives.get(i);
             result |= left.compare(right);
             if ((result & NE) == NE || ((result & (LT|GT)) == (LT|GT))) {
                 return NE;
@@ -256,8 +256,8 @@ public class State implements Compare {
             // there may be alt Alternative ... see ArgumentTest.testEmptyAlt ...
             // only add equals ab's ... TODO: this test is somehow redundant
 
-            left = (Alternative) attributions.get(i);
-            right = (Alternative) rightState.attributions.get(i);
+            left = (Alternative) alternatives.get(i);
+            right = (Alternative) rightState.alternatives.get(i);
 
             if ((left.getArgCount() == 1) && (right.getArgCount() == 1)) {
                 left.addArgAttrs(nextLefts);
@@ -285,10 +285,10 @@ public class State implements Compare {
         Attribute replacedArg;
 
         replacedResult = (Attribute) map.get(getAttribute());
-        max = attributions.size();
+        max = alternatives.size();
         result = new State(replacedResult);
         for (i = 0; i < max; i++) {
-            old = (Alternative) attributions.get(i);
+            old = (Alternative) alternatives.get(i);
             replacement = new Alternative(old.production, old.resultOfs);
             maxJ = old.getArgCount();
             for (j = 0; j < maxJ; j++) {
@@ -296,7 +296,7 @@ public class State implements Compare {
                 replacedArg = (Attribute) map.get(tmp);
                 replacement.add(old.getArgOfs(j), (replacedArg != null)? replacedArg : tmp);
             }
-            result.attributions.add(replacement);
+            result.alternatives.add(replacement);
         }
         return result;
     }
@@ -304,7 +304,6 @@ public class State implements Compare {
     //----------------------------------------------------------------------------
 
     public Occurrence calcOccurrence(CopyBuffer copyBuffer, List stack, Attribute start) {
-        Alternative[] abs;
         Alternative ab;
         int i;
         int j;
@@ -315,8 +314,8 @@ public class State implements Compare {
         Occurrence occ;
 
         alt = new ArrayList();
-        for (i = 0; i < attributions.size(); i++) {
-            ab = (Alternative) attributions.get(i);
+        for (i = 0; i < alternatives.size(); i++) {
+            ab = (Alternative) alternatives.get(i);
             max = ab.getArgCount();
             seq = new ArrayList();
             for (j = 0; j < max; j++) {
@@ -352,17 +351,17 @@ public class State implements Compare {
         }
         first = (State) copies.get(0);
         result = new State(Merger.map(mapping, first.getAttribute()));
-        attribSize = first.attributions.size();
+        attribSize = first.alternatives.size();
         copiesSize = copies.size();
         for (a = 0; a < attribSize; a++) {
-            firstAb = (Alternative) first.attributions.get(a);
+            firstAb = (Alternative) first.alternatives.get(a);
             destAb = new Alternative(firstAb.production, firstAb.resultOfs);
             for (c = 0; c < copiesSize; c++) {
                 current = (State) copies.get(c);
-                srcAb = (Alternative) current.attributions.get(a);
+                srcAb = (Alternative) current.alternatives.get(a);
                 addMappedArguments(srcAb, destAb, mapping);
             }
-            result.attributions.add(destAb);
+            result.alternatives.add(destAb);
         }
         return result;
     }
@@ -372,7 +371,6 @@ public class State implements Compare {
         int i;
         int max;
         Attribute attr;
-        Merger merger;
 
         max = ab.getArgCount();
         for (i = 0; i < max; i++) {
@@ -392,9 +390,9 @@ public class State implements Compare {
         int i;
         int max;
 
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            getSequence((Alternative) attributions.get(i), seq, nextAttrs, nextOfss, nextSeqs, cb);
+            getSequence(alternatives.get(i), seq, nextAttrs, nextOfss, nextSeqs, cb);
         }
     }
 
@@ -426,7 +424,7 @@ public class State implements Compare {
     public void addBlind(int i, Attribute attr, int ofs) {
         Alternative ab;
 
-        ab = (Alternative) attributions.get(i);
+        ab = (Alternative) alternatives.get(i);
         ab.add(ofs, attr);
     }
 
@@ -442,11 +440,11 @@ public class State implements Compare {
 
         oldMin = minOcc;
         oldMax = maxOcc;
-        max = attributions.size();
-        minOcc = calcOcc((Alternative) attributions.get(0), false, cb);
-        maxOcc = calcOcc((Alternative) attributions.get(0), true, cb);
+        max = alternatives.size();
+        minOcc = calcOcc((Alternative) alternatives.get(0), false, cb);
+        maxOcc = calcOcc((Alternative) alternatives.get(0), true, cb);
         for (i = 1; i < max; i++) {
-            ab = (Alternative) attributions.get(i);
+            ab = (Alternative) alternatives.get(i);
             minOcc = Math.min(calcOcc(ab, false, cb), minOcc);
             maxOcc = Math.max(calcOcc(ab, true, cb), maxOcc);
         }
@@ -492,9 +490,9 @@ public class State implements Compare {
         Alternative ab;
 
         buf = new StringBuilder();
-        max = attributions.size();
+        max = alternatives.size();
         for (i = 0; i < max; i++) {
-            ab = (Alternative) attributions.get(i);
+            ab = (Alternative) alternatives.get(i);
             buf.append("  ");
             if (raw) {
                 buf.append(ab.toRawString());
