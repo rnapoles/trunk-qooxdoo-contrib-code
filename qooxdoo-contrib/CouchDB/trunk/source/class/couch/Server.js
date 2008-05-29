@@ -1,5 +1,19 @@
+/**
+
+  This models a CouchDB server.
+
+**/
 qx.Class.define("couch.Server",{
 extend: couch.Abstract,
+
+/**
+
+  vPath {String} the path of the server
+  vUsername {String} optional username for http-authentification
+  vPassword {String} optional password for http-authentification
+  vTimeout {Integer ? 5000} optional timeout in miliseconds. 
+
+**/
 
 /////////////////////////////////////////////////////////////
 construct:function( vPath, vUsername, vPassword, vTimeout ){
@@ -47,7 +61,10 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
 },members:{
 ///////////
 
-  /** create or use a database */
+  /** create or use a database 
+    
+    @param vName {String} The name of the database
+  */
   database:function( vName ){
     return new couch.Database( vName, this );
   },
@@ -57,12 +74,14 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
     return this._getDatabases();
   },
 
-  /** refresh all info */
-  replay:function(){
+  _replay:function(){
     this.getSet('_databases', '_all_dbs');
   },
 
-  /** construct an url on this server */
+  /** construct an url on this server 
+  
+    @param vUrl {String} the local part of the url
+  */
   url:function( vUrl ){
     return( this._getUrl() + vUrl );
   },
@@ -72,13 +91,17 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
     return this;
   },
 
-  /** creates a restfull request instance */
-  createRequestObject:function( vMethod, vUrl, vResponseType ){
+  /** creates a restfull request instance 
+  
+    @param vMethod {GET | PUT | POST | DELETE} the request method
+    @param vUrl    {String} the local request url 
+    
+  */
+  createRequestObject:function( vMethod, vUrl ){
 
     if( qx.lang.String.startsWith( vUrl, '/' ) ) vUrl = vUrl.substr(1);
-    if( !vResponseType ) vResponseType = qx.util.Mime.JSON;
 
-    var req = new couch.Request( vUrl, vMethod, vResponseType );
+    var req = new couch.Request( vUrl, vMethod, qx.util.Mime.JSON );
     req.set({
       timeout:  this.getTimeout(),
       username: this.getUsername(),

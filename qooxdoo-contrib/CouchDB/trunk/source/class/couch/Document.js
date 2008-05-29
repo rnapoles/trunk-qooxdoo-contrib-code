@@ -1,5 +1,17 @@
+/**
+
+  This models a CouchDB document.
+
+**/
 qx.Class.define("couch.Document",{
 extend: couch.Abstract,
+
+/**
+
+  @param vId {String} optional document-id
+  @param vDatabase {Couch.Database} associated database to use instead of default
+  
+**/
 
 //////////////////////////////////////
 construct:function( vId, vDatabase ){
@@ -28,15 +40,30 @@ construct:function( vId, vDatabase ){
 },members:{
 ///////////
 
+  /** set a key in this document 
+    @param k {String} name of key
+    @param v {Object} value of key
+  */
+  
   setKey:function( k, v ){
     var d = this.getData();
     d[k] = v;
     this._setStatus('changed');
   },
+  
+  
+  /** get all data as a map.
+    @returns {Map}
+  **/
 
   getData:function(){
     return this._getData();
   },
+  
+  
+  /** set all data at once.
+    @param vData {Map} map of data
+  */
 
   setData:function( vData ){
     if( this._getDocId()  ) vData._id = this._getDocId();
@@ -44,15 +71,27 @@ construct:function( vId, vDatabase ){
     this._setData( vData );
     this._setStatus('changed');
   },
-
+  
+  /** get a specific key.
+    @param k {String} name of the key 
+    @returns {Object}
+  **/
   getKey:function( k ){
     var d = this.getData();
     return d[k];
   },
+  
+  /** get the document-id.
+    @param {String} 
+  **/
 
   getDocId:function(){
     return this._getDocId();
   },
+  
+  /** get the current revision.
+    @returns {String} 
+  **/
 
   getRevision:function(){
     return this._getRev();
@@ -74,10 +113,12 @@ construct:function( vId, vDatabase ){
     if( rev ) this.setKey( '_rev', rev );
   },
 
-  replay:function(){
+  _replay:function(){
     this.getSet('_data', this._getDocId(), {} );
   },
-
+  
+  
+  /** remove this document from the server */
   remove:function(){
     if( this._getDocId() && this._getRev() ){
       req = this.deleteRequest(this._getDocId() + '?rev=' + this._getRev());
@@ -88,6 +129,7 @@ construct:function( vId, vDatabase ){
     } else return false;
   },
 
+  /** remove this document from the server, even if it was updated in the mean time */
   forceRemove:function(){
     this.remove();
     this.once('conflict',function(){
@@ -102,6 +144,8 @@ construct:function( vId, vDatabase ){
     if( d.id  ) this._setDocId( d.id );
     if( d.rev ) this._setRev( d.rev );
   },
+  
+  /** save this document on the server */
 
   save:function(){
     if( !this._getDocId() ) var req = this.postRequest('', this.getData());
@@ -110,6 +154,8 @@ construct:function( vId, vDatabase ){
     req.proxyTo(this);
     req.send();
   },
+  
+  /** save this document on the server, even if it was updated in the mean time */
 
   forceSave:function(){
     this.save();
@@ -122,15 +168,30 @@ construct:function( vId, vDatabase ){
       });
     });
   },
+  
+  /** get the associated server 
+    @returns {couch.Server}
+  **/
 
   getServer:function(){
     return this.getDatabase().getServer();
   },
+  
+  /** get the associated database.
+    @returns {couch.Database} 
+  **/
 
   getDatabase:function(){
     if( !this._getDatabase() ) return couch.Default.database();
     else return this._getDatabase();
   },
+  
+  /** construct an url for the database that contains this document.
+    @param vUrl {String} local url 
+    @returns {String} a fully qualified url
+  **/
+   
+  
 
   url:function( vUrl ){
     return this.getDatabase().url( vUrl );
