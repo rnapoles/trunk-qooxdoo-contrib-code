@@ -75,7 +75,7 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
   },
 
   _replay:function(){
-    this.getSet('_databases', '_all_dbs');
+    this._getSet('_databases', '_all_dbs');
   },
 
   /** construct an url on this server 

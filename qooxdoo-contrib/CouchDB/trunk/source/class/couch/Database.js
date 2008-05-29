@@ -96,7 +96,7 @@ This name does not contain the '_design' prefix.
   },
 
   _replay:function(){
-    this.getSet('_info','');
+    this._getSet('_info','');
   },
   
 /** create this database on the configured server. */  
