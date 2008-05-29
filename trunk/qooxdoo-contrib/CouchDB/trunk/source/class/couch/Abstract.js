@@ -135,7 +135,6 @@ construct:function(){
   
   */
 
-  /**  */
   whenever:function( vStatus, vFunc, vTarget ){
     var vTarget = vTarget ? vTarget : this;
     this.addEventListener('changeStatus', function(){
@@ -155,10 +154,15 @@ construct:function(){
     return this._getStatus();
   },
 
-  /** create a get request */  
-  getRequest:function( vUrl, nParams, jParams, vResponseType ){  
-    var req = this.createRequest( 'GET', vUrl, vResponseType );
-    req.setParams( nParams, jParams );            
+  /** create a get request 
+    @param vUrl {String} local url
+    @param nParams {Map} parameters that should be escaped normally
+    @param jParams {Map} paremeters that should be escaped as JSON  
+    @returns {couch.Request}
+  */  
+  getRequest:function( vUrl, nParams, jParams ){  
+    var req = this.createRequest( 'GET', vUrl );
+    req.setParams( nParams, jParams );           
     return req;    
   },  
   
@@ -185,6 +189,7 @@ construct:function(){
   /** create a post request. 
     @param vUrl {String} local url
     @param vData {Map} the data to send with the request
+    @returns {couch.Request}
   **/
   postRequest:function( vUrl, vData ){  
     var req = this.createRequest( 'POST', vUrl );
@@ -195,6 +200,7 @@ construct:function(){
   /** create a put request.
     @param vUrl {String} local url
     @param vData {Map} the data to send with the request
+    @returns {couch.Request}
   **/
   putRequest:function( vUrl, vData ){  
     var req = this.createRequest( 'PUT', vUrl );
@@ -204,6 +210,7 @@ construct:function(){
   
   /** create a delete request.
       @param vUrl {String} local url
+      @returns {couch.Request}
   **/
   deleteRequest:function( vUrl ){  
     var req = this.createRequest( 'DELETE', vUrl );      
@@ -211,8 +218,9 @@ construct:function(){
   },
   
   /** create a request object.
+    @param vMethod {GET|PUT|POST|DELETE} http-method of request
     @param vUrl {String} local url
-
+    @returns {couch.Request}
   **/
   createRequest:function( vMethod, vUrl ){
     var req  = this.getServer().createRequestObject( vMethod, this.url( vUrl ) );         

@@ -42,6 +42,10 @@ construct:function( vUrl, vMethod, vResponseType ){
     this.createDispatchDataEvent( eventName, e.getContent() );
   },
   
+
+  /** proxy all events to some other object
+   @param vTarget {qx.core.Target} the event-target that should receive the events   
+  **/
   proxyTo:function( vTarget ){
     // setting up proxy events
     var re = couch.Request.REQUEST_EVENTS;
@@ -52,13 +56,27 @@ construct:function( vUrl, vMethod, vResponseType ){
     }, this );
   },
   
+  /** setup a request parameters that should be encoded as JSON 
+    @param k {String} key of the parameter
+    @param v {Object} json limited datastructure (no fuctions, no dates)
+  **/
+  
   jsonParameter:function( k, v ){
     this.setParameter( k, couch.Request.toJSON( v ) )
   },
   
+  /** setup the associated data for a put or post request encoded as JSON
+   @param vData {Object} json limited datastructure (no fuctions, no dates)
+  **/
+  
   jsonData:function( vData ){
     this.setData( couch.Request.toJSON( vData ) );
   },
+  
+  /** setup all parameters at once 
+    @param vNormal {Map} parameters that should be encoded normally
+    @param vJson   {Map} parameters that should be encoded as JSON
+  **/
   
   setParams:function( vNormal, vJson ){
     if( !vNormal ) vNormal = {};
@@ -67,6 +85,11 @@ construct:function( vUrl, vMethod, vResponseType ){
     for( k in vJson   ) this.jsonParameter( k, vJson[k] );    
   },
   
+  /** setup an event-listener, the lite version
+    @param vEvent {String} name of the event
+    @param vFunc  {Function} function that gets either the content of the response or associated data.
+    @param vTarget {Object} target of execution
+  **/
   when:function( vEvent, vFunc, vTarget ){
     this.addEventListener(vEvent, function( e ){    
       if( e instanceof qx.io.remote.Response )      

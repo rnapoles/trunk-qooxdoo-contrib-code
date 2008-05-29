@@ -1,6 +1,16 @@
 /**
 
-  This models a CouchDB server.
+  This models a CouchDB server. 
+  
+  Typical usage:
+<pre>
+  var myServer = new couch.Server('path/to/my/couch/proxy');
+  var myDatabase = myServer.database('myDatabase');
+  myDatabase.create(); 
+</pre>  
+
+  If you only use one database instance on one server, you likely prefer to use couch.Default.
+  
 
 **/
 qx.Class.define("couch.Server",{
@@ -8,10 +18,10 @@ extend: couch.Abstract,
 
 /**
 
-  vPath {String} the path of the server
-  vUsername {String} optional username for http-authentification
-  vPassword {String} optional password for http-authentification
-  vTimeout {Integer ? 5000} optional timeout in miliseconds. 
+  @param vPath {String} the path of the server
+  @param vUsername {String} optional username for http-authentification
+  @param vPassword {String} optional password for http-authentification
+  @param vTimeout {Integer ? 5000} optional timeout in miliseconds. 
 
 **/
 
@@ -64,12 +74,16 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
   /** create or use a database 
     
     @param vName {String} The name of the database
+    @returns {couch.Database}
+    
   */
   database:function( vName ){
     return new couch.Database( vName, this );
   },
 
-  /** retrieve all databases */
+  /** retrieve all databases 
+    @returns {Array} an array of strings corresponding to the names of available databases
+  */
   getDatabases:function(){
     return this._getDatabases();
   },
@@ -81,12 +95,16 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
   /** construct an url on this server 
   
     @param vUrl {String} the local part of the url
+    @returns {String} a fully qualified url
+    
   */
   url:function( vUrl ){
     return( this._getUrl() + vUrl );
   },
 
-  /** get the associated server. Just return itself */
+  /** get the associated server (just returns itself).
+    @return {couch.Server} this server instance
+  */
   getServer:function(){
     return this;
   },
@@ -95,6 +113,7 @@ construct:function( vPath, vUsername, vPassword, vTimeout ){
   
     @param vMethod {GET | PUT | POST | DELETE} the request method
     @param vUrl    {String} the local request url 
+    @returns {couch.Request}
     
   */
   createRequestObject:function( vMethod, vUrl ){
