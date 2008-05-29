@@ -114,7 +114,7 @@ construct:function( vId, vDatabase ){
   },
 
   _replay:function(){
-    this.getSet('_data', this._getDocId(), {} );
+    this._getSet('_data', this._getDocId(), {} );
   },
   
   
