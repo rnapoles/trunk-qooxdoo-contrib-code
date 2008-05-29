@@ -82,9 +82,8 @@ construct:function( vId, vDatabase ){
   },
   
   /** get the document-id.
-    @param {String} 
+    @returns {String} 
   **/
-
   getDocId:function(){
     return this._getDocId();
   },
@@ -92,7 +91,6 @@ construct:function( vId, vDatabase ){
   /** get the current revision.
     @returns {String} 
   **/
-
   getRevision:function(){
     return this._getRev();
   },
