@@ -205,9 +205,6 @@ public class Main {
     // all packages should use configurable PrintWriters
     private void printInternalError(String[] args, Throwable e) {
         System.err.println("Internal error. ");
-        System.err.print("Please visit http://sourceforge.net/projects/mork and ");
-        System.err.println("report the problem (Bugs -> Create New).");
-        System.err.println("Include the following information:");
         printSystemProperty("os.name");
         printSystemProperty("os.version");
         printSystemProperty("java.version");

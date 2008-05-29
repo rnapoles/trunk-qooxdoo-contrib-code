@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.qooxdoo.sushi.util.IntArrayList;
-
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.mapping.Transport;
+import org.qooxdoo.sushi.reflect.Function;
+import org.qooxdoo.sushi.reflect.Identity;
+import org.qooxdoo.sushi.util.IntArrayList;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.
@@ -38,7 +39,7 @@ public class State implements Compare {
     /** inv: seed or size() > 0.  Productions are sorted! */
     private List attributions;
 
-    // TODO: public
+    // TODO: private
     public int minOcc;
     public int maxOcc;
 
@@ -156,7 +157,8 @@ public class State implements Compare {
     }
 
     //---------------------------------------------------------------------------
-
+    private static final Function TMP_FUNCTION = new Identity("tmp", Object.class);
+    
     public void createSemanticsBuffer(Ag sems, Transport transport) {
         int i;
         int max;
@@ -170,7 +172,7 @@ public class State implements Compare {
         max = attributions.size();
         for (i = 0; i < max; i++) {
             old = (Alternative) attributions.get(i);
-            replacement = new AttributionBuffer(old.production, null,
+            replacement = new AttributionBuffer(old.production, TMP_FUNCTION,
                                         new AttributeOccurrence(transportAttribute, old.resultOfs));
             maxJ = old.getArgCount();
             args = new ArrayList();  // TODO: improve getTransportFn

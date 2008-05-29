@@ -19,13 +19,15 @@
 
 package org.qooxdoo.sushi.semantics;
 
-import org.qooxdoo.sushi.grammar.Grammar;
-import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.misc.StringArrayList;
-import org.qooxdoo.sushi.util.Util;
 import java.util.ArrayList;
 import java.util.List;
+
 import junit.framework.TestCase;
+
+import org.qooxdoo.sushi.grammar.Grammar;
+import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.reflect.Identity;
+import org.qooxdoo.sushi.util.Util;
 
 public class OagTest extends TestCase {
     public void testSimple() throws GenericException {
@@ -53,22 +55,6 @@ public class OagTest extends TestCase {
         visits = OagBuilder.run(sems, null, true);
         for (i = 0; i < visits.length; i++) {
             System.out.println(" " + i + "\t" + visits[i]);
-        }
-    }
-
-    private static void print(StringArrayList symbolTable, List[] as) {
-        int i;
-        int j;
-        int max;
-
-        for (i = 0; i < as.length; i++) {
-            System.out.print("\t\t" + i + ":");
-            max = as[i].size();
-            for (j = 0; j < max; j++) {
-                System.out.print(' ');
-                System.out.print(((Attribute) as[i].get(j)).name);
-            }
-            System.out.println();
         }
     }
 
@@ -171,8 +157,6 @@ public class OagTest extends TestCase {
         for (r = 0; r < rules.length; r++) {
             addCalls(sems, attrs, grm, r, allCalls[r]);
         }
-        System.out.println("grammar: " + grm);
-        System.out.println("ab: " + sems);
         return sems;
     }
 
@@ -182,7 +166,7 @@ public class OagTest extends TestCase {
         AttributionBuffer ab;
 
         for (i = 0; i < prodCalls.length; i++) {
-            ab = new AttributionBuffer(prod, null, getOccurrence(attrs, grm, prodCalls[i][0], prod));
+            ab = new AttributionBuffer(prod, new Identity("foo", Object.class), getOccurrence(attrs, grm, prodCalls[i][0], prod));
             for (j = 1; j < prodCalls[i].length; j++) {
                 ab.add(getOccurrence(attrs, grm, prodCalls[i][j], prod));
             }
