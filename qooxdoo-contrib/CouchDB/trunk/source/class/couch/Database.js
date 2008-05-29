@@ -2,6 +2,17 @@
 
   Models a CouchDB database.
   
+  Typical usage:  
+<pre>
+  
+  var myServer = new couch.Server('path/to/my/couch/proxy');
+  var myDatabase = myServer.database('myDatabase');
+  myDatabase.create();
+  myDatabase.once('available', function(){
+    alert('database created!');    
+  });
+
+  
 **/
 qx.Class.define("couch.Database",{
 extend: couch.Abstract,
@@ -79,9 +90,10 @@ The document does not yet have to exist.
   },
   
 /** get a new couch.Design instance given the name of the design. 
-This name does not contain the '_design' prefix.
+This name should not contain the '_design' prefix.
       
-  @param vId {String} Document-ID  
+  @param vName {String} Name of the design document without the _design prefix
+  @returns {couch.Design}
   
 **/  
 
@@ -89,7 +101,9 @@ This name does not contain the '_design' prefix.
     return new couch.Design( vName, this );
   },
   
-/** request info about the database. */
+/** request info about the database. 
+  @returns {Map} 
+**/
 
   getInfo:function(){
     return this._getInfo();
@@ -116,7 +130,10 @@ This name does not contain the '_design' prefix.
   },
   
 /** get the associated server instance. If not configured this will return the default
-server instance. */  
+server instance. 
+
+  @returns {couch.Server}
+*/  
 
   getServer:function(){
     var vServer = this._getServer();
@@ -137,6 +154,7 @@ server instance. */
 /** construct an url for this server
 
   @param vUrl {String} the local part of the url
+  @returns {String}
   
 **/  
   
@@ -146,7 +164,9 @@ server instance. */
     return this.getServer().url( this.getDatabaseName() + vUrl );
   },
   
-/** retrieve the name of the database. */  
+/** retrieve the name of the database. 
+  @returns {String}
+**/  
 
   getDatabaseName:function(){
     return this._getDatabaseName().toLowerCase();

@@ -1,6 +1,34 @@
 /**
 
   This models a CouchDB document.
+  When you instantiate this class, the data is _not_ automatically fetched.
+  You need to call 'refresh' first. 
+  
+  Typical usage of reading a document:
+<pre>  
+  var myServer = new couch.Server('path/to/my/couch/proxy');
+  var myDatabase = myServer.database('myDatabase');
+  var myDoc = myDatabase.document('myDocument');
+  myDoc.refresh();
+  myDoc.once('availabe', function(){
+   alert( myDoc.getKey('country') + " is the country!");
+  });
+</pre>
+
+  Typical usage of creating a document:
+<pre>
+  var myServer = new couch.Server('path/to/my/couch/proxy');
+  var myDatabase = myServer.database('myDatabase');
+  var myDoc = myDatabase.document('myDocument');
+  myDoc.setData({country: 'Netherlands', language: 'dutch'});
+  myDoc.save();
+  myDoc.once('available', function(){
+    alert('the document has been saved!');
+  });
+  myDoc.once('conflict',function(){
+    alert('the document could not be saved because it already exists');
+  });
+</pre>
 
 **/
 qx.Class.define("couch.Document",{
@@ -199,6 +227,10 @@ construct:function( vId, vDatabase ){
 },statics:{
 ///////////
 
+  /** cleans a javascript map from all keys starting with an underscore. 
+    @param vMap {Map} the map to clean
+    @returns {Map} a new map with only the keys not starting with an underscore
+  **/
   cleanMap:function( vMap ){
     var result = {}
     for( var k in vMap ){
