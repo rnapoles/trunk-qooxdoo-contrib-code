@@ -45,13 +45,13 @@ public class AttributionBuffer {
         addAll(orig.args);
     }
 
-    public AttributionBuffer(int production, Function function, AttributeOccurrence resultAttr) {
+    public AttributionBuffer(int production, Function function, AttributeOccurrence result) {
         if (function == null) {
             throw new IllegalArgumentException();
         }
         this.production = production;
         this.function = function;
-        this.result = resultAttr;
+        this.result = result;
         this.args = new ArrayList<AttributeOccurrence>();
     }
 
@@ -61,7 +61,7 @@ public class AttributionBuffer {
 
         max = args.size();
         for (i = 0; i < max; i++) {
-            if (attr.ofs < ((AttributeOccurrence) args.get(i)).ofs) {
+            if (attr.ofs < args.get(i).ofs) {
                 break;
             }
         }
@@ -72,12 +72,8 @@ public class AttributionBuffer {
      * @param args list of AttributeOccurrence objects
      */
     public void addAll(List<AttributeOccurrence> args) {
-        int i;
-        int max;
-
-        max = args.size();
-        for (i = 0; i < max; i++) {
-            add((AttributeOccurrence) args.get(i));
+        for (AttributeOccurrence arg : args) {
+            add(arg);
         }
     }
 

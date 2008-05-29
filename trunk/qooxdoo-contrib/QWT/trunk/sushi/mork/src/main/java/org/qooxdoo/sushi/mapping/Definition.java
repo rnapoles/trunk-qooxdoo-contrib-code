@@ -19,17 +19,18 @@
 
 package org.qooxdoo.sushi.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.reflect.Function;
 import org.qooxdoo.sushi.reflect.Selection;
+import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.AttributeOccurrence;
 import org.qooxdoo.sushi.semantics.AttributionBuffer;
-import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Definition of an attribute,
@@ -157,11 +158,10 @@ public class Definition {
 
     private static AttributionBuffer createAB(Attribute result, int prod, int ofs, Function fn, List<Attribute> argAttrs) {
         AttributionBuffer ab;
-        int i;
 
         ab = new AttributionBuffer(prod, fn, new AttributeOccurrence(result, ofs));
-        for (i = 0; i < argAttrs.size(); i++) {
-            ab.add(new AttributeOccurrence((Attribute) argAttrs.get(i), ofs));
+        for (Attribute a : argAttrs) {
+            ab.add(new AttributeOccurrence(a, ofs));
         }
         return ab;
     }
