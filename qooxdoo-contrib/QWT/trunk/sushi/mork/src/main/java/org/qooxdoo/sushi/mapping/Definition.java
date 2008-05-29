@@ -150,17 +150,17 @@ public class Definition {
             // synthesized attributes
             maxAlt = grammar.getAlternativeCount(attribute.symbol);
             for (alt = 0; alt < maxAlt; alt++) {
-                semantics.add(createAB(attribute, grammar.getAlternative(attribute.symbol, alt), -1,
-                                       fn, argAttrs));
+                semantics.add(createAB(attribute, grammar.getAlternative(attribute.symbol, alt), -1, fn, argAttrs));
             }
         }
     }
 
-    private static AttributionBuffer createAB(Attribute result, int prod, int ofs, Function fn, List<Attribute> argAttrs) {
+    private static AttributionBuffer createAB(Attribute result, int prod, int ofs, Function fn, List<Attribute> args) {
         AttributionBuffer ab;
 
+        // all occurrences have the same ofs!
         ab = new AttributionBuffer(prod, fn, new AttributeOccurrence(result, ofs));
-        for (Attribute a : argAttrs) {
+        for (Attribute a : args) {
             ab.add(new AttributeOccurrence(a, ofs));
         }
         return ab;
