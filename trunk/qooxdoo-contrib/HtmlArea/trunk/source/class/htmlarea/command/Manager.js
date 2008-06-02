@@ -1647,6 +1647,13 @@ qx.Class.define("htmlarea.command.Manager",
            * call _visualizeFocus to get the right feedback to the user (editor is active)
            */
           qx.ui.core.ClientDocument.getInstance().setActiveChild(this);
+          
+          /* Select range before focus body element */
+          var range = this.__commandManager.__commandManager.getCurrentRange();
+          if (range) {
+            range.select();
+          }
+
           this._visualizeFocus();
         }, this.__editorInstance, 50);
       },
