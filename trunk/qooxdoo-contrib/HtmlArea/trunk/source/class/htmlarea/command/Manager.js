@@ -1341,6 +1341,11 @@ qx.Class.define("htmlarea.command.Manager",
          /* Body element must have focus before executing command */
          this.__doc.body.focus();
 
+         /* Select range if it exists */
+         if (this.__currentRange) {
+           this.__currentRange.select();
+         }
+
          this.__doc.execCommand("BackColor", false, value);
 
          /* Focus the editor */
