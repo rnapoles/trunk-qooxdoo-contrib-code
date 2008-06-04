@@ -576,11 +576,8 @@ qx.Class.define("htmlarea.command.Manager",
         
         //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
       }
-      else
-      {
-        /* We do net need to pollute the generated HTML with IDs */
-        spanNode.removeAttribute("id");
-      }
+      /* We do net need to pollute the generated HTML with IDs */
+      spanNode.removeAttribute("id");
 
       return true;
     },
