@@ -30,6 +30,13 @@
 qx.Class.define("htmlarea.HtmlArea",
 {
   extend : qx.ui.embed.Iframe,
+  
+  /*
+   * IMPORTANT NOTE
+   * If you add functionality which manipulates the content of the HtmlArea
+   * AND you want make these changes undo-/redo-able you have to make sure
+   * to implement methods in the "Manager" and "UndoManager" classes. 
+   */
 
   /*
   *****************************************************************************
@@ -557,27 +564,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /** private field which holds the content of the editor  */
     __value        : "",
-
-
-    /**
-     * replaces some content
-     * 
-     * @param search {Object} can be a string or regexp
-     * @param replace {String} content which should be set
-     * @return {Boolean}
-     */
-    replaceContent : function (search, replace)
-    {
-      if (this.__isReady)
-      {
-        var body = this.getContentBody();
-        body.innerHTML = body.innerHTML.replace(search, replace);
-
-        return true;
-      }
-
-      return false;
-    },
 
 
     /**
