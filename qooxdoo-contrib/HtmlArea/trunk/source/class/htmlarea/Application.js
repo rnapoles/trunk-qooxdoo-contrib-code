@@ -147,6 +147,9 @@ qx.Class.define("htmlarea.Application",
         italic :              { image : "htmlarea/image/text_italic.gif", action : htmlArea.setItalic },
         underline :           { image : "htmlarea/image/text_underline.gif", action : htmlArea.setUnderline },
         strikethrough :       { image : "htmlarea/image/text_strikethrough.gif", action : htmlArea.setStrikeThrough },
+
+        indet :               { image : "htmlarea/image/indent.gif", action : htmlArea.insertIndent },
+        outdent :             { image : "htmlarea/image/outdent.gif", action : htmlArea.insertOutdent },
         
         alignLeft :           { image : "htmlarea/image/align_left.gif", action : htmlArea.setJustifyLeft },
         alignCenter :         { image : "htmlarea/image/align_center.gif", action : htmlArea.setJustifyCenter },
