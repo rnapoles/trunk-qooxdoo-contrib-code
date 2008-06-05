@@ -12,9 +12,15 @@ build and deployment process. Additionally, qxtransformer lets you
 concentrate on UI structure description and allows you to switch 
 to a new version of a qooxdoo API with a minimum of code-changes.
 
-This is a mirror of the qxtransformer SVN located at 
+The qxtransformer SVN is located at 
 
 https://www.qxtransformer.org/svn/qxtransformer/ (note the "s" in https)
+
+You may want to create a local "SVN external" pointing to this repository, 
+if you want to work with the qxtransformer code from within your 
+regular qooxdoo-contrib checkout: 
+text property "svn:externals" on directory QxTransformer/ with value 
+"qxtransformer https://www.qxtransformer.org/svn/qxtransformer/"
 
 You can file bug reports in our trac ticket system:
 
@@ -28,7 +34,3 @@ attach them to a bug report in the trac.
 Please visit the qxtransformer homepage for more information:
 
 http://www.qxtransformer.org
-
-
-
-
