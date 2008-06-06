@@ -106,21 +106,21 @@ selenium-server-ext:
 	)
 
 selenium-server-start:
-	(cd $(SELENIUM_BUILD_DIR); java -jar selenium-server.jar -interactive)
+	(cd $(SELENIUM_BUILD_DIR); $(JAVA) -jar selenium-server.jar -interactive)
 
 selenium-rhino-shell:
 	(export CLASSPATH=$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar; \
-	java org.mozilla.javascript.tools.shell.Main \
+	$(JAVA) org.mozilla.javascript.tools.shell.Main \
 	)
 
 run-simulation-showcase:
 	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
-	java org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/showcase/test_showcase.js \
+	$(JAVA) org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/showcase/test_showcase.js \
 	)
 
 run-simulation-custom:
 	(export CLASSPATH="$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar"; \
-	java org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/custom/simulation.js -keepBrowser \
+	$(JAVA) org.mozilla.javascript.tools.shell.Main ./tool/selenium/simulation/custom/simulation.js -keepBrowser \
 	)
 
 	
