@@ -50,6 +50,7 @@ importClass(Packages.com.thoughtworks.selenium.QxSelenium);
 var selServer   = "localhost";
 var selPort     = 4444;
 var testBrowser = "*firefox";
+//var testBrowser = "*iexplore";
 var autHost = "http://demo.qooxdoo.org";
 //var autHost = "http://localhost";
 var autPath = "/0.7.2/showcase/index.html";
