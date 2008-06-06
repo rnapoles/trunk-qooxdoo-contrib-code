@@ -298,7 +298,7 @@ Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventP
   else if (document.createEventObject)
   {
     LOG.debug("triggerMouseEventQx: IE-path");
-    evt = document.createEventObject();
+    evt = element.ownerDocument.createEventObject();
 
     evt.detail = detail;
     evt.screenX = screenX;
