@@ -25,10 +25,94 @@ class qcl_db_model extends qcl_jsonrpc_model
   // instance variables
   //-------------------------------------------------------------
   
-	var $currentRecord;                   // the current record
-	var $emptyRecord = array();           // you can pre-insert static values here
-	var $metaColumns = array();           // assoc. array containing the metadata fields  => columns
-  var $metaFields  = array();           // assoc. array containing the metadata columns => fields
+  /**
+   * the datasource object instance
+   * @var qcl_db_pear 
+   */
+  var $db;
+  
+  /**
+   * the name of the table in the database that holds the
+   * data of this model
+   * @var string
+   */
+  var $table;
+  
+  /**
+   * the current record cached 
+   * @var array
+   */
+	var $currentRecord;
+	
+	/**
+	 * a blueprint of an newly initialized record. 
+	 * you can pre-insert static values here
+	 * @var array
+	 */
+	var $emptyRecord = array();           
+	
+	/**
+	 * a map containing the aliases for property names in 
+	 * table columns used by the model
+	 * @var array
+	 */
+	var $aliasMap = array();
+	
+	/**
+	 * the datasource model object, if any
+	 * @var qcl_datasource_model
+	 */
+	var $datasourceModel = null;
+
+	/**
+	 * the datasource name or other information identifying the datasource
+	 * @var string
+	 */
+	var $datasource;
+	
+	/**
+	 * the name of the model
+	 * @var string
+	 */
+	var $name;
+	
+	/**
+	 * the type of the model, if the model implements a generic 
+	 * type in a specific way
+	 *
+	 * @var string
+	 */
+	var $type;
+	
+	/**
+	 * the class name of the model. Written in a language 
+	 * independent way such as namespace.package.ClassName
+	 *
+	 * @var string
+	 */
+	var $class;
+	
+  //-------------------------------------------------------------
+  // deprecated properties
+  //-------------------------------------------------------------
+	
+	/**
+	 * an map containing the names of the properties
+	 * as keys and of the columns as values. do not use this,
+   * as it will be removed.
+   * @deprecated
+	 * @var array
+	 */
+	var $metaColumns = array();
+
+	/**
+	 * a map containing the names of the columns as keys
+	 * and properties as values. do not use this,
+   * as it will be removed.
+   * @deprecated
+   * @var array
+	 */
+  var $metaFields  = array();
   
 	//-------------------------------------------------------------
   // internal methods
@@ -50,7 +134,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	}
      	
 	//-------------------------------------------------------------
-  // constructor methods
+  // initialization
 	//-------------------------------------------------------------   
 
   /**
@@ -88,9 +172,20 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function _init($dsn=null)
 	{
-    $this->db =& qcl_db::getSubclass(&$this->controller,$dsn);
-    $this->db->model =& $this;
+    require_once("qcl/db/pear.php"); 
+	  $db =& new qcl_db_pear(&$this->controller,$dsn);
+    if ( $db->error )
+    {
+      $this->raiseError($db->error);
+    }
+    $this->db =& $db;
+    $this->db->model =& $this;  
 	}
+
+  //-------------------------------------------------------------
+  // controller
+  //-------------------------------------------------------------   
+	
 	
  	/**
  	 * sets controller of this model and passes it to linked database object
@@ -106,7 +201,12 @@ class qcl_db_model extends qcl_jsonrpc_model
  			$this->db->setController(&$controller);	
  		} 
  	}
- 
+
+  //-------------------------------------------------------------
+  // Data Model Introspection
+  //-------------------------------------------------------------   
+ 	
+ 	
   /**
    * checks if model has a corresponding column in the table (normatively,
    * doesn't check whether the column really exists)
@@ -144,7 +244,54 @@ class qcl_db_model extends qcl_jsonrpc_model
   {
     return $this->foreignKey;
   }
- 	
+  
+ /**
+   * gets the column name from a normalized field name
+   * @return string
+   * @param string $fieldName
+   */
+  function getColumnName ( $fieldName )
+  {
+    return $this->metaColumns[$fieldName];
+  }
+
+  /**
+   * gets the (normalized) field name from a column name
+   * @return string Field Name
+   * @param string $columnName
+   */
+  function getFieldName ( $columnName )
+  {
+    return $this->metaFields[$columnName];
+  }  
+
+  //-------------------------------------------------------------
+  // Generic Data Model API
+  //-------------------------------------------------------------   
+
+  /**
+   * Get a property. By default, properties are "fields". This can be overridden as necessary
+   * @param string       $name Property name
+   * @param int|string   $id Optional - set property for id, otherwise operate on cached record
+   * @return mixed value of property
+   */
+  function getProperty( $name, $id = null )
+  {
+    return $this->getFieldValue( $name, $id );
+  }
+
+  /**
+   * Set a property. By default, properties are "fields". This can be overridden as necessary
+   * @return void 
+   * @param string     $name
+   * @param mixed      $value 
+   * @param int|string $id Optional - set property for id, otherwise operate on cached record
+   */
+  function setProperty( $name, $value, $id = null )
+  {
+    $this->setFieldValue( $name, $value, $id);
+  }  
+    
   /**
    * gets all database records optionally sorted by field
    * @param string|null 		$orderBy 	(optional) order by field
@@ -207,7 +354,6 @@ class qcl_db_model extends qcl_jsonrpc_model
  	    return $this->getRecordsWhere( "`{$this->key_id}` IN ($rowIds)", $orderBy, $fields );
  	  }  
  	}
- 	
  	
  	/**
    * gets values of database columns that match a where condition
@@ -442,25 +588,93 @@ class qcl_db_model extends qcl_jsonrpc_model
  	}   
 
   /**
-   * gets the column name from a normalized field name
-   * @return string
-   * @param string $fieldName
+   * inserts a record into a table and returns last_insert_id()
+   * @return int the id of the inserted row 
    */
-  function getColumnName ( $fieldName )
+  function create()
   {
-    return $this->metaColumns[$fieldName];
+    $data = $this->emptyRecord;
+    $data[$this->key_id]=null; // so at least one field is set
+    $id = $this->insert( $data );
+    
+    $this->currentRecord = $this->getById($id);
+    return $id;
   }
 
   /**
-   * gets the (normalized) field name from a column name
-   * @return string Field Name
-   * @param string $columnName
+   * inserts a record into a table and returns last_insert_id()
+   * @param array $data associative array with the column names as keys and the column data as values
+   * @return int the id of the inserted row 
    */
-  function getFieldName ( $columnName )
+  function insert( $data )
   {
-    return $this->metaFields[$columnName];
+    // created timestamp
+    if ( $this->key_created and ! isset ( $data[$this->key_created] ) )
+    {
+      $data[$this->key_created] = strftime("%Y-%m-%d %T");
+    }
+    
+    // modified timestamp
+    if ( $this->key_modified and ! isset ( $data[$this->key_created] )  )
+    {
+      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
+    } 
+    
+    return $this->db->insert( $this->table,$data );
   }
 
+  /**
+   * updates a record in a table identified by id
+   * @param array       $data   associative array with the column names as keys and the column data as values
+   * @param int|string  $id   if the id key is not provided in the $data paramenter, provide it here (optional)
+   * @return boolean success 
+   */
+  function update ( $data=null, $id=null )    
+  {
+    // use cached record data
+    if ($data === null)
+    {
+      $data = $this->currentRecord;
+    }
+    else
+    {
+      if ( $id !== null )
+      {
+        $data[$this->key_id] = $id;
+      }
+    }
+    
+    // set modified timestamp if the timestamp is not part of the data
+    if ( $this->key_modified && empty( $data[$this->key_modified] ) )
+    {
+      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
+    }    
+    
+    return $this->db->update( $this->table, $data, $this->key_id );
+  }     
+  
+  /**
+   * deletes one or more records in a table identified by id
+   * @param mixed $ids (array of) record id(s)
+   */
+  function delete ( $ids )
+  {
+    $this->db->delete ( $this->table, $ids, $this->key_id );
+  } 
+  
+  /**
+   * deletes one or more records in a table matching a where condition
+   * @param string  $where where condition
+   */
+  function deleteWhere ( $where )
+  {
+    $this->db->deleteWhere ( $this->table, $where );
+  }  	
+ 	
+  //-------------------------------------------------------------
+  // SQL-Database specific methods
+  //-------------------------------------------------------------   
+ 	
 	/**
 	 * gets the value of a column in a record without field->column translation 
 	 * @param string	     $column 	
@@ -554,17 +768,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 		return $this->getColumnValue($columnName,$id);
 	}
 
-  /**
-   * Get a property. By default, properties are "fields". This can be overridden as necessary
-   * @param string       $name Property name
-   * @param int|string   $id Optional - set property for id, otherwise operate on cached record
-   * @return mixed value of property
-   */
-  function getProperty( $name, $id = null )
-  {
-    return $this->getFieldValue( $name, $id );
-  }
 
+  
 	/**
 	 * translates field names to column names and sets value of field in current record
 	 * @param string	   $field			field name to translate
@@ -582,18 +787,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 		}
 		$this->setColumnValue( $columnName, $value, $id );
 	}
-  
-  /**
-   * Set a property. By default, properties are "fields". This can be overridden as necessary
-   * @return void 
-   * @param string     $name
-   * @param mixed      $value 
-   * @param int|string $id Optional - set property for id, otherwise operate on cached record
-   */
-  function setProperty( $name, $value, $id = null )
-  {
-    $this->setFieldValue( $name, $value, $id);
-  }
+
 
 	/**
 	 * translates column to field names
@@ -718,110 +912,66 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->setOptions( $options, $id );
   }
 
+  /**
+   * Returns a hash map of ids the modification timestamp
+   * @return array
+   */
+  function getModificationList()
+  {
+    if ( ! $this->key_modified )
+    {
+      $this->raiseError("Table {$this->table} has no timestamp column");
+    }
+    
+    $rows = $this->db->getAllRecords("
+      SELECT 
+        {$this->key_id}       AS id,
+        {$this->key_modified} AS timestamp
+      FROM {$this->table}
+    ") ;  
+    $map = array();
+    foreach ($rows as $row)
+    {
+      $map[$row['id']] = $row['timestamp'];
+    }
+    return $map;
+  }
+  
+  /**
+   * updates the modification date without changing the data
+   * @param int|array $ids One or more record ids
+   * @return void
+   */
+  function updateTimestamp( $ids )
+  {
+    if (! is_numeric($ids) and ! is_array($ids)  )
+    {
+      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
+    }
+    
+    $ids = implode(",", (array) $ids);
+    $this->db->execute(" 
+      UPDATE `{$this->table}` 
+      SET `{$this->key_modified}` = NOW()
+      WHERE `{$this->key_id}` IN ($ids)
+    ");
+  }
+  
+  /**
+   * gets the current timestamp from the database
+   * @return string
+   */
+  function getTimestamp()
+  {
+    return $this->db->getValue("SELECT NOW()");
+  }
+    
+  
 	//-------------------------------------------------------------
-  // standard creat/insert/update/delete methods
+  // SQL Table Maintenance AP
   //-------------------------------------------------------------
 
-	/**
-	 * inserts a record into a table and returns last_insert_id()
-	 * @return int the id of the inserted row 
-	 */
-	function create()
- 	{
-    $data = $this->emptyRecord;
- 		$data[$this->key_id]=null; // so at least one field is set
-    $id = $this->insert( $data );
- 		
-    $this->currentRecord = $this->getById($id);
- 		return $id;
- 	}
 
-	/**
-	 * inserts a record into a table and returns last_insert_id()
-	 * @param array $data associative array with the column names as keys and the column data as values
-	 * @return int the id of the inserted row 
-	 */
-	function insert( $data )
- 	{
-    // created timestamp
-    if ( $this->key_created and ! isset ( $data[$this->key_created] ) )
-    {
-      $data[$this->key_created] = strftime("%Y-%m-%d %T");
-    }
-    
-    // modified timestamp
-    if ( $this->key_modified and ! isset ( $data[$this->key_created] )  )
-    {
-      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
-    } 
-    
-    return $this->db->insert( $this->table,$data );
- 	}
-
-	/**
-	 * updates a record in a table identified by id
-	 * @param array 	    $data 	associative array with the column names as keys and the column data as values
-	 * @param int|string	$id		if the id key is not provided in the $data paramenter, provide it here (optional)
-	 * @return boolean success 
-	 */
-	function update ( $data=null, $id=null )   	
-	{
-    // use cached record data
-    if ($data === null)
-		{
-			$data = $this->currentRecord;
-		}
-		else
-		{
-			if ( $id !== null )
-			{
-				$data[$this->key_id] = $id;
-			}
-		}
-    
-    // set modified timestamp if the timestamp is not part of the data
-    if ( $this->key_modified && empty( $data[$this->key_modified] ) )
-    {
-      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
-    }    
-    
-		return $this->db->update( $this->table, $data, $this->key_id );
-	}   	
-	
-	/**
-	 * deletes one or more records in a table identified by id
-	 * @param mixed $ids (array of) record id(s)
-	 */
-	function delete ( $ids )
-	{
-		$this->db->delete ( $this->table, $ids, $this->key_id );
-	} 
-	
-	/**
-	 * deletes one or more records in a table matching a where condition
-	 * @param string 	$where where condition
-	 */
-	function deleteWhere ( $where )
-	{
-		$this->db->deleteWhere ( $this->table, $where );
-	} 
-
-  function _getInitFlags ()
-  {
-    $init_flags   = "bibliograph_table_init";
-    if ( ! $this->_initFlags  )
-    {
-      $this->_initFlags = (array) $this->retrieve($init_flags);
-    }
-    return $this->_initFlags;
-  }
-
-  function _setInitFlags ($flags)
-  {
-    $init_flags   = "bibliograph_table_init";
-    $this->_initFlags = $flags;
-    $this->store($init_flags,$flags);
-  }
 
   /**
    * checks whether model table(s) have been initialized
@@ -830,11 +980,13 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function isInitialized ( $table=null )
   {
+    //$this->createXml($table);
     $flags = $this->_getInitFlags();
     $table = either ( $table, $this->table );
     return ( $flags[$table] == true );
-  }
+  }  
 
+  
   /**
    * sets the initialized state of model table(s) 
    * @return 
@@ -847,6 +999,23 @@ class qcl_db_model extends qcl_jsonrpc_model
     $table = either ( $table, $this->table );
     $flags[$table] = $value;
     $this->_setInitFlags($flags);    
+  }  
+  
+  function _setInitFlags ($flags)
+  {
+    $init_flags   = "bibliograph_table_init";
+    $this->_initFlags = $flags;
+    $this->store($init_flags,$flags);
+  }  
+  
+  function _getInitFlags ()
+  {
+    $init_flags   = "bibliograph_table_init";
+    if ( ! $this->_initFlags  )
+    {
+      $this->_initFlags = (array) $this->retrieve($init_flags);
+    }
+    return $this->_initFlags;
   }
 
   /**
@@ -900,6 +1069,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * create a table. override if necessary
+   * @deprecated
    */
   function createTable($table)
   {
@@ -917,6 +1087,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * adds initial values, using an sql file. To be overridden by table-specific methods
+   * @todo: intial values from xml and not from sql
    */
   function addInitialValues($table)
   {  
@@ -1026,7 +1197,8 @@ class qcl_db_model extends qcl_jsonrpc_model
    * the sql stored in the file system from the structure existing in the 
    * database, remove the file and $this->setInitialized($table,false).
    * @return boolen success
-   * @todo: remove AUTO-INCREMENT value
+   * @deprecated
+   * 
    */
   function saveTableStructureSql($table)
   {
@@ -1049,6 +1221,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * updates or creates table in database if it doesn't exist yet
    * @param string $table 
+   * @deprecated
    * @return 
    */
   function updateTableStructure($table)
@@ -1081,58 +1254,438 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
   
   /**
-   * Returns a hash map of ids the modification timestamp
-   * @return array
-   */
-  function getModificationList()
-  {
-    if ( ! $this->key_modified )
-    {
-      $this->raiseError("Table {$this->table} has no timestamp column");
-    }
-    
-    $rows = $this->db->getAllRecords("
-      SELECT 
-        {$this->key_id}       AS id,
-        {$this->key_modified} AS timestamp
-      FROM {$this->table}
-    ") ;  
-    $map = array();
-    foreach ($rows as $row)
-    {
-      $map[$row['id']] = $row['timestamp'];
-    }
-    return $map;
-  }
-  
-  /**
-   * updates the modification date without changing the data
-   * @param int|array $ids One or more record ids
+   * sets datasource information
+   * @param mixed $datasource Either the name of the datasource or an object reference to t
    * @return void
    */
-  function updateTimestamp( $ids )
+  function setDatasource($datasource)
   {
-    if (! is_numeric($ids) and ! is_array($ids)  )
+    if ( is_string($datasource) and trim($datasource))
     {
-      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
+      $this->datasource = $datasource;
     }
-    
-    $ids = implode(",", (array) $ids);
-    $this->db->execute(" 
-      UPDATE `{$this->table}` 
-      SET `{$this->key_modified}` = NOW()
-      WHERE `{$this->key_id}` IN ($ids)
-    ");
+    else
+    {
+      $this->raiseError("Invalid datasource '$datasource");
+    }
   }
   
   /**
-   * gets the current timestamp from the database
+   * returns datasource information
+   * the datasource object
+   * return string
+   */
+  function getDatasource()
+  {
+    if ( is_string($this->datasource) ) return $this->datasource;
+    if ( is_object ($this->datasourceModel) )
+    {
+      return $this->datasourceModel->getName();
+    }
+    $this->raiseError("Neither datasource name or model available");
+  }
+
+  /**
+   * stores the name or object reference of the datasource
+   * @param mixed $datasource Either the name of the datasource or an object reference to t
+   * the datasource object
+   * return void
+   */
+  function setDatasourceModel($datasource)
+  {
+    if ( is_object ($datasource) and is_a($datasource,"qcl_datasource_model") )
+    {
+      $this->datasourceModel =& $datasource;
+    }
+    else
+    {
+      $this->raiseError("Argument must be a qcl_datasource_model object");
+    }
+  }  
+  
+  /**
+   * retrieves the datasource object or name
+   * @return qcl_datasource_model or string 
+   */
+  function &getDatasourceModel()
+  {
+    return $this->datasourceModel;
+  }
+
+  /**
+   * initializes the model
+   * @param mixed $datasource Either the name of the datasource or an object reference to t
+   * the datasource object, or null if model is independend of a datasource
+   * @return void
+   */
+  function initialize($datasource=null)
+  {
+    /*
+     * set datasource
+     */
+    if ( is_string($datasource) )
+    {
+      //@todo: $this->setDatasource($datasource);
+      $this->datasource = $datasource;
+    }
+    elseif ( is_object($datasource) )
+    {
+      $this->setDatasourceModel($datasource);
+    }
+    
+    /*
+     * create or update tables
+     */
+    $this->xmlSchema =& $this->updateTablesFromXmlSchema();
+  }    
+  
+  /**
+   * returns the prefix for tables used by this 
+   * model. defaults to the datasource name plus underscore
+   * or an empty string if there is no datasource
    * @return string
    */
-  function getTimestamp()
+  function getTablePrefix()
   {
-  	return $this->db->getValue("SELECT NOW()");
+    $datasourceName = $this->datasource;
+    return $datasourceName ? 
+      ( $datasourceName . "_" ) : "";
   }
+  
+  /**
+   * returns the absolute path of the xml file that
+   * is connected by default to this model. It is located
+   * in the same directory as the class file 
+   * path/to/class/classname.schema.xml
+   * return string
+   */
+  function getXmlSchmemaPath()
+  {
+    $class = get_class($this);
+    return str_replace("_","/",$class) . ".model.xml";
+  }
+  
+  /**
+   * parse xml schema file and, if it has changed, create or update
+   * all needed tables and columns
+   * @param string $datasource datasource name
+   * @return qcl_xml_simpleXML
+   */
+  function &updateTablesFromXmlSchema($path=null,$sqltype="mysql")
+  {
+    
+    /*
+     * parse schema file
+     */
+    $path = either($path, $this->getXmlSchmemaPath());
+    if ( !is_valid_file($path) )
+    {
+      $this->raiseError("No valid file path: '$path'");
+    }
+    
+    /*
+     * get schema document and return it if it hasn't changed
+     */
+    $this->info("Getting Schema Document...");
+    $modelXml =& $this->parseXmlSchemaFile($path);
+    if ( ! $modelXml->hasChanged() ) return $modelXml;
+    
+    
+    /*
+     * schema has changed, update database backend
+     */
+    $doc      =& $modelXml->getDocument();
+    
+    /*
+     * model name, class, type and table 
+     */
+    $modelAttrs  = $doc->model->attributes();
+    $this->name  = $modelAttrs['name'];
+    $this->class = $modelAttrs['class'];
+    $this->type  = $modelAttrs['type'];
+    $this->table = $this->getTablePrefix() . $modelAttrs['table'];
+    
+    $this->info("Creating or updating tables for model name '{$this->name}', type '{$this->type}', class '{$this->class}' ...");
+    
+    /*
+     * create main data table if necessary
+     */
+    $table = $this->table;
+    if ( !$this->db->tableExists($table) )
+    {
+      $this->db->createTable($table);
+    }
+   
+    /*
+     * create alias table
+     */
+    $aliases  = $doc->model->definition->aliases->children();
+    $aliasMap = array();
+    foreach($aliases as $alias)
+    {
+      $a = $alias->attributes();
+      $aliasMap[$a['for']] = phpversion() < 5 ? $alias->CDATA() : (string) $alias;
+    }
+    // save it to object
+    $this->aliasMap[$table] = $aliasMap;
+    
+    //$this->info("Aliases:");
+    //$this->info($aliasMap);
+    
+    /*
+     * properties as columns
+     */
+    $properties = $doc->model->definition->properties->children(); 
+    foreach($properties as $property)
+    {
+      $attr      = $property->attributes();
+      $propName  = $attr['name'];
+      $colName   = either($aliasMap[$propName],$propName);
+      
+      //@todo: accept either <$sqltype> or <sql type="$sqltype">
+      $newDef    = $property->$sqltype->CDATA();
+      $oldDef    = $this->db->getColumnDefinition($table,$colName);
+      
+      //$this->info("Property '$propName', Column '$colName':" );
+      //$this->info("Old def: '$oldDef', new def:'$newDef'");
+      
+      if ($newDef == $oldDef ) 
+      {
+        // nothing to do
+        continue;
+      }
+      
+      if ( ! $oldDef )
+      {
+        // column does not exist, add
+        $this->db->addColumn($table,$colName,$newDef);
+      }
+      else
+      {
+        // exists but is different: modifiy
+        $this->info($oldDef);
+        $this->db->modifyColumn($table,$colName,$newDef);
+      }
+      
+    }
+    
+    /*
+     * contraints
+     */
+    $constraints =& $doc->model->definition->constraints;
+    if ( $constraints )
+      foreach ( $constraints->children() as $constraint )
+      {
+        $attrs = $constraint->attributes();
+        switch ($attrs['type'])
+        {
+          /*
+           * primary key(s)
+           */
+          case "primary":
+            $primaryKeys = array();
+            foreach($constraint->children() as $property)
+            {
+              $a = $property->attributes();
+              $propName = $a['name'];
+              $primaryKeys[] =  either($aliasMap[$propName],$propName);
+            }            
+            
+            // analyze existing primary key
+            $oldPrimaryKeys = $this->db->getPrimaryKey($table);
+            
+            //$this->info("Old primary key: " . implode(",",$oldPrimaryKeys) );
+            //$this->info("New primary key: " . implode(",",$primaryKeys) );
+
+            if ( $oldPrimaryKeys != $primaryKeys )
+            {
+              // drop old and add new if different from model
+              if ( $oldPrimaryKeys)
+              {
+                $this->db->dropPrimaryKey($table);
+              }
+  
+              // add primary key
+              $this->db->addPrimaryKey($table,$primaryKeys);
+            }
+            break;
+        }
+      }
+      
+    /*
+     * indexes
+     */
+    $indexes =& $doc->model->definition->indexes;
+    if ( $indexes )
+    {
+      foreach ( $indexes->children() as $index )
+      {
+        $attrs        = $index->attributes();
+        $indexType    = strtoupper($attrs['type']);
+        switch ($indexType)
+        {
+          /*
+           * fulltext and unique index
+           */
+          case "FULLTEXT":
+          case "UNIQUE":
+            
+            $indexProperties = array();
+            foreach($index->children() as $property)
+            {
+              $a        = $property->attributes();
+              $propName = $a['name'];
+              $indexProperties[] = either($aliasMap[$propName],$propName) ;
+            }
+            
+            // analyze existing index
+            $indexName    = either($attrs['name'],$indexProperties[0]);
+            $indexColumns = $this->db->getIndexColumns($table,$indexName); 
+                
+            //$this->info("$indexType index $indexName, existing index:"); 
+            //$this->info($indexColumns);
+            
+            //$this->info("New index:");
+            //$this->info($indexProperties);
+          
+            // if different from model, drop it first
+            if ( count($indexColumns) )
+            {
+              if ( $indexColumns != $indexProperties )
+              {
+                // index exists but is different 
+                $this->db->dropIndex($table,$indexName);
+                $this->db->addIndex($indexType,$table,$indexName,$indexProperties);
+              }
+            }
+            else
+            {
+              // index doesn't exist, create
+              $this->db->addIndex($indexType,$table,$indexName,$indexProperties);
+            }
+                      
+            break;
+        } 
+      }
+    } 
+    
+    /*
+     * creating link tables
+     */
+    $links = $doc->model->links->children();
+    if ( count($links) )
+    {
+      $this->info("Creating or updating linked tables...");
+      foreach ($links as $link)
+      {
+        $a = $link->attributes();
+        
+        /*
+         * create table
+         */
+        if ( $a['table'])
+        {
+          $link_table = $this->getTablePrefix() . $a['table'];
+        }
+        else
+        {
+          $this->raiseError("A table link must have a 'table' attribute.");
+        }
+        if ( ! $this->db->tableExists($link_table) )
+        {
+          $this->db->createTable($link_table);
+        }
+
+        /*
+         * get local key column
+         */
+        if ( $a['localkey'] )
+        {
+          $localKey          = either($a['localkey'],$a['localKey']); 
+          $localKeyColName   = either($aliasMap[$localKey],$localKey);
+        
+        }
+        else
+        {
+          $this->raiseError("A table link must have a 'localKey' attribute.");
+        }        
+        
+        /*
+         * get foreign key column
+         */
+        if ( $a['foreignkey'])
+        {
+          $foreignKey        = either($a['foreignkey'],$a['foreignKey']);
+          $foreignKeyColName = either($aliasMap[$foreignKey],$foreignKey);
+        }
+        else
+        {
+          $this->raiseError("A table link must have a 'foreignKey' attribute.");
+        }
+        
+        /*
+         * copy over the column definition from the main table
+         */
+        $localKeyDef       = $this->db->getColumnDefinition($table,$localKeyColName);
+        $foreignKeyDef     = $this->db->getColumnDefinition($link_table,$foreignKeyColName);
+        
+        //$this->info("Local Key Definition: $localKeyDef");
+        //$this->info("Foreign Key Definition: $foreignKeyDef");
+        
+        if ($localKeyDef == $foreignKeyDef ) 
+        {
+          // nothing to do
+          continue;
+        }
+        
+        if ( ! $foreignKeyDef )
+        {
+          // column does not exist, add
+          $this->db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
+        }
+        else
+        {
+          // exists but is different: modifiy
+          $this->db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
+        }
+          
+      }
+    }
+    return $modelXml;
+  }
+    
+  /**
+   * parses an xml schema file, processing includes
+   * @param string $file
+   * @return qcl_xml_simpleXML
+   */
+  function &parseXmlSchemaFile($file)
+  {
+    require_once ("qcl/xml/simpleXML.php");
+    
+    /*
+     * load model schema xml file
+     */
+    $this->info("loading model schema file '$file'...");
+    $modelXml =& new qcl_xml_simpleXML($file); 
+    $doc =& $modelXml->getDocument();
+    
+    /*
+     * does the model schema inherit from another schema?
+     */
+    $rootAttrs   = $doc->attributes();
+    $modelAttrs  = $doc->model->attributes();
+    
+    if ( $rootAttrs['include'] )
+    {
+      $parentXml   =& $this->parseXmlSchemaFile($rootAttrs['include']);
+      $modelXml->extend($parentXml);
+    }
+    
+    return $modelXml;
+    
+  }
+
   
 }	
 ?>

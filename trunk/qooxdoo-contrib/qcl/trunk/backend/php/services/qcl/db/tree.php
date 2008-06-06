@@ -1,39 +1,30 @@
 <?php
 
 // dependencies
-require_once ("qcl/db/model.php");
+require_once ("qcl/mixin.php");
 
 /**
- * class implementing a basic tree structure based on an sql database table
+ * mixin providing methods to model a basic tree structure based on an 
+ * sql database table. Can only be used with a model that inherits from
+ * qcl_db_model.
  */
 
-class qcl_db_tree extends qcl_db_model
+class qcl_db_tree extends qcl_mixin
 {
 
   //-------------------------------------------------------------
-  // class variables 
+  // additional class variables 
   //-------------------------------------------------------------
 
-	var $table;
-	var $key_id;
 	var $key_parentId;
 	var $key_label;
 	var $key_position;
 	var $icon;
-	var $foreignKey;
 
 	//-------------------------------------------------------------
   // internal methods
   //-------------------------------------------------------------
 
-   /**
-    * constructor 
-    * @param object reference $controller
-    */
-	function __construct($controller)
-  {
-		parent::__construct(&$controller);
-	}   
 	
 	//-------------------------------------------------------------
   // public methods 

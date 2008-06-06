@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/db/model.xml">
+  
+  <model class="qcl_config_db">
+
+    <!-- model definition -->
+    <definition>
+    
+      <!-- properties -->
+      <properties>
+        <property name="namedId" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="type" dataType="string">
+          <mysql>varchar(20) NOT NULL</mysql>
+        </property>
+        <property name="value" dataType="string">
+          <mysql>tinytext NOT NULL</mysql>
+        </property>
+        <property name="permissionRead" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="permissionWrite" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="user" dataType="string">
+          <mysql>varchar(255) NOT NULL</mysql>
+        </property>
+      </properties>
+
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="namedId" />
+        </index>
+      </indexes>
+      
+    </definition>
+  </model>
+</schema>

@@ -128,11 +128,31 @@ class qcl_db extends qcl_jsonrpc_object
 
 	/**
 	 * getter for DSN 
-	 * return string
+	 * return mixed array or string, according to how it was initialized
 	 */
 	function getDsn()
 	{
 		return $this->dsn;		
+	}
+	
+	function getDsnAsString()
+	{
+	  if ( is_array($this->dsn) )
+	  {
+  	  return (
+  	   $this->type . "://" .
+  	   ( $this->user     ?       $this->user     : "" ) .
+  	   ( $this->password ? ":" . $this->password : "" ) .
+  	   ( $this->user     ? "@"                   : "" ) .
+  	   $this->host . "/" .
+  	   ( $this->port ? ":" . $this->port         : "" ) .
+  	   "/ " . $this->database
+  	  );
+	  }
+	  else
+	  {
+	    return $this->getDsn();
+	  }
 	}
   
   /**
