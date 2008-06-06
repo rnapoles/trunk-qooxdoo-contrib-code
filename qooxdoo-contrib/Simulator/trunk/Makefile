@@ -105,8 +105,8 @@ selenium-server-ext:
 	$(JAR) cmf selenium-server/META-INF/MANIFEST.MF selenium-server.jar -C selenium-server . \
 	)
 
-selenium-rc-start:
-	(cd $(SELENIUM_BUILD_DIR); java -jar selenium-server.jar &)
+selenium-server-start:
+	(cd $(SELENIUM_BUILD_DIR); java -jar selenium-server.jar -interactive)
 
 selenium-rhino-shell:
 	(export CLASSPATH=$(MOZILLA_RHINO_PATH)/js.jar$(JAVA_CP_SEP)$(SELENIUM_BUILD_DIR)/selenium-java-client-driver.jar; \
