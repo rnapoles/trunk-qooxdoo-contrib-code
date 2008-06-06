@@ -212,7 +212,7 @@ class qcl_object extends patched_object
 	{
 		if ( is_array($msg) or is_object($msg) )
     {
-      $msg = var_export ( $msg, true );  
+      $msg = var_export ( $msg, true );
     }
     
     $message = date("y-m-j H:i:s");

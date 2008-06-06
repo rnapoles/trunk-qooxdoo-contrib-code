@@ -4,7 +4,7 @@
 require_once ("bibliograph/controller.php");
 
 /**
- * Service class for notes
+ * Abstract service class for notes
  */
 
 class qcl_databinding_tree_controller extends bibliograph_controller

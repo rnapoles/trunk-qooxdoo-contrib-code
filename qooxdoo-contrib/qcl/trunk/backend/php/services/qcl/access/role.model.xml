@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/db/model.xml">
+  
+  <model class="qcl_access_role">
+    <definition>
+    
+      <!-- properties -->
+      <properties>
+        <property name="namedId" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="name" dataType="string">
+          <mysql> varchar(255) character set utf8 NOT NULL default ''</mysql>
+        </property>
+      </properties>
+      
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="namedId" />
+        </index>
+      </indexes>      
+    </definition>
+    <links>
+      <link 
+        table="link_roles_permissions"
+        localKey="id"
+        foreignKey="roleId" />    
+      <link 
+        table="link_user_roles" 
+        localKey="id" 
+        foreignKey="roleId" />
+    </links>
+  </model>
+</schema>

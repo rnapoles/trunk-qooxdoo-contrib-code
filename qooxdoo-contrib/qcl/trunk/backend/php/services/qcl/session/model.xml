@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/db/model.xml">
+  
+  <model 
+    name="qcl.session.Model"
+    class="qcl_session_model">
+    
+    <definition>
+    
+      <!-- properties -->
+      <properties>
+      
+        <!-- we don't need an id -->
+        <property replace="id" />
+        
+        <property name="sessionId" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="messages" dataType="string">
+          <mysql>text NOT NULL</mysql>
+        </property>
+        <property name="user" dataType="string">
+          <mysql>varchar(255) NOT NULL</mysql>
+        </property>
+      </properties>
+            
+    </definition>
+    
+  </model>
+</schema>

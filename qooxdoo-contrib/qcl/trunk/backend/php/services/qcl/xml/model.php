@@ -24,7 +24,22 @@ require_once ("qcl/jsonrpc/model.php");
 
 class qcl_xml_model extends qcl_jsonrpc_model
 {
-      
+  //-------------------------------------------------------------
+  // class properties
+  //-------------------------------------------------------------   
+  
+  /**
+   * properties of the model that should be indexed
+   * @var array
+   */
+  var $indexedProperties = array ("id","namedId","name");
+  
+  /**
+   * parser class
+   * @var qcl_xml_simpleXML
+   */
+  var $parser;
+  
   //-------------------------------------------------------------
   // API methods
   //-------------------------------------------------------------   
@@ -34,14 +49,52 @@ class qcl_xml_model extends qcl_jsonrpc_model
    * @return void
    * @param $datasource string
    */
-  function setDatasource ( $xmlfile )
+  function setDatasource ( $datasource )
   {
-    parent::setDatasource ( $xmlfile );
-    
+    $this->raiseError("Not implemented");
+    parent::setDatasource ( $datasource );
+  }
+  
+  /**
+   * gets the simpleXml document object
+   * return XMLTag (php4) or SimpleXMLElement (php5)
+   */
+  function &getDocument()
+  {
+    return $this->parser->getDocument();
+  }
+  
+  /**
+   * loads and parses and xml file
+   * @param string $xmlfile
+   * @return void
+   */
+  function load($xmlfile)
+  {
     // load xml file
     require_once("qcl/xml/simpleXML.php");
-    $this->parser =& new qcl_xml_simpleXML($xmlfile,true); // cache   
-    $this->doc    =& $parser->getDocument();
+    $this->parser =& new qcl_xml_simpleXML;
+    $this->parser->createIfNotExists($xmlfile);
+    $this->parser->load($xmlfile,true,$this->indexedProperties);      
+  }
+  
+  /**
+   * saves the current state of the xmlfile
+   * @return void
+   */
+  function save()
+  {
+    $this->parser->save();
+  }
+  
+  /**
+   * add index for a property. Needs to be called before the xml 
+   * document is loaded
+   * @param string $name
+   */
+  function addIndex($name)
+  {
+    $this->indexedProperties[] = $name;
   }
   
   /**
@@ -55,17 +108,82 @@ class qcl_xml_model extends qcl_jsonrpc_model
   }  
   
   /**
-   * gets all database records or those that match a where condition. 
-   * the table name is available as the alias "r" (for records)
-   * @param string        $where    where condition to match, if null, get all. You can only query meta colums here
+   * gets all records or those that match a where condition. 
+   * @param mixed         $where    where condition. 
+   * if null, get all. if array, match properties (key) to values.
+   * if there are more than one condition, retrieved records have
+   * to match all conditions (AND-query).
+   * In php4, you can only query indexed attributes
    * @param string|null   $orderBy  (optional) order by field
    * @param array|null    $fields   (optional) Array of fields to retrieve 
    * @return Array Array of db record sets
    */
   function getRecordsWhere($where=null,$orderBy=null,$fields=null)
   {
-
+    /*
+     * get nodes
+     */
+    $nodes = $this->getNodesWhere($where,$orderBy);
+    
+    /*
+     * return result as map
+     */
+    $result = array();
+    foreach ( $nodes as $node )
+    {
+      $result[] = (array) $node;
+      //@todo: filter out columns
+    }
+    return $result;
   }
+
+ /**
+   * gets all nodes or those that match a where condition. 
+   * @param mixed         $where    where condition. 
+   * if null, get all. if array, match properties (key) to values.
+   * if there are more than one condition, retrieved records have
+   * to match all conditions (AND-query).
+   * In php4, you can only query indexed attributes
+   * @param string|null   $orderBy  (optional) order by field
+   * @return array Array of nodes
+   */
+  function getNodesWhere($where=null,$orderBy=null)
+  {
+    /*
+     * check parameters
+     */
+    if ( !( is_null($where) or is_array($where) ) )
+    {
+      $this->raiseError("qcl_xml_model::getNodesWhere(): 'where' argument must be null or an array");
+    }
+    
+    /*
+     * check if we have an xml parser
+     */
+    if ( ! is_object($this->parser) )
+    {
+      $this->raiseError("qcl_xml_model::getNodesWhere(): Parser is not initialized.");
+    }
+    
+    /*
+     * retrieve nodes for each where condition and keep those which are
+     * present in all result sets (== AND query)
+     */
+    $nodes = null;
+    foreach ($where as $property => $value )
+    {
+      $tmp = $this->parser->getNodesByAttributeValue($property,$value);
+      if ( $nodes )
+      {
+        $nodes = array_intersect($nodes,$tmp);
+      }
+      else
+      {
+        $nodes = $tmp;
+      }
+    }
+    return $nodes;
+  }  
   
   /**
    * gets database records by their primary key
@@ -78,12 +196,12 @@ class qcl_xml_model extends qcl_jsonrpc_model
   {
     if ( ! is_numeric($ids) and !is_array($ids) )
     {
-      $this->raiseError("qcl_db_model::getRowsById() : invalid parameter id: '$ids'");
+      $this->raiseError("qcl_xml_model::getRowsById() : invalid parameter id: '$ids'");
     }
     $rowIds = implode(",", (array) $ids );
     if ( ! empty($rowIds) )
     {
-      return $this->getRecordsWhere( "`{$this->key_id}` IN ($rowIds)", $orderBy, $fields );
+      
     }  
   }
   
@@ -97,23 +215,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getValues($column,$where=null,$orderBy=null)
   { 
-    if ( is_array( $column ) )
-    {
-      $column = implode("`,`",$column);
-    }
-    
-    $sql = "SELECT `$column` FROM {$this->table} \n";
-    
-    if ($where)
-    {
-      $sql .= "WHERE $where ";
-    }
-    if ($orderBy)
-    {
-      $orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-    }
-    return $this->db->getValues($sql);    
+    $this->raiseError("Not implemented.");  
   }
 
   /**
@@ -125,23 +227,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getDistinctValues($column,$where=null,$orderBy=null)
   { 
-    if ( is_array( $column ) )
-    {
-      $column = implode("`,`",$column);
-    }
-
-    $sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
-    
-    if ($where)
-    {
-      $sql .= "WHERE $where ";
-    }
-    if ($orderBy)
-    {
-      $orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-    }
-    return $this->db->getValues($sql);    
+     $this->raiseError("Not implemented.");   
   }
    
   /**
@@ -151,6 +237,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getById( $id = null )
   {
+    $this->raiseError("Not implemented");
     if ( $id !== null )
     {
       if ( ! is_numeric($id) )
@@ -189,6 +276,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
     */
   function getByNamedId($namedId)
   {
+    $this->raiseError("Not implemented");
     if ( $this->key_namedId )
     {
       $row = $this->db->getRow("
@@ -213,6 +301,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getIdFromRef($ref)
   {     
+    $this->raiseError("Not implemented");
     if ( $ref === null or is_numeric ($ref) ) 
     {
       return $ref;
@@ -223,12 +312,6 @@ class qcl_xml_model extends qcl_jsonrpc_model
       $this->raiseError("qcl_db_model::getIdFromRef : integer or string expected, got '$ref'"); 
     }
     
-    $row = $this->db->getRow("
-      SELECT `{$this->key_id}` 
-      FROM `{$this->table}` 
-      WHERE `{$this->key_namedId}` = '$ref'  
-    ");
-    $result=$row[$this->key_id];
     return $result;
    }
    
@@ -319,120 +402,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
     } 
     return $this->create( $namedId, $parentId );
   }   
-
-  /**
-   * gets the column name from a normalized field name
-   * @return string
-   * @param string $fieldName
-   */
-  function getColumnName ( $fieldName )
-  {
-    return $this->metaColumns[$fieldName];
-  }
-
-  /**
-   * gets the (normalized) field name from a column name
-   * @return string Field Name
-   * @param string $columnName
-   */
-  function getFieldName ( $columnName )
-  {
-    return $this->metaFields[$columnName];
-  }
-
-  /**
-   * gets the value of a column in a record without field->column translation 
-   * @param string       $column  
-   * @param int|string   $id  if omitted, use current record
-   */
-  function getColumnValue( $column, $id = null)
-  {
-    if ( is_numeric( $id ) )
-    {
-      // id is numeric
-      $row = $this->getById( $id );
-    } 
-    elseif ( is_string($id) )
-    {
-      // id is string => namedId
-      $row = $this->getByNamedId( $id );
-    }
-    elseif ( $id === null )
-    {
-      // operate on current record
-      $row = $this->currentRecord;  
-    }
-    
-    // return value
-    if ( count ( $row ) )
-    {
-      return $row[$column];
-    }
-    else
-    {
-      if ( $id )
-      {
-        $this->raiseError("qcl_db_model::getColumnValue : Row '$id' does not exist");  
-      }
-      elseif ( $id == 0 )
-      {
-        $this->raiseError("qcl_db_model::getColumnValue : ID is 0.");  
-      }      
-      else
-      {
-        $this->raiseError("qcl_db_model::getColumnValue : No current record");  
-      }
-    }
-  }
-
-  /**
-   * sets the value of a column in a record without field->column translation 
-   * @param string      $column
-   * @param mixed       $value
-   * @param int|string  $id   if omitted, modify current record cache without updating the database 
-   */
-  function setColumnValue( $column, $value, $id=null )
-  {
-    if( $id )
-    {
-      if ( ! is_numeric( $id ) )
-      {
-        $namedId = $id;
-        $id = $this->getIdByNamedId ( $namedId );
-        if ( ! $id )
-        {
-          $this->raiseError("Invalid named id '$namedId'.");
-        }
-      }
-      // set data
-      $data = array();
-      $data[$this->key_id] = $id;
-      $data[$column] = $value;
-      $this->update($data);
-    }
-    else
-    {
-      $this->currentRecord[$column]=$value;   
-    }
-  }
  
-  /**
-   * translates field names to column names and returns value of field in current record
-   * @param string     $field     field name  
-   * @param int|string $id  if omitted, use current record 
-   */
-  function getFieldValue ( $field, $id=null )
-  {
-    $columnName = $this->getColumnName( $field );
-    
-    if ( ! $columnName )
-    {
-      $this->raiseError ( "qcl_db_model::getFieldValue : Invalid field '$field'");
-    }   
-    
-    return $this->getColumnValue($columnName,$id);
-  }
-
   /**
    * Get a property. By default, properties are "fields". This can be overridden as necessary
    * @param string       $name Property name
@@ -441,25 +411,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getProperty( $name, $id = null )
   {
-    return $this->getFieldValue( $name, $id );
-  }
-
-  /**
-   * translates field names to column names and sets value of field in current record
-   * @param string     $field     field name to translate
-   * @param mixed      $value 
-   * @param int|string $id    if omitted, modify current record cache without updating the database 
-   * @return void
-   */
-  function setFieldValue ( $field, $value, $id=null )
-  {
-    $columnName = $this->getColumnName($field);
-    
-    if ( ! $columnName )
-    {
-      $this->raiseError ( "qcl_db_model::setFieldValue : Invalid field '$field'");
-    }
-    $this->setColumnValue( $columnName, $value, $id );
+    $this->raiseError("Not implemented");
   }
   
   /**
@@ -471,7 +423,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function setProperty( $name, $value, $id = null )
   {
-    $this->setFieldValue( $name, $value, $id);
+    $this->raiseError("Not implemented");
   }
 
   /**
@@ -482,32 +434,9 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function columnsToFields ( $row )
   {
-    return $this->_columnsToFields ( $row );
+    $this->raiseError("Not implemented");
   }
   
-  /**
-   * translates column to field names
-   * @param array $row
-   * @todo: use "normalize" / "unnormalize"?? concept
-   * @return array
-   */
-  function _columnsToFields ( $row )
-  {
-    if ( ! $row )
-    {
-      $row = $this->currentRecord;
-    }
-    $translatedRow  = array();
-    foreach ( $row as $column => $value )
-    {
-      $field = $this->getFieldName($column);
-      if ( $field and $value )
-      {
-        $translatedRow[$field]=$value;  
-      }
-    }
-    return $translatedRow;
-  }
 
   /**
    * translates field to column names
@@ -517,85 +446,9 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function fieldsToColumns ( $row=null )
   {
-    return $this->_fieldsToColumns ( $row );
+    $this->raiseError("Not implemented");
   }
   
-  /**
-   * translates field to column names
-   * @todo: use "normalize" / "unnormalize"?? concept
-   * @param array $row
-   * @return array
-   */
-  function _fieldsToColumns ( $row=null )
-  {
-    $translatedRow = array();
-    foreach ( $row as $field => $value )
-    {
-      $column = $this->getColumnName($field);
-      if ( $column and $value )
-      {
-        $translatedRow[$column]=$value; 
-      }
-    }
-    return $translatedRow;
-  }
-
-  //-------------------------------------------------------------
-  // options: one column which contains a serialized assoc. array
-  // containing additional dynamic fields that need not have their
-  // own database columns
-  //-------------------------------------------------------------
-
-  /**
-   * get unserialized options from record
-   * @return array
-   * @param $id int[optional]
-   */
-  function getOptions( $id = null )
-  {
-    return (array) unserialize( $this->getProperty( "options", $id ) );
-  }
-
-  /**
-   * serializes option array and saves it to record
-   * @return 
-   * @param $options array
-   * @param $id int[optional]
-   */
-  function setOptions( $options, $id = null )
-  {
-    if ( ! is_array( $options) or ! count ( $options ) )
-    {
-      $this->raiseError("Invalid Options.");
-    }
-    $this->setProperty("options", serialize($options), $id );
-  }
-  
-  /**
-   * gets a single option value
-   * @return 
-   * @param $name string
-   * @param $id int/string[optional]
-   */
-  function getOption($name, $id=null)
-  {
-    $options = $this->getOptions( $id );
-    return $options[$name];
-  }
-
-  /**
-   * sets a single option value
-   * @return 
-   * @param $name string
-   * @param $value mixed
-   * @param $id int/string[optional]
-   */
-  function setOption($name, $value, $id=null)
-  {
-    $options = $this->getOptions( $id );
-    $options[$name] = $value;
-    $this->setOptions( $options, $id );
-  }
 
   //-------------------------------------------------------------
   // standard creat/insert/update/delete methods
@@ -607,6 +460,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function create()
   {
+    $this->raiseError("Not implemented");
     $data = $this->emptyRecord;
     $data[$this->key_id]=null; // so at least one field is set
     $id = $this->insert( $data );
@@ -616,12 +470,13 @@ class qcl_xml_model extends qcl_jsonrpc_model
   }
 
   /**
-   * inserts a record into a table and returns last_insert_id()
+   * inserts a record into the container and return the id
    * @param array $data associative array with the column names as keys and the column data as values
    * @return int the id of the inserted row 
    */
   function insert( $data )
   {
+    $this->raiseError("Not implemented");
     // created timestamp
     if ( $this->key_created and ! isset ( $data[$this->key_created] ) )
     {
@@ -638,33 +493,18 @@ class qcl_xml_model extends qcl_jsonrpc_model
   }
 
   /**
-   * updates a record in a table identified by id
+   * updates the model
    * @param array       $data   associative array with the column names as keys and the column data as values
    * @param int|string  $id   if the id key is not provided in the $data paramenter, provide it here (optional)
    * @return boolean success 
    */
   function update ( $data=null, $id=null )    
   {
-    // use cached record data
-    if ($data === null)
+    if ($data !== null)
     {
-      $data = $this->currentRecord;
+      $this->raiseError("Updating xml model with data as argument not implemented");
     }
-    else
-    {
-      if ( $id !== null )
-      {
-        $data[$this->key_id] = $id;
-      }
-    }
-    
-    // set modified timestamp if the timestamp is not part of the data
-    if ( $this->key_modified && empty( $data[$this->key_modified] ) )
-    {
-      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
-    }    
-    
-    return $this->db->update( $this->table, $data, $this->key_id );
+    $this->parser->save();
   }     
   
   /**
@@ -673,7 +513,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function delete ( $ids )
   {
-    $this->db->delete ( $this->table, $ids, $this->key_id );
+    $this->raiseError("Not implemented");
   } 
   
   /**
@@ -682,25 +522,8 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function deleteWhere ( $where )
   {
-    $this->db->deleteWhere ( $this->table, $where );
+    $this->raiseError("Not implemented");
   } 
-
-  function _getInitFlags ()
-  {
-    $init_flags   = "bibliograph_table_init";
-    if ( ! $this->_initFlags  )
-    {
-      $this->_initFlags = (array) $this->retrieve($init_flags);
-    }
-    return $this->_initFlags;
-  }
-
-  function _setInitFlags ($flags)
-  {
-    $init_flags   = "bibliograph_table_init";
-    $this->_initFlags = $flags;
-    $this->store($init_flags,$flags);
-  }
 
   /**
    * checks whether model table(s) have been initialized
@@ -709,11 +532,9 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function isInitialized ( $table=null )
   {
-    $flags = $this->_getInitFlags();
-    $table = either ( $table, $this->table );
-    return ( $flags[$table] == true );
+    $this->raiseError("Not implemented");  
   }
-
+  
   /**
    * sets the initialized state of model table(s) 
    * @return 
@@ -722,241 +543,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function setInitialized ($table=null, $value=true)
   {
-    $flags = $this->_getInitFlags();
-    $table = either ( $table, $this->table );
-    $flags[$table] = $value;
-    $this->_setInitFlags($flags);    
-  }
-
-  /**
-   * initializes tables, i.e. either creates them if they do not exist or
-   * update them if their definition has changed. this should only be done
-   * once per session
-   * @return void
-   * @param mixed $tables (array of) table name(s)
-   */
-  function initializeTables($tables)
-  {   
-    $tables       = (array) $tables;
-    
-    foreach ( $tables as $table )
-    {    
-      // ensure each table is only checked once
-      if ( $this->isInitialized( $table) )
-      {
-        continue;
-      }
-     
-      // do checks and updates
-      $this->info("*** Initializing table '$table' ***");
-      if ( $this->checkCreateTable($table) or 
-           $this->updateTableStructure($table) )
-      {
-        // success
-        $this->setInitialized($table,true);
-      }
-    }
-  }
-  
-  /**
-   * check table and create it if necessary
-   * @return boolean true if table was created, false if it already exists
-   */
-  function checkCreateTable($table)
-  {
-     if ( $this->db->tableExists( $table ) )
-     {
-       $this->info("Checking if table '$table' exists ... Yes");
-       return false;
-     }
-     else
-     {
-       $this->info("Checking if table '$table' exists ... No, creating it.");
-       $this->createTable($table);       
-       return true;
-     }
-  }
-  
-  /**
-   * create a table. override if necessary
-   */
-  function createTable($table)
-  {
-    $createSql = $this->loadSql($table);
-    if ( ! $createSql )
-    {
-      $file = $this->getSqlFileName($table);
-      $this->raiseError ("Cannot create table $table - sql file '$file' does not exist.");
-    }
-    $this->db->execute($createSql);
-    $this->createTriggers($table);
-    $this->createFunctions($table);
-    $this->addInitialValues($table);
-  }
-  
-  /**
-   * adds initial values, using an sql file. To be overridden by table-specific methods
-   */
-  function addInitialValues($table)
-  {  
-    $sql = $this->loadSql( $table . ".values" );
-    if ( $sql )
-    {
-      $this->info("Adding initial values ...");
-      foreach ( explode(";", $sql ) as $part )
-      {
-        if ( $part = trim($part) )
-        {
-          $this->db->execute( $part );
-        }
-      }
-    }      
-  }
-
-  /**
-   * adds table-related triggers.
-   * db user needs "SUPER" (mysql < 5.1) or "TRIGGER" (mysql >= 5.1) privileges
-   */
-  function createTriggers($table)
-  {
-    $file = $this->getSqlFileName($table . ".triggers" );
-    if ( file_exists ( $file ) )
-    {
-      $this->info("Creating triggers...");
-      $database  = $this->db->getDatabase();
-      $sql       = str_replace('$table', $table, 
-                    str_replace('$database',$database, file_get_contents ( $file ) ) ) ;
-      foreach ( explode(";",$sql) as $part )
-      {
-        if ( $part = trim($part) )
-        {
-          $this->db->execute( $part );
-        }
-      }
-    }
-  } 
-
-  /**
-   * adds table-related functions.
-   */
-  function createFunctions($table)
-  {
-    $file = $this->getSqlFileName($table . ".functions" );
-    if ( file_exists ( $file ) )
-    {
-      $this->info("Creating functions...");
-      $database  = $this->db->getDatabase();
-      $content   = file_get_contents ( $file );
-      eval('$sql = "' . str_replace('"',"'",$content) . '";'); 
-      foreach ( explode("###",$sql) as $part )
-      {
-        if ( $part = trim($part) )
-        {
-          $this->db->execute( $part );
-        }
-      }
-    }
-  }
-
-  /**
-   * gets table structure as sql create statement from database
-   * @return string
-   */
-  function getCreateTableSql($table)
-  {
-    return $this->db->getCreateTableSql($table);
-  }
-  
-  /**
-   * gets name of file where table create sql is stored for a table
-   * @return string
-   * @param $table string
-   */
-  function getSqlFileName($table)
-  {
-    $application = substr(get_class($this),0,strpos(get_class($this),"_"));
-    $type = $this->db->getType();
-    return SERVICE_PATH . "{$application}/sql/{$table}.$type.sql";
-  }
-
-  /**
-   * returns sql statement to create a table loaded from the filesystem
-   * @return string
-   * @param $name string name
-   */
-  function loadSql($name)
-  {
-    $file = $this->getSqlFileName($name);
-    if ( file_exists ($file) )
-    {
-      $this->log("Checking for file '$file' ... Exists.");
-      return  file_get_contents($file);
-    }
-    else
-    {
-      $this->log("Checking for file '$file' ... Does not exist.");
-      return null;
-    }
-  }
-
-  /**
-   * saves the sql commands necessary to create the table into a file. 
-   * This will not overwrite an existing file. If you want to update
-   * the sql stored in the file system from the structure existing in the 
-   * database, remove the file and $this->setInitialized($table,false).
-   * @return boolen success
-   * @todo: remove AUTO-INCREMENT value
-   */
-  function saveTableStructureSql($table)
-  {
-      $file = $this->getSqlFileName($table);
-      if ( ! file_exists( $file ) and is_writeable ( dirname ( $file ) ) )
-      {
-        $sql = $this->getCreateTableSql($table);
-        file_put_contents($file, $sql );        
-        $this->info("Stored sql for {$table}");
-        return true;
-      }
-      else
-      {
-        $this->warn ( dirname ( $file ) . " exists or is not writable. Updated sql is not stored.");
-        return false;
-      }
-  }
-
-
-  /**
-   * updates or creates table in database if it doesn't exist yet
-   * @param string $table 
-   * @return 
-   */
-  function updateTableStructure($table)
-  {
-    $this->info ( "Checking for an update for table '$table'...");
-   
-    if ( ! file_exists ( $this->getSqlFileName($table) ) )
-    {
-      // store sql to create this table
-      // this is only for the developer who wants to synchronize a 
-      // changed table structure in the database with the sql in 
-      // the file system.
-      return $this->saveTableStructureSql($table);
-    }
-    
-    // compare table structure with structure and update table if there is a change
-    $currentSql   = $this->getCreateTableSql($table); // from database
-    $normativeSql = $this->loadSql($table); // from file
-    if ( $currentSql != $normativeSql )
-    {
-      $this->db->updateTableStructure( $table, $normativeSql );
-      $this->saveTableStructureSql($table);
-      $this->info ("Updated table '$table'.");
-    }
-    else
-    {
-      $this->info ( "Table '$table' is up to date.");
-    }
-    return true;
+    $this->raiseError("Not implemented");
   }
   
   /**
@@ -965,23 +552,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getModificationList()
   {
-    if ( ! $this->key_modified )
-    {
-      $this->raiseError("Table {$this->table} has no timestamp column");
-    }
-    
-    $rows = $this->db->getAllRecords("
-      SELECT 
-        {$this->key_id}       AS id,
-        {$this->key_modified} AS timestamp
-      FROM {$this->table}
-    ") ;  
-    $map = array();
-    foreach ($rows as $row)
-    {
-      $map[$row['id']] = $row['timestamp'];
-    }
-    return $map;
+    $this->raiseError("Not implemented");
   }
   
   /**
@@ -991,17 +562,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function updateTimestamp( $ids )
   {
-    if (! is_numeric($ids) and ! is_array($ids)  )
-    {
-      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
-    }
-    
-    $ids = implode(",", (array) $ids);
-    $this->db->execute(" 
-      UPDATE `{$this->table}` 
-      SET `{$this->key_modified}` = NOW()
-      WHERE `{$this->key_id}` IN ($ids)
-    ");
+    $this->raiseError("Not implemented");
   }
   
   /**

@@ -9,11 +9,13 @@
  * PHP5 file_put_contents emulation
  *
  */
-if(!function_exists("file_put_contents")){
+if(!function_exists("file_put_contents"))
+{
     function file_put_contents($file,$data)
     {
         @unlink($file);
         error_log($data,3,$file);
+        return file_exists($file);
     }
 }
 
@@ -27,9 +29,11 @@ if(!function_exists("file_put_contents")){
 if(!function_exists("either")){
     function either()
     {
-            $arg_list = func_get_args();
-            foreach($arg_list as $arg)
-                    if($arg) return $arg;
+        $arg_list = func_get_args();
+        foreach($arg_list as $arg)
+        {
+          if($arg) return $arg;
+        }
         return false;
     } 
 }
@@ -41,15 +45,15 @@ if(!function_exists("either")){
  */
 if( ! function_exists( "stream_get_contents" ) )
 {
-    function stream_get_contents($resource)
-    {
+  function stream_get_contents($resource)
+  {
     $stream = "";
     while ( ! feof ( $resource ) ) 
     { 
       $stream .= fread ( $resource );
     }
     return $stream;
-    } 
+  } 
 }
 
 /**
@@ -91,10 +95,13 @@ if(!function_exists('array_diff_key'))
   {
     $arrs = func_get_args();
     $result = array_shift($arrs);
-    foreach ($arrs as $array) {
-      foreach ($result as $key => $v) {
-        if (array_key_exists($key, $array)) {
-            unset($result[$key]);
+    foreach ($arrs as $array) 
+    {
+      foreach ($result as $key => $v) 
+      {
+        if (array_key_exists($key, $array)) 
+        {
+          unset($result[$key]);
         }
       }
     }
@@ -134,21 +141,27 @@ if ( ! function_exists("json_decode") )
 }
 
 /**
- * transform an object structure into an associative array
+ * transform an object structure into an associative array.
+ * In contrast to array casting with "(array)", this function 
+ * transverses nested objest structures
+ * @param object $obj
+ * return array()
  */
 function object2array($obj)
 {
   if (! is_object($obj)) return (array) $obj;
   $arr=array();
-  foreach (get_object_vars($obj) as $key => $val) {
-        $arr[$key]= is_object($val) ? object2array($val) : $val;
-    }
-    return $arr;
+  foreach (get_object_vars($obj) as $key => $val) 
+  {
+    $arr[$key]= is_object($val) ? object2array($val) : $val;
+  }
+  return $arr;
 }
 
 /**
  * checks if passed string var is a valid file.
- * assumes that strings size > 512 is not a filename
+ * assumes that strings over the length of 512 characters are not a filename
+ * @param string $str
  */
 function is_valid_file($str)
 {

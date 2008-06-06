@@ -3,6 +3,7 @@
 /**
  * Base class for rpc objects which do database queries
  * relying on PEAR::DB for database access
+ * currently, only MySQL is supported
  */
 
 require_once ("qcl/db/db.php");
@@ -17,7 +18,7 @@ class qcl_db_pear extends qcl_db
 	/**
 	 * constructor
 	 * @param object 	$controller 	The controller object
-	 * @param string	$dsn			    (optional) dsn parameter. If omitted, the default database is used
+	 * @param mixed	$dsn (optional) dsn parameter. If omitted, the default database is used
 	 */
 	function __construct($controller, $dsn=null)
 	{
@@ -25,13 +26,16 @@ class qcl_db_pear extends qcl_db
 	}
 
 	//-------------------------------------------------------------
-  // public non-rpc methods
+  // API methods
   //-------------------------------------------------------------
 
 	/**
 	 * connects to database
+	 * @param string|array $dsn DSN connection parameter
+	 * @param bool $abortQuietly if true, do not throw an error if no connection can be made
+	 * @return mixed DB object on success, false on error
 	 */
-	function &connect($dsn=null)
+	function &connect($dsn=null,$abortQuietly=false)
 	{
 		require_once ("DB.php"); // load pear DB library
 
@@ -52,7 +56,15 @@ class qcl_db_pear extends qcl_db
 
     if (PEAR::isError($db))
 		{
-			$this->raiseError( $db->getMessage() . ": " . $db->getUserInfo() );
+			$this->error = $db->getMessage() . ": " . $db->getUserInfo();
+			if ( $abortQuietly )
+			{
+			  return false;
+			}
+			else
+			{
+			 $this->raiseError( $this->error );  
+			}
 		}
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 
@@ -320,25 +332,38 @@ class qcl_db_pear extends qcl_db
 	}
 
   /**
-   * retrieves information on the structure of a given table
+   * gets the sql to do a fulltext search. Uses boolean mode
+   * @return string
    * @param string $table
-   * @return array
+   * @param string $indexName
+   * @param string $expr
    */
-  function getColumnMetaData($table)
+  function getFullTextSql( $table, $indexName, $expr )
   {
-    $schema = substr($this->dsn,strrpos($this->dsn,"/")+1);
-    return $this->getAllRecords("
-      SELECT
-        COLUMN_NAME as name,
-        COLUMN_DEFAULT as `default`,
-        IS_NULLABLE as nullable,
-        COLUMN_TYPE as `type`,
-        COLUMN_KEY as `key`
-      FROM INFORMATION_SCHEMA.COLUMNS
-      WHERE TABLE_SCHEMA = '$schema' AND TABLE_NAME = '$table'
-    ");
-  }
+    $fullSql = $this->getCreateTableSql( $table );
 
+    // add a plus sign ( AND operator) to each search word
+    $searchWords = explode(" ",$expr);
+    foreach($searchWords as $index => $word)
+    {
+      if ( $word{0} != "-" )
+      {
+        $searchWords[$index] = "+" . $word;
+      }
+    }
+
+    // remove dupliate plus signs (in case the user has added them)
+    $expr = str_replace("++","+", implode(" ",$searchWords) );
+
+    preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
+    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
+  }	
+	
+	
+  //-------------------------------------------------------------
+  // database introspection
+  //-------------------------------------------------------------
+	
   /**
    * gets table structure as sql create statement
    * @param string $table table name
@@ -350,7 +375,7 @@ class qcl_db_pear extends qcl_db
     return $row['Create Table'];
   }
 
-  /**
+ /**
    * extracts column data from a sql create table statemnet
    * @return array
    * @param $sql string sql create table statement
@@ -377,37 +402,318 @@ class qcl_db_pear extends qcl_db
     }
     return $columns;
   }
+  
+  
+  /**
+   * retrieves information on the columns contained in a given table
+   * in the currently selected database
+   * @param string $table
+   * @return array Associated array with the keys name, default, nullable, type and key.
+   */
+  function getColumnMetaData($table)
+  {
+    return $this->getAllRecords("
+      SELECT
+        COLUMN_NAME    as `name`,
+        COLUMN_DEFAULT as `default`,
+        IS_NULLABLE    as `nullable`,
+        COLUMN_TYPE    as `type`,
+        COLUMN_KEY     as `key`,
+        EXTRA          as `extra`
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE TABLE_SCHEMA = '{$this->database}' AND TABLE_NAME = '$table'
+      ORDER BY ORDINAL_POSITION
+    ");
+  }
+
 
   /**
-   * gets the sql to do a fulltext search. Uses boolean mode
-   * @return string
-   * @param string $table
-   * @param string $indexName
-   * @param string $expr
+   * checks if table exists
+   * @return boolean
+   * @param $table string
    */
-  function getFullTextSql( $table, $indexName, $expr )
+  function tableExists($table)
   {
-    $fullSql = $this->getCreateTableSql( $table );
-
-    // add a plus sign ( AND operator) to each search word
-    $searchWords = explode(" ",$expr);
-    foreach($searchWords as $index => $word)
-    {
-      if ( $word{0} != "-" )
-      {
-        $searchWords[$index] = "+" . $word;
-      }
-    }
-
-    // remove dupliate plus signs (in case the user has added them)
-    $expr = str_replace("++","+", implode(" ",$searchWords) );
-
-    preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
-    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
+    $database = $this->getDatabase();
+    return $this->getValue("
+      SELECT
+        count(*)
+      FROM
+        INFORMATION_SCHEMA.TABLES
+      WHERE
+        TABLE_NAME='$table'
+      AND
+        TABLE_SCHEMA='$database'
+    ");
   }
 
   /**
+   * checks if a function or stored procedure of this name exists in the database
+   * @return
+   * @param $routine
+   */
+  function routineExists($routine)
+  {
+    return $this->getValue("
+      SELECT
+        count(*)
+      FROM
+        INFORMATION_SCHEMA.ROUTINES
+      WHERE
+        ROUTINE_NAME='$routine'
+    ");
+  }
+
+  /**
+   * creates a temporary table and fills it with data
+   * @return array of citekeys
+   * @param string    $name     name of the table
+   * @param array     $columns  map: column name => column definition
+   * @param array     $data     map: column name => column value
+   */
+  function createTemporaryTable ( $name, $columnData, $data )
+  {
+    // create table
+    $columnDefinition = array();
+    foreach ( $columnData as $columnName => $columnDef )
+    {
+      $columnDefinition[] = "`$columnName` $columnDef";
+    }
+    $columnDefinition = implode(",",$columnDefinition);
+
+    $this->db->execute("
+      CREATE TEMPORARY TABLE `$name` (
+        $columnDefinition
+      )
+    ");
+
+    // insert values
+    $columns = array_keys($columnData);
+    foreach( $data as $row )
+    {
+      $values = array();
+      foreach( array_values( (array) $row ) as $value )
+      {
+        $values[] = "'" . addslashes($value) . "'";
+      }
+      $values = implode("'",$values);
+      $this->db->execute("INSERT INTO `$name` ($columns) VALUES($values)");
+    }
+  }
+
+  
+  function createTable($table)
+  {
+    $this->execute("
+     CREATE TABLE IF NOT EXISTS `$table` ( `dummy` tinyint(1) ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+    ");
+  }
+  
+  /**
+   * checks if a column exists in the database
+   * @param string $table
+   * @param string $column
+   * @return boolean  
+   */
+  function columnExists($table, $column)
+  {
+    $database = $this->getDatabase();
+    return (bool) $this->getValue("
+      SELECT
+        count(*)
+      FROM
+        INFORMATION_SCHEMA.COLUMNS
+      WHERE
+        TABLE_SCHEMA='$database' AND
+        TABLE_NAME='$table' AND
+        COLUMN_NAME='$column';
+    ");
+  }
+
+  /**
+   * gets the definition of a column as in 
+   * a column defintion in a CREATE TABLE statement
+   * @param string $table
+   * @param string $column
+   * @return mixed string defintion or null if column does not exist
+   */
+  function getColumnDefinition($table,$column)
+  {
+    $database = $this->getDatabase(); 
+    $c = $this->getRow("
+      SELECT
+        COLUMN_DEFAULT as `default`,
+        IS_NULLABLE    as `nullable`,
+        COLUMN_TYPE    as `type`,
+        EXTRA          as `extra`
+      FROM 
+        INFORMATION_SCHEMA.COLUMNS
+      WHERE
+        TABLE_SCHEMA='$database' AND
+        TABLE_NAME='$table' AND
+        COLUMN_NAME='$column';
+    "); 
+    if ( count($c) )
+    {
+      $definition = trim(str_replace("  "," ",implode(" ", array(
+        $c['type'],
+        ( $c['nullable'=="YES"] ? "NULL":"NOT NULL"), 
+        ( $c['default'] ? "DEFAULT " . (
+          in_array($c['default'], array("NULL","CURRENT_TIMESTAMP") ) ?
+             $c['default'] : "'" . addslashes($c['default']) . "'" 
+        ) : "" ),
+        $c['extra']
+      ))));         
+      return $definition;
+    }
+    return null;
+  }
+  
+  /**
+   * adds a column 
+   * @param string $table
+   * @param string $column
+   * @param string $definition
+   * @param string $after [optional] "FIRST|AFTER xxx|LAST"
+   */
+  function addColumn($table,$column,$definition,$after="")
+  {
+    $this->execute ("
+      ALTER TABLE `$table` ADD COLUMN `$column` $definition $after;
+    ");    
+    $this->info("Added $table.$column with definition '$definition'.");   
+  }  
+  
+  /**
+   * mofify a column 
+   * @param string $table
+   * @param string $column
+   * @param string $definition
+   * @param string $after [optional] "FIRST|AFTER xxx|LAST"
+   */  
+  function modifyColumn($table,$column,$definition,$after="")
+  {
+    $this->execute ("
+      ALTER TABLE `$table` MODIFY COLUMN `$column` $definition $after;
+    ");
+    $this->info("Modified $table.$column to '$definition'.");    
+  }    
+
+  /**
+   * rename a column 
+   * @param string $table
+   * @param string $oldColumn old column name
+   * @param string $newColumn new column name
+   * @param string $definition (required)
+   * @param string $after [optional] "FIRST|AFTER xxx|LAST"
+   */    
+  function renameColumn($table,$oldColumn,$newColumn,$definition,$after)
+  {
+   $this->execute ("
+      ALTER TABLE `$table` CHANGE COLUMN `$oldColumn` `$newColumn` $definition $after
+    ");
+    $this->info("Renamed $table.$oldColumn to $table.$newColumn.");
+  }
+  
+  /**
+   * gets primary key from table
+   * @param string $table table name
+   * @return array array of columns 
+   */
+  function getPrimaryKey($table)
+  {
+    $database = $this->getDatabase(); 
+    return $this->getValues("
+      SELECT
+        COLUMN_NAME
+      FROM 
+        INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+      WHERE
+        TABLE_SCHEMA='$database' AND
+        TABLE_NAME='$table' AND
+        CONSTRAINT_NAME='PRIMARY'
+    ");
+  }
+  
+  /**
+   * set the primary key for the table
+   * @param string $table table name
+   * @param string|array $columns column(s) for the primary key
+   */
+  function addPrimaryKey($table,$columns)
+  {
+    $columns = (array) $columns;
+    $this->execute("
+      ALTER TABLE `$table` 
+      ADD PRIMARY KEY  (`" . implode("`,`", $columns) . "`);
+    ");
+    $this->info("Added primary key to table '$table'." );
+  }
+  
+  /**
+   * drops primary key of a table
+   * @param string $table
+   */
+  function dropPrimaryKey($table)
+  {
+    $this->execute("
+      ALTER TABLE `$table` DROP PRIMARY KEY;
+    ");   
+    $this->info("Removed primary key from table '$table'." ); 
+  }
+  
+  /**
+   * removes an index
+   * @param string $table table name
+   * @param string $index index name
+   * @return void
+   */
+  function dropIndex($table,$index)
+  {
+     $this->execute ("
+      ALTER TABLE `$table` DROP INDEX `$index`
+    ");
+     $this->info("Removed index '$index' from table '$table'." );
+  }
+  
+  /**
+   * get columns in index
+   * @param string $table
+   * @param string $index 
+   */
+  function getIndexColumns($table, $index)
+  {
+    $records = $this->getAllRecords("
+      SHOW KEYS FROM $table
+      WHERE `Key_name`='$index'
+    ");
+    $result = array();
+    foreach($records as $record)
+    {
+      $result[] = $record['Column_name'];
+    }
+    return $result;
+  }
+  
+  /**
+   * adds a an index
+   * @param string $type FULLTEXT|UNIQUE
+   * @param string $table
+   * @param string $index index name
+   * @param array  $columns column names in the index
+   */
+  function addIndex($type, $table, $index, $columns)
+  {
+    $this->execute ("
+      ALTER TABLE `$table` ADD $type `$index` (`" . implode("`,`", $columns) . "`);
+    ");
+    $this->info("Added $type index '$index' to table '$table' indexing columns " . implode(",",$columns) . ".");
+  }
+  
+  
+  /**
    * updates table structure to conform with sql create table statement passed
+   * @deprecated Use new xml-based table creation / update
    * @return void
    * @param string $table table name
    * @param string $sql   sql create table statement
@@ -495,83 +801,10 @@ class qcl_db_pear extends qcl_db
       $after = "AFTER $columnName";
     }
 
-  }
-
-
-  /**
-   * checks if table exists
-   * @return boolean
-   * @param $table string
-   */
-  function tableExists($table)
-  {
-    $database = $this->getDatabase();
-    return $this->getValue("
-      SELECT
-        count(*)
-      FROM
-        INFORMATION_SCHEMA.TABLES
-      WHERE
-        TABLE_NAME='$table'
-      AND
-        TABLE_SCHEMA='$database'
-    ");
-  }
-
-  /**
-   * checks if a function or stored procedure of this name exists in the database
-   * @return
-   * @param $routine
-   */
-  function routineExists($routine)
-  {
-    return $this->getValue("
-      SELECT
-        count(*)
-      FROM
-        INFORMATION_SCHEMA.ROUTINES
-      WHERE
-        ROUTINE_NAME='$routine'
-    ");
-  }
-
-  /**
-   * creates a temporary table and fills it with data
-   * @return array of citekeys
-   * @param string    $name     name of the table
-   * @param array     $columns  map: column name => column definition
-   * @param array     $data     map: column name => column value
-   */
-  function createTemporaryTable ( $name, $columnData, $data )
-  {
-
-    // create table
-    $columnDefinition = array();
-    foreach ( $columnData as $columnName => $columnDef )
-    {
-      $columnDefinition[] = "`$columnName` $columnDef";
-    }
-    $columnDefinition = implode(",",$columnDefinition);
-
-    $this->db->execute("
-      CREATE TEMPORARY TABLE `$name` (
-        $columnDefinition
-      )
-    ");
-
-    // insert values
-    $columns = array_keys($columnData);
-    foreach( $data as $row )
-    {
-      $values = array();
-      foreach( array_values( (array) $row ) as $value )
-      {
-        $values[] = "'" . addslashes($value) . "'";
-      }
-      $values = implode("'",$values);
-      $this->db->execute("INSERT INTO `$name` ($columns) VALUES($values)");
-    }
-  }
+  }  
+  
+  
 }
 
 ?>
+

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schema
+  include="qcl/db/model.xml">
+
+  <model class="qcl_access_user">
+    
+    <definition>
+    
+      <!-- model properties -->
+      <properties>
+        <property name="username" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="password" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="email" dataType="string">
+          <mysql> varchar(255) character set utf8 default NULL</mysql>
+        </property>
+        <property name="note" dataType="string">
+          <mysql> mediumtext character set utf8 default NULL</mysql>
+        </property>
+      </properties>
+      
+      <!-- aliases -->
+      <aliases>
+        <alias for="namedId">username</alias>
+        <alias for="modified">lastAction</alias>
+      </aliases>
+
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="username" />
+        </index>
+      </indexes>
+      
+    </definition>
+    
+    <!-- linked tables -->
+    <links>
+      <link 
+        table="link_user_roles" 
+        localKey="id" 
+        foreignKey="userId" />
+    </links>
+    
+  </model>
+</schema>

@@ -200,6 +200,49 @@ class qcl_config_controller extends qcl_session_controller
 		$this->set( "tabledatamodel", $table );
 		return $this->getResponseData();
 	}
+	
+  /**
+   * export to xml
+   */
+  function method_exportXML()
+  {
+    /*
+     * models
+     */
+    $configModel =& $this->getModel("config");
+    
+    require_once("qcl/xml/model.php");
+    $path = "../var/tmp/config.xml"; 
+    unlink($path);
+    
+    $xmlModel = new qcl_xml_model($this);
+    $xmlModel->load($path);
+    $doc =& $xmlModel->getDocument();
+    
+    $keysNode =& $doc->addChild("keys");
+    foreach( $configModel->getAll() as $record )
+    {
+      $keyNode =& $keysNode->addChild("key");
+      foreach( $record as $key => $value )
+      {
+        if( $key=="id" )
+        {
+          continue;
+        }
+        elseif ( $key == "namedId" )
+        {
+          $keyNode->addAttribute("name",$record['namedId']);
+        }
+        elseif ( $key != "value" && $value ) 
+        {
+          $keyNode->addAttribute($key,$value);
+        }
+      }
+      $keyNode->setCDATA(htmlentities($record['value']));
+    }
+    $this->Info($doc->asXml());
+  }
+	
 }
 
 ?>

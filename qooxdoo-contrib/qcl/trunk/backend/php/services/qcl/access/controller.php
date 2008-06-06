@@ -604,6 +604,97 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		$this->set( 'treedatamodel', $result );
 		return $this->getResponseData();
   }
+  
+  
+  /**
+   * export to xml
+   */
+  function method_exportXML()
+  {
+    /*
+     * models
+     */
+    $roleModel =& $this->getModel("role");
+    $permModel =& $this->getModel("permission");
+    $userModel =& $this->getModel("user");
+    
+    require_once("qcl/xml/model.php");
+    $path = "../var/tmp/security.xml"; 
+    unlink($path);
+    
+    $xmlModel = new qcl_xml_model($this);
+    $xmlModel->load($path);
+    $doc =& $xmlModel->getDocument();
+    
+    /*
+     * permissions
+     */
+    $permissions =& $doc->addChild("permissions");
+    foreach($permModel->getAllRecords() as $record)
+    {
+      $permission =& $permissions->addChild("permission");
+      $permission->addAttribute("name",$record['namedId']);
+      if ( $record['name'] )
+        $permission->addChild("description", htmlentities($record['name']));
+      if ( $record['note'] )
+        $permission->addChild("note",htmlentities($record['note']));
+    }
+    
+    /*
+     * roles
+     */
+    $roles =& $doc->addChild("roles");
+    foreach($roleModel->getAllRecords() as $record)
+    {
+      $role =& $roles->addChild("role");
+      $role->addAttribute("name",$record['namedId']);
+      
+      if ( $record['name'] )
+        $role->addChild("description", htmlentities($record['name']));
+      if ( $record['note'] )
+        $role->addChild("note",htmlentities($record['note']));
+        
+      /*
+       * add role permissions
+       */
+      $rolePermNode =& $role->addChild("permissions");
+      foreach( $roleModel->getPermissions($record['namedId']) as $permId )
+      {
+        $rp =& $rolePermNode->addChild("permission");
+        $rp->addAttribute("name",$permId);
+      }
+      
+    }
+    
+    /*
+     * users
+     */
+    $users =& $doc->addChild("users");
+    foreach($userModel->getAllRecords() as $record)
+    {
+      $user =& $users->addChild("user");
+      $user->addAttribute("username",$record['username']);
+      if ( $record['name'] )
+        $user->addChild("name", htmlentities($record['name']));
+      if ( $record['email'] )
+        $user->addChild("email", htmlentities($record['email']));
+      $user->addChild("password", htmlentities($record['password']));  
+
+      /*
+       * add roles
+       */
+      $userPermNode =& $user->addChild("roles");
+      $userRoles = $roleModel->getByUserId($record['id']);
+      foreach( $userRoles as $roleId )
+      {
+        $node =& $userPermNode->addChild("role");
+        $role =  $roleModel->getById($roleId);
+        $node->addAttribute("name",$role['namedId']);
+      }
+    }    
+    
+    $xmlModel->save();
+  }
 }
 ?>
 

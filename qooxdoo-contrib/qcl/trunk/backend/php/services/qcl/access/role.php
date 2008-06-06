@@ -115,7 +115,7 @@ class qcl_access_role extends qcl_access_common
 			$roleId = $row[$this->foreignKey];
 			$result[$userId][] = $roleId; 
 		}
-		return $result;
+		return $userId ? $result[$userId] : $result;
   } 
 }
 ?>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/db/model.xml">
+
+  <!-- 
+    the default model for representing datasources
+    model data is stored in a database
+   -->
+  <model 
+    name="qcl.datasource.Model"
+    extends="qcl.db.Model">
+    
+    <definition>
+      <properties>
+         <property name="namedId" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>         
+        <property name="active" dataType="boolean">
+          <mysql> tinyint(1) NOT NULL default '0'</mysql>
+        </property>
+        <property name="type" dataType="string">
+          <mysql> varchar(20) collate utf8_unicode_ci NOT NULL</mysql>
+        </property>
+        <property name="host" dataType="string">
+          <mysql> varchar(100) collate utf8_unicode_ci default NULL</mysql>
+        </property>
+        <property name="port" dataType="int">
+          <mysql> mediumint(9) default NULL</mysql>
+        </property>
+        <property name="database" dataType="string">
+          <mysql> varchar(50) collate utf8_unicode_ci default NULL</mysql>
+        </property>
+        <property name="username" dataType="string">
+          <mysql> varchar(50) collate utf8_unicode_ci default NULL</mysql>
+        </property>
+        <property name="password" dataType="string">
+          <mysql> varchar(50) collate utf8_unicode_ci default NULL</mysql>
+        </property>
+        <property name="encoding" dataType="string">
+          <mysql> varchar(20) collate utf8_unicode_ci NOT NULL</mysql>
+        </property>
+      </properties>
+    </definition>
+  </model>
+</schema>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema>
+
+  <!-- 
+    basic model stored in a database, containing 
+    a numeric id, a modified and created column 
+  -->
+  <model name="qcl.db.Model">
+    
+    <definition>
+    
+      <!-- model properties -->
+      <properties>
+        <property name="id" dataType="string">
+          <mysql>int(11) NOT NULL</mysql>
+        </property>     
+        <property name="created" dataType="string">
+          <mysql>timestamp NOT NULL default '0000-00-00 00:00:00'</mysql>
+        </property>
+        <property name="modified" dataType="string">
+          <mysql>timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</mysql>
+        </property>
+      </properties>
+      
+      <!-- model indexes -->
+      <indexes>
+        <index type="primary">
+          <property name="id" />
+        </index>        
+      </indexes>
+      
+    </definition>
+    
+  </model>
+</schema>

@@ -4,6 +4,7 @@ require_once ("qcl/db/model.php");
 
 /**
  * model for session data bases on a mysql database model
+ * @todo: this should be qcl_session_db_model
  */
 class qcl_session_model extends qcl_db_model 
 {
