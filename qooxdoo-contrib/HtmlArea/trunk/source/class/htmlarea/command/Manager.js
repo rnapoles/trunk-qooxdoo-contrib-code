@@ -1310,15 +1310,38 @@ qx.Class.define("htmlarea.command.Manager",
            
        }
 
-       /* Execute command on selection */
-       if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+       /* Focus and select range in IE before executing command */
+       if (qx.core.Variant.isSet("qx.client", "mshtml"))
+       {
          this.__doc.body.focus();
          this.__currentRange.select();
-         return this.__doc.execCommand("FontSize", false, value);
-       } else {
-         return this.__doc.execCommand("FontSize", false, value);
+       }
+       /*
+        * Gecko uses span tags to save the style settings over block elements.
+        * These span tags contain CSS which has a higher priority than the
+        * font tags which are inserted via execCommand().
+        * Each span tag inside the selection has to be updated to match the
+        * font size value of execCommand().
+        */
+       else if(qx.core.Variant.isSet("qx.client", "gecko"))
+       {
+
+         var parent = rng.commonAncestorContainer;
+
+         /* Check if seleciton is a DOM element */
+         if(parent.nodeType === 1)
+         {
+           /* Set font size on all helper span elements */
+           var spans = parent.getElementsByTagName("span");
+           for (i=0; i<spans.length; i++) {
+             spans[i].style.fontSize = value;
+           }
+         }
+
        }
 
+       /* Execute command on selection */
+       return this.__doc.execCommand("FontSize", false, value);
      },
 
 
