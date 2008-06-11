@@ -299,6 +299,7 @@ qx.Class.define("htmlarea.command.Manager",
         
         /* Flag indicating if range was empty before executing command. Needed for IE bug. */
         var emptyRange = false;
+        var range;
 
         /* Request current range explicitly, if command is one of the invalid focus commands. */
         if(
@@ -322,43 +323,49 @@ qx.Class.define("htmlarea.command.Manager",
          */
         if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          
-          if(command != "selectall")
+          if (!this.__currentRange)
           {
-            /*
-             * Select the content of the Text Range object to set the cursor at the right position
-             * and to give user feedback. Otherwise IE will set the cursor at the first position of the
-             * editor area
-             */
-            this.__currentRange.select();
-
-            if(
-                /*
-                 * If the saved Text Range object contains no text
-                 * collapse it and execute the command at the document object
-                 */
-                (
-                  (this.__currentRange.text) &&
-                  (this.__currentRange.text.length > 0)
-                )
-                ||
-                /*
-                 * Selected range is a control range with an image inside.
-                 */
-                (
-                  (this.__currentRange.length == 1) &&
-                  (this.__currentRange.item(0)) &&
-                  (this.__currentRange.item(0).tagName == "IMG")
-                )
-              )
+            execCommandTarget = this.__doc;
+          }
+          else
+          {
+            if(command != "selectall")
             {
-              execCommandTarget = this.__currentRange; 
+              /*
+               * Select the content of the Text Range object to set the cursor at the right position
+               * and to give user feedback. Otherwise IE will set the cursor at the first position of the
+               * editor area
+               */
+              this.__currentRange.select();
+  
+              if(
+                  /*
+                   * If the saved Text Range object contains no text
+                   * collapse it and execute the command at the document object
+                   */
+                  (
+                    (this.__currentRange.text) &&
+                    (this.__currentRange.text.length > 0)
+                  )
+                  ||
+                  /*
+                   * Selected range is a control range with an image inside.
+                   */
+                  (
+                    (this.__currentRange.length == 1) &&
+                    (this.__currentRange.item(0)) &&
+                    (this.__currentRange.item(0).tagName == "IMG")
+                  )
+                )
+              {
+                execCommandTarget = this.__currentRange; 
+              }
+              else
+              {
+                execCommandTarget = this.__doc;
+              }
+              
             }
-            else
-            {
-              execCommandTarget = this.__doc;
-            }
-            
           }
 
           /* 
@@ -368,7 +375,8 @@ qx.Class.define("htmlarea.command.Manager",
            */
           if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (this.__invalidFocusCommands[command]) )
           {
-            var range = this.getCurrentRange();
+            range = this.getCurrentRange();
+
             /* Check if range is empty */
             if (range.text == "") {
               emptyRange = true;
@@ -1314,7 +1322,12 @@ qx.Class.define("htmlarea.command.Manager",
        if (qx.core.Variant.isSet("qx.client", "mshtml"))
        {
          this.__doc.body.focus();
-         this.__currentRange.select();
+
+         // if we have actually an existing range we have to select it
+         if (this.__currentRange)
+         {
+           this.__currentRange.select();
+         }
        }
        /*
         * Gecko uses span tags to save the style settings over block elements.
