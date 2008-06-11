@@ -643,7 +643,68 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
+    // TODO: IN DEVELOPMENT!
+    getWords : function()
+    {
+      var list = this.getTextNodes();
+      var result = [];
+      var i, j, element, words, tmp;
 
+      for(i=0; i<list.length; i++)
+      {
+        element = list[i];
+        words = element.nodeValue.split(" ");
+        for(j=0; j<words.length; j++)
+        {
+          if(words[j].length > 1)
+          {
+            tmp = {
+              "word" : words[j],
+              "element" : element
+            };
+            result.push(tmp);
+          }
+        }
+      }
+
+      return result;
+    },
+
+    // TODO: IN DEVELOPMENT!
+    getTextNodes : function()
+    {
+      return this._fetchTextNodes(this.getContentDocument().body);
+    },
+
+    // TODO: IN DEVELOPMENT!
+    _fetchTextNodes : function(element)
+    {
+      var result = [];
+      var tmp;
+      
+      // Element node
+      if(element.hasChildNodes)
+      {
+        for(var i=0; i<element.childNodes.length; i++)
+        {
+          tmp = this._fetchTextNodes(element.childNodes[i]);
+          qx.lang.Array.append(result, tmp);
+        }
+      }
+
+      // Text node
+      if(element.nodeType == 3)
+      {
+        // Contains real text
+        if(element.nodeValue.length > 1)
+        {
+          result.push(element);
+        }
+      }
+
+      return result;
+    },
+        
     /*
     ---------------------------------------------------------------------------
       INITIALIZATION
