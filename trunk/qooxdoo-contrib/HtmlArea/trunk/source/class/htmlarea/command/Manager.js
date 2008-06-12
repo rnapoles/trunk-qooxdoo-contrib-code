@@ -487,6 +487,11 @@ qx.Class.define("htmlarea.command.Manager",
 
            if(storedRange)
            {
+             if (this.__lastSelectionType == "Control")
+             {
+               storedRange.collapse();
+             }
+
              /* Try to pasteHTML on the stored range */
              try
              {
@@ -738,6 +743,12 @@ qx.Class.define("htmlarea.command.Manager",
           */
          var currRange = this.getCurrentRange();
          currRange.select();
+
+         if (this.__lastSelectionType == "Control")
+         {
+           currRange.collapse();
+         }
+
          currRange.pasteHTML(img);
        },
        
