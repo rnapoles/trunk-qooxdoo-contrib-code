@@ -1696,11 +1696,24 @@ qx.Class.define("htmlarea.command.Manager",
            * call _visualizeFocus to get the right feedback to the user (editor is active)
            */
           qx.ui.core.ClientDocument.getInstance().setActiveChild(this);
-          
-          /* Select range before focus body element */
-          var range = this.__commandManager.__commandManager.getCurrentRange();
-          if (range) {
-            range.select();
+
+          /* 
+           * sometimes IE can't select the range, but this is not important, so 
+           * we can ignore it
+           */
+          try
+          {
+            /* Select range before focus body element */
+            var range = this.__commandManager.__commandManager.getCurrentRange();
+  
+            if (range)
+            {
+              range.select();
+            }
+          }
+          catch (e)
+          {
+            this.debug ("can't select range in __focusAfterExecCommand.");
           }
 
           this._visualizeFocus();
