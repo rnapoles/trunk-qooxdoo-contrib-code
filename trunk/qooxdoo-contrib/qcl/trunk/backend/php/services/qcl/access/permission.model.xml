@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<schema
-  include="qcl/db/model.xml"
-  extends="qcl.db.Model">
+<schema include="qcl/db/model.xml">
   
-  <model class="qcl_access_permission">
+  <model 
+    name="qcl.access.Permission"
+    extends="qcl.db.Model">
+    
     <definition>
     
       <!-- properties -->
@@ -12,7 +13,7 @@
           <mysql>varchar(50) NOT NULL</mysql>
         </property>
         <property name="note" dataType="string">
-          <mysql> varchar(255) character set utf8 default NULL</mysql>
+          <mysql> varchar(255) NULL default NULL</mysql>
         </property>
       </properties>
       

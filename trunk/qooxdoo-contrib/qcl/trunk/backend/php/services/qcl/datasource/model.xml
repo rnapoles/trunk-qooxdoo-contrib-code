@@ -6,9 +6,7 @@
     the default model for representing datasources
     model data is stored in a database
    -->
-  <model 
-    name="qcl.datasource.Model"
-    extends="qcl.db.Model">
+  <model name="qcl.datasource.Model">
     
     <definition>
       <properties>

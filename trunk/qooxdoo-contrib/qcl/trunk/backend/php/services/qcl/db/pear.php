@@ -43,6 +43,11 @@ class qcl_db_pear extends qcl_db
 		{
 			$dsn = $this->getDsn();
 		}
+		else
+		{
+		  $this->setDsn($dsn);
+		}
+		
     $this->log("Connecting to $dsn.");
 
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
@@ -505,7 +510,7 @@ class qcl_db_pear extends qcl_db
   function createTable($table)
   {
     $this->execute("
-     CREATE TABLE IF NOT EXISTS `$table` ( `dummy` tinyint(1) ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+     CREATE TABLE IF NOT EXISTS `$table` ( `modified` DATETIME NULL ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     ");
   }
   
@@ -570,7 +575,7 @@ class qcl_db_pear extends qcl_db
   }
   
   /**
-   * adds a column 
+   * adds a column, issues a warning if column exists 
    * @param string $table
    * @param string $column
    * @param string $definition
@@ -578,10 +583,17 @@ class qcl_db_pear extends qcl_db
    */
   function addColumn($table,$column,$definition,$after="")
   {
-    $this->execute ("
-      ALTER TABLE `$table` ADD COLUMN `$column` $definition $after;
-    ");    
-    $this->info("Added $table.$column with definition '$definition'.");   
+    if ( ! $this->columnExists($table,$column) )
+    {
+      $this->execute ("
+        ALTER TABLE `$table` ADD COLUMN `$column` $definition $after;
+      ");    
+      $this->info("Added $table.$column with definition '$definition'.");
+    }
+    else
+    {
+      $this->warn("Column $table.$column exists, not added.");   
+    }
   }  
   
   /**

@@ -2,7 +2,10 @@
 <schema
   include="qcl/db/model.xml">
   
-  <model class="qcl_config_db">
+  <model 
+    name="qcl.config.Db"
+    extends="qcl.db.Model"
+    table="config">
 
     <!-- model definition -->
     <definition>
@@ -28,14 +31,15 @@
           <mysql>varchar(255) NOT NULL</mysql>
         </property>
       </properties>
-
-      <!-- indexes -->
-      <indexes>
-        <index type="unique">
-          <property name="namedId" />
-        </index>
-      </indexes>
       
+      <!-- metadata -->
+      <propertyGroups>
+        <propertyGroup name="metaData">
+          <property name="namedId"/>
+          <property name="user"/>
+        </propertyGroup>
+      </propertyGroups>      
+
     </definition>
   </model>
 </schema>
