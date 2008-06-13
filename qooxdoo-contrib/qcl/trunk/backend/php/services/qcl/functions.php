@@ -183,4 +183,30 @@ function microtime_float()
     return ((float)$usec + (float)$sec);
 }
 
+/**
+ * function to properly encode string data for use in xml.
+ * Currently just a wrapper vor htmlentities()
+ * @todo implement
+ * @param string $string
+ * @return string xml-encoded string
+ */
+function xml_entity_encode($string)
+{
+  return htmlentities($string);
+}
+
+
+/**
+ * function to decode character data containing xml entities
+ * Currently just a wrapper vor htmlentity_decode()
+ * @todo implement
+ * @param string $string
+ * @return string 
+ */
+function xml_entity_decode($string)
+{
+  return htmlentity_decode($string);
+}
+
+
 ?>

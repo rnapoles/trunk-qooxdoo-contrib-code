@@ -4,7 +4,8 @@
   include="qcl/db/model.xml">
 
   <model class="qcl_access_user">
-    
+     
+    <!-- model definition -->
     <definition>
     
       <!-- model properties -->
@@ -16,10 +17,10 @@
           <mysql>varchar(50) NOT NULL</mysql>
         </property>
         <property name="email" dataType="string">
-          <mysql> varchar(255) character set utf8 default NULL</mysql>
+          <mysql> varchar(255) NULL</mysql>
         </property>
         <property name="note" dataType="string">
-          <mysql> mediumtext character set utf8 default NULL</mysql>
+          <mysql> mediumtext NULL</mysql>
         </property>
       </properties>
       

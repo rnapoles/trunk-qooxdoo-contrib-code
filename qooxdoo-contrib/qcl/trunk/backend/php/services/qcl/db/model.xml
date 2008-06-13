@@ -12,13 +12,13 @@
       <!-- model properties -->
       <properties>
         <property name="id" dataType="string">
-          <mysql>int(11) NOT NULL</mysql>
+          <mysql>int(11) NOT NULL FIRST</mysql>
         </property>     
         <property name="created" dataType="string">
-          <mysql>timestamp NOT NULL default '0000-00-00 00:00:00'</mysql>
+          <mysql>timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'</mysql>
         </property>
         <property name="modified" dataType="string">
-          <mysql>timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</mysql>
+          <mysql>timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</mysql>
         </property>
       </properties>
       
@@ -28,6 +28,13 @@
           <property name="id" />
         </index>        
       </indexes>
+      
+      <!-- metadata -->
+      <propertyGroups>
+        <propertyGroup name="metaData">
+          <property name="id"/>
+        </propertyGroup>
+      </propertyGroups>
       
     </definition>
     

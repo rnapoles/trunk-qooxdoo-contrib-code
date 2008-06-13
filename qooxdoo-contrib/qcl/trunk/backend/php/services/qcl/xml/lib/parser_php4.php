@@ -95,20 +95,15 @@ class XMLParser
      * @var array
      */
     var $indexedAttributes = array();
-    
+
+
     /**
      * Added: Index of tag names for fast access
      * @var array
      */
     var $tagIndex;
     
-    /**
-     * Added: Array of tag names that are used by the 
-     * implementation and therefore cannot be child tags
-     * @var array
-     */
-    var $invalidTags = array('tagChildren', 'tagAttrs', 'tagParents', 'tagData', 'tagName', 'tagNamespace', 'tagId', 'tagParentId');
-    
+
     /**
      * Constructor. Loads XML document.
      *
@@ -433,6 +428,14 @@ class XMLTag
      * @var int
      */
     var $tagParentId;    
+
+    /**
+     * Added: Array of tag names that are used by the 
+     * implementation and therefore cannot be child tags
+     * @var array
+     */
+    var $invalidTags = array('tagChildren', 'tagAttrs', 'tagParents', 'tagData', 'tagName', 'tagNamespace', 'tagId', 'tagParentId');    
+        
     
     /**
      * Constructor, sets up all the default values
@@ -582,7 +585,7 @@ class XMLTag
         //If the tag is a reserved name, output an error
         if(in_array($name, $this->invalidTags ))
         {
-            trigger_error('You have used a reserved name as the name of an XML tag.', E_USER_ERROR);
+            trigger_error("You have used a reserved name ('$name') as the name of an XML tag.", E_USER_ERROR);
             return;
         }
         
@@ -715,7 +718,9 @@ class XMLTag
         }
       
         //Start a new line, indent by the number indicated in $this->parents, add a <, and add the name of the tag
-        $out .= "\n".str_repeat(XMLPARSER_INDENT_CHAR, $this->tagParents).'<'.$this->tagName;
+        $out .= "\n".
+                str_repeat(XMLPARSER_INDENT_CHAR, $this->tagParents) . 
+                '<'.$this->tagName;
 
         //For each attribute, add attr="value"
         foreach($this->tagAttrs as $attr => $value)

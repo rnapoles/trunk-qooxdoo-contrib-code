@@ -53,7 +53,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 	
 	/**
 	 * a map containing the aliases for property names in 
-	 * table columns used by the model
+	 * table columns used by the model. The aliases apply to
+	 * all tables.
 	 * @var array
 	 */
 	var $aliasMap = array();
@@ -92,6 +93,25 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	var $class;
 	
+	/**
+	 * the schema as an simpleXml object, containing all
+	 * included xml files
+	 * @var qcl_xml_simpleXML
+	 */
+	var $schemaXml;
+	
+	/**
+	 * shortcuts to property nodes in schema xml
+	 * @array array of object references
+	 */
+	var $properties;
+
+  /**
+   * shortcuts to property nodes which belong to metadata
+   * @array array of object references
+   */
+  var $metaDataProperties;	
+	
   //-------------------------------------------------------------
   // deprecated properties
   //-------------------------------------------------------------
@@ -122,12 +142,12 @@ class qcl_db_model extends qcl_jsonrpc_model
    * constructor 
    * @param object reference 	$controller
    */
-	function __construct( $controller )
+	function __construct( $controller, $dsn=null )
   {
     parent::__construct(&$controller);
 		
     // initialize the database handler
-    $this->init();
+    $this->init($dsn);
 
     // generate list of metadata columns ($key_ ...)
     $this->_initMetaColumns(); 
@@ -1336,7 +1356,107 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * create or update tables
      */
-    $this->xmlSchema =& $this->updateTablesFromXmlSchema();
+    $this->schemaXml =& $this->updateTablesFromXmlSchema();
+    
+    /*
+     * setup properties 
+     */
+    $this->setupProperties();
+    
+  }
+  
+  /**
+   * setup model properties
+   */
+  function setupProperties()
+  {
+    /*
+     * check prerequisites
+     */
+    if ( ! is_object($this->schemaXml ) )
+    {
+      $this->raiseError("Model Schema hasn't been initialized.");
+    }
+    
+    $this->info($this->schemaXml->asXML());
+    
+    /*
+     * defintion node
+     */
+    $definition =& $this->schemaXml->getNode("/model/definition");
+    if ( ! $definition )
+    {
+      $this->raiseError("Model schema xml does not have a 'definition' node.");
+    }
+    
+    /*
+     * properties
+     */
+    $properties =& $definition->properties;
+    $children   =& $properties->children();
+
+    if ( ! is_object($properties) )
+    {
+      $this->raiseError("Model has no properties.");
+    }
+    
+    while ( list(,$propNode) = each($children) )
+    {
+      $attrs     = $propNode->attributes();
+      $propName  = $attrs['name'];
+      $columnVar = "col_$propName";
+      $this->$columnVar = $propName;
+      $this->properties[$propName] =& $propNode;
+      $this->info(gettype($propNode)); 
+    } 
+    
+    $this->info("Properties:");
+    $this->info($this->properties);
+
+    /*
+     * aliases
+     */
+    $aliases =& $definition->aliases;
+    if ( $aliases )
+    {
+      $aliasMap = array();
+      foreach($aliases->children() as $alias)
+      {
+        $attrs    = $alias->attributes();
+        $propName = $attrs['for'];
+        $column   = qcl_xml_simpleXML::getData(&$alias);
+        $aliasMap[$propName] = $column; 
+        $columnVar = "col_$propName"; 
+        $this->$columnVar = $column;
+      }
+      $this->aliasMap = $aliasMap; 
+    }    
+    $this->info("Alias Map:");
+    $this->info($aliasMap);
+    
+    /*
+     * setup metadata array with shortcuts to property nodes
+     */
+    $propGroups =& $definition->propertyGroups;
+    if ( $propGroups )
+    {
+      $metaDataNode =& qcl_xml_simpleXML::getChildNodeByAttribute($propGroups,"name","metaData"); 
+      if ( $metaDataNode )
+      {
+        foreach ( $metaDataNode->children() as $metaDataPropNode )
+        {
+          $attrs = $metaDataPropNode->attributes();
+          $name  = $attrs['name'];
+          $this->info("$name => " . gettype($this->properties[$name]) );
+          if ( isset($this->properties[$name]) )
+          {
+            $this->metaDataProperties[$name] =& $this->properties[$name];  
+          }
+        }
+      }
+      $this->info("Metadata properties:"); 
+      $this->info( array_keys($this->metaDataProperties));      
+    }
   }    
   
   /**
@@ -1386,24 +1506,48 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * get schema document and return it if it hasn't changed
      */
-    $this->info("Getting Schema Document...");
     $modelXml =& $this->parseXmlSchemaFile($path);
-    if ( ! $modelXml->hasChanged() ) return $modelXml;
+    if ( ! $modelXml->hasChanged() ) 
+    {
+      $this->info("Schema document hasn't changed.");
+      return $modelXml;
+    }
     
+    $this->info("Parsing Schema Document...");
     
     /*
      * schema has changed, update database backend
      */
-    $doc      =& $modelXml->getDocument();
+    $doc =& $modelXml->getDocument();
     
     /*
-     * model name, class, type and table 
+     * model-level attributes
      */
     $modelAttrs  = $doc->model->attributes();
+    
+    /*
+     * name, should be a dot-separated, java-like class name
+     */
     $this->name  = $modelAttrs['name'];
-    $this->class = $modelAttrs['class'];
+    
+    /*
+     * class can be specified separately, defaults
+     * to name and converted into PHP-style class name
+     * foo.bar.Baz => foo_bar_baz
+     */
+    $this->class = strtolower(str_replace(".","_", either( $modelAttrs['class'], $modelAttrs['name'] ) ) ); 
+    
+    /*
+     * the type can be provided if class is the implementation
+     * of a more generic data type
+     */
     $this->type  = $modelAttrs['type'];
-    $this->table = $this->getTablePrefix() . $modelAttrs['table'];
+    
+    /*
+     * the table name is either provided as the 'table' property
+     * of the class or  as the 'table' attribute of the model
+     */
+    $this->table = either($this->table,$this->getTablePrefix() . $modelAttrs['table']);
     
     $this->info("Creating or updating tables for model name '{$this->name}', type '{$this->type}', class '{$this->class}' ...");
     
@@ -1419,16 +1563,16 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * create alias table
      */
-    $aliases  = $doc->model->definition->aliases->children();
-    $aliasMap = array();
-    foreach($aliases as $alias)
+    $aliases  = $doc->model->definition->aliases;
+    if ($aliases)
     {
-      $a = $alias->attributes();
-      $aliasMap[$a['for']] = phpversion() < 5 ? $alias->CDATA() : (string) $alias;
+      $aliasMap = array();
+      foreach($aliases->children() as $alias)
+      {
+        $a = $alias->attributes();
+        $aliasMap[$a['for']] = phpversion() < 5 ? $alias->CDATA() : (string) $alias;
+      }
     }
-    // save it to object
-    $this->aliasMap[$table] = $aliasMap;
-    
     //$this->info("Aliases:");
     //$this->info($aliasMap);
     
@@ -1443,13 +1587,13 @@ class qcl_db_model extends qcl_jsonrpc_model
       $colName   = either($aliasMap[$propName],$propName);
       
       //@todo: accept either <$sqltype> or <sql type="$sqltype">
-      $newDef    = $property->$sqltype->CDATA();
+      $newDef    = (phpversion() < 5 ) ? $property->$sqltype->CDATA() : (string) $property->$sqltype ;
       $oldDef    = $this->db->getColumnDefinition($table,$colName);
       
       //$this->info("Property '$propName', Column '$colName':" );
       //$this->info("Old def: '$oldDef', new def:'$newDef'");
-      
-      if ($newDef == $oldDef ) 
+       
+      if ( strtolower($newDef) == strtolower($oldDef) ) 
       {
         // nothing to do
         continue;
@@ -1470,7 +1614,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     
     /*
-     * contraints
+     * contraints 
      */
     $constraints =& $doc->model->definition->constraints;
     if ( $constraints )
@@ -1572,11 +1716,11 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * creating link tables
      */
-    $links = $doc->model->links->children();
-    if ( count($links) )
+    $links = $doc->model->links;
+    if ( is_object($links) and count($links->children() ) )
     {
       $this->info("Creating or updating linked tables...");
-      foreach ($links as $link)
+      foreach ($links->children() as $link)
       {
         $a = $link->attributes();
         
@@ -1651,6 +1795,7 @@ class qcl_db_model extends qcl_jsonrpc_model
           
       }
     }
+
     return $modelXml;
   }
     
@@ -1666,26 +1811,128 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * load model schema xml file
      */
-    $this->info("loading model schema file '$file'...");
+    $this->info("Loading model schema file '$file'...");
     $modelXml =& new qcl_xml_simpleXML($file); 
+    $modelXml->removeLock(); // we don't need a lock, since this is read-only
     $doc =& $modelXml->getDocument();
     
     /*
      * does the model schema inherit from another schema?
      */
     $rootAttrs   = $doc->attributes();
-    $modelAttrs  = $doc->model->attributes();
+    $includeFile = $rootAttrs['include'];
     
-    if ( $rootAttrs['include'] )
+    if ( $includeFile  )
     {
-      $parentXml   =& $this->parseXmlSchemaFile($rootAttrs['include']);
+      $this->info("Including '$includeFile' into '$file'...");
+      $parentXml   =& $this->parseXmlSchemaFile($includeFile);
       $modelXml->extend($parentXml);
     }
     
+    /*
+     * return the aggregated schema object
+     */
     return $modelXml;
-    
   }
 
+  /**
+   * exports model data to an xml file
+   *
+   * @param string $path file path, defaults to the location of the inital data file
+   */
+  function export($path=null)
+  {
+    if ( ! is_object ( $this->schemaXml ) )
+    {
+      $this->raiseError("Model must be initialized before exporting data.");
+    }
+    
+    $class   = get_class($this);
+    $path    = either($path,str_replace("_","/",$class) . ".data.xml");
+    
+    $this->info("Exporting $class data to $path");
+    
+    /*
+     * remove old file
+     */
+    @unlink($path);
+    
+    /*
+     * create new xml file
+     */
+    $dataXml     =& new qcl_xml_simpleXML();
+    $dataXml->createIfNotExists($path);
+    $dataXml->load($path); 
+    
+    /*
+     * create the main nodes
+     */
+    $doc         =& $dataXml->getDocument();
+    $dataNode    =& $doc->addChild("data");
+    $recordsNode =& $dataNode->addChild("records");
+    
+    /*
+     * export all records
+     */
+    $records = $this->getAllRecords();
+    foreach($records as $record)
+    {
+      $recordNode =& $recordsNode->addChild("record");
+      
+      /*
+       * dump each column value 
+       */
+      foreach ($this->properties as $propName => $propNode)
+      {
+        /*
+         * column name is either alias or property name
+         */
+        $column = $this->getAlias($propName);
+
+        /*
+         * skip numeric id, created and modified
+         */
+        if ( in_array($column,array($this->col_id,$this->col_modified,$this->col_created))) 
+        {
+          continue;
+        }
+
+        /*
+         * create property data node for each column
+         */
+        $propDataNode =& $recordNode->addChild("property");
+        $propDataNode->addAttribute("name",$propName);
+        $cdata = xml_entity_encode($record[$column]);
+        $dataXml->setData(&$propDataNode,$cdata);
+      }
+    }
+    
+    /*
+     * save xml
+     */
+    $dataXml->save();
+  }
+  
+  /**
+   * checks if a property has an alias 
+   *
+   * @param string $propName property name
+   */
+  function hasAlias($propName)
+  {
+    return ( isset( $this->aliasMap[$propName] ) );
+  }
+  
+  /**
+   * get the local alias of a property name, or
+   * return the name if no alias exists
+   * @param string $propName property name
+   * @return string alias or property name
+   */
+  function getAlias($propName)
+  {
+    return either ( $this->aliasMap[$propName], $propName );
+  }
   
 }	
 ?>
