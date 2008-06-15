@@ -6,7 +6,10 @@
     the default model for representing datasources
     model data is stored in a database
    -->
-  <model name="qcl.datasource.Model">
+  <model 
+    table="datasources"
+    name="qcl.datasource.db.Model"
+    extends="qcl.db.Model">
     
     <definition>
       <properties>
@@ -17,27 +20,28 @@
           <mysql> tinyint(1) NOT NULL default '0'</mysql>
         </property>
         <property name="type" dataType="string">
-          <mysql> varchar(20) collate utf8_unicode_ci NOT NULL</mysql>
+          <mysql> varchar(20) NULL</mysql>
         </property>
         <property name="host" dataType="string">
-          <mysql> varchar(100) collate utf8_unicode_ci default NULL</mysql>
+          <mysql> varchar(100) NULL</mysql>
         </property>
         <property name="port" dataType="int">
-          <mysql> mediumint(9) default NULL</mysql>
+          <mysql> mediumint(9) NULL</mysql>
         </property>
         <property name="database" dataType="string">
-          <mysql> varchar(50) collate utf8_unicode_ci default NULL</mysql>
+          <mysql> varchar(50) NULL</mysql>
         </property>
         <property name="username" dataType="string">
-          <mysql> varchar(50) collate utf8_unicode_ci default NULL</mysql>
+          <mysql> varchar(50) NULL</mysql>
         </property>
         <property name="password" dataType="string">
-          <mysql> varchar(50) collate utf8_unicode_ci default NULL</mysql>
+          <mysql> varchar(50) NULL</mysql>
         </property>
         <property name="encoding" dataType="string">
-          <mysql> varchar(20) collate utf8_unicode_ci NOT NULL</mysql>
+          <mysql> varchar(20) NULL</mysql>
         </property>
       </properties>
+      
     </definition>
   </model>
 </schema>

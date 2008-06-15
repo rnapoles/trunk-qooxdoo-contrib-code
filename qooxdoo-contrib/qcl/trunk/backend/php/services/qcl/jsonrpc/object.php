@@ -331,5 +331,33 @@ class qcl_jsonrpc_object extends qcl_object {
     $this->remove($lockId);
   }
 
+  /**
+   * tests if file has changed since last check
+   * returns true on first check and throws an error
+   * if file does not exist
+   * @param string $path File path
+   * @return boolean
+   */
+  function fileChanged($path)
+  {
+    if ( !is_valid_file($path) )
+    {
+      $this->raiseError("qcl_jsonrpc_object::fileChanged: '$path'  is not a valid file." );
+    }
+    
+    /*
+     * get stored file modification time
+     */
+    $filectime  = filectime($path);
+    $sessionVar = "filectime_" . md5($path);
+    $storedTime = $this->getSessionVar($sessionVar);
+    
+    if ( $filectime != $storedTime )
+    {
+      $this->setSessionVar( $sessionVar, $filectime );
+      return true;
+    }
+    return false;
+  }
 }
 

@@ -545,6 +545,51 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   }
   
   /**
+   * removes a child node that that matches an attribute-value pair
+   * can be called statically
+   * @param object $node
+   * @param string $name
+   * @param string $value
+   * @return boolean True if node was found and removed, false if not found
+   */
+  function removeChildNodeByAttribute($node,$name,$value)
+  {
+    if ( ! qcl_xml_simpleXML::isNode($node) )
+    {
+      qcl_xml_simpleXML::raiseError("qcl_xml_simpleXML::removeChildNodeByAttribute : invalid node.");
+    }
+   
+    /*
+     * remove target node
+     */      
+    $found = false;
+    foreach ( $node->children() as $i => $child )
+    {
+      $childAttrs = $child->attributes();
+      if ( $childAttrs[$name] == $value )
+      {
+        $found = true;
+        $this->info("Removed node containing $name = $value...");
+        if (phpversion() < 5)
+        {
+          $node->removeChild($child);
+        }
+        else
+        {
+          /*
+           * there is no removeChild implementation
+           * in SimpleXML
+           */                    
+          unset($node[$i]);  
+        }
+      }
+    }
+    return $found;
+  }
+  
+  
+  
+  /**
    * save current xml object tree and the cache
    */
   function save()
@@ -637,7 +682,9 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       }
       
       $tag = $sourceChild->getName();
-      $targetChild =& $target->$tag;
+      $targetChild =& $target->$tag;      
+      //$this->info("$tag -> " . gettype($targetChild) );
+
       $doCopyNode  = true;      
       
       /*
@@ -708,6 +755,22 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         if ( is_object($sourceChild) )
         {
           /*
+           * source child attributes
+           */
+          $srcChildAttrs = $sourceChild->attributes();
+          
+          /*
+           * skip child node if target has a node that replaces 
+           * this node
+           */
+          $srcChildName = $srcChildAttrs['name'];
+          if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
+          {
+            //$this->info("$srcChildName exists, not adding node...");
+            continue;
+          }
+          
+          /*
            * add new child to target node
            */
           $cdata = $this->getData(&$sourceChild);
@@ -715,7 +778,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
           
           //$this->info("Creating single node $tag.");
           
-          foreach($sourceChild->attributes() as $key => $value )
+          foreach( $srcChildAttrs as $key => $value )
           {
             $targetChild->addAttribute($key,$value);
           }
@@ -747,33 +810,15 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
              */
             $sAttr = $s->attributes();
             
-             /*
-             * replace target node with source node, using
-             * replace="foo" to replace name="foo"
-             */          
-            $tRepl = $sAttr['replace'];
-            if ( $tRepl )
+            /*
+             * skip child node if target has a node that replaces 
+             * this node
+             */
+            $srcChildName = $sAttrs['name'];
+            if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
             {
-              foreach ( $target->children() as $i => $t )
-              {
-                $tAttr = $t->attributes();
-                if ( $tAttr['name'] == $tRepl )
-                {
-                  if (phpversion() < 5)
-                  {
-                    $target->removeChild($t);
-                  }
-                  else
-                  {
-                    /*
-                     * there is no removeChild implementation
-                     * in SimpleXML
-                     */                    
-                    unset($target[$i]);  
-                  }
-                  
-                }
-              }
+              //$this->info("$srcChildName exists, not adding node...");
+              continue;
             }
             
             /*

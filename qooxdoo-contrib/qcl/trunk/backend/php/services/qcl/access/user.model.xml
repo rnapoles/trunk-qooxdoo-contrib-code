@@ -3,7 +3,10 @@
 <schema
   include="qcl/db/model.xml">
 
-  <model class="qcl_access_user">
+  <model 
+    table="users"
+    name="qcl.access.User"
+    extends="qcl.db.Model">
      
     <!-- model definition -->
     <definition>
@@ -20,14 +23,16 @@
           <mysql> varchar(255) NULL</mysql>
         </property>
         <property name="note" dataType="string">
-          <mysql> mediumtext NULL</mysql>
+          <mysql>mediumtext NULL</mysql>
         </property>
+        <property name="lastAction" dataType="date">
+          <mysql>datetime NULL</mysql>
+        </property> 
       </properties>
       
       <!-- aliases -->
       <aliases>
         <alias for="namedId">username</alias>
-        <alias for="modified">lastAction</alias>
       </aliases>
 
       <!-- indexes -->

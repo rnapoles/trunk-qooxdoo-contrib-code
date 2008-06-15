@@ -2,6 +2,7 @@
 <schema include="qcl/db/model.xml">
   
   <model 
+    table="permissions"
     name="qcl.access.Permission"
     extends="qcl.db.Model">
     

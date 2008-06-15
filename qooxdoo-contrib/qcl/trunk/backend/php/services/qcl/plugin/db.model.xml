@@ -1,47 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<schema
-  include="qcl/db/model.xml">
-  
-  <model class="qcl_plugin_db">
-   
-    <!-- model definition -->
+<!-- plugin model schema -->
+<schema include="qcl/db/model.xml">
+  <model 
+    table="plugins"
+    name="qcl.plugins.db.Model"
+    extends="qcl.db.Model">
+
+   <!-- model definition -->
     <definition>
     
       <!-- properties -->
       <properties>
-
-        <property name="namedId" dataType="string">
+        <property name="namedId" dataType="string"> 
           <mysql>varchar(50) NOT NULL</mysql>
         </property>
         <property name="type" dataType="string">
           <mysql>varchar(20) NOT NULL</mysql>
         </property>
-        <property name="active" dataType="boolean">
-          <mysql>tinyint(1) NOT NULL</mysql>
+        <property name="active" dataType="boolean"> 
+          <mysql>int(1) NOT NULL DEFAULT '0'</mysql>
+        </property>
+        <property name="status" dataType="string">
+          <mysql>varchar(50) NULL</mysql>
         </property>
         <property name="permission" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+          <mysql>varchar(50) NULL</mysql>
         </property>
         <property name="author" dataType="string">
-          <mysql>text NOT NULL</mysql>
+          <mysql>varchar(100) NULL</mysql>
         </property>
         <property name="description" dataType="string">
-          <mysql>varchar(60) NOT NULL</mysql>
-        </property>
+          <mysql>varchar(255) NULL</mysql>
+        </property>        
       </properties>
 
-      <aliases>
-        <alias for="permission">permissionRead</alias>
-      </aliases>
-
+      <!-- unique index namedId/theme -->
       <indexes>
         <index type="unique">
           <property name="namedId" />
-        </index>
+        </index>        
       </indexes>
-      
-    </definition>
 
+      <!-- property groups -->
+      <propertyGroups>
+      
+        <!-- metadata -->
+        <propertyGroup name="metaData">
+          <property name="namedId"/>
+        </propertyGroup>
+      
+      </propertyGroups>
+                
+    </definition>
   </model>
-  
 </schema>
