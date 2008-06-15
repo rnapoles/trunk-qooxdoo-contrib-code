@@ -546,7 +546,8 @@ class qcl_datasource_controller extends qcl_mixin
     $class      = $params[0];
     $datasource = either(trim($params[1]),null);
     
-    $model =& $this->getNew($class);
+    $model =& $this->getNew($class); 
+    $model->_init("mysql://root:root@localhost/test");
     $model->db->connect("mysql://root:root@localhost/test");
     $model->initialize($datasource);
   }

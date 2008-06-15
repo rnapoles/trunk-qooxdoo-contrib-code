@@ -2,7 +2,11 @@
 <schema
   include="qcl/db/model.xml">
   
-  <model class="qcl_access_role">
+  <model 
+    table="roles"
+    name="qcl.access.Role"
+    extends="qcl.db.Model">
+     
     <definition>
     
       <!-- properties -->

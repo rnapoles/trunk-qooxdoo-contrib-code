@@ -205,7 +205,7 @@ function xml_entity_encode($string)
  */
 function xml_entity_decode($string)
 {
-  return htmlentity_decode($string);
+  return html_entity_decode($string); 
 }
 
 

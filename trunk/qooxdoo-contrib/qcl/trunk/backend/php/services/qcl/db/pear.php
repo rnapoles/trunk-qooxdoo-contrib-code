@@ -193,7 +193,9 @@ class qcl_db_pear extends qcl_db
 	 */
 	function insert ( $table, $data )
 	{
-		// inserting several rows at once
+		/*
+		 * inserting several rows at once
+		 */ 
     if ( is_array($data[0]) )
     {
       $ids = array();
@@ -204,7 +206,9 @@ class qcl_db_pear extends qcl_db
       return $ids;
     }
 
-    // construct query
+    /*
+     * prepare columns and values
+     */
 		$columns = array();
     $values	 = array();
 
@@ -223,15 +227,27 @@ class qcl_db_pear extends qcl_db
 			{
 				$values[] = $value;
 			}
+			elseif ( is_null($value) ) 
+			{
+			  $values[] = "NULL";
+			}
 			else
 			{
 				$values[] = "'" . $this->escape( $value ) . "'";
 			}
 		}
+    
+		/*
+		 * create sql strings
+		 */
     $columns = implode("`,`", $columns );
 		$values  = implode (",", $values );
 
-		$this->execute ("
+		/*
+		 * inserting records unless it conflicts with a
+		 * primary key or unique index
+		 */
+		$this->execute("
 			INSERT IGNORE INTO
 				`$table` (`$columns`)
 			VALUES ($values)
@@ -506,11 +522,17 @@ class qcl_db_pear extends qcl_db
     }
   }
 
-  
+  /**
+   * creates a table wit an numeric, unique, self-incrementing 'id' column, 
+   * which is also the primary key, with utf-8 as default character set
+   */
   function createTable($table)
   {
     $this->execute("
-     CREATE TABLE IF NOT EXISTS `$table` ( `modified` DATETIME NULL ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+     CREATE TABLE IF NOT EXISTS `$table` ( 
+      `id` INT(11) NOT NULL AUTO_INCREMENT,
+       PRIMARY KEY (id) 
+      ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
     ");
   }
   
@@ -692,6 +714,7 @@ class qcl_db_pear extends qcl_db
    * get columns in index
    * @param string $table
    * @param string $index 
+   * @return array Array of column names that belong to the index
    */
   function getIndexColumns($table, $index)
   {

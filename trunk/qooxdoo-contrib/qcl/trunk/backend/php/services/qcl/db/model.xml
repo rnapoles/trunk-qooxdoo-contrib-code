@@ -11,29 +11,39 @@
     
       <!-- model properties -->
       <properties>
-        <property name="id" dataType="string">
-          <mysql>int(11) NOT NULL FIRST</mysql>
-        </property>     
+
+        <!-- 'id' column int(11) NOT NULL AUTO_INCREMENT was added during table creation and defined as primary key -->
+
         <property name="created" dataType="string">
           <mysql>timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'</mysql>
         </property>
         <property name="modified" dataType="string">
           <mysql>timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</mysql>
         </property>
-      </properties>
+      </properties> 
       
-      <!-- model indexes -->
-      <indexes>
-        <index type="primary">
+      <!-- constraints -->
+      <constraints> 
+        <!-- 'id' column is already defined as primary key, here only given as example -->
+        <!-- constraint type="primary"> 
           <property name="id" />
-        </index>        
-      </indexes>
+        </constraint-->        
+      </constraints>
       
-      <!-- metadata -->
       <propertyGroups>
+      
+        <!-- metadata -->
         <propertyGroup name="metaData">
           <property name="id"/>
         </propertyGroup>
+      
+        <!-- skip when export data -->
+        <propertyGroup name="skipExport">
+          <property name="id"/>
+          <property name="created"/>
+          <property name="modified"/>
+        </propertyGroup>
+        
       </propertyGroups>
       
     </definition>
