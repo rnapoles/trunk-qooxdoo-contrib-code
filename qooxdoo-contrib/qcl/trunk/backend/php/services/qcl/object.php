@@ -181,7 +181,17 @@ class qcl_object extends patched_object
 	 */
 	function &getNew( $classname, $controller = null ) 
 	{       
-    // check for class existence
+    /*
+     * convert dot-separated class names
+     */
+	  if (strstr($classname,"."))
+	  {
+	    $classname = strtolower(str_replace(".","_",$classname));
+	  }
+	  
+	  /*
+	   * check for class existence
+	   */ 
     if ( ! class_exists ( $classname ) ) 
     {
       $path = $this->includeClassFile($classname);
@@ -193,7 +203,9 @@ class qcl_object extends patched_object
       }
     }
     
-    // instantiate object
+    /*
+     * instantiate object
+     */
     if ( ! $controller and is_a ( $this, "qcl_jsonrpc_controller" ) )
     {
     	$controller =& $this;
@@ -269,12 +281,37 @@ class qcl_object extends patched_object
   }  
   
   /**
-   * gets the stack trace of invoked objects
+   * gets the backtrace of invoked objects
    * @return string list
    */
-  function getStackTrace()
+  function getBacktrace()
   {
-    return implode("\n",array_reverse($GLOBALS['_stackTrace'])) ;
+    return debug_get_backtrace(3);
   }
+  
+  /**
+   * raises a server error and exits
+   * @param string $message
+   * @param int    $number
+   * @param string $file
+   * @param int    $line
+   * return void
+   */
+  function raiseError( $message, $number=null, $file=null, $line=null )
+  {
+    if ( $file and $line )
+    {
+      $message .= " in $file, line $line.";
+    }
+    $this->log( 
+      "### Error in " . get_class($this) . " ###\n" . 
+      $message . "\n" . 
+      "Backtrace:\n" . 
+      $this->getBacktrace(), 
+      QCL_LOG_ERROR
+    );
+    echo $message;
+    exit;
+  }  
 	  
 }
