@@ -81,6 +81,11 @@ class qcl_jsonrpc_object extends qcl_object {
 
   /**
    * raises a server error and exits
+   * @param string $message
+   * @param int    $number
+   * @param string $file
+   * @param int    $line
+   * @return void
    */
   function raiseError( $message, $number=null, $file=null, $line=null )
   {
@@ -91,8 +96,8 @@ class qcl_jsonrpc_object extends qcl_object {
     $this->log( 
       "### Error in " . get_class($this) . " ###\n" . 
       $message . "\n" . 
-      "Stack Trace:\n" . 
-      $this->getStackTrace(), 
+      "Backtrace:\n" . 
+      $this->getBacktrace(), 
       QCL_LOG_ERROR
     );
     // pass error to jsonrpc error object ( or end gracefully)

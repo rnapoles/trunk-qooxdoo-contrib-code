@@ -208,5 +208,53 @@ function xml_entity_decode($string)
   return html_entity_decode($string); 
 }
 
+/**
+ * modification of debug_print_backtrace() - modified not to
+ * echo but instead to return the backtrace and to 
+ * skip a variable number of entries
+ *
+ * @category    PHP
+ * @package     PHP_Compat
+ * @link        http://php.net/function.debug_print_backtrace
+ * @author      Laurent Laville <pear@laurent-laville.org>
+ * @author      Aidan Lister <aidan@php.net>
+ * @author      Christian Boulanger <c.boulanger@qxtransformer.org>
+ * @version     $Revision: 1.3 $
+ * @since       PHP 5
+ * @return      string
+ * @require     PHP 4.3.0 (debug_backtrace)
+ */
+
+function debug_get_backtrace($skip=1)
+{
+    // Get backtrace
+    $backtrace = debug_backtrace();
+
+    // Skip entries
+    for($i0;$i<$skip;$i++)
+      array_shift($backtrace);
+    
+    // Iterate backtrace
+    $calls = array();
+    foreach ($backtrace as $i => $call) {
+        $location = $call['file'] . ':' . $call['line'];
+        $function = (isset($call['class'])) ?
+            $call['class'] . '.' . $call['function'] :
+            $call['function'];
+       
+        $params = '';
+        if (isset($call['args'])) {
+            $params = implode(', ', $call['args']);
+        }
+
+        $calls[] = sprintf('#%d  %s(%s) called at [%s]',
+            $i,
+            $function,
+            $params,
+            $location); 
+    }
+
+    return implode("\n", $calls);
+}
 
 ?>
