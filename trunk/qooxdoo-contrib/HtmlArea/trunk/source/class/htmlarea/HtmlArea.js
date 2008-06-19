@@ -1469,50 +1469,46 @@ qx.Class.define("htmlarea.HtmlArea",
             e.preventDefault();
             e.stopPropagation();
 
-            switch(qx.core.Client.getInstance().getEngine())
+            if (qx.core.Variant.isSet("qx.client", "gecko"))
             {
-               case "gecko":
-                 /*
-                  * Insert additionally an empty div element - this ensures that
-                  * the caret is shown and the cursor moves down a line correctly
-                  *
-                  * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
-                  * only necessary to have anything AFTER the "br" element to get it work.
-                  * Strange hack, I know ;-)
-                  */
-                 this.insertHtml("<br /><div id='placeholder'></div>");
-                 //this.insertHtml("<br _moz_dirty=\"\"/><div id='placeholder'></div>");
-                 //this.insertHtml('<p><br type="_moz" /></p>');
-               break;
+              /*
+               * Insert additionally an empty div element - this ensures that
+               * the caret is shown and the cursor moves down a line correctly
+               *
+               * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
+               * only necessary to have anything AFTER the "br" element to get it work.
+               * Strange hack, I know ;-)
+               */
+              this.insertHtml("<br /><div id='placeholder'></div>");
+            }
+            else if (qx.core.Variant.isSet("qx.client", "webkit"))
+            {
+              /*
+               * TODO: this mechanism works well when the user already typed in some text at the
+               * current line. If the linebreak is done without any text at the current line the
+               * cursor DOES NOT correspond -> it stays at the current line although the linebreak
+               * is inserted. Navigating to the next line with the arrow down key is possible.
+               */
+              this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
+            }
+            else if (qx.core.Variant.isSet("qx.client", "opera"))
+            {
+              /*
+               * To insert a linebreak for Opera it is necessary to work with ranges and add the
+               * br element on node-level. The selection of the node afterwards is necessary for Opera
+               * to show the cursor correctly.
+               */
+              var sel    = this.__getSelection();
+              var rng    = this.__createRange(sel);
 
-               case "webkit":
-                 /*
-                  * TODO: this mechanism works well when the user already typed in some text at the
-                  * current line. If the linebreak is done without any text at the current line the
-                  * cursor DOES NOT correspond -> it stays at the current line although the linebreak
-                  * is inserted. Navigating to the next line with the arrow down key is possible.
-                  */
-                 this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
-               break;
+              var brNode = doc.createElement("br");
+              rng.collapse(true);
+              rng.insertNode(brNode);
+              rng.collapse(true);
 
-               case "opera":
-                 /*
-                  * To insert a linebreak for Opera it is necessary to work with ranges and add the
-                  * br element on node-level. The selection of the node afterwards is necessary for Opera
-                  * to show the cursor correctly.
-                  */
-                 var sel    = this.__getSelection();
-                 var rng    = this.__createRange(sel);
-
-                 var brNode = doc.createElement("br");
-                 rng.collapse(true);
-                 rng.insertNode(brNode);
-                 rng.collapse(true);
-
-                 rng.selectNode(brNode);
-                 sel.addRange(rng);
-                 rng.collapse(true);
-               break;
+              rng.selectNode(brNode);
+              sel.addRange(rng);
+              rng.collapse(true);
             }
           }
 
