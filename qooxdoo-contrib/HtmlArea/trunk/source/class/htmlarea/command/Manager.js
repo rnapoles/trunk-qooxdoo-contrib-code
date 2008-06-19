@@ -987,6 +987,12 @@ qx.Class.define("htmlarea.command.Manager",
        /* Current selection */
        var sel = this.__editorInstance.__getSelection();
        
+       /* Check the focusNode - if not available return a empty map */
+       if (sel.focusNode == null)
+       {
+         return {};
+       }
+       
        /* Get HTML element on which the selection has ended */
        var elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
 
