@@ -1350,24 +1350,31 @@ qx.Class.define("htmlarea.command.Manager",
         * Gecko uses span tags to save the style settings over block elements.
         * These span tags contain CSS which has a higher priority than the
         * font tags which are inserted via execCommand().
-        * Each span tag inside the selection has to be updated to match the
-        * font size value of execCommand().
+        * For each span tag inside the selection the CSS property has to be 
+        * removed to hand over the control to the font size value of execCommand().
         */
        else if(qx.core.Variant.isSet("qx.client", "gecko"))
        {
-
          var parent = rng.commonAncestorContainer;
 
-         /* Check if seleciton is a DOM element */
+         /* Check if selection is a DOM element */
          if(parent.nodeType === 1)
          {
-           /* Set font size on all helper span elements */
+           /* 
+            * Remove the font size property if it is available, otherwise it 
+            * will interfere with the setting of the "font" element.
+            * If we try to set the font size with the CSS property we will
+            * have to transform the font sizes 1-7 to px values which will 
+            * never work out correctly.
+            */
            var spans = parent.getElementsByTagName("span");
            for (i=0; i<spans.length; i++) {
-             spans[i].style.fontSize = value;
+             if (spans[i].style.fontSize)
+             {
+               spans[i].style.fontSize = null;
+             }
            }
          }
-
        }
 
        /* Execute command on selection */
