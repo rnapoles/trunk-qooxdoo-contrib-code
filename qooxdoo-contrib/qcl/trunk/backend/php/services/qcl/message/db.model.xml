@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema>
+
+  <!-- model for messages stored in the database -->
+  
+  <model
+    name="qcl.message.Model"
+    table="messages">
+    
+    <definition>
+      <properties>
+      
+        <property name="class" dataType="string">
+          <mysql>varchar(100) NOT NULL</mysql>
+        </property>      
+        <property name="session_id" dataType="string">
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>  
+        <property name="request_id" dataType="string">
+          <mysql>varchar(150) NOT NULL</mysql>
+        </property>  
+        <property name="name" dataType="string">
+          <mysql>varchar(100) NOT NULL</mysql>
+        </property>         
+        <property name="data" dataType="string">
+          <mysql>blob NOT NULL</mysql>
+        </property>           
+      
+      </properties>
+    </definition>
+  </model>
+</schema>
