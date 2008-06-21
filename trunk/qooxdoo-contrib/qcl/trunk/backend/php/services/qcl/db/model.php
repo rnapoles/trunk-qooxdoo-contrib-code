@@ -27,7 +27,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * the datasource object instance
-   * @var qcl_db_pear 
+   * @var qcl_db_mysql 
    */
   var $db;
   
@@ -177,6 +177,25 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function __call( $function, $arguments, &$return) 
   {
+    /*
+     * we need to reimplement the mixin behavior from 
+     * qcl_object because we cannot call the parent 
+     * class method
+     * @see qcl_object::__call()
+     */
+    if ( phpversion() > 5 and isset($this->_mixinlookup[$method] ) )
+    {
+      $elems = array();
+      for ($i=0, $_i=count($args); $i<$_i; $i++) $elems[] = "\$args[$i]";
+      eval("\$result = ".$this->_mixinlookup[$method]."::"
+          .$method."(".implode(',',$elems).");");
+      return $result;
+    }
+    
+    /*
+     * php4 or no matching mixin methods found.
+     * Now we intercept the getter and setter method calls
+     */
     $startsWith = substr( $function, 0, 3 );
     $endsWith   = substr( $function, 3 );
     if ( $startsWith == "set" )
@@ -292,8 +311,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 */
 	function _init($dsn=null)
 	{
-    require_once("qcl/db/pear.php"); 
-	  $db =& new qcl_db_pear(&$this->controller,$dsn);
+    require_once("qcl/db/mysql.php"); 
+	  $db =& new qcl_db_mysql(&$this->controller,$dsn);
     if ( $db->error )
     {
       $this->raiseError($db->error);
@@ -1203,9 +1222,6 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->raiseError ("Cannot create table $table - sql file '$file' does not exist.");
     }
     $this->db->execute($createSql);
-    $this->createTriggers($table);
-    $this->createFunctions($table);
-    $this->addInitialValues($table);
   }
   
   /**
@@ -1251,27 +1267,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
   } 
 
-  /**
-   * adds table-related functions.
-   */
-  function createFunctions($table)
-  {
-    $file = $this->getSqlFileName($table . ".functions" );
-    if ( file_exists ( $file ) )
-    {
-      $this->info("Creating functions...");
-      $database  = $this->db->getDatabase();
-      $content   = file_get_contents ( $file );
-      eval('$sql = "' . str_replace('"',"'",$content) . '";'); 
-      foreach ( explode("###",$sql) as $part )
-      {
-        if ( $part = trim($part) )
-        {
-          $this->db->execute( $part );
-        }
-      }
-    }
-  }
+
 
   /**
    * gets table structure as sql create statement from database

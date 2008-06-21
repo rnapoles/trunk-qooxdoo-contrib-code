@@ -76,8 +76,8 @@ class qcl_db extends qcl_jsonrpc_object
 			$this->raiseError ("cql_db : Cannot instantiate " . get_class($this) . " object: No controller object provided. Received a " . get_class($controller) . " object.");
 		}
 
-		require_once ("qcl/db/pear.php");
-		$db =& new qcl_db_pear(&$controller,$dsn);
+		require_once ("qcl/db/mysql.php");
+		$db =& new qcl_db_mysql(&$controller,$dsn);
 
 		return $db;
 	}		

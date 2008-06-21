@@ -2,13 +2,14 @@
 
 /**
  * Base class for rpc objects which do database queries
+ * in a mysql database
  * relying on PEAR::DB for database access
- * currently, only MySQL is supported
+ * @todo: remove PEAR:DB dependency, it is not really needed.
  */
 
 require_once ("qcl/db/db.php");
 
-class qcl_db_pear extends qcl_db
+class qcl_db_mysql extends qcl_db
 {
 
 	//-------------------------------------------------------------
@@ -135,7 +136,7 @@ class qcl_db_pear extends qcl_db
 	{
 		if ( ! is_object($this->db) )
     {
-      $this->raiseError ( "qcl_db_pear::getRow : No database connection. Aborting.");
+      $this->raiseError ( "qcl_db_mysql::getRow : No database connection. Aborting.");
     }
 
     $this->log($sql,QCL_LOG_DEBUG);
@@ -838,6 +839,151 @@ class qcl_db_pear extends qcl_db
 
   }  
   
+  /**
+   * creates functions that help maintain a tree structure in the 
+   * database:
+   * 
+   * table_getHierarchyPath( int folderId ):
+   * returns a slash-separated hierarchy path
+   * table_getHierarchyIds( int folderId )
+   * 
+   * Having these functions will significantly speed up tree
+   * path lookup
+   * @param string $table Table name
+   * @param string $col_id Name of id column
+   * @param string $col_parentId Name of parent id column
+   * @param string $col_label Name of node label/name
+   */
+  function createHierarchyFunctions($table, $col_id, $col_parentId, $col_label)
+  {
+    /*
+     * @todo: check permissions
+     */
+    
+    /*
+     * drop functions in case they are already defined
+     */
+    $this->execute("
+      DROP FUNCTION IF EXISTS `{$this->table}_getHierarchyPath`
+    ");
+    $this->execute("
+      DROP FUNCTION IF EXISTS `{$this->table}_getHierarchyIds`
+    "); 
+
+    /*
+     * create functions
+     */
+    $this->execute("
+      CREATE FUNCTION `{$table}_getHierarchyPath`(folderId int)
+      RETURNS varchar(255) READS SQL DATA 
+      begin
+       declare path varchar(255);
+       declare part varchar(50);
+       declare parentId int(11);
+       set path = '';
+       while folderId > 0 do
+         select 
+           `{$col_label}` into part
+           from `{$table}`
+           where `{$col_id}` = folderId;
+         select
+           `{$col_parentId}` into parentId
+           from `{$table}`
+           where `{$col_id}` = folderId; 
+         if path != '' then  
+           set path = concat(
+             CAST('/' AS CHAR CHARACTER SET utf8 ),
+             CAST(path AS CHAR CHARACTER SET utf8 )
+           );
+         end if;      
+         set path = concat(
+           CAST(part AS CHAR CHARACTER SET utf8 ),
+           CAST(path AS CHAR CHARACTER SET utf8 )
+         );
+         set folderId = parentId;
+       end while;
+       return path;
+      end;
+    ");
+    
+    $this->execute("
+      CREATE FUNCTION `{$table}_getHierarchyIds`(folderId int) 
+      RETURNS varchar(255) READS SQL DATA
+      begin
+       declare path varchar(255);
+       declare parentId int(11);
+       set path = '';
+       while folderId > 0 do
+         select
+           `{$col_parentId}` into parentId
+         from `{$table}`
+         where `{$col_parentId}` = folderId;
+         if path != '' then  
+           set path = concat(path,',');
+         end if;
+         set path = concat(path,folderId);
+         set folderId = parentId;
+       end while;
+       return path;
+      end;
+    ");
+  }
+  
+  /**
+   * creates a trigger that inserts a timestamp on 
+   * each newly created record
+   * @param string $table Name of table
+   * @param string $col_created Name of column that gets the timestamp
+   */
+  function createTimestampTrigger( $table, $col_created )
+  {
+    /*
+     * @todo: check permissions
+     */
+    $this->execute("
+      DROP TRIGGER `{$table}_create_timestamp` 
+    ");
+    
+    $this->execute("
+      CREATE TRIGGER `{$table}_create_timestamp` 
+      BEFORE INSERT ON `$table`
+      FOR EACH ROW SET NEW.`$col_created` = NOW();
+    ");      
+  }
+  
+  /**
+   * creates triggers that will automatically create
+   * a md5 hash string over 
+   */
+  function createHashTriggers ( $table, $columns)
+  {
+    /*
+     * @todo: check permisions
+     */
+    $this->execute("
+      CREATE TRIGGER `{$table}_insert_create_hash`
+    ");
+    
+    for($i=0;$i<count($columns);$i++ )
+    {
+      $columns[$i] .= "NEW.`" . $columns[$i] . "`";
+    }
+    
+    $col_sql = implode(",",$columns);
+        
+    $this->execute("
+      CREATE TRIGGER `{$table}_insert_create_hash`
+      BEFORE INSERT ON `$table`
+        FOR EACH ROW SET 
+          NEW.hash = md5(concat_ws(",",$col_sql));
+    ");
+    
+    $this->execute("
+      CREATE TRIGGER `{$table}_update_create_hash`
+      BEFORE UPDATE ON `$table`
+        FOR EACH ROW SET NEW.hash = md5(concat_ws(",",$col_sql));
+    "); 
+  }
   
 }
 
