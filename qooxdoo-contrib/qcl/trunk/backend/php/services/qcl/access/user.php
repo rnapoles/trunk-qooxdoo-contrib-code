@@ -19,11 +19,11 @@ class qcl_access_user extends qcl_access_common
   //-------------------------------------------------------------
 
 	var $table			            = "users";
-	var $key_namedId	          = "username";
-	var $key_name		            = "name";
-	var $key_username 	        = "username"; 
-	var $key_password 	        = "password";
-  var $key_lastAction         = null; // enable if you want to use auto-logout
+	var $col_namedId	          = "username";
+	var $col_name		            = "name";
+	var $col_username 	        = "username"; 
+	var $col_password 	        = "password";
+  var $col_lastAction         = null; // enable if you want to use auto-logout
 	var $icon 			            = "icon/16/apps/system-users.png";
 	var $nodeType		            = "qcl.auth.types.User";
 	var $shortName		          = "user";
@@ -65,7 +65,7 @@ class qcl_access_user extends qcl_access_common
 					`{$roleModel->table}` as r,
 					`{$this->table_link_user_roles}` as l
 				WHERE
-					r.`{$roleModel->key_id}` = l.`{$roleModel->foreignKey}`
+					r.`{$roleModel->col_id}` = l.`{$roleModel->foreignKey}`
 					AND l.`{$this->foreignKey}` = $userId
 			"); 
 
@@ -73,13 +73,13 @@ class qcl_access_user extends qcl_access_common
 		
 		$rows = $this->db->getAllRecords("
 			SELECT
-				r.`{$roleModel->key_id}` as id,
-				r.`{$roleModel->key_namedId}` as nameId
+				r.`{$roleModel->col_id}` as id,
+				r.`{$roleModel->col_namedId}` as nameId
 			FROM 
 				`{$roleModel->table}` as r,
 				`{$this->table_link_user_roles}` as l
 			WHERE
-				r.`{$roleModel->key_id}` = l.`{$roleModel->foreignKey}`
+				r.`{$roleModel->col_id}` = l.`{$roleModel->foreignKey}`
 				AND l.`{$this->foreignKey}` = $userId
 		");
 			
@@ -169,7 +169,7 @@ class qcl_access_user extends qcl_access_common
    			return false;
    		}
    		
-   		$savedPw = $row[$this->key_password]; 
+   		$savedPw = $row[$this->col_password]; 
    		
    		if ( ! $savedPw or 
    			  $password === $savedPw or   
@@ -212,7 +212,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserId()
    {
-   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_id]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->col_id]; 
    }
 
    /**
@@ -221,7 +221,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserName()
    {
-   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_namedId]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->col_namedId]; 
    }
 
    /**
@@ -230,7 +230,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserNamedId()
    {
-   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_namedId]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->col_namedId]; 
    }
   
    /**
@@ -239,7 +239,7 @@ class qcl_access_user extends qcl_access_common
     */
    function getActiveUserFullName()
    {
-   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->key_name]; 
+   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->col_name]; 
    }  
   
    /**
@@ -253,7 +253,7 @@ class qcl_access_user extends qcl_access_common
    function hasPermission($requestedPermission, $user=null)
    {
    		$user 			  = $user ? $this->getByName($user) : $this->getActiveUser();
-   		$username 		= $user[$this->key_namedId];
+   		$username 		= $user[$this->col_namedId];
    		$permissions 	= $this->getPermissions($username);
   		foreach($permissions as $permission)
   		{
@@ -312,7 +312,7 @@ class qcl_access_user extends qcl_access_common
   {
 		// userdata
 		$userdata = $this->getByName($username);
-		unset($userdata[$this->key_password]);
+		unset($userdata[$this->col_password]);
 		$roleNamedIds = $this->getRoles($username);
 
 		// roles and permissions
@@ -427,7 +427,7 @@ class qcl_access_user extends qcl_access_common
    */
   function resetLastAction( $userId=null )
   {
-    if ( ! $this->key_lastAction )
+    if ( ! $this->col_lastAction )
     {
       $this->raiseError("User model does not have a lastAction column.");
     }
@@ -440,8 +440,8 @@ class qcl_access_user extends qcl_access_common
     // reset timestamp
     $this->db->execute("
       UPDATE {$this->table}
-      SET {$this->key_lastAction} = NOW()
-      WHERE `{$this->key_id}` = $userId;
+      SET {$this->col_lastAction} = NOW()
+      WHERE `{$this->col_id}` = $userId;
     ");
   }
   
@@ -453,7 +453,7 @@ class qcl_access_user extends qcl_access_common
    */
   function getSecondsSinceLastAction ( $userId = null )
   {
-    if ( ! $this->key_lastAction )
+    if ( ! $this->col_lastAction )
     {
       $this->raiseError("User model does not have a lastAction column.");
     }
@@ -465,9 +465,9 @@ class qcl_access_user extends qcl_access_common
     
     // get seconds since last action
     $seconds = $this->db->getValue("
-      SELECT TIME_TO_SEC( TIMEDIFF( NOW(), {$this->key_lastAction} ) )
+      SELECT TIME_TO_SEC( TIMEDIFF( NOW(), {$this->col_lastAction} ) )
       FROM {$this->table}
-      WHERE `{$this->key_id}` = $userId;
+      WHERE `{$this->col_id}` = $userId;
     ");
     
     return $seconds;

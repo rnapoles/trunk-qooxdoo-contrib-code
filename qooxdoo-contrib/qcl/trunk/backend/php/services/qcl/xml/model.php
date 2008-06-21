@@ -247,7 +247,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
       $this->currentRecord = $this->db->getRow("
         SELECT * 
         FROM `{$this->table}` 
-        WHERE `{$this->key_id}` = $id;
+        WHERE `{$this->col_id}` = $id;
       ");           
     }
     else
@@ -277,12 +277,12 @@ class qcl_xml_model extends qcl_jsonrpc_model
   function getByNamedId($namedId)
   {
     $this->raiseError("Not implemented");
-    if ( $this->key_namedId )
+    if ( $this->col_namedId )
     {
       $row = $this->db->getRow("
         SELECT * 
         FROM `{$this->table}` 
-        WHERE `{$this->key_namedId}` = '$namedId'
+        WHERE `{$this->col_namedId}` = '$namedId'
       ");
       $this->currentRecord = $row;
       return $row;
@@ -343,7 +343,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
   function getIdByNamedId( $namedId )
   {
     $row    = $this->getByNamedId($namedId);
-    return count($row) ? $row[$this->key_id] : null;
+    return count($row) ? $row[$this->col_id] : null;
   }
 
   /**
@@ -354,7 +354,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
   function getNamedIdById( $id )
   {
     $row    = $this->getById($id);
-    return count($row) ? $row[$this->key_namedId] : null;
+    return count($row) ? $row[$this->col_namedId] : null;
   }
 
   /**
@@ -365,7 +365,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
   function namedIdExists( $namedId )
   {
     $row = $this->getByNamedId ( $namedId );
-    return count($row) ? $row[$this->key_id] : false;
+    return count($row) ? $row[$this->col_id] : false;
   }
   
   /**
@@ -376,7 +376,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    */
   function getByForeignKey( $record, $idOnly = false )
   {
-    $id = $record[ $this->getForeignKey() ];
+    $id = $record[ $this->getForeignKeyColumn() ];
     if ( $idOnly )
     {
       return $id;
@@ -462,7 +462,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
   {
     $this->raiseError("Not implemented");
     $data = $this->emptyRecord;
-    $data[$this->key_id]=null; // so at least one field is set
+    $data[$this->col_id]=null; // so at least one field is set
     $id = $this->insert( $data );
     
     $this->currentRecord = $this->getById($id);
@@ -478,15 +478,15 @@ class qcl_xml_model extends qcl_jsonrpc_model
   {
     $this->raiseError("Not implemented");
     // created timestamp
-    if ( $this->key_created and ! isset ( $data[$this->key_created] ) )
+    if ( $this->col_created and ! isset ( $data[$this->col_created] ) )
     {
-      $data[$this->key_created] = strftime("%Y-%m-%d %T");
+      $data[$this->col_created] = strftime("%Y-%m-%d %T");
     }
     
     // modified timestamp
-    if ( $this->key_modified and ! isset ( $data[$this->key_created] )  )
+    if ( $this->col_modified and ! isset ( $data[$this->col_created] )  )
     {
-      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
+      $data[$this->col_modified] = strftime("%Y-%m-%d %T");
     } 
     
     return $this->db->insert( $this->table,$data );

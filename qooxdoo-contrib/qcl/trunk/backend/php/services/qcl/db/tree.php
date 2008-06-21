@@ -16,9 +16,9 @@ class qcl_db_tree extends qcl_mixin
   // additional class variables 
   //-------------------------------------------------------------
 
-	var $key_parentId;
-	var $key_label;
-	var $key_position;
+	var $col_parentId;
+	var $col_label;
+	var $col_position;
 	var $icon;
 
 	//-------------------------------------------------------------
@@ -38,7 +38,7 @@ class qcl_db_tree extends qcl_mixin
 	function getChildren ( $parentId )
 	{
 		$parentId = (int) $parentId;
-		return $this->getRecordsWhere("{$this->key_parentId} = $parentId", $this->key_position );
+		return $this->getRecordsWhere("{$this->col_parentId} = $parentId", $this->col_position );
 	}
 	
 	/**
@@ -49,8 +49,8 @@ class qcl_db_tree extends qcl_mixin
 	function getChildIds ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
-    $orderBy  = either( $orderBy, $this->key_position );
-		return $this->getValues($this->key_id, "{$this->key_parentId} = $parentId", $orderBy );
+    $orderBy  = either( $orderBy, $this->col_position );
+		return $this->getValues($this->col_id, "{$this->col_parentId} = $parentId", $orderBy );
 	}	
 	
 	/**
@@ -63,7 +63,7 @@ class qcl_db_tree extends qcl_mixin
 		$count = $this->db->getValue("
 			SELECT COUNT(*) 
 			FROM `{$this->table}`
-			WHERE `{$this->key_parentId}` = $parentId
+			WHERE `{$this->col_parentId}` = $parentId
 		"); 
 		return (int) $count;
 	}
@@ -76,14 +76,14 @@ class qcl_db_tree extends qcl_mixin
 	function reorder ( $parentId, $orderBy=null )
 	{
 		$parentId = (int) $parentId;
-		$orderBy  = either ( $orderBy, $this->key_position );
+		$orderBy  = either ( $orderBy, $this->col_position );
 		$childIds = $this->getChildIds ( $parentId, $orderBy );
 		$index = 1;
 		foreach ( $childIds as $id )
 		{
 			$data=array();
-			$data[$this->key_id] 		= $id;
-			$data[$this->key_position] 	= $index++;
+			$data[$this->col_id] 		= $id;
+			$data[$this->col_position] 	= $index++;
 			$this->update($data);
 		}
 		return true;
@@ -94,7 +94,7 @@ class qcl_db_tree extends qcl_mixin
 	 */	
 	function supportsPositioning()
 	{
-		return ( $this->key_position != null);
+		return ( $this->col_position != null);
 	}
 	
    /**
@@ -115,16 +115,16 @@ class qcl_db_tree extends qcl_mixin
 		foreach ( $children as $child )
 		{
 			$data = array();
-			$data[$this->key_id] = $child[$this->key_id];
+			$data[$this->col_id] = $child[$this->col_id];
 			
-			if ( $child[$this->key_id] == $folderId )
+			if ( $child[$this->col_id] == $folderId )
 			{
-				$data[$this->key_position] = $position;
+				$data[$this->col_position] = $position;
 			}
 			else
 			{
 				if ( $index == $position ) $index++; // skip over target position
-				$data[$this->key_position] = $index++;
+				$data[$this->col_position] = $index++;
 			}
 			
 			$this->update($data);
@@ -183,7 +183,7 @@ class qcl_db_tree extends qcl_mixin
     }
     else
     {
-      $id = $this->currentRecord[$this->key_id];
+      $id = $this->currentRecord[$this->col_id];
       $folder = $this->currentRecord;
     }
     
@@ -199,8 +199,8 @@ class qcl_db_tree extends qcl_mixin
     //}
     //else
     //{
-      $label =  trim( str_replace( "/", "\\/", $folder[$this->key_label] ) );
-      $parentPath = $this->getPath( $folder[$this->key_parentId] );
+      $label =  trim( str_replace( "/", "\\/", $folder[$this->col_label] ) );
+      $parentPath = $this->getPath( $folder[$this->col_parentId] );
       $path .= ( $parentPath ? ($parentPath . "/") : "") . $label;
     //}
     return $path;
@@ -219,7 +219,7 @@ class qcl_db_tree extends qcl_mixin
       return array();
     }
     $folder = $this->getById($id);  
-    $hierarchyIds = $this->getNodeIdHierarchy( $folder[$this->key_parentId] );
+    $hierarchyIds = $this->getNodeIdHierarchy( $folder[$this->col_parentId] );
     array_push($hierarchyIds,$id);
     return $hierarchyIds;
   }
@@ -239,7 +239,7 @@ class qcl_db_tree extends qcl_mixin
     }
     else
     {
-      $id = $this->currentRecord[$this->key_id];
+      $id = $this->currentRecord[$this->col_id];
       $folder = $this->currentRecord;
     }
     
@@ -256,7 +256,7 @@ class qcl_db_tree extends qcl_mixin
     //else
     //{
       
-      $hierarchyIds = $this->getHierarchyIds( $folder[$this->key_parentId] );
+      $hierarchyIds = $this->getHierarchyIds( $folder[$this->col_parentId] );
       array_push($hierarchyIds,$id);
       
     //}

@@ -16,12 +16,12 @@ class qcl_plugin_db extends qcl_db_model
 	//------------------------------------------------------------- 
 	
 	var $table 					      = "plugins";
-	var $key_id 				      = null; // no numeric id
-	var $key_type 				    = "type";
-	var $key_active 			    = "active";
-	var $key_permission 	    = "permissionRead";
-  var $key_author           = "author";
-  var $key_description      = "description";
+	var $col_id 				      = null; // no numeric id
+	var $col_type 				    = "type";
+	var $col_active 			    = "active";
+	var $col_permission 	    = "permissionRead";
+  var $col_author           = "author";
+  var $col_description      = "description";
 
 	//-------------------------------------------------------------
   // internal methods

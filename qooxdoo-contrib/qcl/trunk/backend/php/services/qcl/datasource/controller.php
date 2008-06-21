@@ -407,7 +407,7 @@ class qcl_datasource_controller extends qcl_mixin
     $linksNode =& $modelSchemaNode->addChild("links");
     $linkNode  =& $linksNode->addChild("link");
     $linkNode->addAttribute("table","foo");
-    $linkNode->addAttribute("localKey",$modelObj->key_id);
+    $linkNode->addAttribute("localKey",$modelObj->col_id);
     $linkNode->addAttribute("foreignKey",$modelObj->foreignKey);
       
     /*
@@ -549,7 +549,8 @@ class qcl_datasource_controller extends qcl_mixin
     $model =& $this->getNew($class); 
     $model->_init("mysql://root:root@localhost/test");
     $model->db->connect("mysql://root:root@localhost/test");
-    $model->initialize($datasource);
+    $model->initialize($datasource); 
+    $this->info($model->schemaXml->asXml());
   }
   
 
@@ -561,6 +562,21 @@ class qcl_datasource_controller extends qcl_mixin
     $model->export();
   }  
   
+  
+  function method_testOverloading($params)
+  {
+    $obj =& $this->getNew("bibliograph.models.record.Default");
+    $obj->setFoo("hello!");
+    $this->info("Result is:" .  $obj->getFoo() );
+    $obj->foo();
+  }
+  
+  function method_fixBibtex()
+  {
+    $obj =& $this->getNew("bibliograph.models.schema.Bibtex");
+    //$obj->export();
+    
+  }
   
 }
 ?>

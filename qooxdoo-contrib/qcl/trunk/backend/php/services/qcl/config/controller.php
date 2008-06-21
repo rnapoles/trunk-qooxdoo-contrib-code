@@ -42,15 +42,15 @@ class qcl_config_controller extends qcl_session_controller
  	{
  		$mask 	      = $params[0];
     $configModel  = $this->getModel("config");
-    $keys         = $configModel->getDistinctValues($configModel->key_namedId,null,$configModel->key_namedId);
+    $keys         = $configModel->getDistinctValues($configModel->col_namedId,null,$configModel->col_namedId);
  		$result	      = array();
     
  		foreach ( $keys as $key )
  		{
       $row = $configModel->getRow($key);
-      $result[$row[$configModel->key_name]] = array(
-        'name' => $row[$configModel->key_name],
-        'type' => $row[$configModel->key_type],
+      $result[$row[$configModel->col_name]] = array(
+        'name' => $row[$configModel->col_name],
+        'type' => $row[$configModel->col_type],
         'value' => $configModel->getValue($row)
       );
  		}
@@ -130,7 +130,7 @@ class qcl_config_controller extends qcl_session_controller
 		{
 			$row = $configModel->getRowById($id);
 			$data = array();
-			$data[$row[$configModel->key_name]] = $row[$configModel->key_value]; 
+			$data[$row[$configModel->col_name]] = $row[$configModel->col_value]; 
 			$this->dispatchMessage( "qcl.config.messages.server.changeConfigKey", $data );	
 		}
 		return $this->getResponseData();

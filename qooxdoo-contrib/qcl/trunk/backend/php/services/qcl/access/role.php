@@ -66,20 +66,20 @@ class qcl_access_role extends qcl_access_common
 					`{$permModel->table}` as p,
 					`{$this->table_link_roles_permissions}` as l
 				WHERE
-					p.`{$permModel->key_id}` = l.`{$permissionModel->foreignKey}`
+					p.`{$permModel->col_id}` = l.`{$permissionModel->foreignKey}`
 					AND l.`{$this->foreignKey}` = $roleId
 			"); 
 
 		}
 		$rows = $this->db->getAllRecords("
 			SELECT
-				p.`{$permModel->key_id}` as id,
-				p.`{$permModel->key_namedId}` as namedId
+				p.`{$permModel->col_id}` as id,
+				p.`{$permModel->col_namedId}` as namedId
 			FROM 
 				`{$permModel->table}` as p,
 				`{$this->table_link_roles_permissions}` as l
 			WHERE
-				p.`{$permModel->key_id}` = l.`{$permModel->foreignKey}`
+				p.`{$permModel->col_id}` = l.`{$permModel->foreignKey}`
 				AND l.`{$this->foreignKey}` = $roleId
 		");
 		

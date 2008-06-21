@@ -224,7 +224,6 @@ function xml_entity_decode($string)
  * @return      string
  * @require     PHP 4.3.0 (debug_backtrace)
  */
-
 function debug_get_backtrace($skip=1)
 {
     // Get backtrace
