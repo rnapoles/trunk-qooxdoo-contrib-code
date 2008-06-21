@@ -14,9 +14,9 @@ class qcl_datasource_controller extends qcl_mixin
   function method_exportSchemas()
   {
     require_once("qcl/xml/model.php");
-    require_once("qcl/db/pear.php");
+    require_once("qcl/db/mysql.php");
     
-    $db =& new qcl_db_pear(&$this->controller,$this->getIniValue("database.dsn"));
+    $db =& new qcl_db_mysql(&$this->controller,$this->getIniValue("database.dsn"));
     
     $records = $db->getAllRecords("
       SELECT *
@@ -268,7 +268,7 @@ class qcl_datasource_controller extends qcl_mixin
   function method_exportTableSchema($params)
   {
     require_once("qcl/xml/model.php");
-    require_once("qcl/db/pear.php");
+    require_once("qcl/db/mysql.php");
     
     /*
      * parameters
@@ -279,7 +279,7 @@ class qcl_datasource_controller extends qcl_mixin
     /*
      * database object
      */
-    $db =& new qcl_db_pear(&$this->controller,$this->getIniValue("database.dsn"));
+    $db =& new qcl_db_mysql(&$this->controller,$this->getIniValue("database.dsn"));
       
     /*
      * create schema model 

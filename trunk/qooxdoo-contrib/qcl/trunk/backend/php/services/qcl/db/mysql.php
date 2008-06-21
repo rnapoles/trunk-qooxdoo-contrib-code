@@ -40,6 +40,9 @@ class qcl_db_mysql extends qcl_db
 	{
 		require_once ("DB.php"); // load pear DB library
 
+		/*
+		 * get or set dsn information
+		 */
 		if ( ! $dsn )
 		{
 			$dsn = $this->getDsn();
@@ -49,6 +52,9 @@ class qcl_db_mysql extends qcl_db
 		  $this->setDsn($dsn);
 		}
 		
+		/*
+		 * connecting
+		 */
     $this->log("Connecting to $dsn.");
 
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
@@ -59,7 +65,10 @@ class qcl_db_mysql extends qcl_db
     {
       $this->raiseError("Invalid DSN $dsn");
     }
-
+    
+    /*
+     * error
+     */
     if (PEAR::isError($db))
 		{
 			$this->error = $db->getMessage() . ": " . $db->getUserInfo();
@@ -72,9 +81,16 @@ class qcl_db_mysql extends qcl_db
 			 $this->raiseError( $this->error );  
 			}
 		}
+		
+		/*
+		 * fetch mode
+		 */
 		$db->setFetchMode(DB_FETCHMODE_ASSOC);
 
-		// set encoding to do: this needs to be a property of the datasource model
+		/*
+		 * set encoding 
+		 * @todo: this needs to be a property of the datasource model
+		 */
 		if ( $this->controller )
 		{
 			$encoding = $this->controller->getIniValue("database.encoding");
@@ -86,8 +102,10 @@ class qcl_db_mysql extends qcl_db
 		$db->query("SET NAMES $encoding");
 		$db->query("SET CHARACTER_SET $encoding");
 
+		/*
+		 * save database handler and return it
+		 */
 		$this->db =& $db;
-
  		return $db;
 	}
 
