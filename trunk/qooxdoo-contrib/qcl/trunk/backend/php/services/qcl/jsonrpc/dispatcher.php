@@ -592,7 +592,7 @@ for ($i = 0; $i < count($serviceComponents); $i++)
  * Now replace all dots with slashes so we can locate the service script.  We
  * also retain the exploded components of the path, as the class name of the
  * service is the last component of the path.
- * == added CB: look for a folder "controller" and append it if exists ==
+ * == added CB: look for a folder "controllers" and append it if exists ==
  */
 $servicePath = implode("/", $serviceComponents);
 

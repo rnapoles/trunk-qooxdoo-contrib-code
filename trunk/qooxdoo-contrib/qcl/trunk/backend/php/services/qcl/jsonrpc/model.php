@@ -15,10 +15,10 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
   // class variables
   //-------------------------------------------------------------
 
-  var $key_id                 = "id";         // attribute of record tag with unique numeric id 
-  var $key_namedId            = null;         // unique string id, optional  
-  var $key_modified           = "modified";   // the model SHOULD have a "modified" column with a timestamp
-  var $key_created            = null;         // the model CAN have "created" column with a timestamp  
+  var $col_id                 = "id";         // attribute of record tag with unique numeric id 
+  var $col_namedId            = null;         // unique string id, optional  
+  var $col_modified           = "modified";   // the model SHOULD have a "modified" column with a timestamp
+  var $col_created            = null;         // the model CAN have "created" column with a timestamp  
   
   //-------------------------------------------------------------
   // instance variables
@@ -43,7 +43,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
 		parent::__construct();
     $this->setController(&$controller);	
     
-    // generate list of metadata columns ($key_ ...)
+    // generate list of metadata columns ($col_ ...)
     $this->_initMetaColumns(); 
 	}   	
 
@@ -141,8 +141,8 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
    */
   function hasProperty($name)
   {
-    $key_name = "key_{$name}";
-    return ( isset( $this->$key_name ) and $this->$key_name !== null ) ; 
+    $col_name = "key_{$name}";
+    return ( isset( $this->$col_name ) and $this->$col_name !== null ) ; 
   }  
 
   

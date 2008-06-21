@@ -14,11 +14,11 @@ class qcl_session_model extends qcl_db_model
   //-------------------------------------------------------------
 
   var $table             = "sessions";
-  var $key_id            = null;  // no numeric id
-  var $key_namedId       = "sessionId";
-  var $key_lastAction    = "lastAction";
-  var $key_messages      = "messages";
-  var $key_user          = "user";
+  var $col_id            = null;  // no numeric id
+  var $col_namedId       = "sessionId";
+  var $col_lastAction    = "lastAction";
+  var $col_messages      = "messages";
+  var $col_user          = "user";
 
   //-------------------------------------------------------------
   // internal methods 
@@ -49,12 +49,12 @@ class qcl_session_model extends qcl_db_model
   {
     $this->db->execute("
       DELETE FROM `{$this->table}`
-      WHERE `{$this->key_namedId}` = '$sessionId'
-      AND   `{$this->key_user}`   != '$userId' 
+      WHERE `{$this->col_namedId}` = '$sessionId'
+      AND   `{$this->col_user}`   != '$userId' 
     ");
     $this->insert( array (
-      $this->key_namedId => $sessionId,
-      $this->key_user    => $userId
+      $this->col_namedId => $sessionId,
+      $this->col_user    => $userId
     ) );    
   }
 
@@ -67,7 +67,7 @@ class qcl_session_model extends qcl_db_model
   {
     $this->db->execute("
       DELETE FROM `{$this->table}`
-      WHERE `{$this->key_namedId}` = '$sessionId'
+      WHERE `{$this->col_namedId}` = '$sessionId'
     ");
   }
 
@@ -81,7 +81,7 @@ class qcl_session_model extends qcl_db_model
   {
     $this->db->execute("
       DELETE FROM `{$this->table}`
-      WHERE TIME_TO_SEC( TIMEDIFF( NOW(), `{$this->key_lastAction}` ) ) > $timeout
+      WHERE TIME_TO_SEC( TIMEDIFF( NOW(), `{$this->col_lastAction}` ) ) > $timeout
     ");
   }
   
@@ -99,7 +99,7 @@ class qcl_session_model extends qcl_db_model
     $boundary = "af8asdf8h3o434af3h";
     $this->db->execute("
       UPDATE `{$this->table}`
-      SET `{$this->key_messages}` = CONCAT(`{$this->key_messages}`,'$boundary$serializedData') 
+      SET `{$this->col_messages}` = CONCAT(`{$this->col_messages}`,'$boundary$serializedData') 
     ");
   }
   
@@ -112,9 +112,9 @@ class qcl_session_model extends qcl_db_model
   function getBroadcastedMessages( $sessionId )
   {
     $msgData = $this->db->getValue("
-      SELECT `{$this->key_messages}`
+      SELECT `{$this->col_messages}`
       FROM `{$this->table}`
-      WHERE `{$this->key_namedId}` = '$sessionId'
+      WHERE `{$this->col_namedId}` = '$sessionId'
     ");
    
     $messages = array();
@@ -137,8 +137,8 @@ class qcl_session_model extends qcl_db_model
       }
       $this->db->execute("
         UPDATE `{$this->table}`
-        SET `{$this->key_messages}` = ''
-        WHERE `{$this->key_namedId}` = '$sessionId'
+        SET `{$this->col_messages}` = ''
+        WHERE `{$this->col_namedId}` = '$sessionId'
       ");
     }
     return $messages;

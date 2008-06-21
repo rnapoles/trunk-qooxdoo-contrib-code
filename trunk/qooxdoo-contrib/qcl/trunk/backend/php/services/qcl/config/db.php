@@ -17,14 +17,14 @@ class qcl_config_db extends qcl_db_model
 	//------------------------------------------------------------- 
 	
 	var $table 					      = "config";
-	var $key_id 				      = "id";
-	var $key_name 				    = "namedId";
-	var $key_namedId			    = "namedId";
-  var $key_type 				    = "type";
-	var $key_value 				    = "value";
-	var $key_permissionRead 	= "permissionRead";
-	var $key_permissionWrite 	= "permissionWrite";
-	var $key_user 			      = "user";
+	var $col_id 				      = "id";
+	var $col_name 				    = "namedId";
+	var $col_namedId			    = "namedId";
+  var $col_type 				    = "type";
+	var $col_value 				    = "value";
+	var $col_permissionRead 	= "permissionRead";
+	var $col_permissionWrite 	= "permissionWrite";
+	var $col_user 			      = "user";
 	var $types                = array("string","number","boolean");
 
 	//-------------------------------------------------------------
@@ -81,7 +81,7 @@ class qcl_config_db extends qcl_db_model
 		// delete all previous entries
 		$this->db->execute("
 			DELETE FROM `{$this->table}`
-			WHERE  `{$this->key_name}` = '$name'
+			WHERE  `{$this->col_name}` = '$name'
 		");			
 		
 		// create new entry
@@ -89,9 +89,9 @@ class qcl_config_db extends qcl_db_model
 		
 		$this->db->execute("
 			INSERT INTO `{$this->table}` 
-				(`{$this->key_name}`,`{$this->key_type}`,
-				`{$this->key_permissionRead}`,`{$this->key_permissionWrite}`,
-				`{$this->key_user}`) 
+				(`{$this->col_name}`,`{$this->col_type}`,
+				`{$this->col_permissionRead}`,`{$this->col_permissionWrite}`,
+				`{$this->col_user}`) 
 			VALUES 
 				('$name','$type',$permissionRead,$permissionWrite,'$user')
 		");					
@@ -127,14 +127,14 @@ class qcl_config_db extends qcl_db_model
 		{
 			$this->db->execute("
 				DELETE FROM `{$this->table}` 
-				WHERE `{$this->key_id}` = $ref
+				WHERE `{$this->col_id}` = $ref
 			");			
 		}
 		else
 		{
 			$this->db->execute("
 				DELETE FROM `{$this->table}` 
-				WHERE `{$this->key_name}` = '$ref'
+				WHERE `{$this->col_name}` = '$ref'
 			");			
 		}		 
 		return true;
@@ -158,8 +158,8 @@ class qcl_config_db extends qcl_db_model
    */
   function getValue ( $row )
   {
-    $value   = $row[$this->key_value];
-    $type    = $row[$this->key_type];	
+    $value   = $row[$this->col_value];
+    $type    = $row[$this->col_type];	
     switch ( $type )
     {
       case "number": return floatval($value);
@@ -192,13 +192,13 @@ class qcl_config_db extends qcl_db_model
 			$row = $this->db->getRow("
 				SELECT *
 				FROM `{$this->table}` 
-				WHERE `{$this->key_id}` = $id
+				WHERE `{$this->col_id}` = $id
 			");
 			
       // if a read permission is set, require permission
-			if ( $row[$this->key_permissionRead] )
+			if ( $row[$this->col_permissionRead] )
 			{
-				$userModel->requirePermission($row[$this->key_permissionRead]);
+				$userModel->requirePermission($row[$this->col_permissionRead]);
 			}
 		}
 		else
@@ -226,8 +226,8 @@ class qcl_config_db extends qcl_db_model
 			$row = $this->db->getRow("
 				SELECT * 
 				FROM {$this->table}
-				WHERE {$this->key_name} = '$name'
-				AND {$this->key_user} = '$user'
+				WHERE {$this->col_name} = '$name'
+				AND {$this->col_user} = '$user'
 			");
 			
 			// check user status
@@ -236,14 +236,14 @@ class qcl_config_db extends qcl_db_model
 				// admins can read default value
         return $row;
 			}
-			elseif ( $row[$this->key_user] == $user )
+			elseif ( $row[$this->col_user] == $user )
 			{
 				// active user is allowed to acces their own data
         return $row;
 			}
 			
       // is the value protected by a read permission?
-      $permissionRead = $row[$this->key_permissionRead];
+      $permissionRead = $row[$this->col_permissionRead];
 			if( $permissionRead )
 			{
 				$userModel->requirePermisson($permissionRead);
@@ -264,9 +264,9 @@ class qcl_config_db extends qcl_db_model
 				FROM 
           `{$this->table}`
 				WHERE 
-            `{$this->key_name}` = '$name'
+            `{$this->col_name}` = '$name'
 					AND 
-						`{$this->key_user}` = '$activeUserNameId'
+						`{$this->col_user}` = '$activeUserNameId'
 			");
 			// return if found
 			if ( count($row) ) return $row;
@@ -277,11 +277,11 @@ class qcl_config_db extends qcl_db_model
 				FROM 
           `{$this->table}`
 				WHERE 
-            `{$this->key_name}` = '$name'
+            `{$this->col_name}` = '$name'
 					AND 
 					(
-						`{$this->key_user}` = 'default'
-						OR `{$this->key_user}` = 'global'
+						`{$this->col_user}` = 'default'
+						OR `{$this->col_user}` = 'global'
 					)
 			");
       // return if found
@@ -310,8 +310,8 @@ class qcl_config_db extends qcl_db_model
 			$rows = $this->db->getAllRecords("
 				SELECT * 
 				FROM `{$this->table}`
-				WHERE `{$this->key_name}` LIKE '$mask%'
-				ORDER BY `{$this->key_name}`			
+				WHERE `{$this->col_name}` LIKE '$mask%'
+				ORDER BY `{$this->col_name}`			
 			");			
 		}
 		else
@@ -320,7 +320,7 @@ class qcl_config_db extends qcl_db_model
 			$rows = $this->db->getAllRecords("
 				SELECT * 
 				FROM `{$this->table}`
-				ORDER BY `{$this->key_name}`			
+				ORDER BY `{$this->col_name}`			
 			");			
 		}
 		
@@ -336,7 +336,7 @@ class qcl_config_db extends qcl_db_model
       }
       
       // global, default or user value
-      $userId = $row[$this->key_user]; 
+      $userId = $row[$this->col_user]; 
       
       if ( $userId )
       {
@@ -349,7 +349,7 @@ class qcl_config_db extends qcl_db_model
             $found = false;
             foreach ( $rows as $r )
             {
-              if ( $r[$this->key_name] == $row[$this->key_name] and $r[$this->key_user] == $activeUserId ) 
+              if ( $r[$this->col_name] == $row[$this->col_name] and $r[$this->col_user] == $activeUserId ) 
               {
                 $found = true; break;  
               }
@@ -367,7 +367,7 @@ class qcl_config_db extends qcl_db_model
       }
       
       // read permission ?
-      $permissionRead = $row[$this->key_permissionRead];
+      $permissionRead = $row[$this->col_permissionRead];
 			if ( ! $permissionRead or $userModel->hasPermission($permissionRead) )
 			{
 				$result[] = $row;
@@ -416,14 +416,14 @@ class qcl_config_db extends qcl_db_model
       return $this->set ( $name, $value );
 		}
     
-		$id				       = $row[$this->key_id];
-		$type			       = $row[$this->key_type];
-		$permissionWrite = $row[$this->key_permissionWrite];
-		$owner		       = $row[$this->key_user];	
+		$id				       = $row[$this->col_id];
+		$type			       = $row[$this->col_type];
+		$permissionWrite = $row[$this->col_permissionWrite];
+		$owner		       = $row[$this->col_user];	
 
 		// type checking
 		$type_error = false;
-		switch ( $row[$this->key_type] )
+		switch ( $row[$this->col_type] )
 		{
 			case "string" 	: if ( ! is_string($value) ) 	$type_error = true; break;
 			case "number" 	: if ( ! is_numeric($value) ) $type_error = true; break;
@@ -453,16 +453,16 @@ class qcl_config_db extends qcl_db_model
   			else
   			{
           // create user variant 
-          unset($row[$this->key_id]);
-  				$row[$this->key_user] = $activeUser;
+          unset($row[$this->col_id]);
+  				$row[$this->col_user] = $activeUser;
   				$id = $this->insert($row);
-  				$row[$this->key_id] = $id;  				
+  				$row[$this->col_id] = $id;  				
   			}
       }
 		}		
 				
 		// all checks have been passed, set value
-    $row[$this->key_value]=$value;
+    $row[$this->col_value]=$value;
 		$this->update($row);
     $this->log("'$name' set to '$value' for user '$owner'.");
     
@@ -504,7 +504,7 @@ class qcl_config_db extends qcl_db_model
 	function getPermissionRead($name)
 	{
 		$row = $this->getRow($name);
-		return $row[$this->key_permissionRead];
+		return $row[$this->col_permissionRead];
 	}
 	
 	/**
@@ -514,7 +514,7 @@ class qcl_config_db extends qcl_db_model
 	function getPermissionWrite($name)
 	{
 		$row = $this->getRow($name);
-		return $row[$this->key_permissionWrite];
+		return $row[$this->col_permissionWrite];
 	}
 
 	/**

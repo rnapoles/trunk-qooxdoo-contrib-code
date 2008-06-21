@@ -281,7 +281,7 @@ class qcl_object extends patched_object
   }  
   
   /**
-   * gets the backtrace of invoked objects
+   * gets the backtrace of invoked function calls
    * @return string list
    */
   function getBacktrace()

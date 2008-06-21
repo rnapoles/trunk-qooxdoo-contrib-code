@@ -86,7 +86,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		}
 		elseif ( ! $username and $activeUser )
 		{
-			$security = $userModel->getSecurity($activeUser[$userModel->key_username]);
+			$security = $userModel->getSecurity($activeUser[$userModel->col_username]);
 			$this->dispatchMessage("qcl.auth.messages.loginSuccess");
 		}
 		else
@@ -196,9 +196,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
     // determine id
    	if ( $id )
    	{
-   		$data[$model->key_id] = $id;
+   		$data[$model->col_id] = $id;
    	}
-   	elseif ( ! $data[$model->key_id] )
+   	elseif ( ! $data[$model->col_id] )
    	{
    		$this->raiseError("qcl_access_controller::method_updateItem : no id given!");
    	}
@@ -207,7 +207,7 @@ class qcl_access_controller extends qcl_jsonrpc_controller
   	$model->update($data);
   	
     // success
-  	$this->dispatchMessage("qcl.auth.messages.{$type}.updated",$data[$model->key_id]);
+  	$this->dispatchMessage("qcl.auth.messages.{$type}.updated",$data[$model->col_id]);
   	return $this->getResponseData();
   }    
   
@@ -347,16 +347,16 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		$result 		= array();
         
     // get lists of users and roles ordered by name
-		$users 			= $userModel->getRecordsWhere(null,$userModel->key_descriptiveName);
-		$roles 			= $roleModel->getRecordsWhere(null,$roleModel->key_descriptiveName);
+		$users 			= $userModel->getRecordsWhere(null,$userModel->col_descriptiveName);
+		$roles 			= $roleModel->getRecordsWhere(null,$roleModel->col_descriptiveName);
 		$userRoles	= $roleModel->getByUserId();
 		$parentNodeIds	= array();
 		
 		foreach ( $roles as $index => $role )
 		{
-	    $roleId 	= $role[$roleModel->key_id];
-	    $namedId	= $role[$roleModel->key_namedId];
-			$name		  = $role[$roleModel->key_descriptiveName];
+	    $roleId 	= $role[$roleModel->col_id];
+	    $namedId	= $role[$roleModel->col_namedId];
+			$name		  = $role[$roleModel->col_descriptiveName];
 			$label 		= $name ? $name : $namedId;			    			 
 			
 		  $result[] = array(
@@ -380,9 +380,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		
     foreach ( $users as $index => $user )
     {
-	    $userId 	= $user[$userModel->key_id];
-	    $namedId	= $user[$userModel->key_namedId];
-			$name		  = $user[$userModel->key_descriptiveName];
+	    $userId 	= $user[$userModel->col_id];
+	    $namedId	= $user[$userModel->col_namedId];
+			$name		  = $user[$userModel->col_descriptiveName];
 			$label 		= "$name ($namedId)";
 			
 			// add to roles
@@ -457,17 +457,17 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		$result 		= array();
         
     // get ordered lists of roles and permissions 
-		$roles 				    = $roleModel->getAllRecords($roleModel->key_descriptiveName);
-		$permissions		  = $permModel->getAllRecords($roleModel->key_descriptiveName . "`,`" . $permModel->key_namedId );
+		$roles 				    = $roleModel->getAllRecords($roleModel->col_descriptiveName);
+		$permissions		  = $permModel->getAllRecords($roleModel->col_descriptiveName . "`,`" . $permModel->col_namedId );
 		$permissionRoles	= $permModel->getByRoleId();
 		$parentNodeIds		= array();
 		
 		// create role nodes
 		foreach ( $roles as $index => $role )
 		{
-	    $roleId 	= $role[$roleModel->key_id];
-	    $namedId	= $role[$roleModel->key_namedId];
-			$name		  = $role[$roleModel->key_descriptiveName];
+	    $roleId 	= $role[$roleModel->col_id];
+	    $namedId	= $role[$roleModel->col_namedId];
+			$name		  = $role[$roleModel->col_descriptiveName];
 			$label 		= "$name ($namedId)";			    			 
 			
 	    $result[] = array(
@@ -491,9 +491,9 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 
       foreach ( $permissions as $index => $perm )
       {
-		    $permissionId 	= $perm[$permModel->key_id];
-		    $namedId		    = $perm[$permModel->key_namedId];
-  			$name			      = $perm[$permModel->key_descriptiveName];
+		    $permissionId 	= $perm[$permModel->col_id];
+		    $namedId		    = $perm[$permModel->col_namedId];
+  			$name			      = $perm[$permModel->col_descriptiveName];
   			$label 			    = $name? "$name ($namedId)" : $namedId;
   			
   			// add to roles
@@ -541,8 +541,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
 		$result = array();
 		
 		$permission = $permModel->getById($permissionId);
-    $namedId		= $permission[$permModel->key_namedId];
-		$name			  = $permission[$permModel->key_descriptiveName];
+    $namedId		= $permission[$permModel->col_namedId];
+		$name			  = $permission[$permModel->col_descriptiveName];
 		$label 			= $name? "$name ($namedId)" : $namedId;
 
     $result[] = array(
@@ -582,8 +582,8 @@ class qcl_access_controller extends qcl_jsonrpc_controller
    
 		$user = $this->getById($userId);
 
-	  $namedId	      = $user[$userModel->key_namedId];
-		$name		        = $user[$userModel->key_descriptiveName];
+	  $namedId	      = $user[$userModel->col_namedId];
+		$name		        = $user[$userModel->col_descriptiveName];
 		$label 		      = "$name ($namedId)";
 	
     $result[] = array(

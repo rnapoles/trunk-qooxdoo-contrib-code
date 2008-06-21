@@ -16,10 +16,10 @@ class qcl_db_model extends qcl_jsonrpc_model
   // class variables
   //-------------------------------------------------------------
   
-  var $key_id                 = "id";    // column with unique numeric id 
-  var $key_namedId            = null;    // unique string id, optional  
-  var $key_modified;                     // the model SHOULD have a "modified" column with a timestamp
-  var $key_created;                      // the model CAN have "created" column with a timestamp
+  var $col_id                 = "id";    // column with unique numeric id 
+  var $col_namedId            = null;    // unique string id, optional  
+  var $col_modified;                     // the model SHOULD have a "modified" column with a timestamp
+  var $col_created;                      // the model CAN have "created" column with a timestamp
   
   //-------------------------------------------------------------
   // instance variables
@@ -146,18 +146,117 @@ class qcl_db_model extends qcl_jsonrpc_model
     parent::__construct(&$controller);
 		
     // initialize the database handler
+    // @todo: replace with initialize()
     $this->init($dsn);
 
-    // generate list of metadata columns ($key_ ...)
-    $this->_initMetaColumns(); 
+    // generate list of metadata columns ($col_ ...)
+    // @todo: remove
+    $this->_initMetaColumns();
+
+    /*
+     * overload the outmost class. only needed in PHP 4.
+     */
+    if ( phpversion() < 5)
+    {
+      overload(get_class($this));
+    }
 	}
+  
+	//-------------------------------------------------------------
+  // overloading
+  //-------------------------------------------------------------   
+
+  /**
+   * method called when called method does not exist. This will check whether 
+   * method name is getXxx or setXxx and then call getProperty("xxx") 
+   * or setProperty("xxx", $arguments[0]). Otherwise, raise an error.
+   * @param string $function  Method name
+   * @param array  $arguments Array or parameters passed to the method
+   * @param mixed  $return    call-time reference to return value (PHP4-only)
+   * @return mixed return value (PHP5 only) 
+   */
+  function __call( $function, $arguments, &$return) 
+  {
+    $startsWith = substr( $function, 0, 3 );
+    $endsWith   = substr( $function, 3 );
+    if ( $startsWith == "set" )
+    {
+      $this->info("setting $endsWith = " . $arguments[0] );
+      $this->setProperty( $endsWith, $arguments[0] );
+    }
+    elseif ( $startsWith == "get" )
+    {
+      $return = $this->getProperty( $endsWith );
+      $this->info("getting $endsWith = $return");
+    }
+    else
+    {
+      $this->raiseError("Unknown method " . get_class($this) . "::$function().");
+    }
+    if (phpversion() < 5) 
+    {
+      return true; // PHP 4: return value is in &$return
+    }
+    else
+    {
+      return $return; // PHP 5  
+    }
+    
+  }	
      	
 	//-------------------------------------------------------------
   // initialization
 	//-------------------------------------------------------------   
 
   /**
+   * initializes the model
+   * @param mixed $datasource Either the name of the datasource or an object reference to t
+   * the datasource object, or null if model is independend of a datasource
+   * @return void
+   */
+  function initialize($datasource=null)
+  {
+    /*
+     * set datasource
+     */
+    if ( is_string($datasource) )
+    {
+      //@todo: $this->setDatasource($datasource);
+      $this->datasource = $datasource;
+    }
+    elseif ( is_object($datasource) )
+    {
+      $this->setDatasourceModel($datasource);
+    }
+    
+    /*
+     * setup schema and create or update tables if necessary. afterwards,
+     * $this->schemaXml will be set to the schema xml document object
+     */
+    $this->setupSchema();
+    
+    /*
+     * setup properties 
+     */
+    $this->setupProperties();
+    
+    /*
+     * import initial data if necessary
+     */
+    $path = $this->getDataPath();
+    if ( file_exists($path) and ( $this->schemaXml->hasChanged() or $this->fileChanged($path) ) )
+    {
+      $this->import($path);
+    }
+    else
+    {
+      $this->info("No data to import.");
+    }
+  }	
+	
+  /**
    * read class vars starting with "key_" into an array object property
+   * @deprecated
    * @return void
    */
   function _initMetaColumns()
@@ -165,7 +264,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     $classVars = get_class_vars(get_class($this));
     foreach ( $classVars as $key => $value )
     {
-      if ( substr( $key,0,4) == "key_" )
+      if ( substr( $key,0,4) == "col_" )
       {
         $key = substr($key,4);
         $this->metaColumns[$key] = $value;
@@ -178,7 +277,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * public API function to initialize the internal database handler
 	 * when object is created. Override if you want to initialize
 	 * at a later point and then call the private _init function. 
-	 * @param string 	$dsn 
+	 * @param string 	$dsn
+	 * @deprecated 
 	 */
 	function init($dsn=null)
 	{
@@ -186,7 +286,8 @@ class qcl_db_model extends qcl_jsonrpc_model
 	}
 
 	/**
-	 * initializes the internal database handler 
+	 * initializes the internal database handler
+	 * @deprecated 
 	 * @param string 	$dsn 
 	 */
 	function _init($dsn=null)
@@ -204,7 +305,6 @@ class qcl_db_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------
   // controller
   //-------------------------------------------------------------   
-	
 	
  	/**
  	 * sets controller of this model and passes it to linked database object
@@ -225,7 +325,6 @@ class qcl_db_model extends qcl_jsonrpc_model
   // Data Model Introspection
   //-------------------------------------------------------------   
  	
- 	
   /**
    * checks if model has a corresponding column in the table (normatively,
    * doesn't check whether the column really exists)
@@ -234,8 +333,8 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function hasColumn($name)
   {
-    $key_name = "key_{$name}";
-    return ( isset( $this->$key_name ) and $this->$key_name !== null ) ; 
+    $col_name = "key_{$name}";
+    return ( isset( $this->$col_name ) and $this->$col_name !== null ) ; 
   }
   
   /**
@@ -250,16 +349,16 @@ class qcl_db_model extends qcl_jsonrpc_model
    * gets the name of the column that holds the unique (numeric) id of this table
    * @return string
    */
-  function getIdKey()
+  function getIdColumn()
   {
-    return $this->key_id;
+    return $this->col_id;
   }
   
   /**
    * gets the name of the column in other tables that contains a reference to a record in this table (foreign key)
    * return string
    */
-  function getForeignKey()
+  function getForeignKeyColumn()
   {
     return $this->foreignKey;
   }
@@ -289,18 +388,24 @@ class qcl_db_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------   
 
   /**
-   * Get a property. By default, properties are "fields". This can be overridden as necessary
+   * Gets a property from a specific or the current model recordset
    * @param string       $name Property name
    * @param int|string   $id Optional - set property for id, otherwise operate on cached record
    * @return mixed value of property
    */
   function getProperty( $name, $id = null )
   {
+    if ( ! is_object ( $this->schemaXml) )
+    {
+      $this->raiseError("Model schema needs to be set up before getProperty() is called.");
+    }
     return $this->getFieldValue( $name, $id );
   }
 
   /**
-   * Set a property. By default, properties are "fields". This can be overridden as necessary
+   * Sets a property in a specific or the current model recordset. If setting property in the
+   * current record, you need to call the update() method to commit the property change to the
+   * database.
    * @return void 
    * @param string     $name
    * @param mixed      $value 
@@ -308,6 +413,11 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function setProperty( $name, $value, $id = null )
   {
+    if ( ! is_object ( $this->schemaXml) )
+    {
+      $this->raiseError("Model schema needs to be set up before getProperty() is called.");
+    }    
+    
     $this->setFieldValue( $name, $value, $id);
   }  
     
@@ -370,7 +480,7 @@ class qcl_db_model extends qcl_jsonrpc_model
  	  $rowIds = implode(",", (array) $ids );
  	  if ( ! empty($rowIds) )
  	  {
- 	    return $this->getRecordsWhere( "`{$this->key_id}` IN ($rowIds)", $orderBy, $fields );
+ 	    return $this->getRecordsWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $fields );
  	  }  
  	}
  	
@@ -446,7 +556,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 			$this->currentRecord = $this->db->getRow("
 	      SELECT * 
 				FROM `{$this->table}` 
-				WHERE `{$this->key_id}` = $id;
+				WHERE `{$this->col_id}` = $id;
 	    ");   				
 		}
 		else
@@ -475,12 +585,12 @@ class qcl_db_model extends qcl_jsonrpc_model
     */
 	function getByNamedId($namedId)
 	{
-		if ( $this->key_namedId )
+		if ( $this->col_namedId )
     {
       $row = $this->db->getRow("
         SELECT * 
     		FROM `{$this->table}` 
-    		WHERE `{$this->key_namedId}` = '$namedId'
+    		WHERE `{$this->col_namedId}` = '$namedId'
       ");
       $this->currentRecord = $row;
       return $row;
@@ -510,11 +620,11 @@ class qcl_db_model extends qcl_jsonrpc_model
    	}
     
    	$row = $this->db->getRow("
-			SELECT `{$this->key_id}` 
+			SELECT `{$this->col_id}` 
 			FROM `{$this->table}` 
-			WHERE `{$this->key_namedId}` = '$ref'  
+			WHERE `{$this->col_namedId}` = '$ref'  
 		");
-		$result=$row[$this->key_id];
+		$result=$row[$this->col_id];
 		return $result;
    }
    
@@ -546,7 +656,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	function getIdByNamedId( $namedId )
 	{
 		$row 		= $this->getByNamedId($namedId);
-		return count($row) ? $row[$this->key_id] : null;
+		return count($row) ? $row[$this->col_id] : null;
 	}
 
 	/**
@@ -557,7 +667,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	function getNamedIdById( $id )
 	{
 		$row 		= $this->getById($id);
-		return count($row) ? $row[$this->key_namedId] : null;
+		return count($row) ? $row[$this->col_namedId] : null;
 	}
 
 	/**
@@ -568,7 +678,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	function namedIdExists( $namedId )
 	{
 		$row = $this->getByNamedId ( $namedId );
-		return count($row) ? $row[$this->key_id] : false;
+		return count($row) ? $row[$this->col_id] : false;
 	}
   
   /**
@@ -579,7 +689,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getByForeignKey( $record, $idOnly = false )
   {
-    $id = $record[ $this->getForeignKey() ];
+    $id = $record[ $this->getForeignKeyColumn() ];
     if ( $idOnly )
     {
       return $id;
@@ -613,7 +723,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   function create()
   {
     $data = $this->emptyRecord;
-    $data[$this->key_id]=null; // so at least one field is set
+    $data[$this->col_id]=null; // so at least one field is set
     $id = $this->insert( $data );
     
     $this->currentRecord = $this->getById($id);
@@ -653,17 +763,17 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       if ( $id !== null )
       {
-        $data[$this->key_id] = $id;
+        $data[$this->col_id] = $id;
       }
     }
     
     // set modified timestamp if the timestamp is not part of the data
-    if ( $this->key_modified && empty( $data[$this->key_modified] ) )
+    if ( $this->col_modified && empty( $data[$this->col_modified] ) )
     {
-      $data[$this->key_modified] = strftime("%Y-%m-%d %T");
+      $data[$this->col_modified] = strftime("%Y-%m-%d %T");
     }    
     
-    return $this->db->update( $this->table, $data, $this->key_id );
+    return $this->db->update( $this->table, $data, $this->col_id );
   }     
   
   /**
@@ -672,7 +782,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function delete ( $ids )
   {
-    $this->db->delete ( $this->table, $ids, $this->key_id );
+    $this->db->delete ( $this->table, $ids, $this->col_id );
   } 
   
   /**
@@ -754,7 +864,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
       // set data
 			$data = array();
-			$data[$this->key_id] = $id;
+			$data[$this->col_id] = $id;
 			$data[$column] = $value;
 			$this->update($data);
 		}
@@ -931,15 +1041,15 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getModificationList()
   {
-    if ( ! $this->key_modified )
+    if ( ! $this->col_modified )
     {
       $this->raiseError("Table {$this->table} has no timestamp column");
     }
     
     $rows = $this->db->getAllRecords("
       SELECT 
-        {$this->key_id}       AS id,
-        {$this->key_modified} AS timestamp
+        {$this->col_id}       AS id,
+        {$this->col_modified} AS timestamp
       FROM {$this->table}
     ") ;  
     $map = array();
@@ -965,8 +1075,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     $ids = implode(",", (array) $ids);
     $this->db->execute(" 
       UPDATE `{$this->table}` 
-      SET `{$this->key_modified}` = NOW()
-      WHERE `{$this->key_id}` IN ($ids)
+      SET `{$this->col_modified}` = NOW()
+      WHERE `{$this->col_id}` IN ($ids)
     ");
   }
   
@@ -1325,50 +1435,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $this->datasourceModel;
   }
 
-  /**
-   * initializes the model
-   * @param mixed $datasource Either the name of the datasource or an object reference to t
-   * the datasource object, or null if model is independend of a datasource
-   * @return void
-   */
-  function initialize($datasource=null)
-  {
-    /*
-     * set datasource
-     */
-    if ( is_string($datasource) )
-    {
-      //@todo: $this->setDatasource($datasource);
-      $this->datasource = $datasource;
-    }
-    elseif ( is_object($datasource) )
-    {
-      $this->setDatasourceModel($datasource);
-    }
-    
-    /*
-     * setup schema and create or update tables if necessary
-     */
-    $this->setupSchema();
-    
-    /*
-     * setup properties 
-     */
-    $this->setupProperties();
-    
-    /*
-     * import initial data if necessary
-     */
-    $path = $this->getDataPath();
-    if ( file_exists($path) and ( $this->schemaXml->hasChanged() or $this->fileChanged($path) ) )
-    {
-      $this->import($path);
-    }
-    else
-    {
-      $this->info("No data to import.");
-    }
-  }
+
   
   /**
    * gets the path of the file that contains the initial
@@ -1557,8 +1624,22 @@ class qcl_db_model extends qcl_jsonrpc_model
      * the table name is either provided as the 'table' property
      * of the class, usually prefixed by the datasource name, if applicable to the model 
      */
-    $this->table = either( $this->getTablePrefix() . $modelAttrs['table'] );
-        
+    $this->table = $this->getTablePrefix() . $modelAttrs['table'];
+    if ( ! $this->table )
+    {
+      $this->raiseError("Model '{$this->name}': No table name!"); 
+    }
+    
+    /*
+     * whether the setup process should upgrade the schema or just use existing tables in
+     * whatever schema they are in
+     */
+    if ( $modelAttrs['upgradeSchema'] == "no" )
+    {
+      $this->info("Schema document for model name '{$this->name}' is not to be upgraded.");
+      return;
+    }
+    
     /*
      * return if table exists and schema hasn't changed
      */
@@ -1568,6 +1649,9 @@ class qcl_db_model extends qcl_jsonrpc_model
       return;
     }  
     
+    /*
+     * update schema
+     */
     $this->info("Creating or updating tables for model name '{$this->name}', type '{$this->type}', class '{$this->class}' ...");
     
     /*
@@ -1855,6 +1939,7 @@ class qcl_db_model extends qcl_jsonrpc_model
           {
             $this->db->dropIndex($link_table,"link");
           }
+          
           /*
            * create new unique index including column
            */
@@ -1946,7 +2031,6 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * property groups in model schema
      */
-    
     $propGrpsNode =& $this->schemaXml->getNode("/model/definition/propertyGroups");
     //$this->info($propGrpsNode->asXml());
     
@@ -2155,6 +2239,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     $this->info("$count records imported.");
   }
+  
+  
   
 }	
 ?>

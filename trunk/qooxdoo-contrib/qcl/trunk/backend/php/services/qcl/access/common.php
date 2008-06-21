@@ -15,9 +15,9 @@ class qcl_access_common extends qcl_db_model
   //-------------------------------------------------------------
 
 	var $table;
-	var $key_id							          = "id";
-  var $key_namedId                  = "namedId";
-	var $key_descriptiveName			    = "name";
+	var $col_id							          = "id";
+  var $col_namedId                  = "namedId";
+	var $col_descriptiveName			    = "name";
 	var $table_link_user_roles			  = "link_user_roles";
 	var $table_link_roles_permissions	= "link_roles_permissions";
 	var $icon;
@@ -56,7 +56,7 @@ class qcl_access_common extends qcl_db_model
    	function getDescriptiveName($ref)
    	{
    		$row = $this->getByRef($ref);
-   		return $row[$this->key_descriptiveName];
+   		return $row[$this->col_descriptiveName];
    	}
    
    /**
@@ -65,11 +65,11 @@ class qcl_access_common extends qcl_db_model
     */
    function getAllNamedIds()
    {
-   	if ( ! $this->key_namedId )
+   	if ( ! $this->col_namedId )
     {
    		$this->raiseError("qcl_access_common::getAllNamedIds : model does not have a named id property");	
    	}
-    return $this->getDistinctValues($this->key_namedId,null,$this->key_namedId);
+    return $this->getDistinctValues($this->col_namedId,null,$this->col_namedId);
    }
 
 	/**
@@ -94,7 +94,7 @@ class qcl_access_common extends qcl_db_model
    		
    	// insert new empty record
 		$data = array();
-		$data[$this->key_namedId] = $namedId;
+		$data[$this->col_namedId] = $namedId;
 		$itemId = $this->insert($data);
 		
 		// link to role
