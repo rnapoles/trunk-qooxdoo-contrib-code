@@ -27,7 +27,11 @@ if ( ! defined("QCL_LOG_LEVEL") )
 $GLOBALS['_stackTrace'] = array();
 
 /**
- * base class of all json rpc service classes
+ * base class of all qcl classes.
+ * provides cross-version (PHP4/PHP5) mixins and interfaces
+ * mixin code is adapted from Ivo Jansch's blog at 
+ * http://www.jansch.nl/2006/08/23/mixins-in-php/
+ * 
  */
 class qcl_object extends patched_object 
 {
@@ -37,21 +41,38 @@ class qcl_object extends patched_object
    //-------------------------------------------------------------
 
 	/**
-	 * @var JsonRpcError $error
+	 * @var string
 	 */
 	var $error;
-   
-  //-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
 	
+	/**
+	 * array of class names that will be loaded as mixins. 
+	 * @var array 
+	 */
+  var $mixins = array();
+
+  /**
+   * internal cache for classes that have been mixed in
+   */
+  var $_mixinlookup = array();
+  
 	/**
 	 * Class constructor
 	 */
 	function __construct() 
 	{
 		parent::__construct();
-    $GLOBALS['_stackTrace'][] = get_class($this); // save class method for stack trace
+		
+		/*
+		 * apply mixins
+		 */
+    if (is_array($this->mixins))
+    {
+      foreach($this->mixins as $mixin)
+      {
+        $this->mixin( $mixin );
+      }
+    }
 	}
 
   //-------------------------------------------------------------
@@ -118,15 +139,47 @@ class qcl_object extends patched_object
   }
   
   /**
-   * mixing in methods of another class
-   * @todo: adapt for PHP5
+   * cross-version method to mixin methods from other classes.
    * @return void
    * @param $classname class name
    */
   function mixin ($classname)
   {
-    $this->includeClassfile($classname);
-    aggregate( $this, $classname);
+    if ( phpversion() < 5 )
+    {
+      $this->includeClassfile($classname);
+      aggregate( $this, $classname);
+    }
+    else
+    {
+      $methods = get_class_methods($mixin);
+      if ( is_array($methods) )
+      {
+        foreach($methods as $method) $this->_mixinlookup[$method] = $mixin;
+      }
+    }
+  }
+  
+  /**
+   * The __call magic method intercepts any method that does not exist
+   * and falls back to one of the mixins if they define the method that is
+   * being called.
+   * @author Ivo Jansch (see http://www.jansch.nl/2006/08/23/mixins-in-php/)
+   */
+  function __call($method, $args, &$return )
+  {
+    if ( phpversion() > 5 )
+    {
+      if ( isset($this->_mixinlookup[$method] ) )
+      {
+        $elems = array();
+        for ($i=0, $_i=count($args); $i<$_i; $i++) $elems[] = "\$args[$i]";
+        eval("\$result = ".$this->_mixinlookup[$method]."::"
+            .$method."(".implode(',',$elems).");");
+        return $result;
+      }
+    }
+    trigger_error('Call to undefined function ' . $method );
   }
   
 	/**
