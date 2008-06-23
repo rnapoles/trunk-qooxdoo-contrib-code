@@ -869,6 +869,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   function __destruct()
   {
     $this->removeLock($this->cacheId);
+    parent::__destruct();
   }
   
 }

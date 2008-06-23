@@ -645,6 +645,7 @@ if (! $classExists)
     /* never gets here */
 }
 
+
 /* Instantiate the service */
 $service = new $className();
 

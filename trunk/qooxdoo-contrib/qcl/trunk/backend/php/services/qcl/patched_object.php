@@ -31,6 +31,7 @@ class patched_object
     $args = func_get_args();
     if (method_exists($this, '__destruct')) 
     {
+      //$this->info("Registering shutdown function for " . get_class($this));
       register_shutdown_function (array(&$this, '__destruct'));
     }
     if (method_exists($this, '__construct')) 
@@ -40,6 +41,7 @@ class patched_object
   }
 
     function __construct() {}
+    
 }
 
 ?>

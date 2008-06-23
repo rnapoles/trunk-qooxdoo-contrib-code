@@ -15,13 +15,19 @@
       <properties>
          <property name="namedId" dataType="string">
           <mysql>varchar(50) NOT NULL</mysql>
-        </property>         
+        </property>      
+         <property name="prefix" dataType="string">
+          <mysql>varchar(20) NULL</mysql>
+        </property>             
         <property name="active" dataType="boolean">
           <mysql> tinyint(1) NOT NULL default '0'</mysql>
         </property>
         <property name="type" dataType="string">
           <mysql> varchar(20) NULL</mysql>
         </property>
+        <property name="schema" dataType="string"> 
+          <mysql> varchar(100) NULL</mysql>
+        </property>        
         <property name="host" dataType="string">
           <mysql> varchar(100) NULL</mysql>
         </property>

@@ -140,8 +140,8 @@ class qcl_db_tree extends qcl_mixin
    	*/
 	function changeParent( $folderId, $parentFolderId )
 	{
-		$oldParentId  = $this->getFieldValue("parentId",$folderId);
-    $this->setFieldValue("parentId",$parentFolderId,$folderId);
+		$oldParentId  = $this->getPropertyValue("parentId",$folderId);
+    $this->setPropertyValue("parentId",$parentFolderId,$folderId);
     return $oldParentId;
 	}
 		
@@ -154,7 +154,7 @@ class qcl_db_tree extends qcl_mixin
 	function setParentId($parentId,$folderId=null)
 	{
 		$parentId = (int) $parentId;
-		$this->setFieldValue("parentId",$parentId,$folderId);
+		$this->setPropertyValue("parentId",$parentId,$folderId);
     if ( !$folderId )
     {
 		  $this->update();
@@ -168,7 +168,7 @@ class qcl_db_tree extends qcl_mixin
 	 */
 	function getParentId($folderId=null)
 	{
-		return $this->getFieldValue("parentId",$folderId);
+		return $this->getPropertyValue("parentId",$folderId);
 	}	
 	
   /**

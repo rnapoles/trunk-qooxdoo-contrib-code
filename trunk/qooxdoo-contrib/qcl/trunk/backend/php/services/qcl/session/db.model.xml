@@ -3,8 +3,8 @@
   include="qcl/db/model.xml">
   
   <model 
-    name="qcl.session.Model"
-    class="qcl_session_model">
+    name="qcl.session.db.Model"
+    extends="qcl.db.Model">
     
     <definition>
     

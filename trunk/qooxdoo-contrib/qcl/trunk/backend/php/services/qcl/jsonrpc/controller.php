@@ -25,32 +25,60 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * @see qcl_object::configureServie()
 	 */	
 	var $ini;
+
+	/**
+   * request information
+   * @var array
+   */
+  var $request = array(
+    'service'  => null,
+    'method'   => null,
+    'remoteId' => null
+  );
 	
 	/**
 	 * response data to be serialized and returned to server
+	 * @access private
+	 * @var array
 	 */
 	var $_response = array(
     'result'    => array(),
     'messages'  => array(),
     'events'    => array() 
   );
-	
   
   /**
    * models attached to this controller
    */	
 	var $_models = array();
   
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
 
   /**
    * constructor , configures the service
    */
 	function __construct()
   {
-		parent::__construct();
+		/*
+		 * call parent constructor first
+		 */
+    parent::__construct();
+
+		/*
+     * store request information
+     */
+    $this->request['service']  = $GLOBALS['jsonInput']->service;
+    $this->request['method']   = $GLOBALS['jsonInput']->method;
+    $this->request['remoteIp'] = $_SERVER['REMOTE_ADDR']; 
+    
+    /*
+     * log request
+     */
+    $this->log ( 
+      "Request for " . $this->request['service'] . 
+      "." . $this->request['method'] .  
+      " from " . $this->request['remoteIp']
+    );
+    		
 		$this->configureService();		
     $this->setSingleton(&$this);
 	}   	
@@ -126,6 +154,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * gets a model
    * @return object
    * @param string $name 
+   * @deprecated
    */
   function &getModel($name)
   {
@@ -137,6 +166,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * @return void
    * @param string $name 
    * @param object $object 
+   * @deprecated
    */
   function setModel($name,$object)
   {
@@ -448,5 +478,4 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	}	  
 	 
 }	
-
 ?>

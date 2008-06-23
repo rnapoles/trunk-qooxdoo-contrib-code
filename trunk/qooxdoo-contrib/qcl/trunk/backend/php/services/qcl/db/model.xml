@@ -10,7 +10,7 @@
     <definition>
     
       <!-- model properties -->
-      <properties>
+      <properties> 
 
         <!-- 'id' column int(11) NOT NULL AUTO_INCREMENT was added during table creation and defined as primary key -->
 
