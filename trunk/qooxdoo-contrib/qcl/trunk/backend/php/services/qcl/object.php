@@ -23,8 +23,6 @@ if ( ! defined("QCL_LOG_LEVEL") )
 	 define("QCL_LOG_LEVEL",QCL_LOG_ERROR);
 }
 
-// Stack Trace
-$GLOBALS['_stackTrace'] = array();
 
 /**
  * base class of all qcl classes.
@@ -56,8 +54,21 @@ class qcl_object extends patched_object
    */
   var $_mixinlookup = array();
   
+  /**
+   * wether this class is persistent. If true, it will be serialized at the
+   * end of the request and can be unserialized with class_name::unserialize()
+   */
+  var $isPersistent = false;
+  
+  /**
+   * whether this is a newly instantiated object. Will be turned to false
+   * when retrieved from cache
+   */
+  var $isNew = true;
+  
 	/**
-	 * Class constructor
+	 * Class constructor. If the mixin class property contains 
+	 * array entries, these classes will be mixed in.
 	 */
 	function __construct() 
 	{
@@ -66,7 +77,7 @@ class qcl_object extends patched_object
 		/*
 		 * apply mixins
 		 */
-    if (is_array($this->mixins))
+    if ( is_array( $this->mixins ) )
     {
       foreach($this->mixins as $mixin)
       {
@@ -74,9 +85,87 @@ class qcl_object extends patched_object
       }
     }
 	}
-
+	
+	/**
+	 * class destructor.  This is the top-most __destruct method
+	 */
+  function __destruct()
+  {
+  }
+  
+  
   //-------------------------------------------------------------
-  // public methods
+  // persistence
+  //-------------------------------------------------------------	
+
+  /**
+   * get persistent object instance of this class. this will serialize
+   * itself automatically at the end of the request. 
+   * Can take up to five arguments that will be passed to the class constructor
+   * @static
+   */
+  function &getPersistentInstance( $arg1=null, $arg2=null, $arg3=null, $arg4=null, $arg5=null)
+  {
+    $class = __CLASS__; 
+    
+    /*
+     * ensure method is called statically
+     */
+    if ( is_object($this) and !is_a($this,$class) )
+    {
+      $this->raiseError("This method needs to be called statically!");
+    }
+    
+    /*
+     * retrieve instance
+     */
+    $obj =& qcl_object::retrieve($class);
+    
+    /*
+     * create new instance if no cached copy is available
+     */
+    if ( ! is_object ($obj) )
+    {
+      $obj =& new $class( &$arg1, &$arg2, &$arg3, &$arg4, &$arg5);
+      //$this->info("Created new $class");
+    }
+    else
+    {
+      //$this->info("Retrieved $class from cache...");
+      $obj->isNew = false;
+    }
+    
+    /*
+     * set persistent flag so that method will be serialized on shutdown
+     */
+    $obj->isPersistent = true;
+    
+    /*
+     * registering shutdown function since constructor is not called
+     */
+    //$this->info("Registering  function 'save' for " . get_class($obj));
+    register_shutdown_function (array(&$obj, 'save') );        
+    
+    return $obj;
+  }
+  
+  
+  /**
+   * saves the object to a storage
+   */
+  function save()
+  {
+    if ( is_object( $this) and is_a($this,__CLASS__) )
+    {
+      
+      $class = get_class($this);
+      qcl_object::store($class,&$this);
+      echo("Storing $class to cache");
+    }
+  }
+  
+  //-------------------------------------------------------------
+  // object methods
   //-------------------------------------------------------------
 
   /**
@@ -180,6 +269,17 @@ class qcl_object extends patched_object
       }
     }
     trigger_error('Call to undefined function ' . $method );
+  }
+  
+  /**
+   * similar to instanceOf javascript function. checks if object is an instance of the
+   * class or of a subclass of this class. Use this for cross-version compatibility
+   * @param string $class
+   * @return boolean 
+   */
+  function instanceOf( $class )
+  {
+      return is_a($this,$class);    
   }
   
 	/**
@@ -366,5 +466,72 @@ class qcl_object extends patched_object
     echo $message;
     exit;
   }  
-	  
+
+  //-------------------------------------------------------------
+  // data storage in the filesystem
+  //-------------------------------------------------------------   
+  
+  /**
+   * stores the object or arbitrary data in the filesystem.
+   * @param mixed   $id     Id under which to store the data. If no Id is given, use the class name
+   *                This allows to create persistent singletons.
+   * @param mixed   $data     Data to store. If no data is provided, the object serializes itself
+   * return string Path to file with stored data.
+   */
+  function store($id=null, $data="")
+  {
+    if ( ! $id )
+    {
+      // use class name as id
+      $id = get_class($this) . ".tmp";
+    }
+    elseif ( substr($id,0,1) == "." )
+    {
+      // just the extension passed, create random unique id
+      $id = md5(microtime()) . $id;
+    }
+    $path = QCL_TMP_PATH . $id;
+    if ( is_object($data) or is_array($data) )
+    {
+      $data = serialize($data); 
+    }
+    file_put_contents($path,$data);
+    return $path;
+  }
+  
+  /**
+   * retrieve stored object
+   * @param string  $id   Id of data to be retrieved from filesystem
+   */
+  function &retrieve ( $id=null )
+  {
+    if ( ! $id )
+    {
+      $id = get_class($this) . ".tmp";
+    }
+    $path = QCL_TMP_PATH . $id;
+    $data = file_get_contents($path);
+    $obj = @unserialize($data);
+    if ( is_object( $obj ) or is_array( $obj ) )
+    {
+      return $obj;
+    }
+    return $data;
+  }
+  
+  /**
+   * remove stored object
+   */
+  function remove ( $id, $prependPath = true )
+  {
+    if ( ! $id )
+    {
+      $id = get_class($this);
+    }
+    if ( $prependPath) $path = QCL_TMP_PATH . $id;
+    else $path = $id;
+    return unlink ($path);    
+  }
+  
+  
 }
