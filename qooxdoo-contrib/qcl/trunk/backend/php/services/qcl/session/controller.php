@@ -1,20 +1,18 @@
 <?php
 
-// dependencies
-require_once ("qcl/jsonrpc/controller.php");
+/*
+ * dependencies
+ */
+require_once ("qcl/db/controller.php");
 
 /**
- * base class for controllers who use a sesion model to keep track of connected
+ * base class for controllers who use a session model to keep track of connected
  * clients
  */
-
-class qcl_session_controller extends qcl_jsonrpc_controller
+class qcl_session_controller extends qcl_db_controller
 {
   
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-
+  
   /**
    * constructor 
    * registers session with a database-table-based session and user model. 
@@ -23,10 +21,17 @@ class qcl_session_controller extends qcl_jsonrpc_controller
    */
 	function __construct()
   {
-		parent::__construct();
-    if ( ! $this->getModel("session") )
+		/*
+		 * call parent constructor
+		 */
+    parent::__construct();
+    
+    /*
+     * set session model
+     */
+		if ( ! $this->getModel("session") )
     {
-      $sessionModel =& $this->getSingleton("qcl_session_model");
+      $sessionModel =& $this->getSingleton("qcl.session.db.Model");
       $this->setModel("session", &$sessionModel);
     }	
 	}   	

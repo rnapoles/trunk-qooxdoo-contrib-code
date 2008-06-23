@@ -1,8 +1,9 @@
 <?php  
 
 // dependencies
-require_once ("qcl/jsonrpc/model.php");
-require_once ("qcl/db/db.php");
+require_once "qcl/jsonrpc/model.php";
+require_once "qcl/db/db.php";    
+require_once "qcl/xml/simpleXML.php";
 
 /**
  * simple controller-model architecture for jsonrpc
@@ -16,10 +17,6 @@ class qcl_db_model extends qcl_jsonrpc_model
   // class variables
   //-------------------------------------------------------------
   
-  var $col_id                 = "id";    // column with unique numeric id 
-  var $col_namedId            = null;    // unique string id, optional  
-  var $col_modified;                     // the model SHOULD have a "modified" column with a timestamp
-  var $col_created;                      // the model CAN have "created" column with a timestamp
   
   //-------------------------------------------------------------
   // instance variables
@@ -42,7 +39,14 @@ class qcl_db_model extends qcl_jsonrpc_model
    * the current record cached 
    * @var array
    */
-	var $currentRecord;
+	var $currentRecord = null;
+	
+	/**
+	 * the result of the last query
+	 * @access private
+	 * @var array
+	 */
+	var $_lastResult = null;
 	
 	/**
 	 * a blueprint of an newly initialized record. 
@@ -111,27 +115,13 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   var $metaDataProperties;	
 	
-  //-------------------------------------------------------------
-  // deprecated properties
-  //-------------------------------------------------------------
-	
-	/**
-	 * an map containing the names of the properties
-	 * as keys and of the columns as values. do not use this,
-   * as it will be removed.
-   * @deprecated
-	 * @var array
-	 */
-	var $metaColumns = array();
-
-	/**
-	 * a map containing the names of the columns as keys
-	 * and properties as values. do not use this,
-   * as it will be removed.
-   * @deprecated
-   * @var array
-	 */
-  var $metaFields  = array();
+  /**
+   * the path to the model schema xml file. ususally automatically resolved.
+   * @see qcl_db_model::getSchmemaXmlPath()
+   * @var string
+   */
+  var $schemaXmlPath = null;  
+  
   
 	//-------------------------------------------------------------
   // internal methods
@@ -139,27 +129,29 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * constructor 
-   * @param object reference 	$controller
+   * @param qcl_jsonrpc_controller	$controller
+   * @param mixed $datasource Datasource model object or null if no datasource 
    */
-	function __construct( $controller, $dsn=null )
+	function __construct( $controller, $datasourceModel=null )
   {
+  
     parent::__construct(&$controller);
-		
-    // initialize the database handler
-    // @todo: replace with initialize()
-    $this->init($dsn);
-
-    // generate list of metadata columns ($col_ ...)
-    // @todo: remove
-    $this->_initMetaColumns();
-
+	
+    $this->log("Constructing '" . get_class($this) . "' with controller and '" . get_class($datasourceModel) . "'.");
+  
     /*
      * overload the outmost class. only needed in PHP 4.
      */
     if ( phpversion() < 5)
     {
-      overload(get_class($this));
+      overload( get_class($this) );
     }
+    
+    /*
+     *  initialize the model
+     */
+    $this->initialize( &$datasourceModel );
+       
 	}
   
 	//-------------------------------------------------------------
@@ -168,8 +160,13 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * method called when called method does not exist. This will check whether 
-   * method name is getXxx or setXxx and then call getProperty("xxx") 
-   * or setProperty("xxx", $arguments[0]). Otherwise, raise an error.
+   * method name is 
+   * 
+   * - getXxx or setXxx and then call getProperty("xxx") 
+   *    or setProperty("xxx", $arguments[0]). 
+   * - findByXxx to call findBy("xxx",...)
+   * 
+   * Otherwise, raise an error.
    * @param string $function  Method name
    * @param array  $arguments Array or parameters passed to the method
    * @param mixed  $return    call-time reference to return value (PHP4-only)
@@ -183,7 +180,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * class method
      * @see qcl_object::__call()
      */
-    if ( phpversion() > 5 and isset($this->_mixinlookup[$method] ) )
+    if ( phpversion() >= 5 and isset($this->_mixinlookup[$method] ) )
     {
       $elems = array();
       for ($i=0, $_i=count($args); $i<$_i; $i++) $elems[] = "\$args[$i]";
@@ -194,25 +191,47 @@ class qcl_db_model extends qcl_jsonrpc_model
     
     /*
      * php4 or no matching mixin methods found.
-     * Now we intercept the getter and setter method calls
+     * Now we intercept method calls
      */
-    $startsWith = substr( $function, 0, 3 );
-    $endsWith   = substr( $function, 3 );
+    $startsWith = strtolower( substr( $function, 0, 3 ) );
+    $endsWith   = strtolower( substr( $function, 3 ) );
+    
+    /*
+     * get.. and set... for property access
+     * @todo: correct calling of method with variable arguments
+     */
     if ( $startsWith == "set" )
     {
-      $this->info("setting $endsWith = " . $arguments[0] );
-      $this->setProperty( $endsWith, $arguments[0] );
+      //$this->info("setting $endsWith = " . $arguments[0] );
+      $this->setProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
     }
     elseif ( $startsWith == "get" )
-    {
-      $return = $this->getProperty( $endsWith );
-      $this->info("getting $endsWith = $return");
+    { 
+      $return = $this->getProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
+      //$this->info("getting $endsWith = $return");
     }
+    
+    /*
+     * findBy...
+     */
+    elseif ( strtolower( substr( $function, 0, 6 ) ) == "findby" )
+    {
+      $propName = strtolower( substr( $function, 6 ) );
+      $return = $this->findBy($propName,$arguments[0],$arguments[1],$arguments[2]);
+    }
+    
+    /*
+     * method not known, raise error
+     */
     else
     {
       $this->raiseError("Unknown method " . get_class($this) . "::$function().");
     }
-    if (phpversion() < 5) 
+    
+    /*
+     * return result
+     */
+    if ( phpversion() < 5) 
     {
       return true; // PHP 4: return value is in &$return
     }
@@ -220,37 +239,51 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       return $return; // PHP 5  
     }
-    
   }	
      	
 	//-------------------------------------------------------------
-  // initialization
+  // Initialization
 	//-------------------------------------------------------------   
 
   /**
    * initializes the model
-   * @param mixed $datasource Either the name of the datasource or an object reference to t
-   * the datasource object, or null if model is independend of a datasource
+   * @param mixed $datasource Object reference to
+   * the datasource object, or null if model is independent of a datasource
    * @return void
    */
   function initialize($datasource=null)
   {
+  
+    $this->log("Initializing '" . get_class($this) . "' with '" . get_class($datasource) . "'." );
+  
     /*
-     * set datasource
+     * datasource model
      */
-    if ( is_string($datasource) )
+    if ( is_object($datasource) )
     {
-      //@todo: $this->setDatasource($datasource);
-      $this->datasource = $datasource;
-    }
-    elseif ( is_object($datasource) )
-    {
-      $this->setDatasourceModel($datasource);
+      $this->setDatasourceModel(&$datasource);
     }
     
     /*
-     * setup schema and create or update tables if necessary. afterwards,
-     * $this->schemaXml will be set to the schema xml document object
+     * invalid datasource
+     */
+    elseif ( !is_null($datasource) )
+    {
+      $this->raiseError("Parameter must be null or qcl_datasource_db_model object, is " . gettype($datasource) );
+    }
+    
+    /*
+     * connect to database
+     */
+    $this->connect();
+        
+    /*
+     * parse schema document
+     */
+    $this->schemaXml =& $this->getSchemaXml();
+    
+    /*
+     * setup schema. if necessary, create or update tables and import intial data. 
      */
     $this->setupSchema();
     
@@ -258,367 +291,180 @@ class qcl_db_model extends qcl_jsonrpc_model
      * setup properties 
      */
     $this->setupProperties();
+
+  } 	
+	
+  /**
+   * connects to database. if this model is connected to 
+   * a datasource model, reuse the datasource's database
+   * handler
+   *
+   */
+  function connect( $dsn=null )
+  {
+    /*
+     * disconnect if connection exists
+     */
+    if ( is_object($this->db ) )
+    {
+     $this->db->disconnect();
+     unset($this->db); 
+    }
     
     /*
-     * import initial data if necessary
+     * try to get db handler from datasource object
      */
-    $path = $this->getDataPath();
-    if ( file_exists($path) and ( $this->schemaXml->hasChanged() or $this->fileChanged($path) ) )
+    $dsModel =& $this->getDatasourceModel();
+    if ( $dsModel )
     {
-      $this->import($path);
+      $this->log("Getting db handler from datasource object...");
+      $db =& $dsModel->getDatasourceConnection();
+    }
+    
+    /*
+     * otherwise, get a dsn and create new database connection handler
+     */
+    else
+    {
+      if ( ! $dsn )
+      {
+        /*
+         * try to connect to connection supplied by controller
+         */
+        $this->info( get_class($this) . ": getting connection object from Controller...");
+        $controller =& $this->getController();
+        $db =& $controller->getConnection();
+      }
+      else
+      {
+        /*
+         * connecting to custom dsn by creating new database connection object
+         */
+        $this->log("Connecting to custom dsn ...");
+        
+        require_once("qcl/db/mysql.php"); 
+        
+        $this->log("Connecting to ");
+        $this->log($dsn);
+        
+        /*
+         * connect to new database 
+         */
+        $db =& new qcl_db_mysql(&$this->controller,$dsn);
+        
+        if ( $db->error )
+        {
+          $this->raiseError( $db->error );
+        }
+      }
+    }
+    /*
+     * store new connection
+     */
+    $this->db =& $db;
+    $this->db->model =& $this;     
+  }
+
+  //-------------------------------------------------------------
+  // Datasource
+  //-------------------------------------------------------------   	
+
+  /**
+   * stores the name or object reference of the datasource
+   * @param mixed $datasource Either the name of the datasource or an object reference to t
+   * the datasource object
+   * return void
+   */
+  function setDatasourceModel($datasource)
+  {
+    if ( is_object ($datasource) and is_a($datasource,"qcl_datasource_db_model") )
+    {
+      $this->datasourceModel =& $datasource;
     }
     else
     {
-      $this->info("No data to import.");
+      $this->raiseError("Argument must be a qcl_datasource_db_model object");
     }
-  }	
-	
+  }  
+  
   /**
-   * read class vars starting with "key_" into an array object property
-   * @deprecated
-   * @return void
+   * retrieves the datasource object or name
+   * @return qcl_datasource_db_model
    */
-  function _initMetaColumns()
+  function &getDatasourceModel()
   {
-    $classVars = get_class_vars(get_class($this));
-    foreach ( $classVars as $key => $value )
-    {
-      if ( substr( $key,0,4) == "col_" )
-      {
-        $key = substr($key,4);
-        $this->metaColumns[$key] = $value;
-      }
-    }
-    $this->metaFields = array_flip( $this->metaColumns );
+    return $this->datasourceModel;
   }
-
-	/**
-	 * public API function to initialize the internal database handler
-	 * when object is created. Override if you want to initialize
-	 * at a later point and then call the private _init function. 
-	 * @param string 	$dsn
-	 * @deprecated 
-	 */
-	function init($dsn=null)
-	{
-    $this->_init($dsn);
-	}
-
-	/**
-	 * initializes the internal database handler
-	 * @deprecated 
-	 * @param string 	$dsn 
-	 */
-	function _init($dsn=null)
-	{
-    require_once("qcl/db/mysql.php"); 
-	  $db =& new qcl_db_mysql(&$this->controller,$dsn);
-    if ( $db->error )
-    {
-      $this->raiseError($db->error);
-    }
-    $this->db =& $db;
-    $this->db->model =& $this;  
-	}
-
-  //-------------------------------------------------------------
-  // controller
-  //-------------------------------------------------------------   
-	
- 	/**
- 	 * sets controller of this model and passes it to linked database object
- 	 * overrrides qcl_jsonrpc_model method
- 	 * @override
- 	 * @param object $controller
- 	 */
- 	function setController ( $controller )
- 	{
- 		parent::setController(&$controller);
- 		if ( $this->db )
- 		{
- 			$this->db->setController(&$controller);	
- 		} 
- 	}
-
-  //-------------------------------------------------------------
-  // Data Model Introspection
-  //-------------------------------------------------------------   
  	
+  //-------------------------------------------------------------
+  // Properties and Columns
+  //-------------------------------------------------------------   
+
   /**
-   * checks if model has a corresponding column in the table (normatively,
-   * doesn't check whether the column really exists)
-   * @return boolean
-   * @param string $name 
+   * checks if a property has a local alias 
+   *
+   * @param string $propName property name
    */
-  function hasColumn($name)
+  function hasAlias($propName)
   {
-    $col_name = "key_{$name}";
-    return ( isset( $this->$col_name ) and $this->$col_name !== null ) ; 
+    if ( ! is_object ( $this->schemaXml) )
+    {
+      $this->raiseError("Model schema is not initialized.");
+    }      
+    return ( isset( $this->aliasMap[$propName] ) );
   }
   
   /**
-   * @todo: implement
+   * get the local alias of a property name
+   * @param string $propName property name
+   * @return string alias or property name
    */
-  function columnExists()
+  function getAlias($propName)
   {
-    $this->raiseError("Not implemented");
-  }
-  
-  /**
-   * gets the name of the column that holds the unique (numeric) id of this table
-   * @return string
-   */
-  function getIdColumn()
-  {
-    return $this->col_id;
-  }
-  
-  /**
-   * gets the name of the column in other tables that contains a reference to a record in this table (foreign key)
-   * return string
-   */
-  function getForeignKeyColumn()
-  {
-    return $this->foreignKey;
-  }
+    if ( ! is_object ( $this->schemaXml) )
+    {
+      $this->raiseError("Model schema is not initialized.");
+    }  
+    return $this->aliasMap[$propName];
+  }  
   
  /**
-   * gets the column name from a normalized field name
+   * gets the column name from a property name
    * @return string
-   * @param string $fieldName
+   * @param string $property Property name
    */
-  function getColumnName ( $fieldName )
+  function getColumnName ( $property )
   {
-    return $this->metaColumns[$fieldName];
+    if ( ! is_object ( $this->schemaXml) )
+    {
+      $this->raiseError("Model schema is not initialized.");
+    }    
+    return either( $this->getAlias($property), $property );
   }
 
+    
   /**
-   * gets the (normalized) field name from a column name
+   * gets the property name of a column name
    * @return string Field Name
    * @param string $columnName
    */
-  function getFieldName ( $columnName )
+  function getPropertyName ( $columnName )
   {
-    return $this->metaFields[$columnName];
+    if ( ! is_object ( $this->schemaXml) )
+    {
+      $this->raiseError("Model schema is not initialized.");
+    }     
+    static $reverseAliasMap = null;
+    if ( !$reverseAliasMap )
+    {
+      $reverseAliasMap = array_flip($this->aliasMap);
+    }
+    return $reverseAliasMap[$columnName];
   }  
 
   //-------------------------------------------------------------
-  // Generic Data Model API
-  //-------------------------------------------------------------   
-
-  /**
-   * Gets a property from a specific or the current model recordset
-   * @param string       $name Property name
-   * @param int|string   $id Optional - set property for id, otherwise operate on cached record
-   * @return mixed value of property
-   */
-  function getProperty( $name, $id = null )
-  {
-    if ( ! is_object ( $this->schemaXml) )
-    {
-      $this->raiseError("Model schema needs to be set up before getProperty() is called.");
-    }
-    return $this->getFieldValue( $name, $id );
-  }
-
-  /**
-   * Sets a property in a specific or the current model recordset. If setting property in the
-   * current record, you need to call the update() method to commit the property change to the
-   * database.
-   * @return void 
-   * @param string     $name
-   * @param mixed      $value 
-   * @param int|string $id Optional - set property for id, otherwise operate on cached record
-   */
-  function setProperty( $name, $value, $id = null )
-  {
-    if ( ! is_object ( $this->schemaXml) )
-    {
-      $this->raiseError("Model schema needs to be set up before getProperty() is called.");
-    }    
-    
-    $this->setFieldValue( $name, $value, $id);
-  }  
-    
-  /**
-   * gets all database records optionally sorted by field
-   * @param string|null 		$orderBy 	(optional) order by field
-   * @return Array Array of db record sets
-   */
- 	function getAllRecords($orderBy=null)
-  {  
-    return $this->getRecordsWhere(null,$orderBy);
-  }  
-  
- 	/**
-   * gets all database records or those that match a where condition. 
-   * the table name is available as the alias "r" (for records)
-   * @param string 			  $where   	where condition to match, if null, get all
-   * @param string|null 	$orderBy 	(optional) order by field
-   * @param array|null		$fields		(optional) Array of fields to retrieve 
-   * @return Array Array of db record sets
-   */
- 	function getRecordsWhere($where=null,$orderBy=null,$fields=null)
- 	{
-		if ( $fields )
-		{
-			$fields = "`" . implode("`,`", (array) $fields ) . "`";
-		}
-		else
-		{
-			$fields = "*"; 
-		}
-		
-		$sql = "SELECT $fields FROM {$this->table} AS r \n";
-		
-		if ($where)
-		{
-			$sql .= "WHERE $where ";
-		}
-		if ($orderBy)
-		{
-			$orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-		}
-      return $this->db->getAllRecords($sql);   	
- 	}
- 	
- 	/**
-   * gets database records by their primary key
-   * @param array|int		  $ids   	
-   * @param string|null 	$orderBy 	(optional) order by field
-   * @param array|null		$fields		(optional) Array of fields to retrieve 
-   * @return Array Array of db record sets
-   */
- 	function getRowsById( $ids, $orderBy=null, $fields=null )
- 	{
- 	  if ( ! is_numeric($ids) and !is_array($ids) )
- 	  {
- 	    $this->raiseError("qcl_db_model::getRowsById() : invalid parameter id: '$ids'");
- 	  }
- 	  $rowIds = implode(",", (array) $ids );
- 	  if ( ! empty($rowIds) )
- 	  {
- 	    return $this->getRecordsWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $fields );
- 	  }  
- 	}
- 	
- 	/**
-   * gets values of database columns that match a where condition
-   * @param string|array	 	$column		name of column(s) 
-   * @param string 			    $where   	where condition to match, if null, get all
-   * @param string|null 		$orderBy 	(optional) order by field
-   * @return array Array of values
-   */
- 	function getValues($column,$where=null,$orderBy=null)
- 	{	
-		if ( is_array( $column ) )
-    {
-      $column = implode("`,`",$column);
-    }
-    
-    $sql = "SELECT `$column` FROM {$this->table} \n";
-		
-		if ($where)
-		{
-			$sql .= "WHERE $where ";
-		}
-		if ($orderBy)
-		{
-			$orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-		}
-    return $this->db->getValues($sql);   	
- 	}
-
- 	/**
-   * gets all distinct values of database columns that match a where condition
-   * @param string|array	  $column		name of column(s) 
-   * @param string 			    $where   	where condition to match, if null, get all
-   * @param string|null 		$orderBy 	(optional) order by field
-   * @return array Array of values
-   */
- 	function getDistinctValues($column,$where=null,$orderBy=null)
- 	{	
-		if ( is_array( $column ) )
-    {
-      $column = implode("`,`",$column);
-    }
-
-		$sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
-		
-		if ($where)
-		{
-			$sql .= "WHERE $where ";
-		}
-		if ($orderBy)
-		{
-			$orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-		}
-    return $this->db->getValues($sql);   	
- 	}
-   
-  /**
-   * get and cache record by id 
-   * @param mixed $id
-   * @return Array Db record set
-   */
- 	function getById( $id = null )
- 	{
-		if ( $id !== null )
-		{
-			if ( ! is_numeric($id) )
-			{
-				$id = "'$id'";
-			}
-			$this->currentRecord = $this->db->getRow("
-	      SELECT * 
-				FROM `{$this->table}` 
-				WHERE `{$this->col_id}` = $id;
-	    ");   				
-		}
-		else
-		{
-			if ( ! is_array( $this->currentRecord ) )
-			{
-				$this->raiseError("qcl_db_model::getById : no id given, but no record cached!");
-			}
-		}
-    return $this->currentRecord;
-  }
-
-  /**
-   * get record by its unique string id
-   * @deprecated 12.10.2007  
-   * @return Array Db record set
-   */
-	function getByName($name)
-	{
-		return $this->getByNamedId($name);
-	}
-
-   /**
-    * get record by its unique string id
-    * @return Array Db record set
-    */
-	function getByNamedId($namedId)
-	{
-		if ( $this->col_namedId )
-    {
-      $row = $this->db->getRow("
-        SELECT * 
-    		FROM `{$this->table}` 
-    		WHERE `{$this->col_namedId}` = '$namedId'
-      ");
-      $this->currentRecord = $row;
-      return $row;
-    }
-   	else
-   	{
-   		$this->raiseError("qcl_db_model::getByNamedId : model does not have a named id property");	
-   	}
-	}
+  // Numeric and Named Id 
+  //-------------------------------------------------------------      
 
   /**
    * gets the record id from a reference which can be the id itself or an 
@@ -627,86 +473,214 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @return integer id
    */
   function getIdFromRef($ref)
-  {   	
-   	if ( $ref === null or is_numeric ($ref) ) 
-   	{
-   		return $ref;
-   	}
-   	
-   	if ( ! is_string ( $ref ) ) 
-   	{
-   		$this->raiseError("qcl_db_model::getIdFromRef : integer or string expected, got '$ref'");	
-   	}
+  {     
+    if ( $ref === null or is_numeric ($ref) ) 
+    {
+      return $ref;
+    }
     
-   	$row = $this->db->getRow("
-			SELECT `{$this->col_id}` 
-			FROM `{$this->table}` 
-			WHERE `{$this->col_namedId}` = '$ref'  
-		");
-		$result=$row[$this->col_id];
-		return $result;
+    if ( ! is_string ( $ref ) ) 
+    {
+      $this->raiseError("qcl_db_model::getIdFromRef : integer or string expected, got '$ref'"); 
+    }
+    
+    $row = $this->db->getRow("
+      SELECT `{$this->col_id}` 
+      FROM `{$this->table}` 
+      WHERE `{$this->col_namedId}` = '$ref'  
+    ");
+    $result=$row[$this->col_id];
+    return $result;
    }
    
- 	/**
-   * get record by reference (string id or numeric id)
-   * @param mixed $ref numeric id or string name
+  /**
+   * gets numeric id by string id
+   * @param string  $namedId
+   * @param int id or null if record does not exist
    */
- 	function getByRef($ref)
+  function getIdByNamedId( $namedId )
+  {
+    $row  = $this->findByNamedId($namedId);
+    return count($row) ? $row[$this->col_id] : null;
+  }
+
+  /**
+   * gets string id by numeric id
+   * @param int $id
+   * @param string id or null if record does not exist
+   */
+  function getNamedIdById( $id )
+  {
+    $row    = $this->findById($id);
+    return count($row) ? $row[$this->col_namedId] : null;
+  }
+
+  /**
+   * checks if record with $namedId exists
+   * @param string  $namedId
+   * @param int id of existing record of false
+   */
+  function namedIdExists( $namedId )
+  {
+    $row = $this->findByNamedId ( $namedId );
+    return count($row) ? $row[$this->col_id] : false;
+  } 
+  
+  //-------------------------------------------------------------
+  // Record Retrieval (find... methods)
+  //-------------------------------------------------------------   
+ 
+  /**
+   * finds a records by property value
+   * @param string $propName Name of property
+   * @param string $value Value to find
+   * @param string|null[optional] $orderBy  Field to order by
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * properties are to be retrieved
+   * @return array recordset
+   */
+  function findBy( $propName, $value, $orderBy=null, $properties=null )
+  {
+    $colName = $this->getColumnName( $propName );
+    $value   = $this->db->escape($value);
+    return $this->findWhere("`$colName`='$value'");
+  }
+
+  /**
+   * finds a records that compare to a property value. This is like findBy, but using
+   * the "LIKE" operator. Works only with string values
+   * @param string $propName Name of property
+   * @param string $value Value to find
+   * @param string|null[optional] $orderBy  Field to order by
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * properties are to be retrieved
+   * @return array recordset
+   */
+  function findLike( $propName, $value, $orderBy=null, $properties=null )
+  {
+    $colName = $this->getColumnName( $propName );
+    $value   = $this->db->escape($value);
+    return $this->findWhere("`$colName` LIKE '$value'");
+  }  
+  
+  /**
+   * gets all database records optionally sorted by property
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return Array Array of db record sets
+   */
+  function findAll( $orderBy=null, $properties=null )
+  {
+    return $this->findWhere( null, $orderBy, $properties );
+  }  
+  
+  /**
+   * gets all database records or those that match a where condition. 
+   * the table name is available as the alias "r" (for records)
+   * @param string|null  $where   where condition to match, if null, get all
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return Array Array of db record sets. The array keys are already converted to the property names,
+   * so you do not have to deal with column names at all.
+   */
+  function findWhere( $where=null, $orderBy=null, $properties=null )
+  {
+    /*
+     * columns to retrieve
+     */
+    $columns = "";
+    if ( ! $properties )
+    {
+      $properties = array_keys($this->properties);  
+    }
+    
+    $cols = array();
+    foreach ( (array) $properties as $property )
+    {
+      $col = $this->getColumnName($property);
+      $str = "`$col`";
+      if ( $col != $property )
+      {
+        $str .= " AS '$property'";
+      }
+       $cols[] = $str; 
+    }
+    $columns = implode(",",  $cols );
+      
+    /*
+     * select 
+     */
+    $sql = "SELECT $columns FROM {$this->table} AS r \n";
+    
+    /*
+     * where 
+     */
+    if ($where)
+    {
+      $sql .= "WHERE $where ";
+    }
+    
+    /*
+     * order by
+     */
+    if ($orderBy)
+    {
+      $column = array();
+      foreach ( (array) $orderBy as $property )
+      {
+        $column[] = $this->getColumnName($property);
+      }
+      $orderBy = implode("`,`", (array) $column );
+      $sql .= "ORDER BY `$orderBy`"; 
+    }
+    
+    /*
+     * store and return result
+     */
+    $result = $this->db->getAllRecords($sql);
+    $this->currentRecord = count($result) ? $result[0] : null;
+    $this->_lastResult   = $result;    
+    return $result;
+  }
+  
+  /**
+   * Whether the last query didn't find any records
+   * @return boolean
+   */
+  function notFound()
+  {
+    return is_null( $this->currentRecord );
+  }  
+ 	
+ 	/**
+   * find database records by their primary key
+   * @param array|int	$ids Id or array of ids
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return Array Array of db record sets
+   */
+ 	function findById( $ids, $orderBy=null, $properties=null )
  	{
- 		if ( is_numeric ($ref) )
- 		{
- 			return $this->getById($ref); 
- 		}
- 		elseif ( is_string ($ref) )
- 		{
- 			return $this->getByName($ref);
- 		}
- 		else
- 		{
- 			$this->raiseError("qcl_db_model::getByRef : integer or string expected, got '$ref'");
- 		}
+ 	  if ( ! is_numeric($ids) and !is_array($ids) )
+ 	  {
+ 	    $this->raiseError("Invalid parameter id: '$ids'");
+ 	  }
+ 	  $rowIds = implode(",", (array) $ids );
+ 	  if ( ! empty($rowIds) )
+ 	  {
+ 	    $result = $this->findWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $properties );
+ 	    return $result;
+ 	  }  
+ 	  $this->raiseError("No id(s) provided.");
  	}
 
-	/**
-	 * gets numeric id by string id
-	 * @param string	$namedId
-	 * @param int id or null if record does not exist
-	 */
-	function getIdByNamedId( $namedId )
-	{
-		$row 		= $this->getByNamedId($namedId);
-		return count($row) ? $row[$this->col_id] : null;
-	}
-
-	/**
-	 * gets string id by numeric id
-	 * @param int	$id
-	 * @param string id or null if record does not exist
-	 */
-	function getNamedIdById( $id )
-	{
-		$row 		= $this->getById($id);
-		return count($row) ? $row[$this->col_namedId] : null;
-	}
-
-	/**
-	 * checks if record with $namedId exists
-	 * @param string	$namedId
-	 * @param int id of existing record of false
-	 */
-	function namedIdExists( $namedId )
-	{
-		$row = $this->getByNamedId ( $namedId );
-		return count($row) ? $row[$this->col_id] : false;
-	}
-  
   /**
    * gets the record in this table that is referred to by the record from a different table (argument) 
    * @return array
    * @param Array   $record  record from a different table that contains a key corresponding to the foreign id of this table
    * @param Boolean $idOnly if true, return only the value of the foreign key column
    */
-  function getByForeignKey( $record, $idOnly = false )
+  function findByForeignKey( $record, $idOnly = false )
   {
     $id = $record[ $this->getForeignKeyColumn() ];
     if ( $idOnly )
@@ -715,13 +689,96 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     else
     {
-      return $this->getById( $id );
+      return $this->findById( $id );
     }
   }
 
+  //-------------------------------------------------------------
+  // Get property and column values & convert between properties 
+  // and column data
+  //-------------------------------------------------------------      
+
+  /**
+   * Gets a property from the current model recordset
+   * @param string   $name Property name
+   * @return mixed value of property
+   */
+  function getProperty( $name )
+  {
+    if ( isset(  $this->currentRecord[$name] ) )
+    {
+      /*
+       * property exists, return straight
+       */
+      return $this->currentRecord[$name];
+    }
+    else
+    {
+      /*
+       * property doesn't exist, either the current record is in a unconverted
+       * (column) format or there is a letter case problem
+       */
+      foreach ( $this->currentRecord as $key => $value )
+      {
+        if ( strtolower($key) == strtolower($name) )
+        {
+          return $value;
+        }
+        elseif ( strtolower($this->getPropertyName($key)) == strtolower($name) )
+        {
+          return $value;
+        }
+      }
+    }
+    $this->raiseError("Property '$name' does not exist.'");
+  }
+
+  /**
+   * Sets a property in the current model recordset. You need to call the update() method to commit 
+   * the property change to the database.
+   * @return void 
+   * @param string     $name
+   * @param mixed      $value 
+   */
+  function setProperty( $name, $value )
+  { 
+    if ( isset(  $this->currentRecord[$name] ) )
+    {
+      /*
+       * property exists, set it
+       */
+      $this->currentRecord[$name] = $value;
+      return;
+    }
+    else
+    {
+      /*
+       * property doesn't exist, either the current record is in a unconverted
+       * (column) format or there is a letter case problem
+       */
+      foreach ( $this->currentRecord as $key => $value )
+      {
+        if ( strtolower($key) == strtolower($name) )
+        {
+          $this->currentRecord[$key] = $value;
+          return;
+        }
+        elseif ( strtolower($this->getPropertyName($key)) == strtolower($name) )
+        {
+          $this->currentRecord[$key] = $value;
+          return;
+        }
+      }
+    }
+    $this->raiseError("Property '$name' does not exist.'");
+  }  
+
+  //-------------------------------------------------------------
+  // Data creation and manipulation
+  //-------------------------------------------------------------   	
+
 	/**
-	 * creates a new record and 
-	 * optionally links it to a role
+	 * creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
 	 * @param string	$namedId
 	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
 	 * @return int the id of the inserted or existing row 
@@ -744,8 +801,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     $data = $this->emptyRecord;
     $data[$this->col_id]=null; // so at least one field is set
     $id = $this->insert( $data );
-    
-    $this->currentRecord = $this->getById($id);
+    $this->findById($id);
     return $id;
   }
 
@@ -773,9 +829,11 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function update ( $data=null, $id=null )    
   {
-    // use cached record data
+    /*
+     *  use cached record data?
+     */
     if ($data === null)
-    {
+    { 
       $data = $this->currentRecord;
     }
     else
@@ -786,10 +844,27 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
     }
     
-    // set modified timestamp if the timestamp is not part of the data
+    /*
+     * convert property names to column names if necessary
+     */
+    foreach ($data as $key => $value)
+    {
+      if ( $alias = $this->getAlias($key) )
+      {
+        /*
+         * @todo: what if alias exists as property name?
+         */
+        $data[ $alias ] = $value;
+        unset( $data[ $key] );
+      }
+    }
+    
+    /*
+     * set modified timestamp if the timestamp is not part of the data
+     */
     if ( $this->col_modified && empty( $data[$this->col_modified] ) )
     {
-      $data[$this->col_modified] = strftime("%Y-%m-%d %T");
+      $data[$this->col_modified] = null;
     }    
     
     return $this->db->update( $this->table, $data, $this->col_id );
@@ -812,27 +887,272 @@ class qcl_db_model extends qcl_jsonrpc_model
   {
     $this->db->deleteWhere ( $this->table, $where );
   }  	
- 	
-  //-------------------------------------------------------------
-  // SQL-Database specific methods
-  //-------------------------------------------------------------   
- 	
-	/**
-	 * gets the value of a column in a record without field->column translation 
-	 * @param string	     $column 	
-	 * @param int|string   $id	if omitted, use current record
-	 */
-	function getColumnValue( $column, $id = null)
-	{
+
+  //-----------------------------------------------------------------------
+  // Deprecated methods, will be slowly replaced by new findBy... methods
+  //-----------------------------------------------------------------------
+
+  /**
+   * gets the name of the column that holds the unique (numeric) id of this table
+   * @deprecated
+   * @return string
+   */
+  function getIdColumn()
+  {
+    return $this->col_id;
+  }
+  
+  /**
+   * gets the name of the column in other tables that contains a reference to a record in this table (foreign key)
+   * @deprecated
+   * return string
+   */
+  function getForeignKeyColumn()
+  {
+    return $this->foreignKey;
+  }
+
+  /**
+   * gets all database records optionally sorted by field
+   * @param string|null     $orderBy  (optional) order by field
+   * @return Array Array of db record sets
+   * @deprecated use new findX.. methods 
+   */
+  function getAllRecords($orderBy=null)
+  {  
+    return $this->getRecordsWhere(null,$orderBy);
+  }  
+  
+  /**
+   * gets all database records or those that match a where condition. 
+   * the table name is available as the alias "r" (for records)
+   * @param string        $where    where condition to match, if null, get all
+   * @param string|null   $orderBy  (optional) order by field
+   * @param array|null    $fields   (optional) Array of fields to retrieve 
+   * @return Array Array of db record sets
+   * @deprecated use new findX.. methods 
+   */
+  function getRecordsWhere($where=null,$orderBy=null,$fields=null)
+  {
+    if ( $fields )
+    {
+      $fields = "`" . implode("`,`", (array) $fields ) . "`";
+    }
+    else
+    {
+      $fields = "*"; 
+    }
+    
+    $sql = "SELECT $fields FROM {$this->table} AS r \n";
+    
+    if ($where)
+    {
+      $sql .= "WHERE $where ";
+    }
+    if ($orderBy)
+    {
+      $orderBy = implode("`,`", (array) $orderBy );
+      $sql .= "ORDER BY `$orderBy`"; 
+    }
+      return $this->db->getAllRecords($sql);    
+  }
+
+  /**
+   * gets database records by their primary key
+   * @param array|int     $ids    
+   * @param string|null   $orderBy  (optional) order by field
+   * @param array|null    $fields   (optional) Array of fields to retrieve 
+   * @return Array Array of db record sets
+   * @deprecated use new findX.. methods 
+   */
+  function getRowsById( $ids, $orderBy=null, $fields=null )
+  {
+    if ( ! is_numeric($ids) and !is_array($ids) )
+    {
+      $this->raiseError("qcl_db_model::getRowsById() : invalid parameter id: '$ids'");
+    }
+    $rowIds = implode(",", (array) $ids );
+    if ( ! empty($rowIds) )
+    {
+      return $this->getRecordsWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $fields );
+    }  
+  }
+
+  /**
+   * gets values of database columns that match a where condition
+   * @param string|array    $column   name of column(s) 
+   * @param string          $where    where condition to match, if null, get all
+   * @param string|null     $orderBy  (optional) order by field
+   * @return array Array of values
+   * @deprecated use new findX.. methods 
+   */
+  function getValues($column,$where=null,$orderBy=null)
+  { 
+    if ( is_array( $column ) )
+    {
+      $column = implode("`,`",$column);
+    }
+    
+    $sql = "SELECT `$column` FROM {$this->table} \n";
+    
+    if ($where)
+    {
+      $sql .= "WHERE $where ";
+    }
+    if ($orderBy)
+    {
+      $orderBy = implode("`,`", (array) $orderBy );
+      $sql .= "ORDER BY `$orderBy`"; 
+    }
+    return $this->db->getValues($sql);    
+  }
+
+  /**
+   * gets all distinct values of database columns that match a where condition
+   * @param string|array    $column   name of column(s) 
+   * @param string          $where    where condition to match, if null, get all
+   * @param string|null     $orderBy  (optional) order by field
+   * @return array Array of values
+   * @deprecated use new findX.. methods 
+   */
+  function getDistinctValues($column,$where=null,$orderBy=null)
+  { 
+    if ( is_array( $column ) )
+    {
+      $column = implode("`,`",$column);
+    }
+
+    $sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
+    
+    if ($where)
+    {
+      $sql .= "WHERE $where ";
+    }
+    if ($orderBy)
+    {
+      $orderBy = implode("`,`", (array) $orderBy );
+      $sql .= "ORDER BY `$orderBy`"; 
+    }
+    return $this->db->getValues($sql);    
+  }
+ /**
+   * get and cache record by id 
+   * @param mixed $id
+   * @return Array Db record set
+   * @deprecated use new findX.. methods 
+   */
+  function getById( $id = null )
+  {
+    if ( $id !== null )
+    {
+      if ( ! is_numeric($id) )
+      {
+        $id = "'$id'";
+      }
+      $this->currentRecord = $this->db->getRow("
+        SELECT * 
+        FROM `{$this->table}` 
+        WHERE `{$this->col_id}` = $id;
+      ");           
+    }
+    else
+    {
+      if ( ! is_array( $this->currentRecord ) )
+      {
+        $this->raiseError("No id given, but no record cached!");
+      }
+    }
+    return $this->currentRecord;
+  }
+  /**
+   * get record by its unique string id
+   * @deprecated use new findX.. methods
+   * @return Array Db record set
+   */
+  function getByName($name)
+  {
+    return $this->getByNamedId($name);
+  }
+   /**
+    * get record by its unique string id
+    * @deprecated use new findX.. methods t
+    * @return Array Db record set
+    */
+  function getByNamedId($namedId)
+  {
+    if ( $this->col_namedId )
+    {
+      $row = $this->db->getRow("
+        SELECT * 
+        FROM `{$this->table}` 
+        WHERE `{$this->col_namedId}` = '$namedId'
+      ");
+      $this->currentRecord = $row;
+      return $row;
+    }
+    else
+    {
+      $this->raiseError("qcl_db_model::getByNamedId : model does not have a named id property");  
+    }
+  }
+  /**
+   * get record by reference (string id or numeric id)
+   * @param mixed $ref numeric id or string name
+   * @deprecated use new findX.. methods 
+   */
+  function getByRef($ref)
+  {
+    if ( is_numeric ($ref) )
+    {
+      return $this->getById($ref); 
+    }
+    elseif ( is_string ($ref) )
+    {
+      return $this->getByName($ref);
+    }
+    else
+    {
+      $this->raiseError("qcl_db_model::getByRef : integer or string expected, got '$ref'");
+    }
+  }
+
+  /**
+   * gets the record in this table that is referred to by the record from a different table (argument) 
+   * @return array
+   * @param Array   $record  record from a different table that contains a key corresponding to the foreign id of this table
+   * @param Boolean $idOnly if true, return only the value of the foreign key column
+   * @deprecated use new findX.. methods 
+   */
+  function getByForeignKey( $record, $idOnly = false )
+  {
+    $id = $record[ $this->getForeignKeyColumn() ];
+    if ( $idOnly )
+    {
+      return $id;
+    }
+    else
+    {
+      return $this->findById( $id );
+    }
+  }     
+
+  /**
+   * gets the value of a column in a record
+   * @param string       $column  
+   * @param int|string|null[optional] $id Numeric or named id. If omitted, use current record
+   * @deprecated use new findX.. methods 
+   */
+  function getColumnValue( $column, $id = null)
+  {
     if ( is_numeric( $id ) )
     {
       // id is numeric
-      $row = $this->getById( $id );
+      $row = $this->findById( $id );
     } 
     elseif ( is_string($id) )
     {
       // id is string => namedId
-      $row = $this->getByNamedId( $id );
+      $row = $this->findByNamedId( $id );
     }
     elseif ( $id === null )
     {
@@ -840,7 +1160,9 @@ class qcl_db_model extends qcl_jsonrpc_model
       $row = $this->currentRecord;  
     }
     
-    // return value
+    /*
+     * return value
+     */ 
     if ( count ( $row ) )
     {
       return $row[$column];
@@ -849,29 +1171,30 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       if ( $id )
       {
-        $this->raiseError("qcl_db_model::getColumnValue : Row '$id' does not exist");  
+        $this->raiseError("Row '$id' does not exist");  
       }
       elseif ( $id == 0 )
       {
-        $this->raiseError("qcl_db_model::getColumnValue : ID is 0.");  
+        $this->raiseError("Invalid id (0).");  
       }      
       else
       {
-        $this->raiseError("qcl_db_model::getColumnValue : No current record");  
+        $this->raiseError("No current record.");  
       }
     }
-	}
+  }
 
-	/**
-	 * sets the value of a column in a record without field->column translation 
-	 * @param string	    $column
-	 * @param mixed		    $value
-	 * @param int|string  $id 	if omitted, modify current record cache without updating the database 
-	 */
-	function setColumnValue( $column, $value, $id=null )
-	{
+  /**
+   * sets the value of a column in a record 
+   * @param string      $column
+   * @param mixed       $value
+   * @param int|string|null[optional] $id Numeric or named id. If omitted, use current record
+   * @deprecated use new findX.. methods 
+   */
+  function setColumnValue( $column, $value, $id=null )
+  {
     if( $id )
-		{
+    {
       if ( ! is_numeric( $id ) )
       {
         $namedId = $id;
@@ -882,121 +1205,168 @@ class qcl_db_model extends qcl_jsonrpc_model
         }
       }
       // set data
-			$data = array();
-			$data[$this->col_id] = $id;
-			$data[$column] = $value;
-			$this->update($data);
-		}
-		else
-		{
-			$this->currentRecord[$column]=$value;		
-		}
-	}
+      $data = array();
+      $data[$this->col_id] = $id;
+      $data[$column] = $value;
+      $this->update($data);
+    }
+    else
+    {
+      $this->currentRecord[$column]=$value;   
+    }
+  }
  
-	/**
-	 * translates field names to column names and returns value of field in current record
-	 * @param string 	   $field 		field name	
-	 * @param int|string $id 	if omitted, use current record 
-	 */
-	function getFieldValue ( $field, $id=null )
-	{
-		$columnName	= $this->getColumnName( $field );
-		
-		if ( ! $columnName )
-		{
-			$this->raiseError ( "qcl_db_model::getFieldValue : Invalid field '$field'");
-		}		
-		
-		return $this->getColumnValue($columnName,$id);
-	}
+  /**
+   * gets the value of the property of the current record or a record specified by the id
+   * @param string $propName Property name
+   * @param int|string $id    if omitted, modify current record cache without updating the database 
+   * @deprecated use new findX.. methods 
+   */
+  function getPropertyValue ( $propName, $id=null )
+  {
+    $columnName = $this->getColumnName( $propName );
+    return $this->getColumnValue($columnName,$id);
+  }
+
+  /**
+   * sets the value of the property of the current record or a record specified by the id
+   * @param string $propName Property name
+   * @param mixed      $value 
+   * @param int|string $id    if omitted, modify current record cache without updating the database 
+   * @return void
+   * @deprecated use new findX.. methods 
+   */
+  function setPropertyValue ( $propName, $value, $id=null )
+  {
+    $columnName = $this->getColumnName($propName);
+    $this->setColumnValue( $columnName, $value, $id );
+  }
 
 
-  
-	/**
-	 * translates field names to column names and sets value of field in current record
-	 * @param string	   $field			field name to translate
-	 * @param mixed		   $value	
-	 * @param int|string $id 		if omitted, modify current record cache without updating the database 
-	 * @return void
-	 */
-	function setFieldValue ( $field, $value, $id=null )
-	{
-		$columnName	= $this->getColumnName($field);
-		
-		if ( ! $columnName )
-		{
-			$this->raiseError ( "qcl_db_model::setFieldValue : Invalid field '$field'");
-		}
-		$this->setColumnValue( $columnName, $value, $id );
-	}
-
-
-	/**
-	 * translates column to field names
-	 * @param array $row
-	 * @todo: use "normalize" / "unnormalize"?? concept
-	 * @return array
-	 */
-	function columnsToFields ( $row )
-	{
-    return $this->_columnsToFields ( $row );
+  /**
+   * translates column to property names in the array keys
+   * @param array $row
+   * @return array
+   * @deprecated use new findX.. methods 
+   */
+  function columnsToProperties ( $row )
+  {
+    return $this->_columnsToProperties ( $row );
   }
   
-	/**
-	 * translates column to field names
-	 * @param array $row
-	 * @todo: use "normalize" / "unnormalize"?? concept
-	 * @return array
-	 */
-	function _columnsToFields ( $row )
-	{
-		if ( ! $row )
+  /**
+   * translates column to property names in the array keys (implementation)
+   * @param array $row
+   * @return array
+   * @deprecated use new findX.. methods 
+   */
+  function _columnsToProperties ( $row )
+  {
+    if ( ! $row )
     {
       $row = $this->currentRecord;
     }
-		$translatedRow 	= array();
-		foreach ( $row as $column => $value )
-		{
-			$field = $this->getFieldName($column);
-			if ( $field and $value )
-			{
-  			$translatedRow[$field]=$value;	
-			}
-		}
-		return $translatedRow;
-	}
+    $translatedRow  = array();
+    foreach ( $row as $column => $value )
+    {
+      $field = $this->getPropertyName($column);
+      if ( $field and $value )
+      {
+        $translatedRow[$field]=$value;  
+      }
+    }
+    return $translatedRow;
+  }
 
-	/**
-	 * translates field to column names
-	 * @todo: use "normalize" / "unnormalize"?? concept
-	 * @param array $row
-	 * @return array
-	 */
-	function fieldsToColumns ( $row=null )
-	{
-    return $this->_fieldsToColumns ( $row );
+  /**
+   * translates property to column names
+   * @param array $row
+   * @return array
+   * @deprecated use new findX.. methods 
+   */
+  function propertiesToColumns ( $row=null )
+  {
+    return $this->_propertiesToColumns ( $row );
   }
   
-	/**
-	 * translates field to column names
-	 * @todo: use "normalize" / "unnormalize"?? concept
-	 * @param array $row
-	 * @return array
-	 */
-	function _fieldsToColumns ( $row=null )
-	{
+  /**
+   * translates prperty to column names (implementation)
+   * @param array $row
+   * @return array
+   * @deprecated use new findX.. methods 
+   */
+  function _propertiesToColumns ( $row=null )
+  {
     $translatedRow = array();
-		foreach ( $row as $field => $value )
-		{
-			$column = $this->getColumnName($field);
-			if ( $column and $value )
-			{
-		  	$translatedRow[$column]=$value;	
-			}
-		}
-		return $translatedRow;
-	}
+    foreach ( $row as $propName => $value )
+    {
+      $column = $this->getColumnName($propName);
+      if ( $column and $value )
+      {
+        $translatedRow[$column]=$value; 
+      }
+    }
+    return $translatedRow;
+  }  
+  
+  //-------------------------------------------------------------
+  // Timestamp management
+  //-------------------------------------------------------------  
+  
+  /**
+   * updates the modification date without changing the data
+   * @param int|array $ids One or more record ids
+   * @return void
+   */
+  function updateTimestamp( $ids )
+  {
+    if (! is_numeric($ids) and ! is_array($ids)  )
+    {
+      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
+    }
+    
+    $ids = implode(",", (array) $ids);
+    $this->db->execute(" 
+      UPDATE `{$this->table}` 
+      SET `{$this->col_modified}` = NOW()
+      WHERE `{$this->col_id}` IN ($ids)
+    ");
+  }
+  
+  /**
+   * gets the current timestamp from the database
+   * @return string
+   */
+  function getTimestamp()
+  {
+    return $this->db->getValue("SELECT NOW()");
+  }
 
+  /**
+   * Returns a hash map of ids the modification timestamp
+   * @return array
+   */
+  function getModificationList()
+  {
+    if ( ! $this->col_modified )
+    {
+      $this->raiseError("Table {$this->table} has no timestamp column");
+    }
+    
+    $rows = $this->db->getAllRecords("
+      SELECT 
+        {$this->col_id}       AS id,
+        {$this->col_modified} AS timestamp
+      FROM {$this->table}
+    ") ;  
+    $map = array();
+    foreach ($rows as $row)
+    {
+      $map[$row['id']] = $row['timestamp'];
+    }
+    return $map;
+  }  
+  
 	//-------------------------------------------------------------
   // options: one column which contains a serialized assoc. array
   // containing additional dynamic fields that need not have their
@@ -1054,384 +1424,10 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->setOptions( $options, $id );
   }
 
-  /**
-   * Returns a hash map of ids the modification timestamp
-   * @return array
-   */
-  function getModificationList()
-  {
-    if ( ! $this->col_modified )
-    {
-      $this->raiseError("Table {$this->table} has no timestamp column");
-    }
-    
-    $rows = $this->db->getAllRecords("
-      SELECT 
-        {$this->col_id}       AS id,
-        {$this->col_modified} AS timestamp
-      FROM {$this->table}
-    ") ;  
-    $map = array();
-    foreach ($rows as $row)
-    {
-      $map[$row['id']] = $row['timestamp'];
-    }
-    return $map;
-  }
   
-  /**
-   * updates the modification date without changing the data
-   * @param int|array $ids One or more record ids
-   * @return void
-   */
-  function updateTimestamp( $ids )
-  {
-    if (! is_numeric($ids) and ! is_array($ids)  )
-    {
-      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
-    }
-    
-    $ids = implode(",", (array) $ids);
-    $this->db->execute(" 
-      UPDATE `{$this->table}` 
-      SET `{$this->col_modified}` = NOW()
-      WHERE `{$this->col_id}` IN ($ids)
-    ");
-  }
-  
-  /**
-   * gets the current timestamp from the database
-   * @return string
-   */
-  function getTimestamp()
-  {
-    return $this->db->getValue("SELECT NOW()");
-  }
-    
-  
-	//-------------------------------------------------------------
-  // SQL Table Maintenance AP
   //-------------------------------------------------------------
-
-
-
-  /**
-   * checks whether model table(s) have been initialized
-   * @return Boolean
-   * @param $table string[optional] defaults to model able
-   */
-  function isInitialized ( $table=null )
-  {
-    //$this->createXml($table);
-    $flags = $this->_getInitFlags();
-    $table = either ( $table, $this->table );
-    return ( $flags[$table] == true );
-  }  
-
-  
-  /**
-   * sets the initialized state of model table(s) 
-   * @return 
-   * @param $table String[optional] defaults to model table
-   * @param $value Bool[optional] defaults to true
-   */
-  function setInitialized ($table=null, $value=true)
-  {
-    $flags = $this->_getInitFlags();
-    $table = either ( $table, $this->table );
-    $flags[$table] = $value;
-    $this->_setInitFlags($flags);    
-  }  
-  
-  function _setInitFlags ($flags)
-  {
-    $init_flags   = "bibliograph_table_init";
-    $this->_initFlags = $flags;
-    $this->store($init_flags,$flags);
-  }  
-  
-  function _getInitFlags ()
-  {
-    $init_flags   = "bibliograph_table_init";
-    if ( ! $this->_initFlags  )
-    {
-      $this->_initFlags = (array) $this->retrieve($init_flags);
-    }
-    return $this->_initFlags;
-  }
-
-  /**
-   * initializes tables, i.e. either creates them if they do not exist or
-   * update them if their definition has changed. this should only be done
-   * once per session
-   * @return void
-   * @param mixed $tables (array of) table name(s)
-   */
-  function initializeTables($tables)
-  {   
-    $tables       = (array) $tables;
-    
-    foreach ( $tables as $table )
-    {    
-      // ensure each table is only checked once
-      if ( $this->isInitialized( $table) )
-      {
-        continue;
-      }
-     
-      // do checks and updates
-      $this->info("*** Initializing table '$table' ***");
-      if ( $this->checkCreateTable($table) or 
-           $this->updateTableStructure($table) )
-      {
-        // success
-        $this->setInitialized($table,true);
-      }
-    }
-  }
-  
-  /**
-   * check table and create it if necessary
-   * @return boolean true if table was created, false if it already exists
-   */
-  function checkCreateTable($table)
-  {
-     if ( $this->db->tableExists( $table ) )
-     {
-       $this->info("Checking if table '$table' exists ... Yes");
-       return false;
-     }
-     else
-     {
-       $this->info("Checking if table '$table' exists ... No, creating it.");
-       $this->createTable($table);       
-       return true;
-     }
-  }
-  
-  /**
-   * create a table. override if necessary
-   * @deprecated
-   */
-  function createTable($table)
-  {
-    $createSql = $this->loadSql($table);
-    if ( ! $createSql )
-    {
-      $file = $this->getSqlFileName($table);
-      $this->raiseError ("Cannot create table $table - sql file '$file' does not exist.");
-    }
-    $this->db->execute($createSql);
-  }
-  
-  /**
-   * adds initial values, using an sql file. To be overridden by table-specific methods
-   * @todo: intial values from xml and not from sql
-   */
-  function addInitialValues($table)
-  {  
-    $sql = $this->loadSql( $table . ".values" );
-    if ( $sql )
-    {
-      $this->info("Adding initial values ...");
-      foreach ( explode(";", $sql ) as $part )
-      {
-        if ( $part = trim($part) )
-        {
-          $this->db->execute( $part );
-        }
-      }
-    }      
-  }
-
-  /**
-   * adds table-related triggers.
-   * db user needs "SUPER" (mysql < 5.1) or "TRIGGER" (mysql >= 5.1) privileges
-   */
-  function createTriggers($table)
-  {
-    $file = $this->getSqlFileName($table . ".triggers" );
-    if ( file_exists ( $file ) )
-    {
-      $this->info("Creating triggers...");
-      $database  = $this->db->getDatabase();
-      $sql       = str_replace('$table', $table, 
-                    str_replace('$database',$database, file_get_contents ( $file ) ) ) ;
-      foreach ( explode(";",$sql) as $part )
-      {
-        if ( $part = trim($part) )
-        {
-          $this->db->execute( $part );
-        }
-      }
-    }
-  } 
-
-
-
-  /**
-   * gets table structure as sql create statement from database
-   * @return string
-   */
-  function getCreateTableSql($table)
-  {
-    return $this->db->getCreateTableSql($table);
-  }
-  
-  /**
-   * gets name of file where table create sql is stored for a table
-   * @return string
-   * @param $table string
-   */
-  function getSqlFileName($table)
-  {
-    $application = substr(get_class($this),0,strpos(get_class($this),"_"));
-    $type = $this->db->getType();
-    return SERVICE_PATH . "{$application}/sql/{$table}.$type.sql";
-  }
-
-  /**
-   * returns sql statement to create a table loaded from the filesystem
-   * @return string
-   * @param $name string name
-   */
-  function loadSql($name)
-  {
-    $file = $this->getSqlFileName($name);
-    if ( file_exists ($file) )
-    {
-      $this->log("Checking for file '$file' ... Exists.");
-      return  file_get_contents($file);
-    }
-    else
-    {
-      $this->log("Checking for file '$file' ... Does not exist.");
-      return null;
-    }
-  }
-
-  /**
-   * saves the sql commands necessary to create the table into a file. 
-   * This will not overwrite an existing file. If you want to update
-   * the sql stored in the file system from the structure existing in the 
-   * database, remove the file and $this->setInitialized($table,false).
-   * @return boolen success
-   * @deprecated
-   * 
-   */
-  function saveTableStructureSql($table)
-  {
-      $file = $this->getSqlFileName($table);
-      if ( ! file_exists( $file ) and is_writeable ( dirname ( $file ) ) )
-      {
-        $sql = $this->getCreateTableSql($table);
-        file_put_contents($file, $sql );        
-        $this->info("Stored sql for {$table}");
-        return true;
-      }
-      else
-      {
-        $this->warn ( dirname ( $file ) . " exists or is not writable. Updated sql is not stored.");
-        return false;
-      }
-  }
-
-
-  /**
-   * updates or creates table in database if it doesn't exist yet
-   * @param string $table 
-   * @deprecated
-   * @return 
-   */
-  function updateTableStructure($table)
-  {
-    $this->info ( "Checking for an update for table '$table'...");
-   
-    if ( ! file_exists ( $this->getSqlFileName($table) ) )
-    {
-      // store sql to create this table
-      // this is only for the developer who wants to synchronize a 
-      // changed table structure in the database with the sql in 
-      // the file system.
-      return $this->saveTableStructureSql($table);
-    }
-    
-    // compare table structure with structure and update table if there is a change
-    $currentSql   = $this->getCreateTableSql($table); // from database
-    $normativeSql = $this->loadSql($table); // from file
-    if ( $currentSql != $normativeSql )
-    {
-      $this->db->updateTableStructure( $table, $normativeSql );
-      $this->saveTableStructureSql($table);
-      $this->info ("Updated table '$table'.");
-    }
-    else
-    {
-      $this->info ( "Table '$table' is up to date.");
-    }
-    return true;
-  }
-  
-  /**
-   * sets datasource information
-   * @param mixed $datasource Either the name of the datasource or an object reference to t
-   * @return void
-   */
-  function setDatasource($datasource)
-  {
-    if ( is_string($datasource) and trim($datasource))
-    {
-      $this->datasource = $datasource;
-    }
-    else
-    {
-      $this->raiseError("Invalid datasource '$datasource");
-    }
-  }
-  
-  /**
-   * returns datasource information
-   * the datasource object
-   * return string
-   */
-  function getDatasource()
-  {
-    if ( is_string($this->datasource) ) return $this->datasource;
-    if ( is_object ($this->datasourceModel) )
-    {
-      return $this->datasourceModel->getName();
-    }
-    $this->raiseError("Neither datasource name or model available");
-  }
-
-  /**
-   * stores the name or object reference of the datasource
-   * @param mixed $datasource Either the name of the datasource or an object reference to t
-   * the datasource object
-   * return void
-   */
-  function setDatasourceModel($datasource)
-  {
-    if ( is_object ($datasource) and is_a($datasource,"qcl_datasource_model") )
-    {
-      $this->datasourceModel =& $datasource;
-    }
-    else
-    {
-      $this->raiseError("Argument must be a qcl_datasource_model object");
-    }
-  }  
-  
-  /**
-   * retrieves the datasource object or name
-   * @return qcl_datasource_model or string 
-   */
-  function &getDatasourceModel()
-  {
-    return $this->datasourceModel;
-  }
-
-
+  // Model Setup methods
+  //-------------------------------------------------------------
   
   /**
    * gets the path of the file that contains the initial
@@ -1547,9 +1543,14 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getTablePrefix()
   {
-    $datasourceName = $this->datasource;
-    return $datasourceName ? 
-      ( $datasourceName . "_" ) : "";
+    $prefix = "";
+    $dsModel =& $this->getDatasourceModel();
+    if ( $dsModel )
+    {
+      $prefix = $dsModel->getTablePrefix();
+    }
+    //$this->info("Prefix for {$this->name} is '$prefix'.");
+    return $prefix; 
   }
   
   /**
@@ -1559,10 +1560,54 @@ class qcl_db_model extends qcl_jsonrpc_model
    * path/to/class/classname.schema.xml
    * return string
    */
-  function getXmlSchmemaPath()
+  function getSchmemaXmlPath()
   {
+    if ( $this->schemaXmlPath )
+    {
+      return $this->schemaXmlPath;
+    }
     $class = get_class($this);
     return str_replace("_","/",$class) . ".model.xml";
+  }
+  
+  /**
+   * get the model schema as an simpleXml object
+   * @param string $path path of schema xml file or null if default file is used
+   * @return qcl_xml_simpleXML
+   */  
+  function &getSchemaXml($path=null)
+  {
+
+    /*
+     * keep a static reference to the object so that it won't be
+     * recreated a second time in one request
+     */
+    static $schemaXml = null;
+    
+    /*
+     * if schema file has already been parsed, return it
+     */
+    if ( is_object( $schemaXml ) )
+    {
+      return $schemaXml;
+    }
+
+    /*
+     * parse schema file
+     */
+
+    $path = either( $path, $this->getSchmemaXmlPath() );
+
+    if ( !is_valid_file($path) )
+    {
+      $this->raiseError("No valid file path: '$path'");
+    }
+    
+    /*
+     * get and return schema document 
+     */
+    $schemaXml =& $this->parseXmlSchemaFile($path);
+    return $schemaXml;     
   }
   
   /**
@@ -1572,24 +1617,10 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param string $path path of schema xml file or null if default file is used
    * @return void
    */
-  function setupSchema($path=null,$sqltype="mysql")
+  function setupSchema($sqltype="mysql")
   {
-    
-    /*
-     * parse schema file
-     */
-    $path = either($path, $this->getXmlSchmemaPath());
-    if ( !is_valid_file($path) )
-    {
-      $this->raiseError("qcl_db_model::updateTablesFromXmlSchema: No valid file path: '$path'");
-    }
-    
-    /*
-     * get schema document 
-     */
-    $this->schemaXml =& $this->parseXmlSchemaFile($path); 
-    $modelXml =& $this->schemaXml;    
-    $doc =& $modelXml->getDocument();
+    $modelXml =& $this->getSchemaXml();
+    $doc      =& $modelXml->getDocument();
     
     //$this->info($doc->asXml());
 
@@ -1617,14 +1648,15 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->type  = $modelAttrs['type'];
     
     /*
-     * the table name is either provided as the 'table' property
+     * the table name is provided as the 'table' property
      * of the class, usually prefixed by the datasource name, if applicable to the model 
      */
-    $this->table = $this->getTablePrefix() . $modelAttrs['table'];
-    if ( ! $this->table )
+    if ( ! $modelAttrs['table'] )
     {
       $this->raiseError("Model '{$this->name}': No table name!"); 
     }
+    $prefix = $this->getTablePrefix();
+    $this->table = $prefix . $modelAttrs['table'];
     
     /*
      * whether the setup process should upgrade the schema or just use existing tables in
@@ -1632,7 +1664,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     if ( $modelAttrs['upgradeSchema'] == "no" )
     {
-      $this->info("Schema document for model name '{$this->name}' is not to be upgraded.");
+      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.");
       return;
     }
     
@@ -1641,7 +1673,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     if ( $this->db->tableExists($this->table) and !$modelXml->hasChanged() ) 
     {
-      $this->info("Schema document for model name '{$this->name}', type '{$this->type}', class '{$this->class}' hasn't changed.");
+      //$this->info("Schema document for model name '{$this->name}', type '{$this->type}', class '{$this->class}' hasn't changed.");
       return;
     }  
     
@@ -1944,6 +1976,19 @@ class qcl_db_model extends qcl_jsonrpc_model
         }
       }
     }
+    
+    /*
+     * import initial data if necessary
+     */
+    $path = $this->getDataPath();
+    if ( file_exists($path) and ( $this->schemaXml->hasChanged() or $this->fileChanged($path) ) )
+    {
+      $this->import($path);
+    }
+    else
+    {
+      $this->info("No data to import.");
+    }    
   }
     
   /**
@@ -1953,13 +1998,12 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function &parseXmlSchemaFile($file)
   {
-    require_once ("qcl/xml/simpleXML.php");
-    
+
     /*
      * load model schema xml file
      */
-    $this->info("Loading model schema file '$file'...");
-    $modelXml =& new qcl_xml_simpleXML($file); 
+    $this->log("Loading model schema file '$file'...");
+    $modelXml =& new qcl_xml_simpleXML($file);
     $modelXml->removeLock(); // we don't need a lock, since this is read-only
     $doc =& $modelXml->getDocument();
     
@@ -1971,7 +2015,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     
     if ( $includeFile  )
     {
-      $this->info("Including '$includeFile' into '$file'...");
+      $this->log("Including '$includeFile' into '$file'...");
       $parentXml   =& $this->parseXmlSchemaFile($includeFile);
       $modelXml->extend($parentXml);
     }
@@ -2055,7 +2099,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * export all records
      */ 
-    $records = $this->getAllRecords();
+    $records = $this->findAll();
     
     foreach($records as $record)
     {
@@ -2112,26 +2156,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     $dataXml->save();
   }
   
-  /**
-   * checks if a property has a local alias 
-   *
-   * @param string $propName property name
-   */
-  function hasAlias($propName)
-  {
-    return ( isset( $this->aliasMap[$propName] ) );
-  }
-  
-  /**
-   * get the local alias of a property name, or
-   * return the name if no alias exists
-   * @param string $propName property name
-   * @return string alias or property name
-   */
-  function getAlias($propName)
-  {
-    return either ( $this->aliasMap[$propName], $propName );
-  }
+
   
   /**
    * imports initial data for the model from an xml 
@@ -2235,8 +2260,5 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     $this->info("$count records imported.");
   }
-  
-  
-  
 }	
 ?>

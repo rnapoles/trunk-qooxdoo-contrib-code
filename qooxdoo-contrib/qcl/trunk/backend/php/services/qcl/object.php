@@ -93,7 +93,6 @@ class qcl_object extends patched_object
   {
   }
   
-  
   //-------------------------------------------------------------
   // persistence
   //-------------------------------------------------------------	
@@ -102,19 +101,17 @@ class qcl_object extends patched_object
    * get persistent object instance of this class. this will serialize
    * itself automatically at the end of the request. 
    * Can take up to five arguments that will be passed to the class constructor
-   * @static
+   * @param string $class Class name
+   * @param mixed[optional] $arg1
+   * @param mixed[optional] $arg2
+   * @param mixed[optional] $arg3
+   * @param mixed[optional] $arg4
+   * @param mixed[optional] $arg5
+   * @return qcl_object Instance of class
    */
-  function &getPersistentInstance( $arg1=null, $arg2=null, $arg3=null, $arg4=null, $arg5=null)
+  function &getPersistentInstance( $class, $arg1=null, $arg2=null, $arg3=null, $arg4=null, $arg5=null)
   {
-    $class = __CLASS__; 
-    
-    /*
-     * ensure method is called statically
-     */
-    if ( is_object($this) and !is_a($this,$class) )
-    {
-      $this->raiseError("This method needs to be called statically!");
-    }
+    qcl_object::includeClassfile($class);
     
     /*
      * retrieve instance
@@ -157,10 +154,13 @@ class qcl_object extends patched_object
   {
     if ( is_object( $this) and is_a($this,__CLASS__) )
     {
-      
       $class = get_class($this);
+      //$this->info("Saving serialized object of class $class.");
       qcl_object::store($class,&$this);
-      echo("Storing $class to cache");
+    }
+    else
+    {
+      $this->raiseError("Cannot save object.");
     }
   }
   
@@ -257,7 +257,7 @@ class qcl_object extends patched_object
    */
   function __call($method, $args, &$return )
   {
-    if ( phpversion() > 5 )
+    if ( phpversion() >= 5 )
     {
       if ( isset($this->_mixinlookup[$method] ) )
       {
@@ -532,6 +532,5 @@ class qcl_object extends patched_object
     else $path = $id;
     return unlink ($path);    
   }
-  
-  
 }
+?>

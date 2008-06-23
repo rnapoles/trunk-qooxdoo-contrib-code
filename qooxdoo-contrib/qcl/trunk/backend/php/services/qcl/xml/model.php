@@ -432,7 +432,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    * @todo: use "normalize" / "unnormalize"?? concept
    * @return array
    */
-  function columnsToFields ( $row )
+  function columnsToProperties ( $row )
   {
     $this->raiseError("Not implemented");
   }
@@ -444,7 +444,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    * @param array $row
    * @return array
    */
-  function fieldsToColumns ( $row=null )
+  function propertiesToColumns ( $row=null )
   {
     $this->raiseError("Not implemented");
   }
