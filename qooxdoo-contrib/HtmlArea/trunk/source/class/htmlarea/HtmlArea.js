@@ -1166,12 +1166,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (this.__isLoaded)
       {
-
-        if (qx.core.Variant.isSet("qx.client", "gecko"))
-        {
-          doc.body.contentEditable = true;
-        }
-
         this.__setDesignMode(true);
 
         /*
