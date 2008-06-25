@@ -11,33 +11,13 @@ require_once ("qcl/plugin/abstract.php");
 class qcl_plugin_db extends qcl_db_model
 {    
 
-	//-------------------------------------------------------------
-  // class variables
-	//------------------------------------------------------------- 
-	
-	var $table 					      = "plugins";
-	var $col_id 				      = null; // no numeric id
-	var $col_type 				    = "type";
-	var $col_active 			    = "active";
-	var $col_permission 	    = "permissionRead";
-  var $col_author           = "author";
-  var $col_description      = "description";
-
-	//-------------------------------------------------------------
-  // internal methods
-	//------------------------------------------------------------- 
-   
- 	/**
- 	 * constructor
- 	 * @param object reference $controller
+  /**
+   * the path to the model schema xml file. ususally automatically resolved.
+   * @see qcl_db_model::getSchmemaXmlPath()
+   * @var string
    */
- 	function __construct($controller)
- 	{
-    parent::__construct(&$controller);
-    // initialize tables
-    $this->initializeTables($this->table); 
-	}
-	
+  var $schemaXmlPath = "qcl/plugin/db.model.xml";  
+  
 	//-------------------------------------------------------------
   // public methods 
   //-------------------------------------------------------------    

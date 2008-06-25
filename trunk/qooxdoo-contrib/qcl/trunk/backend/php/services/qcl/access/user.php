@@ -18,12 +18,6 @@ class qcl_access_user extends qcl_access_common
   // class variables, override if necessary
   //-------------------------------------------------------------
 
-	var $table			            = "users";
-	var $col_namedId	          = "username";
-	var $col_name		            = "name";
-	var $col_username 	        = "username"; 
-	var $col_password 	        = "password";
-  var $col_lastAction         = null; // enable if you want to use auto-logout
 	var $icon 			            = "icon/16/apps/system-users.png";
 	var $nodeType		            = "qcl.auth.types.User";
 	var $shortName		          = "user";
@@ -427,6 +421,7 @@ class qcl_access_user extends qcl_access_common
    */
   function resetLastAction( $userId=null )
   {
+
     if ( ! $this->col_lastAction )
     {
       $this->raiseError("User model does not have a lastAction column.");
@@ -439,9 +434,9 @@ class qcl_access_user extends qcl_access_common
     
     // reset timestamp
     $this->db->execute("
-      UPDATE {$this->table}
-      SET {$this->col_lastAction} = NOW()
-      WHERE `{$this->col_id}` = $userId;
+      UPDATE `{$this->table}`
+         SET `{$this->col_lastAction}` = NOW()
+       WHERE `{$this->col_id}` = $userId;
     ");
   }
   
@@ -466,8 +461,8 @@ class qcl_access_user extends qcl_access_common
     // get seconds since last action
     $seconds = $this->db->getValue("
       SELECT TIME_TO_SEC( TIMEDIFF( NOW(), {$this->col_lastAction} ) )
-      FROM {$this->table}
-      WHERE `{$this->col_id}` = $userId;
+        FROM `{$this->table}`
+       WHERE `{$this->col_id}` = $userId;
     ");
     
     return $seconds;

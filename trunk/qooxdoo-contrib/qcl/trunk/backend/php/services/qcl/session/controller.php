@@ -3,7 +3,8 @@
 /*
  * dependencies
  */
-require_once ("qcl/db/controller.php");
+require_once "qcl/db/controller.php";
+require_once "qcl/session/db.model.php";
 
 /**
  * base class for controllers who use a session model to keep track of connected
@@ -29,11 +30,8 @@ class qcl_session_controller extends qcl_db_controller
     /*
      * set session model
      */
-		if ( ! $this->getModel("session") )
-    {
-      $sessionModel =& $this->getSingleton("qcl.session.db.Model");
-      $this->setModel("session", &$sessionModel);
-    }	
+    $sessionModel =& $this->getSingleton("qcl.session.db.Model");
+    $this->setModel("session", &$sessionModel);
 	}   	
 
 	//-------------------------------------------------------------

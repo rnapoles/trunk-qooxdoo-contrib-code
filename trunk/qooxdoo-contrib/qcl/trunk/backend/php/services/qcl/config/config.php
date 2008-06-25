@@ -24,19 +24,6 @@ require_once ("qcl/jsonrpc/model.php");
 class qcl_config extends qcl_jsonrpc_model
 {    
 
-
-	//-------------------------------------------------------------
-  // internal methods
-	//------------------------------------------------------------- 
-   
- 	/**
- 	 * constructor calls parent constructor
-   */
- 	function __construct($controller)
- 	{
-		parent::__construct(&$controller);
-	}
-
 	//-------------------------------------------------------------
   // static methods 
 	//-------------------------------------------------------------   

@@ -6,7 +6,7 @@
   <model 
     table="users"
     name="qcl.access.User"
-    extends="qcl.db.Model">
+    extends="qcl.db.Model"> 
      
     <!-- model definition -->
     <definition>

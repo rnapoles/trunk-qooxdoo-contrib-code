@@ -278,9 +278,9 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->connect();
         
     /*
-     * parse schema document
+     * parse schema document into $this->schemaXml
      */
-    $this->schemaXml =& $this->getSchemaXml();
+    $this->getSchemaXml();
     
     /*
      * setup schema. if necessary, create or update tables and import intial data. 
@@ -317,7 +317,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     $dsModel =& $this->getDatasourceModel();
     if ( $dsModel )
     {
-      $this->log("Getting db handler from datasource object...");
+      //$this->info( get_class($this) . ": Getting db handler from datasource object...");
       $db =& $dsModel->getDatasourceConnection();
     }
     
@@ -331,7 +331,7 @@ class qcl_db_model extends qcl_jsonrpc_model
         /*
          * try to connect to connection supplied by controller
          */
-        $this->info( get_class($this) . ": getting connection object from Controller...");
+        //$this->info( get_class($this) . ": getting connection object from Controller...");
         $controller =& $this->getController();
         $db =& $controller->getConnection();
       }
@@ -400,6 +400,15 @@ class qcl_db_model extends qcl_jsonrpc_model
   // Properties and Columns
   //-------------------------------------------------------------   
 
+  /**
+   * get all properties of this model
+   * @return array
+   */
+  function getProperties()
+  {
+    return array_keys($this->properties);
+  }
+  
   /**
    * checks if a property has a local alias 
    *
@@ -642,6 +651,45 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->_lastResult   = $result;    
     return $result;
   }
+
+  /**
+   * gets all values of a model property that match a where condition
+   * @param string $property Name of property 
+   * @param string|null[optional] $where Where condition to match, if null, get all
+   * @param string|null[optional] $orderBy Property to order by 
+   * @param bool[optional, default false] If true, get only distinct values
+   * @return array Array of values
+   */
+  function findValues( $property, $where=null, $orderBy=null, $distinct=false )
+  { 
+    $column = $this->getColumnName($property);
+    $sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
+    
+    if ($where)
+    {
+      $sql .= "WHERE $where ";
+    }
+    if ($orderBy)
+    {
+      $orderBy = $this->getColumnName($orderBy);
+      $sql .= "ORDER BY `$orderBy`"; 
+    }
+    return $this->db->getValues($sql);    
+  }  
+
+  /**
+   * gets all distinct values of a model property that match a where condition
+   * @param string $property Name of property 
+   * @param string|null[optional] $where Where condition to match, if null, get all
+   * @param string|null[optional] $orderBy Property to order by 
+   * @param bool[optional, default false] If true, get only distinct values
+   * @return array Array of values
+   */
+  function findDistinctValues( $property, $where=null, $orderBy=null )
+  { 
+    return $this->findValues( $property, $where, $orderBy, true );
+  }
+  
   
   /**
    * Whether the last query didn't find any records
@@ -705,7 +753,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getProperty( $name )
   {
-    if ( isset(  $this->currentRecord[$name] ) )
+    if ( isset( $this->currentRecord[$name] ) )
     {
       /*
        * property exists, return straight
@@ -1035,6 +1083,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     return $this->db->getValues($sql);    
   }
+  
  /**
    * get and cache record by id 
    * @param mixed $id
@@ -1458,7 +1507,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * defintion node
      */
-    $definition =& $this->schemaXml->getNode("/model/definition");
+    $schemaXml  =& $this->getSchemaXml(); 
+    $definition =& $schemaXml->getNode("/model/definition");
     if ( ! $definition )
     {
       $this->raiseError("Model schema xml does not have a 'definition' node.");
@@ -1577,25 +1627,18 @@ class qcl_db_model extends qcl_jsonrpc_model
    */  
   function &getSchemaXml($path=null)
   {
-
-    /*
-     * keep a static reference to the object so that it won't be
-     * recreated a second time in one request
-     */
-    static $schemaXml = null;
     
     /*
      * if schema file has already been parsed, return it
      */
-    if ( is_object( $schemaXml ) )
+    if ( is_object( $this->schemaXml ) )
     {
-      return $schemaXml;
+      return $this->schemaXml;
     }
 
     /*
      * parse schema file
      */
-
     $path = either( $path, $this->getSchmemaXmlPath() );
 
     if ( !is_valid_file($path) )
@@ -1606,8 +1649,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * get and return schema document 
      */
-    $schemaXml =& $this->parseXmlSchemaFile($path);
-    return $schemaXml;     
+    $this->schemaXml =& $this->parseXmlSchemaFile($path);
+    return $this->schemaXml;     
   }
   
   /**
@@ -1718,7 +1761,19 @@ class qcl_db_model extends qcl_jsonrpc_model
       $propName  = $attr['name'];
       $colName   = either($aliasMap[$propName],$propName);
       
-      //@todo: accept either <$sqltype> or <sql type="$sqltype">
+      if ( count($property->children()) == 0)
+      {
+        // no column definitions, continue
+        continue;
+      }
+      
+      //@todo:  accept either <$sqltype> or <sql type="$sqltype">
+      if ( ! is_object($property->$sqltype) )
+      {
+        $this->warn("Model Property '$propName'  has no definition matching the sql type.");
+        continue;
+      }
+      
       $newDef    = $modelXml->getData($property->$sqltype);
       $oldDef    = $this->db->getColumnDefinition($table,$colName);
       
@@ -1983,7 +2038,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     $path = $this->getDataPath();
     if ( file_exists($path) and ( $this->schemaXml->hasChanged() or $this->fileChanged($path) ) )
     {
-      $this->import($path);
+      $this->info("FIXME: Skipping import ");
+      //$this->import($path);
     }
     else
     {
@@ -2002,7 +2058,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * load model schema xml file
      */
-    $this->log("Loading model schema file '$file'...");
+    //$this->info("Loading model schema file '$file'...");
     $modelXml =& new qcl_xml_simpleXML($file);
     $modelXml->removeLock(); // we don't need a lock, since this is read-only
     $doc =& $modelXml->getDocument();
@@ -2015,9 +2071,10 @@ class qcl_db_model extends qcl_jsonrpc_model
     
     if ( $includeFile  )
     {
-      $this->log("Including '$includeFile' into '$file'...");
+      //$this->info("Including '$includeFile' into '$file'...");
       $parentXml   =& $this->parseXmlSchemaFile($includeFile);
       $modelXml->extend($parentXml);
+      //$this->info($modelXml->asXml());
     }
     
     /*

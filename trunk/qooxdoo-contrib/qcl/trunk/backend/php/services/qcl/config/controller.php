@@ -42,16 +42,16 @@ class qcl_config_controller extends qcl_session_controller
  	{
  		$mask 	      = $params[0];
     $configModel  = $this->getModel("config");
-    $keys         = $configModel->getDistinctValues($configModel->col_namedId,null,$configModel->col_namedId);
+    $keys         = $configModel->findDistinctValues("namedId",null,"namedId");
  		$result	      = array();
     
  		foreach ( $keys as $key )
  		{
-      $row = $configModel->getRow($key);
-      $result[$row[$configModel->col_name]] = array(
-        'name' => $row[$configModel->col_name],
-        'type' => $row[$configModel->col_type],
-        'value' => $configModel->getValue($row)
+      $configModel->getRow($key);
+      $result[$key] = array(
+        'name'  => $key,
+        'type'  => $configModel->getType(),
+        'value' => $configModel->getValue()
       );
  		}
  		$this->set( "configMap", $result );

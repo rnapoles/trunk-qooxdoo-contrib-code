@@ -418,6 +418,7 @@ class qcl_db_mysql extends qcl_db
  /**
    * extracts column data from a sql create table statemnet
    * @return array
+   * @deprecated use getColumnMetaData() or  getColumnDefinition()
    * @param $sql string sql create table statement
    */
   function extractColumnData($sql)
@@ -599,11 +600,13 @@ class qcl_db_mysql extends qcl_db
         TABLE_NAME='$table' AND
         COLUMN_NAME='$column';
     "); 
+    
+    // @todo: Bad, bad stuff below, this needs a rework!
     if ( count($c) )
     {
       $definition = trim(str_replace("  "," ",implode(" ", array(
         $c['type'],
-        ( $c['nullable'=="YES"] ? "NULL":"NOT NULL"), 
+        ( $c['nullable']=="YES" ? "NULL":"NOT NULL"), 
         ( $c['default'] ? "DEFAULT " . (
           in_array($c['default'], array("NULL","CURRENT_TIMESTAMP") ) ?
              $c['default'] : "'" . addslashes($c['default']) . "'" 

@@ -226,17 +226,30 @@ function xml_entity_decode($string)
  */
 function debug_get_backtrace($skip=1)
 {
-    // Get backtrace
+    /*
+     * Get backtrace
+     */
     $backtrace = debug_backtrace();
 
-    // Skip entries
+    /*
+     * Skip entries
+     */
     for($i0;$i<$skip;$i++)
       array_shift($backtrace);
     
-    // Iterate backtrace
+    /*
+     * Location of document root in file system
+     * (will be stripped in output)
+     */
+    $path = realpath( SERVICE_PATH );
+      
+    /*
+     * Iterate backtrace
+     */
     $calls = array();
-    foreach ($backtrace as $i => $call) {
-        $location = $call['file'] . ':' . $call['line'];
+    foreach ($backtrace as $i => $call) 
+    {
+        $location = str_replace($path,"",$call['file']) . ':' . $call['line'];
         $function = (isset($call['class'])) ?
             $call['class'] . '.' . $call['function'] :
             $call['function'];
@@ -246,7 +259,7 @@ function debug_get_backtrace($skip=1)
             $params = implode(', ', $call['args']);
         }
 
-        $calls[] = sprintf('#%d  %s(%s) called at [%s]',
+        $calls[] = sprintf('#%d  %s(%s) called at\n--> %s',
             $i,
             $function,
             $params,

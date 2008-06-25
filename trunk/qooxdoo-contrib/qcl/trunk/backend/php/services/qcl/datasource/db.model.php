@@ -34,7 +34,7 @@ class qcl_datasource_db_model extends qcl_db_model
    */
   function initializeModels()
   {
-    $this->raiseError("Abstract method not yet implemented in class.");
+    $this->raiseError("Abstract method initializeModel not yet implemented in class qcl_datasource_db_model. You need to subclass this class in order to use it.");
     
     /* Example:
     $controller =& $this->getController();

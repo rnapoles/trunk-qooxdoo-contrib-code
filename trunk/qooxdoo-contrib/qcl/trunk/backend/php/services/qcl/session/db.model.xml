@@ -3,6 +3,7 @@
   include="qcl/db/model.xml">
   
   <model 
+    table="sessions"
     name="qcl.session.db.Model"
     extends="qcl.db.Model">
     
@@ -17,14 +18,18 @@
         <property name="sessionId" dataType="string">
           <mysql>varchar(50) NOT NULL</mysql>
         </property>
-        <property name="messages" dataType="string">
-          <mysql>text NOT NULL</mysql>
-        </property>
         <property name="user" dataType="string">
-          <mysql>varchar(255) NOT NULL</mysql>
+          <mysql>varchar(50) NOT NULL</mysql>
+        </property>
+        <property name="messages" dataType="string">
+          <mysql>text NULL</mysql>
         </property>
       </properties>
-            
+      
+      <aliases>
+        <alias for="namedId">sessionId</alias>
+      </aliases>
+      
     </definition>
     
   </model>

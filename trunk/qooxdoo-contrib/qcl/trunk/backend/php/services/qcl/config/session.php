@@ -12,10 +12,18 @@ require_once ("qcl/config/db.php");
 class qcl_config_session extends qcl_config_db
 {    
 	
+  /**
+   * the path to the model schema xml file
+   * @see qcl_db_model::getSchmemaXmlPath()
+   * @var string
+   */
+  var $schemaXmlPath = "qcl/config/db.model.xml";  
+  
+  
 	//-------------------------------------------------------------
   // public methods 
 	//-------------------------------------------------------------    
- 
+	
 	/**
 	 * overridden, because not allowed in this model
 	 */
