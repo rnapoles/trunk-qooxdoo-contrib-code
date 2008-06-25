@@ -234,6 +234,7 @@ class qcl_object extends patched_object
    */
   function mixin ($classname)
   {
+    //$this->info("Mixin $classname applied to " . get_class($this) );
     if ( phpversion() < 5 )
     {
       $this->includeClassfile($classname);
@@ -241,10 +242,13 @@ class qcl_object extends patched_object
     }
     else
     {
-      $methods = get_class_methods($mixin);
+      $methods = get_class_methods($classname);
       if ( is_array($methods) )
       {
-        foreach($methods as $method) $this->_mixinlookup[$method] = $mixin;
+        foreach($methods as $method) 
+        {
+          $this->_mixinlookup[$method] = $classname;
+        }
       }
     }
   }

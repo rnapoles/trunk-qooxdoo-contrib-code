@@ -4,36 +4,17 @@ require_once ("qcl/db/model.php");
 
 /**
  * model for session data bases on a mysql database model
- * @todo: this should be qcl_session_db_model
  */
 class qcl_session_db_model extends qcl_db_model 
 {
 
-	//-------------------------------------------------------------
-  // class variables
-  //-------------------------------------------------------------
-
-  var $table             = "sessions";
-  var $col_id            = null;  // no numeric id
-  var $col_namedId       = "sessionId";
-  var $col_lastAction    = "lastAction";
-  var $col_messages      = "messages";
-  var $col_user          = "user";
-
-  //-------------------------------------------------------------
-  // internal methods 
-  //-------------------------------------------------------------
- 
   /**
-   * constructor 
-   * @param object reference $controller
+   * the path to the model schema xml file
+   * @see qcl_db_model::getSchmemaXmlPath()
+   * @var string
    */
- 	function __construct($controller)
-  {
-    parent::__construct(&$controller);
-    $this->initializeTables($this->table);
-	}   
-  
+  var $schemaXmlPath = "qcl/session/db.model.xml";  
+   
 	//-------------------------------------------------------------
   // public methods
   //-------------------------------------------------------------
@@ -49,11 +30,11 @@ class qcl_session_db_model extends qcl_db_model
   {
     $this->db->execute("
       DELETE FROM `{$this->table}`
-      WHERE `{$this->col_namedId}` = '$sessionId'
+      WHERE `{$this->col_sessionId}` = '$sessionId'
       AND   `{$this->col_user}`   != '$userId' 
     ");
     $this->insert( array (
-      $this->col_namedId => $sessionId,
+      $this->col_sessionId => $sessionId,
       $this->col_user    => $userId
     ) );    
   }
@@ -67,7 +48,7 @@ class qcl_session_db_model extends qcl_db_model
   {
     $this->db->execute("
       DELETE FROM `{$this->table}`
-      WHERE `{$this->col_namedId}` = '$sessionId'
+      WHERE `{$this->col_sessionId}` = '$sessionId'
     ");
   }
 
@@ -81,7 +62,7 @@ class qcl_session_db_model extends qcl_db_model
   {
     $this->db->execute("
       DELETE FROM `{$this->table}`
-      WHERE TIME_TO_SEC( TIMEDIFF( NOW(), `{$this->col_lastAction}` ) ) > $timeout
+      WHERE TIME_TO_SEC( TIMEDIFF( NOW(), `{$this->col_modified}` ) ) > $timeout
     ");
   }
   
@@ -114,7 +95,7 @@ class qcl_session_db_model extends qcl_db_model
     $msgData = $this->db->getValue("
       SELECT `{$this->col_messages}`
       FROM `{$this->table}`
-      WHERE `{$this->col_namedId}` = '$sessionId'
+      WHERE `{$this->col_sessionId}` = '$sessionId'
     ");
    
     $messages = array();
@@ -138,7 +119,7 @@ class qcl_session_db_model extends qcl_db_model
       $this->db->execute("
         UPDATE `{$this->table}`
         SET `{$this->col_messages}` = ''
-        WHERE `{$this->col_namedId}` = '$sessionId'
+        WHERE `{$this->col_sessionId}` = '$sessionId'
       ");
     }
     return $messages;

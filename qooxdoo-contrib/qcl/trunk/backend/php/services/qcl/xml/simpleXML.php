@@ -672,9 +672,13 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
      * iterate through source children and populate matching
      * target children
      */
-
-    foreach($source->children() as $sourceChild)
+    
+    $sourceChildren =& $source->children();
+    
+    for($i=0; $i<count($sourceChildren); $i++ )
     {
+      $sourceChild =& $sourceChildren[$i];
+      
       if ( ! is_object($sourceChild) )
       {
         $this->warn("Invalid source child:" . gettype($sourceChild));
@@ -791,6 +795,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
 
         elseif ( is_array( $sourceChild ) )
         {
+          //$this->info( count($sourceChild) . " nodes.");
           /*
            * we need to copy over an array of nodes
            */
@@ -815,6 +820,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
              * this node
              */
             $srcChildName = $sAttrs['name'];
+            //$this->info("<$tag name='$name'>");
             if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
             {
               //$this->info("$srcChildName exists, not adding node...");

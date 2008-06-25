@@ -14,34 +14,7 @@ class qcl_access_common extends qcl_db_model
   // common class variables to be overridden
   //-------------------------------------------------------------
 
-	var $table;
-	var $col_id							          = "id";
-  var $col_namedId                  = "namedId";
-	var $col_descriptiveName			    = "name";
-	var $table_link_user_roles			  = "link_user_roles";
-	var $table_link_roles_permissions	= "link_roles_permissions";
-	var $icon;
-	var $foreignKey						        = "Needs to be overridden!";
   var $reservedNames                = array(); 
-
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
- 
-  /**
-   * constructor 
-   * @param object reference $controller
-   */
- 	function __construct($controller)
-  {
-    parent::__construct(&$controller);
-    // initialize tables
-    $this->initializeTables(array(
-      $this->table,
-      $this->table_link_user_roles,
-      $this->table_link_roles_permissions
-    )); 
-	}   
 
 	//-------------------------------------------------------------
 	// public non-rpc methods 

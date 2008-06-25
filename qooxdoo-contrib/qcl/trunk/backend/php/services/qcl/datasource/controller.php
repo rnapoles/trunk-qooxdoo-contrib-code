@@ -57,7 +57,7 @@ class qcl_datasource_controller extends qcl_db_controller
    */
   function getClass($schemaName)
   {
-    if ( !$schemaName or $schemaName == "default" )
+    if ( !$schemaName )
     {
       $class = $this->defaultModelClass;
     }
@@ -72,6 +72,11 @@ class qcl_datasource_controller extends qcl_db_controller
     }
     
     //$this->info("Getting class $class for schema $schemaName");
+
+    if ( !$class )
+    {
+      $this->raiseError("No class defined for datasource schema $schemaName.");
+    }
     return $class;
   }
   
@@ -94,6 +99,10 @@ class qcl_datasource_controller extends qcl_db_controller
    */
   function &getDatasourceModel($name)
   {
+    
+    /*
+     * get abstract datasource model to retrieve more specific one
+     */
     $dsModel  =& new qcl_datasource_db_model( &$this );
 
     /*

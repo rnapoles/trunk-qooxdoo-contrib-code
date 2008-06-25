@@ -8,12 +8,11 @@
   <model name="qcl.db.Model">
     
     <definition>
-    
+
       <!-- model properties -->
       <properties> 
-
+        <property name="id" dataType="int"/>
         <!-- 'id' column int(11) NOT NULL AUTO_INCREMENT was added during table creation and defined as primary key -->
-
         <property name="created" dataType="string">
           <mysql>timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'</mysql>
         </property>

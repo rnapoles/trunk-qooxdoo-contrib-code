@@ -22,10 +22,10 @@
           <mysql>tinytext NOT NULL</mysql>
         </property>
         <property name="permissionRead" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+          <mysql>varchar(50) NULL</mysql>
         </property>
         <property name="permissionWrite" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+          <mysql>varchar(50) NULL</mysql>
         </property>
         <property name="user" dataType="string">
           <mysql>varchar(255) NOT NULL</mysql>
