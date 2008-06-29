@@ -11,26 +11,26 @@
     
       <!-- properties -->
       <properties>
-        <property name="namedId" dataType="string"> 
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="namedId" type="string"> 
+          <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="type" dataType="string">
-          <mysql>varchar(20) NOT NULL</mysql>
+        <property name="type" type="string">
+          <sql>varchar(20) NOT NULL</sql>
         </property>
-        <property name="active" dataType="boolean"> 
-          <mysql>int(1) NOT NULL DEFAULT '0'</mysql>
+        <property name="active" type="boolean"> 
+          <sql>int(1) NOT NULL DEFAULT '0'</sql>
         </property>
-        <property name="status" dataType="string">
-          <mysql>varchar(50) NULL</mysql>
+        <property name="status" type="string">
+          <sql>varchar(50) NULL</sql>
         </property>
-        <property name="permission" dataType="string">
-          <mysql>varchar(50) NULL</mysql>
+        <property name="permission" type="string">
+          <sql>varchar(50) NULL</sql>
         </property>
-        <property name="author" dataType="string">
-          <mysql>varchar(100) NULL</mysql>
+        <property name="author" type="string">
+          <sql>varchar(100) NULL</sql>
         </property>
-        <property name="description" dataType="string">
-          <mysql>varchar(255) NULL</mysql>
+        <property name="description" type="string">
+          <sql>varchar(255) NULL</sql>
         </property>        
       </properties>
 

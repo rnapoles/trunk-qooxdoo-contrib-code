@@ -45,7 +45,7 @@ class qcl_plugin_abstract extends qcl_jsonrpc_model
 
 	function getPermission()
   {
-    return $this->permission;
+    return $this->permissionModel;
   }
   
   function getAuthor()

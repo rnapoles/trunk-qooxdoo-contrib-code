@@ -5,6 +5,7 @@
   
   <model 
     table="roles"
+    type="qcl.types.Role"
     name="qcl.access.Role"
     extends="qcl.db.Model">
      
@@ -12,30 +13,28 @@
     
       <!-- properties -->
       <properties>
-        <property name="namedId" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="namedId" type="string" index="yes" unique="yes">
+          <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="name" dataType="string">
-          <mysql> varchar(255) character set utf8 NOT NULL default ''</mysql>
+        <property name="name" type="string">
+          <sql> varchar(255) NOT NULL default ''</sql>
         </property>
       </properties>
-      
-      <!-- indexes -->
-      <indexes>
-        <index type="unique">
-          <property name="namedId" />
-        </index>
-      </indexes>      
+ 
     </definition>
-    <links>
-      <link 
-        table="link_roles_permissions"
+    
+    <!-- links to other models -->
+    <links
         localKey="id"
-        foreignKey="roleId" />    
+        foreignKey="roleId">
       <link 
+        name="permission"
+        table="link_roles_permissions"
+        model="qcl.access.Permission" />    
+      <link 
+        name="user"
         table="link_user_roles" 
-        localKey="id" 
-        foreignKey="roleId" />
+        model="qcl.access.User" />
     </links>
   </model>
 </schema>

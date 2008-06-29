@@ -47,6 +47,12 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   var $hasChanged;
   
   /**
+   * the document object
+   * @var SimpleXmlElement or SimpleXmlTag object
+   */
+  var $doc;
+  
+  /**
    * constructor
    * @param mixed   $xml see qcl_xml_simpleXML::load() 
    * @param mixed   $cache see qcl_xml_simpleXML::load() 
@@ -165,7 +171,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
             //$this->info("Timestamp doesn't match:" .$this->filectime );
           }
         }
-        else
+        elseif ( ! is_bool( $object) )
         {
           $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
         }
@@ -218,7 +224,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       /*
        * prohibited tag names
        */
-      $xmlTag =& new XMLTag;
+      $xmlTag =& new SimpleXmlElement;
       $this->invalidTags = $xmlTag->invalidTags;
       
       /*
@@ -293,7 +299,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   
   /**
    * get the root of the document alias for getDocument
-   * return XMLTag (php4) or SimpleXMLElement (php5)
+   * return SimpleXmlElement
    */
   function &getRoot()
   {
@@ -302,7 +308,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   
   /**
    * get document root node
-   * return XMLTag (php4) or SimpleXMLElement (php5)
+   * return SimpleXmlElement
    */
   function &getDocument()
   {
@@ -326,7 +332,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   }
   
   /**
-   * make sure node is the right datatype - xmlTag or SimpleXmlElement
+   * make sure node is the right datatype
    * method can be called statically.
    * @param mixed $node
    * @return boolean
@@ -334,7 +340,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   function isNode($node,$raiseError=true)
   {
     $class = strtolower( get_class($node) );
-    return ( $class == "xmltag" or $class == "simplexmlelement" );
+    return ( $class == "simplexmlelement" );
   }
   
   /**
@@ -363,19 +369,37 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       $this->raiseError("qcl_xml_simpleXML::getNode : No xml document available.");
     } 
     
+    /*
+     * traverse object tree along the path
+     * @todo: php5 simpleXML has native xpath support
+     */    
     if ( phpversion() < 5 )
     { 
-      $tmp =& $this->doc;
-      
-      /*
-       * traverse object tree along the path
-       * @todo: php5 simpleXML has native xpath support
-       */
+      $tmp =& $this->getDocument();      
+
       $parts = explode("/",$pathOrNode);
       foreach ( $parts as $part )
       {
-        if ( !trim($part) ) continue; // ignore initial "//"
-  
+        /*
+         * ignore initial or double slashes
+         */
+        if ( !trim($part) ) 
+        {
+          continue;  
+        }
+         
+        /*
+         * ignore root tag 
+         */
+        if ( key($parts) == 0 and $part == $tmp->getName() )
+        {
+          continue;
+        }
+        
+        
+        /*
+         * parse content in square brackets
+         */
         if ( ! strstr($part,"[") )
         {
           $n = 1;
@@ -523,7 +547,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
    * @param object $node
    * @param string $name
    * @param string $value
-   * @return xmlTag (PHP4) / SimpleXMLElement (PHP5) or null if not found;
+   * @return SimpleXmlElement or null if not found;
    */
   function &getChildNodeByAttribute( $node, $name, $value )
   {
@@ -536,6 +560,8 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     while ( list(,$child) = each($children) )
     {
       $attr = $child->attributes();
+      $tag  = $child->getName();
+      //if ($GLOBALS['debug']==true) $this->info("<$tag $name='{$attr[$name]}' =='$value'? >");
       if ( $attr[$name] == $value )
       {
         return $child;

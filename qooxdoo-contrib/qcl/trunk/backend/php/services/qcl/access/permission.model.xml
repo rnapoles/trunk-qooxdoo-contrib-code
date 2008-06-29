@@ -3,6 +3,7 @@
   
   <model 
     table="permissions"
+    type="qcl.types.Permission"
     name="qcl.access.Permission"
     extends="qcl.db.Model">
     
@@ -10,11 +11,11 @@
     
       <!-- properties -->
       <properties>
-        <property name="namedId" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="namedId" type="string" index="yes" unique="yes">
+          <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="note" dataType="string">
-          <mysql> varchar(255) NULL default NULL</mysql>
+        <property name="note" type="string">
+          <sql> varchar(255) NULL default NULL</sql>
         </property>
       </properties>
       
@@ -22,20 +23,15 @@
       <aliases>
         <alias for="descriptiveName">name</alias>
       </aliases>
-      
-      <!-- indexes -->
-      <indexes>
-        <index type="unique">
-          <property name="namedId" />
-        </index>
-      </indexes>
             
     </definition>
-    <links>
-      <link 
-        table="link_roles_permissions"
+    <links        
         localKey="id"
-        foreignKey="permissionId" />
+        foreignKey="permissionId" >
+      <link 
+        name="role"
+        table="link_roles_permissions"
+        model="qcl.access.Permission"/>
     </links>
   </model>
   

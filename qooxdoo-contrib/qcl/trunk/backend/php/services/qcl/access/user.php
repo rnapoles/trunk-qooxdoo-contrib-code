@@ -21,12 +21,8 @@ class qcl_access_user extends qcl_access_common
 	var $icon 			            = "icon/16/apps/system-users.png";
 	var $nodeType		            = "qcl.auth.types.User";
 	var $shortName		          = "user";
-	var $foreignKey		          = "userId";
-  
   var $reservedNames          = array("default","admin","global");
 	
-
- 
   //-------------------------------------------------------------
   // public methods 
   //-------------------------------------------------------------
@@ -42,47 +38,24 @@ class qcl_access_user extends qcl_access_common
    */
   function getRoles($userRef,$getNamedIds=true)
   { 
-		$userId     = $this->getIdFromRef($userRef);
-    $controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+		$userId = $this->getIdFromRef($userRef);
 		if ( ! $userId )
 		{
-			$this->raiseError("qx::security::user::getRoles : invalid user reference '$userRef'.");
+		  $this->raiseError("Invalid user '$userRef'.");
 		}
-
-		if ($getNamedIds === null)
-		{
-			return $this->db->getAllRecords("
-				SELECT 
-					r.*
-				FROM 
-					`{$roleModel->table}` as r,
-					`{$this->table_link_user_roles}` as l
-				WHERE
-					r.`{$roleModel->col_id}` = l.`{$roleModel->foreignKey}`
-					AND l.`{$this->foreignKey}` = $userId
-			"); 
-
-		}
-		
-		$rows = $this->db->getAllRecords("
-			SELECT
-				r.`{$roleModel->col_id}` as id,
-				r.`{$roleModel->col_namedId}` as nameId
-			FROM 
-				`{$roleModel->table}` as r,
-				`{$this->table_link_user_roles}` as l
-			WHERE
-				r.`{$roleModel->col_id}` = l.`{$roleModel->foreignKey}`
-				AND l.`{$this->foreignKey}` = $userId
-		");
-			
-		$result = array();
-		foreach ( $rows as $row )
-		{
-			$result[] = $getNamedIds ? $row['nameId'] : (int) $row['id'];
-		}
-		return $result;
+    if ( $getNamedIds===true)
+    {
+      $this->findWhere("t1.{$this->col_id}=$userId",null,array("","namedId"),"role");
+    }
+    elseif ( $getNamedIds === false )
+    {
+      $this->findWhere("t1.{$this->col_id}=$userId",null,array("","id"),"role");
+    }
+    elseif ( is_null($getNamedIds) )
+    {
+      return $this->findWhere("t1.{$this->col_id}=$userId",null,array("","*"),"role");
+    }
+		return $this->getValues();
    }
    
   /**
@@ -121,7 +94,7 @@ class qcl_access_user extends qcl_access_common
   {
 		$userId     = $this->getIdFromRef($userRef);
     $controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
     
 		if ( ! $userId )
 		{
@@ -266,7 +239,7 @@ class qcl_access_user extends qcl_access_common
   		}
   		// permission was not found
       $controller  =& $this->getController();
-      $permModel   =& $controller->getModel("permission");
+      $permModel   =& $controller->getPermissionModel();
       if ( ! count( $permModel->getByNamedId($requestedPermission) ) )
       {
         // permission does not exist, create it
@@ -290,7 +263,7 @@ class qcl_access_user extends qcl_access_common
    		else
    		{
         $controller =& $this->getController();
-        $userModel  =  $controller->getModel("user");
+        $userModel  =  $controller->getUserModel();
         $userName   =  $userModel->getActiveUserNamedId();
         $this->info("User '$userName' does not have required permission '$permission'. Access denied.");
         $this->raiseError("Permission denied.");
@@ -311,7 +284,7 @@ class qcl_access_user extends qcl_access_common
 
 		// roles and permissions
     $controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
 		$roles = array();
 		$roleDescriptiveNames = array();
 		foreach ( $roleNamedIds as $roleNamedId )
@@ -341,7 +314,7 @@ class qcl_access_user extends qcl_access_common
   	$userRefs	  = (array) $userRefs;
   	$roleRefs	  = (array) $roleRefs;
     $controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
     	
   	foreach ( $userRefs as $userRef )
   	{
@@ -376,7 +349,7 @@ class qcl_access_user extends qcl_access_common
   	$userRefs	  =  (array) $userRefs;
   	$roleRefs	  =  (array) $roleRefs;
     $controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
   	
   	foreach( $userRefs as $userRef )
   	{

@@ -3,10 +3,11 @@
  * dependencies
  */
 require_once "qcl/jsonrpc/controller.php";
+require_once "qcl/access/common.php";
 
 /**
  * controller for models that use a database backend
- * (and other models), providing central access to
+ * providing central access by all connected models to
  * a shared database connection
  */
 class qcl_db_controller extends qcl_jsonrpc_controller
@@ -29,11 +30,12 @@ class qcl_db_controller extends qcl_jsonrpc_controller
      * call parent constructor first
      */
     parent::__construct();
-
+    
     /*
      * establish database connection
      */
     $this->connect();
+   
   }     
   
   /**
@@ -121,6 +123,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
     
     $this->_connection =& $db;
   }
+
   
 }
 ?>

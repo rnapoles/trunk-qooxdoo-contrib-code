@@ -12,27 +12,14 @@ require_once ("qcl/access/common.php");
 class qcl_access_role extends qcl_access_common
 {    
   //-------------------------------------------------------------
-  // class variables, override if necessary
+  // class variables
   //-------------------------------------------------------------
 
-	var $table				  = "roles";
 	var $icon 				  = "icon/16/apps/system-users.png";
 	var $nodeType			  = "qcl.auth.types.Role";
 	var $shortName			= "role";
-	var $foreignKey			= "roleId";
 	
-  //-------------------------------------------------------------
-  // internal methods 
-  //-------------------------------------------------------------
-   
-  /**
-   * constructor 
-   */
-  function __construct($controller)
-  {
-		parent::__construct(&$controller);
-  }   
-   
+
   //-------------------------------------------------------------
   // public non rpc methods 
   //-------------------------------------------------------------
@@ -48,47 +35,24 @@ class qcl_access_role extends qcl_access_common
    */
   function getPermissions($roleRef,$getNamedIds=true)
   {
-    $controller =& $this->getController();		
-    $permModel  =& $controller->getModel("permission");
-		
 		$roleId = $this->getIdFromRef($roleRef);
 		if ( ! $roleId )
 		{
-			$this->raiseError("qx::security::role::getPermissions : invalid role reference '$roleRef'.");
+			$this->raiseError("Ivalid role '$roleRef'.");
 		}
-
-		if ($getNamedIds === null)
-		{
-			return $this->db->getAllRecords("
-				SELECT
-					p.*
-				FROM 
-					`{$permModel->table}` as p,
-					`{$this->table_link_roles_permissions}` as l
-				WHERE
-					p.`{$permModel->col_id}` = l.`{$permissionModel->foreignKey}`
-					AND l.`{$this->foreignKey}` = $roleId
-			"); 
-
-		}
-		$rows = $this->db->getAllRecords("
-			SELECT
-				p.`{$permModel->col_id}` as id,
-				p.`{$permModel->col_namedId}` as namedId
-			FROM 
-				`{$permModel->table}` as p,
-				`{$this->table_link_roles_permissions}` as l
-			WHERE
-				p.`{$permModel->col_id}` = l.`{$permModel->foreignKey}`
-				AND l.`{$this->foreignKey}` = $roleId
-		");
-		
-		$result = array();
-		foreach ( $rows as $row )
-		{
-			$result[] = $getNamedIds ? $row['namedId'] : (int) $row['id'];
-		}
-		return $result;
+    if ( $getNamedIds===true)
+    {
+      $this->findWhere("t1.{$this->col_id}=$roleId",null,array("","namedId"),"permission");
+    }
+    elseif ( $getNamedIds === false )
+    {
+      $this->findWhere("t1.{$this->col_id}=$roleId",null,array("","id"),"permission");
+    }
+    elseif ( is_null($getNamedIds) )
+    {
+      return $this->findWhere("t1.{$this->col_id}=$roleId",null,array("","*"),"permission");
+    }
+    return $this->getValues();
   }   
 
   /**
@@ -99,7 +63,7 @@ class qcl_access_role extends qcl_access_common
   function getByUserId($userId = null)
   {
 		$controller =&  $this->getController();
-    $userModel  =&  $controller->getModel("user");
+    $userModel  =&  $controller->getUserModel();
     
     $result = array();
 		$sql = "SELECT * FROM {$this->table_link_user_roles} ";

@@ -726,10 +726,13 @@ class qcl_db_mysql extends qcl_db
    */
   function dropIndex($table,$index)
   {
-     $this->execute ("
-      ALTER TABLE `$table` DROP INDEX `$index`
-    ");
-     $this->info("Removed index '$index' from table '$table'." );
+    if ( count( $this->getIndexColumns($table, $index ) ) ) 
+    {
+      $this->execute ("
+        ALTER TABLE `$table` DROP INDEX `$index`
+      ");
+       $this->info("Removed index '$index' from table '$table'." );
+    }
   }
   
   /**
@@ -757,14 +760,22 @@ class qcl_db_mysql extends qcl_db
    * @param string $type FULLTEXT|UNIQUE
    * @param string $table
    * @param string $index index name
-   * @param array  $columns column names in the index
+   * @param string|array  $columns name(s) of column(s) in the index
    */
   function addIndex($type, $table, $index, $columns)
   {
-    $this->execute ("
-      ALTER TABLE `$table` ADD $type `$index` (`" . implode("`,`", $columns) . "`);
-    ");
-    $this->info("Added $type index '$index' to table '$table' indexing columns " . implode(",",$columns) . ".");
+    if ( ! count( $this->getIndexColumns($table, $index ) ) ) 
+    {
+      $columns = (array) $columns;
+      $this->execute ("
+        ALTER TABLE `$table` ADD $type `$index` (`" . implode("`,`", $columns) . "`);
+      ");
+      $this->info("Added $type index '$index' to table '$table' indexing columns " . implode(",",$columns) . ".");
+    }
+    else
+    {
+      $this->warn("Index $index already exists in table $table."); 
+    }
   }
   
   
@@ -962,7 +973,7 @@ class qcl_db_mysql extends qcl_db
      * @todo: check permissions
      */
     $this->execute("
-      DROP TRIGGER `{$table}_create_timestamp` 
+      DROP TRIGGER IF EXISTS `{$table}_create_timestamp` 
     ");
     
     $this->execute("
@@ -974,7 +985,7 @@ class qcl_db_mysql extends qcl_db
   
   /**
    * creates triggers that will automatically create
-   * a md5 hash string over 
+   * a md5 hash string over a set of columns
    */
   function createHashTriggers ( $table, $columns)
   {
@@ -982,28 +993,33 @@ class qcl_db_mysql extends qcl_db
      * @todo: check permisions
      */
     $this->execute("
-      CREATE TRIGGER `{$table}_insert_create_hash`
-    ");
+      DROP TRIGGER IF EXISTS `{$table}_insert_create_hash`
+    ",true);
+    $this->execute("
+      DROP TRIGGER IF EXISTS `{$table}_update_create_hash`
+    ",true); 
     
+    $col=array();
     for($i=0;$i<count($columns);$i++ )
     {
-      $columns[$i] .= "NEW.`" . $columns[$i] . "`";
+      $col[] = "NEW.`" . $columns[$i] . "`";
     }
     
-    $col_sql = implode(",",$columns);
+    $col_sql = implode(",",$col);
         
     $this->execute("
       CREATE TRIGGER `{$table}_insert_create_hash`
       BEFORE INSERT ON `$table`
-        FOR EACH ROW SET 
-          NEW.hash = md5(concat_ws(",",$col_sql));
-    ");
+      FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
+    ",true);
     
     $this->execute("
       CREATE TRIGGER `{$table}_update_create_hash`
       BEFORE UPDATE ON `$table`
-        FOR EACH ROW SET NEW.hash = md5(concat_ws(",",$col_sql));
-    "); 
+      FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
+    ",true); 
+    
+    $this->info("Created trigger to update hash over " . implode(",",$columns) . ".");
   }
   
 }

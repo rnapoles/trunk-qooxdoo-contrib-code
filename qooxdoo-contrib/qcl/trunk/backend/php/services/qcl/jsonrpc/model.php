@@ -59,21 +59,12 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  	}
  	
  	/**
- 	 * gets controller (singleton) of this model 
- 	 * @todo: clear up this instance stuff
+ 	 * gets controller of this model 
  	 * @return qcl_jsonrpc_controller 
  	 */
  	function &getController()
  	{
- 		$controllerSingleton =& $this->controller->getInstance();
- 		if ( is_object($controllerSingleton) )
- 		{
- 			return $controllerSingleton;
- 		}
- 		else
- 		{
- 			return $this->controller;
- 		}
+    return $this->controller;
  	}	
 
 	//-------------------------------------------------------------

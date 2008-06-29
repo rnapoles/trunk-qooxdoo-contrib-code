@@ -259,7 +259,7 @@ function debug_get_backtrace($skip=1)
             $params = implode(', ', $call['args']);
         }
 
-        $calls[] = sprintf('#%d  %s(%s) called at\n--> %s',
+        $calls[] = sprintf("#%d  %s(%s) called at\n--> %s",
             $i,
             $function,
             $params,

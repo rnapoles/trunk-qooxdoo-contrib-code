@@ -54,14 +54,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 	 * @var array
 	 */
 	var $emptyRecord = array();           
-	
-	/**
-	 * a map containing the aliases for property names in 
-	 * table columns used by the model. The aliases apply to
-	 * all tables.
-	 * @var array
-	 */
-	var $aliasMap = array();
+
 	
 	/**
 	 * the datasource model object, if any
@@ -98,17 +91,49 @@ class qcl_db_model extends qcl_jsonrpc_model
 	
 	/**
 	 * the schema as an simpleXml object, containing all
-	 * included xml files
+	 * included xml files. Acces with qcl_db_model::getSchemaXml();
+	 * @access private
 	 * @var qcl_xml_simpleXML
 	 */
 	var $schemaXml;
 	
 	/**
-	 * shortcuts to property nodes in schema xml
+	 * shortcuts to property nodes in schema xml. Access with qcl_db_model::getPropertyNode($name)
 	 * @array array of object references
 	 */
-	var $properties;
+	var $propertyNodes;
 
+  /**
+   * an associated array having the names of all properties (including linked tables) as
+   * keys and the same names OR a local alias as value. To get a list of properties, use
+   * qcl_db_model::getProperties();
+   * @access private
+   * @var array
+   */
+  var $properties = array();	
+
+  /**
+   * shortcuts to schema xml nodes with information on table links
+   * @var array
+   */
+  var $linkNodes = null;
+  
+  /**
+   * the local key of this table, usually the id property. acces with ::getLocalKey()
+   * @var string
+   * @access private
+   */
+  var $localKey;
+  
+  /**
+   * The foreign key of this table in other tables that link to this model.
+   * This MUST always be the same key, one model cannot have different foreign key names.
+   * Access with ::getForeignKey()
+   * 
+   * @access private
+   * @var string 
+   */
+  var $foreignKey;
   /**
    * shortcuts to property nodes which belong to metadata
    * @array array of object references
@@ -291,7 +316,11 @@ class qcl_db_model extends qcl_jsonrpc_model
      * setup properties 
      */
     $this->setupProperties();
-
+    
+    /*
+     * setup table links
+     */
+    $this->setupTableLinks();
   } 	
 	
   /**
@@ -388,12 +417,16 @@ class qcl_db_model extends qcl_jsonrpc_model
   }  
   
   /**
-   * retrieves the datasource object or name
+   * retrieves the datasource object
    * @return qcl_datasource_db_model
    */
   function &getDatasourceModel()
   {
+   //if ( is_object ( $this->datasourceModel ) )
+   //{ 
     return $this->datasourceModel;
+   //}
+   //$this->raiseError("No datasource model set.");
   }
  	
   //-------------------------------------------------------------
@@ -406,7 +439,20 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getProperties()
   {
+    $this->getSchemaXml(); // make sure schema has been initialized
     return array_keys($this->properties);
+  }
+  
+  /**
+   * Checks if property exists
+   *
+   * @param string $name
+   * @return bool
+   */
+  function hasProperty( $name )
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return isset( $this->properties[$name] );    
   }
   
   /**
@@ -416,57 +462,70 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function hasAlias($propName)
   {
-    if ( ! is_object ( $this->schemaXml) )
-    {
-      $this->raiseError("Model schema is not initialized.");
-    }      
-    return ( isset( $this->aliasMap[$propName] ) );
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return ( $this->properties[$propName] != $propName );
   }
   
   /**
-   * get the local alias of a property name
-   * @param string $propName property name
-   * @return string alias or property name
-   */
-  function getAlias($propName)
-  {
-    if ( ! is_object ( $this->schemaXml) )
-    {
-      $this->raiseError("Model schema is not initialized.");
-    }  
-    return $this->aliasMap[$propName];
-  }  
-  
- /**
-   * gets the column name from a property name
+   * gets the column name from a property name. Alias for qcl_db_model::getPropertySchemaName
    * @return string
    * @param string $property Property name
    */
-  function getColumnName ( $property )
+  function getColumnName ( $name )
   {
-    if ( ! is_object ( $this->schemaXml) )
-    {
-      $this->raiseError("Model schema is not initialized.");
-    }    
-    return either( $this->getAlias($property), $property );
+    return $this->getPropertySchemaName( $name );
   }
-
+  
+  /**
+   * gets the name the property has in the model schema (i.e. either
+   * the unchanged name or a local alias)
+   * @param string $name
+   * @return string
+   */
+  function getPropertySchemaName ( $name )
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return $this->properties[$name];
+  }
     
   /**
-   * gets the property name of a column name
+   * Gets the node in the schema xml that contains information on 
+   * the property
+   *
+   * @param string $name
+   * @return SimpleXmlElement  
+   */
+  function &getPropertyNode ( $name )
+  {
+    $this->getSchemaXml(); // make sure schema has been initialized
+    return $this->propertyNodes[ $name ];
+  }
+
+  /**
+   * Gets the simple type of the model property (string, int, etc.)
+   *
+   * @param string $name
+   * @return string
+   */
+  function getPropertyType ( $name )
+  {
+    $node  =& $this->getPropertyNode( $name );
+    $attrs =  $node->attributes();
+    return $attrs['type']; 
+  }
+  
+  /**
+   * gets the property name corresponding to a column name
    * @return string Field Name
    * @param string $columnName
    */
   function getPropertyName ( $columnName )
   {
-    if ( ! is_object ( $this->schemaXml) )
-    {
-      $this->raiseError("Model schema is not initialized.");
-    }     
+    $this->getSchemaXml(); // make sure aliasMap is initialized
     static $reverseAliasMap = null;
     if ( !$reverseAliasMap )
     {
-      $reverseAliasMap = array_flip($this->aliasMap);
+      $reverseAliasMap = array_flip($this->properties);
     }
     return $reverseAliasMap[$columnName];
   }  
@@ -585,14 +644,18 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * gets all database records or those that match a where condition. 
-   * the table name is available as the alias "r" (for records)
+   * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
    * @param string|null  $where   where condition to match, if null, get all
    * @param string|null[optional] $orderBy     Order by property
-   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all. When using
+   * joined tables, the parameter must be an array containing two arrays, the first with the properties of the model table, 
+   * and the second with the properties of the joined table.
+   * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
+   * automatically generate the necessary join query.
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where=null, $orderBy=null, $properties=null )
+  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null )
   {
     /*
      * columns to retrieve
@@ -604,29 +667,149 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     
     $cols = array();
-    foreach ( (array) $properties as $property )
+    
+    /*
+     * query involves linked tables
+     */
+    if ( $link )
     {
-      $col = $this->getColumnName($property);
-      $str = "`$col`";
-      if ( $col != $property )
+      for ( $i=0; $i<2; $i++ )
       {
-        $str .= " AS '$property'";
-      }
-       $cols[] = $str; 
-    }
-    $columns = implode(",",  $cols );
+        switch( $i ) 
+        {
+          case 0: 
+            $alias="t1"; 
+            $model = $this; 
+            break;
+          case 1: 
+            $alias="t2"; 
+            $model = $this->getJoinedModelInstance($link); 
+            break;
+        }
       
+        /*
+         * replace "*" with all properties
+         */
+        if ( $properties[$i]== "*" )
+        {
+          $properties[$i] = $model->getProperties();
+        }
+        
+        /*
+         * construct column query
+         */
+        foreach ( (array) $properties[$i] as $property )
+        {
+         /*
+          * skip empty parameters
+          */
+         if ( ! $property ) continue;
+         
+         /*
+          * get column name 
+          */
+         $col = $model->getColumnName($property);
+         
+         /*
+          * table and column alias
+          */
+         $str = "$alias.`$col`";
+         if ( $col != $property or $i>0 )
+         {
+           if ( $i>0 )
+           {
+             $str .= " AS '$link.$property'";
+           }
+           else
+           {
+            $str .= " AS '$property'";  
+           }
+         }
+         $cols[] = $str; 
+        }
+      }
+    }
+    
+    /*
+     * query involves only local table
+     */
+    else
+    {
+       /*
+       * replace "*" with all properties
+       */
+      if ( $properties == "*" )
+      {
+        $properties = $this->getProperties();
+      }      
+      
+      foreach ( (array) $properties as $property )
+      {
+        $col = $this->getColumnName($property);
+        $str = "`$col`";
+        if ( $col != $property )
+        {
+          $str .= " AS '$property'";
+        }
+         $cols[] = $str; 
+      }
+    }
+    
+    $columns   = implode(",",  $cols );
+    $thisTable = $this->getTableName();
+          
     /*
      * select 
      */
-    $sql = "SELECT $columns FROM {$this->table} AS r \n";
+    $sql = "\n   SELECT $columns \n";
+    
     
     /*
-     * where 
+     * from
+     */
+    $sql .= "     FROM `$thisTable` AS t1 \n";
+    
+    /*
+     * join
+     */
+    if ( $link )
+    {
+      /*
+       * link table
+       */
+      $linkTable   = $this->getLinkTable($link);
+      $localKey    = $this->getLocalKey();
+      $foreignKey  = $this->getForeignKey(); 
+      
+      /*
+       * joined model
+       */
+      $joinedTable = $this->getJoinedTable($link);
+      $joinedModel = $this->getJoinedModelInstance($link);
+      $joinedLKey  = $joinedModel->getLocalKey();
+      $joinedFKey  = $joinedModel->getForeignKey();
+      
+      
+      if ( $linkTable != $joinedTable )
+      {
+        /*
+         * @todo: this might not be compatible with other DBMS
+         */
+        $sql .= "     JOIN (`$linkTable` AS l,`$joinedTable` AS t2) \n";
+        $sql .= "       ON ( t1.`$localKey` = l.`$foreignKey` AND l.`$joinedFKey` = t2.`$joinedLKey` ) \n";
+      }
+      else
+      {
+        $sql .= "     JOIN `$joinedTable` AS t2 ON ( t1.`$localKey` = t2.`$foreignKey` ) \n";
+      }
+    }
+    
+    /*
+     * where  
      */
     if ($where)
     {
-      $sql .= "WHERE $where ";
+      $sql .= "    WHERE $where \n";
     }
     
     /*
@@ -644,9 +827,14 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     
     /*
+     * execute query
+     */
+    //$this->info($sql);
+    $result = $this->db->getAllRecords($sql);
+    
+    /*
      * store and return result
      */
-    $result = $this->db->getAllRecords($sql);
     $this->currentRecord = count($result) ? $result[0] : null;
     $this->_lastResult   = $result;    
     return $result;
@@ -723,6 +911,39 @@ class qcl_db_model extends qcl_jsonrpc_model
  	}
 
   /**
+   * find database records by their named id
+   * @param array|string $ids Id or array of ids
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return Array Array of db record sets
+   */
+  function findByNamedId( $ids, $orderBy=null, $properties=null )
+  {
+    if ( ! count( (array) $ids ) )
+    {
+      $this->raiseError("Invalid parameter.");
+    }
+    
+    /*
+     * assemble values for IN operator
+     */
+    $inValues = array();
+    foreach ( (array) $ids as $id )
+    {
+       $inValues[] = "'" . $this->db->escape($id) . "'";
+    }
+    $inValues = implode(",", $inValues ) ;
+    
+    /*
+     * run query and return result
+     */
+    $result = $this->findWhere( "`{$this->col_namedId}` IN ($inValues)", $orderBy, $properties );
+    
+    return $result;
+    
+  } 	
+ 	
+  /**
    * gets the record in this table that is referred to by the record from a different table (argument) 
    * @return array
    * @param Array   $record  record from a different table that contains a key corresponding to the foreign id of this table
@@ -742,6 +963,69 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 
   //-------------------------------------------------------------
+  // Retrieving query results in different formats
+  //-------------------------------------------------------------     
+  
+  /**
+   * gets the data of the currently loaded record
+   *
+   * @return array 
+   */
+  function getRecord()
+  {
+    return $this->currentRecord;
+  }
+
+  /*
+   * gets the data from the last find query
+   * @return array
+   */
+  function getResult()
+  {
+    return $this->_lastResult;
+  }
+  
+  /**
+   * return query result as a an 
+   */
+  function getResultTree( $property )
+  {
+    if ( ! $this->hasProperty($property) )
+    {
+      $this->raiseError("Cannot create result tree: Property '$property' does not exist.'");
+    }
+    
+    $result = $this->getResult();
+    $tree   = array();
+    foreach ( $result as $record )
+    {
+      $key = $record[$property];
+      unset($record[$property]);
+      $tree[$key][] = $record;
+    }
+    return $tree;
+  }
+  
+  /**
+   * Returns the values of the first column in the result set
+   * as an array.
+   *
+   * @return array
+   */
+  function getValues()
+  {
+    $result = $this->getResult();
+    $values = array();
+    foreach( $result as $record )
+    {
+      $v = array_values($record);
+      $values[] = $v[0]; 
+    }
+    return $values;
+  }
+  
+  
+  //-------------------------------------------------------------
   // Get property and column values & convert between properties 
   // and column data
   //-------------------------------------------------------------      
@@ -753,6 +1037,12 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getProperty( $name )
   {
+    if ( ! is_array($this->currentRecord ) or count($this->currentRecord) == 0 )
+    {
+      $this->raiseError("Cannot get property '$name' from model '{$this->name}: no record loaded.");
+    }
+    
+    
     if ( isset( $this->currentRecord[$name] ) )
     {
       /*
@@ -842,17 +1132,38 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   /**
    * inserts a record into a table and returns last_insert_id()
+   * @param string[optional, default] $namedId 
    * @return int the id of the inserted row 
    */
-  function create()
+  function create( $namedId = null )
   {
     $data = $this->emptyRecord;
-    $data[$this->col_id]=null; // so at least one field is set
+    $data[$this->col_id] = null; // so at least one field is set
+    if ( $namedId )
+    {
+      $data[$this->col_namedId] = $namedId;
+    }
     $id = $this->insert( $data );
     $this->findById($id);
     return $id;
   }
 
+  /**
+   * Finds a record by its namedId or creates it if necessary
+   * @param  string $namedId
+   * @return int Id of found or newly created record
+   */
+  function createOrFind( $namedId )
+  {
+    $this->findByNamedId( $namedId );
+    if ( $this->notFound() )
+    {
+      $this->create( $namedId );  
+    }
+    return $this->getId();
+  }
+  
+  
   /**
    * inserts a record into a table and returns last_insert_id()
    * @param array $data associative array with the column names as keys and the column data as values
@@ -897,7 +1208,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     foreach ($data as $key => $value)
     {
-      if ( $alias = $this->getAlias($key) )
+      if ( $alias = $this->getColumnName($key) )
       {
         /*
          * @todo: what if alias exists as property name?
@@ -957,7 +1268,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getForeignKeyColumn()
   {
-    return $this->foreignKey;
+    return $this->getColumnName($this->getForeignKey());
   }
 
   /**
@@ -1034,7 +1345,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @return array Array of values
    * @deprecated use new findX.. methods 
    */
-  function getValues($column,$where=null,$orderBy=null)
+  function getColumnValues($column,$where=null,$orderBy=null)
   { 
     if ( is_array( $column ) )
     {
@@ -1494,21 +1805,12 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function setupProperties()
   {
-    /*
-     * check prerequisites
-     */
-    if ( ! is_object($this->schemaXml ) )
-    {
-      $this->raiseError("Model Schema hasn't been initialized.");
-    }
-    
-    //$this->info($this->schemaXml->asXML());
-    
+
     /*
      * defintion node
      */
     $schemaXml  =& $this->getSchemaXml(); 
-    $definition =& $schemaXml->getNode("/model/definition");
+    $definition =& $schemaXml->getNode("/schema/model/definition");
     if ( ! $definition )
     {
       $this->raiseError("Model schema xml does not have a 'definition' node.");
@@ -1529,14 +1831,29 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       $attrs     = $propNode->attributes(); 
       $propName  = $attrs['name'];
+      
+      
+      /*
+       * store shorcut object property for easy
+       * sql string coding: "SELECT {$this->col_id} ..."
+       */
       $columnVar = "col_$propName";
       $this->$columnVar = $propName;
-      $this->properties[$propName] = $propNode;
+      
+      /*
+       * store property node
+       */
+      $this->propertyNodes[$propName] = $propNode;
+      
+      /*
+       * store property name as key and value
+       */
+      $this->properties[$propName] = $propName; 
       //$this->info(gettype($propNode)); 
     } 
     
 //    $this->info("Properties:");
-//    $this->info(array_keys($this->properties));
+//    $this->info(array_keys($this->propertyNodes));
 //    $this->info(array_keys(get_object_vars($this)));
     
     /*
@@ -1548,14 +1865,30 @@ class qcl_db_model extends qcl_jsonrpc_model
       $aliasMap = array();
       foreach($aliases->children() as $alias)
       {
+        
+        /*
+         * get alias
+         */
         $attrs    = $alias->attributes();
         $propName = $attrs['for'];
         $column   = qcl_xml_simpleXML::getData(&$alias);
+        
+        /*
+         * store in alias map
+         */
         $aliasMap[$propName] = $column; 
+        
+        /*
+         * overwrite object property
+         */
         $columnVar = "col_$propName"; 
         $this->$columnVar = $column;
+        
+        /*
+         * overwrite property name with alias
+         */
+        $this->properties[$propName] = $column; 
       }
-      $this->aliasMap = $aliasMap; 
     }    
     //$this->info("Alias Map:");
     //$this->info($aliasMap);
@@ -1573,17 +1906,26 @@ class qcl_db_model extends qcl_jsonrpc_model
         {
           $attrs = $metaDataPropNode->attributes();
           $name  = $attrs['name'];
-          //$this->info("$name => " . gettype($this->properties[$name]) );
-          if ( isset($this->properties[$name]) )
+          //$this->info("$name => " . gettype($this->propertyNodes[$name]) );
+          if ( isset($this->propertyNodes[$name]) )
           {
-            $this->metaDataProperties[$name] =& $this->properties[$name];  
+            $this->metaDataProperties[$name] =& $this->propertyNodes[$name];  
           }
         }
       }
       //$this->info("Metadata properties:"); 
       //$this->info( array_keys($this->metaDataProperties));      
     }
-  }    
+  }  
+  
+  /**
+   * Gets the name of the main data table
+   * @return string
+   */
+  function getTableName()
+  {
+    return $this->table;
+  }
   
   /**
    * returns the prefix for tables used by this 
@@ -1750,7 +2092,22 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     //$this->info("Aliases:");
     //$this->info($aliasMap);
-    
+
+    /*
+     * drop indexes this speeds up things immensely. they will be recreated
+     * further dow.
+     */
+    $indexes =& $doc->model->definition->indexes;
+    if ( $indexes )
+    {
+      foreach ( $indexes->children() as $index )
+      {
+        $attrs   = $index->attributes();
+        $name    = $attrs['name'];
+        $this->db->dropIndex($table,$name);
+      }
+    }
+            
     /*
      * properties as columns
      */
@@ -1761,24 +2118,60 @@ class qcl_db_model extends qcl_jsonrpc_model
       $propName  = $attr['name'];
       $colName   = either($aliasMap[$propName],$propName);
       
+      /*
+       * save property/alias
+       */
+      $this->properties[$propName] = $colName;
+      
+      /*
+       * skip if no column definition available
+       */
       if ( count($property->children()) == 0)
       {
-        // no column definitions, continue
         continue;
       }
       
-      //@todo:  accept either <$sqltype> or <sql type="$sqltype">
-      if ( ! is_object($property->$sqltype) )
+      /*
+       * @todo: check for <sql type="$sqltype">
+       */
+      if ( ! is_object($property->sql) )
       {
-        $this->warn("Model Property '$propName'  has no definition matching the sql type.");
+        $this->warn("Model Property '$propName' has no definition matching the sql type.");
         continue;
       }
       
-      $newDef    = $modelXml->getData($property->$sqltype);
+      $newDef    = $modelXml->getData($property->sql);
       $oldDef    = $this->db->getColumnDefinition($table,$colName);
       
       //$this->info("Property '$propName', Column '$colName':" );
       //$this->info("Old def: '$oldDef', new def:'$newDef'");
+
+      
+      /* 
+       * unique column
+       */
+      if ( $attr['unique'] == "yes" )
+      {
+        $indexName = $colName . "_unique";
+        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
+        {
+          $this->db->addIndex("unique", $table, $indexName, $colName ); 
+        }
+      }
+
+      /*
+       * index 
+       */
+      if ( $attr['index'] == "yes" )
+      {
+        $indexName = $colName;
+        $this->info("Creating index for $colName"); 
+        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
+        {
+          $this->db->addIndex("index", $table, $indexName, $colName ); 
+        }
+      } 
+      
       
       /*
        * skip column if old and new column definition are identical
@@ -1807,10 +2200,10 @@ class qcl_db_model extends qcl_jsonrpc_model
       else
       {
         // exists but is different: modifiy
-        $this->info( "Old definition:" . $oldDef);
+        $this->info( "{$table}.{$colName}: " . $oldDef);
         $this->db->modifyColumn($table,$colName,$newDef);
       }
-      
+ 
     }
     
     /*
@@ -1892,29 +2285,7 @@ class qcl_db_model extends qcl_jsonrpc_model
             
             // analyze existing index
             $indexName    = either($attrs['name'],$indexProperties[0]);
-            $indexColumns = $this->db->getIndexColumns($table,$indexName); 
-                
-            //$this->info("$indexType index $indexName, existing index:"); 
-            //$this->info($indexColumns);
-            
-            //$this->info("New index:");
-            //$this->info($indexProperties);
-          
-            // if different from model, drop it first
-            if ( count($indexColumns) )
-            {
-              if ( $indexColumns != $indexProperties )
-              {
-                // index exists but is different 
-                $this->db->dropIndex($table,$indexName);
-                $this->db->addIndex($indexType,$table,$indexName,$indexProperties);
-              }
-            }
-            else
-            {
-              // index doesn't exist, create
-              $this->db->addIndex($indexType,$table,$indexName,$indexProperties);
-            }
+            $this->db->addIndex($indexType,$table,$indexName,$indexProperties);
                       
             break;
         } 
@@ -1928,10 +2299,47 @@ class qcl_db_model extends qcl_jsonrpc_model
     if ( is_object($links) and count($links->children() ) )
     {
       $this->info("Creating or updating linked tables...");
+      
+      $a = $links->attributes();
+      
+      /*
+       * get local key column
+       */
+      if ( $a['localkey'] )
+      {
+        $localKey          = either($a['localkey'],$a['localKey']); 
+        $localKeyColName   = either($aliasMap[$localKey],$localKey);
+      }
+      else
+      {
+        $this->raiseError("The <links> node must have a 'localKey' attribute.");
+      }
+
+      /*
+       * get foreign key column
+       */
+      if ( $a['foreignkey'])
+      {
+        $foreignKey        = either($a['foreignkey'],$a['foreignKey']);
+        $foreignKeyColName = either($aliasMap[$foreignKey],$foreignKey);
+      }
+      else
+      {
+        $this->raiseError("The <links> node must have a 'foreignKey' attribute.");
+      }
+      
+      /*
+       * setup each link 
+       */
       foreach ($links->children() as $link)
       {
         $a = $link->attributes();
         
+        /*
+         * link table internal name
+         */
+        $name = $a['name'];
+
         /*
          * create table
          */
@@ -1948,33 +2356,6 @@ class qcl_db_model extends qcl_jsonrpc_model
           $this->db->createTable($link_table);
         }
 
-        /*
-         * get local key column
-         */
-        if ( $a['localkey'] )
-        {
-          $localKey          = either($a['localkey'],$a['localKey']); 
-          $localKeyColName   = either($aliasMap[$localKey],$localKey);
-        
-        }
-        else
-        {
-          $this->raiseError("A table link must have a 'localKey' attribute.");
-        }        
-        
-        /*
-         * get foreign key column
-         */
-        if ( $a['foreignkey'])
-        {
-          $foreignKey        = either($a['foreignkey'],$a['foreignKey']);
-          $foreignKeyColName = either($aliasMap[$foreignKey],$foreignKey);
-        }
-        else
-        {
-          $this->raiseError("A table link must have a 'foreignKey' attribute.");
-        }
-        
         /*
          * copy over the column definition from the main table
          */
@@ -2010,25 +2391,26 @@ class qcl_db_model extends qcl_jsonrpc_model
         }
         
         /*
-         * add to unique index in link table
+         * add to unique index in link table, this works only if the table is
+         * empty
          */
-        $uniqueIndexCols =  $this->db->getIndexColumns($link_table,"link");
-        if ( ! in_array($foreignKeyColName,$uniqueIndexCols) )
-        {
-          /*
-           * drop existing index
-           */
-          if ( count($uniqueIndexCols) )
+        if ( $this->db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
+        { 
+          $uniqueIndexCols =  $this->db->getIndexColumns($link_table,"link");
+          if ( ! in_array($foreignKeyColName,$uniqueIndexCols) )
           {
-            $this->db->dropIndex($link_table,"link");
+            /*
+             * create new unique index including column
+             */
+            $uniqueIndexCols[] = $foreignKeyColName;
+            $this->db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
           }
-          
-          /*
-           * create new unique index including column
-           */
-          $uniqueIndexCols[] = $foreignKeyColName;
-          $this->db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
         }
+        else
+        {
+          $this->warn("Cannot create unique constraint in $link_table for " . implode(",",$uniqueIndexCols) . ": Table is not empty.");
+        }
+        
       }
     }
     
@@ -2044,9 +2426,20 @@ class qcl_db_model extends qcl_jsonrpc_model
     else
     {
       $this->info("No data to import.");
-    }    
-  }
+    }  
     
+    /*
+     * model- dependent post-setup actions
+     * 
+     */
+    $this->postSetupSchema();
+  }
+
+  /**
+   * model-dependent post-setup stuff. empty stub to be overridden by subclasses if necessary
+   */
+  function postSetupSchema() {} 
+  
   /**
    * parses an xml schema file, processing includes
    * @param string $file
@@ -2082,7 +2475,235 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     return $modelXml;
   }
+  
+  //-------------------------------------------------------------
+  // Linked tables
+  //-------------------------------------------------------------    
 
+  /**
+   * Sets up the links to external models
+   * @return void
+   */
+  function setupTableLinks()
+  {
+    $schemaXml =& $this->getSchemaXml(); 
+    $links     =& $schemaXml->getNode("/schema/model/links");
+    
+    if ( is_object($links) )
+    {
+      $attrs = $links->attributes();
+      $this->localKey   = either($attrs['localKey'],$attrs['localkey']);
+      $this->foreignKey = either($attrs['foreignKey'],$attrs['foreignkey']);
+      
+      $this->linkNodes = array();
+      foreach ($links->children() as $linkNode)
+      {
+        $attrs = $linkNode->attributes();
+        /*
+         * link table internal name
+         */
+        $name = $attrs['name'];
+        $this->linkNodes[$name] = $linkNode; // don't use copy by reference in PHP4 here, won't work, but $linkNode is a copy anyways because of foreach
+      }
+    }    
+  }  
+
+  
+  /**
+   * gets the schema xml node containing information on the given link name
+   * @param string $name
+   * @return SimpleXmlElement 
+   */
+  function &getLinkNode ( $name )
+  {
+    if ( ! is_array( $this->linkNodes ) )
+    {
+      $this->setupTableLinks();
+    }
+    
+    $linkNode = $this->linkNodes[$name];
+    
+    if ( ! is_object($linkNode) )
+    {
+      $this->raiseError("No <link> node available for '$name'.");
+    }
+    return $linkNode;    
+  }
+
+  /**
+   * Gets the name of the table that joins this model to the
+   * joined model for the specific link name
+   *
+   * @param string $name Name of the link
+   * @return string Name of the link table
+   */
+  function getLinkTable( $name )
+  {
+    $linkNode =& $this->getLinkNode( $name );
+    $attrs= $linkNode->attributes();
+    return $attrs['table'];
+  }
+
+  /**
+   * Gets the class of the model that is joined to this model for the specific link name
+   *
+   * @param string $Name of the link
+   * @return string Name of the joined model
+   */
+  function getJoinedModelClass( $name )
+  {
+    $linkNode =& $this->getLinkNode( $name );
+    $attrs= $linkNode->attributes();
+    return $attrs['model'];
+  }   
+  
+  /**
+   * Gets an instance of the model that is joined to this model for the specific link name
+   *
+   * @param string $Name of the link
+   * @return qcl_db_model 
+   */
+  function &getJoinedModelInstance( $name )
+  {
+    $modelClass =  $this->getJoinedModelClass( $name );
+    $controller =& $this->getController();
+    $modelObj   =& $controller->getNew( $modelClass );
+    return $modelObj;
+  } 
+  
+  /**
+   * Gets the name of the table that is joined to this table for the specific link name
+   *
+   * @param string $Name of the link
+   * @return string Name of the joined table
+   */
+  function getJoinedTable( $name )
+  {
+    $joinedModel =& $this->getJoinedModelInstance( $name );
+    return $joinedModel->getTableName();
+  }  
+  
+  /**
+   * Gets the name of the local key joining the table
+   *
+   * @return string Name of the local key
+   */
+  function getLocalKey ()
+  {
+    return $this->localKey;
+  }    
+
+  /**
+   * Gets the name of the local key joining the table 
+   *
+   * @return string Name of the local key
+   */
+  function getForeignKey ()
+  {
+    return $this->foreignKey;
+  }
+
+  /**
+   * Gets the name of the link in the schema xml, given a model instance.
+   * Throws an error if the model is not linked.
+   *
+   * @param qcl_db_model $model
+   * @return string
+   */
+  function getLinkByModel( $model )
+  {
+    if ( ! is_a($model,"qcl_db_model" ) )
+    {
+      $this->raiseError("Argument needs to be a qcl_db_model or subclass.");
+    }
+    
+    foreach ( $this->linkNodes as $linkName => $linkNode )
+    {
+      $attrs = $linkNode->attributes();
+      $class = strtolower( str_replace(".","_", $attrs['model'] ) ); 
+      if ( is_a($model,$class) )
+      {
+        return $linkName;
+      }
+    }
+    $this->raiseError("The model '" . get_class($this) . "' is not linked to model '" . get_class($model) . "'.");
+  }
+  
+  
+  /**
+   * create a link between this model and a different model identified in a schema xml link
+   *
+   * @param string|object $first Either the object to link to or the name of the link in the schema xml
+   * @param int $linkedId Id of the recordset in the remote model
+   * @param int|null $localId[optional, default null] The id of the local dataset. If not given as an argument, 
+   * the id of the currently loaded record is used.
+   */
+  function createLink($first,$linkedId=null,$localId=null)
+  {
+    /*
+     * context data
+     */
+    $link         = is_object($first) ? $this->getLinkByModel( $first ) : $first;
+    $linkedId     = is_object($first) ? $first->getId() : $linkedId;
+    $localId      = either($localId, $this->getId() );
+    $linkTable    = $this->getLinkTable($link);
+    $foreignkey   = $this->getForeignKey();
+    $joinedModel  = $this->getJoinedModelInstance($link);
+    $jmForeignKey = $joinedModel->getForeignKey();
+    
+
+    if ( ! $localId or ! is_numeric($localId) )
+    {
+      $this->raiseError("Invalid local id '$localId");
+    }    
+    
+    if ( ! $linkedId or ! is_numeric($linkedId) )
+    {
+      $this->raiseError("Invalid linked id '$linkedId");
+    }
+    
+    /*
+     * link data
+     */
+    $data = array();
+    $data[$foreignkey]   = $localId;
+    $data[$jmForeignKey] = $linkedId;
+    
+    /*
+     * insert into table
+     */
+    $this->db->insert($linkTable, $data);
+  }
+  
+  /**
+   * removes a link between this model and a different model identified in a schema xml link
+   *
+   * @param string $link Name of the link
+   * @param int $linkedId Id of the recordset in the remote model
+   * @param int|null $localId[optional, default null] The id of the local dataset. If not given as an argument, 
+   * the id of the currently loaded record is used.
+   */
+  function removeLink($link,$linkedId,$localId=null)
+  {
+    /*
+     * context data
+     */
+    $localId      = either($localId, $this->getId() );
+    $linkTable    = $this->getLinkTable($link);
+    $foreignkey   = $this->getForeignKey();
+    $joinedModel  = $this->getJoinedModelInstance($link);
+    $jmForeignKey = $joinedModel->getForeignKey();
+    
+    /*
+     * remove from table
+     */
+    $this->db->deleteWhere($linkTable, "`$foreignkey`=$localId AND `$jmForeignKey`=$linkedId" );
+  }  
+  
+  //-------------------------------------------------------------
+  // Import and export of model data
+  //-------------------------------------------------------------  
+  
   /**
    * exports model data to an xml file
    *
@@ -2093,13 +2714,9 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * schema document
      */
-    if ( ! is_object ( $this->schemaXml ) )
-    {
-      $this->raiseError("Model must be initialized before exporting data.");
-    }
-    $schemaXmlDoc =& $this->schemaXml->getDocument();
-    
-    
+    $schemaXml    =& $this->getSchemaXml(); 
+    $schemaXmlDoc =& $schemaXml->getDocument();
+      
     /*
      * path of exported file
      */
@@ -2128,7 +2745,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * property groups in model schema
      */
-    $propGrpsNode =& $this->schemaXml->getNode("/model/definition/propertyGroups");
+    $propGrpsNode =& $schemaXml->getNode("/model/definition/propertyGroups");
     //$this->info($propGrpsNode->asXml());
     
     /*
@@ -2141,7 +2758,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * skipped
      */
     $propList     =  array_keys($this->properties); 
-    $skipExpNode  =& $this->schemaXml->getChildNodeByAttribute(&$propGrpsNode,"name","skipExport");
+    $skipExpNode  =& $schemaXml->getChildNodeByAttribute(&$propGrpsNode,"name","skipExport");
     if ( $skipExpNode )
     {
       foreach($skipExpNode->children() as $skipPropNode )
@@ -2170,12 +2787,12 @@ class qcl_db_model extends qcl_jsonrpc_model
         /*
          * property node
          */
-        $propNode =& $this->properties[$propName];
+        $propNode =& $this->propertyNodes[$propName];
         
         /*
          * column name is either alias or property name
          */
-        $column = $this->getAlias($propName);
+        $column = $this->getColumnName($propName);
     
         /*
          * column data; skip empty columns
@@ -2254,10 +2871,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * schema document
      */
-    if ( ! is_object ( $this->schemaXml ) )
-    {
-      $this->raiseError("Model must be initialized before exporting data.");
-    }
+    $schemaXml    =& $this->getSchemaXml();
     $schemaXmlDoc =& $this->schemaXml->getDocument();
     
     $this->info("Importing data from '$path' into {$this->name}..." );
@@ -2266,7 +2880,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * open xml data file and get record node
      */
     $dataXml     =& new qcl_xml_simpleXML($path);
-    $dataDoc     = $dataXml->getDocument();
+    $dataDoc     = $dataXml->getDocument(); // don't use pass by reference here
     $recordsNode = $dataXml->getNode("/data/records");
     
     if ( ! is_object($recordsNode) )
@@ -2292,7 +2906,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       {
         $propAttrs = $propNode->attributes();
         $propName  = $propAttrs['name'];
-        $propData  = $this->schemaXml->getData(&$propNode);
+        $propData  = $schemaXml->getData(&$propNode);
         $properties[$propName] =$propData;
       }
       
@@ -2303,7 +2917,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       $data = array();
       foreach( $properties as $propName => $propData )
       {
-        $colName = $this->getAlias($propName);
+        $colName = $this->getColumnName($propName);
         $data[$colName] =  xml_entity_decode($propData);
       }
       
@@ -2317,5 +2931,62 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     $this->info("$count records imported.");
   }
+  
+  //-------------------------------------------------------------
+  // Queries
+  //-------------------------------------------------------------  
+  
+  /**
+   * Checks whether model supports query operators
+   * @return bool
+   */
+  function hasQueryOperators()
+  {
+    $schemaXml =& $this->getSchemaXml();
+    $opNodes   =& $this->getNode("/schema/model/queries/operators");
+    return is_object($opNodes) && count( $opNodes->operator ); 
+  }
+  
+  /**
+   * gets all nodes from the schema xml that contain
+   * information on query operators for a certain
+   * property type (string, int, etc.)
+   *
+   * @param string $type  Type of property
+   * @return array Array of SimpleXmlElement (PH4)  objects
+   */
+  function getQueryOperatorNodes( $type )
+  {
+    if ( ! $this->hasQueryOperators() )
+    {
+      $this->raiseError("Model '{$this->name}'' does not support query operators.");
+    }
+    
+    /*
+     * return cached data if available, otherwise retrieve it from schema xml
+     */
+    static $queryOperators = array();
+    
+    if ( ! is_array( $queryOperators[$type] ) )
+    {
+      $schemaXml =& $this->getSchemaXml();
+      $operators =& $this->getNode("/schema/model/queries/operators/operator");
+      
+      foreach ( $operators as $operatorNode )
+      {
+        $attrs = $operatorNode->attributes();
+        if ( $attrs['type'] == $type )
+        {
+          $queryOperators[$type][] =& $operatorNode;
+        }
+      }
+    }
+    
+    /*
+     * return result
+     */
+    return $queryOperators[$type];
+  }
+  
 }	
 ?>

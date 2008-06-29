@@ -38,12 +38,13 @@ class qcl_datasource_db_model extends qcl_db_model
     
     /* Example:
     $controller =& $this->getController();
-    $this->setModel("record",     new bibliograph_models_record_default( &$controller, &$this) );
-    $this->setModel("folder",     new bibliograph_models_record_default( &$controller, &$this) );
-    $this->setModel("attachment", new bibliograph_models_attachment_default( &$controller, &$this) );
-    $this->setModel("note",       new bibliograph_models_note_default( &$controller, &$this) );
+    $this->recordModel     =& new bibliograph_models_record_default( &$controller, &$this );
+    $this->folderModel     =& new bibliograph_models_record_default( &$controller, &$this );
+    $this->attachmentModel =& new bibliograph_models_attachment_default( &$controller, &$this );
+    $this->noteModel       =& new bibliograph_models_note_default( &$controller, &$this );
      */
   }
+  
   
   /**
    * gets a stored model by name

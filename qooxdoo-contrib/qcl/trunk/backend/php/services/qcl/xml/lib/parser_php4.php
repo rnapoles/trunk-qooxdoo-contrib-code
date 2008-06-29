@@ -33,15 +33,19 @@ define('XMLPARSER_INDENT_CHAR', "  ");
  * of the php5 simplexml functions
  * 
  * Changes:
- * - addded methods from PHP5 simplexml API to achieve basic compatibility
+ * - Renamed XMLTag to SimpleXmlElement so that API comments are consistent 
+ *   across versions
+ * - added methods from PHP5 SimpleXml API to achieve basic compatibility
  *   main differences:
  *   * you cannot access attributes using the array syntax - use attributes() 
- *     insteas
+ *     instead.
  *   * you cannot get the CDATA of a node by casting a member to string like
  *     in PHP5 ("(string) $obj->member"). You need to use $obj->member->CDATA()
  *     instead. To set the CDATA use $obj->member->setCDATA("foo");
+ *     In order to work cross-version, you can use the following syntax:
+ *     $data = phpversion() < 5 ? $node->CDATA() : (string) $node;
  * - renamed AddChild() method to _AddChild() ad added addChild() method 
- *   with method signature from PHP5 simplexml
+ *   with method signature from PHP5 SimpleXml
  * - child members will only be array if more than one child of with the same
  *   tag name exists
  * - no lowercasing of tagnames
@@ -233,7 +237,7 @@ class XMLParser
         if (count($this->stack) == 0) 
         {
             //If so, set the document as the current tag
-            $this->document = new XMLTag($name, $attrs);
+            $this->document = new SimpleXmlElement($name, $attrs);
             
             //And start out the stack with the document tag
             $this->stack = array('document');
@@ -353,7 +357,7 @@ class XMLParser
 
 
 /**
- * XML Tag Object (php4)
+ * SimpleXmlElement Tag Object (php4)
  *
  * This object stores all of the direct children of itself in the $children array. They are also stored by
  * type as arrays. So, if, for example, this tag had 2 <font> tags as children, there would be a class member
@@ -364,12 +368,13 @@ class XMLParser
  * To loop through all of the direct children of a specific tag for this object, it is probably easier 
  * to use the arrays of the specific tag names, as explained above.
  *
- * @author Adam A. Flynn <adamaflynn@criticaldevelopment.net>
+ * @author Original author: Adam A. Flynn <adamaflynn@criticaldevelopment.net>
+ * @author Modified by Christian Boulanger <c.boulanger@qxtransformer.org>
  * @copyright Copyright (c) 2005-2007, Adam A. Flynn
  *
- * @version 1.3.0
+ * 
  */
-class XMLTag
+class SimpleXmlElement
 {
     /**
      * Array with the attributes of this XML tag
@@ -443,9 +448,9 @@ class XMLTag
      * @param string $name
      * @param array $attrs
      * @param int $parents
-     * @return XMLTag
+     * @return SimpleXmlElement
      */
-    function XMLTag($name, $attrs = array(), $parents = 0, $namespace="" )
+    function SimpleXmlElement($name, $attrs = array(), $parents = 0, $namespace="" )
     {
         //Make the keys of the attr array lower case, and store the value
         $this->tagAttrs = array_change_key_case($attrs, CASE_LOWER);
@@ -549,7 +554,7 @@ class XMLTag
      */
     function &removeChild($childNode)
     {
-      if ( strtolower(get_class($childNode)) != "xmltag" )
+      if ( strtolower(get_class($childNode)) != "simplexmlelement" )
       {
         trigger_error("Cannot remove node: Invalid parameter");
       }
@@ -590,7 +595,7 @@ class XMLTag
         }
         
         //Create the child object itself
-        $child = new XMLTag($name, $attrs, $parents);
+        $child = new SimpleXmlElement($name, $attrs, $parents);
         
         //Add a random tag id to make it unique
         $child->tagId = md5(mt_rand() . time());

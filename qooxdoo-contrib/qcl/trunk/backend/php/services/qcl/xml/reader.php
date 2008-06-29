@@ -12,14 +12,32 @@ class qcl_xml_reader extends qcl_object
     
   /**
 	 * constructor
+	 * @param string|null[optional, default null] $xml Xml string or path to file
 	 **/
-  function __construct()
+  function __construct( $xml=null )
   {
+    if ( phpversion() >= 5 )
+    {
+      $this->raiseError("qcl_xml_reader currently works only with php4.");
+    }
+    
     if ( ! function_exists("domxml_open_mem") )
     {
       $this->raiseError("Cannot parse xml document: domxml-extension is not installed!");
     }
-    parent::__construct( &$controller);
+    parent::__construct();
+    
+    if ( $xml )
+    {
+      if ( is_valid_file($xml) )
+      {
+        $this->load_file($xml);
+      }
+      else
+      {
+        $this->load_string($xml);
+      }
+    }
   }
 
   /**

@@ -11,15 +11,33 @@ class qcl_access_common extends qcl_db_model
 {
 
   //-------------------------------------------------------------
-  // common class variables to be overridden
+  // common class variables 
   //-------------------------------------------------------------
 
-  var $reservedNames                = array(); 
+  /**
+   * Array of names that canot be used as names for users, permissions and 
+   * roles.
+   * @var array
+   */
+  var $reservedNames = array();
 
+  /**
+   * table linking users and roles
+   * @deprecated Use new model linking through schema xml instead.
+   * @var string
+   */
+  var $table_link_user_roles = "link_user_roles";
+  
+  /**
+   * table linking roles and permissions
+   * @deprecated Use new model linking through schema xml instead.
+   * @var string
+   */
+  var $table_link_roles_permissions = "link_roles_permissions";
+  
 	//-------------------------------------------------------------
 	// public non-rpc methods 
 	//-------------------------------------------------------------   
-   
 
    /**
     * get descriptive name of role
@@ -82,6 +100,7 @@ class qcl_access_common extends qcl_db_model
   			$this->addToRole ( $itemId, $parentId );	
   		}
     }	
+    $this->findById($itemId);
 		return $itemId;
   } 
   
