@@ -10,20 +10,20 @@
     <definition>
       <properties>
       
-        <property name="class" dataType="string">
-          <mysql>varchar(100) NOT NULL</mysql>
+        <property name="class" type="string">
+          <sql>varchar(100) NOT NULL</sql>
         </property>      
-        <property name="session_id" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="session_id" type="string">
+          <sql>varchar(50) NOT NULL</sql>
         </property>  
-        <property name="request_id" dataType="string">
-          <mysql>varchar(150) NOT NULL</mysql>
+        <property name="request_id" type="string">
+          <sql>varchar(150) NOT NULL</sql>
         </property>  
-        <property name="name" dataType="string">
-          <mysql>varchar(100) NOT NULL</mysql>
+        <property name="name" type="string">
+          <sql>varchar(100) NOT NULL</sql>
         </property>         
-        <property name="data" dataType="string">
-          <mysql>blob NOT NULL</mysql>
+        <property name="data" type="string">
+          <sql>blob NOT NULL</sql>
         </property>           
       
       </properties>

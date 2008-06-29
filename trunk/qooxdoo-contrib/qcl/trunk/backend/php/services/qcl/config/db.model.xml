@@ -12,23 +12,23 @@
     
       <!-- properties -->
       <properties>
-        <property name="namedId" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="namedId" type="string">
+          <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="type" dataType="string">
-          <mysql>varchar(20) NOT NULL</mysql>
+        <property name="type" type="string">
+          <sql>varchar(20) NOT NULL</sql>
         </property>
-        <property name="value" dataType="string">
-          <mysql>tinytext NOT NULL</mysql>
+        <property name="value" type="string">
+          <sql>tinytext NOT NULL</sql>
         </property>
-        <property name="permissionRead" dataType="string">
-          <mysql>varchar(50) NULL</mysql>
+        <property name="permissionRead" type="string">
+          <sql>varchar(50) NULL</sql>
         </property>
-        <property name="permissionWrite" dataType="string">
-          <mysql>varchar(50) NULL</mysql>
+        <property name="permissionWrite" type="string">
+          <sql>varchar(50) NULL</sql>
         </property>
-        <property name="user" dataType="string">
-          <mysql>varchar(255) NOT NULL</mysql>
+        <property name="user" type="string">
+          <sql>varchar(255) NOT NULL</sql>
         </property>
       </properties>
       

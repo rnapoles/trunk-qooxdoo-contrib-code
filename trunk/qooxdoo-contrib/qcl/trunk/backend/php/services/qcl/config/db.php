@@ -41,7 +41,7 @@ class qcl_config_db extends qcl_db_model
 	{
 		// check permission
     $controller  =& $this->getController();
-    $userModel   =& $controller->getModel("user");
+    $userModel   =& $controller->getUserModel();
     $userModel->requirePermission("qcl.config.permissions.manage");
 		
 		// todo: check if key already exists, if yes, abort
@@ -97,7 +97,7 @@ class qcl_config_db extends qcl_db_model
 	function delete( $ref )
 	{
 		$controller =& $this->getController();
-    $userModel  =& $controller->getModel("user");
+    $userModel  =& $controller->getUserModel();
 		$userModel->requirePermission("qcl.config.permissions.manage");
 		
 		if ( is_numeric( $ref ) )
@@ -168,7 +168,7 @@ class qcl_config_db extends qcl_db_model
 	function getRowById( $id )
 	{
 		$controller  =& $this->getController();
-    $userModel   =& $controller->getModel("user");
+    $userModel   =& $controller->getUserModel();
     if ( is_numeric( $id ) )
 		{
 			$row = $this->db->getRow("
@@ -199,7 +199,7 @@ class qcl_config_db extends qcl_db_model
 	function getRow($name,$user=null)
 	{			
 		$controller  =& $this->getController();
-    $userModel   =& $controller->getModel("user");
+    $userModel   =& $controller->getUserModel();
     
     if ( $user !== null )
 		{
@@ -295,7 +295,7 @@ class qcl_config_db extends qcl_db_model
 	function getAll( $mask=null )
 	{
 		$controller    =& $this->getController();
-    $userModel     =& $controller->getModel("user");
+    $userModel     =& $controller->getUserModel();
     $activeUserId  =  $userModel->getActiveUserId();
 		
 		if ( $mask )
@@ -382,7 +382,7 @@ class qcl_config_db extends qcl_db_model
 	function set( $name, $value, $defaultValue=false)
 	{
 		$controller    =& $this->getController();
-    $userModel     =& $controller->getModel("user");
+    $userModel     =& $controller->getUserModel();
     $activeUser    =  $userModel->getActiveUserNamedId(); 
     
 		if ( $defaultValue )
@@ -474,7 +474,7 @@ class qcl_config_db extends qcl_db_model
 	{
 		$row = $this->getById($id);
 		$controller    =& $this->getController();
-    $userModel     =& $controller->getModel("user");
+    $userModel     =& $controller->getUserModel();
     $userModel->requirePermission("qcl.config.permissions.manage");
     $row[$key]= $value;
     $this->update($row);
@@ -521,7 +521,7 @@ class qcl_config_db extends qcl_db_model
 	function hasReadAccess($name)
 	{
 		$controller  =& $this->getController();
-    $userModel   =  $controller->getModel("user");
+    $userModel   =  $controller->getUserModel();
     return $userModel->hasPermission($this->getPermissionRead($name));
 	}
 	
@@ -533,7 +533,7 @@ class qcl_config_db extends qcl_db_model
   function hasWriteAccess($name)
   {
   	$controller  =& $this->getController();
-    $userModel   =  $controller->controller->getModel("user");
+    $userModel   =  $controller->controller->getUserModel();
     return $userModel->hasPermission($this->getPermissionWrite($name));
 	}
 }

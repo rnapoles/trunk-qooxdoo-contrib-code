@@ -1,34 +1,16 @@
 <?php
 
-// dependencies
-require_once ("qcl/session/controller.php");
+/*
+ * dependencies
+ */
+require_once ("qcl/mixin.php");
 require_once ("qcl/config/config.php");
 
 /**
- * Service class providing data to the config manager on the client
- * requires user, permission, role and session models
+ * Mixin providing methods to edit configuration data
  */
-
-class qcl_config_controller extends qcl_session_controller
+class qcl_config_services extends qcl_mixin
 {
-
-	//-------------------------------------------------------------
-  // internal methods
-	//------------------------------------------------------------- 
-   
- 	/**
- 	 * constructor 
- 	 * @param $useDefaulConfigModel if true, create default config model
-   */
- 	function __construct( $useDefaulConfigModel=true )
- 	{
-    parent::__construct();
-    if ( $useDefaulConfigModel )
-    {
-      $configModel =& qcl_config::getSubclass(&$this);
-  		$this->setModel("config", &$configModel);
-    }
-	}
 	
 	//-------------------------------------------------------------
  	// public rpc methods 
@@ -41,7 +23,7 @@ class qcl_config_controller extends qcl_session_controller
  	function method_updateClient($params)
  	{
  		$mask 	      = $params[0];
-    $configModel  = $this->getModel("config");
+    $configModel  = $this->getConfigModel();
     $keys         = $configModel->findDistinctValues("namedId",null,"namedId");
  		$result	      = array();
     
@@ -65,7 +47,7 @@ class qcl_config_controller extends qcl_session_controller
  	function method_updateServer($params)
  	{
 		$map          = (array) $params[1];
-    $configModel  = $this->getModel("config");
+    $configModel  = $this->getConfigModel();
     
 		foreach( $map as $key => $value )
 		{
@@ -84,9 +66,9 @@ class qcl_config_controller extends qcl_session_controller
 	 * 
 	 * @param string $params[1]->name The name of the property (i.e., myapplication.config.locale)
 	 * @param string $params[1]->type The type of the property (string|number|object|boolean)
-	 * @param string $params[1]->permissionRead The permission name that is needed to access 
+	 * @param string $params[1]->permissionModelRead The permission name that is needed to access 
 	 * 		  and read this property (optional)
-	 * @param string $params[1]->permissionWrite The permission name that is needed to access 
+	 * @param string $params[1]->permissionModelWrite The permission name that is needed to access 
 	 * 		  and read this property (optional)
 	 * @param boolean $params[1]->allowUserVariants If true, allow users to create their 
 	 * 		  own variant of the configuration setting 
@@ -94,13 +76,13 @@ class qcl_config_controller extends qcl_session_controller
 	 */
 	function method_create($params)
 	{
-		$configModel  = $this->getModel("config");
+		$configModel  = $this->getConfigModel();
     
     $id = $configModel->create(
 			$params[1]->name, 
 			$params[1]->type, 
-			$params[1]->permissionRead, 
-			$params[1]->permissionWrite,
+			$params[1]->permissionModelRead, 
+			$params[1]->permissionModelWrite,
 			$params[1]->allowUserVariants
 		);
 		$this->dispatchMessage( "qcl.config.messages.key.created", $id );
@@ -121,7 +103,7 @@ class qcl_config_controller extends qcl_session_controller
 		$id 	        =  $params[1];
 		$key	        =  $params[2];
 		$value	      =  $params[3];
-		$configModel  =& $this->getModel("config");
+		$configModel  =& $this->getConfigModel();
     
 		$configModel->updateById($id,$key,$value);
 		$this->dispatchMessage( "qcl.config.messages.key.updated", $id );
@@ -146,7 +128,7 @@ class qcl_config_controller extends qcl_session_controller
 	 */
 	function method_delete( $params )
 	{ 
-		$configModel =& $this->getModel("config");
+		$configModel =& $this->getConfigModel();
     $configModel->delete($params[1]);
 		return $this->getResponseData();
 	} 
@@ -162,7 +144,7 @@ class qcl_config_controller extends qcl_session_controller
 	 */
 	function method_set( $params )
 	{
-		$configModel =& $this->getModel("config");
+		$configModel =& $this->getConfigModel();
     $configModel->set( $params[0], $params[1], $params[2] );
 		$data = array();
 		$data[$params[0]] = $params[1];
@@ -179,8 +161,8 @@ class qcl_config_controller extends qcl_session_controller
 	function method_getAll( $params )
 	{
 		$mask         =  $params[0];
-    $userModel    =& $this->getModel("user");
-    $configModel  =& $this->getModel("config"); 
+    $userModel    =& $this->getUserModel();
+    $configModel  =& $this->getConfigModel(); 
     $rows         =  $configModel->getAll( $mask );
     
 		$table = array();
@@ -209,7 +191,7 @@ class qcl_config_controller extends qcl_session_controller
     /*
      * models
      */
-    $configModel =& $this->getModel("config");
+    $configModel =& $this->getConfigModel();
     
     require_once("qcl/xml/model.php");
     $path = "../var/tmp/config.xml"; 

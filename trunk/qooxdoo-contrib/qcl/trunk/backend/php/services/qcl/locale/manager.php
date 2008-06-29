@@ -1,24 +1,38 @@
 <?php
 
-// dependencies
-require_once ("qcl/jsonrpc/controller.php");
+/*
+ * dependencies
+ * 
+ */
+require_once "qcl/object.php";
+require_once "qcl/locale/model_qooxdoo.php";
 
 /**
  * manages locales and translations. uses a gettext model by default
  * extending controllers should set the "locale" model before calling the
  * parent constructor if they want to use a different locale model.
  */
-class qcl_locale_controller extends qcl_jsonrpc_controller
+class qcl_locale_manager extends qcl_object
 {
 
 	//-------------------------------------------------------------
   // class variables
   //-------------------------------------------------------------
   	
+  /**
+   * The default locale
+   * @var string
+   */
   var $default_locale = "en"; 
  
+  /**
+   * The locale model. Access with getLocaleModel()
+   * @var qcl_locale_model_qooxdoo
+   */
+  var $localModel;
+  
 	//-------------------------------------------------------------
-  // internal methods
+  // setup
   //-------------------------------------------------------------
   
 	/**
@@ -27,19 +41,33 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
 	function __construct()
 	{
   	parent::__construct();
-    if ( ! $this->getModel("locale") )
-    {
-      require_once("qcl/locale/model_qooxdoo.php");
-      $localeModel =& $this->getSingleton("qcl_locale_model_qooxdoo");
-      $this->setModel("locale",&$localeModel);
+
+  	/*
+  	 * You can set a different locale model in an extending class 
+  	 */
+  	if ( ! $this->localeModel )
+    {  
+      $this->localeModel =& $this->getSingleton("qcl_locale_model_qooxdoo");
     }
-    // automatically determine locale
+    
+    /*
+     *  automatically determine locale
+     */
     $this->setLocale();
 	}
 
 	//-------------------------------------------------------------
   // public non-rpc methods
   //-------------------------------------------------------------
+
+  /**
+   * returns the locale model
+   * @return qcl_locale_model_qooxdoo
+   */
+  function &getLocaleModel()
+  {
+    return $this->localModel;
+  }
   
   /**
    * sets the default locale. if no value is given, the locale is determined on
@@ -49,7 +77,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
    */
 	function setLocale($locale=null)
 	{
-		$localeModel =& $this->getModel("locale");   
+		$localeModel =& $this->getLocaleModel();   
     $localeModel->setLocale( either( $locale, $this->getUserLocale(), $this->default_locale ) );
 	}
 
@@ -59,7 +87,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
    */
   function getUserLocale()
   {
-    $localeModel =& $this->getModel("locale");
+    $localeModel =& $this->getLocaleModel();
     $browser_locales = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"] );
     $locale = null;
     foreach ( $browser_locales as $brlc )
@@ -97,7 +125,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
    */
   function getAvailableLocales()
   {
-    $localeModel =& $this->getModel("locale");
+    $localeModel =& $this->getLocaleModel();
     return $localeModel->getAvailableLocales();
   }
 
@@ -110,7 +138,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
    */
   function tr ( $messageId, $varargs=array() )
   {
-		$localeModel =& $this->getModel("locale");
+		$localeModel =& $this->getLocaleModel();
     $translation =  $localeModel->translate( $messageId );  
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);    
@@ -128,7 +156,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
    */
   function trn ( $singularMessageId, $pluralMessageId, $count, $varargs=array() )
   {
-    $localeModel =& $this->getModel("locale");
+    $localeModel =& $this->getLocaleModel();
     $translation =  $localeModel->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
     array_unshift( $varargs, $translation );
     return call_user_func_array('sprintf',$varargs);     
@@ -145,7 +173,7 @@ class qcl_locale_controller extends qcl_jsonrpc_controller
   function method_logLocaleInfo()
   {
     // todo: check access
-    $localeModel =& $this->getModel("locale");
+    $localeModel =& $this->getLocaleModel();
     
     $this->info( "Locale information: ");
     $this->info( "  Available locales: " . implode(",", $localeModel->getAvailableLocales() ) . " ... ");

@@ -16,11 +16,9 @@ class qcl_access_permission extends qcl_access_common
   // class variables, override if necessary
   //-------------------------------------------------------------
 
-	var $table			  = "permissions";
 	var $icon 			  = "icon/16/mimetypes/empty-x-encrypted.png";
 	var $nodeType		  = "qcl.auth.types.Permission";
 	var $shortName		= "permission";
-	var $foreignKey		= "permissionId";
 
   //-------------------------------------------------------------
   // internal methods 
@@ -46,7 +44,7 @@ class qcl_access_permission extends qcl_access_common
  	function getByRoleId($roleId = null)
  	{
 		$controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
     
     $result = array();
 		$sql = "SELECT * FROM {$this->table_link_roles_permissions} ";
@@ -76,7 +74,7 @@ class qcl_access_permission extends qcl_access_common
  	 	if ( ! $roleId )
  		{
    	  $controller =& $this->getController();
-      $roleModel  =& $controller->getModel("role");
+      $roleModel  =& $controller->getRoleModel();
    	  $roleId	    =  $roleModel->createIfNotExists("qcl.roles.Unassigned");
  		}
  		return parent::create( $namedId, $roleId );
@@ -105,7 +103,7 @@ class qcl_access_permission extends qcl_access_common
   function addToRole( $permissionRefs, $roleRefs )
   {
   	$controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
    	$permissionRefs = (array) $permissionRefs;
   	$roleRefs 		= (array) $roleRefs;
     
@@ -141,7 +139,7 @@ class qcl_access_permission extends qcl_access_common
   function removeFromRole( $permissionRefs, $roleRefs )
   {
   	$controller =& $this->getController();
-    $roleModel  =& $controller->getModel("role");
+    $roleModel  =& $controller->getRoleModel();
   	$permissionRefs = (array) $permissionRefs;
   	$roleRefs 	= (array) $roleRefs;
   	

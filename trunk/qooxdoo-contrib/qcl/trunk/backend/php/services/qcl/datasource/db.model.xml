@@ -13,38 +13,38 @@
     
     <definition>
       <properties>
-         <property name="namedId" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+         <property name="namedId" type="string">
+          <sql>varchar(50) NOT NULL</sql>
         </property>      
-         <property name="prefix" dataType="string">
-          <mysql>varchar(20) NULL</mysql>
+         <property name="prefix" type="string">
+          <sql>varchar(20) NULL</sql>
         </property>             
-        <property name="active" dataType="boolean">
-          <mysql> tinyint(1) NOT NULL default '0'</mysql>
+        <property name="active" type="boolean">
+          <sql> tinyint(1) NOT NULL default '0'</sql>
         </property>
-        <property name="type" dataType="string">
-          <mysql> varchar(20) NULL</mysql>
+        <property name="type" type="string">
+          <sql> varchar(20) NULL</sql>
         </property>
-        <property name="schema" dataType="string"> 
-          <mysql> varchar(100) NULL</mysql>
+        <property name="schema" type="string"> 
+          <sql> varchar(100) NULL</sql>
         </property>        
-        <property name="host" dataType="string">
-          <mysql> varchar(100) NULL</mysql>
+        <property name="host" type="string">
+          <sql> varchar(100) NULL</sql>
         </property>
-        <property name="port" dataType="int">
-          <mysql> mediumint(9) NULL</mysql>
+        <property name="port" type="int">
+          <sql> mediumint(9) NULL</sql>
         </property>
-        <property name="database" dataType="string">
-          <mysql> varchar(50) NULL</mysql>
+        <property name="database" type="string">
+          <sql> varchar(50) NULL</sql>
         </property>
-        <property name="username" dataType="string">
-          <mysql> varchar(50) NULL</mysql>
+        <property name="username" type="string">
+          <sql> varchar(50) NULL</sql>
         </property>
-        <property name="password" dataType="string">
-          <mysql> varchar(50) NULL</mysql>
+        <property name="password" type="string">
+          <sql> varchar(50) NULL</sql>
         </property>
-        <property name="encoding" dataType="string">
-          <mysql> varchar(20) NULL</mysql>
+        <property name="encoding" type="string">
+          <sql> varchar(20) NULL</sql>
         </property>
       </properties>
       

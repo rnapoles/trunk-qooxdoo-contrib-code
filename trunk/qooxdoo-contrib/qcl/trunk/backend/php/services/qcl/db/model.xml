@@ -11,13 +11,13 @@
 
       <!-- model properties -->
       <properties> 
-        <property name="id" dataType="int"/>
+        <property name="id" type="int"/>
         <!-- 'id' column int(11) NOT NULL AUTO_INCREMENT was added during table creation and defined as primary key -->
-        <property name="created" dataType="string">
-          <mysql>timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'</mysql>
+        <property name="created" type="string">
+          <sql>timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'</sql>
         </property>
-        <property name="modified" dataType="string">
-          <mysql>timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</mysql>
+        <property name="modified" type="string">
+          <sql>timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</sql>
         </property>
       </properties> 
       
@@ -46,6 +46,60 @@
       </propertyGroups>
       
     </definition>
+    
+    <!-- operators for queries -->
+    <queries>
+      <operators>
+        <operator arguments="string">
+          <label>contains</label>
+          <sql placeholder="?">LIKE '%?%'</sql>
+        </operator>
+        <operator arguments="string">
+          <label>starts with</label>
+          <sql placeholder="?">LIKE '?%'</sql>
+        </operator>
+        <operator arguments="string">
+          <label>does not contain</label>
+          <sql placeholder="?">NOT LIKE '%?%'</sql>
+        </operator>
+        <operator arguments="int">
+          <label>is</label>
+          <sql placeholder="?">= '?'</sql>
+        </operator>        
+        <operator arguments="int">
+          <label>is not</label>
+          <sql placeholder="?">!= '?'</sql>
+        </operator>    
+        <operator arguments="int">
+          <label>greater than</label>
+          <sql placeholder="?">&gt;'?'</sql>
+        </operator>
+        <operator arguments="int">
+          <label>lesser than</label>
+          <sql placeholder="?">&lt;'?'</sql>
+        </operator>
+        <operator arguments="int">
+          <label>greater than or equals</label>
+          <sql placeholder="?">&gt;='?'</sql>
+        </operator>
+        <operator arguments="int">
+          <label>lesser than or equals</label>
+          <sql placeholder="?">&lt;='?'</sql>
+        </operator> 
+
+        <!-- the following is not implemented, possible syntax? -->        
+        <operator arguments="int int">
+          <label>between</label>
+          <sql placeholder="?">BETWEEN(?,?)</sql>
+        </operator>
+        <operator arguments="list">
+          <label>in</label>
+          <sql placeholder="?">IN(?)</sql>
+        </operator>
+        
+        <!-- todo: lists and ranges -->
+      </operators>
+    </queries>
     
   </model>
 </schema>

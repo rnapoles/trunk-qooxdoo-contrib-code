@@ -57,7 +57,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
   
   /**
    * gets the simpleXml document object
-   * return XMLTag (php4) or SimpleXMLElement (php5)
+   * return SimpleXmlElement  
    */
   function &getDocument()
   {
@@ -213,7 +213,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
    * @param string|null     $orderBy  (optional) order by field
    * @return array Array of values
    */
-  function getValues($column,$where=null,$orderBy=null)
+  function getColumnValues($column,$where=null,$orderBy=null)
   { 
     $this->raiseError("Not implemented.");  
   }
@@ -426,29 +426,6 @@ class qcl_xml_model extends qcl_jsonrpc_model
     $this->raiseError("Not implemented");
   }
 
-  /**
-   * translates column to field names
-   * @param array $row
-   * @todo: use "normalize" / "unnormalize"?? concept
-   * @return array
-   */
-  function columnsToProperties ( $row )
-  {
-    $this->raiseError("Not implemented");
-  }
-  
-
-  /**
-   * translates field to column names
-   * @todo: use "normalize" / "unnormalize"?? concept
-   * @param array $row
-   * @return array
-   */
-  function propertiesToColumns ( $row=null )
-  {
-    $this->raiseError("Not implemented");
-  }
-  
 
   //-------------------------------------------------------------
   // standard creat/insert/update/delete methods
@@ -525,26 +502,6 @@ class qcl_xml_model extends qcl_jsonrpc_model
     $this->raiseError("Not implemented");
   } 
 
-  /**
-   * checks whether model table(s) have been initialized
-   * @return Boolean
-   * @param $table string[optional] defaults to model able
-   */
-  function isInitialized ( $table=null )
-  {
-    $this->raiseError("Not implemented");  
-  }
-  
-  /**
-   * sets the initialized state of model table(s) 
-   * @return 
-   * @param $table String[optional] defaults to model table
-   * @param $value Bool[optional] defaults to true
-   */
-  function setInitialized ($table=null, $value=true)
-  {
-    $this->raiseError("Not implemented");
-  }
   
   /**
    * Returns a hash map of ids the modification timestamp

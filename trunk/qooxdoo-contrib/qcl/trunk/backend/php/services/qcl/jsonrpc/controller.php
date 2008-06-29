@@ -14,11 +14,6 @@ define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");
 class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 {
 
-   //-------------------------------------------------------------
-   // inistance variables
-   //-------------------------------------------------------------
-
-
 	/**
 	 * initial configuration contained in ini.php-files in the #
 	 * service class folders
@@ -46,13 +41,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     'messages'  => array(),
     'events'    => array() 
   );
-  
-  /**
-   * models attached to this controller
-   */	
-	var $_models = array();
-  
-
+    
   /**
    * constructor , configures the service
    */
@@ -78,8 +67,16 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
       "." . $this->request['method'] .  
       " from " . $this->request['remoteIp']
     );
-    		
-		$this->configureService();		
+
+    /*
+     * configure service
+     */
+		$this->configureService();
+		
+		/*
+		 * save this object as a singleton
+		 * @todo: is this necessary?
+		 */
     $this->setSingleton(&$this);
 	}   	
 
@@ -96,12 +93,14 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	function configureService()
 	{
 		global $serviceComponents;
+		
 		$currPath = defined(servicePathPrefix) ? servicePathPrefix : "";
 		$this->ini = array();
 		$found = false;
     
-		// traverse service path and look for service.ini.php files 
-		// 
+		/*
+		 *  traverse service path and look for service.ini.php files
+		 */ 
 		for ( $i=0; $i<count($serviceComponents); $i++ )
 		{
 			 $currPath .= $serviceComponents[$i] . "/";
@@ -145,41 +144,64 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		}
 		return $value;
 	}
-
-	//-------------------------------------------------------------
+	
+  //-------------------------------------------------------------
   // models
   //-------------------------------------------------------------
-  
-  /**
-   * gets a model
-   * @return object
-   * @param string $name 
-   * @deprecated
-   */
-  function &getModel($name)
-  {
-    return $this->_models[$name];
-  }	
-  
-  /**
-   * saves a model
-   * @return void
-   * @param string $name 
-   * @param object $object 
-   * @deprecated
-   */
-  function setModel($name,$object)
-  {
-    $this->_models[$name] =& $object;
-  }
 
+  /**
+   * Initializes all the models needed for the controller.
+   * @type abstract
+   * @return void
+   */
+  function initializeModels()
+  { 
+    $this->raiseError("qcl_jsonrpc_controller::initializeModels() is abstract.");
+  }
+ 
+  /**
+   * Gets the user data model 
+   * @return qcl_access_user
+   */
+  function &getUserModel()
+  {
+    return $this->userModel;
+  }  
+  
+  /**
+   * Gets the permission data model 
+   * @return qcl_access_permission
+   */
+  function &getPermissionModel()
+  {
+    return $this->permissionModel;
+  }    
+
+  /**
+   * Gets the role data model 
+   * @return qcl_access_role
+   */
+  function &getRoleModel()
+  {
+    return $this->roleModel;
+  }
+  
+  /**
+   * Gets the config data model 
+   * @return qcl_config
+   */
+  function &getConfigModel()
+  {
+    return $this->configModel;
+  }    	
+	
 	//-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------
   
   /**
    * gets the locale controller and sets the default locale. default is
-   * a qcl_locale_controller (see there). if you want to use a different
+   * a qcl_locale_manager (see there). if you want to use a different
    * controller, override this method
    * return Object
    */
@@ -188,7 +210,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     static $localeController = null;
     if ( ! $localeController )
     {
-      $localeController =& $this->getSingleton("qcl_locale_controller");
+      $localeController =& $this->getSingleton("qcl_locale_manager");
     }
     return $localeController;
   }

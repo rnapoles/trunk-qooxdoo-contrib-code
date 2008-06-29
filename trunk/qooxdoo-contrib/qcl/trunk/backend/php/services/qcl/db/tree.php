@@ -50,7 +50,7 @@ class qcl_db_tree extends qcl_mixin
 	{
 		$parentId = (int) $parentId;
     $orderBy  = either( $orderBy, $this->col_position );
-		return $this->getValues($this->col_id, "{$this->col_parentId} = $parentId", $orderBy );
+		return $this->getColumnValues($this->col_id, "{$this->col_parentId} = $parentId", $orderBy );
 	}	
 	
 	/**

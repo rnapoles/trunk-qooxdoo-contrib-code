@@ -432,11 +432,19 @@ function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
         exit(1);
     }
 	
-    // return jsonrpc error
-    $error->SetError($errno, $errmsg);
-    $error->SendAndExit();
-
-    // never gets here
+    switch($errno)
+    {
+      case E_WARNING:
+      case E_NOTICE:
+          qcl_object::warn($errmsg);
+          break;
+      
+      default:
+        // return jsonrpc error
+        $error->SetError($errno, $errmsg);
+        $error->SendAndExit();
+    }   
+   // never gets here
 }
 
 /**

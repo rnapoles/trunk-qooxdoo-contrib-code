@@ -5,6 +5,7 @@
 
   <model 
     table="users"
+    type="qcl.types.User"
     name="qcl.access.User"
     extends="qcl.db.Model"> 
      
@@ -13,20 +14,20 @@
     
       <!-- model properties -->
       <properties>
-        <property name="username" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="username" type="string" index="yes">
+          <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="password" dataType="string">
-          <mysql>varchar(50) NOT NULL</mysql>
+        <property name="password" type="string">
+          <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="email" dataType="string">
-          <mysql> varchar(255) NULL</mysql>
+        <property name="email" type="string">
+          <sql> varchar(255) NULL</sql>
         </property>
-        <property name="note" dataType="string">
-          <mysql>mediumtext NULL</mysql>
+        <property name="note" type="string">
+          <sql>mediumtext NULL</sql>
         </property>
-        <property name="lastAction" dataType="date">
-          <mysql>datetime NULL</mysql>
+        <property name="lastAction" type="date">
+          <sql>datetime NULL</sql>
         </property> 
       </properties>
       
@@ -45,11 +46,13 @@
     </definition>
     
     <!-- linked tables -->
-    <links>
-      <link 
-        table="link_user_roles" 
+    <links 
         localKey="id" 
-        foreignKey="userId" />
+        foreignKey="userId">
+      <link 
+        name="role"
+        table="link_user_roles" 
+        model="qcl.access.Role" />
     </links>
     
   </model>

@@ -434,7 +434,7 @@ class qcl_object extends patched_object
    */
   function warn ( $msg )	
   {
-    $this->log ( $msg, QCL_LOG_WARN );
+    $this->log ( "*** WARNING *** " . $msg, QCL_LOG_WARN );
   }  
   
   /**

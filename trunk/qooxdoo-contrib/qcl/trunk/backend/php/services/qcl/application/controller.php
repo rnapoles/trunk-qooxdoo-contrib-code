@@ -1,6 +1,6 @@
 <?php
 
-require ("qcl/jsonrpc/controller.php");
+require_once ("qcl/jsonrpc/controller.php");
 
 /**
  * qcl Application Controller

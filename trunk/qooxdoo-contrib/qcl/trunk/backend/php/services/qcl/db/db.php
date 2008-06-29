@@ -141,9 +141,9 @@ class qcl_db extends qcl_jsonrpc_object
 	  {
   	  return (
   	   $this->type . "://" .
-  	   ( $this->user     ?       $this->user     : "" ) .
+  	   ( $this->userModel     ?       $this->userModel     : "" ) .
   	   ( $this->password ? ":" . $this->password : "" ) .
-  	   ( $this->user     ? "@"                   : "" ) .
+  	   ( $this->userModel     ? "@"                   : "" ) .
   	   $this->host . "/" .
   	   ( $this->port ? ":" . $this->port         : "" ) .
   	   "/ " . $this->database
@@ -171,7 +171,7 @@ class qcl_db extends qcl_jsonrpc_object
         $dsn, $matches
       );
       $this->type     = $matches[1];
-      $this->user     = $matches[2];
+      $this->userModel     = $matches[2];
       $this->password = $matches[3];
       $this->host     = $matches[4];
       $this->port     = $matches[5];
@@ -206,7 +206,7 @@ class qcl_db extends qcl_jsonrpc_object
 	 */
 	function getUser()
 	{
-		return $this->user;		
+		return $this->userModel;		
 	}
 
 	/**
