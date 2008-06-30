@@ -404,7 +404,7 @@ class qcl_config_db extends qcl_db_model
       elseif ( is_numeric( $value ) ) $type = "number";
       else $type = "string";
       
-      $this->info("qcl_config::set : creating non-existant key '$name', type '$type'.");
+      $this->info("qcl_config::set : creating non-existing key '$name', type '$type'.");
       
       $this->create($name, $type, null, null, true );
       return $this->set ( $name, $value );
@@ -455,10 +455,16 @@ class qcl_config_db extends qcl_db_model
       }
 		}		
 				
-		// all checks have been passed, set value
-    $row[$this->col_value]=$value;
-		$this->update($row);
-    $this->log("'$name' set to '$value' for user '$owner'.");
+		/*
+		 *  all checks have been passed, set value
+		 */
+    $data = array();
+    $data['id']    = $row[$this->col_id];
+    $data['value'] = $value;
+    
+		$this->update($data);
+    
+		$this->log("'$name' set to '$value' for user '$owner'."); 
     
 		return true;
 	}

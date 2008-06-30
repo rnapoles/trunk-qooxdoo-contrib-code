@@ -286,11 +286,15 @@ class qcl_db_mysql extends qcl_db_abstract
 		}
 		$pairs = implode ("," , $pairs );
 
-		$this->query ( "
+		$sql = ( "
 			UPDATE `$table`
 			SET $pairs
 			WHERE `$idColumn` = '$id'
 		");
+		
+		//$this->Info($sql); 
+		
+		return $this->query($sql);
 	}
 
 	/**
