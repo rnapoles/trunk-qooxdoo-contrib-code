@@ -13,15 +13,7 @@ require_once "qcl/xml/simpleXML.php";
  */
 class qcl_db_model extends qcl_jsonrpc_model
 {
-	//-------------------------------------------------------------
-  // class variables
-  //-------------------------------------------------------------
-  
-  
-  //-------------------------------------------------------------
-  // instance variables
-  //-------------------------------------------------------------
-  
+
   /**
    * the datasource object instance
    * @var qcl_db_mysql 
@@ -1187,7 +1179,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @return boolean success 
    */
   function update ( $data=null, $id=null )    
-  {
+  {    
     /*
      *  use cached record data?
      */
@@ -1195,12 +1187,9 @@ class qcl_db_model extends qcl_jsonrpc_model
     { 
       $data = $this->currentRecord;
     }
-    else
+    elseif ( $id !== null )
     {
-      if ( $id !== null )
-      {
-        $data[$this->col_id] = $id;
-      }
+      $data[$this->col_id] = $id;
     }
     
     /*
@@ -1208,13 +1197,26 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     foreach ($data as $key => $value)
     {
-      if ( $alias = $this->getColumnName($key) )
+      $columnName = $this->getColumnName($key);
+      //$this->info("$key => $columnName : $value");
+      if ( $columnName and $columnName != $key )
       {
         /*
+         * if the column name is different from the key, we need
+         * to copy the property value to the column key and delete the 
+         * property key
          * @todo: what if alias exists as property name?
+         */ 
+        $data[ $columnName ] = $value;
+        unset( $data[ $key ] );
+      }
+      elseif ( ! $columnName )
+      {
+        /*
+         * if the column name doesn't exist, delete the key
          */
-        $data[ $alias ] = $value;
-        unset( $data[ $key] );
+        $this->warn("Ignoring nonexistent model property '$key' ({$this->name}).");
+        unset( $data[ $key ] );
       }
     }
     
@@ -1225,6 +1227,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       $data[$this->col_modified] = null;
     }    
+    
+    //$this->info($data);
     
     return $this->db->update( $this->table, $data, $this->col_id );
   }     

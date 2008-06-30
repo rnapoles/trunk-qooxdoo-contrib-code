@@ -6,7 +6,7 @@
     name="qcl.config.Db"
     extends="qcl.db.Model"
     table="config">
-
+ 
     <!-- model definition -->
     <definition>
     
