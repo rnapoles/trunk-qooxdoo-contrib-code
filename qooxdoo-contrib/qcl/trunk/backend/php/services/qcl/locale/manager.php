@@ -2,9 +2,8 @@
 
 /*
  * dependencies
- * 
  */
-require_once "qcl/object.php";
+require_once "qcl/jsonrpc/controller.php";
 require_once "qcl/locale/model_qooxdoo.php";
 
 /**
@@ -12,7 +11,7 @@ require_once "qcl/locale/model_qooxdoo.php";
  * extending controllers should set the "locale" model before calling the
  * parent constructor if they want to use a different locale model.
  */
-class qcl_locale_manager extends qcl_object
+class qcl_locale_manager extends qcl_jsonrpc_controller
 {
 
 	//-------------------------------------------------------------
@@ -29,7 +28,7 @@ class qcl_locale_manager extends qcl_object
    * The locale model. Access with getLocaleModel()
    * @var qcl_locale_model_qooxdoo
    */
-  var $localModel;
+  var $localeModel;
   
 	//-------------------------------------------------------------
   // setup
@@ -40,13 +39,17 @@ class qcl_locale_manager extends qcl_object
  	*/
 	function __construct()
 	{
-  	parent::__construct();
+  	/*
+  	 * initialize parent class
+  	 */
+	  parent::__construct();
 
   	/*
   	 * You can set a different locale model in an extending class 
   	 */
   	if ( ! $this->localeModel )
     {  
+      
       $this->localeModel =& $this->getSingleton("qcl_locale_model_qooxdoo");
     }
     
@@ -66,7 +69,7 @@ class qcl_locale_manager extends qcl_object
    */
   function &getLocaleModel()
   {
-    return $this->localModel;
+    return $this->localeModel;
   }
   
   /**

@@ -30,11 +30,6 @@
           <sql>datetime NULL</sql>
         </property> 
       </properties>
-      
-      <!-- aliases -->
-      <aliases>
-        <alias for="namedId">username</alias>
-      </aliases>
 
       <!-- indexes -->
       <indexes>

@@ -521,8 +521,10 @@ class qcl_config_db extends qcl_db_model
 	function hasReadAccess($name)
 	{
 		$controller  =& $this->getController();
-    $userModel   =  $controller->getUserModel();
-    return $userModel->hasPermission($this->getPermissionRead($name));
+    $userModel   =& $controller->getUserModel();
+    $permission  =  $this->getPermissionRead($name);
+    
+    return $userModel->hasPermission($permission);
 	}
 	
   /**
@@ -533,8 +535,10 @@ class qcl_config_db extends qcl_db_model
   function hasWriteAccess($name)
   {
   	$controller  =& $this->getController();
-    $userModel   =  $controller->controller->getUserModel();
-    return $userModel->hasPermission($this->getPermissionWrite($name));
+    $userModel   =& $controller->getUserModel();
+    $permission  =  $this->getPermissionWrite($name);
+    
+    return $userModel->hasPermission($permission);
 	}
 }
 

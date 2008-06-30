@@ -19,13 +19,12 @@ class qcl_db_controller extends qcl_jsonrpc_controller
    * @access private
    */
   var $_connection = null;
-
   
   /**
    * constructor 
    */
   function __construct()
-  {
+  {    
     /*
      * call parent constructor first
      */
@@ -114,7 +113,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
     /*
      * connect to new database 
      */
-    $db =& new qcl_db_mysql(&$this->controller,$dsn);
+    $db =& new qcl_db_mysql( $dsn, &$this );
     
     if ( $db->error )
     {

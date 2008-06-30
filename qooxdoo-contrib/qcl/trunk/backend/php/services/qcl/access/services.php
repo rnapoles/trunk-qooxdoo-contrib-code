@@ -60,39 +60,92 @@ class qcl_access_services extends qcl_mixin
     */
    function method_updateClient($params)
    {
-    return $this->method_authenticate($params);
+     return $this->method_authenticate($params);
    }  
 
-   /**
-    * default update client method: authenticate user
-    * @param string $param[0] username
-    * @param string $param[1] (MD5-encoded) password
-    */
-   function method_authenticate($params)
-   {
+  /**
+   * default update client method: authenticate user
+   * @param string $param[0] username
+   * @param string $param[1] (MD5-encoded) password
+   * @todo: the logic in this method is somewhat confusing
+   */
+  function method_authenticate($params)
+  {
+    /*
+     * arguments
+     */
     $username   = utf8_decode($params[0]);
     $password   = utf8_decode($params[1]);
     
-    $userModel  = $this->getUserModel();
+    /*
+     * user model
+     */
+    $userModel  =& $this->getUserModel();
+    
+    /*
+     * get the active user data (or null if nobody is logged in)
+     */
     $activeUser = $userModel->getActiveUser();
     
-    // authenticate user if password matches
+    /*
+     * authenticate user if user name has been provided
+     * and password matches
+     */
     if ( $username and $userModel->authenticate ( $username, $password ) )
     {
+      
+      /*
+       * get client security data
+       */
       $security = $userModel->getSecurity($username);
+      
+      /*
+       * set active user data
+       */
       $userModel->setActiveUser($security['userdata']);
+      
+      /*
+       * message that login was successful
+       */
       $this->dispatchMessage("qcl.auth.messages.loginSuccess"); 
+      
       $this->info ("Logging on user $username.");   
     }
-    elseif ( ! $username and $activeUser )
+    
+    /*
+     * otherwise, if we have no username, but a user is already
+     * logged in, use the data of this user
+     */
+    elseif ( ! $username and is_array( $activeUser ) )
     {
-      $security = $userModel->getSecurity($activeUser[$userModel->col_username]);
+      /*
+       * user already logged in, get security data from active user
+       */
+      $userName = $activeUser[$userModel->col_username];
+      $security = $userModel->getSecurity($userName);
+      
+      /*
+       * message that login was successful
+       */
       $this->dispatchMessage("qcl.auth.messages.loginSuccess");
     }
+    
+    
+    /*
+     * otherwise, we assume that invalid authentication data has been 
+     * provided
+     */
     else
     {
+      /*
+       * authentication failed
+       */
       $security = null;
       $userModel->setActiveUser(null);
+      
+      /*
+       * message
+       */
       $this->dispatchMessage( "qcl.auth.messages.loginFailed", $this->tr("Wrong username or password.") );
     }
     
@@ -108,14 +161,33 @@ class qcl_access_services extends qcl_mixin
    */
   function method_logout()
   {
-    $userModel = $this->getUserModel();
+    /*
+     * user model
+     */
+    $userModel =& $this->getUserModel();
+    
+    /*
+     * username
+     */
     $username = $userModel->getActiveUserNamedId();
     if ( $username)
     {
       $this->info ("Logging out user $username.");  
     }
+    
+    /*
+     * delete active user
+     */
     $userModel->setActiveUser(null);
+    
+    /*
+     * message
+     */
     $this->dispatchMessage("qcl.auth.messages.user.loggedOut");
+    
+    /*
+     * return client data
+     */
     return $this->getResponseData();
   }   
   
@@ -339,7 +411,7 @@ class qcl_access_services extends qcl_mixin
     /*
      * model
      */
-    $userModel = $this->getUserModel();
+    $userModel =& $this->getUserModel();
     
     /*
      * action
@@ -371,7 +443,7 @@ class qcl_access_services extends qcl_mixin
     $roleRefs   = $params[2];
 
     // remove
-    $userModel = $this->getUserModel();
+    $userModel =& $this->getUserModel();
     $userModel->removeFromRole($userRefs,$roleRefs);
 
     // success
@@ -386,20 +458,35 @@ class qcl_access_services extends qcl_mixin
    */
   function method_addPermissionToRole($params)
   {
+    /*
+     * security
+     */
     $this->requirePermission("qcl.auth.permissions.manage");
-    
-    $userModel = $this->getUserModel();
-    $userModel->requirePermission("qcl.auth.permissions.manage");
-    
+
+    /*
+     * arguments
+     */
     $permRefs = $params[1];
     $roleRefs = $params[2];
+        
+    /*
+     * models
+     */
+    $permModel =& $this->getPermissionModel();
     
-    // add 
-    $permModel = $this->getPermissionModel();
+    /*
+     * add permission to role
+     */
     $permModel->addToRole($permRefs,$roleRefs); 
     
-    // success
+    /*
+     * message
+     */
     $this->dispatchMessage("qcl.auth.messages.permission.roleAdded",$permRefs);
+    
+    /*
+     * return client data
+     */
     return $this->getResponseData();
   }
    
@@ -424,7 +511,7 @@ class qcl_access_services extends qcl_mixin
     /*
      * model
      */
-    $permModel = $this->getPermissionModel();
+    $permModel =& $this->getPermissionModel();
     
     /*
      * action
@@ -536,13 +623,24 @@ class qcl_access_services extends qcl_mixin
    */
   function synchronizePermissions( $permissionsClient )
   {
+    /*
+     * models
+     */
     $userModel  =& $this->getUserModel();
     $roleModel  =& $this->getRoleModel();
     $permModel  =& $this->getPermissionModel();           
 
+    /*
+     * permissions on the server
+     */
     $permissionsServer  = $permModel->getAllNamedIds();
-    $unassignedRoleId   = $roleModel->createIfNotExists("qcl.roles.Unassigned");
     
+    /*
+     * get or create a role for permissions that 
+     * haven't been assigned to a role and add
+     * these new permissions to this role
+     */
+    $unassignedRoleId   = $roleModel->createIfNotExists("qcl.roles.Unassigned");
     foreach($permissionsClient as $namedId)
     {
       if ( ! in_array( $namedId, $permissionsServer ) )
@@ -559,26 +657,40 @@ class qcl_access_services extends qcl_mixin
    */
   function method_getRolesAndPermissions( $params )
   {                                 
-    
-    // synchronize permissions if sent from client
+    /*
+     * arguments
+     */
     $permissions = $params[0];
+    
+    /*
+     * models
+     */
+    $userModel  =& $this->getUserModel();
+    $roleModel  =& $this->getRoleModel();
+    $permModel  =& $this->getPermissionModel();  
+    
+    /*
+     * synchronize permissions if sent from client
+     */
     if ( is_array ( $permissions ) )
     {
       $this->synchronizePermissions($permissions);
     }
 
-    $userModel  =& $this->getUserModel();
-    $roleModel  =& $this->getRoleModel();
-    $permModel  =& $this->getPermissionModel();  
     $result     = array();
         
-    // get ordered lists of roles and permissions 
+    /*
+     * get ordered lists of roles and permissions
+     */ 
     $roles            = $roleModel->getAllRecords($roleModel->col_descriptiveName);
     $permissions      = $permModel->getAllRecords($roleModel->col_descriptiveName . "`,`" . $permModel->col_namedId );
     $permissionRoles  = $permModel->getByRoleId();
+    
     $parentNodeIds    = array();
     
-    // create role nodes
+    /*
+     * create role nodes
+     */
     foreach ( $roles as $index => $role )
     {
       $roleId   = $role[$roleModel->col_id];
@@ -598,46 +710,58 @@ class qcl_access_services extends qcl_mixin
                             name  => $name
                           )
       );        
-      // parent node id to which the following nodes will be added
+      /*
+       * remember arent node id to which the following 
+       * nodes will be added
+       */
       $parentNodeIds[$roleId]=$index+1;
     }
     
-    // render tree after creating roles
+    /*
+     * render tree after creating roles
+     */
     $result[] = array( 'command' => "render" );
 
-      foreach ( $permissions as $index => $perm )
+    /*
+     * now add permissions to roles
+     */
+    foreach ( $permissions as $index => $perm )
+    {
+      $permissionId   = $perm[$permModel->col_id];
+      $namedId        = $perm[$permModel->col_namedId];
+      $name           = $perm[$permModel->col_descriptiveName];
+      $label          = $name? "$name ($namedId)" : $namedId;
+      
+      /*
+       * get the roles of each permission and 
+       * add permission nodes to it
+       */
+      $myRoleIds  = $permissionRoles[$permissionId];
+      
+      foreach ( $myRoleIds as $roleId )         
       {
-        $permissionId   = $perm[$permModel->col_id];
-        $namedId        = $perm[$permModel->col_namedId];
-        $name           = $perm[$permModel->col_descriptiveName];
-        $label          = $name? "$name ($namedId)" : $namedId;
-        
-        // add to roles
-        $myRoleIds  = $permissionRoles[$permissionId];
-  
-        foreach ( $myRoleIds as $roleId )         
-        {
-          $parentNodeId = $parentNodeIds[$roleId];
-          $result[] = array(
-            'parentNodeId'  => $parentNodeId,
-            'bOpened'       => true,
-            'label'         => $label,
-            'icon'          => $permModel->icon,
-            'iconSelected'  => $permModel->icon,
-            'data'      => array (
-                        type  => "qcl.auth.types.Permission",
-                        id    => $permissionId,
-                        namedId => $namedId,
-                        name  => $name
-                      )
-          );
-        }
-      } 
+        $parentNodeId = $parentNodeIds[$roleId];
+        $result[] = array(
+          'parentNodeId'  => $parentNodeId,
+          'bOpened'       => true,
+          'label'         => $label,
+          'icon'          => $permModel->icon,
+          'iconSelected'  => $permModel->icon,
+          'data'      => array (
+                      type  => "qcl.auth.types.Permission",
+                      id    => $permissionId,
+                      namedId => $namedId,
+                      name  => $name
+                    )
+        );
+      }
+    } 
 
-      // return data
-      $this->set( 'treedatamodel', $result );
-      return $this->getResponseData();
-    
+    /*
+     * return client data
+     */
+    $this->set( 'treedatamodel', $result );
+    return $this->getResponseData();    
   }
     
   /**
@@ -648,14 +772,23 @@ class qcl_access_services extends qcl_mixin
    */
   function method_getPermissionNode ( $params )
   {
+    /*
+     * arguments
+     */
     $permissionId = $params[0]; 
     $parentNodeId = $params[1];
-      
-    $userModel  = $this->getUserModel();
-    $roleModel  = $this->getRoleModel();
-    $permModel  = $this->getPermissionModel();        
-    $result = array();
     
+    /*
+     * models
+     */
+    $userModel  =& $this->getUserModel();
+    $roleModel  =& $this->getRoleModel();
+    $permModel  =& $this->getPermissionModel();        
+    
+    /*
+     * construct node
+     */
+    $result     = array();
     $permission = $permModel->getById($permissionId);
     $namedId    = $permission[$permModel->col_namedId];
     $name       = $permission[$permModel->col_descriptiveName];
@@ -676,6 +809,9 @@ class qcl_access_services extends qcl_mixin
                         )
     );    
 
+    /*
+     * return client data
+     */
     $this->set( 'treedatamodel', $result );
     return $this->getResponseData();
   }
@@ -688,16 +824,24 @@ class qcl_access_services extends qcl_mixin
    */
   function method_getUserNode ( $params )
   {
+    /*
+     * arguments
+     */
     $userId         = $params[0]; 
     $parentNodeId   = $params[1];
     
-    $userModel  = $this->getUserModel();
-    $roleModel  = $this->getRoleModel();
-    $permModel  = $this->getPermissionModel();      
-    $result         = array();
-   
-    $user = $this->getById($userId);
+    /*
+     * models
+     */
+    $userModel  =& $this->getUserModel();
+    $roleModel  =& $this->getRoleModel();
+    $permModel  =& $this->getPermissionModel();
 
+    /*
+     * construct node
+     */
+    $result         = array();
+    $user           = $this->getById($userId);
     $namedId        = $user[$userModel->col_namedId];
     $name           = $user[$userModel->col_descriptiveName];
     $label          = "$name ($namedId)";
@@ -812,5 +956,5 @@ class qcl_access_services extends qcl_mixin
     $xmlModel->save();
   }
 }
-?>
 
+?>

@@ -1,35 +1,19 @@
 <?php
 
+/*
+ * dependencies
+ */
+require_once "qcl/db/abstract.php";
+require_once "DB.php"; // load pear DB library
+
 /**
  * Base class for rpc objects which do database queries
  * in a mysql database
  * relying on PEAR::DB for database access
  * @todo: remove PEAR:DB dependency, it is not really needed.
  */
-
-require_once ("qcl/db/db.php");
-
-class qcl_db_mysql extends qcl_db
+class qcl_db_mysql extends qcl_db_abstract
 {
-
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-
-	/**
-	 * constructor
-	 * @param object 	$controller 	The controller object
-	 * @param mixed	$dsn (optional) dsn parameter. If omitted, the default database is used
-	 */
-	function __construct($controller, $dsn=null)
-	{
-		parent::__construct(&$controller,$dsn);
-	}
-
-	//-------------------------------------------------------------
-  // API methods
-  //-------------------------------------------------------------
-
 	/**
 	 * connects to database
 	 * @param string|array $dsn DSN connection parameter
@@ -38,8 +22,6 @@ class qcl_db_mysql extends qcl_db
 	 */
 	function &connect($dsn=null,$abortQuietly=false)
 	{
-		require_once ("DB.php"); // load pear DB library
-
 		/*
 		 * get or set dsn information
 		 */
@@ -89,16 +71,17 @@ class qcl_db_mysql extends qcl_db
 
 		/*
 		 * set encoding 
-		 * @todo: this needs to be a property of the datasource model
 		 */
-		if ( $this->controller )
+		if ( $controller =& $this->getController() )
 		{
-			$encoding = $this->controller->getIniValue("database.encoding");
+			$encoding = $controller->getIniValue("database.encoding");
 		}
-		else
+		
+		if ( ! $encoding )
 		{
 			$encoding = "utf8";
 		}
+		
 		$db->query("SET NAMES $encoding");
 		$db->query("SET CHARACTER_SET $encoding");
 
@@ -154,7 +137,7 @@ class qcl_db_mysql extends qcl_db
 	{
 		if ( ! is_object($this->db) )
     {
-      $this->raiseError ( "qcl_db_mysql::getRow : No database connection. Aborting.");
+      $this->raiseError ( "No database connection. Aborting.");
     }
 
     $this->log($sql,QCL_LOG_DEBUG);

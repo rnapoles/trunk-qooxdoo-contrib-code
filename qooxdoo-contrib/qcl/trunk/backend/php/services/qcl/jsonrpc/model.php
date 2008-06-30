@@ -11,27 +11,41 @@ require_once ("qcl/jsonrpc/object.php");
 class qcl_jsonrpc_model extends qcl_jsonrpc_object
 {
 
-  
-  //-------------------------------------------------------------
-  // instance variables
-  //-------------------------------------------------------------
+  /**
+   * The controller object. Every model MUST have a controller object from
+   * which it receives service and request information
+   *
+   * @var qcl_jsonrpc_controller or subclass
+   */
+	var $controller = null;
 
-	var $controller             = null;         // the controller object 
-	var $currentRecord          = array();      // the current record cached for perfomance
-  var $emptyRecord            = array();      // you can pre-insert static values here
-
-
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
+	/**
+	 * The current model record data
+	 *
+	 * @var array
+	 */
+	var $currentRecord = null;
+	
+	/**
+	 * The default record data that will be used when creating a new
+	 * model record. You can preset static data here.
+	 */
+  var $emptyRecord = array();
 
  /**
   * constructor 
   */
-	function __construct($controller=null)
+	function __construct( $controller=null )
   {
-		parent::__construct();
-    $this->setController(&$controller);	
+		/*
+		 * initialize parent class
+		 */
+    parent::__construct();
+    
+    /*
+     * set controller. This wil throw an error if no controller is available
+     */
+    $this->setController( &$controller );	
 	}   	
 
 	//-------------------------------------------------------------

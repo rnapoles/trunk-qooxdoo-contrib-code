@@ -3,221 +3,184 @@
 /*
  * dependencies
  */
-require_once "qcl/db/controller.php";
+require_once "qcl/access/controller.php";
+require_once "qcl/session/db.model.php";
 
 /**
- * Base class thathandles authentication, access control
- * and configuration
+ * Base class that keeps track of connected clients 
+ * and dispatches or broadcasts messages.
  */
-class qcl_access_controller extends qcl_db_controller
+class qcl_session_controller extends qcl_access_controller
 {
+    
   /**
-   * user model singleton. 
-   * To access, use getUserModel()
+   * session model. Access with getSessionModel()
    * @access private
-   * @var qcl_access_user or subclass
+   * @var qcl_session_db_model
    */
-  var $userModel = null;
+  var $sessionModel;
+    
+  /**
+   * constructor 
+   * registers session with a database-table-based session and user model. 
+   * if you want to use your custom session model, set it before
+   * calling this parent constructor
+   */
+  function __construct()
+  {
+
+    /*
+     * call parent constructor, this will initialize database
+     * connection and access/config models
+     */
+    parent::__construct();
+            
+    /*
+     * add session model
+     */
+    $this->sessionModel =& $this->getNew("qcl_session_db_model");
+    
+
+  }     
+    
+  //-------------------------------------------------------------
+  // session management
+  //-------------------------------------------------------------
 
   /**
-   * role model singleton.
-   * To access, use getRoleModel()
-   * @access private
-   * @var qcl_access_role or subclass
+   * gets the session model
+   * @return qcl_session_db_model
    */
-  var $roleModel = null;  
-
-  /**
-   * permission model singleton.
-   * To access, use getPermissionModel()
-   * @access private
-   * @var qcl_access_permission or subclass
-   */
-  var $permissionModel = null;
-
-  /**
-   * configuration data model singleton.
-   * To access, use getConfigModel()
-   * @access private
-   * @var qcl_config or subclass
-   */
-  var $configModel = null;
-
-  /**
-   * name of anonymous user
-   */
-  var $anonymous_name      = "guest";
+  function &getSessionModel()
+  {
+    return $this->sessionModel;
+  }
   
   /**
-   * password of anonymous user
+   * returns the current session id
+   * @return string session id
    */
-  var $anonymous_password  = "guest";  
-    
-  /**
-   * constructor. initializes access/config model
-   */
-	function __construct()
+  function getSessionId()
   {
-		/*
-		 * call parent constructor, this will initialize database
-		 * connection
-		 */
-    parent::__construct();
-    
-    /*
-     * initialize access and config models based on connection
-     */
-    $this->initializeModels();
- 
-	}   	
+    return session_id();
+  }
 
-  //-------------------------------------------------------------
-  // setup models 
-  //-------------------------------------------------------------
-	
   /**
-   * Initializes all the models needed for the controller. All models
-   * are database-based and are singletons
-   * override if necessary
-   * @return void
+   * registers session and user. call from extending controller's constructor 
+   * requires a user and a session model
+   * @param string $user user name
+   * @param int $timeout Timeout in seconds, defaults to 600 seconds
    */
-  function initializeModels()
-  { 
-    /*
-     * user model
-     */
-    $this->userModel =& $this->getSingleton("qcl_access_user");
-    
-    /*
-     * role model
-     */
-    $this->roleModel =& $this->getSingleton("qcl_access_role");
-    
-    /*
-     * permission model
-     */
-    $this->permissionModel =& $this->getSingleton("qcl_access_permission");
-
-    /*
-     * configuration model
-     */
-    $this->configModel =& $this->getSingleton("qcl_config_db");
-  }   
-
-  //-------------------------------------------------------------
-  // authentication and access control
-  //-------------------------------------------------------------
- 
-  /**
-   * checks if the requesting client is an authenticated use
-   * to do the actual authentication, use qcl_access_user::authenticate()
-   * @see qcl_access_user::authenticate()
-   * @return void
-   */
-  function authenticate()
+  function registerSession($user, $timeout=600)
   {
+    $sessionModel =& $this->getSessionModel();
+    
+    // delete all expired sessions
+    $sessionModel->expungeStaleSessions($timeout);
+    
+    // register current session (will be ignored if already present)
+    $sessionModel->registerSession( $this->getSessionId(), $user);
+  }
+
+
+  
+  //-------------------------------------------------------------
+  // messages and events
+  //-------------------------------------------------------------
+
+  /**
+   * broadcasts a message to all connected clients
+   * @param mixed $messages Message name or hash map of messages
+   * @param mixed $data Data dispatched with message
+   */
+  function broadcastMessage ( $message, $data=true )
+  {
+    //$this->info("Broadcast $message");
+    if ( is_string ($message) )
+    {
+      $sessionModel =& $this->getSessionModel();
+      $sessionModel->addMessageBroadcast( $this->getSessionId(), $message, $data );
+    }
+    else
+    {
+      trigger_error ("Invalid broadcast parameter");
+    }
+  }
+  
+  /**
+   * Forwards messages to client and send logout message when timeout.
+   * @return array
+   */
+  function method_getMessages($params)
+  {
+
+    /*
+     * set client-side log level
+     */
+    //$this->setSessionVar("qcl.logLevel.client",$logLevel);        
+    
     /*
      * models
      */
     $userModel   =& $this->getUserModel();
-    $configModel =& $this->getConfigModel();
     
     /*
-     * timeout
-     */
-    $timeout = (int) either( $configModel->get("qcl.session.timeout"), 1800 ); // timeout in seconds, defaults to 30 minutes
-    
-    /*
-     * check authentication and timeout
+     * if authenticated, check timeout 
      */
     if ( $userModel->authenticate() )
     {
-      /*
-       * user has been authenticated
-       */
       $activeUser = $userModel->getActiveUserNamedId();
       
       /*
-       * register this session
+       * check the user session for timeouts etc.
        */
-      $this->registerSession( $activeUser, $timeout );
-      
-      /*
-       * guests have no timeout, check for all others
-       */
-      if ( $activeUser != $this->anonymous_name )
+      if ( ! $this->checkTimeout($activeUser) )
       {
-        $seconds = (int) $userModel->getSecondsSinceLastAction();
-        
-        //$this->info("bibliograph_controller::authenticate: User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
-        $userModel->resetLastAction();
-        
-        if ( $seconds > $timeout )
-        {
-          // add logout command to message queue
-          $this->info( "$seconds seconds after last activity (Timeout $timeout seconds). Logging out user " . $this->userModel->getActiveUserNamedId() . "." );
-          $this->dispatchMessage("qcl.commands.logout");
-          $userModel->setActiveUser(null);
-          return $this->getResponseData();
-        } 
-        return true; // user is authenticated        
-      }
+        /*
+         * force log out
+         */
+        $this->dispatchMessage("qcl.commands.logout");
+        $userModel->setActiveUser(null);
+      }         
     }
-    else
-    {
-      /*
-       * grant guest access
-       */
-      $userModel->authenticate($this->anonymous_name,$this->anonymous_password);
-    }
-    
-    /*
-     * change config model to read-only mode for guest access
-     */
-    $this->configModel =& $this->getSingleton("qcl_config_session");    
-    
-    /*
-     * shorthand to check if we have guest access
-     */
-    $this->guestAccess = true;
-  }  
+    return $this->getResponseData();
+  }
 
   //-------------------------------------------------------------
-  // convenience methods
+  // response
   //-------------------------------------------------------------
-  
+
   /**
-   * gets active user
-   * @return qcl_access_user
+   * gets result for json response inclusing result data, events, and messages
+   * overriding parent method to include message broadcasts
+   * @override
+   * @return array
    */
-  function getActiveUser()
+  function getResponseData()
   {
-    $userModel =& $this->getUserModel();
-    return $userModel->getActiveUser();
+    $sessionModel =& $this->getSessionModel();
+    $messages = $sessionModel->getBroadcastedMessages($this->getSessionId());
+    //$this->info(count($messages) . " broadcasted messages.");
+    foreach( $messages as $message )
+    {
+      $this->addMessage($message['name'],$message['data']);
+      //$this->info($message['name']);
+    }
+    return parent::getResponseData();
   }
-  
+
   /**
-   * abort with error if active user doesn't have permission
-   * @return void
-   * @param $permission String
+   * gets the path to a file that has been uploaded with uploader.php
+   * @param string $file filename (must not have any path information)
+   * @return string fully qualified path to file
    */
-  function requirePermission ( $permission )
+  function getTmpUploadPath($file)
   {
-    $userModel =& $this->getUserModel();
-    $userModel->requirePermission( $permission );
+    $prefix  = session_id();
+    $path = "../../var/upload/tmp/{$prefix}_{$file}";
+    return realpath($path);
   }
-  
-  /**
-   * checks if active user doesn't has permission
-   * @return boolean
-   * @param $permission String
-   */
-  function hasPermission ( $permission )
-  {
-    $userModel =& $this->getUserModel();
-    return $userModel->hasPermission( $permission );
-  }   
-	 
-}	
+   
+} 
 
 ?>

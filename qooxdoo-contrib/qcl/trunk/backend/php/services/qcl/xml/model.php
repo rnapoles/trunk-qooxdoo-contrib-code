@@ -43,17 +43,6 @@ class qcl_xml_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------
   // API methods
   //-------------------------------------------------------------   
-
-  /**
-   * sets datasource, which in this model is the xml file containing the records
-   * @return void
-   * @param $datasource string
-   */
-  function setDatasource ( $datasource )
-  {
-    $this->raiseError("Not implemented");
-    parent::setDatasource ( $datasource );
-  }
   
   /**
    * gets the simpleXml document object

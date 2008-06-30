@@ -22,10 +22,25 @@ class qcl_config_services extends qcl_mixin
  	 */
  	function method_updateClient($params)
  	{
- 		$mask 	      = $params[0];
-    $configModel  = $this->getConfigModel();
-    $keys         = $configModel->findDistinctValues("namedId",null,"namedId");
- 		$result	      = array();
+ 		/*
+ 		 * @todo: security
+ 		 */
+
+ 		/*
+ 		 * arguments
+ 		 */
+ 	  $mask = $params[0];
+ 	  
+ 	  /*
+ 	   * config model
+ 	   */
+    $configModel =& $this->getConfigModel();
+    
+    /*
+     * read config data into table
+     */
+    $keys   = $configModel->findDistinctValues("namedId",null,"namedId");
+ 		$result	= array();
     
  		foreach ( $keys as $key )
  		{
@@ -36,6 +51,10 @@ class qcl_config_services extends qcl_mixin
         'value' => $configModel->getValue()
       );
  		}
+ 		
+ 		/*
+ 		 * return client data
+ 		 */
  		$this->set( "configMap", $result );
  		return $this->getResponseData(); 
  	}
@@ -46,9 +65,24 @@ class qcl_config_services extends qcl_mixin
  	 */
  	function method_updateServer($params)
  	{
-		$map          = (array) $params[1];
-    $configModel  = $this->getConfigModel();
+    /*
+     * @todo: Security
+     */
+ 	  
+    /*
+     * arguments
+     */
+ 	  $map          =  (array) $params[1];
     
+ 	  /*
+ 	   * config model
+ 	   */
+ 	  $configModel  =& $this->getConfigModel();
+    
+ 	  /*
+ 	   * set each config key data and dispatch an update message
+ 	   * for each data change
+ 	   */
 		foreach( $map as $key => $value )
 		{
       $result = $configModel->set( $key, $value );
@@ -57,6 +91,10 @@ class qcl_config_services extends qcl_mixin
         $this->dispatchMessage( "qcl.config.messages.key.updated", $key );		  
       }
     } 
+    
+    /*
+     * return client data
+     */
  		return $this->getResponseData(); 
  	}
    	
@@ -76,7 +114,7 @@ class qcl_config_services extends qcl_mixin
 	 */
 	function method_create($params)
 	{
-		$configModel  = $this->getConfigModel();
+		$configModel  =& $this->getConfigModel();
     
     $id = $configModel->create(
 			$params[1]->name, 

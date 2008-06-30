@@ -6,11 +6,11 @@ require_once ("qcl/jsonrpc/object.php");
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_db extends qcl_jsonrpc_object
+class qcl_db_abstract extends qcl_jsonrpc_object
 {
 
 	/**
-	 * @var object $db database handler
+	 * @var object database handler
 	 */
 	var $db;
 	
@@ -30,96 +30,111 @@ class qcl_db extends qcl_jsonrpc_object
 	var $database;
 	
 	/**
-	 * @var controller object
+	 * The database host
+	 * @var string
 	 */
-	var $controller = null;
-	
   var $host;
+  
+  /**
+   * The port on which the database daemon listens
+   */
   var $port;
+  
+  /**
+   * The password needed to access the server
+   */
   var $password;
   
   /**
    * contains a reference to a model if called from a model
-   * @var model   
+   * @access private
+   * @var qcl_db_model
    */
   var $model = null;
   
+  /**
+   * contains a reference to the controller if called from a model
+   * or controller
+   * @access private
+   * @var qcl_jsonrpc_controller
+   */
+  var $controller = null;  
+  
 	/**
 	 * constructor
-	 * @param object 	$controller 	(optional) A controller object, if called from a model
-	 * @param string	$dsn			    (optional) dsn parameter. If omitted, the default database is used
+	 * 
 	 */
-	function __construct($controller=null,$dsn=null)
+	function __construct( $dsn=null, $master=null )
 	{
-		parent::__construct();
-		if ( is_a( $controller, "qcl_jsonrpc_controller" ) )
-		{
-			$this->controller =& $controller;
-		}
-		$this->init($dsn);	
+		/*
+		 * initialize parent class
+		 */
+	  parent::__construct();
+	  
+	  /*
+	   * store master objects if given
+	   */
+    if ( is_a($master,"qcl_jsonrpc_model") )
+    {
+      $this->model      =& $master;
+      $this->controller =& $master->getController();
+    }
+	  elseif ( is_a($master,"qcl_jsonrpc_controller") )
+    {
+      $this->controller =& $master;
+    }
+	  elseif ( ! is_null($master) )
+	  {
+	    $this->raiseError("Invalid master object: " .  get_class($master) );
+	  }
+	  
+		/*
+		 * initialize the connection with the dsn provided
+		 */
+		$this->init( $dsn );	
 	}
-		
-	//-------------------------------------------------------------
-	// static methods
-	//-------------------------------------------------------------
-	
-	/**
-	 * static method which returns a database object based on the configuration file
-	 * @param object 	$controller 	The controller object
-	 * @param string	$dsn			    (optional) dsn parameter. If omitted, the default database is used
-	 * @return always returns a PEAR object at the moment
-	 */
-	function &getSubclass($controller=null,$dsn=null)
-	{
-		if ( ! is_a($controller,"qcl_jsonrpc_controller" ) )
-		{
-			$this->raiseError ("cql_db : Cannot instantiate " . get_class($this) . " object: No controller object provided. Received a " . get_class($controller) . " object.");
-		}
+  
+  /**
+   * getter for model
+   * @return qcl_jsonrpc_model
+   */
+  function &getModel()
+  {
+    return $this->model;
+  }
 
-		require_once ("qcl/db/mysql.php");
-		$db =& new qcl_db_mysql(&$controller,$dsn);
-
-		return $db;
-	}		
-
-	//-------------------------------------------------------------
-	// instance methods 
-	//-------------------------------------------------------------
-
+  /**
+   * getter for controller
+   * @return qcl_jsonrpc_controller
+   */
+  function &getController()
+  {
+    return $this->controller;
+  }  
+  
 	/**
 	 * initializes the object
 	 * @param string	$dsn 	optional dsn string overriding the dsn provided by the controller
 	 */
 	function init( $dsn = null )
 	{
-    if ( $dsn )
+	  /*
+	   * we have a valid dsn
+	   */
+	  if ( is_string($dsn) or is_array($dsn) )
 		{
 			$this->setDsn($dsn);
-		}
-		elseif ( is_a($this->controller,"qcl_jsonrpc_controller" ) )
-		{
-			$dsn = $this->controller->getIniValue("database.dsn");
-      if ( ! $dsn )
-      {
-        $this->raiseError("Missing DSN. Check service configuration file.");
-      }
-      $this->setDsn($dsn);	
-		}
-    else
-    {
-  		$this->raiseError ("cql_db : Cannot initialize database object " . 
-        get_class($this) . ". No controller found.");    
-    }
-    
-    // if we have a valid dsn, initialize the database
-		if ( $this->getDsn() )
-		{
  			$this->db = $this->connect();	
 		}
-    
-    // todo: we cannot throw an error here because sometime the database gets
-    // initialized later. but this leads to errors which are difficult to trace
-    // if we are supposed to initialize here, but the dsn is missing.
+		
+		/*
+		 * if not, throw error
+		 */
+    else
+    {
+      $this->raiseError ("Cannot initialize database object " . 
+        get_class($this) . ". No DSN available.");  
+    }
 	}
 
 	//-------------------------------------------------------------
@@ -135,18 +150,22 @@ class qcl_db extends qcl_jsonrpc_object
 		return $this->dsn;		
 	}
 	
+	/**
+	 * return dsn information as a PEAR::DB compatible dsn string
+	 * @return string
+	 */
 	function getDsnAsString()
 	{
 	  if ( is_array($this->dsn) )
 	  {
   	  return (
   	   $this->type . "://" .
-  	   ( $this->userModel     ?       $this->userModel     : "" ) .
-  	   ( $this->password ? ":" . $this->password : "" ) .
-  	   ( $this->userModel     ? "@"                   : "" ) .
+  	   ( $this->userModel ?       $this->userModel : "" ) .
+  	   ( $this->password  ? ":" . $this->password  : "" ) .
+  	   ( $this->userModel ? "@"                    : "" ) .
   	   $this->host . "/" .
-  	   ( $this->port ? ":" . $this->port         : "" ) .
-  	   "/ " . $this->database
+  	   ( $this->port      ? ":" . $this->port      : "" ) .
+  	   "/" . $this->database
   	  );
 	  }
 	  else
@@ -171,7 +190,7 @@ class qcl_db extends qcl_jsonrpc_object
         $dsn, $matches
       );
       $this->type     = $matches[1];
-      $this->userModel     = $matches[2];
+      $this->user     = $matches[2];
       $this->password = $matches[3];
       $this->host     = $matches[4];
       $this->port     = $matches[5];
@@ -245,8 +264,6 @@ class qcl_db extends qcl_jsonrpc_object
     return $this->database;
   }
 
-
-
 	//-------------------------------------------------------------
 	// abstract methods to be implemented
 	//-------------------------------------------------------------
@@ -254,33 +271,33 @@ class qcl_db extends qcl_jsonrpc_object
 	/**
 	 * makes connection
 	 */
-	function &connect () {}
+	function connect () {}
 	
 	/**
 	 * queries database
 	 */
-	function &query ( $sql ) {}
+	function query ( $sql ) {}
 	
 	/**
 	 * executes a query, alias of $this->query
 	 */
-	function &execute ( $sql ) {}
+	function execute ( $sql ) {}
 
 	/**
 	 * get first row of result set
 	 */
-	function &getRow ( $sql ) {}
+	function getRow ( $sql ) {}
 
 	/**
 	 * gets the value of the first cell cell of the first row of the result set
 	 * useful for example for "SELECT count(*) ... " queries
 	 */
-	function &getValue ( $sql ) {}
+	function getValue ( $sql ) {}
 	
 	/**
 	 * gets whole result set mapped to array
 	 */
-	function &getAllRecords( $sql ) {}
+	function getAllRecords( $sql ) {}
 	
 	/**
 	 * inserts a record into a table and returns last_insert_id()
