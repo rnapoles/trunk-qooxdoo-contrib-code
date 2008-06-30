@@ -7,7 +7,8 @@ require_once ("qcl/object.php");
  * base class of all json rpc service classes
  */
 
-class qcl_jsonrpc_object extends qcl_object {
+class qcl_jsonrpc_object extends qcl_object 
+{
 
   //-------------------------------------------------------------
   // instance variables
@@ -23,17 +24,6 @@ class qcl_jsonrpc_object extends qcl_object {
    */
   var $bin_path    = "../../bin/";  
   
-  //-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-	
-	/**
-	 * Class constructor
-	 */
-	function __construct() 
-	{
-		parent::__construct();
-	}
 
   //-------------------------------------------------------------
   // public methods

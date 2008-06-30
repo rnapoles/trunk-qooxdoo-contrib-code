@@ -1,6 +1,13 @@
 <?php
-require_once ("qcl/access/common.php");
 
+/*
+ * Dependencies
+ */
+require_once "qcl/access/common.php";
+
+/*
+ * Constants
+ */
 define('QCL_ACTIVE_USER_SESSION_VARNAME', "qcl_access_user_activeUser");
 
 /**
@@ -92,15 +99,24 @@ class qcl_access_user extends qcl_access_common
    */
   function getPermissions($userRef,$getNamedIds=true)
   {
-		$userId     = $this->getIdFromRef($userRef);
+		/*
+		 * arguments
+		 */
+    $userId     = $this->getIdFromRef($userRef);
+    if ( ! $userId )
+    {
+      $this->raiseError("qx::security::user::getPermissions : invalid user reference '$userRef'.");
+    }
+    
+    /*
+     * models
+     */
     $controller =& $this->getController();
     $roleModel  =& $controller->getRoleModel();
-    
-		if ( ! $userId )
-		{
-			$this->raiseError("qx::security::user::getPermissions : invalid user reference '$userRef'.");
-		}
 		
+		/*
+		 * get all permissions
+		 */
 		$myRoles = $this->getRoles($userRef,$getNamedIds);
 		$result = array();
 		foreach ( $myRoles as $roleRef )
@@ -110,59 +126,80 @@ class qcl_access_user extends qcl_access_common
 				$roleModel->getPermissions( $roleRef, $getNamedIds )
 			));
 		}
+		
+		/*
+		 * return permissions as array
+		 */
 		return $result;
-   }
+  }
    
-   /**
-    * authenticate a user with a password. if no username is given, check if a user has already been logged in,
-    * so you can use this method in your service class without parameters to make sure a login has taken place.
-    * @param string $username or null
-    * @param string $password (MD5-encoded) password or null
-    * @return boolean success
-    */
-   function authenticate ( $username=null, $password=null )
-   {
-   		if ( $username==null and is_array( $this->getActiveUser() ) )
+  /**
+   * authenticate a user with a password. if no username is given, check if a user has already been logged in,
+   * so you can use this method in your service class without parameters to make sure a login has taken place.
+   * @param string $username or null
+   * @param string $password (MD5-encoded) password or null
+   * @return boolean success
+   */
+  function authenticate ( $username=null, $password=null )
+  {
+
+    if ( ! $username ) 
+    {
+      if ( is_array( $this->getActiveUser() ) )
       {
+      /*
+       * user is already authenticated
+       */
         return true;
       }
-      
-      $row = $this->getByName ( $username );
-   		
-   		if ( ! is_array($row) )
-   		{
-   			$this->error = "Unknown user name";
-   			$this->setActiveUser(null);
-   			return false;
-   		}
-   		
-   		$savedPw = $row[$this->col_password]; 
-   		
-   		if ( ! $savedPw or 
-   			  $password === $savedPw or   
-   			  md5( $password ) === $savedPw or
-   			  $password === md5 ( $savedPw ) ) 
-   		{
-   			$this->setActiveUser($row);
-   			$this->resetLastAction();
-        return true;
-   		}
-   		else
-   		{
-   			$this->error = "Wrong Password";
-   			$this->setActiveUser(null);
-   			return false;
-   		}
-   }
+      else
+      {
+        return false; 
+      }
+    }
+    
+    /*
+     * try to authenticate
+     */
+    $row = $this->getByName ( $username );
+ 		
+ 		if ( ! is_array($row) )
+ 		{
+ 			$this->error = "Unknown user name";
+ 			$this->setActiveUser(null);
+ 			return false;
+ 		}
+ 		
+ 		/*
+ 		 * compare provided password with stored password
+ 		 */
+ 		$savedPw = $row[$this->col_password]; 
+ 		
+ 		if ( ! $savedPw or 
+ 			  $password === $savedPw or   
+ 			  md5( $password ) === $savedPw or
+ 			  $password === md5 ( $savedPw ) ) 
+ 		{
+ 			$this->setActiveUser($row);
+ 			$this->resetLastAction();
+      return true;
+ 		}
+ 		else
+ 		{
+ 			$this->error = "Wrong Password";
+ 			$this->setActiveUser(null);
+ 			return false;
+ 		}
+  }
    
-   /**
-    * gets active user information which is persisted during a session
-    * @return array
-    */
-   function getActiveUser()
-   {
-   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME]; 
-   }
+  /**
+   * gets active user information which is persisted during a session
+   * @return array
+   */
+  function getActiveUser()
+  {
+    return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME]; 
+  }
    
    /**
     * sets active user information
@@ -219,10 +256,27 @@ class qcl_access_user extends qcl_access_common
     */
    function hasPermission($requestedPermission, $user=null)
    {
-   		$user 			  = $user ? $this->getByName($user) : $this->getActiveUser();
+   		/*
+   		 * arguments
+   		 */
+      $user 			  = $user ? $this->getByName($user) : $this->getActiveUser();
    		$username 		= $user[$this->col_namedId];
+
+   		/*
+   		 * models
+   		 */
+      $controller  =& $this->getController();
+      $permModel   =& $controller->getPermissionModel();
+   		
+   		/*
+   		 * get all permissions of the user
+   		 */
    		$permissions 	= $this->getPermissions($username);
-  		foreach($permissions as $permission)
+  		
+   		/*
+   		 * check if permission is granted
+   		 */
+   		foreach($permissions as $permission)
   		{
   			if ( $permission == $requestedPermission )
   			{
@@ -237,12 +291,15 @@ class qcl_access_user extends qcl_access_common
   				}
   			}
   		}
-  		// permission was not found
-      $controller  =& $this->getController();
-      $permModel   =& $controller->getPermissionModel();
+  		
+  		/*
+  		 * Permission was not found
+  		 */
       if ( ! count( $permModel->getByNamedId($requestedPermission) ) )
       {
-        // permission does not exist, create it
+        /*
+         * permission does not exist, create it
+         */
         $permModel->create($requestedPermission);
         $this->info("Permission '$requestedPermission' created.");
       }
@@ -263,7 +320,7 @@ class qcl_access_user extends qcl_access_common
    		else
    		{
         $controller =& $this->getController();
-        $userModel  =  $controller->getUserModel();
+        $userModel  =& $controller->getUserModel();
         $userName   =  $userModel->getActiveUserNamedId();
         $this->info("User '$userName' does not have required permission '$permission'. Access denied.");
         $this->raiseError("Permission denied.");
@@ -275,32 +332,46 @@ class qcl_access_user extends qcl_access_common
   * @param string username
   * @return array security policy and user data
   */
-  function getSecurity($username)
+  function getSecurity( $username )
   {
-		// userdata
-		$userdata = $this->getByName($username);
-		unset($userdata[$this->col_password]);
-		$roleNamedIds = $this->getRoles($username);
-
-		// roles and permissions
+		/*
+		 * models
+		 */
     $controller =& $this->getController();
     $roleModel  =& $controller->getRoleModel();
+    
+    /*
+		 * userdata
+		 */ 
+		$userdata = $this->getByName($username);
+		unset($userdata[$this->col_password]);
+
+		/*
+		 * get all roles and permissions
+		 */
 		$roles = array();
 		$roleDescriptiveNames = array();
+		
+    $roleNamedIds = $this->getRoles($username);
 		foreach ( $roleNamedIds as $roleNamedId )
 		{
-			
 			$roleDescriptiveNames[]	= $roleModel->getDescriptiveName($roleNamedId);
-			$roles[$roleNamedId] 	= $roleModel->getPermissions($roleNamedId);
+			$roles[$roleNamedId] 	  = $roleModel->getPermissions($roleNamedId);
 		}
 		
-		// security policy data for client
+		/*
+		 * return client data
+		 */
 		$userdata['roles'] = implode(", ",$roleDescriptiveNames);
 		$userdata['icon']  = $this->icon;
 		$security = array(
 			'userdata'	=> $userdata,
 			'roles'		=> $roles
 		);
+		
+		/*
+		 * return security data
+		 */
 		return $security;
   }
 
@@ -390,11 +461,13 @@ class qcl_access_user extends qcl_access_common
   /**
    * resets the timestamp of the last action  for the currently active user or a specified user ID 
    * @return void
-   * @param mixed $userId int user id or not given if for currently active user
+   * @param mixed $userRef int user id or not given if for currently active user
    */
-  function resetLastAction( $userId=null )
+  function resetLastAction( $userRef=null )
   {
-
+    
+    $userId = $this->getIdFromRef( $userRef);
+    
     if ( ! $this->col_lastAction )
     {
       $this->raiseError("User model does not have a lastAction column.");
@@ -417,10 +490,13 @@ class qcl_access_user extends qcl_access_common
    * get number of seconds since resetLastAction() has been called
    * for the current user or the specified user
    * @return int seconds
-   * @param $userId int[optional]
+   * @param mixed $userRef int user id or not given if for currently active user
    */
-  function getSecondsSinceLastAction ( $userId = null )
+  function getSecondsSinceLastAction ( $userRef = null )
   {
+    
+    $userId = $this->getIdFromRef( $userRef);
+    
     if ( ! $this->col_lastAction )
     {
       $this->raiseError("User model does not have a lastAction column.");

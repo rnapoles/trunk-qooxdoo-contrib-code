@@ -1,12 +1,13 @@
 <?php
 
-// dependencies
-require_once ("qcl/db/model.php");
+/*
+ * Dependencies
+ */
+require_once "qcl/db/model.php";
 
 /**
  * common base class for permission, role and user models
  */
-
 class qcl_access_common extends qcl_db_model	
 {
 
@@ -73,7 +74,10 @@ class qcl_access_common extends qcl_db_model
 	 */
 	function create( $namedId, $parentId=null )
   {
- 		if ( in_array($namedId, $this->$reservedNames ) )
+ 		/*
+ 		 * check
+ 		 */
+    if ( in_array($namedId, $this->$reservedNames ) )
  		{
  			$this->raiseError ( "'$namedId' is a reserved name and cannto be used." );
  		}
@@ -83,12 +87,16 @@ class qcl_access_common extends qcl_db_model
  			$this->raiseError ( "'$namedId' already exists." );
  		}
    		
-   	// insert new empty record
+   	/*
+   	 * insert new empty record
+   	 */
 		$data = array();
 		$data[$this->col_namedId] = $namedId;
 		$itemId = $this->insert($data);
 		
-		// link to role
+		/*
+		 * link to role 
+		 */
     if ( $parentId )
     {
   		if ( is_a( $this, "qcl_access_user") )
@@ -100,7 +108,15 @@ class qcl_access_common extends qcl_db_model
   			$this->addToRole ( $itemId, $parentId );	
   		}
     }	
+    
+    /*
+     * load item data
+     */
     $this->findById($itemId);
+    
+    /*
+     * return item id
+     */
 		return $itemId;
   } 
   

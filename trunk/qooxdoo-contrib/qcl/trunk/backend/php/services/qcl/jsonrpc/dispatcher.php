@@ -30,11 +30,11 @@
  */
 if ( !isset($_GET["_ScriptTransport_id"]) and function_exists("json_encode") )
 {
-	require dirname(__FILE__) . "/json_wrapper.php";
+	require_once dirname(__FILE__) . "/json_wrapper.php";
 }
 else
 {
-	require dirname(__FILE__) . "/JSON.phps";	
+	require_once dirname(__FILE__) . "/JSON.phps";	
 }
 
 
@@ -53,7 +53,7 @@ else
  */
 if (file_exists("global_settings.php"))
 {
-    require "global_settings.php";
+    require_once "global_settings.php";
 }
 
 /**
@@ -111,8 +111,10 @@ define("Accessibility_Fail",               "fail");
 /**
  * Default accessibility for methods when not overridden by the service class.
  */
-define("defaultAccessibility",             Accessibility_Domain);
-
+if ( ! defined("defaultAccessibility") )
+{
+  define("defaultAccessibility",           Accessibility_Domain);
+}
 
 
 /**
@@ -436,7 +438,7 @@ function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
     {
       case E_WARNING:
       case E_NOTICE:
-          qcl_object::warn($errmsg);
+          qcl_object::writeLog($errmsg);
           break;
       
       default:
@@ -607,7 +609,7 @@ $servicePath = implode("/", $serviceComponents);
 /* Try to load the requested service */
 if ( file_exists( servicePathPrefix . $servicePath . ".php") )
 {
-  require servicePathPrefix . $servicePath . ".php";
+  require_once servicePathPrefix . $servicePath . ".php";
 }
 else
 {
@@ -615,7 +617,7 @@ else
   $servicePath2 = implode("/", $serviceComponents);
   if ( file_exists( servicePathPrefix . $servicePath2 . ".php") )
   {
-    require servicePathPrefix . $servicePath2 . ".php";
+    require_once servicePathPrefix . $servicePath2 . ".php";
   }
   else
   {  

@@ -47,6 +47,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
 	function __construct()
   {
+
 		/*
 		 * call parent constructor first
 		 */
@@ -73,11 +74,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      */
 		$this->configureService();
 		
-		/*
-		 * save this object as a singleton
-		 * @todo: is this necessary?
-		 */
-    $this->setSingleton(&$this);
 	}   	
 
 	//-------------------------------------------------------------
@@ -203,7 +199,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * gets the locale controller and sets the default locale. default is
    * a qcl_locale_manager (see there). if you want to use a different
    * controller, override this method
-   * return Object
+   * return qcl_locale_manager
    */
   function &getLocaleController()
   {

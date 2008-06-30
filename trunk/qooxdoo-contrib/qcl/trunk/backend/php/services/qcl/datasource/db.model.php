@@ -5,6 +5,12 @@ require_once "qcl/db/model.php";
 class qcl_datasource_db_model extends qcl_db_model
 {
   /**
+   * datasource name
+   * @var string
+   */
+  var $datasource;
+  
+  /**
    * models that are attached to this datasource
    * @var array
    */
@@ -27,12 +33,13 @@ class qcl_datasource_db_model extends qcl_db_model
    * @var qcl_db_mysql
    */
   var $datasourceConnectionObj;
-  
+    
   /**
    * initializes all models that belong to this datasource
    * @abstract
+   * @param string $datasource Name of the datasource
    */
-  function initializeModels()
+  function initializeModels( $datasource )
   {
     $this->raiseError("Abstract method initializeModel not yet implemented in class qcl_datasource_db_model. You need to subclass this class in order to use it.");
     
@@ -45,6 +52,10 @@ class qcl_datasource_db_model extends qcl_db_model
      */
   }
   
+  function getDatasourceName()
+  {
+    return $this->datasource;
+  }
   
   /**
    * gets a stored model by name
@@ -109,7 +120,7 @@ class qcl_datasource_db_model extends qcl_db_model
       /*
        * connect to new database 
        */
-      $db =& new qcl_db_mysql(&$this->controller,$dsn);
+      $db =& new qcl_db_mysql($dsn, &$this);
       
       if ( $db->error )
       {

@@ -1,16 +1,13 @@
 <?php
-/**
- * qcl: qooxdoo component library
- * 
+/*
+ * dependencies
  */
+require_once("qcl/functions.php");      // global function
+require_once("qcl/patched_object.php"); // php4 object compatibility patch
 
-// helper functions
-require_once("qcl/functions.php");
-
-// php4 object compatibility patch
-require_once("qcl/patched_object.php");
-
-// log constants
+/*
+ * constants
+ */
 define( "QCL_LOG_FILE" ,	QCL_LOG_PATH . "bibliograph.log" ); // todo: make application-specific!
 define( "QCL_LOG_OFF", 		0 );
 define( "QCL_LOG_DEBUG", 	1 );
@@ -23,7 +20,6 @@ if ( ! defined("QCL_LOG_LEVEL") )
 	 define("QCL_LOG_LEVEL",QCL_LOG_ERROR);
 }
 
-
 /**
  * base class of all qcl classes.
  * provides cross-version (PHP4/PHP5) mixins and interfaces
@@ -33,10 +29,6 @@ if ( ! defined("QCL_LOG_LEVEL") )
  */
 class qcl_object extends patched_object 
 {
-
-   //-------------------------------------------------------------
-   // instance variables
-   //-------------------------------------------------------------
 
 	/**
 	 * @var string
@@ -72,7 +64,10 @@ class qcl_object extends patched_object
 	 */
 	function __construct() 
 	{
-		parent::__construct();
+		/*
+		 * initialize parent class
+		 */
+	  parent::__construct();
 		
 		/*
 		 * apply mixins
@@ -87,11 +82,10 @@ class qcl_object extends patched_object
 	}
 	
 	/**
-	 * class destructor.  This is the top-most __destruct method
+	 * class destructor.  This is the top-most __destruct method, currently
+	 * just an empty stub
 	 */
-  function __destruct()
-  {
-  }
+  function __destruct() {}
   
   //-------------------------------------------------------------
   // persistence
@@ -470,6 +464,19 @@ class qcl_object extends patched_object
     echo $message;
     exit;
   }  
+  
+  function dumpObject($object)
+  {
+    $dump = array();
+    foreach ( get_object_vars($object) as $key => $value )
+    {
+      $type   = gettype($value);
+      $class  = is_object($value) ? "(" . get_class($value) . ")" : "";
+      $dump[] = " $key => $type $class";
+      
+    }
+    $this->info("\n" . implode("\n",$dump) );
+  }
 
   //-------------------------------------------------------------
   // data storage in the filesystem

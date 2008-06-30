@@ -1,8 +1,9 @@
 <?php  
 
-// dependencies
+/*
+ * dependencies
+ */
 require_once "qcl/jsonrpc/model.php";
-require_once "qcl/db/db.php";    
 require_once "qcl/xml/simpleXML.php";
 
 /**
@@ -10,7 +11,6 @@ require_once "qcl/xml/simpleXML.php";
  * common base class for models based on a (mysql) database
  * @todo: make this dbms-independent
  */
-
 class qcl_db_model extends qcl_jsonrpc_model
 {
 	//-------------------------------------------------------------
@@ -344,7 +344,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * try to get db handler from datasource object
      */
     $dsModel =& $this->getDatasourceModel();
-    if ( $dsModel )
+    if ( is_object( $dsModel ) )
     {
       //$this->info( get_class($this) . ": Getting db handler from datasource object...");
       $db =& $dsModel->getDatasourceConnection();
@@ -362,7 +362,7 @@ class qcl_db_model extends qcl_jsonrpc_model
          */
         //$this->info( get_class($this) . ": getting connection object from Controller...");
         $controller =& $this->getController();
-        $db =& $controller->getConnection();
+        $db         =& $controller->getConnection();
       }
       else
       {
@@ -379,7 +379,7 @@ class qcl_db_model extends qcl_jsonrpc_model
         /*
          * connect to new database 
          */
-        $db =& new qcl_db_mysql(&$this->controller,$dsn);
+        $db =& new qcl_db_mysql($dsn, &$this);
         
         if ( $db->error )
         {
@@ -387,11 +387,11 @@ class qcl_db_model extends qcl_jsonrpc_model
         }
       }
     }
+    
     /*
      * store new connection
      */
-    $this->db =& $db;
-    $this->db->model =& $this;     
+    $this->db =& $db;  
   }
 
   //-------------------------------------------------------------
@@ -784,10 +784,10 @@ class qcl_db_model extends qcl_jsonrpc_model
       /*
        * joined model
        */
-      $joinedTable = $this->getJoinedTable($link);
-      $joinedModel = $this->getJoinedModelInstance($link);
-      $joinedLKey  = $joinedModel->getLocalKey();
-      $joinedFKey  = $joinedModel->getForeignKey();
+      $joinedTable =  $this->getJoinedTable($link);
+      $joinedModel =& $this->getJoinedModelInstance($link);
+      $joinedLKey  =  $joinedModel->getLocalKey();
+      $joinedFKey  =  $joinedModel->getForeignKey();
       
       
       if ( $linkTable != $joinedTable )
@@ -2643,13 +2643,13 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * context data
      */
-    $link         = is_object($first) ? $this->getLinkByModel( $first ) : $first;
-    $linkedId     = is_object($first) ? $first->getId() : $linkedId;
-    $localId      = either($localId, $this->getId() );
-    $linkTable    = $this->getLinkTable($link);
-    $foreignkey   = $this->getForeignKey();
-    $joinedModel  = $this->getJoinedModelInstance($link);
-    $jmForeignKey = $joinedModel->getForeignKey();
+    $link         =  is_object($first) ? $this->getLinkByModel( $first ) : $first;
+    $linkedId     =  is_object($first) ? $first->getId() : $linkedId;
+    $localId      =  either($localId, $this->getId() );
+    $linkTable    =  $this->getLinkTable($link);
+    $foreignkey   =  $this->getForeignKey();
+    $joinedModel  =& $this->getJoinedModelInstance($link);
+    $jmForeignKey =  $joinedModel->getForeignKey();
     
 
     if ( ! $localId or ! is_numeric($localId) )
@@ -2688,11 +2688,11 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * context data
      */
-    $localId      = either($localId, $this->getId() );
-    $linkTable    = $this->getLinkTable($link);
-    $foreignkey   = $this->getForeignKey();
-    $joinedModel  = $this->getJoinedModelInstance($link);
-    $jmForeignKey = $joinedModel->getForeignKey();
+    $localId      =  either($localId, $this->getId() );
+    $linkTable    =  $this->getLinkTable($link);
+    $foreignkey   =  $this->getForeignKey();
+    $joinedModel  =& $this->getJoinedModelInstance($link);
+    $jmForeignKey =  $joinedModel->getForeignKey();
     
     /*
      * remove from table

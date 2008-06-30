@@ -13,23 +13,6 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
   var $locale_dir     = "../../../frontend/source/translation"; 
   var $locale_js_dir  = "../../../frontend/source/class/bibliograph/translation";  // todo
   var $translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // todo
-
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-  
-  /**
- 	* constructor
- 	*/
-	function __construct( $controller )
-	{
-    parent::__construct( &$controller );
-	}
-
-	//-------------------------------------------------------------
-  // public non-interface methods
-  //-------------------------------------------------------------
-
   
   /**
    * does the actual lookup
