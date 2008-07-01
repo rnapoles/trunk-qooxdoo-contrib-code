@@ -332,6 +332,10 @@ qx.Class.define("htmlarea.HtmlArea",
                     value = a.nodeValue;
                   }
                 }
+                else
+                {
+                  value = a.nodeValue; 
+                }
               }
               else
               {
