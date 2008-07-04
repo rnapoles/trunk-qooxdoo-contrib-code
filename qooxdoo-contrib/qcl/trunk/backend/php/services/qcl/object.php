@@ -220,6 +220,10 @@ class qcl_object extends patched_object
     return $path;
    
   }
+
+  //-------------------------------------------------------------
+  // mixin and overloading
+  //------------------------------------------------------------- 
   
   /**
    * cross-version method to mixin methods from other classes.
@@ -268,6 +272,11 @@ class qcl_object extends patched_object
     }
     trigger_error('Call to undefined function ' . $method );
   }
+ 
+  
+  //-------------------------------------------------------------
+  // class introspection 
+  //-------------------------------------------------------------
   
   /**
    * similar to instanceOf javascript function. checks if object is an instance of the
@@ -280,6 +289,9 @@ class qcl_object extends patched_object
       return is_a($this,$class);    
   }
   
+  //-------------------------------------------------------------
+  // instance and singleton management
+  //-------------------------------------------------------------  
 	/**
 	 * set (non-persistent) singleton instance of a class
 	 * @param object $instance reference to be set as singleton
@@ -290,7 +302,7 @@ class qcl_object extends patched_object
     $GLOBALS['qcl_jsonrpc_singletons'][$classname] =& $instance;
     return $instance;
   }
-	
+
 	/**
 	 * gets singleton instance when dealing with object copy
 	 */
@@ -316,11 +328,12 @@ class qcl_object extends patched_object
     $instance =& $GLOBALS['qcl_jsonrpc_singletons'][$classname];
     if ( ! $instance )  
     {
-      $instance = $this->getNew( $classname, &$controller );
+      $instance =& $this->getNew( $classname, &$controller );
     }
     return $instance;
   }
-	
+
+  
 	/**
 	 * gets new instance of classname
 	 * if object is a subclass of qx_jsonrpc_controller, pass the object as constructor 
@@ -365,6 +378,10 @@ class qcl_object extends patched_object
     return $instance;
   }
  
+  //-------------------------------------------------------------
+  // logging
+  //-------------------------------------------------------------
+  
 	/**
 	 * log to file on server
 	 * @param string $message
@@ -488,6 +505,8 @@ class qcl_object extends patched_object
    *                This allows to create persistent singletons.
    * @param mixed   $data     Data to store. If no data is provided, the object serializes itself
    * return string Path to file with stored data.
+   * @return string path to file
+   * @todo reimplement using a storage class which can be file-based, db-based, etc. 
    */
   function store($id=null, $data="")
   {

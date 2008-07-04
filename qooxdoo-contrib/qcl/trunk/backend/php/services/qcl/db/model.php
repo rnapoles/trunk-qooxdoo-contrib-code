@@ -105,6 +105,14 @@ class qcl_db_model extends qcl_jsonrpc_model
   var $properties = array();	
 
   /**
+   * an associated array having the names of all alias as
+   * keys and the property names as value.
+   * @access private
+   * @var array
+   */
+  var $aliases = array();    
+  
+  /**
    * shortcuts to schema xml nodes with information on table links
    * @var array
    */
@@ -219,7 +227,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     if ( $startsWith == "set" )
     {
-      //$this->info("setting $endsWith = " . $arguments[0] );
+      //$this->info("setting $endsWith = " . $arguments[0] . "(" . gettype($arguments[0]) . ")." . print_r($arguments,true));
       $this->setProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
     }
     elseif ( $startsWith == "get" )
@@ -1064,43 +1072,84 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 
   /**
-   * Sets a property in the current model recordset. You need to call the update() method to commit 
-   * the property change to the database.
+   * Sets a property in the current model recordset. Unless you provide an id,
+   * you need to call the update() method to commit the property change to the database.
    * @return void 
    * @param string     $name
    * @param mixed      $value 
+   * @param int        $id if given, find and update property recordd
    */
-  function setProperty( $name, $value )
+  function setProperty( $name, $value, $id=null )
   { 
-    if ( isset(  $this->currentRecord[$name] ) )
+    //$this->info("set property '$name' = '$value' (" . gettype($value) .") on record #$id");
+    
+    /*
+     * retrieve record if id is given
+     */
+    if ( ! is_null( $id ) )
     {
-      /*
-       * property exists, set it
-       */
-      $this->currentRecord[$name] = $value;
-      return;
+      $this->findById( $id );
+      $data['id'] = $id;
     }
+    
+    /*
+     * else use current record
+     */
     else
     {
-      /*
-       * property doesn't exist, either the current record is in a unconverted
-       * (column) format or there is a letter case problem
-       */
-      foreach ( $this->currentRecord as $key => $value )
+      $data['id'] = $this->getProperty("id");
+    }
+    
+    /*
+     * if property name exists, set it
+     */    
+    if ( isset( $this->currentRecord[$name] ) )
+    {
+      $this->currentRecord[$name] = $value;
+      $data[$name] = $value;
+    }
+    
+    /*
+     * if property name doesn't exist, either the current record is in a unconverted
+     * (column) format or there is a letter case problem
+     */    
+    else
+    {
+      $found = false;
+      foreach ( $this->getProperties() as $key ) 
       {
         if ( strtolower($key) == strtolower($name) )
         {
           $this->currentRecord[$key] = $value;
-          return;
+          $data[$key] = $value;
+          $found = true;
         }
-        elseif ( strtolower($this->getPropertyName($key)) == strtolower($name) )
+        elseif ( strtolower($this->getColumnName($key) ) == strtolower($name) )
         {
           $this->currentRecord[$key] = $value;
-          return;
+          $data[$key] = $value;
+          $found = true;
         }
       }
+      
+      /*
+       * if still not found, raise error
+       */
+      if ( ! $found )
+      {
+        $this->raiseError("Property '$name' does not exist.'");
+      }
     }
-    $this->raiseError("Property '$name' does not exist.'");
+    
+    /*
+     * commit property if id was given
+     */
+    if ( ! is_null( $id ) )
+    {
+      $this->update($data);
+    }
+    
+    return true;
   }  
 
   //-------------------------------------------------------------
@@ -1130,29 +1179,35 @@ class qcl_db_model extends qcl_jsonrpc_model
   function create( $namedId = null )
   {
     $data = $this->emptyRecord;
-    $data[$this->col_id] = null; // so at least one field is set
+    
+    /*
+     * insert empty id field so at least one field is set
+     * this will be set ba the database
+     */
+    $data[$this->col_id] = null; 
+    
+    /*
+     * set named id if given
+     */
     if ( $namedId )
     {
       $data[$this->col_namedId] = $namedId;
     }
+    
+    /*
+     * insert data
+     */
     $id = $this->insert( $data );
+    
+    /*
+     * load record
+     */
     $this->findById($id);
+    
+    /*
+     * return new id
+     */
     return $id;
-  }
-
-  /**
-   * Finds a record by its namedId or creates it if necessary
-   * @param  string $namedId
-   * @return int Id of found or newly created record
-   */
-  function createOrFind( $namedId )
-  {
-    $this->findByNamedId( $namedId );
-    if ( $this->notFound() )
-    {
-      $this->create( $namedId );  
-    }
-    return $this->getId();
   }
   
   
@@ -1163,12 +1218,18 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function insert( $data )
   {
-    // created timestamp
+    /*
+     * created timestamp by setting it to null
+     * @todo: is this compatible with all dbms?
+     */
     if ( $this->col_created and ! isset ( $data[$this->col_created] ) )
     {
       $data[$this->col_created] = null;
     }
     
+    /*
+     * insert into database
+     */
     return $this->db->insert( $this->table,$data );
   }
 
@@ -1176,9 +1237,10 @@ class qcl_db_model extends qcl_jsonrpc_model
    * updates a record in a table identified by id
    * @param array       $data   associative array with the column names as keys and the column data as values
    * @param int|string  $id   if the id key is not provided in the $data paramenter, provide it here (optional)
+   * @param bool        $keepTimestamp If true, do not overwrite the 'modified' timestamp
    * @return boolean success 
    */
-  function update ( $data=null, $id=null )    
+  function update ( $data=null, $id=null, $keepTimestamp= false )    
   {    
     /*
      *  use cached record data?
@@ -1197,38 +1259,60 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     foreach ($data as $key => $value)
     {
-      $columnName = $this->getColumnName($key);
-      //$this->info("$key => $columnName : $value");
-      if ( $columnName and $columnName != $key )
+      
+      /*
+       * property equals column name. nothing to do.
+       */
+      if ( $this->properties[$key] == $key)
       {
-        /*
-         * if the column name is different from the key, we need
-         * to copy the property value to the column key and delete the 
-         * property key
-         * @todo: what if alias exists as property name?
-         */ 
-        $data[ $columnName ] = $value;
-        unset( $data[ $key ] );
+        continue;
       }
-      elseif ( ! $columnName )
+      
+      /*
+       * key is an alias ( = column name). this occurs when the data is in 
+       * the native table format. nothing to do
+       */  
+      elseif ( isset( $this->aliases[$key] ) )
       {
-        /*
-         * if the column name doesn't exist, delete the key
-         */
+        continue;
+      }
+      
+      /*
+       * key is a property, get the column name. this should be
+       * default. we need
+       * to copy the property value to the column key and delete the 
+       * property key
+       */
+      elseif ( isset( $this->properties[$key] ) )
+      {
+        $columnName = $this->getColumnName($key);
+        $data[ $columnName ] = $value;
+        unset( $data[ $key ] );        
+      }
+
+      /*
+       * otherwise, the key is invalidm  delete key and value 
+       */
+      else
+      {
         $this->warn("Ignoring nonexistent model property '$key' ({$this->name}).");
         unset( $data[ $key ] );
-      }
+      }      
+
+      //$this->info("$key => $columnName : $value"); 
+
     }
     
     /*
-     * set modified timestamp if the timestamp is not part of the data
+     * set modified timestamp to null to set it to the current database update time
+     * unless requested (i.e. in syn operations)
      */
-    if ( $this->col_modified && empty( $data[$this->col_modified] ) )
+    if ( $this->col_modified && !$keepTimestamp)
     {
       $data[$this->col_modified] = null;
     }    
     
-    //$this->info($data);
+    $this->info($data);
     
     return $this->db->update( $this->table, $data, $this->col_id );
   }     
@@ -1250,6 +1334,21 @@ class qcl_db_model extends qcl_jsonrpc_model
   {
     $this->db->deleteWhere ( $this->table, $where );
   }  	
+  
+  /**
+   * Finds a record by its namedId or creates it if necessary
+   * @param  string $namedId
+   * @return int Id of found or newly created record
+   */
+  function createOrFind( $namedId )
+  {
+    $this->findByNamedId( $namedId );
+    if ( $this->notFound() )
+    {
+      $this->create( $namedId );  
+    }
+    return $this->getId();
+  }  
 
   //-----------------------------------------------------------------------
   // Deprecated methods, will be slowly replaced by new findBy... methods
@@ -1553,7 +1652,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param string      $column
    * @param mixed       $value
    * @param int|string|null[optional] $id Numeric or named id. If omitted, use current record
-   * @deprecated use new findX.. methods 
+   * @deprecated use new setter methods 
    */
   function setColumnValue( $column, $value, $id=null )
   {
@@ -1588,8 +1687,18 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function getPropertyValue ( $propName, $id=null )
   {
-    $columnName = $this->getColumnName( $propName );
-    return $this->getColumnValue($columnName,$id);
+    /*
+     * get from database if id is given
+     */
+    if ( ! is_null($id) )
+    {
+      $this->findById($id);
+    }
+    
+    /*
+     * return value
+     */
+    return $this->getProperty( $propName ); 
   }
 
   /**
@@ -1598,12 +1707,30 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @param mixed      $value 
    * @param int|string $id    if omitted, modify current record cache without updating the database 
    * @return void
-   * @deprecated use new findX.. methods 
+   * @deprecated use new setter methods 
    */
   function setPropertyValue ( $propName, $value, $id=null )
   {
-    $columnName = $this->getColumnName($propName);
-    $this->setColumnValue( $columnName, $value, $id );
+    /*
+     * get from database if id is given
+     */
+    if ( ! is_null($id) )
+    {
+      $this->findById($id);
+    }
+    
+    /*
+     * set property
+     */
+    $this->setProperty($propName,$value);
+    
+    /*
+     * save to database if id is given
+     */
+    if ( ! is_null($id) )
+    {
+      $this->update();
+    }
   }
 
 
@@ -1892,6 +2019,11 @@ class qcl_db_model extends qcl_jsonrpc_model
          * overwrite property name with alias
          */
         $this->properties[$propName] = $column; 
+        
+        /*
+         * store in aliases array
+         */
+        $this->aliases[$column] = $propName;
       }
     }    
     //$this->info("Alias Map:");

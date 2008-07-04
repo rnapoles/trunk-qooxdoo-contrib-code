@@ -12,24 +12,6 @@ require_once ("qcl/mixin.php");
 class qcl_db_tree extends qcl_mixin
 {
 
-  //-------------------------------------------------------------
-  // additional class variables 
-  //-------------------------------------------------------------
-
-	var $col_parentId;
-	var $col_label;
-	var $col_position;
-	var $icon;
-
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-
-	
-	//-------------------------------------------------------------
-  // public methods 
-	//-------------------------------------------------------------   
-
 
 	/**
 	 * gets child nodes of a branch ordered by the order field
@@ -144,32 +126,6 @@ class qcl_db_tree extends qcl_mixin
     $this->setPropertyValue("parentId",$parentFolderId,$folderId);
     return $oldParentId;
 	}
-		
-	/**
-	 * set parent folder id of current or specified record
-	 * @param int		$parentId
-	 * @param int[optional] $folderId
-	 * @return void
-	 */
-	function setParentId($parentId,$folderId=null)
-	{
-		$parentId = (int) $parentId;
-		$this->setPropertyValue("parentId",$parentId,$folderId);
-    if ( !$folderId )
-    {
-		  $this->update();
-    }
-	}
-
-	/**
-	 * get parent folder id of current or specified record
-	 * @param int		$folderId
-	 * @return int parent id
-	 */
-	function getParentId($folderId=null)
-	{
-		return $this->getPropertyValue("parentId",$folderId);
-	}	
 	
   /**
    * gets the path of a folder in the folder hierarchy
