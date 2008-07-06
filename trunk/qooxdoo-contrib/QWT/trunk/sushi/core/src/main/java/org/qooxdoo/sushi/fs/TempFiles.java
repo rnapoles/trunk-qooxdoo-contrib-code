@@ -28,13 +28,13 @@ import org.qooxdoo.sushi.fs.file.FileNode;
 
 public class TempFiles implements Runnable {
     /** null if the exit task has already been started */
-    private List<FileNode> delete;
+    private List<Node> delete;
 
     /** null if the exit task has already been executed */
     private final Random rand;
     
     public TempFiles() {
-        this.delete = new ArrayList<FileNode>();
+        this.delete = new ArrayList<Node>();
         this.rand = new Random();
     }
 
@@ -45,7 +45,7 @@ public class TempFiles implements Runnable {
     /**
      * @param file  file or directory
      */
-    public synchronized void deleteAtExit(FileNode node) {
+    public synchronized void deleteAtExit(Node node) {
         if (delete == null) {
             // already exiting
             tryDelete(node);
@@ -55,28 +55,24 @@ public class TempFiles implements Runnable {
     }
 
     public synchronized void run() {
-        List<FileNode> tmp;
+        List<Node> tmp;
         
         tmp = delete;
         delete = null;
-        for (FileNode node : tmp) {
-            if (node.exists()) {
-                try {
-                    node.delete();
-                } catch (IOException e) {
-                    // ignored
-                }
-            }
+        for (Node node : tmp) {
+        	tryDelete(node);
         }
     }
 
-    private void tryDelete(FileNode node) {
-        if (node.exists()) {
-            try {
+    private boolean tryDelete(Node node) {
+        try {
+        	if (node.exists()) {
                 node.delete();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        	}
+        	return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
