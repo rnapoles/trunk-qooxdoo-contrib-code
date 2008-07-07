@@ -350,9 +350,7 @@ public class IO extends Thread {
 
         while (true) {
             dir = (FileNode) temp.join("sushidir" + tempFiles.random() + "tmp");
-            if (!dir.exists()) {
-                // TODO: how to do this atomically?
-                dir.mkdir();
+            if (dir.getFile().mkdir()) {
                 tempFiles.deleteAtExit(dir);
                 return dir;
             }
