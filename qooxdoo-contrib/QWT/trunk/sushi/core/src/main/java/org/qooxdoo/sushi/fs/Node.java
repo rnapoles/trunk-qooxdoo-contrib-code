@@ -109,8 +109,29 @@ public abstract class Node {
     /** lists child nodes or null if this is not a directory */
     public abstract List<? extends Node> list() throws ListException;
 
-    /** @return this */ 
+    /**
+     * Fails if the directory already exists. TODO: atomic operation
+     * @return this
+     */ 
     public abstract Node mkdir() throws MkdirException;
+    
+    /**
+     * Fails if the directory already exists. TODO: this is not an atomic implementation;
+     * FileNode overrides it for that reason.
+     * @return this
+     */
+    public Node mkfile() throws MkfileException {
+    	try {
+			if (exists()) {
+				throw new MkfileException(this);
+			}
+			writeBytes();
+		} catch (IOException e) {
+			throw new MkfileException(this, e);
+		}
+		return this;
+    }
+    
     
     /** @return this */ 
     public abstract Node delete() throws DeleteException;
@@ -430,31 +451,43 @@ public abstract class Node {
         return this;
     }
     
-    public Node mkdirOpt() throws IOException {
-        if (!exists()) {
-            mkdir();
-        }
+    public Node mkdirOpt() throws MkdirException {
+        try {
+			if (!exists()) {
+			    mkdir();
+			}
+		} catch (ExistsException e) {
+			throw new MkdirException(this, e);
+		}
         return this;
     }
 
-    public Node mkdirsOpt() throws IOException {
+    public Node mkdirsOpt() throws MkdirException {
         Node parent;
         
-        if (!exists()) {
-            parent = getParent();
-            if (parent != null) {
-                parent.mkdirsOpt();
-            }
-            mkdir();
-        }
+        try {
+			if (!exists()) {
+			    parent = getParent();
+			    if (parent != null) {
+			        parent.mkdirsOpt();
+			    }
+			    mkdir();
+			}
+		} catch (ExistsException e) {
+			throw new MkdirException(this, e);
+		}
         return this;
     }
 
-    public Node mkdirs() throws IOException {
-        if (exists()) {
-            throw new IOException("cannot create directories: " + this);
-        }
-        return mkdirsOpt();
+    public Node mkdirs() throws MkdirException {
+    	try {
+    		if (exists()) {
+    			throw new MkdirException(this);
+    		}
+    	    return mkdirsOpt();
+    	} catch (IOException e) {
+    		throw new MkdirException(this, e);
+    	}
     }
 
     //-- output create functionality

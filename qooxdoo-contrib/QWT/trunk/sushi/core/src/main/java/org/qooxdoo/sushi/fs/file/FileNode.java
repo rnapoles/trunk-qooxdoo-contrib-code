@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.MkdirException;
+import org.qooxdoo.sushi.fs.MkfileException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
 import org.qooxdoo.sushi.fs.zip.ZipFilesystem;
@@ -175,11 +176,14 @@ public class FileNode extends Node {
     //-- create
     
     /** this is not a touch because it fails if the file exists */
-    public FileNode mkfile() throws IOException {
-        if (exists()) {
-            throw new IOException(this + ": file exists");
-        }
-        createOutputStream().close();
+    public FileNode mkfile() throws MkfileException {
+    	try {
+			if (!file.createNewFile()) {
+			    throw new MkfileException(this);
+			}
+		} catch (IOException e) {
+			throw new MkfileException(this, e);
+		}
         return this;
     }
     
