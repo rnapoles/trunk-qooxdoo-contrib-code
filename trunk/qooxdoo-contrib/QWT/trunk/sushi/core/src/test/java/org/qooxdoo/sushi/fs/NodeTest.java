@@ -378,16 +378,38 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         assertEquals("", file.readString());
     }
 
+    //-- mkfile
+    
     @Test
-    public void mkdirToNonexistingDirectory() throws IOException {
-        try {
-            work.join("nosuchdir/file").mkdir();
-            fail();
-        } catch (IOException e) {
-            // ok
-        }
+    public void mkfileNormal() throws IOException {
+        Node file;
+        
+        file = work.join("file");
+        assertSame(file, file.mkfile());
+        assertTrue(file.exists());
+        assertTrue(file.isFile());
+        assertFalse(file.isDirectory());
     }
 
+    @Test(expected=MkfileException.class)
+    public void mkfileToNonexistingDirectory() throws IOException {
+        work.join("nosuchdir/file").mkfile();
+    }
+
+    @Test(expected=MkfileException.class)
+    public void mkfileOnFile() throws IOException {
+        Node file;
+        
+        file = work.join("file");
+        file.mkfile();
+        file.mkfile();
+    }
+
+    @Test(expected=MkfileException.class)
+    public void mkfileOnDir() throws IOException {
+        work.mkfile();
+    }
+    
     //-- mkdir
     
     @Test
@@ -401,14 +423,14 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         assertTrue(dir.isDirectory());
     }
 
-    @Test
+    @Test(expected=MkdirException.class)
+    public void mkdirToNonexistingDirectory() throws IOException {
+        work.join("nosuchdir/file").mkdir();
+    }
+
+    @Test(expected=MkdirException.class)
     public void mkdirsOnExisting() throws IOException {
-        try {
-            work.mkdirs();
-            fail();
-        } catch (IOException e) {
-            // ok
-        }
+        work.mkdirs();
     }
     
     @Test
