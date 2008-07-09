@@ -191,14 +191,15 @@ class qcl_db_mysql extends qcl_db_abstract
 	 * inserts a record into a table and returns last_insert_id()
 	 * @param string $table table name
 	 * @param array $data associative array with the column names as keys and the column data as values
+	 * @param string $idCol[optional] if provided, some issues with the last-insert-id value can be avoided.
 	 * @return int the id of the inserted row (only if auto_incremnt-key)
 	 */
-	function insert ( $table, $data )
+	function insert ( $table, $data, $idCol = null )
 	{
 		/*
 		 * inserting several rows at once
 		 */ 
-    if ( is_array($data[0]) )
+    if ( is_array( $data[0] ) )
     {
       $ids = array();
       foreach($data as $row)
@@ -216,7 +217,10 @@ class qcl_db_mysql extends qcl_db_abstract
 
 		foreach ( $data as $key => $value )
 		{
-			if ( ! trim($key) )
+			/*
+			 * only add valid key-value pairs
+			 */
+		  if ( ! trim($key) )
       {
         continue;
       }
@@ -225,6 +229,9 @@ class qcl_db_mysql extends qcl_db_abstract
         $columns[] = $key;
       }
 
+      /*
+       * escape values if necessary
+       */
       if ( is_numeric($value) )
 			{
 				$values[] = $value;
@@ -238,6 +245,14 @@ class qcl_db_mysql extends qcl_db_abstract
 				$values[] = "'" . $this->escape( $value ) . "'";
 			}
 		}
+		
+		/*
+		 * check result
+		 */
+    if ( count($columns) == 0 )
+    {
+      $this->raiseError("Nothing to insert.");
+    }
     
 		/*
 		 * create sql strings
@@ -246,15 +261,26 @@ class qcl_db_mysql extends qcl_db_abstract
 		$values  = implode (",", $values );
 
 		/*
-		 * inserting records unless it conflicts with a
+		 * create sql: insert records unless it conflicts with a
 		 * primary key or unique index
 		 */
-		$this->execute("
+		$sql = "
 			INSERT IGNORE INTO
 				`$table` (`$columns`)
 			VALUES ($values)
-		");
-		return $this->getLastInsertId();
+		";
+		
+		/*
+		 * execute query
+		 */
+		$this->execute( $sql );
+		
+		/*
+		 * return last insert id
+		 */
+		$id = $this->getLastInsertId();
+    
+		return $id; 
 	}
 
 	/**
@@ -336,9 +362,9 @@ class qcl_db_mysql extends qcl_db_abstract
 	 * gets last inserted primary key
 	 * @return int
 	 */
-	function getLastInsertId()
+	function getLastInsertId( $table=null, $idCol=null )
 	{
-		$id = $this->getValue( "SELECT last_insert_id()" );
+	  $id = $this->getValue( "SELECT last_insert_id()" );
     return $id;
 	}
 

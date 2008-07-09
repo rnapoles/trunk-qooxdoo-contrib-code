@@ -104,9 +104,9 @@ class qcl_config_services extends qcl_mixin
 	 * 
 	 * @param string $params[1]->name The name of the property (i.e., myapplication.config.locale)
 	 * @param string $params[1]->type The type of the property (string|number|object|boolean)
-	 * @param string $params[1]->permissionModelRead The permission name that is needed to access 
+	 * @param string $params[1]->permissionRead The permission name that is needed to access 
 	 * 		  and read this property (optional)
-	 * @param string $params[1]->permissionModelWrite The permission name that is needed to access 
+	 * @param string $params[1]->permissionWrite The permission name that is needed to access 
 	 * 		  and read this property (optional)
 	 * @param boolean $params[1]->allowUserVariants If true, allow users to create their 
 	 * 		  own variant of the configuration setting 
@@ -119,8 +119,8 @@ class qcl_config_services extends qcl_mixin
     $id = $configModel->create(
 			$params[1]->name, 
 			$params[1]->type, 
-			$params[1]->permissionModelRead, 
-			$params[1]->permissionModelWrite,
+			$params[1]->permissionRead, 
+			$params[1]->permissionWrite,
 			$params[1]->allowUserVariants
 		);
 		$this->dispatchMessage( "qcl.config.messages.key.created", $id );

@@ -896,11 +896,20 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   }
   
   /**
+   * removes the lock of the present xml file
+   * @return void
+   */
+  function removeLock()
+  {
+    parent::removeLock($this->cacheId);
+  }
+  
+  /**
    * destructor: removes the lock on the xmlfile, so that other processes can read or write it.
    */
   function __destruct()
   {
-    $this->removeLock($this->cacheId);
+    $this->removeLock();
     parent::__destruct();
   }
   
