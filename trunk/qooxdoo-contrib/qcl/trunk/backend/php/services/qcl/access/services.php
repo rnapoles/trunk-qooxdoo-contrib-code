@@ -69,7 +69,7 @@ class qcl_access_services extends qcl_mixin
    * @param string $param[1] (MD5-encoded) password
    * @todo: the logic in this method is somewhat confusing
    */
-  function method_authenticate($params)
+  function method_authenticate( $params=array(null,null) )
   {
     /*
      * arguments

@@ -2,23 +2,42 @@
 /*
  * dependencies
  */
-require_once("qcl/functions.php");      // global function
-require_once("qcl/patched_object.php"); // php4 object compatibility patch
+require_once "qcl/functions.php";      // global function
+require_once "qcl/patched_object.php"; // php4 object compatibility patch
 
 /*
- * constants
+ * path to log file
  */
-define( "QCL_LOG_FILE" ,	QCL_LOG_PATH . "bibliograph.log" ); // todo: make application-specific!
+if ( ! defined( "QCL_LOG_FILE") )
+{
+  define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . "qcl.log" );  
+}
+
+/*
+ * log levels
+ */
 define( "QCL_LOG_OFF", 		0 );
 define( "QCL_LOG_DEBUG", 	1 );
 define( "QCL_LOG_INFO", 	2 );
 define( "QCL_LOG_WARN", 	3 );
 define( "QCL_LOG_ERROR", 	4 );
 
+/*
+ * log level
+ */
 if ( ! defined("QCL_LOG_LEVEL") )
 {
 	 define("QCL_LOG_LEVEL",QCL_LOG_ERROR);
 }
+
+/*
+ * JsonRpcClassPrefix from dispatcher script
+ */
+if ( ! defined( "JsonRpcClassPrefix" ) )
+{
+  define( "JsonRpcClassPrefix" , "class_");
+}
+
 
 /**
  * base class of all qcl classes.
@@ -183,11 +202,29 @@ class qcl_object extends patched_object
   /**
    * get include path for a class name
    * @return 
-   * @param $classname
+   * @param string[optional] $classname Class name, defaults to the clas name of the instance
+   * @return string
    */
-  function getClassPath($classname)
+  function getClassPath($classname = null)
   {
-    // delete JsonRpcClassPrefix
+    /*
+     * get my own classpath?
+     */
+    if ( is_null($classname) )
+    {
+      if ( isset($this) and is_object($this) )
+      {
+        $classname = get_class($this);  
+      }
+      else
+      {
+        $this->raiseError("No classname given.");
+      }
+    }
+    
+    /*
+     * delete JsonRpcClassPrefix
+     */
     if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
     {
 	    $pathname = substr($classname,strlen(JsonRpcClassPrefix));        	
@@ -197,9 +234,33 @@ class qcl_object extends patched_object
     	$pathname = $classname;
     }
         
-    // determine path name
-    return SERVICE_PATH . implode( "/", explode("_",$pathname ) ) . ".php";
+    /*
+     * return path name
+     */
+    return SERVICE_PATH . implode( "/", explode("_", $pathname ) ) . ".php";
   }
+  
+  /**
+   * returns the path to the directory containing the class
+   * @param string[optional] $classname Class name, defaults to the clas name of the instance
+   * @return string
+   */
+  function getClassDir($classname=null)
+  {
+    if ( $classname )
+    {
+      return dirname( qcl_object::getClassPath( $classname ) );
+    }
+    elseif ( isset( $this ) and is_object($this ) )
+    {
+      return dirname( $this->getClassPath() );  
+    }
+    else
+    {
+      $this->raiseError("No classname given.");
+    }
+  }
+  
   
   /**
    * load file for class
@@ -292,24 +353,43 @@ class qcl_object extends patched_object
   //-------------------------------------------------------------
   // instance and singleton management
   //-------------------------------------------------------------  
+
 	/**
-	 * set (non-persistent) singleton instance of a class
-	 * @param object $instance reference to be set as singleton
+	 * Gets singleton instance. If you want to use this method on a static class that extends this class,
+	 * you need to override this method like so: <pre>
+	 * function &getInstance( $class=__CLASS__ )
+	 * {
+	 *   return parent::getInstance( $class );
+	 * }
+	 * </pre>
+	 * The reason is that PHP cannot access the class name in static classes (which hasn't been resolved in PHP5!).
+	 * @param string[optional, defaults to __CLASS__] $class Class name. Does not need to be provided in object instances.
+	 * @return object singleton  instance of class
 	 */
-	function &setSingleton( $instance ) 
+	function &getInstance( $class = __CLASS__ )
 	{
+    if ( is_object($this) )
+    {
+	   return $this->getSingleton(get_class(&$this));
+    }
+    else
+    {
+      return $this->getSingleton( $class );
+    }
+	}
+
+  /**
+   * set (non-persistent) singleton instance of a class
+   * @access private
+   * @param object $instance reference to be set as singleton
+   * @return void
+   */
+  function &setSingleton( $instance ) 
+  {
     $classname = get_class ( $instance );
     $GLOBALS['qcl_jsonrpc_singletons'][$classname] =& $instance;
     return $instance;
   }
-
-	/**
-	 * gets singleton instance when dealing with object copy
-	 */
-	function &getInstance()
-	{
-    return $this->getSingleton(get_class(&$this));
-	}
 	
 	/**
 	 * get (non-persistent) singleton instance of class.
@@ -352,7 +432,7 @@ class qcl_object extends patched_object
 	  {
 	    $classname = strtolower(str_replace(".","_",$classname));
 	  }
-	  
+    
 	  /*
 	   * check for class existence
 	   */ 
@@ -368,12 +448,16 @@ class qcl_object extends patched_object
     }
     
     /*
-     * instantiate object
+     * provide the controller if given
      */
     if ( ! $controller and is_a ( $this, "qcl_jsonrpc_controller" ) )
     {
     	$controller =& $this;
     }
+    
+    /*
+     * instantiate and return object
+     */    
     $instance =& new $classname(&$controller);
     return $instance;
   }
@@ -539,14 +623,21 @@ class qcl_object extends patched_object
     {
       $id = get_class($this) . ".tmp";
     }
+    
     $path = QCL_TMP_PATH . $id;
-    $data = file_get_contents($path);
-    $obj = @unserialize($data);
-    if ( is_object( $obj ) or is_array( $obj ) )
+    
+    if ( is_valid_file($path) )
     {
-      return $obj;
+      $data = file_get_contents($path);
+      $obj = @unserialize($data);
+    
+      if ( is_object( $obj ) or is_array( $obj ) )
+      {
+        return $obj;
+      }
+      return $data;
     }
-    return $data;
+    return null;
   }
   
   /**
@@ -560,7 +651,12 @@ class qcl_object extends patched_object
     }
     if ( $prependPath) $path = QCL_TMP_PATH . $id;
     else $path = $id;
-    return unlink ($path);    
+    if ( is_valid_file($path) )
+    {
+      unlink ($path);
+      return true;
+    }
+    return false; 
   }
 }
 ?>

@@ -24,7 +24,25 @@ class qcl_jsonrpc_object extends qcl_object
    */
   var $bin_path    = "../../bin/";  
   
-
+  
+  /**
+   * Gets singleton instance. If you want to use this method on a static class that extends this class,
+   * you need to override this method like so: <pre>
+   * function &getInstance( $class=__CLASS__ )
+   * {
+   *   return parent::getInstance( $class );
+   * }
+   * </pre>
+   * The reason is that PHP cannot access the class name in static classes (which hasn't been resolved in PHP5!).
+   * @param string[optional, defaults to __CLASS__] $class Class name. Does not need to be provided in object instances.
+   * @return object singleton  instance of class
+   */  
+  function &getInstance( $class=__CLASS__ )
+  {
+    return parent::getInstance( $class );
+  }
+  
+  
   //-------------------------------------------------------------
   // public methods
   //-------------------------------------------------------------
@@ -94,7 +112,7 @@ class qcl_jsonrpc_object extends qcl_object
     global $error;
     if ( is_object($error) )
     {
-      $error->setError( $number, stripslashes( $message ) );
+      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
       $error->SendAndExit();
       // never gets here
       exit;
@@ -207,6 +225,11 @@ class qcl_jsonrpc_object extends qcl_object
    */
   function getLock( $lockId )
   {
+    if ( ! $lockId )
+    {
+      $this->raiseError("No lock id provided.");
+    }    
+    
     $hasLock = false;
     $time    = floor(microtime_float());
     
@@ -256,7 +279,14 @@ class qcl_jsonrpc_object extends qcl_object
    */
   function removeLock ( $lockId )
   {
-    // create md5 hash to get around all character problems etc.
+    if ( ! $lockId )
+    {
+      $this->raiseError("No lock id provided.");
+    }
+    
+    /*
+     *  create md5 hash to get around all character problems etc.
+     */
     $lockId = md5($lockId) . ".lock";    
     $this->remove($lockId);
   }

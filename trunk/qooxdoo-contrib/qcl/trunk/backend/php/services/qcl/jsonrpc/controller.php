@@ -56,8 +56,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		/*
      * store request information
      */
-    $this->request['service']  = $GLOBALS['jsonInput']->service;
-    $this->request['method']   = $GLOBALS['jsonInput']->method;
+    global $jsonInput;
+		$this->request['service']  = $jsonInput ? $jsonInput->service : "";
+    $this->request['method']   = $jsonInput ? $jsonInput->method  : "";
     $this->request['remoteIp'] = $_SERVER['REMOTE_ADDR']; 
     
     /*
@@ -88,21 +89,41 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 **/
 	function configureService()
 	{
-		global $serviceComponents;
 		
-		$currPath = defined(servicePathPrefix) ? servicePathPrefix : "";
+	  /*
+	   * get the components of the service name either from the dispatcher script (global var)
+	   * or from the class name
+	   */
+	  global $serviceComponents;
+		if ( ! $serviceComponents )
+		{
+		  /*
+		   * get class name without prefix
+		   */
+		  $classname = get_class($this);
+		  if ( substr($classname,0,strlen(JsonRpcClassPrefix)) == JsonRpcClassPrefix )
+      {
+        $classname = substr($classname,strlen(JsonRpcClassPrefix));          
+      }
+      /*
+       * get service components from classname
+       */
+		  $serviceComponents = explode( "_", $classname );
+		}
+		
+		$currPath = defined( "servicePathPrefix" ) ? servicePathPrefix : "";
 		$this->ini = array();
 		$found = false;
     
 		/*
 		 *  traverse service path and look for service.ini.php files
 		 */ 
-		for ( $i=0; $i<count($serviceComponents); $i++ )
+		for ( $i=0; $i<count( $serviceComponents ); $i++ )
 		{
 			 $currPath .= $serviceComponents[$i] . "/";
 			 
 			 // if config file exists, parse it and add/override config directives
-			 if ( file_exists ($currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
+			 if ( file_exists ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
 			 {
 			   $found = true;
          $config = parse_ini_file ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE, true);

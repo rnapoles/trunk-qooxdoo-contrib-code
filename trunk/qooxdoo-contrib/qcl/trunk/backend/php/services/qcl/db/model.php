@@ -28,7 +28,8 @@ class qcl_db_model extends qcl_jsonrpc_model
   var $table;
   
   /**
-   * the current record cached 
+   * the current record cached. Access with qcl_db_model::getRecord 
+   * @access private
    * @var array
    */
 	var $currentRecord = null;
@@ -276,7 +277,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * the datasource object, or null if model is independent of a datasource
    * @return void
    */
-  function initialize($datasource=null)
+  function initialize( $datasource=null )
   {
   
     $this->log("Initializing '" . get_class($this) . "' with '" . get_class($datasource) . "'." );
@@ -286,7 +287,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     if ( is_object($datasource) )
     {
-      $this->setDatasourceModel(&$datasource);
+      $this->setDatasourceModel( &$datasource );
     }
     
     /*
@@ -404,9 +405,9 @@ class qcl_db_model extends qcl_jsonrpc_model
    * the datasource object
    * return void
    */
-  function setDatasourceModel($datasource)
+  function setDatasourceModel( $datasource )
   {
-    if ( is_object ($datasource) and is_a($datasource,"qcl_datasource_db_model") )
+    if ( is_object ( $datasource ) and is_a( $datasource, "qcl_datasource_db_model") )
     {
       $this->datasourceModel =& $datasource;
     }
@@ -646,7 +647,8 @@ class qcl_db_model extends qcl_jsonrpc_model
    * gets all database records or those that match a where condition. 
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
    * @param string|null  $where   where condition to match, if null, get all
-   * @param string|null[optional] $orderBy     Order by property
+   * @param string|array|null[optional] $orderBy Order by property/properties. If an array is given, the last
+   * element of the array will be searched for "ASC" or "DESC" and used as sort direction
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all. When using
    * joined tables, the parameter must be an array containing two arrays, the first with the properties of the model table, 
    * and the second with the properties of the joined table.
@@ -817,13 +819,27 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     if ($orderBy)
     {
+      
+      $orderBy  = (array) $orderBy;
+      
+      /*
+       * order direction 
+       */
+      $lastElem = $orderBy[count($orderBy)-1];
+      $direction = in_array( strtolower($lastElem), array("asc","desc") ) ? 
+          array_pop($orderBy) : "";
+      
+      /*
+       * order columns
+       */
       $column = array();
-      foreach ( (array) $orderBy as $property )
+      foreach ( $orderBy as $property )
       {
         $column[] = $this->getColumnName($property);
       }
       $orderBy = implode("`,`", (array) $column );
-      $sql .= "ORDER BY `$orderBy`"; 
+      $sql .= "ORDER BY `$orderBy` $direction";
+       
     }
     
     /*
@@ -965,9 +981,32 @@ class qcl_db_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------
   // Retrieving query results in different formats
   //-------------------------------------------------------------     
+
+  /**
+   * Gets the data as an associated array from the data provided
+   * @param array|stdClass|qcl_db_model $data
+   * @return array
+   */
+  function _getArrayData( $data )
+  {
+    if ( is_a( $data, "qcl_db_model" ) )
+    {
+      $array = $data->getRecord();
+    }
+    elseif ( is_array( $data ) or is_a( $data, "stdClass" ) )
+    {
+      $array = (array) $data;
+    }    
+    else
+    {
+      $this->raiseError("Invalid parameter");
+    }
+    return $array;
+  }
   
   /**
-   * gets the data of the currently loaded record
+   * Gets the data of the currently loaded record as an associative 
+   * array.
    *
    * @return array 
    */
@@ -976,6 +1015,17 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $this->currentRecord;
   }
 
+  /**
+   * Gets the data of the currently loaded record as a stdClass object
+   * so you can use $record->foo instead of $record['foo']
+   * @return stdClass 
+   */
+  function getRecordObject()
+  {
+    $obj = (object) $this->currentRecord;
+    return $obj;
+  }  
+  
   /*
    * gets the data from the last find query
    * @return array
@@ -1024,6 +1074,57 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $values;
   }
   
+  /**
+   * compare current record with array. This will only compare the keys existing in the array or
+   * the fields that are provided as second argument
+   * @param object|array $compare Model object or array data
+   * @param array $fields
+   * @return bool whether the values are equal or not
+   */
+  function compareWith( $compare, $fields=null )
+  {
+    /*
+     * check arguments to get what we should compare with
+     */
+    $array = $this->_getArrayData($compare);    
+    
+    /*
+     * assume data is equal as default and change this to false
+     * as difference is found
+     */
+    $isEqual = true;
+    
+    /*
+     * do the comparison
+     */
+    if ( is_array($fields) )
+    {
+      foreach ( $fields as $key  )
+      {
+        if ( $this->currentRecord[$key] !== $array[$key] )
+        {
+          $isEqual = false;  
+        }
+      }
+      
+    }
+    else
+    {
+      foreach ( $array as $key => $value )
+      {
+        if ( $this->currentRecord[$key] !== $value )
+        {
+          $isEqual = false;  
+        }
+      }
+    }
+    
+    /*
+     * return the result
+     */
+    //$this->info("The data is " . ($isEqual ? "equal" : "not equal") ); 
+    return $isEqual;
+  }
   
   //-------------------------------------------------------------
   // Get property and column values & convert between properties 
@@ -1033,21 +1134,40 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * Gets a property from the current model recordset
    * @param string   $name Property name
+   * @param int[optional]  $id if given, load record  
    * @return mixed value of property
    */
-  function getProperty( $name )
+  function getProperty( $name, $id = null )
   {
-    if ( ! is_array($this->currentRecord ) or count($this->currentRecord) == 0 )
+  
+    /*
+     * check if record is loaded
+     */
+    if ( is_null($id) )
     {
-      $this->raiseError("Cannot get property '$name' from model '{$this->name}: no record loaded.");
+      if ( ! is_array($this->currentRecord ) or count($this->currentRecord) == 0) 
+      {
+        $this->raiseError("Cannot get property '$name' from model '{$this->name}: no record loaded.");
+      }
+    }    
+    
+    /*
+     * retrieve record if id is given
+     */
+    else 
+    {
+      $this->findById( $id );
+      if ( $this->notFound() )
+      {
+        $this->raiseError("Cannot get property '$name' from model '{$this->name}: Record #$id does not exist.");
+      }
     }
     
-    
+    /*
+     * property exists, return straight
+     */    
     if ( isset( $this->currentRecord[$name] ) )
     {
-      /*
-       * property exists, return straight
-       */
       return $this->currentRecord[$name];
     }
     else
@@ -1062,12 +1182,16 @@ class qcl_db_model extends qcl_jsonrpc_model
         {
           return $value;
         }
-        elseif ( strtolower($this->getPropertyName($key)) == strtolower($name) )
+        elseif ( strtolower( $this->aliases[$key] ) == strtolower($name) )
         {
           return $value;
         }
       }
     }
+    
+    /*
+     * property name was not found
+     */
     $this->raiseError("Property '$name' does not exist.'");
   }
 
@@ -1172,26 +1296,31 @@ class qcl_db_model extends qcl_jsonrpc_model
  	}   
 
   /**
-   * inserts a record into a table and returns last_insert_id()
+   * inserts a new empty record into a table and returns last_insert_id()
    * @param string[optional, default] $namedId 
    * @return int the id of the inserted row 
    */
   function create( $namedId = null )
   {
-    $data = $this->emptyRecord;
     
     /*
-     * insert empty id field so at least one field is set
-     * this will be set ba the database
+     * get default data record
      */
-    $data[$this->col_id] = null; 
+    $data = $this->emptyRecord; 
     
     /*
      * set named id if given
      */
     if ( $namedId )
     {
-      $data[$this->col_namedId] = $namedId;
+      if ( $this->hasProperty("namedId") )
+      {
+        $data[$this->col_namedId] = $namedId;  
+      }
+      else
+      {
+        $this->raiseError("Cannot create new {$this->name} record '$namedId'. Model does not have a namedId property.");
+      }
     }
     
     /*
@@ -1213,11 +1342,16 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * inserts a record into a table and returns last_insert_id()
-   * @param array $data associative array with the column names as keys and the column data as values
-   * @return int the id of the inserted row 
+   * @param array|stdClass $data associative array with the column names as keys and the column data as values
+   * @return int the id of the inserted row or 0 if the insert was not successful 
    */
   function insert( $data )
   {
+    /*
+     * check arguments
+     */
+    $data = $this->_getArrayData($data);
+    
     /*
      * created timestamp by setting it to null
      * @todo: is this compatible with all dbms?
@@ -1230,7 +1364,23 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * insert into database
      */
-    return $this->db->insert( $this->table,$data );
+    $id = $this->db->insert( $this->table, $data );
+    
+    //$this->info("Created new record #$id in {$this->table} with data: " . var_dump($data,true) );
+     
+    /*
+     * retrive record data (which might contain additional values inserted by the database)
+     * if the model has an id column and a new id was returned
+     */
+    if ( $this->col_id and $id ) 
+    {
+      $this->findById($id);
+    }
+    
+    /*
+     * return id or 0 if the insert was not successful 
+     */
+    return $id;
   }
 
   /**
@@ -1312,7 +1462,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       $data[$this->col_modified] = null;
     }    
     
-    $this->info($data);
+    //$this->info($data);
     
     return $this->db->update( $this->table, $data, $this->col_id );
   }     
@@ -1388,14 +1538,19 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * gets all database records or those that match a where condition. 
    * the table name is available as the alias "r" (for records)
-   * @param string        $where    where condition to match, if null, get all
-   * @param string|null   $orderBy  (optional) order by field
-   * @param array|null    $fields   (optional) Array of fields to retrieve 
+   * @param string   $where    where condition to match, if null, get all
+   * @param string|array|null[optional]  $orderBy  (optional) order by field. if an array is provided,
+   * the last element is can contain the sort direction ("ASC"/"DESC")
+   * @param array|null[optional] $fields  Array of fields to retrieve 
    * @return Array Array of db record sets
    * @deprecated use new findX.. methods 
    */
-  function getRecordsWhere($where=null,$orderBy=null,$fields=null)
+  function getRecordsWhere( $where=null, $orderBy=null, $fields=null)
   {
+    
+    /*
+     * fields to retrieve
+     */
     if ( $fields )
     {
       $fields = "`" . implode("`,`", (array) $fields ) . "`";
@@ -1405,18 +1560,40 @@ class qcl_db_model extends qcl_jsonrpc_model
       $fields = "*"; 
     }
     
+    /*
+     * select
+     */
     $sql = "SELECT $fields FROM {$this->table} AS r \n";
     
+    /*
+     * where
+     */
     if ($where)
     {
       $sql .= "WHERE $where ";
     }
-    if ($orderBy)
+    
+    /*
+     * order by 
+     */
+    if ( $orderBy )
     {
-      $orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
+      $orderBy  = (array) $orderBy;
+      $lastElem = $orderBy[count($orderBy)-1];
+      
+      $direction = in_array( strtolower($lastElem), array("asc","desc") ) ? 
+          array_pop($orderBy) : "";
+      
+      $orderBy = implode("`,`", $orderBy );
+      $sql .= "ORDER BY `$orderBy` $direction"; 
     }
-      return $this->db->getAllRecords($sql);    
+    
+    //$this->info($sql);
+    
+    /*
+     * return db records
+     */
+    return $this->db->getAllRecords($sql);    
   }
 
   /**
@@ -2590,6 +2767,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     //$this->info("Loading model schema file '$file'...");
     $modelXml =& new qcl_xml_simpleXML($file);
     $modelXml->removeLock(); // we don't need a lock, since this is read-only
+
     $doc =& $modelXml->getDocument();
     
     /*
