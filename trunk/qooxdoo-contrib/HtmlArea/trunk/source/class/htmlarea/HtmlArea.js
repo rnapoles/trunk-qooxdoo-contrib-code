@@ -72,6 +72,8 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
 
+    this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
+
 
     /**
      * Wrapper method for mouse events.
@@ -99,11 +101,6 @@ qx.Class.define("htmlarea.HtmlArea",
     this.addEventListener("keyup",    this._handleKeyUp,    this);
     this.addEventListener("keydown",  this._handleKeyDown,  this);
     this.addEventListener("keypress", this._handleKeyPress, this);
-
-    if (qx.core.Variant.isSet("qx.client", "mshtml"))
-    {
-      this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
-    }
 
     /* Check for available content */
     if (typeof value == "string") {
@@ -1089,10 +1086,7 @@ qx.Class.define("htmlarea.HtmlArea",
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
       qx.html.EventRegistration.addEventListener(doc.body, "mouseup", this.__handleMouseUpEvent);
 
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
-      }
+      qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
     },
 
 
@@ -1777,7 +1771,11 @@ qx.Class.define("htmlarea.HtmlArea",
     _handleFocusEvent : function(e)
     {
       this.setFocused(e.type == "focus");
-      e.type == "focus" ? this.__onFocus() : this.__onBlur();
+
+      if (e.type == "focus")
+      { 
+        this._handleFocusIn();
+      }
     },
 
 
@@ -1789,25 +1787,11 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type member
      * @return {void}
      */
-   __onFocus : function()
+   _handleFocusIn : function()
    {
      this.__storedSelectedHtml = null;
+
      this.createDispatchEvent("focused");
-   },
-
-
-   /**
-    * Called with every blur event of the editor.
-    * Compares the current value with the stored one.
-    * If they are different the current content is synced
-    * with the value variable.
-    *
-    * @type member
-    * @return {void}
-    */
-   __onBlur : function()
-   {
-      // nothing to do
    },
 
 
@@ -1824,6 +1808,12 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug("handleMouse " + e.type);
+      }
+
+      // need to invalidate the stored range
+      if (this.__commandManager)
+      {
+        this.__commandManager.invalidateCurrentRange();
       }
 
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
@@ -1864,17 +1854,30 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {qx.event.type.Event} focus out event
      * @return {void}
      */
-    _handleFocusOut : qx.core.Variant.select("qx.client", {
+    _handleFocusOut : qx.core.Variant.select("qx.client",
+    {
+
       "mshtml" : function(e)
       {
+        if (this.__commandManager)
+        {
+          this.__commandManager.storeCurrentRange();
+        }
+
         /* Save range text */
-        if (this.__storedSelectedHtml == null){
+        if (this.__storedSelectedHtml == null)
+        {
           this.__storedSelectedHtml = this.getSelectedHtml();
         }
 
         this.createDispatchEvent("focusOut");
       },
-      "default" : function(e) {}
+
+      "default" : function(e)
+      {
+        this.createDispatchEvent("focusOut");
+      }
+
     }),
 
 
@@ -2788,11 +2791,7 @@ qx.Class.define("htmlarea.HtmlArea",
       // ************************************************************************
       qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
       qx.html.EventRegistration.removeEventListener(doc.body, "mouseup", this.__handleMouseUpEvent);
-      
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
-      }
+      qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
     }
     catch(ex) {}
 

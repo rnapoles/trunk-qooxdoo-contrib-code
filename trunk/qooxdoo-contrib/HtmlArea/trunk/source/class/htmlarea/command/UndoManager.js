@@ -95,9 +95,32 @@ qx.Class.define("htmlarea.command.UndoManager",
         qx.html.EventRegistration.addEventListener(this.__doc, "mousedown", this.__handleMouseDown);
       }
     },
-    
-    
-    
+
+
+    /**
+     * invalidates the current range.
+     * 
+     * @type member
+     * @return {void}
+     */
+    invalidateCurrentRange : function ()
+    {
+      this.__commandManager.invalidateCurrentRange();
+    },
+
+
+    /**
+     * stores the current range.
+     * 
+     * @type member
+     * @return {void}
+     */
+    storeCurrentRange : function ()
+    {
+      this.__commandManager.storeCurrentRange();
+    },
+
+
     /**
      * Inserts a paragraph when hitting the "enter" key.
      * Decorator method for commandManager instance.
