@@ -82,6 +82,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleMouseEvent = qx.lang.Function.bind(this._handleMouseEvent, this);
+    this.__handleMouseUpEvent = qx.lang.Function.bind(this._handleMouseUpEvent, this);
 
     /*
      * Catch load event - no timer needed which polls if the component is ready and
@@ -194,7 +195,12 @@ qx.Class.define("htmlarea.HtmlArea",
      * This event is dispatched when the document receives an "focusout" event
      */
     "focusOut"         : "qx.event.type.Event",
-    
+
+    /**
+     * This event is dispatched when the editor gets a right click.
+     */
+    "contextmenu"      : "qx.event.type.DataEvent",
+
     /** 
       * Holds information about the state of undo/redo
       * Keys are "undo" and "redo".
@@ -1081,6 +1087,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
+      qx.html.EventRegistration.addEventListener(doc.body, "mouseup", this.__handleMouseUpEvent);
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
@@ -1821,6 +1828,31 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
+    },
+
+
+    /**
+     * Eventlistener for all mouse up events. Fires the contextmenu event.
+     *
+     * @type member
+     * @param e {Object} Event object
+     * @return {void}
+     */
+    _handleMouseUpEvent : function(e)
+    {
+      var button = (e.button ? e.button : e.which);
+
+      if (qx.event.type.MouseEvent.buttons.right == button)
+      {
+        var data   = {
+          x : e.clientX,
+          y : e.clientY
+        };
+
+        qx.client.Timer.once(function() {
+          this.createDispatchDataEvent("contextmenu", data);
+        }, this, 0);
+      }
     },
 
 
@@ -2755,6 +2787,7 @@ qx.Class.define("htmlarea.HtmlArea",
       //   WIDGET MOUSE EVENTS
       // ************************************************************************
       qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
+      qx.html.EventRegistration.removeEventListener(doc.body, "mouseup", this.__handleMouseUpEvent);
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
