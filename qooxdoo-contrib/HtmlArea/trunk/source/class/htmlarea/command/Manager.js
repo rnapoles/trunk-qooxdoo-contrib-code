@@ -36,8 +36,6 @@ qx.Class.define("htmlarea.command.Manager",
 
     this.__commands       = null;
     this.__populateCommandList();
-
-    this.__editorInstance.addEventListener("focusOut", this._handleFocusOut, this);
   },
 
   statics :
@@ -133,20 +131,44 @@ qx.Class.define("htmlarea.command.Manager",
 
 
     /**
-     * Eventlistener for focus out events to save the current selection.
+     * save the current selection.
      * NOTE: this method is currently only used for mshtml.
      *
      * @type member
-     * @param e {qx.event.type.Event} focus out event
      * @return {void}
      */
-    _handleFocusOut : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(e)
+    storeCurrentRange : qx.core.Variant.select("qx.client",
+    {
+
+      "mshtml" : function()
       {
-        this.__currentRange = this.__editorInstance.getRange();
+        this.__currentRange      = this.__editorInstance.getRange();
         this.__lastSelectionType = this.__editorInstance.__getSelection().type;
       },
+
       "default" : function() {}
+
+    }),
+
+
+    /**
+     * invalidates the current selection.
+     * NOTE: this method is currently only used for mshtml.
+     *
+     * @type member
+     * @return {void}
+     */
+    invalidateCurrentRange : qx.core.Variant.select("qx.client",
+    {
+
+      "mshtml" : function()
+      {
+        this.__currentRange      = null;
+        this.__lastSelectionType = null;
+      },
+
+      "default" : function() {}
+
     }),
 
 
