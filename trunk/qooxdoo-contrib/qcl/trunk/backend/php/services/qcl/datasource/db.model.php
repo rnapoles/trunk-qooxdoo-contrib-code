@@ -165,7 +165,7 @@ class qcl_datasource_db_model extends qcl_db_model
   {
     if ( $options['dsn'] )
     {
-      $db = new qcl_db(&$this,$options['dsn']);
+      $db = new qcl_db_mysql(&$this,$options['dsn']);
     }
     else
     {
