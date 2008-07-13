@@ -1036,6 +1036,4 @@ class qcl_db_mysql extends qcl_db_abstract
   }
   
 }
-
 ?>
-
