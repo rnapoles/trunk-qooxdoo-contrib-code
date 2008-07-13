@@ -5,7 +5,7 @@
 require_once "qcl/functions.php";      // global function
 require_once "qcl/patched_object.php"; // php4 object compatibility patch
 
-/*
+/**
  * path to log file
  */
 if ( ! defined( "QCL_LOG_FILE") )
@@ -13,7 +13,7 @@ if ( ! defined( "QCL_LOG_FILE") )
   define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . "qcl.log" );  
 }
 
-/*
+/**
  * log levels
  */
 define( "QCL_LOG_OFF", 		0 );
@@ -22,7 +22,7 @@ define( "QCL_LOG_INFO", 	2 );
 define( "QCL_LOG_WARN", 	3 );
 define( "QCL_LOG_ERROR", 	4 );
 
-/*
+/**
  * log level
  */
 if ( ! defined("QCL_LOG_LEVEL") )
@@ -30,13 +30,21 @@ if ( ! defined("QCL_LOG_LEVEL") )
 	 define("QCL_LOG_LEVEL",QCL_LOG_ERROR);
 }
 
-/*
+/**
  * JsonRpcClassPrefix from dispatcher script
  */
 if ( ! defined( "JsonRpcClassPrefix" ) )
 {
   define( "JsonRpcClassPrefix" , "class_");
 }
+
+
+/**
+ * global reqistry that is maintained during one request. For persistent storage, use
+ * getSessionVar and setSessionVar
+ * @var array
+ */
+$qcl_registry = array();
 
 
 /**
@@ -48,12 +56,12 @@ if ( ! defined( "JsonRpcClassPrefix" ) )
  */
 class qcl_object extends patched_object 
 {
-
-	/**
-	 * @var string
-	 */
-	var $error;
-	
+  /**
+   * The class name of this object
+   * @var string
+   */
+  var $class;
+ 
 	/**
 	 * array of class names that will be loaded as mixins. 
 	 * @var array 
@@ -65,6 +73,19 @@ class qcl_object extends patched_object
    */
   var $_mixinlookup = array();
   
+  /**
+   * PHP4/PHP5 interface implementation.
+   * @var array
+   */
+  var $implements = array();
+
+  /**
+   * If this object produces a recoverable error, the error message will be stored here
+   * for convenience
+   * @var string
+   */
+  var $error;
+    
   /**
    * wether this class is persistent. If true, it will be serialized at the
    * end of the request and can be unserialized with class_name::unserialize()
@@ -88,6 +109,11 @@ class qcl_object extends patched_object
 		 */
 	  parent::__construct();
 		
+	  /*
+	   * class name
+	   */
+	  $this->class = get_class($this);
+	  
 		/*
 		 * apply mixins
 		 */
@@ -98,6 +124,48 @@ class qcl_object extends patched_object
         $this->mixin( $mixin );
       }
     }
+    
+    /*
+     * PHP4/PHP5: check if interfaces are implemented. This
+     * will be removed and real interfaces be used when qcl moves
+     * to PHP5-only
+     */
+    foreach ( $this->implements as $interface )
+    {
+      /*
+       * do not check again
+       */
+      if ( $this->getRegistryVar( "qcl.interfaces.checked.{$this->class}.$interface" ) )
+      {
+        continue;
+      }
+      
+      /*
+       * check interface methods
+       */
+      foreach( get_class_methods( $interface ) as $method )
+      {
+        if ( ! method_exists( $this, $method ) )
+        {
+          $this->raiseError("Class {$this->class} has no implementation of method '$method' as required by interface '$interface'");
+        }
+      }
+      /*
+       * check interface properties
+       */
+      foreach( get_class_vars( $interface ) as $var )
+      {
+        if ( !  isset( $this, $var ) )
+        {
+          $this->raiseError("Class {$this->class} has no property '$var' as required by interface '$interface'");
+        }
+      }
+
+      /*
+       * set flag that this was checked
+       */
+      $this->setRegistryVar( "qcl.interfaces.checked.{$this->class}.$interface", true );
+    }
 	}
 	
 	/**
@@ -105,6 +173,31 @@ class qcl_object extends patched_object
 	 * just an empty stub
 	 */
   function __destruct() {}
+  
+  //-------------------------------------------------------------
+  // registry during request
+  //------------------------------------------------------------- 
+
+  /**
+   * Gets a registry value
+   * @param string $name
+   * @return mixed
+   */
+  function &getRegistryVar( $name )
+  {
+    return $GLOBALS['qcl_registry'][$name];    
+  }
+
+  /**
+   * Sets a registry value
+   * @param string $name
+   * @param string $value
+   * @return void
+   */
+  function setRegistryVar( $name, $value )
+  {
+    $GLOBALS['qcl_registry'][$name] =& $value;    
+  }
   
   //-------------------------------------------------------------
   // persistence
@@ -205,7 +298,7 @@ class qcl_object extends patched_object
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
    */
-  function getClassPath($classname = null)
+  function getClassPath( $classname = null)
   {
     /*
      * get my own classpath?
