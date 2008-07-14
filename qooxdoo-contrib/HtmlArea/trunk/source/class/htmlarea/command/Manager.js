@@ -745,7 +745,7 @@ qx.Class.define("htmlarea.command.Manager",
            return false;
          }
        },
-       
+
        "mshtml" : function(attributes, commandObject)
        {
          /* Put together the HTML for the image */
@@ -755,7 +755,7 @@ qx.Class.define("htmlarea.command.Manager",
            img += attrName + "='" + attributes[attrName] + "' ";
          }
          img += "/>";
-                  
+
          /* 
           * IE *does not* support the "insertHtml" command and
           * the "insertImage" command is not sufficient.
@@ -764,23 +764,43 @@ qx.Class.define("htmlarea.command.Manager",
           * TextRange Object. 
           */
          var currRange = this.getCurrentRange();
-         currRange.select();
 
-         if (this.__lastSelectionType == "Control")
+         try
          {
-           currRange.collapse();
-         }
+           currRange.select();
 
-         currRange.pasteHTML(img);
+           currRange.pasteHTML(img);
+         }
+         catch (exc)
+         {
+           // we can't pasteHtml so we check if we have selected an image and
+           // replaces all items
+           if (this.__lastSelectionType.toLowerCase() == "control")
+           {
+             if (currRange && currRange.length > 0)
+             {
+               var item = currRange(0);
+
+               if (item.tagName.toLowerCase() == "img")
+               {
+                 for (var attrName in attributes)
+                 {
+                   item.setAttribute(attrName, attributes[attrName]);
+                 }
+               }
+             }
+           }
+         }
        },
-       
+
        "default" : function(attributes, commandObject)
        {
          /* For all other browsers use the execCommand directly */
          return this.__doc.execCommand(commandObject.identifier, false, attributes.src);  
        }
      }),
-     
+
+
      /**
       * Inserts a hyperlink. In Gecko browser these is achieved by
       * inserting DOM nodes.
