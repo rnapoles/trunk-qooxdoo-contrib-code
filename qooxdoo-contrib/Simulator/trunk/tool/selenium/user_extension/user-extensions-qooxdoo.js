@@ -529,7 +529,7 @@ Selenium.prototype.isQxEnabled = function(locator)
  */
 PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
 {
-  LOG.info("Locate qooxdoo-Object by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
+  LOG.info("Locate qooxdoo-Object by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
 
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
 
@@ -556,7 +556,7 @@ PageBot.prototype.locateElementByQxx = function(qxLocator, inDocument, inWindow)
  */
 PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
 {
-  LOG.info("Locate Element by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
+  LOG.info("Locate Element by qooxdoo-UserData-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
 
   var qxObject = this._findQxObjectInWindow(qxLocator, inWindow);
 
@@ -583,7 +583,7 @@ PageBot.prototype.locateElementByQx = function(qxLocator, inDocument, inWindow)
  */
 PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
 {
-  LOG.info("Locate Element by qooxdoo-UserData-XPath-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
+  LOG.info("Locate Element by qooxdoo-UserData-XPath-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
 
   var locatorParts = qxLocator.split('//');
 
@@ -608,8 +608,18 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
     return null;
   }
 
-  var qxElement = qxObject.getElement();
-  var resultElement = this._findElementUsingFullXPath('descendant::' + xpathPart, qxElement, inWindow);
+  var qxElement = qxObject.getElement();  
+  
+  var resultElement;
+  if (this.locateElementByXPath){
+  
+    //Selenium 1.0: Use public function locateElementByXPath
+    resultElement =       this.locateElementByXPath('descendant-or-self::node()/'+xpathPart, qxElement, inWindow);
+  } else {
+    //Selenium 0.9.2: Use internal function _findElementUsingFullXPath
+    resultElement = this._findElementUsingFullXPath('descendant-or-self::node()/'+xpathPart, qxElement, inWindow);
+  }
+    
   return resultElement;
 };
 
@@ -635,7 +645,7 @@ PageBot.prototype.locateElementByQxp = function(qxLocator, inDocument, inWindow)
  */
 PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
 {
-  LOG.info("Locate Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow);
+  LOG.info("Locate Element by qooxdoo-Object-Hierarchy-Locator=" + qxLocator + ", inDocument=" + inDocument + ", inWindow=" + inWindow.location.href);
 
   var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
 
@@ -683,7 +693,7 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
 
   else
   {
-    LOG.error("qx-Locator: qx-Object not defined. inWindow=" + inWindow + ", inWindow.qx=" + inWindow.qx);
+    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
 
     // do not throw here, as if the locator fails in the first place selenium will call this
     // again with all frames (and windows?) which won't result in "element not found" but in
@@ -745,7 +755,7 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
   }
   else
   {
-    LOG.error("qx-Locator: qx-Object not defined. inWindow=" + inWindow + ", inWindow.qx=" + inWindow.qx);
+    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
 
     // do not throw here, as if the locator fails in the first place selenium will call this
     // again with all frames (and windows?) which won't result in "element not found" but in
