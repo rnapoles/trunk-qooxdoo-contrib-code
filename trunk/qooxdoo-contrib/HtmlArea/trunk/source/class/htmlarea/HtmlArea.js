@@ -661,26 +661,35 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
-    // TODO: IN DEVELOPMENT!
-    getWords : function()
+    /**
+     * TODOC
+     * 
+     * @type member
+     * @return {Map}
+     */
+    getWordsWithElement : function()
     {
       var list = this.getTextNodes();
-      var result = [];
-      var i, j, element, words, tmp;
+      var result = {};
+      var i, j, words, element, word;
 
-      for(i=0; i<list.length; i++)
+      for(i=0,len1=list.length; i<len1; ++i)
       {
         element = list[i];
         words = element.nodeValue.split(" ");
-        for(j=0; j<words.length; j++)
+
+        for(j=0,len2=words.length; j<len2; ++j)
         {
-          if(words[j].length > 1)
+          word = this._cleanupWord(words[j]);
+
+          if(word != null && word.length > 1)
           {
-            tmp = {
-              "word" : words[j],
-              "element" : element
-            };
-            result.push(tmp);
+            if (!result[word])
+            {
+              result[word] = [];
+            }
+
+            result[word].push(element);
           }
         }
       }
@@ -688,13 +697,43 @@ qx.Class.define("htmlarea.HtmlArea",
       return result;
     },
 
-    // TODO: IN DEVELOPMENT!
+
+    /**
+     * TODOC
+     * 
+     * @type member
+     * @param word {String}
+     * @return {String}
+     */
+    _cleanupWord : function (word)
+    {
+      if (!word)
+      {
+        return null;
+      }
+
+      return word.replace(/\t|\n|\r|/gi, "");
+    },
+
+
+    /**
+     * TODOC
+     * 
+     * @type member
+     * @return {Node[]}
+     */
     getTextNodes : function()
     {
       return this._fetchTextNodes(this.getContentDocument().body);
     },
 
-    // TODO: IN DEVELOPMENT!
+
+    /**
+     * TODOC
+     * 
+     * @type member
+     * @return {Node[]}
+     */
     _fetchTextNodes : function(element)
     {
       var result = [];
@@ -722,7 +761,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
       return result;
     },
-        
+
+
     /*
     ---------------------------------------------------------------------------
       INITIALIZATION
