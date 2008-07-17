@@ -220,7 +220,11 @@ qx.Class.define("htmlarea.HtmlArea",
   {
     /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
     simpleLinebreak : "<br>",
-    
+
+    /* regex to extract text content from innerHTML */
+    GetWordsRegExp     : /([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g,
+    CleanupWordsRegExp : /[\u0000-\u0040]/gi,
+
     /**
      * Formats the style information. If the styleInformation was passed
      * in as a map it gets converted to a string.
@@ -660,7 +664,8 @@ qx.Class.define("htmlarea.HtmlArea",
         return this.getContentDocument().body;
       }
     },
-    
+
+
     /** 
      * Returns all the words that are contained in a node.
      * 
@@ -677,17 +682,16 @@ qx.Class.define("htmlarea.HtmlArea",
 
       // Clone the node
       var nodeClone = node.cloneNode(true);
+
       // Replace all ">" with space "> " to creat new word borders
       nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
-      var words = [];
-      if (qx.core.Variant.isSet("qx.client", "mshtml|opera")) {
-        words = nodeClone.innerText.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);  
-      } else {
-        words = nodeClone.textContent.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);
-      }
+
+      var text  = qx.core.Variant.isSet("qx.client", "mshtml|opera") ? nodeClone.innerText : nodeClone.textContent;
+      var words = text.match(htmlarea.HtmlArea.GetWordsRegExp);
+
       return !words ? [] : words;
     },
-    
+
 
     /**
      * TODOC
@@ -740,7 +744,7 @@ qx.Class.define("htmlarea.HtmlArea",
         return null;
       }
 
-      return word.replace(/\t|\n|\r|/gi, "");
+      return word.replace(htmlarea.HtmlArea.CleanupWordsRegExp, "");
     },
 
 
