@@ -525,6 +525,17 @@ qx.Class.define("htmlarea.HtmlArea",
       init  : true
     },
 
+
+    /**
+     * if true we add a linebreak after control+enter
+     */
+    insertLinebreakOnCtrlEnter :
+    {
+      check : "Boolean",
+      init  : true
+    },
+
+
     /**
      * Toggles whether to use Undo/Redo
      */
@@ -1270,7 +1281,11 @@ qx.Class.define("htmlarea.HtmlArea",
       var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
-      
+
+      if (qx.core.Variant.isSet("qx.debug", "on")) {
+        this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
+      }
+
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -1285,10 +1300,17 @@ qx.Class.define("htmlarea.HtmlArea",
           switch(keyIdentifier)
           {
             case "enter":
-              var sel = this.__getSelection();
-              var rng = this.__createRange(sel);
-              rng.collapse(true);
-              rng.pasteHTML('<br/><div class="placeholder"></div>');
+              if (this.getInsertLinebreakOnCtrlEnter())
+              {
+                var sel = this.__getSelection();
+                var rng = this.__createRange(sel);
+                rng.collapse(true);
+                rng.pasteHTML('<br/><div class="placeholder"></div>');
+              }
+              else
+              {
+                return;
+              }
             break;
             
             /*
@@ -1297,7 +1319,7 @@ qx.Class.define("htmlarea.HtmlArea",
              * combination several times without releasing the "Ctrl" key
              */
             case "control":
-              this.__controlPressed = false;            
+              this.__controlPressed = false;
             break;
             
             /*
@@ -1386,9 +1408,9 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
         
-        /*if (qx.core.Variant.isSet("qx.debug", "on")) {
+        if (qx.core.Variant.isSet("qx.debug", "on")) {
           this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase() + " | " + e.getCharCode());
-        }*/
+        }
         
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
         if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
@@ -1429,11 +1451,10 @@ qx.Class.define("htmlarea.HtmlArea",
       var isCtrlPressed   = e.isCtrlPressed();
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
-      /*
+
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
       }
-      */
 
       switch(keyIdentifier)
       {
@@ -1467,6 +1488,11 @@ qx.Class.define("htmlarea.HtmlArea",
            */
           if (isCtrlPressed)
           {
+            if (!this.getInsertLinebreakOnCtrlEnter())
+            {
+              return;
+            }
+
             e.preventDefault();
             e.stopPropagation();
 
