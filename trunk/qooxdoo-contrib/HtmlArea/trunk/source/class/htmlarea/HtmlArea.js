@@ -675,29 +675,19 @@ qx.Class.define("htmlarea.HtmlArea",
         node = this.getContentBody();
       }
 
-      var words = this._getInnerText(node);
-
+      // Clone the node
+	    var nodeClone = node.cloneNode(true);
+	    // Replace all ">" with space "> " to creat new word borders
+	    nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
+	    var words = [];
+	    if (qx.core.Variant.isSet("qx.client", "mshtml|opera")) {
+	      words = nodeClone.innerText.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);  
+	    } else {
+	      words = nodeClone.textContent.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);
+	    }
       return !words ? [] : words;
     },
     
-    
-    /**
-     * returns the inner text of a node
-     * 
-     * @param node {Object}
-     */
-    _getInnerText : function(node) {
-       // Clone the body
-       var nodeClone = node.cloneNode(true);
-       // Replace all ">" with space "> " to creat new word borders
-       nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
-       if (qx.core.Variant.isSet("qx.client", "mshtml|opera")) {
-         return nodeClone.innerText.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);	
-       } else {
-         return nodeClone.textContent.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);
-       }
-    },
- 
 
     /**
      * TODOC
