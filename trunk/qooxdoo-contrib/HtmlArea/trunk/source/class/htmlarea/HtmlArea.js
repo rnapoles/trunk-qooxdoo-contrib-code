@@ -84,7 +84,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleMouseEvent = qx.lang.Function.bind(this._handleMouseEvent, this);
-    this.__handleMouseUpEvent = qx.lang.Function.bind(this._handleMouseUpEvent, this);
+    this.__handleContextMenuEvent = qx.lang.Function.bind(this._handleContextMenuEvent, this);
 
     /*
      * Catch load event - no timer needed which polls if the component is ready and
@@ -1084,7 +1084,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "click" : "mouseup", this.__handleMouseEvent);
-      qx.html.EventRegistration.addEventListener(doc.body, "mouseup", this.__handleMouseUpEvent);
+      /* Register context menu event - use contextmenu for safari (because mac safari does not fire mouse up event on right click) and mousup for all other
+       * browsers (as ie does not give the right button number for the context menu) */
+      qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
 
       qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
     },
@@ -1822,16 +1824,15 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Eventlistener for all mouse up events. Fires the contextmenu event.
+     * Eventlistener for all context menu events. Fires the contextmenu event.
      *
      * @type member
      * @param e {Object} Event object
      * @return {void}
      */
-    _handleMouseUpEvent : function(e)
+    _handleContextMenuEvent : function(e)
     {
       var button = (e.button ? e.button : e.which);
-
       if (qx.event.type.MouseEvent.buttons.right == button)
       {
         var data   = {
@@ -2790,7 +2791,7 @@ qx.Class.define("htmlarea.HtmlArea",
       //   WIDGET MOUSE EVENTS
       // ************************************************************************
       qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isMshtml() ? "mouseup" : "click", this.__handleMouseEvent);
-      qx.html.EventRegistration.removeEventListener(doc.body, "mouseup", this.__handleMouseUpEvent);
+      qx.html.EventRegistration.removeEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
       qx.html.EventRegistration.removeEventListener(doc, "focusout", this.__handleFocusOut);
     }
     catch(ex) {}
