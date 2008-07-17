@@ -780,6 +780,9 @@ qx.Class.define("htmlarea.command.Manager",
              if (currRange && currRange.length > 0)
              {
                var item = currRange(0);
+               item.setAttribute("border", "0");
+               item.setAttribute("hight", "");
+               item.setAttribute("width", "");
 
                if (item.tagName.toLowerCase() == "img")
                {

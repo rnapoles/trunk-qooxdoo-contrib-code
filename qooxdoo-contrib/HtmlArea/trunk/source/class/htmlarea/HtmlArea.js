@@ -1350,9 +1350,9 @@ qx.Class.define("htmlarea.HtmlArea",
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
 
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
-      }
+      //if (qx.core.Variant.isSet("qx.debug", "on")) {
+      //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
+      //}
 
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
@@ -1476,9 +1476,9 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var keyIdentifier   = e.getKeyIdentifier().toLowerCase();
         
-        if (qx.core.Variant.isSet("qx.debug", "on")) {
-          this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase() + " | " + e.getCharCode());
-        }
+        //if (qx.core.Variant.isSet("qx.debug", "on")) {
+        //  this.debug(e.getType() + " | " + e.getKeyIdentifier().toLowerCase() + " | " + e.getCharCode());
+        //}
         
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
         if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
@@ -1520,9 +1520,9 @@ qx.Class.define("htmlarea.HtmlArea",
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
 
-      if (qx.core.Variant.isSet("qx.debug", "on")) {
-        this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
-      }
+      //if (qx.core.Variant.isSet("qx.debug", "on")) {
+      //  this.debug(e.getType() + " | " + keyIdentifier + " | " + e.getCharCode());
+      //}
 
       switch(keyIdentifier)
       {
