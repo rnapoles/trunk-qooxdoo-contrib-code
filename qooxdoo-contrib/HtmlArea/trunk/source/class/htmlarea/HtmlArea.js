@@ -676,15 +676,15 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
       // Clone the node
-	    var nodeClone = node.cloneNode(true);
-	    // Replace all ">" with space "> " to creat new word borders
-	    nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
-	    var words = [];
-	    if (qx.core.Variant.isSet("qx.client", "mshtml|opera")) {
-	      words = nodeClone.innerText.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);  
-	    } else {
-	      words = nodeClone.textContent.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);
-	    }
+      var nodeClone = node.cloneNode(true);
+      // Replace all ">" with space "> " to creat new word borders
+      nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
+      var words = [];
+      if (qx.core.Variant.isSet("qx.client", "mshtml|opera")) {
+        words = nodeClone.innerText.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);  
+      } else {
+        words = nodeClone.textContent.match(/([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g);
+      }
       return !words ? [] : words;
     },
     
