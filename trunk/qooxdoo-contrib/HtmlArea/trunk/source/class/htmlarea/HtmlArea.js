@@ -261,9 +261,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type static
      * @param root {Node} Root node (starting point)
      * @param outputRoot {Boolean} Controls whether the root node is also added to the output
+     * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} Content of current node
      */
-    __getHtml : function(root, outputRoot)
+    __getHtml : function(root, outputRoot, skipHtmlEncoding)
     {
       var html = "";
 
@@ -271,7 +272,7 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         case 1:  // Node.ELEMENT_NODE
         case 11:  // Node.DOCUMENT_FRAGMENT_NODE
-
+        
           var closed;
           var i;
 
@@ -287,7 +288,7 @@ qx.Class.define("htmlarea.HtmlArea",
               if (root.tagName.toLowerCase() == "div" && root.className && root.className == "placeholder")
               {
                 for (i=root.firstChild; i; i=i.nextSibling) {
-                  html += htmlarea.HtmlArea.__getHtml(i, true);
+                  html += htmlarea.HtmlArea.__getHtml(i, true, skipHtmlEncoding);
                 }
                 return html;
               }
@@ -371,7 +372,7 @@ qx.Class.define("htmlarea.HtmlArea",
           }
 
           for (i=root.firstChild; i; i=i.nextSibling) {
-            html += htmlarea.HtmlArea.__getHtml(i, true);
+            html += htmlarea.HtmlArea.__getHtml(i, true, skipHtmlEncoding);
           }
 
           if (outputRoot && !closed) {
@@ -381,8 +382,7 @@ qx.Class.define("htmlarea.HtmlArea",
           break;
 
         case 3:  // Node.TEXT_NODE
-
-          html = htmlarea.HtmlArea.__htmlEncode(root.data);
+          html = skipHtmlEncoding ? root.data : htmlarea.HtmlArea.__htmlEncode(root.data);
           break;
 
         case 8:  // Node.COMMENT_NODE
@@ -631,11 +631,12 @@ qx.Class.define("htmlarea.HtmlArea",
      * carefully.
      *
      * @type member
+     * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} computed value of the editor
      */
-    getComputedValue : function()
+    getComputedValue : function(skipHtmlEncoding)
     {
-      return this.getHtml();
+      return this.getHtml(skipHtmlEncoding);
     },
 
 
@@ -2420,9 +2421,10 @@ qx.Class.define("htmlarea.HtmlArea",
      * Get html content (call own recursive method)
      *
      * @type member
+     * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} current content of the editor as XHTML
      */
-    getHtml : function()
+    getHtml : function(skipHtmlEncoding)
     {
       var doc = this.getContentDocument();
 
@@ -2430,7 +2432,7 @@ qx.Class.define("htmlarea.HtmlArea",
         return null;
       }
 
-      return htmlarea.HtmlArea.__getHtml(doc.body, false);
+      return htmlarea.HtmlArea.__getHtml(doc.body, false, skipHtmlEncoding);
     },
 
     /**
