@@ -561,6 +561,37 @@ qx.Class.define("htmlarea.HtmlArea",
 
   members :
   {
+    /**
+     * Blocks iframe. Overwritten method from Iframe class
+     * IMPORTANT: the implementation of the parent class breaks
+     * the Undo/Redo in IE.
+     * 
+     * @type member
+     * @return {void}
+     */
+    block : function()
+    {
+      if (this._blockerNode) {
+        this._blockerNode.style.display = "";
+      } 
+    },
+    
+    /**
+     * Releases iframe. Overwritten method from Iframe class
+     * IMPORTANT: the implementation of the parent class breaks
+     * the Undo/Redo in IE.
+     * 
+     * @type member
+     * @return {void}
+     */
+    release : function()
+    {
+      if (this._blockerNode) {
+        this._blockerNode.style.display = "none";
+      }
+    },
+    
+    
     /** Initial content which is written dynamically into the iframe's document */
     __contentWrap :
     {
