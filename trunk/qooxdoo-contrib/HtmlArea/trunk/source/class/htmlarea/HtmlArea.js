@@ -2764,6 +2764,27 @@ qx.Class.define("htmlarea.HtmlArea",
         return range.toString();
       }
     },
+    
+    
+    /**
+     * Clears the current selection
+     * 
+     * @type member
+     * @return {void}
+     */
+    clearSelection : qx.core.Variant.select("qx.client", {
+      "mshtml" : function()
+      {
+        this.__getSelection().empty(); 
+      },
+      
+      "default" : function()
+      {
+        this.__getSelection().collapseToStart();
+      }
+    }),
+    
+    
 
     /*
      -----------------------------------------------------------------------------
