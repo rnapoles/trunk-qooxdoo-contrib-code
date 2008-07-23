@@ -17,6 +17,6 @@
 
   "namespace" : "skeletonapplication",
   
-  "version" : "0.1",
-  "qooxdoo-versions": ["trunk"]
+  "version" : "trunk",
+  "qooxdoo-versions": ["0.7"]
 }
