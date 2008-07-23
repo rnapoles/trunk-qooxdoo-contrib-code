@@ -1,2 +1,7 @@
-An application skeleton for TestRunner/DemoBrowser/... like applications. Uses 
-qooxdoo theming.
+===== SkeletonTestRunner =====
+
+An application skeleton for applications that are similar to TestRunner, 
+DemoBrowser, etc., which come with the qooxdoo framework. This skeleton was 
+created by taking a snapshot of the TestRunner application and removing all 
+parts that were testrunner-specific, so that generic application classes were
+left. Uses qooxdoo theming.
