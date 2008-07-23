@@ -1,8 +1,14 @@
-Filesize format class
-FilesizeFormat cell renderer class
+===== Filesize =====
 
-These classes were inspired by qooxdoo classes qx.util.format.NumberFormat and qx.ui.table.cellrenderer.Number.  Thus, Gaetan de Menten and Til Schneider are listed as co-authors.
-It should be noted that there are 1024 Bytes in a KB (not 1000).  This nuance is incorporated into the filesizeFormat Class.
+  * Filesize format class
+  * FilesizeFormat cell renderer class
 
-As of 4/17/08, a running demo of the app is viewable at sandbox.tartansolutions.com/filesize/build
+These classes were inspired by qooxdoo classes qx.util.format.NumberFormat and 
+qx.ui.table.cellrenderer.Number.  Thus, Gaetan de Menten and Til Schneider are 
+listed as co-authors.
 
+It should be noted that there are 1024 Bytes in a KB (not 1000). This nuance 
+is incorporated into the filesizeFormat Class.
+
+As of 4/17/08, a running demo of the app is viewable at 
+http://sandbox.tartansolutions.com/filesize/build
