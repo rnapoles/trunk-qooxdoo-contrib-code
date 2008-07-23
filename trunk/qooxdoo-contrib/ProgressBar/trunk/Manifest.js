@@ -21,6 +21,6 @@
 
   "namespace" : "progressbar",
         
-  "version" : "0.1",
-  "qooxdoo-versions": ["0.7", "trunk"]
+  "version" : "trunk",
+  "qooxdoo-versions": ["0.7"]
 }
