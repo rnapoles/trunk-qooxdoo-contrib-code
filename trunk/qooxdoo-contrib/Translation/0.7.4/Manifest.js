@@ -4,7 +4,7 @@
   "summary" : "Collaboration project for translating language-specific parts of qooxdoo",
   "description" : "If you would like to help with translations please contact translation@qooxdoo.org",
   "keywords" : ["translation"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib/Translation",
+  "homepage" : "http://contrib.qooxdoo.org/Translation",
 
   "license" : "LGPL/EPL",
   "authors" : [
