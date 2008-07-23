@@ -5,13 +5,14 @@
   "description" : "A couple of interoperating extensions that are useful for web application development (authentication, clipboard, databinding) currently with a PHP/MySQL backend.",
   
   "keywords" : ["toolkit", "authentication", "databinding", "clipboard", "php", "backend"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://contrib.qooxdoo.org",
 
   "license" : "LGPL/EPL",
   "authors" : [
     {
-      "name" : "Christian Boulanger (cboulanger)",
-      "email" : "info (AT) bibliograph (DOT) org"
+      "name" : "Christian Boulanger",
+      "user" : "cboulanger",
+      "email" : "info AT bibliograph DOT org"
     }
   ],
 

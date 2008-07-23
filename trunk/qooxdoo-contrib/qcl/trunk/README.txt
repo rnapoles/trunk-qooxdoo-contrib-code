@@ -1,5 +1,6 @@
-qoodoo component library (qxl)
------------------------------
+===== qcl =====
+
+qoodoo component library
 
 A couple of interoperating extensions that are useful for web 
 application development:
