@@ -5,17 +5,16 @@
   "description" : "A Java Applet for embedding into your webpage on which you can drop files.",
   
   "keywords" : ["upload", "applet" ],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://contrib.qooxdoo.org",
 
-  "license" : "LGPL/EPL",
+  "license" : "Apache",
   "authors" : [
     {
-      "name" : "Christian Boulanger (cboulanger)",
-      "email" : "info (AT) bibliograph (DOT) org"
+      "name" : "Christian Boulanger",
+      "user" : "cboulanger",
+      "email" : "info AT bibliograph DOT org"
     }
   ],
-
-  "namespace" : "javaUploadApplet",
   
   "version" : "trunk",
   "qooxdoo-versions": ["0.7"]

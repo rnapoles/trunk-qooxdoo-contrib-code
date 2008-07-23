@@ -1,0 +1,8 @@
+===== License =====
+
+Licensing applies to the PHP backend for Drag & Drop Upload Java Applet
+
+This is Public Domain, you can use, modify or distribute it in any
+way you wish, but please report improvements to 
+ 
+info AT bibliograph DOT org
