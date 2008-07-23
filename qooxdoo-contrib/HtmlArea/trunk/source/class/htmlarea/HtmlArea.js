@@ -1430,7 +1430,7 @@ qx.Class.define("htmlarea.HtmlArea",
              * Execute the "selectAll" command identifier whenever the shortcut "Ctrl+A" is pressed
              */
             case "a":
-              this.__executeHotkey('selectAll', true);              
+              this.__executeHotkey('selectAll', true);
             break;
             
             case "b":
@@ -1518,7 +1518,7 @@ qx.Class.define("htmlarea.HtmlArea",
         
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
         if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
-                                      keyIdentifier == "b" || 
+                                      keyIdentifier == "b" || keyIdentifier == "u" || 
                                       keyIdentifier == "i" || keyIdentifier == "k"))
         {
           e.preventDefault();
