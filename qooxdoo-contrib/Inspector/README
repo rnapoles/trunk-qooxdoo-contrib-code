@@ -1,20 +1,18 @@
-Inspector
+===== Inspector =====
 
-What is it?
-===========
-The qooxdoo inspector is a tool designed to help debugging qooxdoo applications. 
-It consists of four seperate windows.
-1. a javascript shell.
-2. the object finder which shows a table of all qooxdoo objects.
-3. the widget finder which shows a tree structure of the ui.
-4. the property editor which shows all properties of the current selected object.
+qooxdoo inspector is a tool designed to help debugging qooxdoo applications. 
+
+It consists of four separate windows:
+1. "console", which is an interactive JavaScript shell.
+2. "object finder" which shows a table of all qooxdoo objects.
+3. "widget finder" which shows a tree structure of the UI.
+4. "property editor" which shows all properties of the currently selected object.
 
 
-How to use it?
-==============
-The inspector consist of four windows which can be opened with the following key combination:
-CTRL + SHIFT + F1 opens the shell
-CTRL + SHIFT + F2 opens the object finder window
-CTRL + SHIFT + F3 opens the widget finder window
-CTRL + SHIFT + F4 opens the property editor window
+==== How to use it? ====
+
 CTRL + SHIFT + F11 opens all windows
+CTRL + SHIFT + F1  opens the console
+CTRL + SHIFT + F2  opens the object finder
+CTRL + SHIFT + F3  opens the widget finder 
+CTRL + SHIFT + F4  opens the property editor
