@@ -2,9 +2,9 @@
   "name" : "WindowManager",
   
   "summary" : "Simon's extended window manager",
-  "description" : "...",
+  "description" : "",
   "keywords" : ["widget"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://contrib.qooxdoo.org",
   
   "license" : "LGPL/EPL",
   "authors" : [
