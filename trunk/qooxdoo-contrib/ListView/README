@@ -1,1 +1,9 @@
-A widget for lists.
+===== ListView =====
+
+A virtual list widget. It is deprecated in 0.7.x and not planned to be ported 
+to qooxdoo 0.8. Please use the Table widget instead, which is part of the 
+framework for a very long time now.
+
+If you don't want to migrate to Table and/or rely on functionality that only 
+ListView provides, you may have to port it to 0.8 yourself. This project can be 
+used as a place of collaboration for such a port.
