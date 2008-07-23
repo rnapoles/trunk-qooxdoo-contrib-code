@@ -4,12 +4,13 @@
   "summary" : "A simple HTML editing widget",
   "description" : "...",
   "keywords" : ["widget"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://contrib.qooxdoo.org/HtmlArea",
   
   "license" : "LGPL/EPL",
   "authors" : [
     {
       "name" : "Alexander Back",
+      "user" : "aback",
       "email" : "alex DOT back AT 1und1 DOT de"
     }
   ],
