@@ -1,4 +1,4 @@
-INFORMATION
+===== Simulator =====
 
 This module provides various pieces to utilize Selenium
 (http://www.openqa.org/selenium) to automate qooxdoo applications.
