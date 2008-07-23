@@ -1,4 +1,4 @@
-CouchDB Support Code
+===== CouchDB =====
 
 This contribution provides client-side access to a CoucbDB server using a REST api.
 For this purpose, part of this contribution is also a more generic neutral rest-library.
@@ -9,4 +9,4 @@ http://incubator.apache.org/couchdb/
 Please note that CouchDB itself is still in Alpha state and the api is in flux.
 So, it might from time to time lag behind SVN updates of CouchDB. 
 
-Releases of this contribution are therefor tagged by date.
+Releases of this contribution are therefore tagged by date.
