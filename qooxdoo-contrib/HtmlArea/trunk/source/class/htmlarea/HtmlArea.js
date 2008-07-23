@@ -603,10 +603,10 @@ qx.Class.define("htmlarea.HtmlArea",
         style   : qx.core.Variant.select("qx.client",
         {
            "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-                       'body { width:100%; height:100%;background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+                       'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } ',
            "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: hidden; }' +
-                       'body { background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+                       'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } '
         }),
         body    : '<body id="bodyElement">\n',
