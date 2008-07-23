@@ -4,7 +4,7 @@
   "summary" : "A Sample widget.",
   "description": "This widget can be used as basis for other contributions",
   "keywords" : ["widget", "skeleton"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://contrib.qooxdoo.org",
   
   "license" : "LGPL/EPL",    
   "authors" : [
@@ -17,6 +17,6 @@
   "namespace" : "skeletonwidget",
   "resource-uri-setting" : "skeletonwidget.resourceUri",
 
-  "version" : "0.1",
-  "qooxdoo-versions": ["0.7", "trunk"]
+  "version" : "trunk",
+  "qooxdoo-versions": ["0.7"]
 }
