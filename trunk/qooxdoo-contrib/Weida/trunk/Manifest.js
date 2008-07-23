@@ -19,12 +19,13 @@ Nothing of it is 100% finished, but the basics are working quite good",
   
   "authors" : [
     {
-      "name" : "Leander Hanwald"
+      "name" : "Leander Hanwald",
+      "user" : "hanwald"
     }
   ],
   
   "license" : "LGPL/EPL",
-  "version" : "alpha1",
+  "version" : "trunk",
   
   "qooxdoo-versions": ["0.7.1"]
   
