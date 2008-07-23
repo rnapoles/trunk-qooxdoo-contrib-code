@@ -1,5 +1,6 @@
-Qooxdoo Web Toolkit
--------------------
+===== QWT =====
+
+qooxdoo Web Toolkit
 
 CAUTION: this is early beta software.
 
@@ -16,5 +17,4 @@ Directory structure
   application    example applications
 
 
-See also: http://qooxdoo.org/documentation/contrib/contributions/qwt
-
+See also: http://contrib.qooxdoo.org/QWT
