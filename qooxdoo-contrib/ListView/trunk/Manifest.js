@@ -10,6 +10,7 @@
   "authors" : [
     {
       "name" : "Jonathan Rass",
+      "user" : "jonathan_rass",
       "email" : "jonathan.rass@1und1.de"
     }
   ],
