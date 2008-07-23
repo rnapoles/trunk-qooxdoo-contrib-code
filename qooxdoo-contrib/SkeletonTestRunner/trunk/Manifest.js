@@ -1,11 +1,11 @@
 {
-  "name" : "SkeletonQxRunner",
+  "name" : "SkeletonTestRunner",
   "namespace" : "qxapp",
   
   "summary" : "Skeleton for TestRunner/DemoBrowser-like applications",
   "description" : "...",
   "keywords" : ["widget"],
-  "homepage" : "http://qooxdoo.org/documentation/contrib",
+  "homepage" : "http://contrib.qooxdoo.org",
   
   "authors" : [
     {
@@ -14,9 +14,8 @@
     }
   ],
   
-  "license" : "LGPL",
+  "license" : "LGPL/EPL",
   "version" : "trunk",
   
   "qooxdoo-versions": ["0.7.1"]
-  
 }
