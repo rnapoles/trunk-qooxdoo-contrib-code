@@ -656,6 +656,34 @@ PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
   }
 };
 
+/**
+ * Returns the client document instance or null if Init.getApplication() returned null. 
+ * Reason is that qooxdoo 0.7 relies on the application being set when the client document
+ * is accessed  
+ *
+ * @type member
+ * @param inWindow {var} window too get client document for
+ * @return {qx.ui.core.ClientDocument | null} document or null
+ */
+PageBot.prototype._getClientDocument = function(inWindow){
+  
+  //In qooxdoo 0.7, qx.ui.core.ClientDocument.getInstance() triggers the autoflush
+  //mechanism in qooxdoo. This will cause the rendering queues to be flushed.
+  //If the application is not set yet, Widget.flushGlobalQueues will fail.
+  //
+  //So prevent access to the client document until application is set
+  if ((inWindow != null)
+       && (inWindow.qx != null)
+       && (inWindow.qx.core.Init != null)
+       && (inWindow.qx.core.Init.getInstance() != null)      
+       && (inWindow.qx.core.Init.getInstance().getApplication() != null)
+     ){
+    return inWindow.qx.ui.core.ClientDocument.getInstance();
+  } else{
+    return null;
+  }
+}
+
 
 /**
  * TODOC
@@ -686,7 +714,11 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
       qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
     } else 
     {
-      qxAppRoot = inWindow.qx.ui.core.ClientDocument.getInstance();
+      qxAppRoot = this._getClientDocument(inWindow);
+      if (qxAppRoot == null){
+        LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+        return null;
+      }
     }
     this._globalQxObject = inWindow.qx;
   }
@@ -751,7 +783,11 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
   if (inWindow.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance using (qx.ui.core.ClientDocument.getInstance())");
-    qxResultObject = inWindow.qx.ui.core.ClientDocument.getInstance();
+    qxResultObject = this._getClientDocument(inWindow);
+    if (qxResultObject == null){
+      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+      return null;
+    }
   }
   else
   {
