@@ -1913,11 +1913,6 @@ qx.Class.define("htmlarea.HtmlArea",
       if (e.type == "focus")
       { 
         this._handleFocusIn();
-        this.getContentBody().style.backgroundColor = "#FF0000";
-      }
-      else
-      {
-        this.getContentBody().style.backgroundColor = "#FFFFFF";
       }
     },
 
