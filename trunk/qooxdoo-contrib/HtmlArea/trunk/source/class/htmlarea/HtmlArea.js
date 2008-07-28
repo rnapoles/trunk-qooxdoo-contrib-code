@@ -1338,7 +1338,9 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _visualizeFocus : function()
     {
-      if (this.getElement().offsetWidth == 0)
+      var elem = this.getElement();
+
+      if (!elem || elem && elem.offsetWidth == 0)
       {
         this.debug("can't visualize focus because the iframe is invisible.");
         return;
