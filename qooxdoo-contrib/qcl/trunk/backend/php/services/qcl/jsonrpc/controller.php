@@ -122,7 +122,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		{
 			 $currPath .= $serviceComponents[$i] . "/";
 			 
-			 // if config file exists, parse it and add/override config directives
+			 /*
+			  * if config file exists, parse it and add/override config directives
+			  */
 			 if ( file_exists ( $currPath . "/" . QCL_SERVICE_CONFIG_FILE) )
 			 {
 			   $found = true;
@@ -133,7 +135,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     
     if ( ! $found )
     {
-      $this->raiseError("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
+      $this->warn("No " . QCL_SERVICE_CONFIG_FILE . " file found for " . get_class($this) . " ." );
     }
 	}
 

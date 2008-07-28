@@ -15,7 +15,7 @@ require_once ("qcl/jsonrpc/model.php");
  *   if allowed, create their own versions of the entry. When they edit
  *   this entry, they will all other variants will be left untouched including
  *   the default value, to which the user variant can be reset.
- * - on the client, a qcl.config.manager singleton object takes care of retrieval
+ * - on the client, a qcl.config.Manager singleton object takes care of retrieval
  *   and update of the config entries. on login, all or a subset of the configuration 
  *   entries that an individual user has access to will be sent to the client and 
  *   cached there.  
