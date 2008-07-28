@@ -145,6 +145,22 @@ function debug_get_backtrace($skip=1)
   return implode("\n", $calls);
 }
 
+/**
+ * returns file extension, if any
+ * @param string $file
+ * @return string
+ */
+function get_file_extension ($file)
+{
+  $pos = strrpos($file,".");
+  
+  if ( $pos !== false )
+  {
+    return substr($file,$pos+1);  
+  }
+  return "";
+}
+
 
 /*
  * we can return here if not PHP 4

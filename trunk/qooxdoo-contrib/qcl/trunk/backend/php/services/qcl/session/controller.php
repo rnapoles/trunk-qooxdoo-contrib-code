@@ -164,7 +164,7 @@ class qcl_session_controller extends qcl_access_controller
     foreach( $messages as $message )
     {
       $this->addMessage($message['name'],$message['data']);
-      //$this->info($message['name']);
+      $this->info($message);
     }
     return parent::getResponseData();
   }
