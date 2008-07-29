@@ -30,7 +30,7 @@
   
   "provides" : 
   {
-    "namespace"   : "qx",
+    "namespace"   : "htmlarea",
     "encoding"    : "utf-8",
     "class"       : "source/class",
     "resource"    : "source/resource",
