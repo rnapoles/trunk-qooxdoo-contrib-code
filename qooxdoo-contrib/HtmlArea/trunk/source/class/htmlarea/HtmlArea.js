@@ -1975,7 +1975,8 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         var data   = {
           x : e.clientX,
-          y : e.clientY
+          y : e.clientY,
+          target : e.target || e.srcElement
         };
 
         qx.client.Timer.once(function() {
