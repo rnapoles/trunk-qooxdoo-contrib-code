@@ -189,6 +189,7 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
             or stristr($line, "dispatchMessage") )  
         {
           $qxml->add($line);
+          $line_no += $header_lines;
           continue;
         }
         
