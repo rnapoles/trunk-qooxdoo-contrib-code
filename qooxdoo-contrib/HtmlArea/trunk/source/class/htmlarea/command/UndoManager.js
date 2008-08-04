@@ -67,6 +67,12 @@ qx.Class.define("htmlarea.command.UndoManager",
     /* Flag for the undo-mechanism to monitor the content changes */
     __startTyping : false,
     
+    /* Known action types */
+   __knownActionTypes : { command : true, content : true, custom : true },
+    
+    /* Map with infos about custom registered handler */
+    __registeredHandler : {},
+
     
     /* *******************************************************
      *
@@ -209,6 +215,45 @@ qx.Class.define("htmlarea.command.UndoManager",
     },
     
     
+    /**
+     * Public API method to add an undo step
+     * 
+     * @param undoRedoObject {Object} object which contains all the info to undo/redo
+     * 							      the given step. This object has to define
+     * 								  at least the "actionType" key to work properly.
+     * 								  This object is passed to the handler methods 
+     * 								  defined in the @see{registerHandler} method.
+     * 					   
+     * @return {void}
+     */
+    addUndoStep : function(undoRedoObject)
+    {
+      this.__addToUndoStack(undoRedoObject);
+    },
+        
+    
+    /**
+     * Register a handler for a customized actionType. This handler methods 
+     * (undo and redo) are called whenever the UndoManager encounters the 
+     * given actionType to undo/redo the change.
+     * 
+     * @param actionType {String} actionType to react on with undo and redo methods 
+     * @param undoHandler {function} undo method
+     * @param redoHandler {function} redo method
+     * @param context {Object} In this context the methods are called. When no 
+     * 						   context is given the context is the UndoManager itself.
+     * 
+     * @return {void}
+     * 
+     */
+    registerHandler : function(actionType, undoHandler, redoHandler, context)
+    {
+      this.__registeredHandler[actionType] = { undo    : undoHandler,
+                                               redo    : redoHandler,
+                                               context : context };
+    },
+    
+    
     /* *******************************************************
      *
      *                  UNDO METHODS
@@ -257,8 +302,24 @@ qx.Class.define("htmlarea.command.UndoManager",
        {
          var undoStep = this.__undoStack.pop();
 
-         /* Pass the undo-handling to the specialized methods ("__undo" + actionType) */
-         result = this["__undo"+undoStep.actionType].call(this, undoStep);
+         if (this.__knownActionTypes[undoStep.actionType.toLowerCase()]) 
+         {
+          /* Pass the undo-handling to the specialized methods ("__undo" + actionType) */
+          result = this["__undo" + undoStep.actionType].call(this, undoStep);
+         }
+         /* Any there any handlers which are registered to this actionType? */
+         else if(this.__registeredHandler[undoStep.actionType])
+         {
+            var handler = this.__registeredHandler[undoStep.actionType];
+            result = handler.undo.call(handler.context ? context : this, undoStep);
+            
+            // add it automatically to the redoStack
+            this.__addToRedoStack(undoStep);
+         }
+         else
+         {
+           this.error("actionType " + undoStep.actionType + " is not managed! Please provide a handler method!");
+         }
 
          /* (re)set the flags */
          this.__startTyping  = false;
@@ -471,9 +532,24 @@ qx.Class.define("htmlarea.command.UndoManager",
          if (this.__redoStack.length > 0)
          {
            var redoStep = this.__redoStack.pop();
-
-           /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
-           result = this["__redo" + redoStep.actionType].call(this, redoStep);
+           
+           if (this.__knownActionTypes[redoStep.actionType.toLowerCase()]) 
+           {
+            /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
+            result = this["__redo" + redoStep.actionType].call(this, redoStep);
+           }
+           else if(this.__registeredHandler[redoStep.actionType])
+           {
+              var handler = this.__registeredHandler[redoStep.actionType];
+              result = handler.redo.call(handler.context ? context : this, redoStep);
+              
+              // add it automatically to the undoStack
+              this.__addToUndoStack(redoStep);
+           }
+           else
+           {
+             this.error("actionType " + redoStep.actionType + " is not managed! Please provide a handler method!");
+           }
 
            /* (re)set the flags */
            this.__startTyping  = false;
@@ -1078,6 +1154,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     }
     catch(e) {}
     
-    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "__commands", "__doc");
+    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "__commands", "__doc", "__knownActionTypes", "__registeredHandler");
   }
 });
