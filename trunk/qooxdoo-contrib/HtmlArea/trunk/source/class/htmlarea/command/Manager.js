@@ -142,8 +142,13 @@ qx.Class.define("htmlarea.command.Manager",
 
       "mshtml" : function()
       {
-        this.__currentRange      = this.__editorInstance.getRange();
-        this.__lastSelectionType = this.__editorInstance.__getSelection().type;
+        if (this.__editorInstance)
+        {
+          this.__currentRange      = this.__editorInstance.getRange();
+
+          var sel = this.__editorInstance.__getSelection();
+          this.__lastSelectionType = sel ? sel.type : "";
+        }
       },
 
       "default" : function() {}
@@ -774,15 +779,15 @@ qx.Class.define("htmlarea.command.Manager",
          catch (exc)
          {
            // we can't pasteHtml so we check if we have selected an image and
-           // replaces all items
+           // replaces all attributes
            if (this.__lastSelectionType.toLowerCase() == "control")
            {
              if (currRange && currRange.length > 0)
              {
                var item = currRange(0);
                item.setAttribute("border", "0");
-               item.setAttribute("hight", "");
-               item.setAttribute("width", "");
+               item.setAttribute("hight",  "auto");
+               item.setAttribute("width",  "auto");
 
                if (item.tagName.toLowerCase() == "img")
                {
