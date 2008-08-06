@@ -724,7 +724,8 @@ qx.Class.define("htmlarea.command.UndoManager",
              * SPECIAL CASE
              * If the hyperlinks gets inserted on a selection treat it as a command step
              */
-            if (!this.__editorInstance.__getSelection().isCollapsed)
+            if (this.__editorInstance.__getSelection() && 
+                !this.__editorInstance.__getSelection().isCollapsed)
             {
               undoObject.actionType = "Command";
             }
@@ -745,7 +746,8 @@ qx.Class.define("htmlarea.command.UndoManager",
            * need to act on a range to work should be captured.
            *
            */
-          if (this.__editorInstance.__getSelection().isCollapsed)
+          if (this.__editorInstance.__getSelection() && 
+              this.__editorInstance.__getSelection().isCollapsed)
           {
             switch(command)
             {
@@ -984,11 +986,20 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @param e {DOM event} mouse event instance
      * @return {void}
      */
-    _handleMouseUp : qx.core.Variant.select("qx.client", {
+    _handleMouseUp : qx.core.Variant.select("qx.client",
+    {
       "gecko" : function(e)
       {
         /* Get the current selected node (if available) */
         var sel = this.__editorInstance.__getSelection();
+
+        // if no selection exists, we have no selected node
+        if (!sel)
+        {
+          this.__selectedNode = null;
+          return;
+        }
+
         var anchorNode = sel.anchorNode;
         
         var checkNode = anchorNode.childNodes[sel.anchorOffset];
@@ -1050,7 +1061,7 @@ qx.Class.define("htmlarea.command.UndoManager",
               {
                 /* A change occured -> add undo step and update the stored element */
                 this.__addInternalUndoStep();
-                this.__selectedNode = tableNode.cloneNode(true);                
+                this.__selectedNode = tableNode.cloneNode(true);
               }
             }, this, 0);
           }
@@ -1059,7 +1070,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         {
           /* Reset the stored element for every other case */
           this.__selectedNode = null;
-        }      
+        }
       },
       
       "default" : function(e)

@@ -732,17 +732,22 @@ qx.Class.define("htmlarea.command.Manager",
            
            /* Get the image node */
            var sel = this.__editorInstance.__getSelection();
-           var anchorNode = sel.anchorNode;
-           var offset = sel.anchorOffset;
-           var img = anchorNode.childNodes[offset-1];
-           
-           var attrNode;
-           for (var attribute in attributes)
+
+           // TODO: need to revert the execCommand if no selection exists?
+           if (sel)
            {
-             attrNode = this.__doc.createAttribute(attribute);
-             attrNode.nodeValue = attributes[attribute];
+             var anchorNode = sel.anchorNode;
+             var offset = sel.anchorOffset;
+             var img = anchorNode.childNodes[offset-1];
              
-             img.setAttributeNode(attrNode);
+             var attrNode;
+             for (var attribute in attributes)
+             {
+               attrNode = this.__doc.createAttribute(attribute);
+               attrNode.nodeValue = attributes[attribute];
+               
+               img.setAttributeNode(attrNode);
+             }
            }
          }
          else
@@ -819,12 +824,13 @@ qx.Class.define("htmlarea.command.Manager",
       * @param commandObject {Object} command object
       * @return {Boolean} result
       */
-     __insertHyperLink : qx.core.Variant.select("qx.client", {
+     __insertHyperLink : qx.core.Variant.select("qx.client",
+     {
        "gecko" : function(url, commandObject)
        {
          var sel      = this.__editorInstance.__getSelection();
          var rng      = this.__editorInstance.__createRange(sel);
-         
+
          /* 
           * SPECIAL CASE
           * If the selection is collapsed insert a link with
@@ -853,7 +859,7 @@ qx.Class.define("htmlarea.command.Manager",
            
            sel.collapseToEnd();
            
-           return true;      
+           return true;
          }
          else
          {
@@ -1038,7 +1044,7 @@ qx.Class.define("htmlarea.command.Manager",
        var sel = this.__editorInstance.__getSelection();
        
        /* Check the focusNode - if not available return a empty map */
-       if (sel.focusNode == null)
+       if (!sel || sel.focusNode == null)
        {
          return {};
        }
