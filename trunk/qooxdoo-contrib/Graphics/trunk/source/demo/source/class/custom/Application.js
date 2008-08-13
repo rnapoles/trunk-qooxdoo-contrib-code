@@ -54,7 +54,7 @@ MEMBERS
 
       function doWZ(e)
       {
-        var wz = new graphics.engine.WalterZorn();
+        var wz = new ssvg.engine.WalterZorn();
 
         var el = o.getElement();
         wz.setContainer(el);
@@ -67,7 +67,7 @@ MEMBERS
         wz.setColor("#ff9900");
         wz.drawEllipse(16, 240+dy, 59, 130);
         wz.setFont("arial,helvetica,sans-serif", "11px",
-                   graphics.engine.WalterZorn.Font.PLAIN);
+                   ssvg.engine.WalterZorn.Font.PLAIN);
         wz.drawString(35, 180+dy, "<nobr>.drawEllipse(&nbsp;)<\/nobr>");
         wz.drawString(360, 66+dy, ".fillPolygon(&nbsp;)");
         wz.drawLine(62, 197+dy, 48, 234+dy);
@@ -79,7 +79,7 @@ MEMBERS
                       190+dy,
                       "These are not image files.<br>" +
                       "Shapes &amp; text have been dynamically drawn with " +
-                      "<br>graphics.engine.WalterZorn");
+                      "<br>ssvg.engine.WalterZorn");
 
         wz.setStroke(2);
         wz.setColor("#ff99b6");
@@ -111,7 +111,7 @@ MEMBERS
         // Smiley
         wz.fillEllipse(wc+292, 36+dy, 15, 15);
         wz.setColor("#990099");
-        wz.setStroke(graphics.engine.WalterZorn.Stroke.DOTTED);
+        wz.setStroke(ssvg.engine.WalterZorn.Stroke.DOTTED);
         wz.drawRect(wc+280, dy, 40, 50);
         wz.drawString(wc+210, 20+dy, "<nobr>.drawRect(&nbsp;)<\/nobr>");
         wz.setStroke(1);
@@ -145,6 +145,16 @@ MEMBERS
       }
 
       o.addEventListener("appear", doWZ);
+
+      console.warn("About to create 'g' element");
+      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      var appender = new qx.log.appender.FireBug();
+      g.setAttribute('transform',
+                     'matrix(0 1 1 0 0 0) translate(1 0)');
+      var l = g.transform.baseVal.getItem(0).matrix;
+      var r = g.transform.baseVal.getItem(1).matrix;
+      var m = l.multiply(r);
+      qx.dev.Debug.debugObject(m, "m", 10, appender);
     },
 
 
