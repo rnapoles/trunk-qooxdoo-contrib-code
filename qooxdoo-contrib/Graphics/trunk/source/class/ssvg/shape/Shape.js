@@ -25,10 +25,29 @@ qx.Class.define("ssvg.shape.Shape",
 
   construct : function(parent, type)
   {
-    this.base();
-    this._parent = parent;
-    this._type = type;
-
+    this.base(arguments);
+    this.setType(type);
     parent.add(this);
+  },
+
+  properties :
+  {
+    type :
+    {
+      init : null
+    },
+
+    parent :
+    {
+      init : null
+    }
+  },
+
+  statics :
+  {
+    fromJson : function(parent, jsonDescription)
+    {
+      
+    }
   }
 });

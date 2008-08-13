@@ -42,6 +42,6 @@ qx.Class.define("ssvg.shape.Circle",
    */
   construct : function(parent, xCenter, yCenter, radius)
   {
-    this.base(parent, xCenter, yCenter, radius, radius);
+    this.base(arguments, parent, xCenter, yCenter, radius, radius);
   }
 });

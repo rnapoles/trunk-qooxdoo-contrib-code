@@ -44,6 +44,6 @@ qx.Class.define("ssvg.shape.Ellipse",
    */
   construct : function(parent, xCenter, yCenter, xRadius, yRadius)
   {
-    this.base(parent, "ellipse");
+    this.base(arguments, parent, "ellipse");
   }
 });

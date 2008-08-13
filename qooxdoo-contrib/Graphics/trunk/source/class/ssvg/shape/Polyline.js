@@ -41,6 +41,6 @@ qx.Class.define("ssvg.shape.Polyline",
    */
   construct : function(parent, points)
   {
-    this.base(parent, "polyline");
+    this.base(arguments, parent, "polyline");
   }
 });

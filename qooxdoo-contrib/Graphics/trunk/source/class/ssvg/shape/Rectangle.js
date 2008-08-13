@@ -17,7 +17,7 @@
 ************************************************************************ */
 
 /**
- * Create a new Path.
+ * The Rectangle shape.
  *
  * The JSON representation has members type="rect", left, top, width,
  * height, and cornerRadius.
@@ -52,6 +52,6 @@ qx.Class.define("ssvg.shape.Rectangle",
    */
   construct : function(parent, left, top, width, height, cornerRadius)
   {
-    this.base(parent, "rect");
+    this.base(arguments, parent, "rect");
   }
 });
