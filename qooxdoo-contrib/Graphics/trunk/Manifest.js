@@ -1,7 +1,7 @@
 {
   "name" : "Graphics",
 
-  "summary" : "Simplified Scalable Vector Graphics",
+  "summary" : "Simple Scalable Vector Graphics",
   "description": "Render graphics in qooxdoo widgets",
   "keywords" : ["graphics"],
   "homepage" : "http://contrib.qooxdoo.org",
@@ -10,7 +10,7 @@
   "authors" : [
     {
       "name" : "Derrell Lipman",
-      "email" : "derrell.lipman@unwireduniverse.com"
+      "email" : "derrell DOT lipman AT unwireduniverse DOT com"
     }
   ],
   
