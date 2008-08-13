@@ -17,7 +17,7 @@
 ************************************************************************ */
 
 /**
- * A Text shape.
+ * The Text shape.
  *
  * The JSON representation has members type="text", x, y, and text.
  */
@@ -42,6 +42,6 @@ qx.Class.define("ssvg.shape.Text",
    */
   construct : function(parent, x, y, text)
   {
-    this.base(parent, "text");
+    this.base(arguments, parent, "text");
   }
 });

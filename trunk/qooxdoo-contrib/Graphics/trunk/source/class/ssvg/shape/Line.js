@@ -43,6 +43,6 @@ qx.Class.define("ssvg.shape.Line",
    */
   construct : function(parent, x0, y0, x1, y1)
   {
-    this.base(parent, "line");
+    this.base(arguments, parent, "line");
   }
 });

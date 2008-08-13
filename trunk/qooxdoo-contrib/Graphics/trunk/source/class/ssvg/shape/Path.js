@@ -37,7 +37,7 @@ qx.Class.define("ssvg.shape.Path",
    */
   construct : function(parent, path)
   {
-    this.base(parent, "path");
+    this.base(arguments, parent, "path");
 
     // Parse the path
   }
