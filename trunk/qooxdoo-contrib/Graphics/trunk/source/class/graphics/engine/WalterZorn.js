@@ -99,42 +99,6 @@ qx.Class.define("graphics.engine.WalterZorn",
                  graphics.engine.WalterZorn.Font.PLAIN);
     this.color = "#000000";
     this.htm = "";
-    this.wnd = wnd || window;
-
-    if (! cnv)
-    {
-      throw new Error("Missing canvas parameter");
-    }
-
-    if(typeof(cnv) == "string")
-    {
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        this.cont = (this.wnd.document.all[cnv]);
-      }
-      else
-      {
-        this.cont = this.wnd.document.getElementById(cnv);
-      }
-    }
-    else if(cnv == window.document)
-    {
-      this.cont = document.getElementsByTagName("body")[0];
-    }
-    else
-    {
-      // If cnv is a direct reference to a canvas DOM node
-      // (option suggested by Andreas Luleich)
-      this.cont = cnv;
-    }
-
-    // Create new canvas inside container DIV. Thus the drawing and
-    // clearing methods won't interfere with the container's inner html.
-    // Solution suggested by Vladimir.
-
-    this.cnv = this.wnd.document.createElement("div");
-    this.cnv.style.fontSize=0;
-    this.cont.appendChild(this.cnv);
 
     // Equivalent but alternative function names
     this.drawOval = this.drawEllipse;
@@ -157,6 +121,28 @@ qx.Class.define("graphics.engine.WalterZorn",
 
   members :
   {
+    _canvas : null,
+
+    setContainer : function(container)
+    {
+      if (! container)
+      {
+        throw new Error("Missing container parameter");
+      }
+
+      if (this._canvas !== null)
+      {
+        throw new Error("Container may be set only once");
+      }
+
+      // Create new canvas inside container DIV. Thus the drawing and
+      // clearing methods won't interfere with the container's inner html.
+      // Solution suggested by Vladimir.
+      this._canvas = window.document.createElement("div");
+      this._canvas.style.fontSize=0;
+      container.appendChild(this._canvas);
+    },
+
     setColor : function(x)
     {
       this.color = x.toLowerCase();
@@ -508,21 +494,21 @@ qx.Class.define("graphics.engine.WalterZorn",
     {
       "mshtml" : function()
       {
-        if (this.cnv)
+        if (this._canvas)
         {
-          this.cnv.insertAdjacentHTML("BeforeEnd", this._htmRpc());
+          this._canvas.insertAdjacentHTML("BeforeEnd", this._htmRpc());
         }
         this.htm = "";
       },
 
       "default" : function()
       {
-        if(this.cnv)
+        if(this._canvas)
         {
-          var x = this.wnd.document.createRange();
-          x.setStartBefore(this.cnv);
+          var x = window.document.createRange();
+          x.setStartBefore(this._canvas);
           x = x.createContextualFragment(this.htm);
-          this.cnv.appendChild(x);
+          this._canvas.appendChild(x);
         }
         this.htm = "";
       }
@@ -531,9 +517,9 @@ qx.Class.define("graphics.engine.WalterZorn",
     clear : function()
     {
       this.htm = "";
-      if(this.cnv)
+      if(this._canvas)
       {
-        this.cnv.innerHTML = "";
+        this._canvas.innerHTML = "";
       }
     },
 
