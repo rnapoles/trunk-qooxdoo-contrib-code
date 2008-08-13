@@ -1,7 +1,7 @@
 {
   "name" : "Graphics",
 
-  "summary" : "Graphics classes",
+  "summary" : "Simplified Scalable Vector Graphics",
   "description": "Render graphics in qooxdoo widgets",
   "keywords" : ["graphics"],
   "homepage" : "http://contrib.qooxdoo.org",
@@ -14,8 +14,8 @@
     }
   ],
   
-  "namespace" : "graphics",
-  "resource-uri-setting" : "graphics.resourceUri",
+  "namespace" : "ssvg",
+  "resource-uri-setting" : "ssvg.resourceUri",
 
   "version" : "trunk",
   "qooxdoo-versions": ["0.7"]

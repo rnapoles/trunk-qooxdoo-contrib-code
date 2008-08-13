@@ -74,7 +74,7 @@
  * by qooxdoo, it must therefore typically be called from a widget's "appear"
  * event handler.
  */
-qx.Class.define("graphics.engine.WalterZorn",
+qx.Class.define("ssvg.engine.WalterZorn",
 {
   extend : qx.core.Object,
 
@@ -121,7 +121,7 @@ qx.Class.define("graphics.engine.WalterZorn",
     // Initilaize font
     this.setFont("verdana,geneva,helvetica,sans-serif",
                  "12px",
-                 graphics.engine.WalterZorn.Font.PLAIN);
+                 ssvg.engine.WalterZorn.Font.PLAIN);
 
     // Initialize drawing color
     this.setColor("#000000");
@@ -205,7 +205,7 @@ qx.Class.define("graphics.engine.WalterZorn",
      *  
      * @param stroke {Integer}
      *   The stroke width to use.  As a special case, the value
-     *   graphics.engine.WalterZorn.Stroke.DOTTED may be used to specify that
+     *   ssvg.engine.WalterZorn.Stroke.DOTTED may be used to specify that
      *   a single-width dotted line is to be used for strokes.
      */
     setStroke : function(stroke)
@@ -243,14 +243,14 @@ qx.Class.define("graphics.engine.WalterZorn",
      *   The font size to use.  The units are required, so, for example, you
      *   could use "11px" or "16pt".
      *
-     * @param style {graphics.engine.WalterZorn.Font}
-     *   One of the font style settings in graphics.engine.WalterZorn.Font.*
+     * @param style {ssvg.engine.WalterZorn.Font}
+     *   One of the font style settings in ssvg.engine.WalterZorn.Font.*
      */
     setFont : function(family, size, style)
     {
       this.fontFamily = family;
       this.fontSize = size;
-      this.fontStyle = style || graphics.engine.WalterZorn.Font.PLAIN;
+      this.fontStyle = style || ssvg.engine.WalterZorn.Font.PLAIN;
     },
 
     /**
@@ -705,7 +705,7 @@ qx.Class.define("graphics.engine.WalterZorn",
      *
      * @param hAlign {String}
      *   Horizontal text alignment.  This must be one of the values of
-     *   {@link graphics.engine.WalterZorn.HAlign}.
+     *   {@link ssvg.engine.WalterZorn.HAlign}.
      *
      * @param text {String}
      *   Text to be drawn.  (Non-escaped) HTML tags inside the string will
@@ -759,7 +759,7 @@ djl -- do we want to even allow this?  what trouble do we get ourselves into?
       {
         if (this._canvas)
         {
-          this._canvas.insertAdjacentHTML("BeforeEnd", this._htmRpc());
+          this._canvas.insertAdjacentHTML("BeforeEnd", this._htm);
         }
         this._htm = "";
       },
@@ -969,46 +969,6 @@ djl -- do we want to even allow this?  what trouble do we get ourselves into?
         clip.join('') +
         'overflow:hidden;' +
         '"><\/div>';
-    },
-
-    _mkDivIe : function(x, y, w, h)
-    {
-      this._htm += '%%'+this._color+';'+x+';'+y+';'+w+';'+h+';';
-    },
-
-    _htmRpc : function()
-    {
-      var clip = [];
-      var clipSize = this.getClipSize();
-      if (clipSize)
-      {
-        clip.push('clip:rect(');
-
-        // clip top
-        clip.push(y < 0 ? -y : 0);
-        clip.push('px,');
-
-        // clip right
-        clip.push(x + w > clipSize.width ? clipSize.width - x : w);
-        clip.push('px,');
-
-        // clip bottom
-        clip.push(y + h > clipSize.height ? clipSize.height - y : h);
-        clip.push('px,');
-
-        // clip left
-        clip.push(x < 0 ? -x : 0);
-        clip.push('px');
-
-        clip.push(');');
-      }
-
-      return this._htm.replace(
-        graphics.engine.WalterZorn._regex,
-        '<div style="overflow:hidden;position:absolute;' +
-        clip.join('') +
-        'background-color:'+
-        '$1;left:$2;top:$3;width:$4;height:$5"></div>\n');
     },
 
     _mkLin : function(x1, y1, x2, y2)
