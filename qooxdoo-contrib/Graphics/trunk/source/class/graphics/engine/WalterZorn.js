@@ -64,13 +64,24 @@
 
 
      
+/**
+ * VectorGraphics library by Walter Zorn, converted for use by qooxdoo.  It
+ * provides graphics capabilities: functions to draw circles, ellipses
+ * (ovals), oblique lines, polylines and polygons (for instance triangles,
+ * rectangles) dynamically into a webpage.
+ *
+ * Note: This library is low-level, writing into a "canvas" (div).  When used
+ * by qooxdoo, it must therefore typically be called from a widget's "appear"
+ * event handler.
+ */
 qx.Class.define("graphics.engine.WalterZorn",
 {
   extend : qx.core.Object,
 
   statics :
   {
-    Font    :
+    /** Font characteristic */
+    Font :
     {
       PLAIN       : 'font-weight:normal;',
       BOLD        : 'font-weight:bold;',
@@ -78,11 +89,22 @@ qx.Class.define("graphics.engine.WalterZorn",
       ITALIC_BOLD : 'font-style:italic;font-weight:bold'
     },
 
-    Stroke    :
+    /** Stroke characteristics.  This may be used in lieu of a stroke width. */
+    Stroke :
     {
       DOTTED      : -1
     },
 
+    /** Horizontal text alignment options for {@link drawStringRect} */
+    HAlign :
+    {
+      LEFT        : "left",
+      CENTER      : "center",
+      RIGHT       : "right",
+      JUSTIFY     : "justify"
+    },
+
+    /** Regular expression for faster IE string manipulation */
     _regex  :  /%%([^;]+);([^;]+);([^;]+);([^;]+);([^;]+);/g
   },
 
@@ -93,17 +115,19 @@ qx.Class.define("graphics.engine.WalterZorn",
       throw new Error("Unsupported browser");
     }
 
+    // Initialize stroke width: 1 pixel */
     this.setStroke(1);
+
+    // Initilaize font
     this.setFont("verdana,geneva,helvetica,sans-serif",
                  "12px",
                  graphics.engine.WalterZorn.Font.PLAIN);
-    this.color = "#000000";
-    this.htm = "";
 
-    // Equivalent but alternative function names
-    this.drawOval = this.drawEllipse;
-    this.fillOval = this.fillEllipse;
-    this.drawPolyline = this.drawPolyLine;
+    // Initialize drawing color
+    this.setColor("#000000");
+
+    // HTML for graphics is built up in this variable
+    this._htm = "";
   },
 
   properties :
@@ -111,7 +135,12 @@ qx.Class.define("graphics.engine.WalterZorn",
     /**
      * The size of the div to which we should clip
      *
-     * Value should be an object containing the members 'width' and 'hight'.
+     * Value should be an object containing the members 'width' and 'height',
+     * or null to indicate no clipping.  No clipping means that drawing can
+     * occur outside the boundaries of the canvas to which this class is
+     * drawing.  It is slightly faster to avoid the need for clipping, but the
+     * caller must then be careful that all drawn elements fall within the
+     * canvas if that is a requirement of the application.
      */
     clipSize :
     {
@@ -121,8 +150,16 @@ qx.Class.define("graphics.engine.WalterZorn",
 
   members :
   {
+    /** Canvas (div) to which we are drawing */
     _canvas : null,
 
+    /**
+     * Specify the container div in which the canvas for drawing is
+     * inserted.
+     *
+     * @param container {div}
+     *   The container div in which all drawing should take place.
+     */
     setContainer : function(container)
     {
       if (! container)
@@ -143,21 +180,44 @@ qx.Class.define("graphics.engine.WalterZorn",
       container.appendChild(this._canvas);
     },
 
-    setColor : function(x)
+    /**
+     * Specifies the color of the drawing "pen". Once set, this color will be
+     * used by the subsequently called drawing methods until it is overridden
+     * through another call of setColor(). 
+     *
+     * @param color {String}
+     *   The text or hex representation of the color to use.  The value must
+     *   be enclosed in quotation marks, and should be hexadecimal following
+     *   the pattern "#rrggbb" (as usual with HTML). Color names available in
+     *   HTML (for instance "maroon") may be used as well.
+     */
+    setColor : function(color)
     {
-      this.color = x.toLowerCase();
+      this._color = color.toLowerCase();
     },
 
-    setStroke : function(x)
+    /**
+     * Specifies the thickness of the drawing "pen" for lines and bounding
+     * lines of shapes. Once set, this thickness will be used by the
+     * subsequently called drawing methods until it is overridden through
+     * another call of setStroke(). Default line thickness, before setStroke()
+     * is called, is 1 px.
+     *  
+     * @param stroke {Integer}
+     *   The stroke width to use.  As a special case, the value
+     *   graphics.engine.WalterZorn.Stroke.DOTTED may be used to specify that
+     *   a single-width dotted line is to be used for strokes.
+     */
+    setStroke : function(stroke)
     {
-      this.stroke = x;
-      if(!(x+1))
+      this._stroke = stroke;
+      if(!(stroke+1))
       {
         this.drawLine = this._mkLinDott;
         this._mkOv = this._mkOvDott;
         this.drawRect = this._mkRectDott;
       }
-      else if(x-1 > 0)
+      else if(stroke-1 > 0)
       {
         this.drawLine = this._mkLin2D;
         this._mkOv = this._mkOv2D;
@@ -171,13 +231,46 @@ qx.Class.define("graphics.engine.WalterZorn",
       }
     },
 
-    setFont : function(fam, sz, sty)
+    /**
+     * This method can be invoked prior to drawString() to specify or change
+     * font-family, -size and -style. 
+     *  
+     * @param family {String}
+     *   A string of comma-separated font families,
+     *   e.g. "arial,helvetica,sans-serif"
+     *
+     * @param size {String}
+     *   The font size to use.  The units are required, so, for example, you
+     *   could use "11px" or "16pt".
+     *
+     * @param style {graphics.engine.WalterZorn.Font}
+     *   One of the font style settings in graphics.engine.WalterZorn.Font.*
+     */
+    setFont : function(family, size, style)
     {
-      this.ftFam = fam;
-      this.ftSz = sz;
-      this.ftSty = sty || graphics.engine.WalterZorn.Font.PLAIN;
+      this.fontFamily = family;
+      this.fontSize = size;
+      this.fontStyle = style || graphics.engine.WalterZorn.Font.PLAIN;
     },
 
+    /**
+     * A polyline is a series of connected line segments. xPoints and yPoints
+     * are arrays which specify the x and y coordinates of each point as
+     * follows:
+     * <ul>
+     * <li>var xPoints = [x1,x2,x3,x4,x5];</li>
+     * <li>var yPoints = [y1,y2,y3,y4,y5];</li>
+     * </ul>
+     *
+     * Line thickness is 1px by default, or what has been specified by a call
+     * to setStroke().
+     *
+     * @param xPoints {Array}
+     *   The array of x coordinates
+     *
+     * @param y {Array}
+     *   The array of y coordinates
+     */
     drawPolyLine : function(x, y)
     {
       for (var i=x.length - 1; i;)
@@ -187,22 +280,231 @@ qx.Class.define("graphics.engine.WalterZorn",
       }
     },
 
+    /**
+     * Outline of a rectangle.
+     *
+     * @param x {Integer}
+     *   The x attribute of the point at the top-left corner of the
+     *   rectangle.
+     *
+     * @param y {Integer}
+     *   The y attribute of the point at the top-left corner of the
+     *   rectangle.
+     *
+     * @param w {Integer}
+     *   The width of the rectangle.
+     *
+     * @param h {Integer}
+     *   The height of the rectangle
+     */
+    drawRect : function(x, y, w, h)
+    {
+      // actual implementation is overridden in setStroke()
+    },
+
+    /**
+     * Draw a rectangle.  The rectangle is filled with the currently
+     * selected color.
+     *
+     * @param x {Integer}
+     *   The x attribute of the point at the top-left corner of the
+     *   rectangle.
+     *
+     * @param y {Integer}
+     *   The y attribute of the point at the top-left corner of the
+     *   rectangle.
+     *
+     * @param w {Integer}
+     *   The width of the rectangle.
+     *
+     * @param h {Integer}
+     *   The height of the rectangle
+     */
     fillRect : function(x, y, w, h)
     {
       this._mkDiv(x, y, w, h);
     },
 
-    drawPolygon : function(x, y)
+    /**
+     * Draw a polygon.  A polygon is a polyline (see {@link drawPolyLine})
+     * with an additional line segment from the final point provided for the
+     * polyline back to the initial point.
+     *
+     * Line thickness is 1px by default, or what has been specified by a call
+     * to setStroke().
+     *
+     * @param xPoints {Array}
+     *   The array of x coordinates
+     *
+     * @param y {Array}
+     *   The array of y coordinates
+     */
+    drawPolygon : function(xPoints, yPoints)
     {
-      this.drawPolyline(x, y);
-      this.drawLine(x[x.length-1], y[x.length-1], x[0], y[0]);
+      this.drawPolyLine(xPoints, yPoints);
+      this.drawLine(xPoints[xPoints.length-1], yPoints[xPoints.length-1],
+                    xPoints[0], yPoints[0]);
     },
 
+    /**
+     * Draw a filled polygon.  See {@link drawPolygon}
+     *
+     * @param xPoints {Array}
+     *   The array of x coordinates
+     *
+     * @param y {Array}
+     *   The array of y coordinates
+     *
+     * Notes:
+     *
+     * fillPolygon method, implemented by Matthieu Haller.  This javascript
+     * function is an adaptation of the gdImageFilledPolygon for Walter Zorn
+     * lib.  C source of GD 1.8.4 found at http://www.boutell.com/gd/
+     *   
+     * THANKS to Kirsten Schulz for the polygon fixes!
+     *   
+     * The intersection finding technique of this code could be improved
+     * by remembering the previous intertersection, and by using the slope.
+     * That could help to adjust intersections to produce a nice
+     * interior_extrema.
+     */
+    fillPolygon : function(xPoints, yPoints)
+    {
+      var i;
+      var y;
+      var miny;
+      var maxy;
+      var x1;
+      var y1;
+      var x2;
+      var y2;
+      var ind1;
+      var ind2;
+      var ints;
+
+      var n = xPoints.length;
+      if(!n)
+      {
+        return;
+      }
+
+      miny = yPoints[0];
+      maxy = yPoints[0];
+     
+      for(i = 1; i < n; i++)
+      {
+        if(yPoints[i] < miny)
+        {
+          miny = yPoints[i];
+        }
+
+        if(yPoints[i] > maxy)
+        {
+          maxy = yPoints[i];
+        }
+      }
+     
+      for(y = miny; y <= maxy; y++)
+      {
+        var polyInts = new Array();
+     
+        ints = 0;
+
+        for(i = 0; i < n; i++)
+        {
+          if(!i)
+          {
+            ind1 = n-1;
+            ind2 = 0;
+          }
+          else
+          {
+            ind1 = i-1;
+            ind2 = i;
+          }
+     
+          y1 = yPoints[ind1];
+          y2 = yPoints[ind2];
+     
+          if(y1 < y2)
+          {
+            x1 = xPoints[ind1];
+            x2 = xPoints[ind2];
+          }
+          else if(y1 > y2)
+          {
+            y2 = yPoints[ind1];
+            y1 = yPoints[ind2];
+            x2 = xPoints[ind1];
+            x1 = xPoints[ind2];
+          }
+          else
+          {
+            continue;
+          }
+
+          //  Modified 11. 2. 2004 Walter Zorn
+          if((y >= y1) && (y < y2))
+          {
+            polyInts[ints++] = Math.round((y-y1) * (x2-x1) / (y2-y1) + x1);
+          }
+          else if((y == maxy) && (y > y1) && (y <= y2))
+          {
+            polyInts[ints++] = Math.round((y-y1) * (x2-x1) / (y2-y1) + x1);
+          }
+        }
+     
+        polyInts.sort(function(x, y) { return (x - y); });
+     
+        for(i = 0; i < ints; i+=2)
+        {
+          this._mkDiv(polyInts[i], y, polyInts[i+1]-polyInts[i]+1, 1);
+        }
+      }
+    },
+
+    /*
+     * Draw an outline of an ellipse.
+     *
+     * Line thickness is 1px by default, or what has been specified by a call
+     * to setStroke().
+     *
+     * @param x {Integer}
+     *   The x attribute of the point at the top-left corner of the
+     *   bounding rectangle.
+     *
+     * @param y {Integer}
+     *   The y attribute of the point at the top-left corner of the
+     *   bounding rectangle.
+     *
+     * @param w {Integer}
+     *   The width of the bounding rectangle.
+     *
+     * @param h {Integer}
+     *   The height of the bounding rectangle
+     */
     drawEllipse : function(x, y, w, h)
     {
       this._mkOv(x, y, w, h);
     },
 
+    /*
+     * Draw and fill an ellipse.
+     *
+     * @param left {Integer}
+     *   The x attribute of the point at the top-left corner of the
+     *   bounding rectangle.
+     *
+     * @param top {Integer}
+     *   The y attribute of the point at the top-left corner of the
+     *   bounding rectangle.
+     *
+     * @param w {Integer}
+     *   The width of the bounding rectangle.
+     *
+     * @param h {Integer}
+     *   The height of the bounding rectangle
+     */
     fillEllipse : function(left, top, w, h)
     {
       var a = w>>1;
@@ -254,13 +556,39 @@ qx.Class.define("graphics.engine.WalterZorn",
       this._mkDiv(cx-a, cy-oy, w, (oy<<1)+hod);
     },
 
-    fillArc : function(iL, iT, iW, iH, fAngA, fAngZ)
+    /**
+     * Fills a pie section of an ellipse. Start-angle and end-angle may be
+     * integer numbers or decimalpoint values. Like with the other
+     * ...Ellipse() functions, X and Y specify the left-top corner of the
+     * bounding rectangle.
+     *
+     * @param left {Integer}
+     *   The x attribute of the point at the top-left corner of the
+     *   bounding rectangle.
+     *
+     * @param top {Integer}
+     *   The y attribute of the point at the top-left corner of the
+     *   bounding rectangle.
+     *
+     * @param w {Integer}
+     *   The width of the bounding rectangle.
+     *
+     * @param h {Integer}
+     *   The height of the bounding rectangle
+     *
+     * @param angleA {Integer|Float}
+     *   Starting angle of the arc
+     *
+     * @param angleZ {Integer|Float}
+     *   Ending angle of the arc
+     */
+    fillArc : function(left, top, w, h, angleA, angleZ)
     {
-      var a = iW>>1;
-      var b = iH>>1;
-      var iOdds = (iW&1) | ((iH&1) << 16);
-      var cx = iL+a;
-      var cy = iT+b;
+      var a = w>>1;
+      var b = h>>1;
+      var iOdds = (w&1) | ((h&1) << 16);
+      var cx = left+a;
+      var cy = top+b;
       var x = 0;
       var y = b;
       var ox = x;
@@ -278,20 +606,20 @@ qx.Class.define("graphics.engine.WalterZorn",
       var xEndZ;
       var yEndZ;
       
-      var iSects = (1 << (Math.floor((fAngA %= 360.0)/180.0) << 3))
-        | (2 << (Math.floor((fAngZ %= 360.0)/180.0) << 3))
-        | ((fAngA >= fAngZ) << 16);
+      var iSects = (1 << (Math.floor((angleA %= 360.0)/180.0) << 3))
+        | (2 << (Math.floor((angleZ %= 360.0)/180.0) << 3))
+        | ((angleA >= angleZ) << 16);
       var aBndA = new Array(b+1);
       var aBndZ = new Array(b+1);
 		
       // Set up radial boundary lines
-      fAngA *= Math.PI/180.0;
-      fAngZ *= Math.PI/180.0;
-      xEndA = cx+Math.round(a*Math.cos(fAngA));
-      yEndA = cy+Math.round(-b*Math.sin(fAngA));
+      angleA *= Math.PI/180.0;
+      angleZ *= Math.PI/180.0;
+      xEndA = cx+Math.round(a*Math.cos(angleA));
+      yEndA = cy+Math.round(-b*Math.sin(angleA));
       this._mkLinVirt(aBndA, cx, cy, xEndA, yEndA);
-      xEndZ = cx+Math.round(a*Math.cos(fAngZ));
-      yEndZ = cy+Math.round(-b*Math.sin(fAngZ));
+      xEndZ = cx+Math.round(a*Math.cos(angleZ));
+      yEndZ = cy+Math.round(-b*Math.sin(angleZ));
       this._mkLinVirt(aBndZ, cx, cy, xEndZ, yEndZ);
 
       while(y > 0)
@@ -336,147 +664,73 @@ qx.Class.define("graphics.engine.WalterZorn",
       }
     },
 
-    /*
-     * fillPolygon method, implemented by Matthieu Haller.  This javascript
-     * function is an adaptation of the gdImageFilledPolygon for Walter Zorn
-     * lib.  C source of GD 1.8.4 found at http://www.boutell.com/gd/
-     *   
-     * THANKS to Kirsten Schulz for the polygon fixes!
-     *   
-     * The intersection finding technique of this code could be improved
-     * by remembering the previous intertersection, and by using the slope.
-     * That could help to adjust intersections to produce a nice
-     * interior_extrema.
+    /**
+     * Writes text to the specified location.
+     *
+     * @param x {Integer}
+     *   x attribute of the top-left corner of the text bounding rectangle
+     *
+     * @param y {Integer}
+     *   y attribute of the top-left corner of the text bounding rectangle
+     *
+     * @param text {String}
+     *   Text to be drawn.  (Non-escaped) HTML tags inside the string will
+     *   be interpreted. For example, "Some Text<br>more Text" would indeed
+     *   create a line break.
      */
-    fillPolygon : function(array_x, array_y)
+    drawString : function(x, y, text)
     {
-      var i;
-      var y;
-      var miny;
-      var maxy;
-      var x1;
-      var y1;
-      var x2;
-      var y2;
-      var ind1;
-      var ind2;
-      var ints;
-
-      var n = array_x.length;
-      if(!n)
-      {
-        return;
-      }
-
-      miny = array_y[0];
-      maxy = array_y[0];
-     
-      for(i = 1; i < n; i++)
-      {
-        if(array_y[i] < miny)
-        {
-          miny = array_y[i];
-        }
-
-        if(array_y[i] > maxy)
-        {
-          maxy = array_y[i];
-        }
-      }
-     
-      for(y = miny; y <= maxy; y++)
-      {
-        var polyInts = new Array();
-     
-        ints = 0;
-
-        for(i = 0; i < n; i++)
-        {
-          if(!i)
-          {
-            ind1 = n-1;
-            ind2 = 0;
-          }
-          else
-          {
-            ind1 = i-1;
-            ind2 = i;
-          }
-     
-          y1 = array_y[ind1];
-          y2 = array_y[ind2];
-     
-          if(y1 < y2)
-          {
-            x1 = array_x[ind1];
-            x2 = array_x[ind2];
-          }
-          else if(y1 > y2)
-          {
-            y2 = array_y[ind1];
-            y1 = array_y[ind2];
-            x2 = array_x[ind1];
-            x1 = array_x[ind2];
-          }
-          else
-          {
-            continue;
-          }
-
-          //  Modified 11. 2. 2004 Walter Zorn
-          if((y >= y1) && (y < y2))
-          {
-            polyInts[ints++] = Math.round((y-y1) * (x2-x1) / (y2-y1) + x1);
-          }
-          else if((y == maxy) && (y > y1) && (y <= y2))
-          {
-            polyInts[ints++] = Math.round((y-y1) * (x2-x1) / (y2-y1) + x1);
-          }
-        }
-     
-        polyInts.sort(function(x, y) { return (x - y); });
-     
-        for(i = 0; i < ints; i+=2)
-        {
-          this._mkDiv(polyInts[i], y, polyInts[i+1]-polyInts[i]+1, 1);
-        }
-      }
-    },
-
-    drawString : function(txt, x, y)
-    {
-      this.htm += '<div style="position:absolute;white-space:nowrap;'+
+      this._htm += '<div style="position:absolute;white-space:nowrap;'+
         'left:' + x + 'px;'+
         'top:' + y + 'px;'+
-        'font-family:' +  this.ftFam + ';'+
-        'font-size:' + this.ftSz + ';'+
-        'color:' + this.color + ';' + this.ftSty + '">'+
-        txt +
+        'font-family:' +  this.fontFamily + ';'+
+        'font-size:' + this.fontSize + ';'+
+        'color:' + this._color + ';' + this.fontStyle + '">'+
+        text +
         '<\/div>';
     },
 
-    /*
-     * drawStringRect() added by Rick Blommers.  Allows to specify the size of
-     * the text rectangle and to align the text both horizontally (e.g. right)
-     * and vertically within that rectangle
+    /**
+     * Like drawString(), but allows setting the width of the text rectangle
+     * and specifying the horizontal text-alignment.
+     *
+     * @param x {Integer}
+     *   x attribute of the top-left corner of the text bounding rectangle
+     *
+     * @param y {Integer}
+     *   y attribute of the top-left corner of the text bounding rectangle
+     *
+     * @param w {Integer}
+     *   Width of the text bounding rectangle
+     *
+     * @param hAlign {String}
+     *   Horizontal text alignment.  This must be one of the values of
+     *   {@link graphics.engine.WalterZorn.HAlign}.
+     *
+     * @param text {String}
+     *   Text to be drawn.  (Non-escaped) HTML tags inside the string will
+     *   be interpreted. For example, "Some Text<br>more Text" would indeed
+     *   create a line break.
      */
-    drawStringRect : function(txt, x, y, width, halign)
+    drawStringRect : function(x, y, w, hAlign, text)
     {
-      this.htm += '<div style="position:absolute;overflow:hidden;'+
+      this._htm += '<div style="position:absolute;overflow:hidden;'+
         'left:' + x + 'px;'+
         'top:' + y + 'px;'+
-        'width:'+width +'px;'+
-        'text-align:'+halign+';'+
-        'font-family:' +  this.ftFam + ';'+
-        'font-size:' + this.ftSz + ';'+
-        'color:' + this.color + ';' + this.ftSty + '">'+
-        txt +
+        'width:'+w +'px;'+
+        'text-align:'+hAlign+';'+
+        'font-family:' +  this.fontFamily + ';'+
+        'font-size:' + this.fontSize + ';'+
+        'color:' + this._color + ';' + this.fontStyle + '">'+
+        text +
         '<\/div>';
     },
 
+/*
+djl -- do we want to even allow this?  what trouble do we get ourselves into?
     drawImage : function(imgSrc, x, y, w, h, a)
     {
-      this.htm += '<div style="position:absolute;'+
+      this._htm += '<div style="position:absolute;'+
         'left:' + x + 'px;'+
         'top:' + y + 'px;'+
         // w (width) and h (height) arguments are now optional.
@@ -489,7 +743,16 @@ qx.Class.define("graphics.engine.WalterZorn",
         (a ? (' '+a) : '') + '>'+
         '<\/div>';
     },
+*/
 
+    /**
+     * Paint the graphics by flushing the drawn elements to the browser.
+     * Until this method is called, no graphics will be displayed.
+     *
+     * This is the slowest part of the graphics operation.  It is recommended
+     * to avoid extraneous calls to this method.  Typically it should be
+     * called only once following a whole series of drawing method calls.
+     */
     paint : qx.core.Variant.select("qx.client",
     {
       "mshtml" : function()
@@ -498,7 +761,7 @@ qx.Class.define("graphics.engine.WalterZorn",
         {
           this._canvas.insertAdjacentHTML("BeforeEnd", this._htmRpc());
         }
-        this.htm = "";
+        this._htm = "";
       },
 
       "default" : function()
@@ -507,16 +770,16 @@ qx.Class.define("graphics.engine.WalterZorn",
         {
           var x = window.document.createRange();
           x.setStartBefore(this._canvas);
-          x = x.createContextualFragment(this.htm);
+          x = x.createContextualFragment(this._htm);
           this._canvas.appendChild(x);
         }
-        this.htm = "";
+        this._htm = "";
       }
     }),
 
     clear : function()
     {
-      this.htm = "";
+      this._htm = "";
       if(this._canvas)
       {
         this._canvas.innerHTML = "";
@@ -697,12 +960,12 @@ qx.Class.define("graphics.engine.WalterZorn",
         clip.push(');');
       }
 
-      this.htm += '<div style="position:absolute;'+
+      this._htm += '<div style="position:absolute;'+
         'left:' + x + 'px;'+
         'top:' + y + 'px;'+
         'width:' + w + 'px;'+
         'height:' + h + 'px;'+
-        'background-color:' + this.color + ';' +
+        'background-color:' + this._color + ';' +
         clip.join('') +
         'overflow:hidden;' +
         '"><\/div>';
@@ -710,7 +973,7 @@ qx.Class.define("graphics.engine.WalterZorn",
 
     _mkDivIe : function(x, y, w, h)
     {
-      this.htm += '%%'+this.color+';'+x+';'+y+';'+w+';'+h+';';
+      this._htm += '%%'+this._color+';'+x+';'+y+';'+w+';'+h+';';
     },
 
     _htmRpc : function()
@@ -740,7 +1003,7 @@ qx.Class.define("graphics.engine.WalterZorn",
         clip.push(');');
       }
 
-      return this.htm.replace(
+      return this._htm.replace(
         graphics.engine.WalterZorn._regex,
         '<div style="overflow:hidden;position:absolute;' +
         clip.join('') +
@@ -852,7 +1115,7 @@ qx.Class.define("graphics.engine.WalterZorn",
       var x = x1;
       var y = y1;
       var yIncr = (y1 > y2)? -1 : 1;
-      var s = this.stroke;
+      var s = this._stroke;
       var _s;
 
       if(dx >= dy)
@@ -1086,7 +1349,7 @@ qx.Class.define("graphics.engine.WalterZorn",
 
     _mkOv2D : function(left, top, width, height)
     {
-      var s = this.stroke;
+      var s = this._stroke;
       width += s+1;
       height += s+1;
       var a = width>>1;
@@ -1296,7 +1559,7 @@ qx.Class.define("graphics.engine.WalterZorn",
 
     _mkRect : function(x, y, w, h)
     {
-      var s = this.stroke;
+      var s = this._stroke;
       this._mkDiv(x, y, w, s);
       this._mkDiv(x+w, y, s, h);
       this._mkDiv(x, y+h, w+s, s);
