@@ -48,7 +48,8 @@ qx.Class.define("ssvg.shape.Group",
     add : function(shape)
     {
       // Remove this shape from its current parent
-      if (var parent = shape.getParent())
+      var parent = shape.getParent()
+      if (parent)
       {
         parent.remove(shape);
       }
@@ -217,4 +218,5 @@ qx.Class.define("ssvg.shape.Group",
     {
       return ssvg.shape.Shape.fromJson(this, jsonDescription);
     }
+  }
 });
