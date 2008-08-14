@@ -182,7 +182,7 @@ MEMBERS
 
       if (bVersion_0_8)
       {
-        o.addListener("appear", doWZ);
+        o.addListener("resize", doWZ);
       }
       else
       {
