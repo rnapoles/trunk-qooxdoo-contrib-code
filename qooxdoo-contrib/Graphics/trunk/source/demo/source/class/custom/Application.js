@@ -24,7 +24,7 @@
  */
 qx.Class.define("custom.Application",
 {
-  extend : qx.application.Gui,
+  extend : qx.application.Gui || qx.application.Standalone,
 
 
 
@@ -41,22 +41,58 @@ MEMBERS
     {
       this.base(arguments);
 
-      var o = new qx.ui.basic.Terminator();
-      o.set(
-        {
-          top : 100,
-          left : 100,
-          width : 800,
-          height : 500,
-          backgroundColor : "white"
-        });
-      o.addToDocument();
+      var bVersion_0_7 =
+        qx.core.Version.major == 0 && qx.core.Version.minor == 7;
+      var bVersion_0_8 =
+        qx.core.Version.major == 0 && qx.core.Version.minor == 8;
+
+      // We don't yet support any version other than 0.7.x and 0.8.x
+      if (! bVersion_0_7 && ! bVersion_0_8)
+      {
+        throw new Error("Unsupported version: " +
+                        "major=" + qx.core.Version.major + ", " +
+                        "minor=" + qx.core.Version.minor);
+      }
+      
+      if (bVersion_0_8)
+      {
+        var o = new qx.ui.layout.Composite();
+        o.set(
+          {
+            width : 800,
+            height : 500,
+            backgroundColor : "white"
+          });
+        this.getRoot().add(o, { top : 100, left : 100 });
+      }
+      else
+      {
+        var o = new qx.ui.basic.Terminator();
+        o.set(
+          {
+            top : 100,
+            left : 100,
+            width : 800,
+            height : 500,
+            backgroundColor : "white"
+          });
+        o.addToDocument();
+      }
 
       function doWZ(e)
       {
         var wz = new ssvg.engine.WalterZorn();
+        var el;
 
-        var el = o.getElement();
+        if (bVersion_0_8)
+        {
+          el = o.getContentElement().getDomElement();
+        }
+        else
+        {
+          el = o.getElement();
+        }
+
         wz.setContainer(el);
 
         wz.setClipSize({ width : o.getWidth(), height : o.getHeight() });
@@ -144,8 +180,16 @@ MEMBERS
         wz.paint();
       }
 
-      o.addEventListener("appear", doWZ);
+      if (bVersion_0_8)
+      {
+        o.addListener("appear", doWZ);
+      }
+      else
+      {
+        o.addEventListener("appear", doWZ);
+      }
 
+/*
       console.warn("About to create 'g' element");
       var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       var appender = new qx.log.appender.FireBug();
@@ -155,6 +199,7 @@ MEMBERS
       var r = g.transform.baseVal.getItem(1).matrix;
       var m = l.multiply(r);
       qx.dev.Debug.debugObject(m, "m", 10, appender);
+*/
     },
 
 
