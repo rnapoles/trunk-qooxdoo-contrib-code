@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+  qooxdooVersion="0.7">
+	
+	<!-- login window -->
+			
+	<qx:widget
+    namespace="components.loginWidget"
+    className="Simple" 
+    include="components.loginWidget.SimpleHandlers"
+    extend="qx.ui.window.Window" 
+    
+		width="250" 
+		modal="true" 
+		showMinimize="false"
+		showMaximize="false" 
+		showClose="false" 
+		resizable="false"
+    
+    display="true"
+    translate="true"
+    
+		onAppear="this.centerToBrowser()">
+
+    <qxt:constructor>
+        <qxt:arguments>
+            <qxt:argument attribute="caption" default="Please login."/>
+            <qxt:argument attribute="icon" />
+        </qxt:arguments>
+    </qxt:constructor>         
+
+		<qx:fieldSet dimension="auto,auto">
+
+			<qx:verticalBoxLayout spacing="5">
+
+				<!--  label -->
+				<qx:atom 
+					height="20" width="auto"
+					label="Please log in."
+					icon="icon/16/actions/encrypt.png" 
+					iconPosition="left" />
+
+				<!-- input fields -->
+				<qx:gridLayout
+					dimension="auto,auto"
+					verticalSpacing="5" 
+					horizontalSpacing="5">
+
+					<!-- columns -->
+					<qx:gridLayoutColumn 
+						width="70"
+						horizontalAlignment="right" 
+						verticalAlignment="top" />
+
+					<qx:gridLayoutColumn 
+						width="180"
+						horizontalAlignment="right" 
+						verticalAlignment="top" />
+
+					<!-- user name-->
+					<qx:gridLayoutRow 
+						height="20">
+
+						<qx:gridLayoutCell>
+							<qx:label text="User Name" />
+						</qx:gridLayoutCell>
+
+						<qx:gridLayoutCell>
+				  		<qx:textField 
+                id="username" scope="widget"
+                width="100%" height="20"/>
+						</qx:gridLayoutCell>
+
+					</qx:gridLayoutRow>
+
+					<!-- password -->
+					<qx:gridLayoutRow height="20">
+          
+						<qx:gridLayoutCell>
+							<qx:label text="Password" />
+						</qx:gridLayoutCell>
+
+						<qx:gridLayoutCell>
+							<qx:passwordField 
+                id="password" scope="widget"
+                width="100%" height="20"/>
+						</qx:gridLayoutCell>
+
+					</qx:gridLayoutRow>
+
+					<!-- buttons -->
+					<qx:gridLayoutRow height="20">
+
+						<qx:gridLayoutCell />
+
+						<qx:gridLayoutCell>
+
+							<qx:horizontalBoxLayout spacing="5">
+
+								<qx:button label="Login" width="100">
+									<qx:eventListener	type="execute" delegate="onSubmit" />
+ 								</qx:button>
+
+							</qx:horizontalBoxLayout>
+
+						</qx:gridLayoutCell>
+
+					</qx:gridLayoutRow>
+
+				</qx:gridLayout>
+
+			</qx:verticalBoxLayout>
+
+		</qx:fieldSet>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.loginFailed">
+			var msg = message.getData();
+			if (msg) alert(msg);
+		</qx:messageSubscriber>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+			this.close();
+		</qx:messageSubscriber>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.logout">
+			this.show();
+		</qx:messageSubscriber>
+
+	</qx:widget>
+	
+</qxt:include-definition>	
