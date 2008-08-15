@@ -228,20 +228,22 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
           try 
           { 
             var widget = this.getBoundWidget(key);
-            if ( widget.getUpdateTarget() == "server" ) continue;
-            var value  = result[key];
             if (typeof widget == "object" )
             {
-              widget.setWidgetData(value);
+              if ( widget.getUpdateTarget() != "server" ) 
+              {
+                var value  = result[key];
+                widget.setWidgetData(value);  
+              }
             }
             else
             {
-              this.info ( "`" + key + "` is not a bound widget");
+              this.warn ( "`" + key + "` is not a bound widget");
             }
           } 
           catch(e)
           {
-            this.info (e);
+            this.warn (e);
           }
         }
       }
