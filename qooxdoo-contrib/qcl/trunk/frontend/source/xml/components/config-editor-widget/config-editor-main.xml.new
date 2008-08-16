@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- about:config-like widget -->
+	
+	<!-- SECURITY POLICIES -->
+	
+	<!-- configuration editor context menu -->
+	
+	<!-- security policies -->
+	<qx:security>
+		<qx:permission name="qcl.config.permissions.manage"/>
+		<qx:permission name="qcl.config.permissions.editor.createKey"/>
+		<qx:permission name="qcl.config.permissions.editor.deleteKey"/>
+		<qx:permission name="qcl.config.permissions.editor.editKey"/>
+	</qx:security>
+	<qx:menu id="contextMenuAuthConfig">
+	
+		<qx:menuButton text="New Key"
+			enabled="false"
+			enableOnPermission="qcl.config.permissions.editor.createKey">
+			<qx:eventListener type="execute" dispatchMessage="qcl.config.commands.editor.createKey" />
+		</qx:menuButton>
+
+		<qx:menuButton text="Edit Key"
+			enabled="false"
+			enableOnPermission="qcl.config.permissions.editor.editKey">
+			<qx:eventListener type="execute" dispatchMessage="qcl.config.commands.editor.editKey" />
+		</qx:menuButton>
+
+		<qx:menuButton text="Delete Key" 
+			enabled="false" 
+			enableOnPermission="qcl.config.permissions.editor.deleteKey">
+			<qx:eventListener type="execute" dispatchMessage="qcl.config.commands.editor.deleteKey" />
+		</qx:menuButton>
+		
+	</qx:menu>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+			qx.event.message.Bus.dispatch("qcl.config.messages.editor.reload");
+		</qx:messageSubscriber>
+		 
+		<qx:verticalBoxLayout dimension="100%,100%">
+		
+		<!-- toolbar -->
+		<qx:toolBar width="100%" height="30">
+	
+				<qx:toolBarButton 
+					text="Reload" 
+					icon="icon/22/actions/view-refresh.png" 
+					tooltip="Reload the data">
+					<qx:eventListener type="execute" dispatchMessage="qcl.config.messages.editor.reload"/>
+				</qx:toolBarButton>
+
+				<qx:toolBarButton 
+					text="New Key"
+					icon="icon/22/apps/system-users.png" 
+					enabled="false"
+					enableOnPermission="qcl.config.permissions.editor.createKey">
+					<qx:eventListener type="execute" dispatchMessage="qcl.config.messages.editor.createKey"/>
+				</qx:toolBarButton>
+								
+				<qx:toolBarButton 
+					text="Delete"
+					icon="icon/22/actions/edit-delete.png"
+					enabled="false"
+					enableOnPermission="qcl.config.permissions.editor.deleteKey">
+					<qx:eventListener type="execute" dispatchMessage="qcl.config.messages.editor.deleteKey"/>
+				</qx:toolBarButton>
+				
+				<qx:textField id="configEditorFilter" width="1*" top="3" liveUpdate="true">
+					<qx:eventListener type="input" delegate="config_editor_main_00_on_input" />				</qx:textField>
+						
+				
+		</qx:toolBar>		
+		
+		<qxt:script>
+			// cell editor for type column
+			var configEditorTypeCellEditor = new qx.ui.table.celleditor.ComboBox;
+			configEditorTypeCellEditor.setListData(["string","number","boolean"]);
+			configEditorTypeCellEditor.setEditable(false);
+		</qxt:script>
+
+		<qxt:script>
+			<![CDATA[
+			// cell editor for value
+			var configEditorValueCellEditor = new qx.ui.table.celleditor.Dynamic;
+			configEditorValueCellEditor.setCellEditorFactoryFunction(function(cellInfo){
+				var model = cellInfo.table.getTableModel();
+				var type  = model.getValue(model.getColumnIndexById("type"),cellInfo.row);
+				var value	= model.getValue(model.getColumnIndexById("value"),cellInfo.row);
+				var cellEditor;
+				switch( type )
+				{
+					case "number":
+						cellEditor = new qx.ui.table.celleditor.TextField;
+						cellEditor.setValidationFunction(function(value,oldValue){
+							if ( isNaN(value) )
+							{
+								alert ( "Only numbers allowed" );
+								return oldValue;
+							}
+							return value;
+						});
+						break;
+
+					case "boolean":
+						cellEditor = new qx.ui.table.celleditor.ComboBox;
+						cellEditor.setListData(["true","false"]);
+						cellEditor.setEditable(false);
+						/* the following makes no sense
+						cellEditor.setValidationFunction(function(value,oldValue){
+							if ( value == "true" )
+							{
+								return true; 
+							}
+							return false;
+						});**/
+						break;				
+						
+					default:
+						if ( value.length > 20 )
+						{
+							// todo: insert window/textarea cell editor
+							cellEditor = new qx.ui.table.celleditor.TextField;
+						}
+						else
+						{
+							cellEditor = new qx.ui.table.celleditor.TextField;
+						}
+	
+				}
+				return cellEditor;
+			});
+			]]>
+		</qxt:script>
+		
+		<qx:table  
+			id="configEditorTable"
+			dimension="100%,1*"
+			tableModel="simple"
+			columnVisibilityButtonVisible="false"
+			keepFirstVisibleRowComplete="true"
+			statusBarVisible="false"
+			border="inset-thin"
+			dataBinding="true">
+				
+			<qx:tableColumn key="id"    label="ID"    display="false"/>
+			<qx:tableColumn key="name"  label="Name"  width="4*" />
+			<qx:tableColumn key="type"  label="Type"  width="70" 
+				editable="true" celleditor="configEditorTypeCellEditor" />
+			<qx:tableColumn key="value" label="Value" width="3*"
+				editable="true" celleditor="configEditorValueCellEditor" />
+			<qx:tableColumn key="permissionRead" label="Read Perm."  width="1*"
+				editable="true" />
+			<qx:tableColumn key="permissionWrite" label="Write Perm." width="1*"
+				editable="true" />
+			<qx:tableColumn key="user" label="User/Status"  width="1*" editable="true"/>
+			
+			<!-- (re)load  -->
+			
+			<qx:messageSubscriber filter="qcl.config.messages.editor.reload" delegate="config_editor_main_01_on_qcl_config_messages_editor_reload" />			
+			<!-- create new -->
+			
+			<qx:messageSubscriber filter="qcl.config.messages.editor.createKey" delegate="config_editor_main_02_on_qcl_config_messages_editor_createKey" />			
+			<qx:messageSubscriber filter="qcl.config.messages.key.created">
+				var newRow = [message.getData()];
+				for ( var i in this.__newConfigKey ) newRow.push( this.__newConfigKey[i] );
+				this.getTableModel().addRows([newRow]);
+				this.setFocusedCell(2,this.getTableModel().getRowCount()-1);
+				this.startEditing();
+			</qx:messageSubscriber>
+			
+			<!-- delete -->
+			
+			<qx:messageSubscriber filter="qcl.config.messages.editor.deleteKey" delegate="config_editor_main_03_on_qcl_config_messages_editor_deleteKey" />
+			<!-- update metadata  -->
+			
+			<qx:eventListener type="dataChanged" qxt:modifier=".getTableModel()"  delegate="config_editor_main_04_on_dataChanged" />			
+			<qx:messageSubscriber filter="qcl.config.messages.key.updated">
+				//
+			</qx:messageSubscriber>
+
+		</qx:table>
+		
+		</qx:verticalBoxLayout>
+
+	
+</qxt:include-definition>
