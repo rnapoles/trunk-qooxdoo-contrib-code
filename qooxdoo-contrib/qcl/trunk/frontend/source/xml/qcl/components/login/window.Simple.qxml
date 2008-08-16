@@ -1,28 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <qxt:include-definition
 	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
-	xmlns:qxt="http://www.qxtransformer.org/extension">
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+  qooxdooVersion="0.7">
 	
 	<!-- login window -->
 			
-	<qx:window 
-		id="loginWindow" 
+	<qx:widget
+    namespace="components.loginWidget.window"
+    className="Simple" 
+    include="components.loginWidget.SimpleHandlers"
+    extend="qx.ui.window.Window" 
+    
 		width="250" 
-		caption="Login" 
 		modal="true" 
 		showMinimize="false"
 		showMaximize="false" 
 		showClose="false" 
-		display="true"
 		resizable="false"
+    
+    display="true"
+    translate="true"
+    
 		onAppear="this.centerToBrowser()">
+
+    <qxt:constructor>
+        <qxt:arguments>
+            <qxt:argument attribute="caption" default="Please login."/>
+            <qxt:argument attribute="icon" />
+        </qxt:arguments>
+    </qxt:constructor>         
 
 		<qx:fieldSet dimension="auto,auto">
 
 			<qx:verticalBoxLayout spacing="5">
 
 				<!--  label -->
-
 				<qx:atom 
 					height="20" width="auto"
 					label="Please log in."
@@ -30,7 +43,6 @@
 					iconPosition="left" />
 
 				<!-- input fields -->
-
 				<qx:gridLayout
 					dimension="auto,auto"
 					verticalSpacing="5" 
@@ -56,27 +68,29 @@
 						</qx:gridLayoutCell>
 
 						<qx:gridLayoutCell>
-				  		<qx:textField id="loginWindow_username" width="100%" height="20"/>
+				  		<qx:textField 
+                id="username" scope="widget"
+                width="100%" height="20"/>
 						</qx:gridLayoutCell>
 
 					</qx:gridLayoutRow>
 
 					<!-- password -->
-
 					<qx:gridLayoutRow height="20">
-
+          
 						<qx:gridLayoutCell>
 							<qx:label text="Password" />
 						</qx:gridLayoutCell>
 
 						<qx:gridLayoutCell>
-							<qx:passwordField id="loginWindow_password" width="100%" height="20"/>
+							<qx:passwordField 
+                id="password" scope="widget"
+                width="100%" height="20"/>
 						</qx:gridLayoutCell>
 
 					</qx:gridLayoutRow>
 
 					<!-- buttons -->
-
 					<qx:gridLayoutRow height="20">
 
 						<qx:gridLayoutCell />
@@ -86,22 +100,8 @@
 							<qx:horizontalBoxLayout spacing="5">
 
 								<qx:button label="Login" width="100">
-									<qx:eventListener	type="execute">
-										var username = loginWindow_username.getValue();
-										var password = loginWindow_password.getValue();
-										if ( ! username )
-										{
-											alert(this.tr("You have to supply a username"));
-											return;
-										}
-										var data = {
-											'username'		: username,
-											'password'		: password
-										};
-										qx.event.message.Bus.dispatch("qcl.auth.messages.loginAttempt", data);
-										loginWindow_password.setValue("");
-									</qx:eventListener>
-								</qx:button>
+									<qx:eventListener	type="execute" delegate="onSubmit" />
+ 								</qx:button>
 
 							</qx:horizontalBoxLayout>
 
@@ -128,6 +128,6 @@
 			this.show();
 		</qx:messageSubscriber>
 
-	</qx:window>
+	</qx:widget>
 	
 </qxt:include-definition>	
