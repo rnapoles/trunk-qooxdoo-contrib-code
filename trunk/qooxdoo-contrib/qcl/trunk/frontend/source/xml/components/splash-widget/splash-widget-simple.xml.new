@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- splash window -->
+			
+	<qx:verticalBoxLayout
+		width="500" height="100">
+		
+		<qx:eventListener type="appear">
+      var d = qx.ui.core.ClientDocument.getInstance();
+      this.setLeft((d.getClientWidth() - this.getBoxWidth()) / 2);
+      this.setTop(20);
+		</qx:eventListener>
+		
+		<qx:label backgroundColor="white" border="black" 
+			dimension="100%,100%" padding="10"
+			textAlign="center">
+				<qx:configChangeEventListener key="$namespace.application.splashTextHtml">
+					this.setText(event.getData());
+				</qx:configChangeEventListener>
+		</qx:label>
+
+		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+			this.hide();
+		</qx:messageSubscriber>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.logout">
+			this.show();
+		</qx:messageSubscriber>
+			
+	</qx:verticalBoxLayout>		
+	
+</qxt:include-definition>
+	
