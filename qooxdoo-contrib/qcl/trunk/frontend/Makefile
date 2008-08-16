@@ -21,33 +21,19 @@
 # SETTINGS
 ################################################################################
 
-#
-# Path to top folder containing the needed libraries: 
-#   qooxdoo-0.7-sdk
-#   qxtransformer-sdk
-#
-
-TOP_FOLDER_PATH = ../../../bibliograph-dev
 
 #
 # Path to the folder of your qooxdoo distribution.
 #
 
-QOOXDOO_PATH = ${TOP_FOLDER_PATH}/qooxdoo-0.7-sdk-trunk
+QOOXDOO_PATH = ../../../../qooxdoo-0.7-sdk-trunk
 
 #
 # Namespace of application 
 # to build custom load scripts for plugins, `make source APPLICATION_NAMESPACE=yourNamespace`
 #
 
-APPLICATION_NAMESPACE = bibliograph
-
-#
-# Files that will be copied from the source directory into the build
-# directory (space separated list). The default list is empty.
-#
-
-APPLICATION_FILES = index.html
+APPLICATION_NAMESPACE = qcl
 
 #
 # locales for which translation resources should be created
@@ -72,7 +58,7 @@ XSLTPROC = /opt/local/bin/xsltproc
 
 #Define path to QxTransformer.
 
-QXTRANSFORMER_PATH = ${TOP_FOLDER_PATH}/qxtransformer-sdk/
+QXTRANSFORMER_PATH = ../../../../qxtransformer-sdk/
 
 # QxTransformer uses some own classes and defines additional
 # APPLICATION_ADDITIONAL_CLASS_PATH variable.
