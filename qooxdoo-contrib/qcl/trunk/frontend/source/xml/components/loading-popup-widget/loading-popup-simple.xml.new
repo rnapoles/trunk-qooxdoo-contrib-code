@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+  xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension"
+  >
+	
+	<!-- loading indicator -->
+  <!-- todo: cancel requests selectively -->
+  
+	<qx:popup
+		height="auto" width="auto" autoHide="false"
+		onAppear="this.centerToBrowser()">
+			<qx:atom
+				border="outset-thin"
+				padding="10"
+				icon="icon/16/actions/ajax-loader.gif" 
+				label="Loading, please wait..." 
+				backgroundColor="white">
+				
+				<qx:messageSubscriber filter="qcl.databinding.messages.rpc.*" delegate="loading_popup_simple_00_on_qcl_databinding_messages_rpc__" />        
+        <!-- clear queue and hide popup -->
+        <qx:eventListener type="click">
+          this.setUserData("queue",[]);
+          this.getParent().hide();
+        </qx:eventListener>		
+        
+		</qx:atom>
+		
+	</qx:popup>		
+	
+</qxt:include-definition>
+	
