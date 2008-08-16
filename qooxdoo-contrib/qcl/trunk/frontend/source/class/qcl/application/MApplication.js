@@ -487,6 +487,40 @@ qx.Mixin.define("qcl.application.MApplication",
     canNavigateForward : function()
     {
       return ( this.getForwardHistoryStack().length > 1 );
+    },
+    
+    /**
+     * sets up the default context menu behaviour: traverse the widget tree upwards until
+     * a context menu ist found, which is then displayed
+     */
+    setupContextMenu : function()
+    {
+
+      // add contextmenu event handler to client document
+      qx.ui.core.ClientDocument.getInstance().addEventListener("contextmenu",function(e){
+                
+        var target = e.getOriginalTarget();
+        
+        while ( target && typeof target=="object" && target.getParent )
+        {
+          if ( target.getContextMenu && target.getContextMenu() )
+          {
+            var contextMenu = target.getContextMenu();
+            contextMenu.setLeft( e.getClientX() );
+            contextMenu.setTop( e.getClientY() );
+            contextMenu.setOpener( target );
+            contextMenu.show();
+            qx.event.message.Bus.dispatch("qcl.messages.contextmenu.changed",contextMenu);
+            return true;
+          }
+          else
+          {
+            target = target.getParent();
+          }
+        } 
+      },this);      
     }
+    
+    
   }
 });
