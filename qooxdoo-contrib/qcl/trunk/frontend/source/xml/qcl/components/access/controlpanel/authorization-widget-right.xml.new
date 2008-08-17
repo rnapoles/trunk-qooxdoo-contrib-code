@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+					
+	<!-- tree -->
+	<qx:verticalBoxLayout width="100%" height="100%">
+	<qx:virtualTree
+		id="authConfigRightTree" 
+		left="0" top="0" width="100%" height="1*"
+		backgroundColor="white" border="inset"
+		selectionMode="multipleInterval"
+		showCellFocusIndicator="false"
+		alwaysShowOpenCloseSymbol="true"
+		contextMenu="contextMenuAuthConfig"
+		statusBarVisible="false"
+
+		sortChildNodesBy="javascript:{'label':'asc'}"
+		sortAfterDrop="true"
+		allowDragOut="false"
+		enableDragDrop="true"
+		dragAction="javascript:['move','copy']"
+		serviceName="application.security"
+		serviceMethodUpdateClient="getRolesAndPermissions"		
+		dataBinding="true">
+   				
+		<qx:virtualTreeColumn heading="Roles/Permissions" width="100%" />
+
+		<!-- SECURITY POLICIES -->
+		
+		<qx:security>
+
+			<qx:permission name="qcl.auth.permissions.role.create">
+				<qx:updater message="qcl.auth.messages.changeSelection" />
+				<qx:condition>
+					return (this.getApplication().getUserData("currentTree") == this);
+				</qx:condition>
+			</qx:permission>
+
+			<qx:permission name="qcl.auth.permissions.create"
+				><qx:updater message="qcl.auth.messages.changeSelection" />
+				<qx:condition>
+					<![CDATA[
+					return (
+						this.getApplication().getUserData("currentTree") == this
+						&& this.getApplication().getUserData("currentNodeType") == "qcl.auth.types.Role"
+					);
+					]]>
+				</qx:condition>
+			</qx:permission>
+
+		</qx:security>
+			
+		<!-- EVENTS & MESSAGES -->	
+
+		<!-- (re) load -->
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.reload" delegate="authorization_widget_right_00_on_qcl_auth_messages_reload" />		
+		<!-- focus -->
+		<qx:eventListener type="focus"  delegate="authorization_widget_right_01_on_focus" />		
+		<!-- change selection event -->
+		<qx:eventListener type="changeSelection"  delegate="authorization_widget_right_02_on_changeSelection" />
+		<!-- clear selection when clicked in other tree -->
+
+		<qx:messageSubscriber filter="qcl.auth.messages.changeSelection">
+			if (this.getApplication().getUserData("currentTree") != this) 
+			{ 
+				this.getSelectionModel().clearSelection();
+			}
+		</qx:messageSubscriber>
+		
+		<!-- drag and  drop -->
+		
+		<qxt:script>
+			<![CDATA[
+			// additional supportsDrop check (hooks into MDragAndDropSupport)
+			// to prevent to drop on parents that already contain a reference/copy of itself
+			authConfigRightTree.supportsDropCallback = authConfigLeftTree.supportsDropCallback; 
+			]]>
+		</qxt:script>
+		
+		<qx:eventListener type="dragdrop" delegate="authorization_widget_right_03_on_dragdrop" />		
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.roleAdded" delegate="authorization_widget_right_04_on_qcl_auth_messages_permission_roleAdded" />
+		<!-- create a new role -->
+		
+		<qx:messageSubscriber filter="qcl.auth.commands.role.create" delegate="authorization_widget_right_05_on_qcl_auth_commands_role_create" />
+		<qx:messageSubscriber filter="qcl.auth.messages.role.created">
+			<![CDATA[
+			var id   = message.getData();
+			var parentNodeId = this.getApplication().getUserData("currentNode").data.id;	
+			qx.event.message.Bus.dispatch( "qcl.auth.messages.reload" );
+			]]>
+		</qx:messageSubscriber>
+		
+		<!-- create a new permission -->
+		
+		<qx:messageSubscriber filter="qcl.auth.commands.permission.create" delegate="authorization_widget_right_06_on_qcl_auth_commands_permission_create" />
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.created">
+			<![CDATA[
+			// todo: add only newly created node
+			this.getDataModel().clearData();
+			this.updateClient();
+			]]>
+		</qx:messageSubscriber>		
+		
+		<!-- delete or remove items. the server calls are handled in the left tree, we need only handle the response -->
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.role.deleted">
+			qx.event.message.Bus.dispatch( "qcl.auth.messages.reload" );
+		</qx:messageSubscriber>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.deleted">
+			this.getDataModel().clearData(); this.updateClient();
+		</qx:messageSubscriber>
+				
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.roleRemoved" delegate="authorization_widget_right_07_on_qcl_auth_messages_permission_roleRemoved" />		
+	</qx:virtualTree>	
+	</qx:verticalBoxLayout>
+</qxt:include-definition>
