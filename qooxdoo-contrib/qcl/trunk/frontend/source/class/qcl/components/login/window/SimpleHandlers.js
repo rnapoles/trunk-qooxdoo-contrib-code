@@ -1,14 +1,13 @@
 /**
- * qooxdoo class containing all extracted handler code as methods.
+ * event handlers for qcl.components.login.window.Simple
  **/
-qx.Class.define('qcl.ApplicationEventHandlers',
+qx.Class.define('qcl.components.login.window.SimpleHandlers',
 {
-  extend : qx.application.Gui,
 
   members :
   {
      /**
-     * Event handler for login-window-simple.xml, line 89
+     * Event handler for qcl.components.loginWidget.window.Simple
      * Event type 'execute'
      * @param event {qx.event.type.Event} Event object
      * @param target {qx.core.Target} Event target object
@@ -16,8 +15,8 @@ qx.Class.define('qcl.ApplicationEventHandlers',
      */
     onSubmit : function(event,target)
     {
-      var username = loginWindow_username.getValue();
-      var password = loginWindow_password.getValue();
+      var username = this.usernameField.getValue();
+      var password = this.passwordField.getValue();
       
       if ( ! username )
       {
@@ -25,11 +24,11 @@ qx.Class.define('qcl.ApplicationEventHandlers',
         return;
       }
       var data = {
-        'username'    : username,
-        'password'    : password
+        'username' : username,
+        'password' : password
       };
       qx.event.message.Bus.dispatch("qcl.auth.messages.loginAttempt", data);
-      loginWindow_password.setValue("");
+      this.passwordField.setValue("");
     }
   }
 });

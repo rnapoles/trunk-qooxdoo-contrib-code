@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<qxt:include-definition
+<qxt:root
 	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
 	xmlns:qxt="http://www.qxtransformer.org/extension"
   qooxdooVersion="0.7">
@@ -7,11 +7,11 @@
 	<!-- login window -->
 			
 	<qx:widget
-    namespace="components.loginWidget.window"
+    namespace="qcl.components.loginWidget.window"
     className="Simple" 
-    include="components.loginWidget.SimpleHandlers"
+    include="qcl.components.login.window.SimpleHandlers"
     extend="qx.ui.window.Window" 
-    
+   
 		width="250" 
 		modal="true" 
 		showMinimize="false"
@@ -69,7 +69,7 @@
 
 						<qx:gridLayoutCell>
 				  		<qx:textField 
-                id="username" scope="widget"
+                id="usernameField" scope="widget"
                 width="100%" height="20"/>
 						</qx:gridLayoutCell>
 
@@ -84,7 +84,7 @@
 
 						<qx:gridLayoutCell>
 							<qx:passwordField 
-                id="password" scope="widget"
+                id="passwordField" scope="widget"
                 width="100%" height="20"/>
 						</qx:gridLayoutCell>
 
@@ -130,4 +130,4 @@
 
 	</qx:widget>
 	
-</qxt:include-definition>	
+</qxt:root>	
