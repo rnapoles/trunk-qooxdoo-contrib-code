@@ -11,7 +11,7 @@
     namespace="qcl.components.popup.request"
     className="Simple" 
     extend="qx.ui.popup.Popup" 
-    include="qcl.components.login.popup.request.SimpleHandlers"
+    include="qcl.components.popup.request.MSimple"
       
     height="auto" width="auto" autoHide="false"
     onAppear="this.centerToBrowser()">
