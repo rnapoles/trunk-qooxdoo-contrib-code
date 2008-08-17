@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- authorization configuration -->
+	
+	<!-- includes -->
+	<qxt:include base="components" src="authorization-widget/authorization-widget-contextmenus.xml"/>
+
+	<!-- SECURITY POLICIES -->
+	
+	<qx:security>
+		<qx:permission name="qcl.auth.permissions.manage" />
+	</qx:security>
+
+    <qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+      qx.event.message.Bus.dispatch("qcl.auth.messages.reload","");
+    </qx:messageSubscriber>  
+
+		<qxt:script>
+			<![CDATA[
+			// hack: configure service path with application name. this is very ugly!
+			// todo: find a more elegant way of solving this, i.e. by subclassing the 
+			// application class
+			var appClassName = qx.core.Init.getInstance().getApplication().classname;
+			var appName	= appClassName.substring(0,appClassName.indexOf("."));
+			this.getApplication().setUserData("serviceName",appName + ".security" );
+			]]>
+		</qxt:script>
+		 
+		<qx:verticalBoxLayout dimension="100%,100%">
+		
+		<!-- toolbar -->
+		<qx:toolBar width="100%" height="30">
+	
+				<qx:toolBarButton 
+					text="Reload" 
+					icon="icon/22/actions/view-refresh.png" 
+					tooltip="Reload the data">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.messages.reload"/>
+				</qx:toolBarButton>
+
+				<qx:toolBarButton 
+					text="New User"
+					icon="icon/22/apps/system-users.png" 
+					enabled="false"
+					enableOnPermission="qcl.auth.permissions.user.create">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.user.create"/>
+				</qx:toolBarButton>
+				
+				<qx:toolBarButton 
+					text="New Role"
+					icon="icon/22/actions/folder-new.png"
+					enabled="false"
+					enableOnPermission="qcl.auth.permissions.role.create">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.role.create"/>
+				</qx:toolBarButton>
+
+				<qx:toolBarButton 
+					text="New Permission"
+					icon="icon/22/mimetypes/empty-x-encrypted.png"
+					enabled="false"
+					enableOnPermission="qcl.auth.permissions.permission.create">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.permission.create"/>
+				</qx:toolBarButton>			
+				
+				<qx:toolBarButton 
+					text="Delete"
+					icon="icon/22/actions/edit-delete.png"
+					enabled="false"
+					enableOnPermission="qcl.auth.permissions.item.delete">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.delete"/>
+				</qx:toolBarButton>		
+				
+				<qx:toolBarButton 
+					text="Remove"
+					icon="icon/22/actions/edit-delete.png"
+					enabled="false"
+					enableOnPermission="qcl.auth.permissions.item.remove">
+					<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.remove"/>
+				</qx:toolBarButton>								
+				
+		</qx:toolBar>		
+		
+			<qx:verticalSplitPane 
+				firstSize="3*" secondSize="1*" 
+				top="0" left="0" width="100%" height="1*" 
+				showKnob="true">	
+				
+				<qx:topPane>
+		
+					<qx:verticalBoxLayout dimension="100%,100%">
+					
+						<qx:horizontalSplitPane 
+							firstSize="1*" secondSize="1*" 
+							top="0" left="0" width="100%" height="1*" 
+							showKnob="true">
+									
+							<qx:leftPane>
+								<qxt:include base="components" src="authorization-widget/authorization-widget-left.xml"/>
+							</qx:leftPane>
+							
+							<qx:rightPane>
+								<qxt:include base="components" src="authorization-widget/authorization-widget-right.xml"/>  
+							</qx:rightPane>
+							
+						</qx:horizontalSplitPane>
+						
+					</qx:verticalBoxLayout>
+				
+				</qx:topPane>
+				
+				<qx:bottomPane>
+					<qxt:include base="components" src="authorization-widget/authorization-widget-properties.xml"/>
+				</qx:bottomPane>
+				
+			</qx:verticalSplitPane>
+		
+		</qx:verticalBoxLayout>
+	
+</qxt:include-definition>

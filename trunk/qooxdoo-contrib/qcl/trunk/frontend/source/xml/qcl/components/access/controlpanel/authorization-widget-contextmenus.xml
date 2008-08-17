@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+	
+	<!-- authorization configuration context menu -->
+	
+	<!-- security policies -->
+	<qx:security>
+		<qx:permission name="qcl.auth.permissions.user.create"/>
+		<qx:permission name="qcl.auth.permissions.role.create"/>
+		<qx:permission name="qcl.auth.permissions.permission.create"/>
+		<qx:permission name="qcl.auth.permissions.item.delete"/>
+		<qx:permission name="qcl.auth.permissions.item.edit"/>
+		<qx:permission name="qcl.auth.permissions.item.move"/>
+		<qx:permission name="qcl.auth.permissions.item.remove"/>
+	</qx:security>
+	
+	<qx:menu id="contextMenuAuthConfig">
+	
+		<qx:menuButton text="New User"
+			enabled="false"
+			enableOnPermission="qcl.auth.permissions.user.create">
+			<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.user.create" />
+		</qx:menuButton>
+
+		<qx:menuButton text="New Role"
+			enabled="false"
+			enableOnPermission="qcl.auth.permissions.role.create">
+			<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.role.create" />
+		</qx:menuButton>
+
+		<qx:menuButton text="New Permission"
+			enabled="false"
+			enableOnPermission="qcl.auth.permissions.permission.create">
+			<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.permission.create" />
+		</qx:menuButton>
+
+		<qx:menuSeparator />
+
+		<qx:menuButton text="Remove from Role" 
+			enabled="false" 
+			enableOnPermission="qcl.auth.permissions.item.remove">
+			<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.remove" />
+		</qx:menuButton>
+
+		<qx:menuButton text="Delete" 
+			enabled="false" 
+			enableOnPermission="qcl.auth.permissions.item.delete">
+			<qx:eventListener type="execute" dispatchMessage="qcl.auth.commands.item.delete" />
+		</qx:menuButton>
+		
+	</qx:menu>
+		
+</qxt:include-definition>	

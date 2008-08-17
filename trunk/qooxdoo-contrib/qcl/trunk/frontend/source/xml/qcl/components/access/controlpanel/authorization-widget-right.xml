@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:include-definition
+	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+	xmlns:qxt="http://www.qxtransformer.org/extension">
+					
+	<!-- tree -->
+	<qx:verticalBoxLayout width="100%" height="100%">
+	<qx:virtualTree
+		id="authConfigRightTree" 
+		left="0" top="0" width="100%" height="1*"
+		backgroundColor="white" border="inset"
+		selectionMode="multipleInterval"
+		showCellFocusIndicator="false"
+		alwaysShowOpenCloseSymbol="true"
+		contextMenu="contextMenuAuthConfig"
+		statusBarVisible="false"
+
+		sortChildNodesBy="javascript:{'label':'asc'}"
+		sortAfterDrop="true"
+		allowDragOut="false"
+		enableDragDrop="true"
+		dragAction="javascript:['move','copy']"
+		serviceName="application.security"
+		serviceMethodUpdateClient="getRolesAndPermissions"		
+		dataBinding="true">
+   				
+		<qx:virtualTreeColumn heading="Roles/Permissions" width="100%" />
+
+		<!-- SECURITY POLICIES -->
+		
+		<qx:security>
+
+			<qx:permission name="qcl.auth.permissions.role.create">
+				<qx:updater message="qcl.auth.messages.changeSelection" />
+				<qx:condition>
+					return (this.getApplication().getUserData("currentTree") == this);
+				</qx:condition>
+			</qx:permission>
+
+			<qx:permission name="qcl.auth.permissions.create"
+				><qx:updater message="qcl.auth.messages.changeSelection" />
+				<qx:condition>
+					<![CDATA[
+					return (
+						this.getApplication().getUserData("currentTree") == this
+						&& this.getApplication().getUserData("currentNodeType") == "qcl.auth.types.Role"
+					);
+					]]>
+				</qx:condition>
+			</qx:permission>
+
+		</qx:security>
+			
+		<!-- EVENTS & MESSAGES -->	
+
+		<!-- (re) load -->
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.reload">		
+			<![CDATA[
+
+			// set service method
+			this.setServiceName(this.getApplication().getUserData("serviceName"));
+
+			// (re)load tree
+			this.getDataModel().clearData();
+			
+			// send permission data ?
+			if ( this.getUserData("permissionsSynchronized") )
+			{
+				this.updateClient();
+			}
+			else
+			{
+				// send permission names to server
+				this.updateClient( qcl.auth.permission.Manager.getInstance().getNamedIds() );
+				this.setUserData("permissionsSynchronized",true);
+			}
+			]]>
+		</qx:messageSubscriber>		
+		
+		<!-- focus -->
+		<qx:eventListener type="focus" >
+			<![CDATA[
+			// we are in focus
+			this.getApplication().setUserData("currentTree",this); 
+			
+			// set drag policy
+			var user = qcl.auth.user.Manager.getInstance().getActiveUser();  
+			if ( user.hasPermission("qcl.auth.permissions.manage") )
+			{
+				this.setAllowDragTypes(['qcl.auth.types.Permission']);
+				this.setAllowDropTypes([['qcl.auth.types.Permission', 'qcl.auth.types.Role']]);
+			}
+			else
+			{
+				this.setAllowDragTypes(null);
+				this.setAllowDropTypes(null);
+			}
+			]]>
+		</qx:eventListener>
+		
+		<!-- change selection event -->
+		<qx:eventListener type="changeSelection" >
+			<![CDATA[
+			var node = event.getData()[0];
+			if ( ! node ) return;
+
+			// determine and save node type and notify subscribers
+			var nodeType = this.getNodeType(node);  
+			node.data.sourceTree = this;
+			this.getApplication().setUserData("currentNodeType",nodeType);
+			this.getApplication().setUserData("currentNode",node);
+			qx.event.message.Bus.dispatch( "qcl.auth.messages.changeSelection",node );
+			]]>
+		</qx:eventListener>
+
+		<!-- clear selection when clicked in other tree -->
+
+		<qx:messageSubscriber filter="qcl.auth.messages.changeSelection">
+			if (this.getApplication().getUserData("currentTree") != this) 
+			{ 
+				this.getSelectionModel().clearSelection();
+			}
+		</qx:messageSubscriber>
+		
+		<!-- drag and  drop -->
+		
+		<qxt:script>
+			<![CDATA[
+			// additional supportsDrop check (hooks into MDragAndDropSupport)
+			// to prevent to drop on parents that already contain a reference/copy of itself
+			authConfigRightTree.supportsDropCallback = authConfigLeftTree.supportsDropCallback; 
+			]]>
+		</qxt:script>
+		
+		<qx:eventListener type="dragdrop">
+			<![CDATA[
+			var dropData 	 = this.getDropData(event);
+			var action		 = event.getAction();
+			var selection  = dropData.nodeData;
+			var targetNode = dropData.targetNode;
+			if ( this.getNodeType(targetNode) != "qcl.auth.types.Role" ) return;
+			
+			var targetNodeRoleId = parseInt(targetNode.data.id);
+			
+			selection.forEach(function(sourceNode){	
+				var permissionId 		 		= parseInt(sourceNode.data.id);
+				var sourceNodeRoleId   	= parseInt(this.nodeGet(sourceNode.parentNodeId).data.id);
+				if ( action == "move" )
+				{
+					this.updateServer( this.getServiceName() + ".removePermissionFromRole", permissionId, sourceNodeRoleId );
+				}
+				this.updateServer( this.getServiceName() + ".addPermissionToRole", permissionId, targetNodeRoleId );
+			}, this);
+			
+			this.setUserData("dropData",dropData);
+		  ]]>					
+		</qx:eventListener>	
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.roleAdded">
+			<![CDATA[
+			var dropData = this.getUserData("dropData");
+			if (dropData && dropData.nodeData[0].data.id == message.getData() )
+			{
+			 this.moveNode(dropData);
+			 this.setUserData("dropData",null);
+			}
+			]]>
+		</qx:messageSubscriber>		
+
+		<!-- create a new role -->
+		
+		<qx:messageSubscriber filter="qcl.auth.commands.role.create">
+			<![CDATA[
+			var newName = prompt(this.tr("Please enter dot-separated named id (foo.roles.mySpecialRole) of role"));
+			if ( ! newName ) return;
+			roleNode = this.getApplication().getUserData("currentNode");
+			this.updateServer( this.getServiceName() + ".createItem", "role", newName, roleNode.data.id );
+			]]>
+		</qx:messageSubscriber>		
+
+		<qx:messageSubscriber filter="qcl.auth.messages.role.created">
+			<![CDATA[
+			var id   = message.getData();
+			var parentNodeId = this.getApplication().getUserData("currentNode").data.id;	
+			qx.event.message.Bus.dispatch( "qcl.auth.messages.reload" );
+			]]>
+		</qx:messageSubscriber>
+		
+		<!-- create a new permission -->
+		
+		<qx:messageSubscriber filter="qcl.auth.commands.permission.create">
+			<![CDATA[
+			var newName = prompt(this.tr("Please enter dot-separated named id (foo.permissions.doFoo) of permission"));
+			if ( ! newName ) return;
+			var roleNode = this.getApplication().getUserData("currentNode");
+			var nodeType = this.getNodeType(roleNode) ; 
+			if ( nodeType != "qcl.auth.types.Role" )
+			{
+				qx.event.message.Bus.dispatch("error-client", "Cannot create permission - invalid parent node type " + nodeType );
+				return;
+			}
+			this.updateServer( this.getServiceName() + ".createItem", "permission", newName, roleNode.data.id );
+			]]>
+		</qx:messageSubscriber>		
+
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.created">
+			<![CDATA[
+			// todo: add only newly created node
+			this.getDataModel().clearData();
+			this.updateClient();
+			]]>
+		</qx:messageSubscriber>		
+		
+		<!-- delete or remove items. the server calls are handled in the left tree, we need only handle the response -->
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.role.deleted">
+			qx.event.message.Bus.dispatch( "qcl.auth.messages.reload" );
+		</qx:messageSubscriber>
+		
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.deleted">
+			this.getDataModel().clearData(); this.updateClient();
+		</qx:messageSubscriber>
+				
+		<qx:messageSubscriber filter="qcl.auth.messages.permission.roleRemoved">
+			// listen to message only if this is not a drag and drop session
+			if ( ! this.getUserData("dropData") )
+			{
+				this.getDataModel().prune(this.getApplication().getUserData("currentNode"),true);
+				this.getDataModel().setData();
+			}
+		</qx:messageSubscriber>
+		
+	</qx:virtualTree>	
+	</qx:verticalBoxLayout>
+</qxt:include-definition>
