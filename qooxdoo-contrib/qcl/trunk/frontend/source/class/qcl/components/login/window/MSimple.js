@@ -1,9 +1,9 @@
 /**
- * event handlers for qcl.components.login.window.Simple
- **/
-qx.Class.define('qcl.components.login.window.SimpleHandlers',
+ * Mixin providing methods and event/message handlers for 
+ * qcl.components.login.window.Simple
+ */
+qx.Class.define('qcl.components.login.window.MSimple',
 {
-
   members :
   {
      /**
