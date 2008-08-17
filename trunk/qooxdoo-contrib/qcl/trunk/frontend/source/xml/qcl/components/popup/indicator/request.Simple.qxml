@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <qxt:root
   xmlns:qx="http://www.qxtransformer.org/qooxdoo"
-  xmlns:qxt="http://www.qxtransformer.org/extension"
-  >
+  xmlns:qxt="http://www.qxtransformer.org/extension">
   
   <!-- loading indicator -->
   <!-- todo: cancel requests selectively -->
@@ -12,22 +11,25 @@
     className="Simple" 
     extend="qx.ui.popup.Popup" 
     include="qcl.components.popup.indicator.request.MSimple"
-      
-    height="auto" width="auto" autoHide="false"
-    onAppear="this.centerToBrowser()">
+    translate="true">
     
-      <qx:atom
-        border="outset-thin"
-        padding="10"
-        icon="icon/16/actions/ajax-loader.gif" 
-        label="Loading, please wait..." 
-        backgroundColor="white">
-        
-        <!-- respond to rpc messages -->
-        <qx:messageSubscriber filter="qcl.databinding.messages.rpc.*" delegate="handleRpcMessage" />        
-        
-        <!-- clear queue and hide popup -->
-        <qx:eventListener type="click" delegate="handleClick" />
+    <qxt:properties
+      height="auto" 
+      width="auto" 
+      autoHide="false"
+      onAppear="this.centerToBrowser()"/>
+    
+    <qx:atom
+      padding="10"
+      icon="icon/16/actions/ajax-loader.gif" 
+      label="Loading, please wait..." 
+      backgroundColor="white">
+      
+      <!-- respond to rpc messages -->
+      <qx:messageSubscriber filter="qcl.databinding.messages.rpc.*" delegate="handleRpcMessage" />        
+      
+      <!-- clear queue and hide popup -->
+      <qx:eventListener type="click" delegate="handleClick" />
 
     </qx:atom>
     
