@@ -7,7 +7,7 @@
 	<!-- login window -->
 			
 	<qx:widget
-    namespace="qcl.components.loginWidget.window"
+    namespace="qcl.components.login.window"
     className="Simple" 
     include="qcl.components.login.window.SimpleHandlers"
     extend="qx.ui.window.Window" 
