@@ -1,7 +1,7 @@
 /* ************************************************************************
 
 
-    Widget class 'qcl.components.login.popup.request.Simple'.
+    Widget class 'qcl.components.popup.request.Simple'.
     This file is auto-generated. Do not edit, manual changes will be overwritten.
 
 
@@ -19,11 +19,11 @@
 /**
  * @todo: add documentation here auto-generated from qxml file
  */
-qx.Class.define("qcl.components.login.popup.request.Simple",
+qx.Class.define("qcl.components.popup.request.Simple",
 {
   extend : qx.ui.popup.Popup,
 
-  include : [ qcl.components.login.popup.request.SimpleHandlers ],
+  include : [ qcl.components.popup.request.MSimple ],
 
     
   /**
