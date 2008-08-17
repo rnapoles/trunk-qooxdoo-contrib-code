@@ -8,7 +8,7 @@
   <!-- todo: cancel requests selectively -->
   
   <qx:widget
-    namespace="qcl.components.login.popup.request"
+    namespace="qcl.components.popup.request"
     className="Simple" 
     extend="qx.ui.popup.Popup" 
     include="qcl.components.login.popup.request.SimpleHandlers"
