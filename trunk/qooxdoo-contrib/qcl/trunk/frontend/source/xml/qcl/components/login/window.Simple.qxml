@@ -12,7 +12,16 @@
     include="qcl.components.login.window.MSimple"
     extend="qx.ui.window.Window"
     translate="true"> 
-   
+
+    <!-- constructor -->
+    <qxt:constructor>
+      <qxt:arguments>
+        <qxt:argument attribute="caption" default="Please login."/>
+        <qxt:argument attribute="icon" />
+      </qxt:arguments>
+    </qxt:constructor>     
+
+  <!-- properties -->
    <qxt:properties
   		width="250" 
   		modal="true" 
@@ -22,13 +31,7 @@
   		resizable="false"
       display="true"
 		  onAppear="this.centerToBrowser()"/>
-
-    <qxt:constructor>
-        <qxt:arguments>
-            <qxt:argument attribute="caption" default="Please login."/>
-            <qxt:argument attribute="icon" />
-        </qxt:arguments>
-    </qxt:constructor>         
+       
 
 		<qx:fieldSet dimension="auto,auto">
 
