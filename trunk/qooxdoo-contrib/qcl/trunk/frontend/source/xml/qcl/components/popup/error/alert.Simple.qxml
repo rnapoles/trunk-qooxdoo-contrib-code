@@ -6,7 +6,7 @@
 	<!-- simple error log window -->		
   
 	<qx:widget 
-    namespace="qcl.components.login.popup.error.alert"
+    namespace="qcl.components.popup.error.alert"
     className="Simple" 
     extend="qx.ui.window.Window" 
     
