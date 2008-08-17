@@ -8,14 +8,16 @@
 	<qx:widget 
     namespace="qcl.components.popup.error.alert"
     className="Simple" 
-    extend="qx.ui.window.Window" 
+    extend="qx.ui.window.Window"
+    translate="true">
     
-		width="400" height="auto" 
-		caption="Error" 
-		showMinimize="false" 
-    showMaximize="false" 
-    showClose="false" 
-		onAppear="this.centerToBrowser()">
+    <qxt:properties
+  		width="400" height="auto" 
+  		caption="Error" 
+  		showMinimize="false" 
+      showMaximize="false" 
+      showClose="false" 
+  		onAppear="this.centerToBrowser()"/>
 
 		<!-- events and messages -->
     

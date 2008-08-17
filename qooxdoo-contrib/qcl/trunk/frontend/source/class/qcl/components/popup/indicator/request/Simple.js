@@ -55,21 +55,28 @@ qx.Class.define("qcl.components.popup.indicator.request.Simple",
      */
     paint: function ()
     {
-
-      // parent object to which child objects will be added: this object or dummy stub, depends on setToClientDocument property
-      var qx_id96075= this;
+      // Parent object to which child objects will be added: this object or dummy stub, depends on setToClientDocument property
+      var qx_id96357= this;
 
 /** begin auto-generated gui code **/
 
-var qx_id99716 = new qx.ui.basic.Atom("Loading, please wait...","icon/16/actions/ajax-loader.gif");
-qx_id99716.setBorder("outset-thin");
-qx_id99716.setPadding(10);
-qx_id99716.setBackgroundColor("white");
-qx_id96075.add(qx_id99716);
+this.setHeight("auto");
+this.setWidth("auto");
+this.setAutoHide(false);
 
-qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.*",function(message){this.handleRpcMessage(message,qx_id99716);},this);
+this.addEventListener("appear",function(event)
+{
+this.centerToBrowser()
+},this);
 
-qx_id99716.addEventListener("click", function(event){this.handleClick(event,qx_id99716);},this);
+var qx_id98767 = new qx.ui.basic.Atom(this.tr("Loading, please wait..."),"icon/16/actions/ajax-loader.gif");
+qx_id98767.setPadding(10);
+qx_id98767.setBackgroundColor("white");
+qx_id96357.add(qx_id98767);
+
+qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.*",function(message){this.handleRpcMessage(message,qx_id98767);},this);
+
+qx_id98767.addEventListener("click", function(event){this.handleClick(event,qx_id98767);},this);
 
 /** end auto-generated gui code **/
 

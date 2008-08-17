@@ -52,41 +52,52 @@ qx.Class.define("qcl.components.popup.error.alert.Simple",
      */
     paint: function ()
     {
-
-      // parent object to which child objects will be added: this object or dummy stub, depends on setToClientDocument property
-      var qx_id96738= this;
+      // Parent object to which child objects will be added: this object or dummy stub, depends on setToClientDocument property
+      var qx_id96996= this;
 
 /** begin auto-generated gui code **/
+
+this.setWidth(400);
+this.setHeight("auto");
+this.setCaption(this.tr("Error"));
+this.setShowMinimize(false);
+this.setShowMaximize(false);
+this.setShowClose(false);
+
+this.addEventListener("appear",function(event)
+{
+this.centerToBrowser()
+},this);
 
 qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(message){
 
 			message.getData() == false ? this.hide() : this.show();
 		
-},qx_id96738);
+},qx_id96996);
 
-var qx_id97917 = new qx.ui.layout.VerticalBoxLayout();
-qx_id97917.setSpacing(5);
-qx_id97917.setPadding(10);
-qx_id97917.setWidth("100%");
-qx_id97917.setHeight("100%");
-qx_id96738.add(qx_id97917);
+var qx_id98129 = new qx.ui.layout.VerticalBoxLayout();
+qx_id98129.setSpacing(5);
+qx_id98129.setPadding(10);
+qx_id98129.setWidth("100%");
+qx_id98129.setHeight("100%");
+qx_id96996.add(qx_id98129);
 
-var qx_id97923 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id97923.setWidth("100%");
-qx_id97923.setHeight("1*");
-qx_id97923.setSpacing(10);
-qx_id97923.setVerticalChildrenAlign("middle");
-qx_id97917.add(qx_id97923);
+var qx_id100121 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100121.setWidth("100%");
+qx_id100121.setHeight("1*");
+qx_id100121.setSpacing(10);
+qx_id100121.setVerticalChildrenAlign("middle");
+qx_id98129.add(qx_id100121);
 
-var qx_id99911 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
-qx_id99911.setDimension(32 ,32);
-qx_id97923.add(qx_id99911);
+var qx_id100130 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
+qx_id100130.setDimension(32 ,32);
+qx_id100121.add(qx_id100130);
 
-var qx_id99917 = new qx.ui.basic.Label(" ");
-qx_id99917.setWrap(true);
-qx_id99917.setHeight("100%");
-qx_id99917.setWidth("1*");
-qx_id99917.setMode("html");
+var qx_id100135 = new qx.ui.basic.Label(this.tr(" "));
+qx_id100135.setWrap(true);
+qx_id100135.setHeight("100%");
+qx_id100135.setWidth("1*");
+qx_id100135.setMode("html");
 
 qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(message){
 
@@ -94,26 +105,26 @@ qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(mes
   					var msg = "" + msg.replace(/\\n/,"") + "";
   					this.setText(msg);
   				
-},qx_id99917);
-qx_id97923.add(qx_id99917);
+},qx_id100135);
+qx_id100121.add(qx_id100135);
 
-var qx_id99940 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id99940.setWidth("100%");
-qx_id99940.setHeight("auto");
-qx_id99940.setHorizontalChildrenAlign("center");
-qx_id99940.setSpacing(10);
-qx_id97917.add(qx_id99940);
+var qx_id100157 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100157.setWidth("100%");
+qx_id100157.setHeight("auto");
+qx_id100157.setHorizontalChildrenAlign("center");
+qx_id100157.setSpacing(10);
+qx_id98129.add(qx_id100157);
 
-var qx_id99948 = new qx.ui.form.Button("OK",null);
-qx_id99948.setHeight(25);
-qx_id99948.setWidth(70);
-qx_id99940.add(qx_id99948);
+var qx_id100166 = new qx.ui.form.Button(this.tr("OK"),null);
+qx_id100166.setHeight(25);
+qx_id100166.setWidth(70);
+qx_id100157.add(qx_id100166);
 
-qx_id99948.addEventListener("execute",function(event){
+qx_id100166.addEventListener("execute",function(event){
 
 						errorWindow.hide();
 					
-},qx_id99948);
+},qx_id100166);
 
 /** end auto-generated gui code **/
 

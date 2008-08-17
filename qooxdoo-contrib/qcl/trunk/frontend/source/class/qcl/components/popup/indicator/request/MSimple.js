@@ -3,7 +3,7 @@
  * qcl.components.popup.indicator.request.Simple
  * 
  */
-qx.Class.define('qcl.components.popup.indicator.request.MSimple',
+qx.Mixin.define('qcl.components.popup.indicator.request.MSimple',
 {
 
   members :
@@ -14,7 +14,7 @@ qx.Class.define('qcl.components.popup.indicator.request.MSimple',
      * @param target {qx.core.Target} Message receiver object 
      * @return void
      */
-    handleRpcMesssage : function(message,target)
+    handleRpcMessage : function(message,target)
     {
     
       var status = message.getName();
@@ -52,11 +52,11 @@ qx.Class.define('qcl.components.popup.indicator.request.MSimple',
        */
       if (queue.length) 
       {
-        this.getParent().show();
+        this.show();
       } 
       else 
       {
-        this.getParent().hide();
+        this.hide();
       }
     
     },
@@ -64,7 +64,7 @@ qx.Class.define('qcl.components.popup.indicator.request.MSimple',
     handleClick : function()
     {
       this.setUserData("queue",[]);
-      this.getParent().hide();      
+      this.hide();      
     }
     
   }

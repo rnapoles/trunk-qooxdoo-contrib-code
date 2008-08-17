@@ -10,19 +10,18 @@
     namespace="qcl.components.login.window"
     className="Simple" 
     include="qcl.components.login.window.MSimple"
-    extend="qx.ui.window.Window" 
+    extend="qx.ui.window.Window"
+    translate="true"> 
    
-		width="250" 
-		modal="true" 
-		showMinimize="false"
-		showMaximize="false" 
-		showClose="false" 
-		resizable="false"
-    
-    display="true"
-    translate="true"
-    
-		onAppear="this.centerToBrowser()">
+   <qxt:properties
+  		width="250" 
+  		modal="true" 
+  		showMinimize="false"
+  		showMaximize="false" 
+  		showClose="false" 
+  		resizable="false"
+      display="true"
+		  onAppear="this.centerToBrowser()"/>
 
     <qxt:constructor>
         <qxt:arguments>

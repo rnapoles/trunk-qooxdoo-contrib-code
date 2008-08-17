@@ -2,7 +2,7 @@
  * Mixin providing methods and event/message handlers for 
  * qcl.components.login.window.Simple
  */
-qx.Class.define('qcl.components.login.window.MSimple',
+qx.Mixin.define('qcl.components.login.window.MSimple',
 {
   members :
   {
