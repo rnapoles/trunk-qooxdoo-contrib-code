@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<qxt:include-definition
+<qxt:root
 	xmlns:qx="http://www.qxtransformer.org/qooxdoo"
 	xmlns:qxt="http://www.qxtransformer.org/extension">
 	
 	<!-- simple error log window -->		
-	<qx:window 
-		id="errorWindow" 
+  
+	<qx:widget 
+    namespace="qcl.components.login.popup.error.alert"
+    className="Simple" 
+    extend="qx.ui.window.Window" 
+    
 		width="400" height="auto" 
 		caption="Error" 
-		showMinimize="false" showMaximize="false" showClose="false" 
+		showMinimize="false" 
+    showMaximize="false" 
+    showClose="false" 
 		onAppear="this.centerToBrowser()">
 
 		<!-- events and messages -->
-		
+    
 		<qx:messageSubscriber filter="qcl.databinding.messages.rpc.error">
 			message.getData() == false ? this.hide() : this.show();
 		</qx:messageSubscriber>
@@ -44,15 +50,17 @@
 				width="100%" height="auto" 
 				horizontalChildrenAlign="center"
 				spacing="10">
+        
 				<qx:button label="OK" height="25" width="70">
 					<qx:eventListener type="execute">
 						errorWindow.hide();
 					</qx:eventListener>
 				</qx:button>
-			</qx:horizontalBoxLayout>
+			
+      </qx:horizontalBoxLayout>
 			
 		</qx:verticalBoxLayout>	
 
-	</qx:window>
+	</qx:widget>
 	
-</qxt:include-definition>	
+</qxt:root>	

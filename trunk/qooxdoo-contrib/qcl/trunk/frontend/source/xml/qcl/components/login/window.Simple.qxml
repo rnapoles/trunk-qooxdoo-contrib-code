@@ -9,7 +9,7 @@
 	<qx:widget
     namespace="qcl.components.login.window"
     className="Simple" 
-    include="qcl.components.login.window.SimpleHandlers"
+    include="qcl.components.login.window.MSimple"
     extend="qx.ui.window.Window" 
    
 		width="250" 
