@@ -1,7 +1,7 @@
 /* ************************************************************************
 
 
-    Widget class 'qcl.components.login.popup.error.alert.Simple'.
+    Widget class 'qcl.components.popup.error.alert.Simple'.
     This file is auto-generated. Do not edit, manual changes will be overwritten.
 
 
@@ -18,7 +18,7 @@
 /**
  * @todo: add documentation here auto-generated from qxml file
  */
-qx.Class.define("qcl.components.login.popup.error.alert.Simple",
+qx.Class.define("qcl.components.popup.error.alert.Simple",
 {
   extend : qx.ui.window.Window,
 
