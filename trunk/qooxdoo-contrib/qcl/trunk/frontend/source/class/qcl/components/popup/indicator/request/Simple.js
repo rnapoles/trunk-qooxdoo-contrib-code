@@ -56,12 +56,13 @@ qx.Class.define("qcl.components.popup.indicator.request.Simple",
     paint: function ()
     {
       // Parent object to which child objects will be added: this object or dummy stub, depends on setToClientDocument property
-      var qx_id96357= this;
+      var qx_id96292= this;
 
 /** begin auto-generated gui code **/
 
 this.setHeight("auto");
 this.setWidth("auto");
+this.setBorder("black");
 this.setAutoHide(false);
 
 this.addEventListener("appear",function(event)
@@ -69,14 +70,14 @@ this.addEventListener("appear",function(event)
 this.centerToBrowser()
 },this);
 
-var qx_id98767 = new qx.ui.basic.Atom(this.tr("Loading, please wait..."),"icon/16/actions/ajax-loader.gif");
-qx_id98767.setPadding(10);
-qx_id98767.setBackgroundColor("white");
-qx_id96357.add(qx_id98767);
+var qx_id98041 = new qx.ui.basic.Atom(this.tr("Busy ..."),"icon/16/actions/ajax-loader.gif");
+qx_id98041.setPadding(10);
+qx_id98041.setBackgroundColor("white");
+qx_id96292.add(qx_id98041);
 
-qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.*",function(message){this.handleRpcMessage(message,qx_id98767);},this);
+qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.*",function(message){this.handleRpcMessage(message,qx_id98041);},this);
 
-qx_id98767.addEventListener("click", function(event){this.handleClick(event,qx_id98767);},this);
+qx_id98041.addEventListener("click", function(event){this.handleClick(event,qx_id98041);},this);
 
 /** end auto-generated gui code **/
 

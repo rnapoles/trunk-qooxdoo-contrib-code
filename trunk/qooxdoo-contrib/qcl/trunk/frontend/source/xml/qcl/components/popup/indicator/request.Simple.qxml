@@ -16,13 +16,14 @@
     <qxt:properties
       height="auto" 
       width="auto" 
+      border="black"
       autoHide="false"
       onAppear="this.centerToBrowser()"/>
     
     <qx:atom
       padding="10"
       icon="icon/16/actions/ajax-loader.gif" 
-      label="Loading, please wait..." 
+      label="Busy ..." 
       backgroundColor="white">
       
       <!-- respond to rpc messages -->
