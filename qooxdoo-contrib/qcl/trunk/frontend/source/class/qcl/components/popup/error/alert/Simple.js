@@ -53,7 +53,7 @@ qx.Class.define("qcl.components.popup.error.alert.Simple",
     paint: function ()
     {
       // Parent object to which child objects will be added: this object or dummy stub, depends on setToClientDocument property
-      var qx_id96996= this;
+      var qx_id96931= this;
 
 /** begin auto-generated gui code **/
 
@@ -73,31 +73,31 @@ qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(mes
 
 			message.getData() == false ? this.hide() : this.show();
 		
-},qx_id96996);
+},qx_id96931);
 
-var qx_id98129 = new qx.ui.layout.VerticalBoxLayout();
-qx_id98129.setSpacing(5);
-qx_id98129.setPadding(10);
-qx_id98129.setWidth("100%");
-qx_id98129.setHeight("100%");
-qx_id96996.add(qx_id98129);
+var qx_id98069 = new qx.ui.layout.VerticalBoxLayout();
+qx_id98069.setSpacing(5);
+qx_id98069.setPadding(10);
+qx_id98069.setWidth("100%");
+qx_id98069.setHeight("100%");
+qx_id96931.add(qx_id98069);
 
-var qx_id100121 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id100121.setWidth("100%");
-qx_id100121.setHeight("1*");
-qx_id100121.setSpacing(10);
-qx_id100121.setVerticalChildrenAlign("middle");
-qx_id98129.add(qx_id100121);
+var qx_id100059 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100059.setWidth("100%");
+qx_id100059.setHeight("1*");
+qx_id100059.setSpacing(10);
+qx_id100059.setVerticalChildrenAlign("middle");
+qx_id98069.add(qx_id100059);
 
-var qx_id100130 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
-qx_id100130.setDimension(32 ,32);
-qx_id100121.add(qx_id100130);
+var qx_id100068 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
+qx_id100068.setDimension(32 ,32);
+qx_id100059.add(qx_id100068);
 
-var qx_id100135 = new qx.ui.basic.Label(this.tr(" "));
-qx_id100135.setWrap(true);
-qx_id100135.setHeight("100%");
-qx_id100135.setWidth("1*");
-qx_id100135.setMode("html");
+var qx_id100072 = new qx.ui.basic.Label(this.tr(" "));
+qx_id100072.setWrap(true);
+qx_id100072.setHeight("100%");
+qx_id100072.setWidth("1*");
+qx_id100072.setMode("html");
 
 qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(message){
 
@@ -105,31 +105,39 @@ qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(mes
   					var msg = "" + msg.replace(/\\n/,"") + "";
   					this.setText(msg);
   				
-},qx_id100135);
-qx_id100121.add(qx_id100135);
+},qx_id100072);
+qx_id100059.add(qx_id100072);
 
-var qx_id100157 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id100157.setWidth("100%");
-qx_id100157.setHeight("auto");
-qx_id100157.setHorizontalChildrenAlign("center");
-qx_id100157.setSpacing(10);
-qx_id98129.add(qx_id100157);
+var qx_id100095 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100095.setWidth("100%");
+qx_id100095.setHeight("auto");
+qx_id100095.setHorizontalChildrenAlign("center");
+qx_id100095.setSpacing(10);
+qx_id98069.add(qx_id100095);
 
-var qx_id100166 = new qx.ui.form.Button(this.tr("OK"),null);
-qx_id100166.setHeight(25);
-qx_id100166.setWidth(70);
-qx_id100157.add(qx_id100166);
+var qx_id100103 = new qx.ui.form.Button(this.tr("OK"),null);
+qx_id100103.setHeight(25);
+qx_id100103.setWidth(70);
+qx_id100095.add(qx_id100103);
 
-qx_id100166.addEventListener("execute",function(event){
-
-						errorWindow.hide();
-					
-},qx_id100166);
+qx_id100103.addEventListener("execute", function(event){this.closeWindow(event,qx_id100103);},this);
 
 /** end auto-generated gui code **/
 
       // set widget object, deprecated, will be removed
       this.setWidget(this);
+    },
+
+    /**
+     * 
+     * @param event {qx.event.type.Event}
+     * @param target {qx.core.Target}
+     */ 
+    closeWindow : function(event,target)
+    {
+
+      this.close();
+    
     }
 
   }

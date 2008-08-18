@@ -54,14 +54,17 @@
 				spacing="10">
         
 				<qx:button label="OK" height="25" width="70">
-					<qx:eventListener type="execute">
-						errorWindow.hide();
-					</qx:eventListener>
+					<qx:eventListener type="execute" delegate="closeWindow"/>
 				</qx:button>
 			
       </qx:horizontalBoxLayout>
 			
 		</qx:verticalBoxLayout>	
+    
+    <!-- FIXME: rename qx:eventHandler to qxt:eventHandler  -->
+    <qx:eventHandler name="closeWindow">
+      this.close();
+    </qx:eventHandler>
 
 	</qx:widget>
 	
