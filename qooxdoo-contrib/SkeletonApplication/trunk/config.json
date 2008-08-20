@@ -1,0 +1,21 @@
+// This is the qooxdoo 0.8 replacement for Makefile
+{
+  "name"    : "An application skeleton",
+
+  "include" :
+  [
+    {
+      "path" : "../../qooxdoo/trunk/tool/data/config/application.json"
+    }
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "skeletonapplication",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk/framework",
+    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
+    "QXTHEME"      : "qx.theme.Modern",
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  }
+}
