@@ -18,7 +18,7 @@
 /**
  * @todo: add documentation here auto-generated from qxml file
  */
-qx.Class.define("qcl.components.dialog.Simple",
+qx.Class.define("qcl.components.dialog.Error",
 {
   extend : qx.ui.window.Window,
 
