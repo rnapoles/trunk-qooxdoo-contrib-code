@@ -3,7 +3,7 @@
  * qcl.components.popup.indicator.request.Simple
  * 
  */
-qx.Mixin.define('qcl.components.popup.indicator.request.MSimple',
+qx.Mixin.define('qcl.components.jsonrpc.MStatusIndicator',
 {
 
   members :
