@@ -256,11 +256,24 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */
     _updateClient : function()
     {
+        /*
+         * abort if databinding is turned off
+         */
         if ( ! this.getDataBinding() ) return false;
+        
+        /*
+         * abort if updates should only be made to the server
+         */        
         if ( this.getUpdateTarget() == "server" ) return false;
         
+        /*
+         * turn arguments into a real array object 
+         */
         for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
         
+        /*
+         * choose transport mechanism
+         */
         switch (this.getTransport())
         {         
           // use JSON-RPC
@@ -273,15 +286,22 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             break; 
         }
     },
+    
+    /**
+     * the data returned by the server
+     */
+    __responseData : null,
 
     /**
      * update the client using jsonrpc
+     * @access private
      */
     _updateClientJsonRpc : function(args)
     {
-      var rpc = new qx.io.remote.Rpc();
      
-      // service method and parameters
+      /*
+       * assemble service method and parameters
+       */
       if ( typeof args[0] == "string" && args[0].indexOf(".") > 0 )
       {
         var serviceName    = args[0].substr(0,args[0].lastIndexOf("."));
@@ -295,47 +315,79 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         var params         = args;
       }      
       
+      /*
+       * configure new request object
+       */
+      var rpc = new qx.io.remote.Rpc();      
       rpc.setTimeout(this.getTimeout());
       rpc.setUrl(this.getServiceUrl());
       rpc.setServiceName(serviceName);
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
+      
+      /*
+       * tag the current object instance for closures
+       */
       var _this = this;
       
-      // start request
-      
-      // notify of start of request
+      /* 
+       * notify of start of request
+       */
       var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
+      qx.event.message.Bus.dispatch("qcl.databinding.messages.rpc.start",timestamp);
       
-      // callback function
-      var callbackFunc = function(data, ex, id) {
-        // notify of end of request
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));
+      /*
+       * create callback function
+       */
+      var callbackFunc = function(data, ex, id) 
+      {
+        /*
+         * save data
+         */
+        _this.__responseData = data;
+        
+        /* 
+         * notify of end of request
+         */
+        var message = qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp);
+        message.setSender(_this);
+        qx.event.message.Bus.dispatch( message );
+        
+        /*
+         * dispose request
+         */
         request.reset();
         request.dispose();
-        request = null; // dispose rpc object
+        request = null;
 
         if (ex == null) 
         {  
-           // handle messages and events
+           /*
+            * handle messages and events
+            */
            if (data.messages || data.events) 
            {
              _this.__handleEventsAndMessages(_this,data)
            }
            
-           // handle received data	              
+           /*
+            * handle received data  
+            */              
            if ( data.result )
            {
              _this.__handleDataReceived (data.result);
            }
                     
-           // notify that data has been received
+           /*
+            * notify that data has been received
+            */
            _this.createDispatchDataEvent("dataReceived",data.result);
            
          } 
          else 
          {
-           // dispatch error message
+           /*
+            * dispatch error message
+            */
            qx.event.message.Bus.dispatch( 
              new qx.event.message.Message(
                "qcl.databinding.messages.rpc.error",
@@ -344,20 +396,34 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
            );
            _this.warn ( "Async exception (#" + id + "): " + ex.message );
 
-           // notify that data has been received but failed
+           /* 
+            * notify that data has been received but failed
+            */
            _this.createDispatchDataEvent("dataReceived",null);
          }
 
-       }
+       };
        
-       // send request 
+       /*
+        * send request 
+        */
        params.unshift(serviceMethod);
        params.unshift(callbackFunc);
        var request = rpc.callAsync.apply(rpc,params);
         
-       // pass request object to subscribers  
+       /*
+        * pass request object to subscribers and event listeners
+        */  
        qx.event.message.Bus.dispatch( "qcl.databinding.messages.rpc.object", request );
        this.createDispatchDataEvent( "requestSent", request ); 
+    },
+
+    /**
+     * returns the data that was received from the server
+     */
+    getResponseData : function()
+    {
+      return this.__responseData;
     },
 
     /**
@@ -633,10 +699,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */
     _updateServerJsonRpc : function (args)
     {      
-      // request objecgt
-      var rpc = new qx.io.remote.Rpc();
-      
-      // service method and parameters
+   
+      /*
+       * assemble service method and parameters
+       */
       if ( typeof args[0] == "string" && args[0].indexOf(".") > 0 )
       {
         var serviceName   = args[0].substr(0,args[0].lastIndexOf("."));
@@ -649,62 +715,97 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         var serviceMethod = this.getServiceMethodUpdateServer();
         var params = args;
       }			      
-      
-      rpc.setServiceName( serviceName )
-      rpc.setTimeout(this.getTimeout());
-      rpc.setUrl(this.getServiceUrl());
+
+      /*
+       * configure request object
+       */
+      var rpc = new qx.io.remote.Rpc();      
+      rpc.setServiceName( serviceName );
+      rpc.setTimeout( this.getTimeout() );
+      rpc.setUrl( this.getServiceUrl() );
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
+      
+      /*
+       * reference present object instance for closures
+       */
       var _this = this;
       
-      // start request
+      /* 
+       * notify of start of request
+       */
       var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp));
+      qx.event.message.Bus.dispatch("qcl.databinding.messages.rpc.start",timestamp);
       
-      // get widget data
+      /*
+       * get widget data
+       */
       var widgetData = this.__getWidgetData();
       
-      // callback function
+      /*
+       * callback function
+       */
       var callbackFunc = function(data, ex, id)
       {
-         // notify of end of request
-        qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp));		         
+        /*
+         * save data
+         */
+        _this.__responseData = data;
+        
+        /* 
+         * notify of end of request
+         */
+        var message = qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp);
+        message.setSender(_this);
+        qx.event.message.Bus.dispatch( message );
+        
+        /*
+         * dispose request
+         */		         
         request.reset();
         request.dispose();
-        request = null; // dispose rpc object
+        request = null; 
         
         if (ex == null) 
         {
-          // handle messages and events
+          /*
+           * handle messages and events
+           */
           if (data.messages || data.events) 
           {
             _this.__handleEventsAndMessages( _this, data )
           }
           
-          // notify about sent data only if sending was successful
+          /*
+           * notify about sent data only if sending was successful
+           */
           _this.createDispatchDataEvent("dataSent",data.result);
           
         } 
         else 
         {
-          // dispatch error message, todo
+          /*
+           * dispatch error message
+           */
           qx.event.message.Bus.dispatch( 
-           new qx.event.message.Message(
              "qcl.databinding.messages.rpc.error",
              ex.message
-            )
           );
           _this.warn ( "Async exception (#" + id + "): " + ex.message );
         }
        };
 
-      // send request 
+      /* 
+       * send request
+       */ 
       params.unshift(widgetData);
       params.unshift(serviceMethod);
       params.unshift(callbackFunc);
       var request = rpc.callAsync.apply(rpc,params);
       
-      // pass request object to subscribers  
-      qx.event.message.Bus.dispatch(new qx.event.message.Message("qcl.databinding.messages.rpc.object",request)); 
+      /*
+       * pass request object to message subscribers and event listeners
+       */
+      qx.event.message.Bus.dispatch("qcl.databinding.messages.rpc.object",request); 
       this.createDispatchDataEvent("requestSent",request);     
     },
     
