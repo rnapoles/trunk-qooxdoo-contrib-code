@@ -7,7 +7,7 @@
   
   <qx:widget 
     namespace="qcl.components.dialog"
-    className="Simple" 
+    className="Error" 
     extend="qx.ui.window.Window"
     translate="true">
     
