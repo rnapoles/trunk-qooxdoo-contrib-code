@@ -26,7 +26,7 @@
 /**
  * A native window that monitors the jsonrpc requests
  */
-qx.Class.define("qcl.components.jsonRpc.MonitorWindow",
+qx.Class.define("qcl.components.jsonrpc.MonitorWindow",
 {
   extend : qx.client.NativeWindow,
 
