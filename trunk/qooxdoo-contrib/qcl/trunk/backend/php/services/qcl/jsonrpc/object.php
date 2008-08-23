@@ -1,7 +1,7 @@
 <?php
 
 // dependencies
-require_once ("qcl/object.php");
+require_once "qcl/object.php";
 
 /**
  * base class of all json rpc service classes
@@ -42,6 +42,18 @@ class qcl_jsonrpc_object extends qcl_object
     return parent::getInstance( $class );
   }
   
+  /**
+   * Run once for the given class during one session
+   * Implementing method must call parent method before executing action like so:
+   * if ( parent::runOnceInSession() ) { execute run-once action  }
+   */
+  function runOnceInSession()
+  {
+    $flag = get_class($this) . ".runOnceInSession";
+    if ( $this->getSessionVar($flag) ) return false;
+    $this->setSessionVar($flag,true);
+    return true;
+  }  
   
   //-------------------------------------------------------------
   // public methods
@@ -106,8 +118,11 @@ class qcl_jsonrpc_object extends qcl_object
    */
   function alert( $message )
   {
-    // pass message as error to jsonrpc error object ( or end gracefully)
+    /*
+     *  pass message as error to jsonrpc error object if present
+     */
     global $error;
+    
     if ( is_object($error) )
     {
       $error->setError( $number, stripslashes( $message ) );
@@ -115,6 +130,10 @@ class qcl_jsonrpc_object extends qcl_object
       // never gets here
       exit;
     }
+    
+    /*
+     * or simply output error message
+     */
     echo $message;
     exit;
   }
@@ -136,30 +155,36 @@ class qcl_jsonrpc_object extends qcl_object
  	 * save a variable in the session 
  	 * @param string	$name	name of the variable
  	 * @param mixed		$data	data to be saved
+ 	 * @depreated Use qcl_registry_Session instead
  	 */
  	function setSessionVar ( $name, $data )
  	{
- 		$_SESSION['QCL_SESSION_VARS'][$name] =& $data;
+ 		$reg =& qcl_registry_Session::getInstance();
+ 		$reg->set($name,$data);
  	}
  	
  	/**
  	 * get a variable from the session 
  	 * @param string	$name	name of the variable
  	 * @return reference a  reference to the session variable
+ 	 * @depreated Use qcl_registry_Session instead
  	 */
- 	function &getSessionVar ( $name )
+ 	function getSessionVar ( $name )
  	{
- 		return $_SESSION['QCL_SESSION_VARS'][$name];
+    $reg =& qcl_registry_Session::getInstance();
+    return $reg->get($name);
  	}
 
  	/**
  	 * checks if sesion variable exists
  	 * @param string	$name	name of the variable
  	 * @return Boolean
+ 	 * @depreated Use qcl_registry_Session instead
  	 */
  	function hasSessionVar ( $name )
  	{
- 		return isset( $_SESSION['QCL_SESSION_VARS'][$name] );
+    $reg =& qcl_registry_Session::getInstance();
+    return $reg->has($name);
  	}
 
 

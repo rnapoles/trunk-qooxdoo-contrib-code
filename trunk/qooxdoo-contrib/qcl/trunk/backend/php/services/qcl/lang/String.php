@@ -120,9 +120,6 @@ class String
     }
   }
 
-  // }}}
-  // {{{ int count()
-
   /**
    * Alias for lenght method.
    *

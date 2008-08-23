@@ -1,7 +1,7 @@
 <?php
 
-require "qcl/jsonrpc/controller.php";
-require "qcl/lang/ArrayList.php";
+require_once "qcl/jsonrpc/controller.php";
+require_once "qcl/lang/ArrayList.php";
 
 class class_qcl_tool_migration extends qcl_jsonrpc_controller
 {
@@ -30,13 +30,14 @@ class class_qcl_tool_migration extends qcl_jsonrpc_controller
     /*
      * arguments
      */
-    //$dir = realpath("../../../frontend/source/xml");
-    $dir = realpath("../../../../../qooxdoo-contrib/qcl/trunk/frontend/source/xml/components");
-    //$application_namespace = "bibliograph";
-    $application_namespace = "qcl";
+    $dir = realpath("../../../frontend/source/xml");
+    //$dir = realpath("../../../../../qooxdoo-contrib/qcl/trunk/frontend/source/xml/components");
+    $application_namespace = "bibliograph";
+    //$application_namespace = "qcl";
     
     $this->info("Extracting handler code from $dir ...");
     $this->js = new ArrayList();
+    $this->namespace = $application_namespace;
     $this->extractHandlers($dir);
     
     $js_code = substr( trim( implode("\n    ", $this->js->toArray() ) ), 0, -1 );
@@ -156,10 +157,15 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
       {
 
         /*
-         * check for event handler, if not found, skip
+         * check for tag, if not found, skip
          */
-        if ( ! ( $isEvent   = stristr($line, "<qx:eventListener") 
-              or $isMessage = stristr($line, "<qx:messageSubscriber" ) ) )
+        if ( ! ( 
+             $isEvent      = stristr($line, "<qx:eventListener") 
+          or $isConfig     = stristr($line, "<qx:configChangeEventListener" )
+          or $isCondition  = stristr($line, "<qx:condition" )
+          or $isPermission = stristr($line, "<qx:permission" )
+          or $isMessage    = stristr($line, "<qx:messageSubscriber" ) 
+        ) )
         {
           $qxml->add($line);
           $line_no++;
@@ -174,8 +180,9 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
           $header_lines = 1;
           while ( $line2 = $lines->next() )
           {
+            if ( ! trim($line2) ) continue;
             $header_lines++;
-            $line .= "\n" . $line2;
+            $line .= " " . $line2;
             if ( strstr($line2, ">") ) break;
           }
         }
@@ -183,10 +190,13 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
         /*
          * continue if event handler is short, delegates or dispatche a message
          */
-        if ( stristr($line, "</qx:eventListener") 
-            or stristr($line, "</qx:messageSubscriber") 
-            or stristr($line, "delegate") 
-            or stristr($line, "dispatchMessage") )  
+        if ( stristr($line, "</qx:eventListener") or
+            stristr($line, "</qx:messageSubscriber") or 
+            stristr($line, "</qx:configChangeEventListener") or
+            stristr($line, "</qx:condition") or
+            stristr($line, "/>") or
+            stristr($line, "delegate") or 
+            stristr($line, "dispatchMessage") )  
         {
           $qxml->add($line);
           $line_no += $header_lines;
@@ -199,12 +209,28 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
         $eventListener = $line;
         
         /*
-         * get event type or message filter
+         * get event type, message filter or config key
          */ 
-        $lookup = $isEvent ? "type" : "filter";
-         preg_match('/' . $lookup .'\s?=\s?"([^"]+)"/s', $line, $matches);
-         $type = $matches[1];
+        $lookup = $isEvent        ? "type" : 
+                  ( $isConfig     ? "key" : 
+                  ( $isMessage    ? "filter" : 
+                  ( $isPermission ? "name" :
+                  "description" ) ) );
+                  
+        preg_match('/' . $lookup .'\s?=\s?"([^"]+)"/s', $line, $matches);
+        $type = $matches[1];
          
+        /*
+         * is permission, remember name and continue
+         */
+        if ( $isPermission )
+        {
+          $lastPermission = $type;
+          $qxml->add($line);
+          $line_no += $header_lines;
+          continue;
+        }
+        
          /*
           * store event handling code
           */
@@ -222,7 +248,11 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
            /*
             * break if end of handler code is reached
             */
-           if ( stristr($line, "</qx:eventListener") or stristr($line, "</qx:messageSubscriber") ) break;
+           if ( stristr($line, "</qx:eventListener") or 
+                stristr($line, "</qx:messageSubscriber") or
+                stristr($line, "</qx:configChangeEventListener") or
+                stristr($line, "</qx:condition")
+           ) break;
            
            /*
             * indentation
@@ -259,15 +289,15 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
          /*
           * if event handler is larger than 5 lines, move event code to javascript
           */
-         if ( $tmp->size() > 5 )
+         if ( $tmp->size() > 0 )
          {
            
            /*
             * prefix is filename plus method counter
             */
            $prefix = str_replace(".", "_", 
-                        str_replace( "-","_", 
-                          substr( $entry,0, -strlen($ext) ) ) ) . 
+                     str_replace( "-","_", 
+                     substr( $entry,0, -strlen($ext) ) ) ) . 
                      sprintf("%02s",$method_counter++);
            
            /*
@@ -278,8 +308,7 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
              $methodName =  $prefix . "_on_" . $type;
              $this->js->addAll( array( 
                 "/**",
-                " * Event handler for $entry, line " . $line_no,
-                " * Event type '$type'",
+                " * Handler for event '$type'",
                 " * @param event {qx.event.type.Event} Event object",
                 " * @param target {qx.core.Target} Event target object",
                 " * @return void",
@@ -288,28 +317,73 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
                 "{"
              ) );
            }
-           else
+           elseif ( $isMessage )
            {
-             $methodName =$prefix . "_on_" . str_replace(array(".","*"),"_",$type);
+             $methodName = $prefix . "_on_" . 
+                str_replace(
+                  array(".","*"),"_",
+                  substr( $type, strlen( $this->namespace . ".messages." ) )
+                );
+                
              $this->js->addAll( array( 
                 "/**",
-                " * Message handler for $entry, line " . $line_no,
-                " * Massage name '$type'",
+                " * Handler for message '$type'",
                 " * @param message {qx.event.message.Message} Message object",
-                " * @param target {qx.core.Target} Message receiver object ",
+                " * @param target {qx.core.Target} Widget context object ",
                 " * @return void",
                 " */",
                 "$methodName : function(message,target)",
                 "{"
              ) );               
            }
+           elseif ( $isConfig )
+           {
+             $methodName =$prefix . "_on_config_change_" . 
+                str_replace(
+                  array(".","*"),"_",
+                  substr( $type, strlen( $this->namespace . "." ) )
+                );
+             
+             
+             $this->js->addAll( array( 
+                "/**",
+                " * Event handler for configuration key '$type'",
+                " * @param event {qx.event.type.Event} Event object",
+                " * @param target {qx.core.Target} Widget context object ",
+                " * @return void",
+                " */",
+                "$methodName : function(event,target)",
+                "{"
+             ) );               
+           }
+           elseif ( $isCondition )
+           {
+             $methodName =$prefix . "_permission_"  .
+                str_replace(
+                  array(".","*"),"_",
+                  substr( $lastPermission, strlen( $this->namespace . ".permissions." ) )
+                );
+                
+             $this->js->addAll( array( 
+                "/**",
+                " * Condition function for permission '$lastPermission'" ,
+                " * $type",
+                " * @param target {qx.core.Target} Widget context object ",
+                " * @return {Boolean}",
+                " */",
+                "$methodName : function(target)",
+                "{"
+             ) );               
+           }
+           
            $this->js->addAll( $tmp );
            $this->js->addAll( array( "},","" ) );
 
            /*
             * replace event listener
             */
-           $eventListener = substr( $eventListener, 0, strrpos($eventListener,">") ) . " delegate=\"$methodName\" />";
+           $eventListener = substr( $eventListener, 0, strrpos($eventListener,">") ) . 
+              " delegate=\"$methodName\" />\n";
            $qxml->add($eventListener);
                       
          }

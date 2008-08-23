@@ -2,8 +2,10 @@
 /*
  * dependencies
  */
-require_once "qcl/functions.php";      // global function
+require_once "qcl/functions.php";      // global functions
 require_once "qcl/patched_object.php"; // php4 object compatibility patch
+require_once "qcl/lang/String.php";    // String object similar to java
+require_once "qcl/lang/ArrayList.php"; // ArrayList object similar to java
 
 /**
  * path to log file
@@ -174,6 +176,21 @@ class qcl_object extends patched_object
 	 */
   function __destruct() {}
   
+  /**
+   * Run once for the given class  per application installation
+   * This can be reset by clearing the php/var/tmp folder. Implementing method
+   * must call parent method before executing action like so:
+   * if ( parent::runOnce() ) { execute run-once action  }
+   */
+  function runOnce()
+  {
+    $path = $path = QCL_TMP_PATH . get_class($this) . ".runonce";
+    if ( file_exists( $path) ) return false;
+    touch($path);
+    return true;
+  }
+  
+ 
   //-------------------------------------------------------------
   // registry during request
   //------------------------------------------------------------- 
@@ -461,14 +478,7 @@ class qcl_object extends patched_object
 	 */
 	function &getInstance( $class = __CLASS__ )
 	{
-    if ( is_object($this) )
-    {
-	   return $this->getSingleton(get_class(&$this));
-    }
-    else
-    {
-      return $this->getSingleton( $class );
-    }
+    return $this->getSingleton( $class );
 	}
 
   /**

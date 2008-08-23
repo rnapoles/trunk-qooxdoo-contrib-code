@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>qcl jsonrpc monitor</title>
+    <link rel="stylesheet" type="text/css" href="listCollapse.css"/>
+    <script type="text/javascript" src="listCollapse.js"></script>
+  </head>
+  <body>
+    <div style="right:0; bottom:0; position:fixed; border: 1px solid black; padding:3px; background-color:white">
+      [<a href='void()' onclick='document.location.reload(); return false;'>Clear</a>]
+      [<a href='void()' onclick='document.body.lastChild.scrollIntoView(); return false;'>Bottom</a>]
+      [<a href='void()' onclick='var c=window.opener.qcl.config.Manager.getInstance(); var v= c.toggleBooleanKey("qcl.components.jsonrpc.MonitorWindow.autoScroll",true); this.style.color = v ? "green" : "red"; return false;'>Scroll</a>]
+      [<a href='void()' onclick='var c=window.opener.qcl.config.Manager.getInstance(); var v= c.toggleBooleanKey("qcl.components.jsonrpc.MonitorWindow.skipGetMessagesRequest",true); this.style.color = v ? "green" : "red"; return false;'>Skip Poll</a>]  
+    </div>  
+  </body>
+</html>
+
