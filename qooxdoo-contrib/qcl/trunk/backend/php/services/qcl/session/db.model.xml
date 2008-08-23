@@ -21,9 +21,6 @@
         <property name="user" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>
-        <property name="messages" type="string">
-          <sql>text NULL</sql>
-        </property>
       </properties>
       
       <aliases>

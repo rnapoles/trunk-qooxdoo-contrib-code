@@ -96,10 +96,15 @@ class qcl_session_controller extends qcl_access_controller
   function broadcastMessage ( $message, $data=true )
   {
     //$this->info("Broadcast $message");
+    
     if ( is_string ($message) )
     {
       $sessionModel =& $this->getSessionModel();
-      $sessionModel->addMessageBroadcast( $this->getSessionId(), $message, $data );
+      $sessionModel->addMessageBroadcast( 
+        $this->getSessionId(), 
+        $message, 
+        $data 
+      );
     }
     else
     {
@@ -158,17 +163,28 @@ class qcl_session_controller extends qcl_access_controller
    */
   function getResponseData()
   {
-    $sessionModel =& $this->getSessionModel();
-    $messages = $sessionModel->getBroadcastedMessages($this->getSessionId());
-    //$this->info(count($messages) . " broadcasted messages.");
-    foreach( $messages as $message )
-    {
-      $this->addMessage($message['name'],$message['data']);
-      $this->info($message);
-    }
+    $this->addBroadcastMessagesToResponse(); 
     return parent::getResponseData();
   }
 
+  /**
+   * adds the messages from the broadcast to the response message queue
+   * @return void
+   */
+  function addBroadcastMessagesToResponse()
+  {
+    $sessModel =& $this->getSessionModel();
+    $messages  =  $sessModel->getBroadcastedMessages($this->getSessionId());
+    
+    //$this->info(count($messages) . " broadcasted messages.");
+    
+    foreach( $messages as $message )
+    {
+      $this->addMessage($message['name'],$message['data']);
+      //$this->info($message);
+    }
+  }  
+  
   /**
    * gets the path to a file that has been uploaded with uploader.php
    * @param string $file filename (must not have any path information)

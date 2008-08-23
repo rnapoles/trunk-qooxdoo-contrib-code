@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema>
+<schema
+ include="qcl/db/model.xml">
 
   <!-- model for messages stored in the database -->
   
   <model
     name="qcl.message.Model"
-    table="messages">
+    table="messages"
+    extends="qcl.db.Model">  
     
     <definition>
       <properties>
       
-        <property name="class" type="string">
-          <sql>varchar(100) NOT NULL</sql>
-        </property>      
-        <property name="session_id" type="string">
+        <property name="sessionId" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>  
-        <property name="request_id" type="string">
+        <property name="requestId" type="string">
           <sql>varchar(150) NOT NULL</sql>
         </property>  
         <property name="name" type="string">
