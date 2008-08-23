@@ -399,10 +399,22 @@ class qcl_config_db extends qcl_db_model
 		// create if key doesn't exist - todo: this is a security problem!
 		if ( ! count($row) )
 		{
-      // type
-      if ( is_bool ( $value) ) $type = "boolean";
-      elseif ( is_numeric( $value ) ) $type = "number";
-      else $type = "string";
+      /*
+       * type
+       */
+      
+      if ( is_bool ( $value) ) 
+      {
+        $type = "boolean";
+      }
+      elseif ( is_numeric( $value ) ) 
+      {
+        $type = "number";
+      }
+      else 
+      {
+        $type = "string";
+      }
       
       $this->info("qcl_config::set : creating non-existing key '$name', type '$type'.");
       

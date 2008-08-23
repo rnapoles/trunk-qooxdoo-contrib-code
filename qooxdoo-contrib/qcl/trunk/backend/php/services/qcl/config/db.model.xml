@@ -13,7 +13,7 @@
       <!-- properties -->
       <properties>
         <property name="namedId" type="string">
-          <sql>varchar(50) NOT NULL</sql>
+          <sql>varchar(100) NOT NULL</sql>
         </property>
         <property name="type" type="string">
           <sql>varchar(20) NOT NULL</sql>
