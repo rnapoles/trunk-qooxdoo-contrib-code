@@ -75,6 +75,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      */
 		$this->configureService();
 		
+   
 	}   	
 
 	//-------------------------------------------------------------
@@ -163,6 +164,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		}
 		return $value;
 	}
+	
 	
   //-------------------------------------------------------------
   // models
@@ -517,6 +519,146 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		}	
 		return $message;
 	}	  
-	 
+	
+	/**
+	 * Debugs the complete jsonrpc request and response to the log file
+	 */
+  function debugJsonRpcRequest()
+  {
+    global $jsonInput;
+    $resultData = $this->_response;
+    
+    $msg  = "Debugging JSON request\n";
+    $msg .= "**********************************************************\n";
+    $msg .= "Service: " . $jsonInput->service . "." . $jsonInput->method . "\n";
+    $msg .= "Parameters: " . var_export($jsonInput->params, true) . "\n\n";
+    $msg .= "Result Data: " . var_export($resultData, true) . "\n\n";
+    $msg .= "**********************************************************\n";
+  
+    $this->info($msg);
+  }
+  
+  /**
+   * Debugs the compe jsonrpc request and response
+   * as nicely formatted html to the client through the
+   * "qcl.messages.htmlDebug" message
+   */
+  function debugJsonRpcRequestAsHtml()
+  {
+    
+    global $jsonInput;
+    $responseData = $this->_response;
+    
+    $config =& $this->getConfigModel();
+       
+       
+    /*
+     * assemble debug array
+     */
+    $debugValue = array(
+      'Parameters'  => $jsonInput->params,
+      'Result'      => $responseData['result'],
+      'Events'      => $responseData['events'],
+      'Messages'    => $responseData['messages']
+    );
+    
+    
+    /*
+     * skip if getMessages request should be ignored
+     */
+    if ( $jsonInput->method == "getMessages" and $config->get("qcl.components.jsonrpc.MonitorWindow.skipGetMessagesRequest") )
+    {
+      return;
+    }
+    
+    $divId = md5(microtime());
+    
+    $html = "<div id='$divId' style='font-weight:bold'>" . 
+            date('H:i:s') . ": " .
+            $jsonInput->service . "." .
+            $jsonInput->method;
+
+    /*
+     * shorten debug output if no result data, message or event
+     */
+    if ( count($responseData['result']) == 0 and
+         count($responseData['messages']) == 0 and
+         count($responseData['events']) == 0 )
+    {
+      $html .= " [No content] </div>";            
+    }        
+    else
+    {
+      $html .= "</div>";
+      $id    = md5(microtime());
+      $html .= $this->_htmlizeValue($debugValue, $id);
+      $html .= "<script>compactMenu('$id',true,'');</script>";
+    }  
+    
+    /*
+     * auto-scroll
+     */
+    if ( $config->get("qcl.components.jsonrpc.MonitorWindow.autoScroll") )
+    {
+      $html .= "<script>document.getElementById('$divId').scrollIntoView();</script>";
+    }
+    
+    /*
+     * dispatch message
+     */
+    $this->dispatchMessage("qcl.messages.htmlDebug",$html);
+  }
+  
+  
+  function _htmlizeValue ( $value, $id='' )
+  {
+    $type = gettype($value);
+    $html = "";
+    switch ( $type )
+    {  
+      case "object":
+      case "array": 
+        $array = (array) $value;
+        $count = count($array); 
+        if ( $count > 0 )
+        {
+         $html .= "<ul class='maketree' id='$id'>"; 
+          foreach($array as $key => $value )
+          {
+            
+            if ( is_array($value) or is_object($value) )
+            {
+              $type  = gettype($value);
+              $count = count( (array) $value );
+              $html .= "<li class='maketree'>$key ($type, $count elements) : ";
+              if ( $count ) $html .= $this->_htmlizeValue($value);
+              $html .= "</li>";   
+            }
+            else
+            {
+              $html .= "<li class='maketree'>$key  : ";
+              $html .= $this->_htmlizeValue($value);
+              $html .= "</li>";   
+            }
+          }
+          $html .= "</ul>";
+        }
+        else
+        {
+          $html .= "<li class='maketree'>$key ($type) : [empty]</li>";
+        }
+        break;
+        
+      case "boolean":
+        $html = "(boolean) " . ( $value ? "true" : "false" );
+        break;
+        
+      default:
+        $html = $value;
+        break;
+    }
+    return $html;
+  }
+	
 }	
 ?>

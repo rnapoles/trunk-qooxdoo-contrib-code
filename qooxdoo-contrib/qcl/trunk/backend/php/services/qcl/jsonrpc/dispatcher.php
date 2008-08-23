@@ -655,7 +655,6 @@ if (! $classExists)
     /* never gets here */
 }
 
-
 /* Instantiate the service */
 $service = new $className();
 
@@ -682,11 +681,11 @@ if (method_exists($service, "GetAccessibility"))
 /* Do the accessibility test. */
 switch($accessibility)
 {
-case Accessibility_Public:
+  case Accessibility_Public:
     /* Nothing to do.  The method is accessible. */
     break;
     
-case Accessibility_Domain:
+  case Accessibility_Domain:
     /* Determine the protocol used for the request */
     if (isset($_SERVER["SSL_PROTOCOL"]))
     {
@@ -741,7 +740,7 @@ case Accessibility_Domain:
     }
     break;
     
-case Accessibility_Session:
+  case Accessibility_Session:
     /* Get the Referer, up through the domain part */
     if (ereg("(((http)|(https))://[^/]*)(.*)",
              $_SERVER["HTTP_REFERER"],
@@ -775,14 +774,14 @@ case Accessibility_Session:
 
     break;
 
-case Accessibility_Fail:
+  case Accessibility_Fail:
     $error->SetError(JsonRpcError_PermissionDenied,
                      "Permission Denied [6]");
     $error->SendAndExit();
     /* never gets here */
     break;
 
-default:
+  default:
     /* Service's GetAccessibility() function returned a bogus value */
     $error->SetError(JsonRpcError_PermissionDenied,
                      "Service error: unknown accessibility.");
