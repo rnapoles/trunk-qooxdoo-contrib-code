@@ -795,7 +795,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       if ( $linkTable != $joinedTable )
       {
         /*
-         * @todo: this might not be compatible with other DBMS
+         * @todo: this might not be compatible with other than mysql
          */
         $sql .= "     JOIN (`$linkTable` AS l,`$joinedTable` AS t2) \n";
         $sql .= "       ON ( t1.`$localKey` = l.`$foreignKey` AND l.`$joinedFKey` = t2.`$joinedLKey` ) \n";
@@ -809,8 +809,9 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * where  
      */
-    if ($where)
+    if ( $where )
     {
+      $where = $this->toSql($where);
       $sql .= "    WHERE $where \n";
     }
     
@@ -1194,6 +1195,20 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     $this->raiseError("Property '$name' does not exist.'");
   }
+  
+  /**
+   * Sets a property in the current model recordset. Unless you provide an id,
+   * you need to call the update() method to commit the property change to the database.
+   * Alias of setProperty
+   * @return void 
+   * @param string     $name
+   * @param mixed      $value 
+   * @param int        $id if given, find and update property recordd
+   */  
+  function set( $name, $value, $id=null )
+  {
+    return $this->setProperty($name, $value, $id);
+  }
 
   /**
    * Sets a property in the current model recordset. Unless you provide an id,
@@ -1279,7 +1294,27 @@ class qcl_db_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------
   // Data creation and manipulation
   //-------------------------------------------------------------   	
-
+  
+  /**
+   * Converts array data to a 'where' compliant sql string
+   */
+  function toSql( $where )
+  {
+    if ( is_array($where) )
+    {
+      $sql = "";
+      foreach ( $where as $property => $expr )
+      {
+        $sql .= "`" . $this->getColumnName($property) . "` " . $expr;  
+      }
+      return $sql; 
+    }
+    else
+    {
+      return $where;
+    }
+  }
+  
 	/**
 	 * creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
 	 * @param string	$namedId
@@ -1482,7 +1517,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   function deleteWhere ( $where )
   {
-    $this->db->deleteWhere ( $this->table, $where );
+    $this->db->deleteWhere ( $this->table, $this->toSql($where) );
   }  	
   
   /**

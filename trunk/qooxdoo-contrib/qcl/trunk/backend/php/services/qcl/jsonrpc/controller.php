@@ -573,11 +573,28 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     
     $divId = md5(microtime());
     
+    /*
+     * service and method
+     */
     $html = "<div id='$divId' style='font-weight:bold'>" . 
             date('H:i:s') . ": " .
             $jsonInput->service . "." .
-            $jsonInput->method;
-
+            $jsonInput->method . "(";
+            
+    /*
+     * parameters
+     */
+    foreach ( $jsonInput->params as $i =>  $p )
+    {
+      if ( is_string($p) ) $html .= "'$p'";
+      elseif ( is_null($p) ) $html .= "null";
+      elseif ( is_bool($p) ) $html .= $p ? "true" : "false";
+      else $html .= $p;
+      if ( $i < count($jsonInput->params) -1 ) $html .= ",";
+    }
+    
+    $html .= ")";
+    
     /*
      * shorten debug output if no result data, message or event
      */
@@ -609,7 +626,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->dispatchMessage("qcl.messages.htmlDebug",$html);
   }
   
-  
+  /**
+   * Outputs a data structure as HTML for debug
+   * @access private
+   * @return string
+   */
   function _htmlizeValue ( $value, $id='' )
   {
     $type = gettype($value);
@@ -630,8 +651,16 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
             {
               $type  = gettype($value);
               $count = count( (array) $value );
-              $html .= "<li class='maketree'>$key ($type, $count elements) : ";
-              if ( $count ) $html .= $this->_htmlizeValue($value);
+              
+              if ( $count ) 
+              {
+                $html .= "<li class='maketree'>$key ($type, $count elements)";
+                $html .= " : " . $this->_htmlizeValue($value);
+              }
+              else
+              {
+                $html .= "<li class='maketree'>$key (empty $type)";
+              }
               $html .= "</li>";   
             }
             else
@@ -659,6 +688,28 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     }
     return $html;
   }
-	
+  
+  /**
+   * overridden info method -> forwards info message to client
+   * @param string $msg
+   */
+  function info($msg)
+  {
+    parent::info($msg);
+    $html = "<div style='color:green'>$msg</div>";
+    $this->dispatchMessage("qcl.messages.htmlDebug",$html);
+  }
+
+  /**
+   * overridden info method -> forwards info message to client
+   * @param string $msg
+   */
+  function warn($msg)
+  {
+    parent::warn($msg);
+    $html = "<div style='color:red'>WARN: $msg</div>";
+    $this->dispatchMessage("qcl.messages.htmlDebug",$html);
+  }  
+  
 }	
 ?>

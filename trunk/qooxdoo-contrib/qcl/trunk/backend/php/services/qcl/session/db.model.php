@@ -1,6 +1,7 @@
 <?php
 
-require_once ("qcl/db/model.php");
+require_once "qcl/db/model.php";
+require_once "qcl/message/db.model.php";
 
 /**
  * model for session data bases on a mysql database model
@@ -28,14 +29,14 @@ class qcl_session_db_model extends qcl_db_model
 	 */
   function registerSession( $sessionId, $userId )
   {
-    $this->db->execute("
-      DELETE FROM `{$this->table}`
-      WHERE `{$this->col_sessionId}` = '$sessionId'
-      AND   `{$this->col_user}`   != '$userId' 
-    ");
+    $this->deleteWhere( array(
+      'sessionId'  => " =  '$sessionId' AND ",
+      'user'       => " != '$userId'" 
+    ) );
+    
     $this->insert( array (
-      $this->col_sessionId => $sessionId,
-      $this->col_user    => $userId
+      'sessionId'  => $sessionId,
+      'user'       => $userId
     ) );    
   }
 
@@ -46,10 +47,7 @@ class qcl_session_db_model extends qcl_db_model
 	 */
   function unregisterSession( $sessionId )
   {
-    $this->db->execute("
-      DELETE FROM `{$this->table}`
-      WHERE `{$this->col_sessionId}` = '$sessionId'
-    ");
+    $this->deleteWhere(array( 'sessionId' => " = '$sessionId'" ) ); 
   }
 
 
@@ -60,9 +58,8 @@ class qcl_session_db_model extends qcl_db_model
 	 */
 	function expungeStaleSessions( $timeout )
   {
-    $this->db->execute("
-      DELETE FROM `{$this->table}`
-      WHERE TIME_TO_SEC( TIMEDIFF( NOW(), `{$this->col_modified}` ) ) > $timeout
+    $this->deleteWhere("
+      TIME_TO_SEC( TIMEDIFF( NOW(), `{$this->col_modified}` ) ) > $timeout
     ");
   }
   
@@ -76,52 +73,50 @@ class qcl_session_db_model extends qcl_db_model
    */
   function addMessageBroadcast( $sessionId, $message, $data )
   {
-    $serializedData = addSlashes(serialize(array($message,$data)));
-    $boundary = "af8asdf8h3o434af3h";
-    $this->db->execute("
-      UPDATE `{$this->table}`
-      SET `{$this->col_messages}` = CONCAT(`{$this->col_messages}`,'$boundary$serializedData') 
-    ");
+    $msgModel = new qcl_message_db_model(&$this->controller);
+    $msgModel->create();
+    $msgModel->setProperty("sessionId",$sessionId);
+    $msgModel->setName($message);
+    $msgModel->setData(addSlashes(serialize($data)));
+    $msgModel->update();
   }
   
   /**
    * gets broadcasted messages for the connected client
    * @return array
-   * @param $sessionId Object
-   * @todo sepatate with CR and base64decode 
+   * @param int $sessionId 
    */
   function getBroadcastedMessages( $sessionId )
   {
-    $msgData = $this->db->getValue("
-      SELECT `{$this->col_messages}`
-      FROM `{$this->table}`
-      WHERE `{$this->col_sessionId}` = '$sessionId'
-    ");
-   
+    $msgModel = new qcl_message_db_model(&$this->controller);
+    
+    /*
+     * get messages that have been stored for session id
+     * 
+     */
+    $rows = $msgModel->findWhere(
+      "`sessionId`='$sessionId'",
+      null,
+      array('name','data')
+    );
+    
     $messages = array();
-        
-    if ( trim($msgData) )
+    foreach ($rows as $row)
     {
-      $boundary = "af8asdf8h3o434af3h";
-      $serializedVars = explode($boundary,$msgData);
-
-      foreach ( $serializedVars as $serializedData )
-      {
-        $data = unserialize($serializedData);
-        if ( is_array($data) )
-        {
-          $messages[] = array(
-            'name'  => $data[0],
-            'data'  => $data[1]
-          );
-        }        
-      }
-      $this->db->execute("
-        UPDATE `{$this->table}`
-        SET `{$this->col_messages}` = ''
-        WHERE `{$this->col_sessionId}` = '$sessionId'
-      ");
+      $messages[] = array(
+        'name'  => $row['name'],
+        'data'  => unserialize(stripslashes($row['data']))
+      );
     }
+    
+    /*
+     * delete messages
+     */
+    $msgModel->deleteWhere("`sessionId`='$sessionId'");
+    
+    /*
+     * return message array
+     */
     return $messages;
   }
   
