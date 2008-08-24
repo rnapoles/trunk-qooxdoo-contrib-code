@@ -17,19 +17,15 @@
 
 ************************************************************************ */
 
-/* ************************************************************************
-
-
-
-************************************************************************ */
 
 /**
- * A native window that monitors the jsonrpc requests
+ * A native window that monitors the jsonrpc requests and responses
  */
 qx.Class.define("qcl.components.jsonrpc.MonitorWindow",
 {
+  
   extend : qx.client.NativeWindow,
-
+  
   /*
   *****************************************************************************
      CONSTRUCTOR
@@ -38,7 +34,10 @@ qx.Class.define("qcl.components.jsonrpc.MonitorWindow",
 
   construct : function()
   {
+    
     this.base(arguments);
+    this.setName("debugHtml");
+    this.setUrl("../../backend/php/services/qcl/lib/listCollapse/listCollapse.html");
     
     /*
      * setup location
@@ -46,46 +45,54 @@ qx.Class.define("qcl.components.jsonrpc.MonitorWindow",
     this.set({
       top    : 0,
       right  : 0,
-      width  : 400,
+      width  : 600,
       height : 400
     });
+    
+
     
     /*
      * check for firebug in the window
      */
-    this.addEventListener("load",function(){
-      if ( ! this._window.console )
+    this.addEventListener("load",function()
+    {  
+      
+      qx.client.Timer.once(function() 
       {
-        this._window.document.writeln (
-           "<div style='color:red'>Firebug not available...</div>"
-        );
-        this._window.console = {
-          log : function ( msg )
-          {
-           // implement 
-          },
-          warn : function ( msg )
-          {
-            // implement
-          },
-          error : function ( msg )
-          {
-            alert(msg);
-          },
-          dir : function ( obj )
-          {
-            // implement
-          }          
-        }
-      }  
-    });
+        if ( ! this._window.console )
+        {
+          this._window.document.writeln (
+             "<div style='color:red'>Firebug not available...</div>"
+          );
+          this._window.console = {
+            log : function ( msg )
+            {
+             // implement 
+            },
+            warn : function ( msg )
+            {
+              // implement
+            },
+            error : function ( msg )
+            {
+              alert(msg);
+            },
+            dir : function ( obj )
+            {
+              // implement
+            }          
+          }
+        }  
+               
+        /*
+         * setup message listeners
+         */
+        var bus = qx.event.message.Bus.getInstance();
+        bus.subscribe("qcl.databinding.messages.rpc.end",this.handleRequestEnd,this);
+        bus.subscribe("qcl.messages.htmlDebug", this.handleHtmlDebug, this );
+      },this,1000);
+    },this);
     
-    /*
-     * setup message listeners
-     */
-    var bus = qx.event.message.Bus.getInstance();
-    bus.subscribe("qcl.databinding.messages.rpc.end",this.handleRequestEnd);
-    bus.subscribe("qcl.messages.htmlDebug", this.handleHtmlDebug );
   },
 
 
@@ -112,27 +119,43 @@ qx.Class.define("qcl.components.jsonrpc.MonitorWindow",
      */
     handleRequestEnd : function(message)
     {
+      
       /*
        * get requesting object and response data
        */
       var reqObj = message.getSender();
       var data   = reqObj.getResponseData();
-      
+
       /*
        * log it to the firebug console
        */
-      this._window.dir(data);
-      
+      if ( this._window && this._window.console )
+      {
+        this._window.console.dir(data);  
+      }
     },
     
     /**
-     * Write html debug data to the page
+     * Write html debug data to the document
      * @param {Object} message
      */
     handleHtmlDebug : function(message)
     {
-      var html = message.getData();
-      this._window.document.writeln(html);
+      if ( this._window )
+      {
+        try 
+        {
+          var html = message.getData();        
+          var doc  = this._window.document;
+          var node = doc.createElement("span");
+          node.innerHTML = html;  
+          doc.body.appendChild(node);
+        }
+        catch(e)
+        {
+          this.warn(e);
+        }
+      }
     }
   }
 });

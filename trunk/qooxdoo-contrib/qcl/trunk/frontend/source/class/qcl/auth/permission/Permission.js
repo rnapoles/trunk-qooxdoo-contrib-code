@@ -194,18 +194,38 @@ qx.Class.define("qcl.auth.permission.Permission",
 		},
 		
 		/**
-		 * checks if all conditions are satisfied
-		 * @return {Boolean} true if all conditions are satisfied
+		 * Checks if all conditions are satisfied. Only those conditions
+		 * are 
+		 * @param context {Object} If provided, check only those conditions
+		 * with a matching context
+		 * @return {Boolean} Returns true if all conditions are satisfied
 		 */
-		_satifiesAllConditions : function()
+		_satifiesAllConditions : function(context)
 		{
       var conditions = this.getConditions();
-			
+			//console.log("Checking conditions for " + this.getNamedId() + ", context " + context );
+      
+      /*
+       * loop through all conditions 
+       */
       for (var i=0; i<conditions.length; i++)
       {
-        var conditionsFunc = conditions[i].condition; 
-				var context =  conditions[i].context;
-				if ( ! conditionsFunc.call(context) ) return false; 
+        var condFunc    = conditions[i].condition; 
+				var condContext = conditions[i].context;
+        
+        //console.log([condFunc,condContext]);
+        
+        /*
+         * check condition only if context matches,
+         * unless no context has been passed
+         */
+        if ( ! context || context == condContext) 
+        {
+          if ( ! condFunc.call(condContext) )
+          {
+            return false;
+          } 
+        }
       }
 			return true;	
 		},
@@ -252,19 +272,30 @@ qx.Class.define("qcl.auth.permission.Permission",
 		},
 
 		/**
-		 * gets state
+		 * Gets the state of the permission. Returns true if the 
+		 * permission has been granted in general to the particular
+		 * user and if all condition functions that have been attached
+		 * return true.
+		 * @param context {Object} If provided, check only the conditions 
+		 * that have a matching object context. This allows to reuse permissions
+		 * in different instances.
+		 * @return {Boolean} The state of the permission 
 		 */
-		getState : function()
+		getState : function(context)
 		{
-			return this.__granted && this._satifiesAllConditions(); 
+			return this.__granted && this._satifiesAllConditions(context); 
 		},
 		
 		/**
-		 * updates the current state and dispatches events
-		 */
-		update : function()
+		 * Updates the current state and dispatches events
+     * @param context {Object} If provided, check only the conditions 
+     * that have a matching object context. This allows to reuse permissions
+     * in different instances.
+     * @return {Boolean} The state of the permission 
+     */
+		update : function(context)
 		{
-      var state = this.getState();
+      var state = this.getState(context);
       //console.log("Updating "+ this.getNamedId() + ": " + state);
       this.createDispatchDataEvent( "changeState", state );
 		}		
