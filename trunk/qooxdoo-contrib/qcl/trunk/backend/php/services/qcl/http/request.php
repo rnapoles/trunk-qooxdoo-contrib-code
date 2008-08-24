@@ -2,7 +2,7 @@
 
 
 /**
- * class to convert from one text encoding to another
+ * http request model
  */
 
 require_once ("qcl/jsonrpc/model.php");

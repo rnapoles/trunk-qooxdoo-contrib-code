@@ -45,9 +45,9 @@ class qcl_jsonrpc_object extends qcl_object
   /**
    * Run once for the given class during one session
    * Implementing method must call parent method before executing action like so:
-   * if ( parent::runOnceInSession() ) { execute run-once action  }
+   * if ( parent::runOncePerClassAndSession() ) { execute run-once action  }
    */
-  function runOnceInSession()
+  function runOncePerClassAndSession()
   {
     $flag = get_class($this) . ".runOnceInSession";
     if ( $this->getSessionVar($flag) ) return false;
@@ -89,10 +89,17 @@ class qcl_jsonrpc_object extends qcl_object
    */
   function raiseError( $message, $number=null, $file=null, $line=null )
   {
+    /*
+     * if error file and line have been specified
+     */
     if ( $file and $line )
     {
       $message .= " in $file, line $line.";
     }
+    
+    /*
+     * write to server log
+     */
     $this->log( 
       "### Error in " . get_class($this) . " ###\n" . 
       $message . "\n" . 
@@ -100,8 +107,13 @@ class qcl_jsonrpc_object extends qcl_object
       $this->getBacktrace(), 
       QCL_LOG_ERROR
     );
-    // pass error to jsonrpc error object ( or end gracefully)
+    
+    /*
+     * if this is a jsonrpc request, we have a global $error object
+     * that the error can be passed to.
+     */
     global $error;
+    
     if ( is_object($error) )
     {
       $error->setError( $number, htmlentities( stripslashes( $message ) ) );
@@ -109,6 +121,10 @@ class qcl_jsonrpc_object extends qcl_object
       // never gets here
       exit;
     }
+    
+    /*
+     * otherwise, it is an html request, print to output
+     */
     echo $message;
     exit;
   }
