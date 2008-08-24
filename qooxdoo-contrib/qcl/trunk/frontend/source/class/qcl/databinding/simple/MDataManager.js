@@ -70,12 +70,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
 
   properties :
   {
-    /*
-    ---------------------------------------------------------------------------
-      PROPERTIES
-    ---------------------------------------------------------------------------
-    */
-
     /** switch to turn databinding on or off */
     dataBinding :
     {
@@ -171,7 +165,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     
   },
 
-	
+  
   /*
   *****************************************************************************
      MEMBERS
@@ -256,35 +250,36 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */
     _updateClient : function()
     {
-        /*
-         * abort if databinding is turned off
-         */
-        if ( ! this.getDataBinding() ) return false;
+      
+      /*
+       * abort if databinding is turned off
+       */
+      if ( ! this.getDataBinding() ) return false;
+      
+      /*
+       * abort if updates should only be made to the server
+       */        
+      if ( this.getUpdateTarget() == "server" ) return false;
+      
+      /*
+       * turn arguments into a real array object 
+       */
+      for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
+      
+      /*
+       * choose transport mechanism
+       */
+      switch (this.getTransport())
+      {         
+        // use JSON-RPC
+        case "jsonrpc":
+          this._updateClientJsonRpc(args);
+           break;
         
-        /*
-         * abort if updates should only be made to the server
-         */        
-        if ( this.getUpdateTarget() == "server" ) return false;
-        
-        /*
-         * turn arguments into a real array object 
-         */
-        for (var i=0, args=[]; i < arguments.length; i++) args.push(arguments[i]);
-        
-        /*
-         * choose transport mechanism
-         */
-        switch (this.getTransport())
-        {         
-          // use JSON-RPC
-          case "jsonrpc":
-            this._updateClientJsonRpc(args);
-	           break;
-	        
-	        default:
-            this.error ("Transport method " + this.getTransport() + " not implemented");
-            break; 
-        }
+        default:
+          this.error ("Transport method " + this.getTransport() + " not implemented");
+          break; 
+      }
     },
     
     /**
@@ -323,7 +318,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       rpc.setUrl(this.getServiceUrl());
       rpc.setServiceName(serviceName);
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
-      
+
       /*
        * tag the current object instance for closures
        */
@@ -333,40 +328,46 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        * notify of start of request
        */
       var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch("qcl.databinding.messages.rpc.start",timestamp);
-      
+      var msg = new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp);
+      msg.setSender(this);
+      qx.event.message.Bus.dispatch(msg);
+            
       /*
        * create callback function
        */
       var callbackFunc = function(data, ex, id) 
       {
+
         /*
          * save data
          */
         _this.__responseData = data;
+      
         
         /* 
          * notify of end of request
          */
-        var message = qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp);
-        message.setSender(_this);
-        qx.event.message.Bus.dispatch( message );
+        var m = new qx.event.message.Message("qcl.databinding.messages.rpc.end", timestamp );
+        m.setSender( _this );
+        qx.event.message.Bus.dispatch( m );
+
+        /*
+         * dispose request @todo: recycle object
+         */
+        rpc.dispose();
+        delete rpc;
         
         /*
-         * dispose request
+         * check for error
          */
-        request.reset();
-        request.dispose();
-        request = null;
-
-        if (ex == null) 
+        if ( ex == null ) 
         {  
            /*
-            * handle messages and events
+            * no error, handle messages and events
             */
            if (data.messages || data.events) 
            {
-             _this.__handleEventsAndMessages(_this,data)
+             _this.__handleEventsAndMessages( _this, data );
            }
            
            /*
@@ -374,13 +375,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             */              
            if ( data.result )
            {
-             _this.__handleDataReceived (data.result);
+             _this.__handleDataReceived ( data.result );
            }
                     
            /*
             * notify that data has been received
             */
-           _this.createDispatchDataEvent("dataReceived",data.result);
+           _this.createDispatchDataEvent("dataReceived", data.result);
            
          } 
          else 
@@ -389,10 +390,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             * dispatch error message
             */
            qx.event.message.Bus.dispatch( 
-             new qx.event.message.Message(
                "qcl.databinding.messages.rpc.error",
                ex.message
-             )
            );
            _this.warn ( "Async exception (#" + id + "): " + ex.message );
 
@@ -407,9 +406,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        /*
         * send request 
         */
-       params.unshift(serviceMethod);
-       params.unshift(callbackFunc);
-       var request = rpc.callAsync.apply(rpc,params);
+       params.unshift( serviceMethod );
+       params.unshift( callbackFunc );
+       var request = rpc.callAsync.apply( rpc, params );
         
        /*
         * pass request object to subscribers and event listeners
@@ -431,11 +430,12 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */
     __handleEventsAndMessages : function ( obj, data )
     {
-      // server messages
+      /*
+       * server messages
+       */
       if( data.messages && data.messages instanceof Array )
       {
-        data.messages.forEach( function(message)
-        {
+        data.messages.forEach( function(message){
           qx.event.message.Bus.dispatch( message.name, message.data ); 
         });
       }
@@ -488,7 +488,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         key = this._getWidgetDataProperties().split(",")[0]; // just use first one
         if ( key == "combobox" )
         {
-						if ( this.getEditable() )
+            if ( this.getEditable() )
             {
               this.setValue( data );
             } 
@@ -577,7 +577,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               this.error("Rpc datatype 'treedatamodel' only valid for qx.ui.treevirtual.TreeVirtual!");
               return false;
             }
-						this.handleServerData(data.treedatamodel);
+            this.handleServerData(data.treedatamodel);
             break;
           
           /* qx.ui.table.model.Simple */
@@ -593,40 +593,40 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             // just replace the whole table, for dynamic loading use remoteTableModel
             if ( data && data instanceof Array && data.length )
             {
-						  dataModel.setData(data);            
+              dataModel.setData(data);            
             }
             else if ( data && data instanceof Array )
             {
-						  dataModel.setData([]);            
+              dataModel.setData([]);            
             }
             else
             {
               this.warn("Invalid rpc data!");
             }
             break;
-					
+          
           /* qcl.auth */
-					case "security":
-						this.setSecurity(data.security);
-						break;
-					
+          case "security":
+            this.setSecurity(data.security);
+            break;
+          
           /* qcl.config */
           case "configMap":
-						this.setConfigMap(data.configMap);
-						break;	
+            this.setConfigMap(data.configMap);
+            break;  
             
           /* qcl.config */
           case "configMap":
-						this.setConfigMap(data.configMap);
-						break;
-            	
+            this.setConfigMap(data.configMap);
+            break;
+              
           /* enabled, set with timeout to not conflict with form enabling / disabling */
           case "enabled":
             var _this = this;
             qx.client.Timer.once(function(){
               _this.setEnabled(data.enabled);
             },50);
-						break;
+            break;
          
           /* default: set property */    
           default:
@@ -682,13 +682,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "jsonrpc":
             this._updateServerJsonRpc(args);
             break;
-	         
-	        // simple post, to do: file upload 
-	        case "post":
-	         this._updateServerPost(args);
-   	      
-   	      // unknown method  
-	        default:
+           
+          // simple post, to do: file upload 
+          case "post":
+           this._updateServerPost(args);
+          
+          // unknown method  
+          default:
             this.error ("Method " + this.getTransport() + " not implemented");
             break;         
         }
@@ -714,7 +714,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         var serviceName   = this.getServiceName();
         var serviceMethod = this.getServiceMethodUpdateServer();
         var params = args;
-      }			      
+      }           
 
       /*
        * configure request object
@@ -734,7 +734,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
        * notify of start of request
        */
       var timestamp = new Date().getTime();
-      qx.event.message.Bus.dispatch("qcl.databinding.messages.rpc.start",timestamp);
+      var msg = new qx.event.message.Message("qcl.databinding.messages.rpc.start",timestamp);
+      msg.setSender(this);
+      qx.event.message.Bus.dispatch(msg);
       
       /*
        * get widget data
@@ -754,16 +756,15 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         /* 
          * notify of end of request
          */
-        var message = qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp);
-        message.setSender(_this);
-        qx.event.message.Bus.dispatch( message );
+        var m = new qx.event.message.Message("qcl.databinding.messages.rpc.end",timestamp);
+        m.setSender(_this);
+        qx.event.message.Bus.dispatch( m );
         
         /*
-         * dispose request
-         */		         
-        request.reset();
-        request.dispose();
-        request = null; 
+         * dispose request @todo: recycle
+         */            
+        rpc.dispose();
+        delete rpc; 
         
         if (ex == null) 
         {
@@ -912,7 +913,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             
           // get combobox value / selected item value
           case "combobox":
-						if (this.getEditable()) 
+            if (this.getEditable()) 
             {
               data = this.getValue();
             }
@@ -1000,13 +1001,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             return "checked";
           case "qx.ui.form.List":
             return "selected,children";
-        	case "qx.manager.selection.RadioManager":
+          case "qx.manager.selection.RadioManager":
           case "qx.ui.listview.ListView":
-	        case "qx.ui.tree.Tree":
+          case "qx.ui.tree.Tree":
             return "selected";
-	        case "qx.ui.form.PasswordField":
+          case "qx.ui.form.PasswordField":
           case "qx.ui.form.TextField":
-	        case "qx.ui.form.TextArea":
+          case "qx.ui.form.TextArea":
           case "qx.ui.form.ListItem":
           case "qx.ui.form.Spinner":
           case "qx.ui.form.RadioButton":
@@ -1020,8 +1021,8 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             return "html";
           case "qx.ui.embed.Iframe":
             return "userData";
-        	default:
-        	 return null;
+          default:
+           return null;
       }
     },    
     
