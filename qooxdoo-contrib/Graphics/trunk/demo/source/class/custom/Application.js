@@ -17,6 +17,8 @@
 #embed(qx.icontheme/32/status/dialog-information.png)
 #embed(custom.image/test.png)
 
+#require(qx.log.appender.Console)
+#require(qx.log.appender.Native)
 ************************************************************************ */
 
 /**
@@ -41,22 +43,12 @@ MEMBERS
     {
       this.base(arguments);
 
-      var bVersion_0_7 =
-        qx.core.Version.major == 0 && qx.core.Version.minor == 7;
-      var bVersion_0_8 =
-        qx.core.Version.major == 0 && qx.core.Version.minor == 8;
-
-      // We don't yet support any version other than 0.7.x and 0.8.x
-      if (! bVersion_0_7 && ! bVersion_0_8)
-      {
-        throw new Error("Unsupported version: " +
-                        "major=" + qx.core.Version.major + ", " +
-                        "minor=" + qx.core.Version.minor);
-      }
+      var bVersion_0_7 = (qx.application.Gui !== undefined);
+      var bVersion_0_8 = ! bVersion_0_7;
       
       if (bVersion_0_8)
       {
-        var o = new qx.ui.layout.Composite();
+        var o = new qx.ui.container.Composite();
         o.set(
           {
             width : 800,
@@ -86,16 +78,16 @@ MEMBERS
 
         if (bVersion_0_8)
         {
-          el = o.getContentElement().getDomElement();
+          el = this.getContainerElement().getDomElement();
         }
         else
         {
-          el = o.getElement();
+          el = this.getElement();
         }
 
         wz.setContainer(el);
 
-        wz.setClipSize({ width : o.getWidth(), height : o.getHeight() });
+        wz.setClipSize({ width : this.getWidth(), height : this.getHeight() });
 
         wc = 800 >> 1;
         dy = 0;
@@ -182,7 +174,7 @@ MEMBERS
 
       if (bVersion_0_8)
       {
-        o.addListener("resize", doWZ);
+        o.addListener("appear", doWZ);
       }
       else
       {
@@ -238,5 +230,5 @@ SETTINGS
 
     settings : {
     "custom.resourceUri" : "./resource"
-      }
+    }
 });

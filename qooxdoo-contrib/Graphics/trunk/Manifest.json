@@ -1,0 +1,37 @@
+{
+  "comment" : "qooxdoo 0.8 manifest here. See Manifest.js for 0.7 use.",
+
+  "info" : 
+  {
+    "name" : "Graphics",
+
+    "summary" : "Simple Scalable Vector Graphics",
+    "description" : "Render graphics in qooxdoo widgets",
+    
+    "keywords" : ["graphics"],
+    "homepage" : "http://contrib.qooxdoo.org",
+
+    "license" : "LGPL",
+    "authors" : 
+    [
+      {
+        "name" : "Derrell Lipman",
+        "email" : "derrell DOT lipman AT unwireduniverse DOT com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "ssvg",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "library"
+  }
+}
+
