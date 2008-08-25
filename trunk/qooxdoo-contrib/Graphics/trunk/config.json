@@ -1,21 +1,70 @@
 {
-  "name"    : "Simple Scalable Vector Graphics",
-
-  "include" :
-  [
-    {
-      "path" : "../../../../../trunk/qooxdoo/tool/data/config/application.json"
-    }
-  ],
-
-  "let" :
+  "jobs" :
   {
-    "APPLICATION"  : "custom",
-    "QOOXDOO_PATH" : "../../../../../trunk/qooxdoo/framework",
-    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
-    "CACHE"        : "../../../../../trunk/qooxdoo/cache",
-    "QXTHEME"      : "qx.theme.Modern",
-    "LOCALES"      : [ "en" ],
-    "ROOT"         : "."
+    "common" :
+    {
+      "let" :
+      {
+        "APPLICATION_NAMESPACE": "ssvg",
+        "QOOXDOO_PATH" : "../../../../../trunk/qooxdoo/framework",
+        "QOOXDOO_URI"  : "../${QOOXDOO_PATH}"
+      },
+
+      "library" :
+      [
+        {
+          "manifest" : "${QOOXDOO_PATH}/Manifest.json",
+          "uri"      : "${QOOXDOO_URI}"
+          /* mind that the final uri will be computed from this 'uri' + the 
+             'class' info from the manifest */
+        },
+
+        {
+          "manifest" : "Manifest.json",
+          "uri"      : ".."
+        }
+      ],
+
+
+      "include" : [ "ssvg.*" ],
+
+      "settings" :
+      {
+        "qx.application" : "ssvg.Application"
+      },
+
+      "localize" :
+      {
+        "locales" : []
+      },
+
+      "cache" :
+      {
+        "path" : "../../../../../trunk/qooxdoo/cache"
+      }
+    },
+
+
+    "source" :
+    {
+      "extend" : ["common"],
+
+      "script" :
+      {
+        "file" : "./source/script/ssvg.js"
+      }
+    },
+
+
+    "build" :
+    {
+      "extend" : ["common"],
+
+      "compile" :
+      {
+        "file" : "./build/script/${APPLICATION_NAMESPACE}.js",
+        "uri"  : "script/${APPLICATION_NAMESPACE}.js"
+      }
+    }
   }
 }

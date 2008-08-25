@@ -1,0 +1,105 @@
+{
+  "comment" : "Configuration for 0.8.  You will likely need to modify 'path',
+'QOOXDOO_PATH', and 'QOOXDOO_URI' below, to match the location of your qooxdoo
+version 0.8 source directory."
+
+  "name"    : "demo",
+
+  "include" :
+  [
+    {
+      "path" : "../../../../../../trunk/qooxdoo/tool/data/config/application.json",
+      "as"   : "appconf"
+    }
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "custom",
+    "QOOXDOO_PATH" : "../../../../../../trunk/qooxdoo/framework",
+    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
+    "QXTHEME"      : "qx.theme.Modern",
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  },
+
+  "jobs" :
+  {
+    "include-contrib" :
+    {
+      "library": 
+      [
+        {
+          "manifest" : "../../../Graphics/trunk/Manifest.json",
+          "uri"      : ".."
+        }
+      ]
+    },
+
+    "api" :
+    {
+      "extend" : ["include-contrib", "appconf::api"]
+    },
+
+    "build" :
+    {
+      "extend" : ["include-contrib", "appconf::build"]
+    },
+
+    "clean" :
+    {
+      "extend" : ["include-contrib", "appconf::clean"]
+    },
+
+    "distclean" :
+    {
+      "extend" : ["include-contrib", "appconf::distclean"]
+    },
+
+    "fix" :
+    {
+      "extend" : ["include-contrib", "appconf::fix"]
+    },
+
+    "lint" :
+    {
+      "extend" : ["include-contrib", "appconf::lint"]
+    },
+
+    "migration" :
+    {
+      "extend" : ["appconf::migration"]
+    },
+
+    "pretty" :
+    {
+      "extend" : ["appconf::pretty"]
+    },
+
+    "publish" :
+    {
+      "extend" : ["appconf::publish"]
+    },
+
+    "source" :
+    {
+      "extend" : ["include-contrib", "appconf::source"]
+    },
+
+    "test" :
+    {
+      "extend" : ["appconf::test"]
+    },
+
+    "test-source" :
+    {
+      "extend" : ["appconf::test-source"]
+    },
+
+    "translate" :
+    {
+      "extend" : ["appconf::translate"]
+    }
+
+  }
+}

@@ -6,6 +6,7 @@
 #
 #  Copyright:
 #    2006-2007 1&1 Internet AG, Germany, http://www.1and1.org
+#    2008      Derrell Lipman
 #
 #  License:
 #    LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -16,8 +17,32 @@
 #    * Sebastian Werner (wpbasti)
 #    * Andreas Ecker (ecker)
 #    * Fabian Jakobs (fjakobs)
+#    * Derrell Lipman (derrell)
 #
 ################################################################################
+
+
+
+
+#
+# HOW TO BUILD
+#
+# To build this demo under qooxdoo version 0.7, invoke this makefile as:
+#   make -F Makefile-0.7 source
+#
+# You will likely need to modify QOOXDOO_PATH, below.
+#
+#
+#
+# If you're looking to build using qooxdoo version 0.8, you should instead use:
+#   ./generate.py source
+#
+#
+
+
+
+
+
 
 ################################################################################
 # SETTINGS
@@ -34,9 +59,9 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = ../../../../../../../0.7/qooxdoo
+QOOXDOO_PATH = ../../../../../../0.7/qooxdoo
 
-APPLICATION_INCLUDES = ../../../../Graphics/trunk
+APPLICATION_INCLUDES = ..
 
 #
 # Namespace of your application e.g. custom
