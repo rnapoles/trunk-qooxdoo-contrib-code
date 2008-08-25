@@ -1,9 +1,18 @@
 {
-  "comment" : "Configuration for 0.8.  You will likely need to modify 'path',
-'QOOXDOO_PATH', and 'QOOXDOO_URI' below, to match the location of your qooxdoo
-version 0.8 source directory."
+  "comment" : "Configuration for 0.8.  You will likely need to modify 'QOOXDOO_PATH' and 'path' below, to match the location of your qooxdoo version 0.8 source directory.",
 
   "name"    : "demo",
+
+  "let" :
+  {
+    "APPLICATION"  : "custom",
+    "QOOXDOO_ROOT" : "../../../../../../trunk/qooxdoo",
+    "QOOXDOO_PATH" : "${QOOXDOO_ROOT}/framework",
+    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
+    "QXTHEME"      : "qx.theme.Modern",
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  },
 
   "include" :
   [
@@ -12,16 +21,6 @@ version 0.8 source directory."
       "as"   : "appconf"
     }
   ],
-
-  "let" :
-  {
-    "APPLICATION"  : "custom",
-    "QOOXDOO_PATH" : "../../../../../../trunk/qooxdoo/framework",
-    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
-    "QXTHEME"      : "qx.theme.Modern",
-    "LOCALES"      : [ "en" ],
-    "ROOT"         : "."
-  },
 
   "jobs" :
   {
