@@ -1680,20 +1680,22 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
-
               var sel = this.__getSelection();
-              
-              // check if inside a list
-              var selNode = sel.focusNode;
-              while (selNode.nodeName.toLowerCase() != "body")
+
+              if (sel)
               {
-                if (selNode.nodeName.toLowerCase() == "li")
+                // check if inside a list
+                var selNode = sel.focusNode;
+                while (selNode.nodeName.toLowerCase() != "body")
                 {
-                  return;
+                  if (selNode.nodeName.toLowerCase() == "li")
+                  {
+                    return;
+                  }
+                  selNode = selNode.parentNode;
                 }
-                selNode = selNode.parentNode;
               }
-              
+
               this.__commandManager.insertParagraphOnLinebreak();
               e.preventDefault();
               e.stopPropagation();
