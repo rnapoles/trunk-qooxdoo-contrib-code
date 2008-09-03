@@ -1,130 +1,21 @@
+// HtmlArea widget - config json
 {
-  "jobs" :
-  {
-    "common" :
+  "name" : "HtmlArea config.json",
+  
+  "include" :
+  [
     {
-      "let" :
-      {
-        "APPLICATION_NAMESPACE": "htmlarea",
-        "QOOXDOO_PATH": "../../../qooxdoo.trunk/frontend/framework",
-        "QOOXDOO_URI": "../${QOOXDOO_PATH}"
-      },
-
-      "library" :
-      [
-        {
-          "manifest" : "${QOOXDOO_PATH}/Manifest.json",
-          "uri"      : "${QOOXDOO_URI}"
-          /* mind that the final uri will be computed from this 'uri' + the 
-             'class' info from the manifest */
-        },
-
-        {
-          "manifest" : "Manifest.json",
-          "uri"      : ".."
-        }
-      ],
-
-
-      "include" : ["htmlarea.*", "qx.theme.Classic"],
-
-      "settings" :
-      {
-        "qx.application" : "htmlarea.Application",
-        "qx.resourceUri" : "${QOOXDOO_URI}/framework/source/resource",
-        "${APPLICATION_NAMESPACE}.resourceUri" : "./resource"
-      },
-
-      "localize" :
-      {
-        "locales" : []
-      },
-
-      "cache" :
-      {
-        "path" : "../../cache"
-      }
-    },
-
-
-    "source" :
-    {
-      "extend" : ["common"],
-
-      "script" :
-      {
-        "file" : "./source/script/htmlarea.js"
-      }
-    },
-
-
-    "build" :
-    {
-      "extend" : ["common"],
-
-      "compile" :
-      {
-        "file" : "./build/script/${APPLICATION_NAMESPACE}.js",
-        "uri"  : "script/${APPLICATION_NAMESPACE}.js"
-      }
-    },
-
-
-    "api-data" :
-    {
-      "extend" : ["common"],
-
-      "api" :
-      {
-        "path" : "./api/script"
-      }
-
-    },
-
-
-    "api-build" :
-    {
-      "extend" : ["common"],
-
-      "library" :
-      [
-        {
-          "encoding" : "utf-8",
-          "path"     : "../../framework/source",
-          "uri"      : "../../../framework/source"
-        },
-
-        {
-          "encoding" : "utf-8",
-          "path"     : "${QOOXDOO_PATH}/application/apiviewer/source",
-          "uri"      : "../${QOOXDOO_PATH}/application/apiviewer/source"
-        }
-      ],
-      
-      
-
-      "include" : ["apiviewer.Application", "qx.legacy.theme.ClassicRoyale"],
-
-      "settings" :
-      {
-        "qx.application" : "apiviewer.Application",
-        "qx.resourceUri" : "${QOOXDOO_URI}/framework/source/resource",
-        "qx.minLogLevel" : "700",
-        "qx.legacy.theme"       : "qx.legacy.theme.ClassicRoyale",
-        "apiviewer.resourceUri" : "./resource/apiviewer",
-        "apiviewer.title": "Generator2 API Viewer"
-       },
-
-      "variants" :
-      {
-        "qx.debug" : ["off"]
-      },
-
-      "compile" :
-      {
-        "file" : "./api/script/apiviewer.js",
-        "uri"  : "script/apiviewer.js"
-      }
+      "path" : "../../qooxdoo/qooxdoo-0.8-sdk/tool/data/config/application.json"
     }
+  ],
+  
+  "let" :
+  {
+    "APPLICATION"  : "htmlarea",
+    "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8-sdk/framework",
+    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
+    "TEST_INCLUDE" : "${APPLICATION}.*",
+    "CACHE"        : "${QOOXDOO_PATH}/framework/cache",
+    "ROOT"         : "."
   }
 }
