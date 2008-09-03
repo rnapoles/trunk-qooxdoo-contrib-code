@@ -113,8 +113,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      * Executes the given command and collects (if necessary) undo information.
      *
      * @type member
-     * @param {String} Command to execute
-     * @param {String ? Integer ? null} Value of the command (if any)
+     * @param command {String} Command to execute
+     * @param value {String ? Integer ? null} Value of the command (if any)
      * @return {Boolean} Result of operation
      */
     execute : function(command, value)
@@ -569,8 +569,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @type member
      * @param command {String} command to execute
-     * @param {String ? Integer ? null} Value of the command (if any)
-     * @param {Object} internal commandObject
+     * @param value {String ? Integer ? null} Value of the command (if any)
+     * @param commandObject {Object} internal commandObject
      * @return {void}
      */
     __collectUndoInfo : function(command, value, commandObject)

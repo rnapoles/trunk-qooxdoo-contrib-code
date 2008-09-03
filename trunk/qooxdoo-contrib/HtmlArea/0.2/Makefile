@@ -34,7 +34,7 @@
 # Please note that Windows users should always use relative paths.
 # It should end with the last directory. Please omit a trailing slash.
 #
-QOOXDOO_PATH = ../qooxdoo
+QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.3-sdk
 
 #
 # Namespace of your application e.g. custom
@@ -55,7 +55,7 @@ APPLICATION_FILES = index.html
 # Add any of those variables for your custom configuration here:
 #-------------------------------------------------------------------------------
 
-
+APPLICATION_COMPLETE_API = true
 
 
 ################################################################################
