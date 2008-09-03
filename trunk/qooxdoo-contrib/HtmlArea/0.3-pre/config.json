@@ -15,7 +15,22 @@
     "QOOXDOO_PATH" : "../../qooxdoo/qooxdoo-0.8-sdk/framework",
     "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
     "TEST_INCLUDE" : "${APPLICATION}.*",
-    "CACHE"        : "${QOOXDOO_PATH}/framework/cache",
+    "CACHE"        : "../../qooxdoo/qooxdoo-0.8-sdk/cache",
     "ROOT"         : "."
+  },
+  
+  
+  "jobs" :
+  {
+    "api-light" :
+    {
+      "extend" : [ "api" ],
+
+      "let" :
+      {
+        "API_INCLUDE"  : ["${APPLICATION}.*"],
+        "API_EXCLUDE"  : ["qx.*"]
+      }
+    }
   }
 }
