@@ -22,6 +22,22 @@
   
   "jobs" :
   {
+    "build-htmlarea" :
+    {
+      "extend" : [ "build" ],
+      
+      "compile-dist" :
+      {
+        "target"   : "${BUILD_PATH}",
+        "file"     : "${BUILD_PATH}/script/${APPLICATION}.js",
+        "uri"      : "script/${APPLICATION}.js",
+        "root"     : "${BUILD_PATH}",
+        "format"   : "on",
+        "locales"  : "${LOCALES}",
+        "optimize" : ["basecalls", "variables", "strings"]
+      }      
+    },
+    
     "api-light" :
     {
       "extend" : [ "api" ],
