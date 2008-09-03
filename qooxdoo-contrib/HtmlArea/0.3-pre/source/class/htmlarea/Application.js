@@ -59,13 +59,11 @@ qx.Class.define("htmlarea.Application",
   members :
   {
     /**
-     * TODOC
+     * Main method - application start point
      *
-     * @type member
-     * @param e {Event} TODOC
      * @return {void}
      */
-    main : function(e)
+    main : function()
     {
       this.base(arguments);
       
