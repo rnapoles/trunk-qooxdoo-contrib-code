@@ -21,13 +21,20 @@
 /**
  * Decorator for CommandManager instance to implement Undo/Redo functionality
  *
- * @type member
+ * 
  * @param commandManager {htmlarea.command.Manager} commandManager instance to decorate
  */
 qx.Class.define("htmlarea.command.UndoManager",
 {
   extend : qx.core.Object,
 
+  /**
+   * Constructor
+   * 
+   * @param commandManager {htmlarea.command.Manager} command manager instance
+   * @param editorInstance {htmlarea.HtmlArea} editor instance
+   * @return {void}
+   */
   construct : function(commandManager, editorInstance)
   {
     this.base(arguments);
@@ -90,7 +97,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Set the document instance on which the UndoManager should perform his actions.
      * 
-     * @type member
      * @param doc {Document} document node to work on
      * @return {void}
      */
@@ -115,8 +121,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     /**
      * Executes the given command and collects (if necessary) undo information.
-     *
-     * @type member
+     *  
      * @param command {String} Command to execute
      * @param value {String ? Integer ? null} Value of the command (if any)
      * @return {Boolean} Result of operation
@@ -173,7 +178,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Service method to check if an undo operation is currently possible
      *
-     * @type member
      * @return {Boolean} Whether an undo is possible or not
      */
     isUndoPossible : function()
@@ -186,8 +190,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Undo facade method. The different types of undo (command/custom/content)
      * are delegated to their specialized implementation.
-     *
-     * @type member
+     * 
      * @return {Boolean}
      */
     undo : function()
@@ -233,7 +236,6 @@ qx.Class.define("htmlarea.command.UndoManager",
       * are not supported by the browsers with an execCommand identifier. The command
       * has to be executed manually and therefore the undo mechanism.
       *
-      * @type member
       * @param undoInfo {Object} Undo info object
       * @return {Boolean}
       */
@@ -290,8 +292,7 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     /**
      * Undo a browser-supported command.
-     *
-     * @type member
+     * 
      * @param undoInfo {Object} Undo info object
      * @return {Boolean}
      */
@@ -323,7 +324,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Undo an internal change like resizing an image/add table cell
      * 
-     * @type member
      * @param undoInfo {Object} Undo info object
      * @return {Boolean} Success of command
      */
@@ -339,7 +339,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Undo content manipulation.
      *
-     * @type member
      * @param undoInfo {Object} Undo info object
      * @return {Boolean}
      */
@@ -395,7 +394,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Service method to check if a redo operation is currently possible
      *
-     * @type member
      * @return {Boolean} Whether redo is possible or not
      */
     isRedoPossible : function()
@@ -407,8 +405,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Redo facade method. The different types of redo (command/custom/content)
      * are delegated to their specialized implementation.
-     *
-     * @type member
+     * 
      * @return {Boolean}
      */
      redo : function()
@@ -446,8 +443,7 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     /**
      * Redo a custom command.
-     *
-     * @type member
+     * 
      * @param redoInfo {Object} Redo info object
      * @return {Boolean}
      */
@@ -462,8 +458,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     
     /**
      * Redo a browser-supported command.
-     *
-     * @type member
+     * 
      * @param redoInfo {Object} Redo info object
      * @return {Boolean}
      */
@@ -494,7 +489,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Redo an internal change like resizing an image/add table cell
      * 
-     * @type member
      * @param redoInfo {Object} Undo info object
      * @return {Boolean} Success of command
      */
@@ -509,8 +503,7 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     /**
      * Redo a content manipulation
-     *
-     * @type member
+     * 
      * @param redoInfo {Object} Redo info object
      * @return {Boolean}
      */
@@ -535,7 +528,6 @@ qx.Class.define("htmlarea.command.UndoManager",
      * which commands are passed through (without added to the undo/redo
      * history).
      * 
-     * @type member
      * @return {void}
      */
     __populateCommandList : function()
@@ -568,7 +560,6 @@ qx.Class.define("htmlarea.command.UndoManager",
      * Collects the necessary info about the current action and adds this
      * info to the undo history.
      * 
-     * @type member
      * @param command {String} command to execute
      * @param value {String ? Integer ? null} Value of the command (if any)
      * @param commandObject {Object} internal commandObject
@@ -660,7 +651,6 @@ qx.Class.define("htmlarea.command.UndoManager",
       * Adds the occured changes to the undo history and
       * sets a flag for the redo action.
       *
-      * @type member
       * @param changeInfo {Object ? String} Infos of the change.
       *                                     Either a map containing details or null for change through a command identifier
       * @return {void}
@@ -696,8 +686,7 @@ qx.Class.define("htmlarea.command.UndoManager",
 
      /**
       * Helper method to get an undo object which is added to the undoStack
-      *
-      * @type member
+      * 
       * @return {Object} undo object
       */
      __getUndoRedoObject : function()
@@ -717,9 +706,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      /**
       * Utility method to add an entry to the undoStack.
       * 
-      * @type member
       * @param changeInfo {Object} Infos of the change
-      *
       * @return {void}
       */
      __addToUndoStack : function(changeInfo)
@@ -737,9 +724,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      /**
       * Utility method to add an entry to the redoStack.
       * 
-      * @type member
       * @param changeInfo {Object} Infos of the change
-      *
       * @return {void}
       */
     __addToRedoStack : function(changeInfo)
@@ -757,8 +742,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      /**
      * Key press handler for the undo manager. Only acts on specific events which
      * are important to the undo manager.
-     * 
-     * @type member
+     *
      * @param e {qx.event.type.KeyEvent} key event instance
      * @return {void} 
      */
@@ -826,8 +810,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * Mouse down handler method.
      * Currently only implemented for IE.
      * Used to track internal changes like resizing an image or a table element.
-     * 
-     * @type member
+     *
      * @param e {DOM event} mouse event instance
      * @return {void}
      */
@@ -859,8 +842,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Mouse up handler method.
      * Used to track internal changes like resizing an image or a table element.
-     * 
-     * @type member
+     *  
      * @param e {DOM event} mouse event instance
      * @return {void}
      */
@@ -986,7 +968,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Adds an internal undo step to the undo stack.
      * 
-     * @type member
      * @return {void} 
      */
     __addInternalUndoStep : function()
@@ -1003,7 +984,6 @@ qx.Class.define("htmlarea.command.UndoManager",
      * about the current state of the undo/redo.
      * The event itself it fired with a timeout to not interfere with the current key event.
      * 
-     * @type member
      * @return {void} 
      */
     __updateUndoRedoState : function() 

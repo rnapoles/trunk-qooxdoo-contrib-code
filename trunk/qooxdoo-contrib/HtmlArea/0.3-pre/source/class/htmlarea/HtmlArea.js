@@ -27,11 +27,6 @@
 
 /**
  * Rich text editor widget
- *
- * @param value {String} Initial content
- * @param styleInformation {String | Map | null} Optional style information for the editor's document
- *                                               Can be a string or a map (example: { "p" : "padding:2px" }
- * @param source {String} source of the iframe
  */
 qx.Class.define("htmlarea.HtmlArea",
 {
@@ -43,6 +38,14 @@ qx.Class.define("htmlarea.HtmlArea",
   *****************************************************************************
   */
 
+  /**
+   * Constructor
+   *
+   * @param value {String} Initial content
+   * @param styleInformation {String | Map | null} Optional style information for the editor's document
+   *                                               Can be a string or a map (example: { "p" : "padding:2px" }
+   * @param source {String} source of the iframe
+   */
   construct : function(value, styleInformation, source)
   {
     // **********************************************************************
@@ -573,8 +576,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Setting the value of the editor
-     *
-     * @type member
+     * 
      * @param value {String} new content to set
      * @return {void}
      */
@@ -600,8 +602,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * is not delivering the current content in a stable manner.
      * To get the current value of the editor use the {@link #getComputedValue}
      * method instead.
-     *
-     * @type member
+     * 
      * @return {String} value of the editor
      */
     getValue : function()
@@ -616,8 +617,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * the elements below the body element. With this method you always
      * get the current value, but it is much more expensive. So use it
      * carefully.
-     *
-     * @type member
+     * 
      * @return {String} computed value of the editor
      */
     getComputedValue : function()
@@ -628,8 +628,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * returns the complete content of the editor
-     *
-     * @type member
+     * 
      * @return {String}
      */
     getCompleteHtml : function ()
@@ -640,8 +639,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * returns the body of the document
-     *
-     * @type member
+     * 
      * @return {Object}
      */
     getContentBody : function ()
@@ -680,11 +678,9 @@ qx.Class.define("htmlarea.HtmlArea",
      * should be removed if someone find a better way to ensure that the document
      * is ready in IE6
      * 
-     * @type member
-     * @param handler {Object}
      * @return {void}
      */
-    __waitForDocumentReady : function ()
+    __waitForDocumentReady : function()
     {
       var doc = this.__iframe.getDocument();
 
@@ -722,8 +718,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Is executed when event "load" is fired
-     *
-     * @type member
+     * 
      * @param e {Object} Event object
      * @return {void}
      */
@@ -843,8 +838,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Returns style attribute as string of a given element
      *
-     * @type member
-     * @param elem {Object} TODOC
+     * @param elem {Object} Element to check for styles 
      * @return {String} style
      */
     __getElementStyleAsString : function(elem)
@@ -885,8 +879,8 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Returns the wrapped content of the editor
      *
-     * @type member
      * @param value {String} body.innerHTML
+     * @param useCurrentBodyStyle {Boolean} whether the current style of the body should be used
      * @return {String} content
      */
     __getWrappedContent : function (value, useCurrentBodyStyle)
@@ -928,8 +922,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Opens a new document and sets the content (if available)
-     *
-     * @type member
+     * 
      * @return {void}
      */
     __renderContent : function()
@@ -957,8 +950,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Adds all needed eventlistener
-     *
-     * @type member
+     * 
      * @return {void}
      */
     __addListeners : function()
@@ -996,8 +988,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * a command manager instance to collect all commands
      * which are executed BEFORE the command manager instance
      * is ready
-     *
-     * @type member
+     * 
      * @return {Object} stack command manager object
      */
     __createStackCommandManager : function()
@@ -1021,8 +1012,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * sets the designMode of the document
      * 
-     * @type member
-     * @param onOrOff {Boolean}
+     * @param onOrOff {Boolean} switch to enable/disable designMode
      * @return {void}
      */
     __setDesignMode : function (onOrOff)
@@ -1058,8 +1048,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Modifier for property "editable"
-     *
-     * @type member
+     * 
      * @param propValue {var} Current value
      * @param propOldValue {var} Previous value
      * @param propData {var} Property configuration map
@@ -1139,8 +1128,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * All keyUp events are delegated to this method
-     *
-     * @type member
+     * 
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1255,7 +1243,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * All keyDown events are delegated to this method
      *
-     * @type member
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1296,8 +1283,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * All keyPress events are delegated to this method
-     *
-     * @type member
+     * 
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1623,7 +1609,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Inserts a paragraph when hitting the "enter" key
      *
-     * @type member
      * @return {Boolean} whether the key event should be stopped or not
      */
     __insertParagraphOnLinebreak : function()
@@ -1682,7 +1667,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Executes a method and prevent default
      *
-     * @type member
      * @param method {String} name of the method which should be called
      * @param preventDefault {Boolean} whether do preventDefault or not
      * @return {void}
@@ -1705,7 +1689,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Eventlistener for focus events
      *
-     * @type member
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1720,8 +1703,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Called with every focus event of the editor.
      * Stores the current content of the editor for later
      * comparison (see at {@link #__onBlur} method)
-     *
-     * @type member
+     * 
      * @return {void}
      */
    __onFocus : function()
@@ -1736,8 +1718,7 @@ qx.Class.define("htmlarea.HtmlArea",
     * Compares the current value with the stored one.
     * If they are different the current content is synced
     * with the value variable.
-    *
-    * @type member
+    * 
     * @return {void}
     */
    __onBlur : function()
@@ -1751,7 +1732,6 @@ qx.Class.define("htmlarea.HtmlArea",
      * This method is invoked for mshtml on "click" events and
      * on "mouseup" events for all others.
      *
-     * @type member
      * @param e {Object} Event object
      * @return {void}
      */
@@ -1769,8 +1749,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Eventlistener for focus out events to save the current selection.
      * NOTE: this method is currently only used for mshtml.
-     *
-     * @type member
+     * 
      * @param e {qx.event.type.Event} focus out event
      * @return {void}
      */
@@ -1795,7 +1774,7 @@ qx.Class.define("htmlarea.HtmlArea",
     */
 
     /**
-     * TODOC
+     * Whether the editor has loaded
      * 
      * @return {Boolean}
      */
@@ -1807,7 +1786,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * TODOC
+     * Whether the documet is in editable mode
      * 
      * @return {Boolean}
      */
@@ -1819,8 +1798,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Inserts html content on the current selection
-     *
-     * @type member
+     * 
      * @param value {String} html content
      * @return {Boolean} Success of operation
      */
@@ -1832,8 +1810,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Removes all formatting styles on the current selection content
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     removeFormat : function()
@@ -1844,8 +1821,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to bold font style
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     setBold : function()
@@ -1856,8 +1832,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to italic font style
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     setItalic : function()
@@ -1868,8 +1843,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to underline font style
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     setUnderline : function()
@@ -1880,8 +1854,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to strikethrough font style
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      *
      */
@@ -1893,8 +1866,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified font size
-     *
-     * @type member
+     * 
      * @param value {Number} Font size
      * @return {Boolean} Success of operation
      */
@@ -1906,8 +1878,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified font size
-     *
-     * @type member
+     * 
      * @param value {Number} Font size
      * @return {Boolean} Success of operation
      */
@@ -1918,8 +1889,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified font color
-     *
-     * @type member
+     * 
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
@@ -1930,8 +1900,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the current selection content to the specified background color
-     *
-     * @type member
+     * 
      * @param value {String} Color value (supported are Hex,
      * @return {Boolean} Success of operation
      */
@@ -1943,8 +1912,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Left-justifies the current selection
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     setJustifyLeft : function()
@@ -1956,7 +1924,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Center-justifies the current selection
      *
-     * @type member
      * @return {Boolean} Success of operation
      */
     setJustifyCenter : function()
@@ -1968,7 +1935,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Right-justifies the current selection
      *
-     * @type member
      * @return {Boolean} Success of operation
      */
     setJustifyRight : function()
@@ -1980,7 +1946,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Full-justifies the current selection
      *
-     * @type member
      * @return {Boolean} Success of operation
      */
     setJustifyFull : function()
@@ -1991,8 +1956,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Indents the current selection
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     insertIndent : function()
@@ -2003,8 +1967,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Outdents the current selection
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     insertOutdent : function()
@@ -2015,8 +1978,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Inserts an ordered list
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     insertOrderedList : function()
@@ -2028,7 +1990,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Inserts an unordered list
      *
-     * @type member
      * @return {Boolean} Success of operation
      */
     insertUnorderedList : function()
@@ -2039,8 +2000,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Inserts a horizontal ruler
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     insertHorizontalRuler : function()
@@ -2052,7 +2012,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Insert an image
      *
-     * @type member
      * @param url {String} url of the image to insert
      * @return {Boolean} Success of operation
      */
@@ -2065,7 +2024,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Inserts a hyperlink
      *
-     * @type member
      * @param url {String} URL for the image to be inserted
      * @return {Boolean} Success of operation
      */
@@ -2077,7 +2035,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Alias for setBackgroundColor("transparent");
      *
-     * @type member
      * @return {Boolean} if succeeded
      */
     removeBackgroundColor : function () {
@@ -2087,8 +2044,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Sets the background color of the editor
-     *
-     * @type member
+     * 
      * @param value {String} color
      * @return {Boolean} if succeeded
      */
@@ -2100,8 +2056,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Alias for setBackgroundImage(null);
-     *
-     * @type member
+     * 
      * @return {Boolean} if succeeded
      */
     removeBackgroundImage : function () {
@@ -2112,7 +2067,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Inserts an background image
      *
-     * @type member
      * @param url {String} url of the background image to set
      * @param repeat {String} repeat mode. Possible values are "repeat|repeat-x|repeat-y|no-repeat".
      *                                     Default value is "no-repeat"
@@ -2128,8 +2082,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Selects the whole content
-     *
-     * @type member
+     * 
      * @return {Boolean} Success of operation
      */
     selectAll : function()
@@ -2140,8 +2093,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Undo last operation
-     *
-     * @type member
+     * 
      * @return {void}
      */
     undo : function()
@@ -2160,8 +2112,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Redo last undo
-     *
-     * @type member
+     * 
      * @return {void}
      */
     redo : function()
@@ -2186,8 +2137,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Resets the content of the editor
-     *
-     * @type member
+     * 
      * @return {void}
      */
     resetHtml : function()
@@ -2225,8 +2175,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Get html content (call own recursive method)
-     *
-     * @type member
+     * 
      * @return {String} current content of the editor as XHTML
      */
     getHtml : function()
@@ -2244,7 +2193,6 @@ qx.Class.define("htmlarea.HtmlArea",
      * Helper function to examine if HTMLArea is empty, except for
      * place holder(s) needed by some browsers.
      * 
-     * @type member
      * @return {Boolean} True, if area is empty - otherwise false.
      */
     containsOnlyPlaceholder : qx.core.Variant.select("qx.client",
@@ -2272,7 +2220,6 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Wrapper method to examine the current context
      *
-     * @type member
      * @return {void}
      */
     __startExamineCursorContext : function()
@@ -2297,7 +2244,7 @@ qx.Class.define("htmlarea.HtmlArea",
      *  0 = command is possible at the moment. Used to enable the corresponding buttons (e.g. bold/italic/underline etc.)
      *  1 = cursor is over content which already received that command. Used to to activate the corresponding buttons (e.g. bold/italic/underline etc.)
      *
-     * @type member
+     * 
      * @return {void}
      */
     __examineCursorContext : function()
@@ -2485,8 +2432,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * Returns the currently selected text.
-     *
-     * @type member
+     * 
      * @return {String} Selected plain text.
      */
     getSelectedText : qx.core.Variant.select("qx.client",
@@ -2548,8 +2494,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
     /**
      * returns the range of the current selection
-     *
-     * @type member
+     * 
      * @return {Range} Range object
      */
     getRange : function()
@@ -2669,7 +2614,6 @@ qx.Class.define("htmlarea.HtmlArea",
   /**
    * Destructor
    *
-   * @type member
    * @return {void}
    */
   destruct : function()

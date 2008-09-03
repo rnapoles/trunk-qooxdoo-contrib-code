@@ -21,12 +21,17 @@
 /**
  * Available commands for the HtmlArea component
  *
- *
  */
 qx.Class.define("htmlarea.command.Manager",
 {
   extend : qx.core.Object,
 
+  /**
+   * Constructor
+   * 
+   * @param editorInstance {htmlarea.HtmlArea} editor instance
+   * @return {void}
+   */
   construct : function(editorInstance)
   {
     this.base(arguments);
@@ -61,8 +66,7 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Set the contentDocument on which this manager should execute
      * his commands
-     *
-     * @type member
+     * 
      * @param doc {Object} contentDocument of the editor instance
      * @return {void}
      */
@@ -113,7 +117,6 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Returns the commandobject of the given command name
      *
-     * @type member
      * @param commandName {String} name of the command
      * @return {Object ? null} commandObject or null if no command is available for the given command name
      */
@@ -131,8 +134,7 @@ qx.Class.define("htmlarea.command.Manager",
 
     /**
      * Populate the internal "commands" object with the available commands and their settings.
-     *
-     * @type member
+     * 
      * @return {void}
      */
     __populateCommandList : function()
@@ -190,7 +192,6 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Executes the given command
      *
-     * @type member
      * @param command {String} Command to execute
      * @param value {String ? Integer ? null} Value of the command (if any)
      * @return {Boolean} Result of operation
@@ -240,7 +241,6 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Internal method to deal with special cases when executing commands
      *
-     * @type member
      * @param command {String} command to execute
      * @param ui {Boolean} Whether to show an ui when executing a command. Default is false.
      * @param value {String ? Integer ? null} value of the command
@@ -378,7 +378,6 @@ qx.Class.define("htmlarea.command.Manager",
      /**
       * Command used at startup to setup the iframe as an editable area.
       *
-      * @type member
       * @param value {Boolean} value of the command
       * @param commandObject {Object} command infos
       * @return {Boolean} Succes of operation
@@ -393,7 +392,6 @@ qx.Class.define("htmlarea.command.Manager",
       * Command used at startup to setup the iframe as an editable area. This
       * command is a fallback to the "styleWithCSS" command.
       *
-      * @type member
       * @param value {Boolean} value of the command
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of the operation
@@ -407,7 +405,6 @@ qx.Class.define("htmlarea.command.Manager",
      /**
       * Inserts custom HTML code at the selection point.
       *
-      * @type member
       * @param value {String} HTML code to insert
       * @param commandObject {Object} command information
       * @return {Boolean} Success of the operation
@@ -470,7 +467,6 @@ qx.Class.define("htmlarea.command.Manager",
       * ONLY IE
       * Inserts a simple linebreak ('<br>') at the current position.
       * 
-      * @type member
       * @return {Boolean} Returns true if an br element is inserted
       */
      __insertBrOnLinebreak : qx.core.Variant.select("qx.client", 
@@ -507,8 +503,7 @@ qx.Class.define("htmlarea.command.Manager",
       * Helper function to set a text align on a range.
       * In IE we need to explicitly get the current range before executing
       * the font size command on it.
-      *
-      * @type member
+      * 
       * @param value {String} text align value
       * @param commandObject {Object} command object
       * @return {Boolean} Success of operation
@@ -526,7 +521,6 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Inserts an image
      * 
-     * @type member
      * @param attributes {Map} map with attributes which should be applied (e.g. "src", "border", "width" and "height")
      * @param commandObject {Object} command object
      * @return {Boolean} Success of operation
@@ -598,7 +592,6 @@ qx.Class.define("htmlarea.command.Manager",
       * inserting DOM nodes.
       * IE is using the "CreateLink" execCommand.
       * 
-      * @type member
       * @param url {String} url to insert
       * @param commandObject {Object} command object
       * @return {Boolean} result
@@ -684,7 +677,6 @@ qx.Class.define("htmlarea.command.Manager",
      /**
       * Internal method to insert an horizontal ruler in the document
       *
-      * @type member
       * @param value {String} empty value
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of operation
@@ -709,7 +701,6 @@ qx.Class.define("htmlarea.command.Manager",
       * Helper function which generates a string containing HTML which can be used to apply the
       * current style to an element.
       * 
-      * @type member
       * @return {String} String containing tags with special style settings.
       */
      generateHelperString : function()
@@ -759,7 +750,6 @@ qx.Class.define("htmlarea.command.Manager",
       * Helper function which generates <span>-tags which can be used to apply the
       * current style to an element.
       * 
-      * @type member
       * @return {Array} Array containing styled elements
       */
      generateHelperNodes : function()
@@ -815,7 +805,6 @@ qx.Class.define("htmlarea.command.Manager",
       * Internal helper function which retrieves all style settings, which are set
       * on the focus node and saves them on a span element.
       *
-      * @type member
       * @return {String} the span element.
       */
      getCurrentStyles : function()
@@ -907,9 +896,8 @@ qx.Class.define("htmlarea.command.Manager",
       * 
       * Returns an array containing all computed values of "text-decoration"
       * and "text-color".
-      *
-      * @type member
-      * @param value {Array} List with element's parents.
+      * 
+      * @param parents {Array} List with element's parents.
       * @return {Array} List containing style information about element's parents.
       */
      __getTextDecorations : function(parents)
@@ -952,8 +940,7 @@ qx.Class.define("htmlarea.command.Manager",
       * Returns the computed value of "background-color" of one parent
       * element, if it contains a _real_ color. 
       *
-      * @type member
-      * @param value {Array} List with element's parents.
+      * @param parents {Array} List with element's parents.
       * @return {String} Background color value. 
       */
      __getBackgroundColor : function(parents)
@@ -984,8 +971,7 @@ qx.Class.define("htmlarea.command.Manager",
       * Internal method to change the font size of the selection.
       * Most of the code is used to change the size of the bullet points
       * synchronous to it's content.
-      *
-      * @type member
+      * 
       * @param value {String} font size number (as used for <font> tags)
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of operation
@@ -1282,7 +1268,6 @@ qx.Class.define("htmlarea.command.Manager",
      /**
       * Internal method to set a background color for the whole document
       *
-      * @type member
       * @param value {String} color info
       * @param commandObject {Object} command infos
       * @return {Boolean} Success of operation
@@ -1300,7 +1285,11 @@ qx.Class.define("htmlarea.command.Manager",
 
 
      /**
-      * TODOC
+      * Sets a background image
+      * 
+      * @param value {Array} Array with infos to url, background-repeat and background-position
+      * @param commandObject {Object} command infos
+      * @return {Boolean} success of operation
       */
      __setBackgroundImage : function(value, commandObject)
      {
@@ -1394,7 +1383,6 @@ qx.Class.define("htmlarea.command.Manager",
       * Selects the whole text.
       * IE uses an own implementation because the execCommand is not reliable.
       * 
-      * @type member
       * @return {Boolean} Success of operation
       */
      __selectAll : qx.core.Variant.select("qx.client", {
@@ -1416,7 +1404,6 @@ qx.Class.define("htmlarea.command.Manager",
     /**
      * Returns the content of the actual range as text
      *
-     * @type member
      * @return {String} selected text
      */
     __getSelectedText : function()
