@@ -37,8 +37,7 @@
 
 /* ************************************************************************
 
-#use(qx.log.appender.Native)
-#use(qx.log.appender.Console)
+#asset(htmlarea/*)
 
 ************************************************************************ */
 /**
@@ -69,24 +68,31 @@ qx.Class.define("htmlarea.Application",
     main : function(e)
     {
       this.base(arguments);
+      
+      // Add log appenders
+      if (qx.core.Variant.isSet("qx.debug", "on"))
+      {
+        qx.log.appender.Native;
+        qx.log.appender.Console;
+        if (qx.bom.client.Engine.MSHTML)
+        {
+          qx.log.appender.Console.init();
+        }
+      }
 
       var demoContent = '<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.';
       var debugStyles = "";
       var doc = this.getRoot();
-
-      //qx.Theme.patch(qx.theme.classic.Appearance, htmlarea.theme.classic.Appearance);
       
-      qx.util.AliasManager.getInstance().add("htmlarea", qx.core.Setting.get("htmlarea.resourceUri"));
-
       var htmlArea = new htmlarea.HtmlArea(demoContent);
-      //htmlArea.set( { height: 400 } );
+      htmlArea.set( { height: 400 } );
       ha = htmlArea;
 
-      var vb = new qx.ui.layout.VBox;
-      var vbContainer = (new qx.ui.container.Composite(vb)).set( { backgroundColor: "white", width : 700 } );
+      var vb = new qx.ui.layout.VBox(8);
+      var vbContainer = (new qx.ui.container.Composite(vb));
 
       var hb = new qx.ui.layout.HBox;
-      var hbContainer = (new qx.ui.container.Composite(hb)).set();
+      var hbContainer = new qx.ui.container.Composite(hb);
 
       /* *********************************************
        * 
@@ -176,11 +182,9 @@ qx.Class.define("htmlarea.Application",
       var button;
       for (var entry in toolbarEntries)
       {
-        button = new qx.ui.form.Button("", toolbarEntries[entry].image);
-        this.debug(button.getAppearance());
+        button = new qx.ui.form.Button(null, toolbarEntries[entry].image);
+        button.set({ focusable : false, keepFocus : true, center : true });
         button.addListener("execute", toolbarEntries[entry].action, htmlArea);
-        button.setFocusable(false);
-        button.setKeepFocus(true);
         hbContainer.add(button);
       }
 

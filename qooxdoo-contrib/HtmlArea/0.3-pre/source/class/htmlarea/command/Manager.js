@@ -36,8 +36,6 @@ qx.Class.define("htmlarea.command.Manager",
 
     this.__commands       = null;
     this.__populateCommandList();
-
-    this.__editorInstance.addListener("focusOut", this._handleFocusOut, this);
   },
 
   statics :
@@ -92,14 +90,8 @@ qx.Class.define("htmlarea.command.Manager",
      * because the user e.g. clicked at a toolbar button the last selection
      * has to be stored in order to perform the desired execCommand correctly.
      */
-    __currentRange    : null,
+    //__currentRange    : null,
 
-    /*
-     * Save the type of the last selection. IE if blur() was executed on the htmlare and
-     * it gets focused again, still _has_ a selection. But this selection can only be used
-     * to execute commands on it, because we can not get any information about it any longer.
-     */
-    __lastSelectionType : "none",
     
     /**
      * Computed pixel sizes for values size attribute in <font> tag
@@ -112,42 +104,6 @@ qx.Class.define("htmlarea.command.Manager",
      * To keep track of these nodes they are equipped with an unique id (-> "qx_link" + __hyperLinkId)
      */
     __hyperLinkId : 0,
-
-
-    /**
-     * Returns the current stored range
-     *
-     * @type member
-     * @return {Range} Range object
-     */
-    getCurrentRange : function ()
-    {
-      if (this.__currentRange != null)
-      {
-        return this.__currentRange;
-      }
-
-      /* Fallback is getting a new range from the editor */
-      return this.__editorInstance.getRange();
-    },
-
-
-    /**
-     * Eventlistener for focus out events to save the current selection.
-     * NOTE: this method is currently only used for mshtml.
-     *
-     * @type member
-     * @param e {qx.event.type.Event} focus out event
-     * @return {void}
-     */
-    _handleFocusOut : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(e)
-      {
-        this.__currentRange = this.__editorInstance.getRange();
-        this.__lastSelectionType = this.__editorInstance.__getSelection().type;
-      },
-      "default" : function() {}
-    }),
 
 
     /* ****************************************************************
@@ -301,15 +257,18 @@ qx.Class.define("htmlarea.command.Manager",
         var emptyRange = false;
 
         /* Request current range explicitly, if command is one of the invalid focus commands. */
-        if(
-          (qx.core.Variant.isSet("qx.client", "mshtml")) &&
-          (qx.core.Client.getInstance().getVersion() < 7) &&
+        /*if(
+          (qx.bom.client.Engine.MSHTML) &&
+          (qx.bom.client.Engine.VERSION < 7) &&
           (this.__invalidFocusCommands[command])
         )
         {
           this.__currentRange = this.__editorInstance.getRange(); 
-        }
-
+        }*/
+        
+        // get the current range
+        var range = this.__editorInstance.getRange();
+        
         /* Body element must have focus before executing command */
         this.__doc.body.focus();
 
@@ -330,7 +289,7 @@ qx.Class.define("htmlarea.command.Manager",
              * and to give user feedback. Otherwise IE will set the cursor at the first position of the
              * editor area
              */
-            this.__currentRange.select();
+            range.select();
 
             if(
                 /*
@@ -338,21 +297,21 @@ qx.Class.define("htmlarea.command.Manager",
                  * collapse it and execute the command at the document object
                  */
                 (
-                  (this.__currentRange.text) &&
-                  (this.__currentRange.text.length > 0)
+                  (range.text) &&
+                  (range.text.length > 0)
                 )
                 ||
                 /*
                  * Selected range is a control range with an image inside.
                  */
                 (
-                  (this.__currentRange.length == 1) &&
-                  (this.__currentRange.item(0)) &&
-                  (this.__currentRange.item(0).tagName == "IMG")
+                  (range.length == 1) &&
+                  (range.item(0)) &&
+                  (range.item(0).tagName == "IMG")
                 )
               )
             {
-              execCommandTarget = this.__currentRange; 
+              execCommandTarget = range;
             }
             else
             {
@@ -368,7 +327,7 @@ qx.Class.define("htmlarea.command.Manager",
            */
           if( (qx.core.Variant.isSet("qx.client", "mshtml")) && (this.__invalidFocusCommands[command]) )
           {
-            var range = this.getCurrentRange();
+            //var range = this.__editorInstance.getRange();
             /* Check if range is empty */
             if (range.text == "") {
               emptyRange = true;
@@ -393,9 +352,6 @@ qx.Class.define("htmlarea.command.Manager",
         {
           this.debug("execCommand " + command + " with value " + value + " succeded");
         }
-
-        /* (re)-focus the editor after the execCommand */
-        this.__focusAfterExecCommand();
 
         /* Reset the startTyping flag to mark the next insert of any char as a new undo step */
         this.__startTyping = false;
@@ -472,7 +428,7 @@ qx.Class.define("htmlarea.command.Manager",
            this.__doc.body.focus();
            
            /* this.__currentRange can be a wrong range!*/
-           var storedRange = this.getCurrentRange();
+           var storedRange = this.__editorInstance.getRange();
            
            /* in this case, get the range again (we lose the cursor position by doing that) */
            var actualRange = this.__editorInstance.getRange();
@@ -504,9 +460,6 @@ qx.Class.define("htmlarea.command.Manager",
          this.__doc.body.focus();
 
          ret = this.__doc.execCommand(commandObject.identifier, false, value);
-
-         /* (re)-focus the editor after the execCommand */
-         this.__focusAfterExecCommand();
        }
 
        return ret;
@@ -563,7 +516,7 @@ qx.Class.define("htmlarea.command.Manager",
      __setTextAlign : function(value, commandObject)
      {
        /* Get Range for IE, or document in other browsers */
-       var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.getCurrentRange() : this.__doc; 
+       var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.__editorInstance.getRange() : this.__doc; 
 
        /* Execute command on it */
        return commandTarget.execCommand(commandObject.identifier, false, value);
@@ -628,7 +581,7 @@ qx.Class.define("htmlarea.command.Manager",
           * only working solution is to use the "pasteHTML" method of the
           * TextRange Object. 
           */
-         var currRange = this.getCurrentRange();
+         var currRange = this.__editorInstance.getRange();
          currRange.select();
          currRange.pasteHTML(img);
        },
@@ -702,9 +655,10 @@ qx.Class.define("htmlarea.command.Manager",
           */
          try
          {
-           if (this.__currentRange != null && this.__currentRange.text != "")
+           var range = this.__editorInstance.getRange();
+           if (range != null && range.text != "")
            {
-             return this.__currentRange.execCommand(commandObject.identifier, false, url);
+             return range.execCommand(commandObject.identifier, false, url);
            }
            else
            {
@@ -883,7 +837,7 @@ qx.Class.define("htmlarea.command.Manager",
        var styleSettings = {};
   
        /* Retrieve element's computed style. */
-       var decoration = this.__editorInstance.getWindow().getComputedStyle(elem, null);
+       var decoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
   
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
@@ -969,7 +923,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style */
-         parentDecoration = this.__editorInstance.getWindow().getComputedStyle(elem, null);
+         parentDecoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
          
          /* Store values */
          decorationValue = parentDecoration.getPropertyValue("text-decoration");
@@ -1013,7 +967,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style*/
-         parentDecoration = this.__editorInstance.getWindow().getComputedStyle(elem, null);
+         parentDecoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
          parentStyleValue = parentDecoration.getPropertyValue("background-color");
 
          /* Check if computed value is valid */
@@ -1042,7 +996,7 @@ qx.Class.define("htmlarea.command.Manager",
        var sel = this.__editorInstance.__getSelection();
 
        var rng = (qx.core.Variant.isSet("qx.client", "mshtml")) ?
-           this.getCurrentRange() :
+           this.__editorInstance.getRange() :
            rng = sel.getRangeAt(0);
        
        /* <ol> or <ul> tags, which are selected, will be saved here */
@@ -1214,7 +1168,7 @@ qx.Class.define("htmlarea.command.Manager",
        /* Execute command on selection */
        if (qx.core.Variant.isSet("qx.client", "mshtml")) {
          this.__doc.body.focus();
-         this.__currentRange.select();
+         this.__editorInstance.getRange().select();
          return this.__doc.execCommand("FontSize", false, value);
        } else {
          return this.__doc.execCommand("FontSize", false, value);
@@ -1241,9 +1195,6 @@ qx.Class.define("htmlarea.command.Manager",
          this.__doc.body.focus();
          
          this.__doc.execCommand("BackColor", false, value);
-         
-         /* Focus the editor */
-         this.__focusAfterExecCommand();
        },
        
        "gecko|opera" : function(value, commandObject)
@@ -1252,15 +1203,12 @@ qx.Class.define("htmlarea.command.Manager",
          this.__doc.body.focus();
          
          this.__doc.execCommand("HiliteColor", false, value);
-         
-         /* Focus the editor */
-         this.__focusAfterExecCommand();
        },
        
        "webkit" : function(value, commandObject) 
        {
          var sel = this.__editorInstance.__getSelection();
-         var rng = this.getCurrentRange();
+         var rng = this.__editorInstance.getRange();
          
          /* check for a range */
          if (!sel.isCollapsed)
@@ -1269,9 +1217,6 @@ qx.Class.define("htmlarea.command.Manager",
             this.__doc.body.focus();
            
            this.__doc.execCommand("BackColor", false, value);
-           
-           /* Focus the editor */
-           this.__focusAfterExecCommand();
            
            /* collapse the selection */
            sel.collapseToEnd();
@@ -1325,9 +1270,6 @@ qx.Class.define("htmlarea.command.Manager",
            this.__doc.body.focus();
            
            this.__doc.execCommand("BackColor", false, value);
-           
-           /* Focus the editor */
-           this.__focusAfterExecCommand();
            
            /* Collapse the selection */
            sel.collapseToEnd();
@@ -1479,7 +1421,7 @@ qx.Class.define("htmlarea.command.Manager",
      */
     __getSelectedText : function()
     {
-      var range = this.getCurrentRange();
+      var range = this.__editorInstance.getRange();
       if (range)
       {
         return (typeof range == "string") ? range : range.toString();
@@ -1498,7 +1440,7 @@ qx.Class.define("htmlarea.command.Manager",
     __getSelectedHtml : function()
     {
       var tmpBody = document.createElement("body");
-      var range   = this.getCurrentRange();
+      var range   = this.__editorInstance.getRange();
 
       if (!range) {
         return "";
@@ -1518,53 +1460,6 @@ qx.Class.define("htmlarea.command.Manager",
       }
 
       return tmpBody.innerHTML;
-    },
-
-
-     /**
-     * (Re)-focuses the editor after an execCommand was executed
-     *
-     * @type member
-     * @param context {Object} current context object for window.setTimeout method
-     * @return void
-     */
-    __focusAfterExecCommand : function()
-    {
-      var that = this.__editorInstance;
-
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
-      {
-        window.setTimeout(function(e)
-        {
-          /*
-           * IE needs to change the activeChild to the editor component
-           * otherwise the e.g. pressed button (to set the selected content bold)
-           * will receive the following events
-           * call _visualizeFocus to get the right feedback to the user (editor is active)
-           */
-          qx.ui.core.ClientDocument.getInstance().setActiveChild(that);
-          that._visualizeFocus();
-        }, 50);
-      }
-      else if (qx.core.Variant.isSet("qx.client", "webkit"))
-      {
-        /*
-         * Webkit needs a mix of both (IE/Gecko). It is needed to (re)set the editor widget
-         * as the active child and to focus the editor widget (again).
-         */
-         window.setTimeout(function(e)
-         {
-           qx.ui.core.ClientDocument.getInstance().setActiveChild(that);
-           that.getWindow().focus();
-         }, 50);
-       }
-       else
-       {
-         /* for all other browser a short delayed focus on the contentWindow should do the job */
-         window.setTimeout(function(e) {
-           that.getWindow().focus();
-         }, 50);
-       }
     }
   },
 

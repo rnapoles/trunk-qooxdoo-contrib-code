@@ -43,7 +43,8 @@ qx.Class.define("htmlarea.command.UndoManager",
 
     this.__populateCommandList();
     
-    editorInstance.addListener("keypress", this._handleKeyPress, this);
+    /* Bind listener to get into the right context */
+    this.__handleKeyPress = qx.lang.Function.bind(this._handleKeyPress, this);
     
     /* Bind listener to get into the right context */
     this.__handleMouseUp = qx.lang.Function.bind(this._handleMouseUp, this);
@@ -98,15 +99,16 @@ qx.Class.define("htmlarea.command.UndoManager",
       this.__doc = doc;
       this.__commandManager.setContentDocument(doc);
       
+      /* keypress events to monitor if the user is typing */
+      qx.event.Registration.addListener(doc.body, "keypress", this.__handleKeyPress, this);
+      
       /* Mouse up listener is used to look after internal changes like image resizing etc. */
-      ///qx.html.EventRegistration.addListener(this.__doc, "mouseup", this.__handleMouseUp);
-      qx.bom.Element.addListener(doc.body, "mouseup", this.__handleMouseUp, this);
+      qx.event.Registration.addListener(doc.body, "mouseup", this.__handleMouseUp, this);
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         /* Mouse down listener is used to look after internal changes like image resizing etc. */
-        ////qx.html.EventRegistration.addListener(this.__doc, "mousedown", this.__handleMouseDown);
-        qx.bom.Element.addListener(doc.body, "mousedown", this.__handleMouseDown, this);
+        qx.event.Registration.addListener(doc.body, "mousedown", this.__handleMouseDown, this, true);
       }
     },
     
@@ -115,8 +117,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      * Executes the given command and collects (if necessary) undo information.
      *
      * @type member
-     * @param {String} Command to execute
-     * @param {String ? Integer ? null} Value of the command (if any)
+     * @param command {String} Command to execute
+     * @param value {String ? Integer ? null} Value of the command (if any)
      * @return {Boolean} Result of operation
      */
     execute : function(command, value)
@@ -146,9 +148,6 @@ qx.Class.define("htmlarea.command.UndoManager",
         {
           /* Call the responsible method */
           result = this[command].call(this);
-
-          /* (re)set the focus in the editor */
-          this.__commandManager.__focusAfterExecCommand();
         }
       }
       else
@@ -571,8 +570,8 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 
      * @type member
      * @param command {String} command to execute
-     * @param {String ? Integer ? null} Value of the command (if any)
-     * @param {Object} internal commandObject
+     * @param value {String ? Integer ? null} Value of the command (if any)
+     * @param commandObject {Object} internal commandObject
      * @return {void}
      */
     __collectUndoInfo : function(command, value, commandObject)
@@ -835,10 +834,10 @@ qx.Class.define("htmlarea.command.UndoManager",
     _handleMouseDown : qx.core.Variant.select("qx.client", {
       "mshtml" : function(e)
       {
-        //var checkNode = e.srcElement;
         var checkNode = e.getOriginalTarget();
         
-        if (checkNode && checkNode.nodeName.toLowerCase() == "img" || checkNode.nodeName.toLowerCase() == "table" )
+        if (checkNode != null && checkNode.nodeType == 1 && 
+            (checkNode.nodeName.toLowerCase() == "img" || checkNode.nodeName.toLowerCase() == "table"))
         {
           this.__selectedNode = { node : checkNode,
                                   content : checkNode.outerHTML 
@@ -847,7 +846,7 @@ qx.Class.define("htmlarea.command.UndoManager",
         else
         {
           this.__selectedNode = null;
-        }      
+        }     
       },
       
       "default" : function(e)
@@ -1009,24 +1008,14 @@ qx.Class.define("htmlarea.command.UndoManager",
      */
     __updateUndoRedoState : function() 
     {
-
-      qx.event.Timer.once(
-        function(e) {
-          this.dispatchEvent(
-            new qx.event.type.Data(
-              "undoRedoState",
-              {
-                undo : this.isUndoPossible() ? 0 : -1,
-                redo : this.isRedoPossible() ? 0 : -1
-              }
-            )
-          );
-        },
-
-        this,
-        200
-      );
-
+      qx.event.Timer.once(function(e)
+      {
+        var data = {
+          undo : this.isUndoPossible() ? 0 : -1,
+          redo : this.isRedoPossible() ? 0 : -1
+        };
+        this.fireDataEvent("undoRedoState", data);
+      }, this, 200);
     }
   },
 
@@ -1038,12 +1027,13 @@ qx.Class.define("htmlarea.command.UndoManager",
   {
     try
     {
-      qx.html.EventRegistration.removeEventListener(this.__doc, "mouseup", this.__handleMouseUp);
+      qx.event.Registration.removeEventListener(doc.body, "keypress", this.__handleKeyPress);
+      qx.event.Registration.removeEventListener(this.__doc, "mouseup", this.__handleMouseUp);
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         /* Mouse down listener is used to look after internal changes like image resizing etc. */
-        qx.html.EventRegistration.removeEventListener(this.__doc, "mousedown", this.__handleMouseDown);
+        qx.event.Registration.removeEventListener(this.__doc, "mousedown", this.__handleMouseDown);
       }
     }
     catch(e) {}
