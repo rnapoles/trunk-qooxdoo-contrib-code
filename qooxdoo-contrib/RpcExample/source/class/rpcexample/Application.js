@@ -1,19 +1,17 @@
-/* ************************************************************************
-
-   Copyright:
-
-   License:
-
-   Authors:
-
-************************************************************************ */
-
-/* ************************************************************************
-
-#asset(rpcexample/*)
-
-************************************************************************ */
-
+/*
+ *
+ * Copyright:
+ *   (c) 2008 by Derrell Lipman
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *   Derrell Lipman (derrell)
+ *
+ */
 qx.Class.define("rpcexample.Application",
 {
   extend : qx.application.Standalone,
@@ -77,7 +75,9 @@ qx.Class.define("rpcexample.Application",
             name : "RPC Server Functionality (sync)",
             func : this.rpcServerFunctionalitySync,
             desc : ("This test calls a whole set of functions to test " +
-                    "each of the primitive data types.  The comparison " +
+                    "each of the primitive data types. " +
+                    "<span style='color:blue;'>Results are " +
+                    "displayed in the debug console.</span>  The comparison " +
                     "results should all end with ': true', and the " +
                     "last test generates an Application Error (#1000).  " +
                     "No other test generates that error, so receiving " +
@@ -95,7 +95,9 @@ qx.Class.define("rpcexample.Application",
             name : "RPC Server Functionality (async)",
             func : this.rpcServerFunctionalityAsync,
             desc : ("This test calls a whole set of functions to test " +
-                    "each of the primitive data types.  The comparison " +
+                    "each of the primitive data types.  " +
+                    "<span style='color:blue;'>Results are " +
+                    "displayed in the debug console.</span>  The comparison " +
                     "results should all end with ': true', and the " +
                     "last test generates an Application Error (#1000).  " +
                     "No other test generates that error, so receiving " +
