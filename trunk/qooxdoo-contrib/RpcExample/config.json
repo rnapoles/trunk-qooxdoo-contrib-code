@@ -1,0 +1,32 @@
+{
+  "name"    : "RpcExample",
+
+  "include" :
+  [
+    {
+      "path" : "../../../../trunk/qooxdoo/tool/data/config/application.json"
+    }
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "rpcexample",
+    "QOOXDOO_PATH" : "../../../../trunk/qooxdoo/framework",
+    "QOOXDOO_URI"  : "../${QOOXDOO_PATH}",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.legacy.*"],
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  },
+
+  "jobs" :
+  {
+    "common" :
+    {
+      "settings" :
+      {
+        "qx.ioRemoteDebug" : "on"
+      }
+    }
+  }
+}
