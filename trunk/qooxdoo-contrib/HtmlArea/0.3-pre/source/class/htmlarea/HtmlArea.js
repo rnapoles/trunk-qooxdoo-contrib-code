@@ -17,6 +17,9 @@
      * Michael Haitz (mhaitz)
      * Jonathan Rass (jonathan_rass)
 
+   Contributors:
+     * Petr Kobalicek (e666e)
+
 ************************************************************************ */
 
 /* ************************************************************************
@@ -232,6 +235,34 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
+    /**
+     * Parse style string to map.
+     *
+     * Example:
+     * htmlarea.HtmlArea.__parseStyle("text-align: left; text-weight: bold;");
+     * 
+     * @type static
+     * @param str {String} String that contain valid style informations separated by ";"
+     * @return {Map} Map of style names and it's values
+     */
+    __parseStyle: function(str)
+    {
+      var map = {};
+      var a = str.split(";");
+      var i;
+    
+      for (i = 0; i < a.length; i++)
+      {
+        var style = a[i], sep = style.indexOf(":");
+        if (sep === -1) continue;
+    
+        var name =  qx.lang.String.trim(style.substring(0, sep));
+        var value = qx.lang.String.trim(style.substring(sep+1, style.length));
+        if (name && value) map[name] = value;
+      }
+    
+      return map;
+    },
 
     /**
      * Get html content (own recursive method)
@@ -243,57 +274,82 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __getHtml : function(root, outputRoot)
     {
-      var html = "";
+      // String builder is array for large text content
+      var html = [];
 
       switch(root.nodeType)
       {
-        case 1:  // Node.ELEMENT_NODE
-        case 11:  // Node.DOCUMENT_FRAGMENT_NODE
+        // This is main area for returning html from iframe content. Content 
+        // from editor can be sometimes ugly, so it's needed to do some
+        // postprocess to make it beautiful.
+        //
+        // The initial version of this function used direct HTML rendering 
+        // (each tag was rendered). This sometimes caused to render empty 
+        // elements. I'm introducing here new method - store tag name and
+        // attributes and use some logic to render them (or not).
 
-          var closed;
+        // Node.ELEMENT_NODE
+        case 1:
+        // Node.DOCUMENT_FRAGMENT_NODE
+        case 11:
+
+          // for() helper variable
           var i;
+          // Tag in lowercase
+          var tag = root.tagName.toLowerCase();
+          // Attributes map
+          var attrMap = {};
+          // Attributes order (don't know if it's necessary, but it will be correct)
+          var attrArray = [];
+          // Styles map (order is not important here)
+          var styles = {};
+          // It's self-closing tag ? (<br />, <img />, ...)
+          var closed = (!(root.hasChildNodes() || htmlarea.HtmlArea.__needsClosingTag(root)));
 
           if (outputRoot)
           {
-            /*
-             * get all of the children nodes of the div placeholder
-             * but DO NOT return the placeholder div elements itself.
-             * This special case is only relevant for IE browsers
-             */
+            // --------------------------------------------------------------
+            // get all of the children nodes of the div placeholder
+            // but DO NOT return the placeholder div elements itself.
+            // This special case is only relevant for IE browsers
+            // --------------------------------------------------------------
+
             if (qx.core.Variant.isSet("qx.client", "mshtml"))
             {
-              if (root.tagName.toLowerCase() == "div" && root.className && root.className == "placeholder")
+              if (tag == "div" && root.className && root.className == "placeholder")
               {
-                for (i=root.firstChild; i; i=i.nextSibling) {
-                  html += htmlarea.HtmlArea.__getHtml(i, true);
+                for (i=root.firstChild; i; i=i.nextSibling)
+                {
+                  html.push(htmlarea.HtmlArea.__getHtml(i, true));
                 }
-                return html;
+                return html.join("");
               }
             }
 
-            closed = (!(root.hasChildNodes() || htmlarea.HtmlArea.__needsClosingTag(root)));
+            // --------------------------------------------------------------
+            // Parse attributes
+            // --------------------------------------------------------------
 
-            html = "<" + root.tagName.toLowerCase();
-
-            var name, value;
+            // Attributes list
             var attrs = root.attributes;
-            var attrsl = attrs.length;
+            var len = attrs.length;
+            // Current attribute
             var a;
 
-            for (i=0; i<attrsl; ++i)
+            for (i = 0; i < len; i++)
             {
               a = attrs[i];
+              
+              // TODO: Document this, I don't know what "specified" means
+              if (!a.specified) continue;
 
-              if (!a.specified) {
-                continue;
-              }
+              // Attribute name and value pair
+              var name = a.nodeName.toLowerCase();
+              var value = a.nodeValue;
 
-              name = a.nodeName.toLowerCase();
-
+              // Mozilla reports some special tags here; we don't need them.
               if (/(_moz|contenteditable)/.test(name))
               {
-                // Mozilla reports some special tags
-                // here; we don't need them.
                 continue;
               }
 
@@ -337,35 +393,127 @@ qx.Class.define("htmlarea.HtmlArea",
                 continue;
               }
 
-              if (value == null) continue;
-              html += " " + name + '="' + value.toString().replace(new RegExp('"', "g"), "'") + '"';
+              if (!value)
+              {
+                continue;
+              }
+              
+              // If we are here, attrbute is interesting and will be put 
+              // into result
+              attrMap[name] = value;
+              attrArray.push(name);
             }
 
-            html += closed ? " />" : ">";
-          }
+            // Helper function to remove attribute fom attrMap and attrArray.
+            function removeAttribute(stylename)
+            {
+              delete attrMap[stylename];
+              qx.lang.Array.remove(attrArray, stylename);
+            }
 
-          for (i=root.firstChild; i; i=i.nextSibling) {
-            html += htmlarea.HtmlArea.__getHtml(i, true);
-          }
+            // --------------------------------------------------------------
+            // Parse styles
+            // --------------------------------------------------------------
 
-          if (outputRoot && !closed) {
-            html += "</" + root.tagName.toLowerCase() + ">";
-          }
+            if (attrMap.style !== undefined)
+            {
+              styles = htmlarea.HtmlArea.__parseStyle(attrMap.style);
+              removeAttribute("style");
+            }
 
+            // --------------------------------------------------------------
+            // Postprocess
+            // --------------------------------------------------------------
+
+            // Everything parsed. Here we can postprocess this element. Let me
+            // introduce variables:
+            // - tag - tag name
+            // - attrMap - attributes map (stored name and value pairs)
+            // - attrArray - attributes array. Here are stored attribute
+            //   names. If attribute is removed from the attrMap, it's
+            //   also needed to remove it from attrArray!
+            // - styles - styles map (stored name and value pairs)
+            //
+            // Q: Why attrMap and attrArray ?
+            // A: Because it can be easily checked whether element contains
+            //    a given attribute and it's value.
+
+            if (tag === "span")
+            {
+              // TODO: Must be optional
+              if (0)
+              {
+                // Create <b> from <span style="font-weight: bold;">
+                if (styles["font-weight"] === "bold")
+                {
+                  tag = "b"; delete styles["font-weight"];
+                }
+                // Create <i> from <span style="font-style: italic;">
+                else if (styles["font-style"] === "italic")
+                {
+                  tag = "i"; delete styles["font-style"];
+                }
+                // Create <u> from <span style="font-style: italic;">
+                else if (styles["text-decoration"] === "underline")
+                {
+                  tag = "u"; delete styles["text-decoration"];
+                }
+                // Create <s> from <span style="text-decoration: line-through;">
+                else if (styles["text-decoration"] === "line-through")
+                {
+                  tag = "strike"; delete styles["text-decoration"];
+                }
+              }
+
+              // Remove empty tag <span></span>, but this also removes generated <b></b>, ...
+              if (qx.lang.Object.isEmpty(attrMap) && qx.lang.Object.isEmpty(styles) && !root.firstChild)
+              {
+                tag = "";
+              }
+            }
+         
+            // --------------------------------------------------------------
+            // Generate Html
+            // --------------------------------------------------------------
+
+            if (tag) html.push("<", tag);
+            for (i = 0; i < attrArray.length; i++)
+            {
+              var name = attrArray[i];
+              var value = attrMap[name];
+              html.push(" ", name, '="', value.toString().replace(new RegExp('"', "g"), "'") + '"');
+            }
+            if (tag) html.push(closed ? " />" : ">");
+          }
+          
+          // Child nodes
+
+          for (i = root.firstChild; i; i = i.nextSibling)
+          {
+            html.push(htmlarea.HtmlArea.__getHtml(i, true));
+          }
+          
+          // Close
+
+          if (outputRoot && !closed)
+          {
+            if (tag) html.push("</", tag, ">");
+          }
           break;
 
-        case 3:  // Node.TEXT_NODE
-
-          html = htmlarea.HtmlArea.__htmlEncode(root.data);
+        // Node.TEXT_NODE
+        case 3:
+          html.push(htmlarea.HtmlArea.__htmlEncode(root.data));
           break;
 
-        case 8:  // Node.COMMENT_NODE
-
-          html = "<!--" + root.data + "-->";
-          break;  // skip comments, for now.
+        // Node.COMMENT_NODE
+        case 8:
+          // skip comments, for now ?
+          html.push("<!--", root.data, "-->");
+          break;
       }
 
-      return html;
+      return html.join("");
     },
 
 
@@ -2181,10 +2329,7 @@ qx.Class.define("htmlarea.HtmlArea",
     getHtml : function()
     {
       var doc = this.__iframe.getDocument();
-
-      if (doc == null) {
-        return null;
-      }
+      if (doc == null) return null;
 
       return htmlarea.HtmlArea.__getHtml(doc.body, false);
     },
@@ -2631,8 +2776,8 @@ qx.Class.define("htmlarea.HtmlArea",
     // ************************************************************************
     //   WIDGET FOCUS/BLUR EVENTS
     // ************************************************************************
-    qx.event.Registration.removeEventListener(doc, "focus", this.__handleFocusEvent);
-    qx.event.Registration.removeEventListener(doc, "blur",  this.__handleFocusEvent);
+    qx.event.Registration.removeListener(doc, "focus", this.__handleFocusEvent);
+    qx.event.Registration.removeListener(doc, "blur",  this.__handleFocusEvent);
 
     // ************************************************************************
     //   WIDGET MOUSE EVENTS
@@ -2641,7 +2786,7 @@ qx.Class.define("htmlarea.HtmlArea",
     
     if (qx.core.Variant.isSet("qx.client", "mshtml"))
     {
-      qx.event.Registration.removeEventListener(doc, "focusout", this.__handleFocusOut);
+      qx.event.Registration.removeListener(doc, "focusout", this.__handleFocusOut);
     }
 
     this._disposeFields("__commandManager", "__handleFocusEvent", "handleMouseEvent", "__contentWrap");
