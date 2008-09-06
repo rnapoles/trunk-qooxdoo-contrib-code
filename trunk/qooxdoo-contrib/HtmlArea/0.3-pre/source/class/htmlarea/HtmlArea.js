@@ -387,16 +387,13 @@ qx.Class.define("htmlarea.HtmlArea",
                 // here; we don't need them.
                 continue;
               }
-              
-              if (name == "old_id")
-              {
-                continue;
-              }
 
-              if (!value)
-              {
-                continue;
-              }
+              // Ignore old id
+              if (name == "old_id") continue;
+              // Ignore attributes with no values
+              if (!value) continue;
+              // Ignore qooxdoo attributes (for example $$hash)
+              if (name.charAt(0) === "$") continue
               
               // If we are here, attrbute is interesting and will be put 
               // into result
@@ -466,7 +463,7 @@ qx.Class.define("htmlarea.HtmlArea",
               }
 
               // Remove empty tag <span></span>, but this also removes generated <b></b>, ...
-              if (qx.lang.Object.isEmpty(attrMap) && qx.lang.Object.isEmpty(styles) && !root.firstChild)
+              if (qx.lang.Object.isEmpty(attrMap) && qx.lang.Object.isEmpty(styles) && !root.hasChildNodes())
               {
                 tag = "";
               }
@@ -476,13 +473,16 @@ qx.Class.define("htmlarea.HtmlArea",
             // Generate Html
             // --------------------------------------------------------------
 
+            // If tag is empty, we don't want it!
             if (tag) html.push("<", tag);
+
             for (i = 0; i < attrArray.length; i++)
             {
               var name = attrArray[i];
               var value = attrMap[name];
               html.push(" ", name, '="', value.toString().replace(new RegExp('"', "g"), "'") + '"');
             }
+
             if (tag) html.push(closed ? " />" : ">");
           }
           
@@ -495,9 +495,9 @@ qx.Class.define("htmlarea.HtmlArea",
           
           // Close
 
-          if (outputRoot && !closed)
+          if (outputRoot && !closed && tag)
           {
-            if (tag) html.push("</", tag, ">");
+            html.push("</", tag, ">");
           }
           break;
 
@@ -520,7 +520,7 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * String containing all tags which need a corresponding closing tag
      */
-    closingTags : " SCRIPT STYLE DIV SPAN TR TD TBODY TABLE EM STRONG FONT A ",
+    closingTags : " SCRIPT STYLE DIV SPAN TR TD TBODY TABLE EM STRONG FONT A P B I U STRIKE ",
 
 
     /**
@@ -638,6 +638,15 @@ qx.Class.define("htmlarea.HtmlArea",
      * A "normal" linebreak can be achieved using the combination "Shift+Enter" anyway
      */
     insertParagraphOnLinebreak :
+    {
+      check : "Boolean",
+      init  : true
+    },
+    
+    /**
+     * Generate <b>, <i>, <u> and <strike> tags instead of <span style=""> tag.
+     */
+    useShortTags:
     {
       check : "Boolean",
       init  : true
