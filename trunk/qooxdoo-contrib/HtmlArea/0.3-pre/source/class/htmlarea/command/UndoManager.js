@@ -72,7 +72,7 @@ qx.Class.define("htmlarea.command.UndoManager",
       * the kind the "cursorContext" event works.
       * (1 = active/pressed, 0 = possible/not pressed, -1 = disabled)
       */
-    "undoRedoState" : "qx.event.type.DataEvent"
+    "undoRedoState" : "qx.event.type.Data"
   },
 
 
@@ -743,7 +743,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * Key press handler for the undo manager. Only acts on specific events which
      * are important to the undo manager.
      *
-     * @param e {qx.event.type.KeyEvent} key event instance
+     * @param e {qx.event.type.Key} key event instance
      * @return {void} 
      */
     _handleKeyPress : function(e)
@@ -1007,13 +1007,13 @@ qx.Class.define("htmlarea.command.UndoManager",
   {
     try
     {
-      qx.event.Registration.removeEventListener(doc.body, "keypress", this.__handleKeyPress);
-      qx.event.Registration.removeEventListener(this.__doc, "mouseup", this.__handleMouseUp);
+      qx.event.Registration.removeListener(doc.body, "keypress", this.__handleKeyPress);
+      qx.event.Registration.removeListener(this.__doc, "mouseup", this.__handleMouseUp);
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         /* Mouse down listener is used to look after internal changes like image resizing etc. */
-        qx.event.Registration.removeEventListener(this.__doc, "mousedown", this.__handleMouseDown);
+        qx.event.Registration.removeListener(this.__doc, "mousedown", this.__handleMouseDown);
       }
     }
     catch(e) {}

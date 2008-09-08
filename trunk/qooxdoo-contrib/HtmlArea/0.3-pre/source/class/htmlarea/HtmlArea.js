@@ -480,9 +480,20 @@ qx.Class.define("htmlarea.HtmlArea",
             {
               var name = attrArray[i];
               var value = attrMap[name];
-              html.push(" ", name, '="', value.toString().replace(new RegExp('"', "g"), "'") + '"');
+              html.push(" ", name, '="', value.toString().replace(new RegExp('"', "g"), "'"), '"');
             }
 
+            if (!qx.lang.Object.isEmpty(styles))
+            {
+              html.push(' style="');
+              for (var name in styles)
+              {
+                var value = styles[name];
+                html.push(name, ":", value.toString().replace(new RegExp('"', "g"), "'"), ";");
+              }
+              html.push('"');
+            }
+  
             if (tag) html.push(closed ? " />" : ">");
           }
           
