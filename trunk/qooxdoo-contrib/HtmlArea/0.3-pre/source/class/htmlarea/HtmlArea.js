@@ -272,7 +272,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param outputRoot {Boolean} Controls whether the root node is also added to the output
      * @return {String} Content of current node
      */
-    __getHtml : function(root, outputRoot)
+    __getHtml : function(root, outputRoot, postprocess)
     {
       // String builder is array for large text content
       var html = [];
@@ -298,9 +298,7 @@ qx.Class.define("htmlarea.HtmlArea",
           // Tag in lowercase
           var tag = root.tagName.toLowerCase();
           // Attributes map
-          var attrMap = {};
-          // Attributes order (don't know if it's necessary, but it will be correct)
-          var attrArray = [];
+          var attributes = {};
           // Styles map (order is not important here)
           var styles = {};
           // It's self-closing tag ? (<br />, <img />, ...)
@@ -320,7 +318,7 @@ qx.Class.define("htmlarea.HtmlArea",
               {
                 for (i=root.firstChild; i; i=i.nextSibling)
                 {
-                  html.push(htmlarea.HtmlArea.__getHtml(i, true));
+                  html.push(htmlarea.HtmlArea.__getHtml(i, true, postprocess));
                 }
                 return html.join("");
               }
@@ -394,79 +392,48 @@ qx.Class.define("htmlarea.HtmlArea",
               if (!value) continue;
               // Ignore qooxdoo attributes (for example $$hash)
               if (name.charAt(0) === "$") continue
-              
-              // If we are here, attrbute is interesting and will be put 
-              // into result
-              attrMap[name] = value;
-              attrArray.push(name);
-            }
 
-            // Helper function to remove attribute fom attrMap and attrArray.
-            function removeAttribute(stylename)
-            {
-              delete attrMap[stylename];
-              qx.lang.Array.remove(attrArray, stylename);
+              // Interesting attrubutes are added to attributes array
+              attributes[name] = value;
             }
 
             // --------------------------------------------------------------
             // Parse styles
             // --------------------------------------------------------------
 
-            if (attrMap.style !== undefined)
+            if (attributes.style !== undefined)
             {
-              styles = htmlarea.HtmlArea.__parseStyle(attrMap.style);
-              removeAttribute("style");
+              styles = htmlarea.HtmlArea.__parseStyle(attributes.style);
+              delete attributes.style;
             }
 
             // --------------------------------------------------------------
             // Postprocess
             // --------------------------------------------------------------
 
-            // Everything parsed. Here we can postprocess this element. Let me
-            // introduce variables:
-            // - tag - tag name
-            // - attrMap - attributes map (stored name and value pairs)
-            // - attrArray - attributes array. Here are stored attribute
-            //   names. If attribute is removed from the attrMap, it's
-            //   also needed to remove it from attrArray!
-            // - styles - styles map (stored name and value pairs)
-            //
-            // Q: Why attrMap and attrArray ?
-            // A: Because it can be easily checked whether element contains
-            //    a given attribute and it's value.
-
-            if (tag === "span")
+            // Call optional postprocess function to modify tag, attributes
+            // or styles in this element.
+            if (postprocess)
             {
-              // TODO: Must be optional
-              if (0)
-              {
-                // Create <b> from <span style="font-weight: bold;">
-                if (styles["font-weight"] === "bold")
-                {
-                  tag = "b"; delete styles["font-weight"];
-                }
-                // Create <i> from <span style="font-style: italic;">
-                else if (styles["font-style"] === "italic")
-                {
-                  tag = "i"; delete styles["font-style"];
-                }
-                // Create <u> from <span style="font-style: italic;">
-                else if (styles["text-decoration"] === "underline")
-                {
-                  tag = "u"; delete styles["text-decoration"];
-                }
-                // Create <s> from <span style="text-decoration: line-through;">
-                else if (styles["text-decoration"] === "line-through")
-                {
-                  tag = "strike"; delete styles["text-decoration"];
-                }
-              }
+              // create postprocess-info:
+              // - info.domElement - current dom element
+              // - info.tag - tag name
+              // - info.attributes - attributes map (stored name and value pairs)
+              // - info.styles - styles map (stored name and value pairs)
+              var info = {
+                domElement: root,
+                tag: tag,
+                attributes: attributes,
+                styles: styles
+              };
+              
+              // call user defined postprocessing function
+              postprocess(info);
 
-              // Remove empty tag <span></span>, but this also removes generated <b></b>, ...
-              if (qx.lang.Object.isEmpty(attrMap) && qx.lang.Object.isEmpty(styles) && !root.hasChildNodes())
-              {
-                tag = "";
-              }
+              // remove reference to dom element (is it needed ? For IE ?)
+              info.domElement = null;
+              // and get tag back
+              tag = info.tag;
             }
          
             // --------------------------------------------------------------
@@ -474,34 +441,40 @@ qx.Class.define("htmlarea.HtmlArea",
             // --------------------------------------------------------------
 
             // If tag is empty, we don't want it!
-            if (tag) html.push("<", tag);
-
-            for (i = 0; i < attrArray.length; i++)
+            if (tag)
             {
-              var name = attrArray[i];
-              var value = attrMap[name];
-              html.push(" ", name, '="', value.toString().replace(new RegExp('"', "g"), "'"), '"');
-            }
+              // Render begin of tag -> <TAG
+              html.push("<", tag);
 
-            if (!qx.lang.Object.isEmpty(styles))
-            {
-              html.push(' style="');
-              for (var name in styles)
+              // Render attributes -> attr=""
+              for (var name in attributes)
               {
-                var value = styles[name];
-                html.push(name, ":", value.toString().replace(new RegExp('"', "g"), "'"), ";");
+                var value = attributes[name];
+                html.push(" ", name, '="', value.toString().replace(new RegExp('"', "g"), "'"), '"');
               }
-              html.push('"');
+
+              // Render styles -> style=""
+              if (!qx.lang.Object.isEmpty(styles))
+              {
+                html.push(' style="');
+                for (var name in styles)
+                {
+                  var value = styles[name];
+                  html.push(name, ":", value.toString().replace(new RegExp('"', "g"), "'"), ";");
+                }
+                html.push('"');
+              }
+
+              // Render end of tag -> > or />
+              html.push(closed ? " />" : ">");
             }
-  
-            if (tag) html.push(closed ? " />" : ">");
           }
           
-          // Child nodes
+          // Child nodes, recursive call itself
 
           for (i = root.firstChild; i; i = i.nextSibling)
           {
-            html.push(htmlarea.HtmlArea.__getHtml(i, true));
+            html.push(htmlarea.HtmlArea.__getHtml(i, true, postprocess));
           }
           
           // Close
@@ -527,13 +500,13 @@ qx.Class.define("htmlarea.HtmlArea",
       return html.join("");
     },
 
-
+    // TODO: Map should be better! (Petr)
     /**
      * String containing all tags which need a corresponding closing tag
      */
-    closingTags : " SCRIPT STYLE DIV SPAN TR TD TBODY TABLE EM STRONG FONT A P B I U STRIKE ",
+    closingTags : " SCRIPT STYLE DIV SPAN TR TD TBODY TABLE EM STRONG FONT A P B I U STRIKE H1 H2 H3 H4 H5 H6 ",
 
-
+    // TODO: No reason that first parameter is element, it should be only string with tag name (Petr)
     /**
      * Checks if given element needs a closing tag
      *
@@ -653,15 +626,18 @@ qx.Class.define("htmlarea.HtmlArea",
       check : "Boolean",
       init  : true
     },
+
     
     /**
-     * Generate <b>, <i>, <u> and <strike> tags instead of <span style=""> tag.
+     * Function to use in postprocessing html. See getHtml() and __getHtml().
      */
-    useShortTags:
+    postprocess:
     {
-      check : "Boolean",
-      init  : true
+      check: "Function",
+      nullable: true,
+      init: null
     },
+
 
     /**
      * Toggles whether to use Undo/Redo
@@ -2351,7 +2327,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var doc = this.__iframe.getDocument();
       if (doc == null) return null;
 
-      return htmlarea.HtmlArea.__getHtml(doc.body, false);
+      return htmlarea.HtmlArea.__getHtml(doc.body, false, this.getPostprocess());
     },
 
     /**
