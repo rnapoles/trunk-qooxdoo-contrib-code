@@ -31,7 +31,8 @@ qx.Class.define("custom.Application",
       var container = new qx.ui.container.Composite(new qx.ui.layout.VBox(4));
       this.getRoot().add(container);
 
-      var chooser = new timechooser.TimeChooser();
+      var d = new Date();
+      var chooser = new timechooser.TimeChooser(Math.floor(d.getTime()/1000));
       container.add(chooser);
     }
   },
