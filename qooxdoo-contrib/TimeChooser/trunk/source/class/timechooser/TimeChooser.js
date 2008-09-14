@@ -125,7 +125,6 @@ qx.Class.define("timechooser.TimeChooser",
         // We expect hours:minutes:seconds[:ampm]
         // Split it into its constituent parts.
         var parts = value.match(/(\d+):(\d+):(\d+)\s*(.+)?/);
-qx.dev.Debug.debugObject(parts, "parts");
 
         // Ensure that there are an appropriate number of parts
         if (parts.length != 4 && parts.length != 5)
@@ -140,7 +139,8 @@ qx.dev.Debug.debugObject(parts, "parts");
           (parseInt(parts[3], 10));                    // seconds
         
         // if there's an ampm flag and it's "PM"...
-        if (parts.length == 5 && parts[4].toUpperCase() == this.tr("PM"))
+        if ((parts[4] && parts[4].toUpperCase() == this.tr("PM")) ||
+            (! parts[4] && parseInt(parts[1]) >= 12))
         {
           // ... then add 12 hours
           value += (60 * 60 * 12);
@@ -203,7 +203,7 @@ qx.dev.Debug.debugObject(parts, "parts");
       else
       {
         // one of the 12-hour formats
-        var v = (Math.floor(value / 60 / 60)) % (60 * 60 * 12);
+        var v = (Math.floor(value / 60 / 60)) % 12;
 
         // We're almost there.  A value of zero becomes 12.
         if (v == 0)
@@ -214,7 +214,7 @@ qx.dev.Debug.debugObject(parts, "parts");
         this.__hours.setValue(v);
 
         // Determine whether this is am or pm
-        if (Math.floor(value / 60 / 60) > (60 * 60 * 12))
+        if (Math.floor(value / 60 / 60) > 12)
         {
           this.__ampm.setValue(this.tr("PM"));
         }
