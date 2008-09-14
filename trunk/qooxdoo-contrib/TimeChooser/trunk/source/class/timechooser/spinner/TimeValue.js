@@ -35,7 +35,7 @@ qx.Class.define("timechooser.spinner.TimeValue",
 
     // Set an appropriate width for a two-digit time component
     var textField = this._getChildControl("textfield");
-    textField.setWidth(24);
+    textField.setWidth(20);
 
     //
     // Put the up/down buttons below the text field instead of to the right
@@ -49,10 +49,21 @@ qx.Class.define("timechooser.spinner.TimeValue",
     // Remove all of them from the grid layout
     this._removeAll();
 
-    // Re-insert them so in the preferred locations
-    this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
-    this._add(downButton, { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
-    this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
+    if (false)
+    {
+      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
+      this._add(downButton, { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
+      this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
+    }
+    else
+    {
+      var layout = new qx.ui.layout.Grid();
+      layout.setColumnFlex(0, 1);
+      this._setLayout(layout);
+      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
+      this._add(upButton,   { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
+      this._add(downButton, { column: 0, row: 2, colSpan: 1, rowSpan : 1 });
+    }
   },
 
   members :

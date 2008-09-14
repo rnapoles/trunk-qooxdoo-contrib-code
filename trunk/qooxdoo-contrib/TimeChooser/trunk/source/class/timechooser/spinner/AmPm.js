@@ -59,9 +59,21 @@ qx.Class.define("timechooser.spinner.AmPm",
     this._removeAll();
 
     // Re-insert them so in the preferred locations
-    this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
-    this._add(downButton, { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
-    this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
+    if (false)
+    {
+      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
+      this._add(downButton, { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
+      this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
+    }
+    else
+    {
+      var layout = new qx.ui.layout.Grid();
+      this._setLayout(layout);
+      layout.setColumnFlex(0, 1);
+      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
+      this._add(upButton,   { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
+      this._add(downButton, { column: 0, row: 2, colSpan: 1, rowSpan : 1 });
+    }
   },
 
   members :
