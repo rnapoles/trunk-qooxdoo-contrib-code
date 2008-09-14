@@ -23,7 +23,7 @@
  */
 qx.Class.define("timechooser.spinner.TimeValue",
 {
-  extend : qx.ui.form.Spinner,
+  extend : timechooser.spinner.Abstract,
 
   construct : function()
   {
@@ -36,34 +36,6 @@ qx.Class.define("timechooser.spinner.TimeValue",
     // Set an appropriate width for a two-digit time component
     var textField = this._getChildControl("textfield");
     textField.setWidth(20);
-
-    //
-    // Put the up/down buttons below the text field instead of to the right
-    //
-
-    // Get the various controls in the spinner
-    var upButton = this._getChildControl("upbutton");
-    var downButton = this._getChildControl("downbutton");
-    var textField = this._getChildControl("textfield");
-
-    // Remove all of them from the grid layout
-    this._removeAll();
-
-    if (false)
-    {
-      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
-      this._add(downButton, { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
-      this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
-    }
-    else
-    {
-      var layout = new qx.ui.layout.Grid();
-      layout.setColumnFlex(0, 1);
-      this._setLayout(layout);
-      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
-      this._add(upButton,   { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
-      this._add(downButton, { column: 0, row: 2, colSpan: 1, rowSpan : 1 });
-    }
   },
 
   members :
