@@ -24,6 +24,15 @@ qx.Class.define("timechooser.spinner.AmPm",
 {
   extend : timechooser.spinner.Abstract,
 
+  /**
+   * Instantiate a new AM/PM spinner.
+   *
+   * @param value {String}
+   *   One of the two strings representing AM and PM.  The legal values are
+   *   the translated strings.
+   *
+   * @return {Void}
+   */
   construct : function(value)
   {
     this.__bInSuperclassConstructor = true;

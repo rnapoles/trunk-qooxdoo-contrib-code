@@ -25,6 +25,11 @@ qx.Class.define("timechooser.spinner.TimeValue",
 {
   extend : timechooser.spinner.Abstract,
 
+  /**
+   * Instantiate a new spinner for hours, minutes, or seconds.
+   *
+   * @return {Void}
+   */
   construct : function()
   {
     this.base(arguments);

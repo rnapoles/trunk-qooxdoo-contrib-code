@@ -28,26 +28,7 @@ qx.Class.define("timechooser.TimeChooser",
    * Instantiate a new time chooser.
    *
    * @param value {Integer|String}
-   *   The provided value may be in one of three formats:
-   *   <ul>
-   *     <li>A string in the format "hours:minutes:seconds[ampm]".  'hours' is
-   *         a number between 0 and 23 inclusive if the ampm portion is
-   *         missing, or between 1 and 12 inclusive if the ampm portion is
-   *         present. 'minutes' and seconds are numbers between 0 and 59
-   *         inclusive.  'ampm' is one of the *upper-case* localized string
-   *         representing before noon ("AM" in English) or after noon ("PM" in
-   *         English).  There is no whitespace allowed anyplace in this entire
-   *         string except optionally after 'seconds'.
-   *     <li>An integer less than 86400, the number of seconds in a day.  If a
-   *         value of this format is provided, then the value is taken as
-   *         the number of seconds past midnight.</li>
-   *     <li>An integer greater than or equal to 86400 (typically much
-   *         greater).  If a value of this format is provided, then the value
-   *         is taken as since "Unix epoch", i.e. the number of seconds since
-   *         midnight, January 1, 1970 GMT.  The {@link #convertToLocalTime}
-   *         property is then consulted to determine whether the time should
-   *         be converted from GMT to local time.</li>
-   *   </ul>
+   *   See {@link #_transformValue}
    */
   construct : function(value)
   {
@@ -89,6 +70,12 @@ qx.Class.define("timechooser.TimeChooser",
 
   properties :
   {
+    /**
+     * The value of the time chooser widget.  The value is stored as the
+     * number of seconds since midnight, so it is an integer value between 0
+     * and 86399 inclusive.  The setter, however, takes a number of formats.
+     * See {@link #_transformValue} for details.
+     */
     value :
     {
       init      : 0,
@@ -96,6 +83,19 @@ qx.Class.define("timechooser.TimeChooser",
       apply     : "_applyValue"
     },
 
+    /**
+     * The format in which to display this time select widget.  The property
+     * value is always a string, and may be one of these three values:
+     * <ul>
+     *   <li>"12": The hours component will be limited to the range [1,12].
+     *       No am/pm component will be displayed.</li>
+     *   <li>"12ampm": As with format "12", the hours component will be
+     *       limited to the range [1,12], but an am/pm component will also be
+     *       displayed.</li>
+     *   <li>"24": The hours component will be limited to the range [0,23].
+     *       No am/pm component will be displayed.</li>
+     * </ul>
+     */
     timeFormat :
     {
       check     : "value == '12' || value == '12ampm' || value == '24';",
@@ -103,9 +103,14 @@ qx.Class.define("timechooser.TimeChooser",
       apply     : "_applyTimeFormat"
     },
 
+    /**
+     * When the value property's setter is called with a value deemed to be
+     * relative to the "Unix epoch", this property determines whether that
+     * value is converted to local time or not.
+     */
     convertToLocalTime :
     {
-      init  : false
+      init  : true
     }
   },
 
@@ -116,6 +121,36 @@ qx.Class.define("timechooser.TimeChooser",
     __seconds : null,
     __ampm    : null,
 
+    
+    /**
+     * @param value {Integer|String}
+     *   The provided value may be in one of three formats:
+     *   <ul>
+     *     <li>A string in the format "hours:minutes:seconds[ampm]".  'hours'
+     *         is a number between 0 and 23 inclusive if the ampm portion is
+     *         missing, or between 1 and 12 inclusive if the ampm portion is
+     *         present. 'minutes' and seconds are numbers between 0 and 59
+     *         inclusive.  'ampm' is one of the *upper-case* localized string
+     *         representing before noon ("AM" in English) or after noon ("PM"
+     *         in English).  There is no whitespace allowed anyplace in this
+     *         entire string except optionally after 'seconds'.
+     *     <li>An integer less than 86400, the number of seconds in a day.  If
+     *         a value of this format is provided, then the value is taken as
+     *         the number of seconds past midnight.</li>
+     *     <li>An integer greater than or equal to 86400 (typically much
+     *         greater).  If a value of this format is provided, then the
+     *         value is taken as since "Unix epoch", i.e. the number of
+     *         seconds since midnight, January 1, 1970 GMT.  The {@link
+     *         #convertToLocalTime} property is then consulted to determine
+     *         whether the time should be converted from GMT to local
+     *         time.</li>
+     *   </ul>
+     *
+     * @return {Integer}
+     *   The input value is transformed from one of those formats into an
+     *   integer that represents the number of seconds since midnight, i.e. a
+     *   value between 0  and 86399 inclusive.
+     */
     _transformValue : function(value)
     {
       var value;
@@ -185,6 +220,18 @@ qx.Class.define("timechooser.TimeChooser",
       return value;
     },
 
+    /**
+     * Apply the value.  This implies resetting the values displayed in the
+     * 'hours', 'minutes', 'seconds', and 'ampm' spinners.
+     *
+     * @param value {Integer}
+     *   The new value, an integer in the range [0,86399].
+     *
+     * @param old {Integer}
+     *   The previous value
+     *
+     * @return {Void}
+     */
     _applyValue : function(value, old)
     {
       // Set the seconds spinner
@@ -225,6 +272,20 @@ qx.Class.define("timechooser.TimeChooser",
       }
     },
 
+    /**
+     * Apply the specified time format.  This shows or hides the 'ampm'
+     * component and resets the 'hours' component's maximum and minimum values
+     * according to the specified format.
+     *
+     * @param value {String}
+     *   One of the valid formats: "12ampm", "12", or "24".
+     *   See {@link# timeFormat} for details.
+     *
+     * @param old {String}
+     *   The previous value
+     *
+     * @return {Void}
+     */
     _applyTimeFormat : function(value, old)
     {
       // Show or hide the am/pm indicator and limit hours, as appropriate
