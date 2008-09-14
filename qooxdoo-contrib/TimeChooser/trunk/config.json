@@ -1,0 +1,70 @@
+{
+  "jobs" :
+  {
+    "common" :
+    {
+      "let" :
+      {
+        "APPLICATION_NAMESPACE": "timechooser",
+        "QOOXDOO_PATH" : "../../../../../trunk/qooxdoo/framework",
+        "QOOXDOO_URI"  : "../${QOOXDOO_PATH}"
+      },
+
+      "library" :
+      [
+        {
+          "manifest" : "${QOOXDOO_PATH}/Manifest.json",
+          "uri"      : "${QOOXDOO_URI}"
+          /* mind that the final uri will be computed from this 'uri' + the 
+             'class' info from the manifest */
+        },
+
+        {
+          "manifest" : "Manifest.json",
+          "uri"      : ".."
+        }
+      ],
+
+
+      "include" : [ "timechooser.*" ],
+
+      "settings" :
+      {
+        "qx.application" : "timechooser.Application"
+      },
+
+      "localize" :
+      {
+        "locales" : []
+      },
+
+      "cache" :
+      {
+        "path" : "../../../../../trunk/qooxdoo/cache"
+      }
+    },
+
+
+    "source" :
+    {
+      "extend" : ["common"],
+
+      "script" :
+      {
+        "file" : "./source/script/timechooser.js"
+      }
+    },
+
+
+    "build" :
+    {
+      "extend" : ["common"],
+
+      "compile" :
+      {
+        "file" : "./build/script/${APPLICATION_NAMESPACE}.js",
+        "uri"  : "script/${APPLICATION_NAMESPACE}.js"
+      }
+    }
+  }
+}
