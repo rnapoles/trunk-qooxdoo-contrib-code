@@ -22,7 +22,7 @@
  */
 qx.Class.define("timechooser.spinner.AmPm",
 {
-  extend : qx.ui.form.Spinner,
+  extend : timechooser.spinner.Abstract,
 
   construct : function(value)
   {
@@ -45,35 +45,6 @@ qx.Class.define("timechooser.spinner.AmPm",
     // Set an initial value to use in case the parameter value is invalid
     this.setValue(this.__am);
     this.setValue(value);
-
-    //
-    // Put the up/down buttons below the text field instead of to the right
-    //
-
-    // Get the various controls in the spinner
-    var upButton = this._getChildControl("upbutton");
-    var downButton = this._getChildControl("downbutton");
-    var textField = this._getChildControl("textfield");
-
-    // Remove all of them from the grid layout
-    this._removeAll();
-
-    // Re-insert them so in the preferred locations
-    if (false)
-    {
-      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
-      this._add(downButton, { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
-      this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
-    }
-    else
-    {
-      var layout = new qx.ui.layout.Grid();
-      this._setLayout(layout);
-      layout.setColumnFlex(0, 1);
-      this._add(textField,  { column: 0, row: 0, colSpan: 2, rowSpan : 1 });
-      this._add(upButton,   { column: 0, row: 1, colSpan: 1, rowSpan : 1 });
-      this._add(downButton, { column: 0, row: 2, colSpan: 1, rowSpan : 1 });
-    }
   },
 
   members :
