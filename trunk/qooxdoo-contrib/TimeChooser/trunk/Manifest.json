@@ -1,0 +1,35 @@
+{
+  "info" : 
+  {
+    "name" : "TimeChooser",
+
+    "summary" : "Widget to select a time of day",
+    "description" : "Widget to select a time of day",
+    
+    "keywords" : ["date", "time"],
+    "homepage" : "http://contrib.qooxdoo.org",
+
+    "license" : "LGPL",
+    "authors" : 
+    [
+      {
+        "name" : "Derrell Lipman",
+        "email" : "derrell DOT lipman AT unwireduniverse DOT com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["trunk"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "timechooser",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "library"
+  }
+}
+
