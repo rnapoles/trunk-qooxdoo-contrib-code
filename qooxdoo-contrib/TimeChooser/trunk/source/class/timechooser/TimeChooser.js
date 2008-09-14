@@ -30,23 +30,23 @@ qx.Class.define("timechooser.TimeChooser",
    * @param value {Integer|String}
    *   The provided value may be in one of three formats:
    *   <ul>
-   *     <li>A string in the format "hours:minutes:seconds[:ampm]".  'hours' is
+   *     <li>A string in the format "hours:minutes:seconds[ampm]".  'hours' is
    *         a number between 0 and 23 inclusive if the ampm portion is
    *         missing, or between 1 and 12 inclusive if the ampm portion is
    *         present. 'minutes' and seconds are numbers between 0 and 59
    *         inclusive.  'ampm' is one of the *upper-case* localized string
    *         representing before noon ("AM" in English) or after noon ("PM" in
    *         English).  There is no whitespace allowed anyplace in this entire
-   *         string.
+   *         string except optionally after 'seconds'.
    *     <li>An integer less than 86400, the number of seconds in a day.  If a
    *         value of this format is provided, then the value is taken as
    *         the number of seconds past midnight.</li>
    *     <li>An integer greater than or equal to 86400 (typically much
-   *         greater).  If a valud of this format is provided, then the value
-   *         is taken as a "Unix epoch", i.e. the number of seconds since
+   *         greater).  If a value of this format is provided, then the value
+   *         is taken as since "Unix epoch", i.e. the number of seconds since
    *         midnight, January 1, 1970 GMT.  The {@link #convertToLocalTime}
    *         property is then consulted to determine whether the time should
-   *         be displayed in GMT or in local time.</li>
+   *         be converted from GMT to local time.</li>
    *   </ul>
    */
   construct : function(value)
@@ -124,20 +124,20 @@ qx.Class.define("timechooser.TimeChooser",
       {
         // We expect hours:minutes:seconds[:ampm]
         // Split it into its constituent parts.
-        var parts = value.split("/(\d+):(\d+):(\d+)(:(.+))?(.*)?/");
+        var parts = value.match(/(\d+):(\d+):(\d+)\s*(.+)?/);
 qx.dev.Debug.debugObject(parts, "parts");
 
         // Ensure that there are an appropriate number of parts
-        if (parts.length != 3 && parts.length != 5)
+        if (parts.length != 4 && parts.length != 5)
         {
           throw new Error(this.tr("Invalid value for TimeChooser: ") + value);
         }
 
         // Calculate the value
         value =
-          (parts[0] * 60 * 60) +         // hours
-          (parts[1] * 60)                // minutes
-          (parts[2]);                    // seconds
+          (parseInt(parts[1], 10) * 60 * 60) +         // hours
+          (parseInt(parts[2], 10) * 60) +              // minutes
+          (parseInt(parts[3], 10));                    // seconds
         
         // if there's an ampm flag and it's "PM"...
         if (parts.length == 5 && parts[4].toUpperCase() == this.tr("PM"))

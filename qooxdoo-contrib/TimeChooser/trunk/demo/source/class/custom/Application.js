@@ -33,6 +33,7 @@ qx.Class.define("custom.Application",
 
       var d = new Date();
       var chooser = new timechooser.TimeChooser(Math.floor(d.getTime()/1000));
+      var chooser = new timechooser.TimeChooser("10:31:20 pm");
       container.add(chooser);
     }
   },
