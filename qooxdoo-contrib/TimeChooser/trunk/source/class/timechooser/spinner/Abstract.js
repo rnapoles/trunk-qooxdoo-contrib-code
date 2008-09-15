@@ -22,7 +22,7 @@
  */
 qx.Class.define("timechooser.spinner.Abstract",
 {
-  extend : timechooser.spinner.Spinner,
+  extend : qx.ui.form.Spinner,
   type   : "abstract",
 
   construct : function(value)
@@ -137,6 +137,28 @@ qx.Class.define("timechooser.spinner.Abstract",
         this._add(upButton,   { column: 1, row: 1, colSpan: 1, rowSpan : 1 });
         break;
       }
+    },
+
+    /**
+     * We add a 'transform' key in the "defer" section, below.  Ensure that
+     * there's a valid transform in case our subclasses don't implement it.
+     *
+     * @param value {Any}
+     *   The value to be transformed
+     *
+     * @return {Any}
+     *   The input value, unaltered
+     */
+    _transformValue : function(value)
+    {
+      return value;
     }
+  },
+
+  defer : function()
+  {
+    // Ensure that Spinner "value" property is modified to contain a
+    // 'transform' function.
+    qx.Class.patch(qx.ui.form.Spinner, timechooser.spinner.MAddTransform);
   }
 });
