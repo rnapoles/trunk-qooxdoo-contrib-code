@@ -94,7 +94,8 @@ qx.Class.define("timechooser.TimeChooser",
     {
       init      : 0,
       transform : "_transformValue",
-      apply     : "_applyValue"
+      apply     : "_applyValue",
+      event     : "changeValue"
     },
 
     /**
@@ -171,9 +172,6 @@ qx.Class.define("timechooser.TimeChooser",
                      ? this.__ampm.getValue()
                      : ""));
       this.__bInOnChange = false;
-
-      // Since the _applyValue method won't be run, fire the event here too.
-      this.fireDataEvent("changeValue", this.getValue());
     },
 
 
@@ -210,15 +208,27 @@ qx.Class.define("timechooser.TimeChooser",
     {
       var value;
 
+      // Interpret a numeric value as a number even if passed as a string
+      if (typeof value == "string")
+      {
+        var number = value.match(/^\s*(\d+)\s*$/);
+        if (number && number.length == 2)
+        {
+          value = parseInt(number[1]);
+        }
+      }
+
+      // Now process value according to its type
       if (typeof value == "string")
       {
         // We expect hours:minutes:seconds[:ampm]
         // Split it into its constituent parts.
-        var parts = value.match(/(\d+):(\d+):(\d+)\s*(.+)?/);
+        var parts = value.match(/^(\d+):(\d+):(\d+)\s*(.+)?/);
 
         // Ensure that there are an appropriate number of parts
-        if (parts.length != 4 && parts.length != 5)
+        if (! parts || (parts.length != 4 && parts.length != 5))
         {
+          this.warn("typeof value=" + typeof(value));
           throw new Error(this.tr("Invalid value for TimeChooser: ") + value);
         }
 
@@ -334,7 +344,7 @@ qx.Class.define("timechooser.TimeChooser",
         this.__hours.setValue(v);
 
         // Determine whether this is am or pm
-        if (Math.floor(value / 60 / 60) > 12)
+        if (Math.floor(value / 60 / 60) >= 12)
         {
           this.__ampm.setValue(this.tr("PM"));
         }
@@ -343,9 +353,6 @@ qx.Class.define("timechooser.TimeChooser",
           this.__ampm.setValue(this.tr("AM"));
         }
       }
-
-      // Let listeners know the value has changed
-      this.fireDataEvent("changeValue", this.getValue());
     },
 
     /**
