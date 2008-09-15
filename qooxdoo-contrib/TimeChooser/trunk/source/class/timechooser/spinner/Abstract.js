@@ -42,7 +42,7 @@ qx.Class.define("timechooser.spinner.Abstract",
     layoutFormat :
     {
       init  : "below/vertical",
-      check : "_checkLayoutFormat",
+      check : function(value) { return this._checkLayoutFormat(value); },
       apply : "_applyLayoutFormat"
     }
   },
@@ -62,6 +62,7 @@ qx.Class.define("timechooser.spinner.Abstract",
      */
     _checkLayoutFormat : function(value)
     {
+      this.warn("In checkLayoutFormat");
       return (value == 'below/vertical' ||
               value == 'below/horizontal');
     },

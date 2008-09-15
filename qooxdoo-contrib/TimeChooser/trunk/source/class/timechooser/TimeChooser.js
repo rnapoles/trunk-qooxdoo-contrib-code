@@ -104,6 +104,15 @@ qx.Class.define("timechooser.TimeChooser",
     },
 
     /**
+     * Specify the spinners' layout format.  Valid values are as specified
+     * for the spinners.
+     */
+    layoutFormat :
+    {
+      apply : "_applyLayoutFormat"
+    },
+
+    /**
      * When the value property's setter is called with a value deemed to be
      * relative to the "Unix epoch", this property determines whether that
      * value is converted to local time or not.
@@ -312,6 +321,27 @@ qx.Class.define("timechooser.TimeChooser",
 
       // Redisplay the time in the new format
       this._applyValue(this.getValue());
+    },
+
+
+    /**
+     * Apply function for layoutFormat property.
+     * Pass the specified layout format on to the spinners.
+     *
+     * @param value {String}
+     *   New value
+     *
+     * @param old {String}
+     *   Previous value
+     *
+     * @return {Void}
+     */
+    _applyLayoutFormat : function(value, old)
+    {
+      this.__hours.setLayoutFormat(value);
+      this.__minutes.setLayoutFormat(value);
+      this.__seconds.setLayoutFormat(value);
+      this.__ampm.setLayoutFormat(value);
     }
   }
 });
