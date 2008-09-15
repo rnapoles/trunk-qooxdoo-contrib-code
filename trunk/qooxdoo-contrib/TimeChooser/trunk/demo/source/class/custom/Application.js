@@ -47,6 +47,15 @@ qx.Class.define("custom.Application",
                           {
                             label.setContent(this.getValue().toString());
                           });
+
+      var o = new qx.ui.core.Spacer();
+      o.setHeight(20);
+      container.add(o);
+
+      // Ensure that normal spinners work, since we kludge the transform
+      // property of Spinner.
+      var o = new qx.ui.form.Spinner(23);
+      container.add(o);
     }
   },
 
