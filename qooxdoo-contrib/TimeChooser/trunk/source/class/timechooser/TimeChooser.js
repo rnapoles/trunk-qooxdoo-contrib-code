@@ -37,6 +37,7 @@ qx.Class.define("timechooser.TimeChooser",
     // Add the hour spinner.  TimeValue's default max is 59, so adjust.
     this.__hours = new timechooser.spinner.TimeValue();
     this.__hours.setMax(23);
+    this.__hours.addListener("changeValue", this._onChange, this);
     this.add(this.__hours);
 
     // Add a colon separator
@@ -46,6 +47,7 @@ qx.Class.define("timechooser.TimeChooser",
     
     // Add the minutes spinner
     this.__minutes = new timechooser.spinner.TimeValue();
+    this.__minutes.addListener("changeValue", this._onChange, this);
     this.add(this.__minutes);
 
     // Add another colon separator
@@ -55,17 +57,29 @@ qx.Class.define("timechooser.TimeChooser",
     
     // Add the seconds spinner
     this.__seconds = new timechooser.spinner.TimeValue();
+    this.__seconds.addListener("changeValue", this._onChange, this);
     this.add(this.__seconds);
 
     // Add the am/pm spinner
     this.__ampm = new timechooser.spinner.AmPm(this.tr("PM"));
+    this.__ampm.addListener("changeValue", this._onChange, this);
     this.add(this.__ampm);
 
     // Initialize properties
     this.initTimeFormat();
+    this.initShowSeconds();
+    this.initLayoutFormat();
 
     // Set the value
     this.setValue(value);
+  },
+
+  events :
+  {
+    /**
+     * Fired when the value changes
+     */
+    changeValue : "qx.event.type.Data"
   },
 
   properties :
@@ -103,12 +117,21 @@ qx.Class.define("timechooser.TimeChooser",
       apply     : "_applyTimeFormat"
     },
 
+    /** Whether to show the 'seconds' spinner */
+    showSeconds :
+    {
+      check     : "Boolean",
+      init      : true,
+      apply     : "_applyShowSeconds"
+    },
+
     /**
      * Specify the spinners' layout format.  Valid values are as specified
      * for the spinners.
      */
     layoutFormat :
     {
+      init  : "below/vertical",
       apply : "_applyLayoutFormat"
     },
 
@@ -125,12 +148,35 @@ qx.Class.define("timechooser.TimeChooser",
 
   members :
   {
-    __hours   : null,
-    __minutes : null,
-    __seconds : null,
-    __ampm    : null,
+    __hours       : null,
+    __minutes     : null,
+    __seconds     : null,
+    __ampm        : null,
+    __bInOnChange : false,
 
     
+    /*
+     * Recalculate this widget's value when one of its constituent spinners
+     * changes value.
+     */
+    _onChange : function(e)
+    {
+      this.__bInOnChange = true;
+      this.setValue(this.__hours.getValue() +
+                    ":" +
+                    this.__minutes.getValue() +
+                    ":" +
+                    this.__seconds.getValue() +
+                    (this.getTimeFormat() == "12ampm"
+                     ? this.__ampm.getValue()
+                     : ""));
+      this.__bInOnChange = false;
+
+      // Since the _applyValue method won't be run, fire the event here too.
+      this.fireDataEvent("changeValue", this.getValue());
+    },
+
+
     /**
      * @param value {Integer|String}
      *   The provided value may be in one of three formats:
@@ -174,6 +220,17 @@ qx.Class.define("timechooser.TimeChooser",
         if (parts.length != 4 && parts.length != 5)
         {
           throw new Error(this.tr("Invalid value for TimeChooser: ") + value);
+        }
+
+        // Determine if we're to interpret this as 12- or 24-hour time.
+        // If there's an ampm flag, it's 12-hour; otherwise 24-hour.
+        if (parts[4])
+        {
+          // We're in 12-hour time.  Convert hour 12 to hour 0 for calculation
+          if (parts[1] == 12)
+          {
+            parts[1] = "0";
+          }
         }
 
         // Calculate the value
@@ -243,6 +300,13 @@ qx.Class.define("timechooser.TimeChooser",
      */
     _applyValue : function(value, old)
     {
+      // If we're changeing the value locally in the _onChange handler...
+      if (this.__bInOnChange)
+      {
+        // ... then there's no need to update the spinners
+        return;
+      }
+
       // Set the seconds spinner
       this.__seconds.setValue(value % 60);
 
@@ -279,6 +343,9 @@ qx.Class.define("timechooser.TimeChooser",
           this.__ampm.setValue(this.tr("AM"));
         }
       }
+
+      // Let listeners know the value has changed
+      this.fireDataEvent("changeValue", this.getValue());
     },
 
     /**
@@ -321,6 +388,32 @@ qx.Class.define("timechooser.TimeChooser",
 
       // Redisplay the time in the new format
       this._applyValue(this.getValue());
+    },
+
+
+    /**
+     * Apply function for showSeconds property.
+     * Show or hide the 'seconds' spinner.
+     *
+     * @param value {Boolean}
+     *   New value
+     *
+     * @param old {Boolean}
+     *   Previous value
+     *
+     * @return {Void}
+     */
+    _applyShowSeconds : function(value, old)
+    {
+      if (value)
+      {
+        this.__seconds.show();
+      }
+      else
+      {
+        this.__seconds.exclude();
+        this.__seconds.setValue(0);
+      }
     },
 
 

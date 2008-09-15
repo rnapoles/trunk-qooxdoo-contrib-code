@@ -33,6 +33,14 @@ qx.Class.define("timechooser.spinner.Abstract",
     this.initLayoutFormat();
   },
 
+  events :
+  {
+    /**
+     * Fired when the spinner's value changes
+     */
+    changeValue : "qx.event.type.Event"
+  },
+
   properties :
   {
     /**
@@ -49,6 +57,14 @@ qx.Class.define("timechooser.spinner.Abstract",
 
   members :
   {
+    // overridden
+    _onTextChange : function(e)
+    {
+      this.base(arguments);
+      this.fireEvent("changeValue");
+    },
+    
+
     /**
      * Check function for layoutFormat property.  We ensure that the value
      * being set is one of the allowed values.
@@ -62,10 +78,10 @@ qx.Class.define("timechooser.spinner.Abstract",
      */
     _checkLayoutFormat : function(value)
     {
-      this.warn("In checkLayoutFormat");
       return (value == 'below/vertical' ||
               value == 'below/horizontal');
     },
+
 
     /**
      * Apply function for layoutFormat property.

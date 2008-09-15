@@ -36,6 +36,15 @@ qx.Class.define("custom.Application",
       var chooser = new timechooser.TimeChooser("12:31:20");
       chooser.setLayoutFormat("below/vertical");
       container.add(chooser);
+
+      var label = new qx.ui.basic.Label();
+      container.add(label);
+
+      chooser.addListener("changeValue",
+                          function(e)
+                          {
+                            label.setContent(e.getData().toString());
+                          });
     }
   },
 
