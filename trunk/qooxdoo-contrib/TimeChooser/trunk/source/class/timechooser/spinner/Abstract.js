@@ -22,7 +22,7 @@
  */
 qx.Class.define("timechooser.spinner.Abstract",
 {
-  extend : qx.ui.form.Spinner,
+  extend : timechooser.spinner.Spinner,
   type   : "abstract",
 
   construct : function(value)
