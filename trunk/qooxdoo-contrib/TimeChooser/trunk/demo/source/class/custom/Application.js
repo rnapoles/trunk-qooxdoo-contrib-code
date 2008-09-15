@@ -32,8 +32,9 @@ qx.Class.define("custom.Application",
       this.getRoot().add(container);
 
       var d = new Date();
-      var chooser = new timechooser.TimeChooser(Math.floor(d.getTime()/1000));
+//      var chooser = new timechooser.TimeChooser(Math.floor(d.getTime()/1000));
       var chooser = new timechooser.TimeChooser("12:31:20");
+      chooser.setLayoutFormat("below/vertical");
       container.add(chooser);
     }
   },
