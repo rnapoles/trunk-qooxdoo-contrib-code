@@ -38,6 +38,9 @@ qx.Class.define("timechooser.spinner.TimeValue",
     this.setMin(0);
     this.setMax(59);
 
+    // Allow wrapping by default
+    this.setWrap(true);
+
     // Set an appropriate width for a two-digit time component
     var textField = this._getChildControl("textfield");
     textField.setWidth(20);
