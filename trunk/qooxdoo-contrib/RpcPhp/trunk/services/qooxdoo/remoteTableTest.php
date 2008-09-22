@@ -147,9 +147,9 @@ class class_remoteTableTest
 
             // Get the data for this row.  In this example case, we calculate
             // it, but we could as well be retrieving it from a database.
-            $rowData[] = $year;
-            $rowData[] = (($year % 4 == 0 && $year % 100 != 0) ||
-                          ($year %400 == 0));
+            $rowData["year"] = $year;
+            $rowData["leap"] = (($year % 4 == 0 && $year % 100 != 0) ||
+                                ($year %400 == 0));
 
             // Add this row data to the result set
             $rows[] = $rowData;
