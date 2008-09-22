@@ -109,6 +109,21 @@ qx.Class.define("rpcexample.Application",
                     "environment locks up during a synchronous call.  " +
                     "If the server hangs for a minute or two, so will " +
                     "the browser!  You have been warned.")
+          },
+
+          {
+            name : "Demonstrate Remote Table usage",
+            func : this.remoteTable,
+            desc : ("This is an example of using the Remote table model " +
+                    "by extending qx.ui.table.model.Remote.  It retrieves " +
+                    "its table data via Remote Procedure Call to the " +
+                    "service called <i>qooxdoo.remoteTableTest</i>.  As of " +
+                    "this writing, that test had been implemented in " +
+                    "qooxdoo's PHP JSON-RPC backend but not yet any " +
+                    "of the other backends.  Look at the qooxdoo-contrib " +
+                    "project called RpcPhp, and specifically, within that " +
+                    "project, at the implementation of the remoteTableTest " +
+                    "method in trunk/services/qooxdoo.")
           }
         ];
 
@@ -1029,6 +1044,30 @@ qx.Class.define("rpcexample.Application",
         testNum = 0;
         tests[testNum][0]();            // [][0] = request
       });
+    },
+
+    remoteTable : function(page, description)
+    {
+      // Instantiate an instance of our local remote data model
+      var dm = new rpcexample.RemoteDataModel();
+
+      // Set the column headings
+      dm.setColumns([ "Year", "Leap Year" ]);
+
+      // Instantiate a table
+      var table = new qx.ui.table.Table(dm);
+      table.set(
+        {
+          margin    : 20
+        });
+
+      // Get the table column model
+      var tcm = table.getTableColumnModel();
+
+      // Show leap year as a boolean (checkbox)
+      tcm.setDataCellRenderer(1, new qx.ui.table.cellrenderer.Boolean());
+
+      page.add(table, { flex : 1 });
     }
   }
 });
