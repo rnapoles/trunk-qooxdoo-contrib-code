@@ -20,6 +20,10 @@ qx.Class.define("rpcexample.RemoteDataModel",
   {
     this.base(arguments);
 
+    // Our data will be sent as an array of maps.  Each map (one row of data)
+    // will have properties "year" and "leap".
+    this.setColumnIds([ "year", "leap" ]);
+
     // Get an RPC object on which we'll do all of our communication
     var clazz = rpcexample.RemoteDataModel;
     this.rpc = new qx.io.remote.Rpc(clazz.URL, clazz.SERVICE);
