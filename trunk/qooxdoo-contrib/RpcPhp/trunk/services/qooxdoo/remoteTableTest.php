@@ -149,13 +149,12 @@ class class_remoteTableTest
             // it, but we could as well be retrieving it from a database.
             //
             // Note that the associative array indexes (which become the
-            // property names in the JSON map) are the Column ID fields in the
-            // data model.  Those fields default to being the column headings.
-            // We therefore use the column headings in this simple example,
-            // for the associative array indexes.
-            $rowData["Year"] = $year;
-            $rowData["Leap Year"] = (($year % 4 == 0 && $year % 100 != 0) ||
-                                     ($year %400 == 0));
+            // property names in the JSON map) are the column id fields used
+            // by the data model.  These are strings that are not localized
+            // and so differ, possibly, from the column headings.
+            $rowData["year"] = $year;
+            $rowData["leap"] = (($year % 4 == 0 && $year % 100 != 0) ||
+                                ($year %400 == 0));
 
             // Add this row data to the result set
             $rows[] = $rowData;
