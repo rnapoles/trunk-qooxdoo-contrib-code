@@ -297,7 +297,7 @@ qx.Class.define("soap.client", { extend : qx.core.Target
             var xmlHttp = this.__getXmlHttp();
             xmlHttp.open("GET", this.getUrl() + "?wsdl", async);
             if(async) {
-                self=this;
+                var self=this;
                 xmlHttp.onreadystatechange = function() {
                     if(xmlHttp.readyState == 4) {
                         self.__onLoadWsdl(method, parameters, async, callback, xmlHttp);
