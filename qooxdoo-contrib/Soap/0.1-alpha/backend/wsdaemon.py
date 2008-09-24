@@ -33,6 +33,7 @@ from soaplib.serializers.primitive import String, Integer, Array
 from soaplib.serializers.clazz import ClassSerializer
 
 import soaplib.wsgi_soap 
+import os
 soaplib.wsgi_soap.log_exceptions(True)
 soaplib.wsgi_soap.log_debug(True)
 
