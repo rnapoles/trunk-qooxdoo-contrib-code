@@ -1,0 +1,64 @@
+
+What you somehow managed to obtain is this: I got the soap client from 
+http://www.guru4.net/articoli/javascript-soap-client/en/ and integrated it 
+(as best as i could) to qooxdoo (qooxdoo.org). There is still some work to 
+be done, but it seems to work as it is. 
+
+Tested with CherryPy 3.1 and soaplib from svn (r39) on Python 2.5.2, and with 
+Qooxdoo 0.7.3
+
+Here's how to install and patch soaplib:
+
+	svn co https://svn.optio.webfactional.com/soaplib/trunk/soaplib /usr/lib/python2.5/site-packages/soaplib
+	cp backend/soaplib_r39.diff /usr/lib/python2.5/site-packages/soaplib
+	cd /usr/lib/python2.5/site-packages/soaplib
+	patch -p0 < soaplib_r39.diff
+
+See http://groups.google.com/group/soapliboptio/browse_thread/thread/888a24d7b4f07263
+
+You may have a version of Python other than 2.5.x installed. If 
+you're not sure, run:
+
+	python -V
+
+and change the python library path above according to the output.
+
+Install CherryPy as documented in its web site, cherrypy.org
+
+After doing all this, run:
+
+	make 
+	python backend/wsdaemon.py
+
+and wait for the 
+
+	http://0.0.0.0:7789/
+
+message to appear. Then navigate to
+
+	http://localhost:7789/static/fronted/source/
+
+and you should see the main screen which is a toolbar with two buttons on the 
+right. 
+
+Known issues:
+- firebug shows the following error on page load, but soap calls work perfectly.
+
+  self.__onLoadWsdl is not a function
+  http://localhost:7789/static/frontend/source/class/soap/client.js
+  Line 304
+
+- table widget somehow makes lots of unnecessary requests before showing the data. 
+  see http://www.nabble.com/RmoteTable-fires-_loadRowCount%28%29-multiple-times-for-very-1st-request-td16628238.html#a16628238
+
+- table gets the row count correctly, but can't properly adjust scrollbar range to 
+  that value.
+
+Make yourself home and send any questions/comments/patches to 
+
+	burak.arslan-qx@arskom.com.tr
+
+In case you haven't noticed, the work here is released under the BSD license.
+
+Take Care!
+Burak

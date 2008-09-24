@@ -1,0 +1,14 @@
+==== Soap Module ====
+
+This is a soap rpc module for qooxdoo. The original code comes from:
+
+http://www.guru4.net/articoli/javascript-soap-client/en/
+
+Note that it is originally licensed under Creative Commons License,
+which is NOT compatible with LGPL (although it is compatible with EPL).
+
+I've also added a sample remote table model for convenience.
+
+There is also a soap backend written in python, using a patched version
+of soaplib, and a vanilla CherryPy 3.1.
+
