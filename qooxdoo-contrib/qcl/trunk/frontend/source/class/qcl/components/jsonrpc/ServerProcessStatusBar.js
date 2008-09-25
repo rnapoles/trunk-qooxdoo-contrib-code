@@ -1,7 +1,7 @@
 /* ************************************************************************
 
 
-    Widget class 'qcl.components.jsonrpc.StatusIndicator'.
+    Widget class 'qcl.components.jsonrpc.ServerProcessStatusBar'.
     This file is auto-generated. Do not edit, manual changes will be overwritten.
 
 
@@ -11,7 +11,7 @@
 
 
 /* ************************************************************************
-#embed(qx.icontheme/16/actions/ajax-loader.gif)
+#embed(qx.icontheme/16/actions/dialog-cancel.png)
 
 
 ************************************************************************ */
@@ -19,11 +19,11 @@
 /**
  * @todo: add documentation here auto-generated from qxml file
  */
-qx.Class.define("qcl.components.jsonrpc.StatusIndicator",
+qx.Class.define("qcl.components.jsonrpc.ServerProcessStatusBar",
 {
-  extend : qx.ui.popup.Popup,
+  extend : qx.ui.layout.HorizontalBoxLayout,
 
-  include : [ qcl.components.jsonrpc.MStatusIndicator ],
+  include : [ qcl.components.jsonrpc.ServerProcessStatus ],
 
     
   /**
@@ -56,28 +56,32 @@ qx.Class.define("qcl.components.jsonrpc.StatusIndicator",
     paint: function ()
     {
       // Client document object
-      var qx_id97112 = qx.ui.core.ClientDocument.getInstance();
+      var qx_id97222 = qx.ui.core.ClientDocument.getInstance();
 
 /** begin auto-generated gui code **/
 
+this.setWidth("100%");
 this.setHeight("auto");
-this.setWidth("auto");
-this.setBorder("black");
-this.setAutoHide(false);
+this.setSpacing(5);
+this.setPadding(3);
 
-this.addEventListener("appear",function(event)
-{
-this.centerToBrowser()
-},this);
+this.addEventListener("displayServerMessage", function(event){this.handleDisplayServerMessage(event,this);},this);
 
-var qx_id98277 = new qx.ui.basic.Atom(this.tr("Busy ..."),"icon/16/actions/ajax-loader.gif");
-qx_id98277.setPadding(10);
-qx_id98277.setBackgroundColor("white");
-this.add(qx_id98277);
+this.addEventListener("endProcess", function(event){this.handleEnd(event,this);},this);
 
-qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.*",function(message){this.handleRpcMessage(message,qx_id98277);},this);
+this.displayLabel = new qx.ui.basic.Label(this.tr(" "));
+this.displayLabel.setWrap(true);
+this.displayLabel.setHeight("100%");
+this.displayLabel.setWidth("1*");
+this.displayLabel.setMode("html");
+this.add(this.displayLabel);
 
-qx_id98277.addEventListener("click", function(event){this.handleClick(event,qx_id98277);},this);
+var qx_id100266 = new qx.ui.form.Button(this.tr("Cancel"),"icon/16/actions/dialog-cancel.png");
+qx_id100266.setWidth("auto");
+qx_id100266.setHeight(25);
+this.add(qx_id100266);
+
+qx_id100266.addEventListener("execute", function(event){this.handleEnd(event,qx_id100266);},this);
 
 /** end auto-generated gui code **/
 

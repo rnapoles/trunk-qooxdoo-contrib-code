@@ -1,6 +1,6 @@
 /**
  * Mixin providing methods and event/message handlers for 
- * qcl.components.popup.indicator.request.Simple
+ * qcl.components.jsonrpc.StatusIndicator
  * 
  */
 qx.Mixin.define('qcl.components.jsonrpc.MStatusIndicator',

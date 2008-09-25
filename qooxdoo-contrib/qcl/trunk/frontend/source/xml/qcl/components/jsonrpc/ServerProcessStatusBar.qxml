@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<qxt:root
+  xmlns:qx="http://www.qxtransformer.org/qooxdoo"
+  xmlns:qxt="http://www.qxtransformer.org/extension">
+  
+  <!-- simple error log window -->    
+  
+  <qx:widget 
+    namespace="qcl.components.jsonrpc"
+    className="ServerProcessStatusBar" 
+    include="qcl.components.jsonrpc.ServerProcessStatus"
+    extend="qx.ui.layout.HorizontalBoxLayout"
+    translate="true">
+    
+    <qxt:properties
+      width="100%" height="auto" 
+      border="inset-thin"
+      backgroundColor="white"
+      spacing="5" padding="3"/>
+
+    <!-- events and messages -->
+    
+    <qx:eventListener 
+      type="displayServerMessage"
+      delegate="handleDisplayServerMessage" />
+
+    <qx:eventListener 
+      type="endProcess"
+      delegate="handleEnd" />   
+    
+    <!-- content -->
+
+    <qx:label 
+      id="displayLabel" scope="widget"
+      wrap="true" height="100%" 
+      width="1*" text=" " mode="html"> 
+    </qx:label>               
+        
+    <qx:button 
+      label="Cancel"
+      width="auto" 
+      icon="icon/16/actions/dialog-cancel.png"
+      height="25">
+      <qx:eventListener 
+        type="execute" delegate="handleEnd"/>
+    </qx:button>
+         
+  </qx:widget>
+  
+</qxt:root>

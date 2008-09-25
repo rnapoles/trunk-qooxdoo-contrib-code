@@ -1,7 +1,7 @@
 /* ************************************************************************
 
 
-    Widget class 'qcl.components.dialog.Simple'.
+    Widget class 'qcl.components.dialog.Error'.
     This file is auto-generated. Do not edit, manual changes will be overwritten.
 
 
@@ -53,7 +53,7 @@ qx.Class.define("qcl.components.dialog.Error",
     paint: function ()
     {
       // Client document object
-      var qx_id97124 = qx.ui.core.ClientDocument.getInstance();
+      var qx_id97222 = qx.ui.core.ClientDocument.getInstance();
 
 /** begin auto-generated gui code **/
 
@@ -69,44 +69,44 @@ this.addEventListener("appear",function(event)
 this.centerToBrowser()
 },this);
 
-var qx_id98213 = new qx.ui.layout.VerticalBoxLayout();
-qx_id98213.setSpacing(5);
-qx_id98213.setPadding(10);
-qx_id98213.setWidth("100%");
-qx_id98213.setHeight("100%");
-this.add(qx_id98213);
+var qx_id98311 = new qx.ui.layout.VerticalBoxLayout();
+qx_id98311.setSpacing(5);
+qx_id98311.setPadding(10);
+qx_id98311.setWidth("100%");
+qx_id98311.setHeight("100%");
+this.add(qx_id98311);
 
-var qx_id98182 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id98182.setWidth("100%");
-qx_id98182.setHeight("1*");
-qx_id98182.setSpacing(10);
-qx_id98182.setVerticalChildrenAlign("middle");
-qx_id98213.add(qx_id98182);
+var qx_id98282 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id98282.setWidth("100%");
+qx_id98282.setHeight("1*");
+qx_id98282.setSpacing(10);
+qx_id98282.setVerticalChildrenAlign("middle");
+qx_id98311.add(qx_id98282);
 
-var qx_id100184 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
-qx_id100184.setDimension(32 ,32);
-qx_id98182.add(qx_id100184);
+var qx_id100281 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
+qx_id100281.setDimension(32 ,32);
+qx_id98282.add(qx_id100281);
 
-var qx_id100189 = new qx.ui.basic.Label(this.tr(" "));
-qx_id100189.setWrap(true);
-qx_id100189.setHeight("100%");
-qx_id100189.setWidth("1*");
-qx_id100189.setMode("html");
-qx_id98182.add(qx_id100189);
+var qx_id100286 = new qx.ui.basic.Label(this.tr(" "));
+qx_id100286.setWrap(true);
+qx_id100286.setHeight("100%");
+qx_id100286.setWidth("1*");
+qx_id100286.setMode("html");
+qx_id98282.add(qx_id100286);
 
-var qx_id100199 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id100199.setWidth("100%");
-qx_id100199.setHeight("auto");
-qx_id100199.setHorizontalChildrenAlign("center");
-qx_id100199.setSpacing(10);
-qx_id98213.add(qx_id100199);
+var qx_id100296 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100296.setWidth("100%");
+qx_id100296.setHeight("auto");
+qx_id100296.setHorizontalChildrenAlign("center");
+qx_id100296.setSpacing(10);
+qx_id98311.add(qx_id100296);
 
-var qx_id100208 = new qx.ui.form.Button(this.tr("OK"),null);
-qx_id100208.setHeight(25);
-qx_id100208.setWidth(70);
-qx_id100199.add(qx_id100208);
+var qx_id100305 = new qx.ui.form.Button(this.tr("OK"),null);
+qx_id100305.setHeight(25);
+qx_id100305.setWidth(70);
+qx_id100296.add(qx_id100305);
 
-qx_id100208.addEventListener("execute", function(event){this.closeWindow(event,qx_id100208);},this);
+qx_id100305.addEventListener("execute", function(event){this.closeWindow(event,qx_id100305);},this);
 
 /** end auto-generated gui code **/
 

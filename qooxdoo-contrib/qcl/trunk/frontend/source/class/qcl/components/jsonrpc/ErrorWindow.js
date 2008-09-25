@@ -53,7 +53,7 @@ qx.Class.define("qcl.components.jsonrpc.ErrorWindow",
     paint: function ()
     {
       // Client document object
-      var qx_id97124 = qx.ui.core.ClientDocument.getInstance();
+      var qx_id97222 = qx.ui.core.ClientDocument.getInstance();
 
 /** begin auto-generated gui code **/
 
@@ -75,29 +75,29 @@ qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(mes
     
 },this);
 
-var qx_id98205 = new qx.ui.layout.VerticalBoxLayout();
-qx_id98205.setSpacing(5);
-qx_id98205.setPadding(10);
-qx_id98205.setWidth("100%");
-qx_id98205.setHeight("100%");
-this.add(qx_id98205);
+var qx_id98304 = new qx.ui.layout.VerticalBoxLayout();
+qx_id98304.setSpacing(5);
+qx_id98304.setPadding(10);
+qx_id98304.setWidth("100%");
+qx_id98304.setHeight("100%");
+this.add(qx_id98304);
 
-var qx_id100206 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id100206.setWidth("100%");
-qx_id100206.setHeight("1*");
-qx_id100206.setSpacing(10);
-qx_id100206.setVerticalChildrenAlign("middle");
-qx_id98205.add(qx_id100206);
+var qx_id100302 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100302.setWidth("100%");
+qx_id100302.setHeight("1*");
+qx_id100302.setSpacing(10);
+qx_id100302.setVerticalChildrenAlign("middle");
+qx_id98304.add(qx_id100302);
 
-var qx_id100215 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
-qx_id100215.setDimension(32 ,32);
-qx_id100206.add(qx_id100215);
+var qx_id100311 = new qx.ui.basic.Image("icon/32/status/dialog-error.png");
+qx_id100311.setDimension(32 ,32);
+qx_id100302.add(qx_id100311);
 
-var qx_id100220 = new qx.ui.basic.Label(this.tr(" "));
-qx_id100220.setWrap(true);
-qx_id100220.setHeight("100%");
-qx_id100220.setWidth("1*");
-qx_id100220.setMode("html");
+var qx_id100316 = new qx.ui.basic.Label(this.tr(" "));
+qx_id100316.setWrap(true);
+qx_id100316.setHeight("100%");
+qx_id100316.setWidth("1*");
+qx_id100316.setMode("html");
 
 qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(message){
 
@@ -105,22 +105,22 @@ qx.event.message.Bus.subscribe("qcl.databinding.messages.rpc.error",function(mes
             var msg = "" + msg.replace(/\\n/,"") + "";
             this.setText(msg);
           
-},qx_id100220);
-qx_id100206.add(qx_id100220);
+},qx_id100316);
+qx_id100302.add(qx_id100316);
 
-var qx_id100242 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id100242.setWidth("100%");
-qx_id100242.setHeight("auto");
-qx_id100242.setHorizontalChildrenAlign("center");
-qx_id100242.setSpacing(10);
-qx_id98205.add(qx_id100242);
+var qx_id100338 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100338.setWidth("100%");
+qx_id100338.setHeight("auto");
+qx_id100338.setHorizontalChildrenAlign("center");
+qx_id100338.setSpacing(10);
+qx_id98304.add(qx_id100338);
 
-var qx_id100251 = new qx.ui.form.Button(this.tr("OK"),null);
-qx_id100251.setHeight(25);
-qx_id100251.setWidth(70);
-qx_id100242.add(qx_id100251);
+var qx_id100347 = new qx.ui.form.Button(this.tr("OK"),null);
+qx_id100347.setHeight(25);
+qx_id100347.setWidth(70);
+qx_id100338.add(qx_id100347);
 
-qx_id100251.addEventListener("execute", function(event){this.closeWindow(event,qx_id100251);},this);
+qx_id100347.addEventListener("execute", function(event){this.closeWindow(event,qx_id100347);},this);
 
 /** end auto-generated gui code **/
 
