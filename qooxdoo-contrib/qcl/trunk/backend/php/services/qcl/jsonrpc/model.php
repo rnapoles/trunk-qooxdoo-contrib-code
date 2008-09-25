@@ -46,7 +46,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
      * set controller. This wil throw an error if no controller is available
      */
     $this->setController( &$controller );	
-	}   	
+	}
 
 	//-------------------------------------------------------------
   // public methods 

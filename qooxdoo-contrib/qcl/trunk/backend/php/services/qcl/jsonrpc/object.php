@@ -1,6 +1,8 @@
 <?php
 
-// dependencies
+/**
+ * Dependencies
+ */ 
 require_once "qcl/object.php";
 
 /**
@@ -42,10 +44,13 @@ class qcl_jsonrpc_object extends qcl_object
     return parent::getInstance( $class );
   }
   
+  
+
+  
   /**
    * Run once for the given class during one session
    * Implementing method must call parent method before executing action like so:
-   * if ( parent::runOncePerClassAndSession() ) { execute run-once action  }
+   * if ( ! parent::runOncePerClassAndSession() ) return;
    */
   function runOncePerClassAndSession()
   {
@@ -175,7 +180,8 @@ class qcl_jsonrpc_object extends qcl_object
  	 */
  	function setSessionVar ( $name, $data )
  	{
- 		$reg =& qcl_registry_Session::getInstance();
+ 		require_once "qcl/registry/Session.php";
+ 	  $reg =& qcl_registry_Session::getInstance();
  		$reg->set($name,$data);
  	}
  	
@@ -187,6 +193,7 @@ class qcl_jsonrpc_object extends qcl_object
  	 */
  	function getSessionVar ( $name )
  	{
+ 	  require_once "qcl/registry/Session.php";
     $reg =& qcl_registry_Session::getInstance();
     return $reg->get($name);
  	}
@@ -199,7 +206,8 @@ class qcl_jsonrpc_object extends qcl_object
  	 */
  	function hasSessionVar ( $name )
  	{
-    $reg =& qcl_registry_Session::getInstance();
+    require_once "qcl/registry/Session.php";
+ 	  $reg =& qcl_registry_Session::getInstance();
     return $reg->has($name);
  	}
 

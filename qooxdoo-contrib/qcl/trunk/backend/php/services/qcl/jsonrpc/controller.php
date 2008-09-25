@@ -141,15 +141,22 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	}
 
 	/**
-	* get service directory url
-	*/
+	 * get service directory url
+	 */
 	function getServiceDirUrl($append="")
 	{
 		global $serviceComponents;
 		$serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
 		return $serverDirUrl . $serviceComponents[0] . "/" . $append;
 	}
-  
+	
+	/**
+	 * Gets the url of the dispatcher script
+	 */
+  function getDispatcherUrl()
+  {
+    return "http://" . getenv (HTTP_HOST) . $_SERVER['PHP_SELF']; 
+  }
 	/**
 	 * gets a configuration value of the pattern "foo.bar.baz"
 	 * This retrieves the values set in the service.ini.php file.

@@ -28,6 +28,17 @@ class String
    */
   var $_value = '';
 
+  
+  /**
+   * Constructor
+   */
+  function String( $str = null, $size = null )
+  {
+    $this->_size = $size;
+    $this->set( (string)$str );
+  }
+  
+  
   /**
    * Returns the character (Unicode code point) at the specified index.
    *
@@ -73,6 +84,27 @@ class String
     $this->_value .= $str;
   }
 
+  
+  /**
+   * Returns the index of the first occurrence of the argument
+   * @param string $str
+   * return int
+   */
+  function indexOf($str)
+  {
+    return strpos($this->_value,$str);
+  }
+  
+  /**
+   * Returns the index of the last occurrence of the argument
+   * @param string $str
+   * return int
+   */
+  function lastIndexOf($str)
+  {
+    return strrpos($this->_value,$str);
+  }
+  
   /**
    * Returns true if and only if this string contains the specified sequence
    * of char values.
@@ -85,6 +117,10 @@ class String
     return ereg( $charSequence, $this->_value );
   }
 
+  /**
+   * Copies the value of another String object
+   * @param String $data
+   */
   function copyValueOf( &$data )
   {
     if ( is_a($data, 'String') ) 
@@ -130,29 +166,20 @@ class String
     return $this->lenght();
   }
 
-  // }}}
-  // {{{ string get()
-
   function get()
   {
     return $this->_value;
   }
-
-  // }}}
-  // {{{ int lenght()
 
   /**
    * Returns the string lenght.
    *
    * @return int
    */
-  function lenght()
+  function length()
   {
     return strlen( $this->_value );
   }
-
-  // }}}
-  // {{{ array matches( string,  [bool] )
 
   /**
    * Verifies if the expression matches the string value. It can be case-or-
@@ -166,9 +193,6 @@ class String
     $function( $expression, $this->_value, $result );
     return $result;
   }
-
-  // }}}
-  // {{{ bool putCharAt( char, int )
 
   /**
    * Puts $char at position $pos in the string. Returns TRUE if it has success
@@ -186,18 +210,6 @@ class String
     }
   }
 
-  // }}}
-  // {{{ contructor.
-
-  function String( $str = null, $size = null )
-  {
-    $this->_size = $size;
-    $this->set( (string)$str );
-  }
-
-  // }}}
-  // {{{ void set( string )
-
   /**
    * Sets the string value. If there is a maximun size set, it will set the
    * string value to the substring made by the beginning to size position
@@ -211,9 +223,6 @@ class String
     : $value;
   }
 
-  // }}}
-  // {{{ void trim()
-
   /**
    * Removes white spaces form beginnig and end of string.
    */
@@ -221,10 +230,6 @@ class String
   {
     $this->_value = trim( $this->_value );
   }
-
-  // }}}
-  // {{{ void toUppercase( [int] )
-
   /**
    * Changes the string case to uppercase if no position is specified.
    * If a position was specified, changes that position case to upper.
@@ -238,9 +243,6 @@ class String
       $charpos );
     }
   }
-
-  // }}}
-  // {{{ void toLowercase( [int] )
 
   /**
    * Changes the string case to lowercase if no position is specified.
@@ -256,7 +258,28 @@ class String
     }
   }
 
-  // }}}
-
+  /**
+   * Returns a part of the string
+   * @param int $first Index of first character
+   * @param int[optional, default null] $count Number of characters to fetch, all if null
+   */
+  function substr ($first,$count=null)
+  {
+    if ( ! is_null($count) )
+    {
+      return substr($this->_value,$first,$count);  
+    }
+    return substr($this->_value,$first);
   }
-  ?>
+  
+  /**
+   * Returns a part of the string
+   * @param int $first Index of first character to fetch
+   * @param int $last Index of last character to fetch
+   */
+  function substring($first,$last)
+  {
+    return $this->substr($first,$last-$first);
+  }
+}
+?>

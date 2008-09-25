@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema
+  include="qcl/db/model.xml">
+
+  <!-- 
+    model that stores serialized objects in the database 
+  -->
+  <model 
+    name="qcl.db.PersistentModel"
+    table="persistentObjects"
+    extends="qcl.db.Model">
+    
+    <definition>
+
+      <!-- model properties -->
+      <properties> 
+        <property name="class" type="string" index="yes">
+          <sql>varchar(100) NOT NULL</sql>
+        </property>
+        <property name="objectId" type="string" index="yes">
+          <sql>varchar(100) NULL</sql>
+        </property>
+        <property name="data" type="blob">
+          <sql>blob</sql>
+        </property>
+      </properties> 
+
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="class" />
+          <property name="objectId" />
+        </index>
+      </indexes>      
+
+    </definition>
+    
+  </model>
+</schema>

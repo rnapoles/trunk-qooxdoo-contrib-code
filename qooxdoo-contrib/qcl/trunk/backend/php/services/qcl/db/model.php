@@ -135,6 +135,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @var string 
    */
   var $foreignKey;
+  
   /**
    * shortcuts to property nodes which belong to metadata
    * @array array of object references
@@ -147,7 +148,6 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @var string
    */
   var $schemaXmlPath = null;  
-  
   
 	//-------------------------------------------------------------
   // internal methods
@@ -536,6 +536,21 @@ class qcl_db_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------      
 
   /**
+   * Gets the id of the current record. Raises error if no record
+   * is loaded.
+   * @return int
+   */
+  function getId()
+  {
+    $id = $this->getProperty("id");
+    if ( ! $id )
+    {
+      $this->raiseError("No record loaded.");
+    }
+    return $id; 
+  }
+  
+  /**
    * gets the record id from a reference which can be the id itself or an 
    * identifiying (dot-separated) name
    * @param mixed $ref numeric id or string name
@@ -646,7 +661,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   /**
    * gets all database records or those that match a where condition. 
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
-   * @param string|null  $where   where condition to match, if null, get all
+   * @param string|array|null  $where   where condition to match, if null, get all, if array, match properties
    * @param string|array|null[optional] $orderBy Order by property/properties. If an array is given, the last
    * element of the array will be searched for "ASC" or "DESC" and used as sort direction
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all. When using
@@ -906,7 +921,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   }  
  	
  	/**
-   * find database records by their primary key
+   * Find database records by their primary key
    * @param array|int	$ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
@@ -1502,6 +1517,15 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $this->db->update( $this->table, $data, $this->col_id );
   }     
   
+  
+  /**
+   * Alias for update() without parameters
+   */
+  function save()
+  {
+    return $this->update();
+  }
+  
   /**
    * deletes one or more records in a table identified by id
    * @param mixed $ids (array of) record id(s)
@@ -2044,7 +2068,41 @@ class qcl_db_model extends qcl_jsonrpc_model
   {
     return $this->db->getValue("SELECT NOW()");
   }
-
+  
+  
+  /**
+   * Gets the timestamp of the last modification
+   * @param int[optional] $id Optional id, if omitted, use current record 
+   */
+  function getModified($id=null)
+  {
+    return $this->getProperty("modified",$id);
+  }
+  
+  /**
+   * Gets the timestamp of the creation of the record
+   * @param int[optional] $id Optional id, if omitted, use current record 
+   */
+  function getCreated($id=null)
+  {
+    return $this->getProperty("created",$id);
+  }  
+  
+  /**
+   * Calculates the number of seconds passed between the
+   * timestamp value parameter. The difference is calculated
+   * by the db engine, not by php.
+   * @todo Implement in db-class, not here
+   * @param string $timestamp Timestamp value
+   * @return float 
+   */
+  function getSecondsSince($timestamp)
+  {
+    return $this->db->getValue("
+      SELECT TIME_TO_SEC(TIMEDIFF(NOW(),'$timestamp'));
+    ");  
+  }
+  
   /**
    * Returns a hash map of ids the modification timestamp
    * @return array
@@ -2330,8 +2388,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * parse schema file
      */
     $path = either( $path, $this->getSchmemaXmlPath() );
-
-    if ( !is_valid_file($path) )
+    if ( ! is_valid_file($path) )
     {
       $this->raiseError("No valid file path: '$path'");
     }
@@ -2494,33 +2551,6 @@ class qcl_db_model extends qcl_jsonrpc_model
       //$this->info("Property '$propName', Column '$colName':" );
       //$this->info("Old def: '$oldDef', new def:'$newDef'");
 
-      
-      /* 
-       * unique column
-       */
-      if ( $attr['unique'] == "yes" )
-      {
-        $indexName = $colName . "_unique";
-        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
-        {
-          $this->db->addIndex("unique", $table, $indexName, $colName ); 
-        }
-      }
-
-      /*
-       * index 
-       */
-      if ( $attr['index'] == "yes" )
-      {
-        $indexName = $colName;
-        $this->info("Creating index for $colName"); 
-        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
-        {
-          $this->db->addIndex("index", $table, $indexName, $colName ); 
-        }
-      } 
-      
-      
       /*
        * skip column if old and new column definition are identical
        * @todo check for position and auto-increment
@@ -2551,7 +2581,32 @@ class qcl_db_model extends qcl_jsonrpc_model
         $this->info( "{$table}.{$colName}: " . $oldDef);
         $this->db->modifyColumn($table,$colName,$newDef);
       }
- 
+
+      /* 
+       * unique column
+       */
+      if ( $attr['unique'] == "yes" )
+      {
+        $indexName = $colName . "_unique";
+        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
+        {
+          $this->db->addIndex("unique", $table, $indexName, $colName ); 
+        }
+      }
+
+      /*
+       * index 
+       */
+      if ( $attr['index'] == "yes" )
+      {
+        $indexName = $colName;
+        $this->info("Creating index for $colName"); 
+        if ( ! count( $this->db->getIndexColumns($table,$indexName) ) ) 
+        {
+          $this->db->addIndex("index", $table, $indexName, $colName ); 
+        }
+      }       
+      
     }
     
     /*
