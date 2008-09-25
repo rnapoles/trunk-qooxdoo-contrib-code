@@ -12,6 +12,6 @@
   ]
 
   ,"namespace" : "soap"
-  ,"version"   : "trunk"
+  ,"version"   : "0.1"
   ,"qooxdoo-versions" : ["0.7"]
 }
