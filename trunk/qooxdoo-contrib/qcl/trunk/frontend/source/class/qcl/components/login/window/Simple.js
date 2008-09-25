@@ -56,7 +56,7 @@ qx.Class.define("qcl.components.login.window.Simple",
     paint: function (caption, icon)
     {
       // Client document object
-      var qx_id97069 = qx.ui.core.ClientDocument.getInstance();
+      var qx_id97167 = qx.ui.core.ClientDocument.getInstance();
 
 /** begin auto-generated gui code **/
 
@@ -73,62 +73,62 @@ this.addEventListener("appear",function(event)
 this.centerToBrowser()
 },this);
 
-var qx_id98262 = new qx.ui.groupbox.GroupBox(null,null);
-qx_id98262.setDimension("auto" ,"auto");
-this.add(qx_id98262);
+var qx_id98360 = new qx.ui.groupbox.GroupBox(null,null);
+qx_id98360.setDimension("auto" ,"auto");
+this.add(qx_id98360);
 
-var qx_id100259 = new qx.ui.layout.VerticalBoxLayout();
-qx_id100259.setSpacing(5);
-qx_id98262.add(qx_id100259);
+var qx_id100356 = new qx.ui.layout.VerticalBoxLayout();
+qx_id100356.setSpacing(5);
+qx_id98360.add(qx_id100356);
 
-var qx_id100263 = new qx.ui.basic.Atom(this.tr("Please log in."),"icon/16/actions/encrypt.png");
-qx_id100263.setHeight(20);
-qx_id100263.setWidth("auto");
-qx_id100263.setIconPosition("left");
-qx_id100259.add(qx_id100263);
+var qx_id100360 = new qx.ui.basic.Atom(this.tr("Please log in."),"icon/16/actions/encrypt.png");
+qx_id100360.setHeight(20);
+qx_id100360.setWidth("auto");
+qx_id100360.setIconPosition("left");
+qx_id100356.add(qx_id100360);
 
-var qx_id100275 = new qx.ui.layout.GridLayout();
-qx_id100275.setDimension("auto" ,"auto");
-qx_id100275.setVerticalSpacing(5);
-qx_id100275.setHorizontalSpacing(5);
-qx_id100259.add(qx_id100275);
-qx_id100275.setRowCount(3);
-qx_id100275.setColumnCount(2);
-qx_id100275.setColumnWidth(0,70);
-qx_id100275.setColumnHorizontalAlignment(0,"right");
-qx_id100275.setColumnVerticalAlignment(0,"top");
-qx_id100275.setColumnWidth(1,180);
-qx_id100275.setColumnHorizontalAlignment(1,"right");
-qx_id100275.setColumnVerticalAlignment(1,"top");
-qx_id100275.setRowHeight(0,20);
+var qx_id100371 = new qx.ui.layout.GridLayout();
+qx_id100371.setDimension("auto" ,"auto");
+qx_id100371.setVerticalSpacing(5);
+qx_id100371.setHorizontalSpacing(5);
+qx_id100356.add(qx_id100371);
+qx_id100371.setRowCount(3);
+qx_id100371.setColumnCount(2);
+qx_id100371.setColumnWidth(0,70);
+qx_id100371.setColumnHorizontalAlignment(0,"right");
+qx_id100371.setColumnVerticalAlignment(0,"top");
+qx_id100371.setColumnWidth(1,180);
+qx_id100371.setColumnHorizontalAlignment(1,"right");
+qx_id100371.setColumnVerticalAlignment(1,"top");
+qx_id100371.setRowHeight(0,20);
 
-var qx_id100301 = new qx.ui.basic.Label(this.tr("User Name"));
-qx_id100275.add(qx_id100301,0,0);
+var qx_id100397 = new qx.ui.basic.Label(this.tr("User Name"));
+qx_id100371.add(qx_id100397,0,0);
 
 this.usernameField = new qx.ui.form.TextField();
 this.usernameField.setWidth("100%");
 this.usernameField.setHeight(20);
-qx_id100275.add(this.usernameField,1,0);
-qx_id100275.setRowHeight(1,20);
+qx_id100371.add(this.usernameField,1,0);
+qx_id100371.setRowHeight(1,20);
 
-var qx_id100319 = new qx.ui.basic.Label(this.tr("Password"));
-qx_id100275.add(qx_id100319,0,1);
+var qx_id100415 = new qx.ui.basic.Label(this.tr("Password"));
+qx_id100371.add(qx_id100415,0,1);
 
 this.passwordField = new qx.ui.form.PasswordField();
 this.passwordField.setWidth("100%");
 this.passwordField.setHeight(20);
-qx_id100275.add(this.passwordField,1,1);
-qx_id100275.setRowHeight(2,20);
+qx_id100371.add(this.passwordField,1,1);
+qx_id100371.setRowHeight(2,20);
 
-var qx_id100338 = new qx.ui.layout.HorizontalBoxLayout();
-qx_id100338.setSpacing(5);
+var qx_id100433 = new qx.ui.layout.HorizontalBoxLayout();
+qx_id100433.setSpacing(5);
 
-var qx_id100341 = new qx.ui.form.Button(this.tr("Login"),null);
-qx_id100341.setWidth(100);
-qx_id100338.add(qx_id100341);
+var qx_id100436 = new qx.ui.form.Button(this.tr("Login"),null);
+qx_id100436.setWidth(100);
+qx_id100433.add(qx_id100436);
 
-qx_id100341.addEventListener("execute", function(event){this.onSubmit(event,qx_id100341);},this);
-qx_id100275.add(qx_id100338,1,2);
+qx_id100436.addEventListener("execute", function(event){this.onSubmit(event,qx_id100436);},this);
+qx_id100371.add(qx_id100433,1,2);
 
 qx.event.message.Bus.subscribe("qcl.auth.messages.loginFailed",function(message){
 
