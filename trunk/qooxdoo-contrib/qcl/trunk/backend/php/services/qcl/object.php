@@ -177,20 +177,27 @@ class qcl_object extends patched_object
   function __destruct() {}
   
   /**
-   * Run once for the given class  per application installation
+   * Run once for the given class per application installation
    * This can be reset by clearing the php/var/tmp folder. Implementing method
    * must call parent method before executing action like so:
    * if ( parent::runOnce() ) { execute run-once action  }
    */
   function runOnce()
   {
-    $path = $path = QCL_TMP_PATH . get_class($this) . ".runonce";
+    $path = QCL_TMP_PATH . get_class($this) . ".runonce";
     if ( file_exists( $path) ) return false;
     touch($path);
     return true;
   }
   
- 
+  /**
+   * Alias method for get_class($this)
+   */
+  function getClassName()
+  {
+    return get_class($this);
+  }
+  
   //-------------------------------------------------------------
   // registry during request
   //------------------------------------------------------------- 
@@ -198,6 +205,7 @@ class qcl_object extends patched_object
   /**
    * Gets a registry value
    * @param string $name
+   * @deprecated
    * @return mixed
    */
   function &getRegistryVar( $name )
@@ -209,6 +217,7 @@ class qcl_object extends patched_object
    * Sets a registry value
    * @param string $name
    * @param string $value
+   * @deprecated
    * @return void
    */
   function setRegistryVar( $name, $value )
@@ -217,7 +226,7 @@ class qcl_object extends patched_object
   }
   
   //-------------------------------------------------------------
-  // persistence
+  // Object persistence
   //-------------------------------------------------------------	
 
   /**
@@ -230,6 +239,7 @@ class qcl_object extends patched_object
    * @param mixed[optional] $arg3
    * @param mixed[optional] $arg4
    * @param mixed[optional] $arg5
+   * @deprecated Subclass qcl_db_PersistentModel instead!
    * @return qcl_object Instance of class
    */
   function &getPersistentInstance( $class, $arg1=null, $arg2=null, $arg3=null, $arg4=null, $arg5=null)
@@ -264,7 +274,7 @@ class qcl_object extends patched_object
      * registering shutdown function since constructor is not called
      */
     //$this->info("Registering  function 'save' for " . get_class($obj));
-    register_shutdown_function (array(&$obj, 'save') );        
+    register_shutdown_function ( array( &$obj, 'save' ) );        
     
     return $obj;
   }

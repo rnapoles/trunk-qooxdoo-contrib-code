@@ -438,6 +438,7 @@ function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
     {
       case E_WARNING:
       case E_NOTICE:
+          require_once dirname(__FILE__) . "/../object.php";
           qcl_object::writeLog($errmsg);
           break;
       

@@ -7,14 +7,35 @@
 
 require_once ("qcl/jsonrpc/model.php");
 
-class qcl_http_request extends qcl_jsonrpc_model
+class qcl_http_Request extends qcl_jsonrpc_model
 {
 
-  var $method   = "POST";     // only post is implemented so far
-  var $data     = null;
+  /**
+   * Request method, only POST implemented so far
+   */
+  var $method  = "POST";    
+  
+  /**
+   * Request data
+   */
+  var $data = null;
+  
+  /**
+   * Optional headers to send with the request
+   */
   var $headers  = array ();
-  var $timeout  = 3;         // timeout in seconds
+  
+  /**
+   * Request timeout
+   */
+  var $timeout  = 3;
 
+  /**
+   * Request content type
+   */
+  var $contentType ="application/x-www-form-urlencoded";
+  
+  
   /**
    * constructor
    * @return
@@ -68,7 +89,8 @@ class qcl_http_request extends qcl_jsonrpc_model
       $this->raiseError("qcl_http_request::setData : argument must be associative array.");
     }
   }
-
+  
+  
   /**
    * getter for data
    * @return array
@@ -108,44 +130,57 @@ class qcl_http_request extends qcl_jsonrpc_model
 
   /**
    * sends the request depending on method and PHP version
-   * @return
+   * @return string
    */
   function send()
   {
-    // check url
+    /*
+     * check url
+     */
     if ( ! $this->url )
     {
       $this->raiseError("qcl_http_request::send : No url provided.");
     }
 
-    // create header string from array
-    $headers =  count($this->headers) > 0 ? implode("\n\r", $this->headers) : null;
+    /*
+     * create header string from array
+     */
+    $headers = count($this->headers) > 0 ? 
+                    implode("\n\r", $this->headers) : null;
 
-    // create data string from array
+    /*
+     * encode data
+     */
     $data = "";
-    foreach ( $this->data as $key => $value )
+    if ( is_array( $this->data ) )
     {
-      if ( trim($key) )
+      foreach ( $this->data as $key => $value )
       {
-        $data .= "&" . urlencode($key) . "=" . urlencode(trim($value));
+        $data .= urlencode($key) . "=" . urlencode(trim($value)) . "&";
       }
     }
-    $data .= "&";
-
-    // send request
+    else
+    {
+      $data = $this->data;
+    }
+    
+    /*
+     * send request
+     */
     if ($this->method == "POST")
     {
        $this->response = $this->post_request_php4($this->url, $data, $this->timeout, $headers);
     }
     else
     {
-      $this->raiseError("Method not supported.");
+      $this->raiseError("Request method {$this->method} not yet supported.");
     }
     return $this->response;
   }
 
   /**
-   * get the raw response data including http headers
+   * Get the raw response data including http headers
+   * @return string
    */
   function getResponse()
   {
@@ -153,7 +188,8 @@ class qcl_http_request extends qcl_jsonrpc_model
   }
 
   /**
-   * get response content without http headers
+   * Get response content without http headers
+   * @return string
    */
   function getResponseContent()
   {
@@ -165,9 +201,9 @@ class qcl_http_request extends qcl_jsonrpc_model
    * post request using php5 functions
    * taken from http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
    * @return
-   * @param $url Object
-   * @param $data Object
-   * @param $optional_headers Object[optional]
+   * @param string $url 
+   * @param mixed $data 
+   * @param array $optional_headers Object[optional]
    */
   function post_request_php5($url, $data, $timeout = 10, $optional_headers = null)
   {
@@ -199,14 +235,14 @@ class qcl_http_request extends qcl_jsonrpc_model
    * post request using php4 functions
    * taken from http://www.enyem.com/wiki/index.php/Send_POST_request_(PHP)
    * @return
-   * @param $url Object
-   * @param $data Object
-   * @param $optional_headers Object[optional]
+   * @param string $url 
+   * @param string $data
+   * @param array[optional] $optional_headers 
    */
   function post_request_php4($url, $data, $timeout=10, $optional_headers = null)
   {
     $start    = strpos($url, '//') + 2;
-    $end      = strpos($url,"/",$start);
+    $end      = either(strpos($url,"/",$start),strlen($url));
     $portPos  = strpos($url,":",$start);
 
     if (  $portPos > 0 )
@@ -222,31 +258,50 @@ class qcl_http_request extends qcl_jsonrpc_model
       $domain = substr($url, $end);
     }
 
-    // connect
+    /*
+     * Connect
+     */
     $this->log("Connecting to $host, port $port, path $domain.");
     $errno = ""; $errstr="";
     $fp = fsockopen($host, $port, $errno, $errstr, $timeout );
+    
+    /*
+     * handle errors
+     */
     if ( ! $fp )
     {
       $this->raiseError("Cannot connect to $host, port $port, path $domain: $errstr");
     }
 
-    // connect successful
+    /*
+     * connection successful, write headers
+     */
     fputs($fp, "POST $domain HTTP/1.1\r\n");
     fputs($fp, "Host: $host\r\n");
     if ($optional_headers)
     {
       fputs($fp, $optional_headers);
     }
-    fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+    
+    /*
+     * content type
+     */
+    if ( $this->contentType )
+    {
+      fputs($fp, "Content-type: {$this->contentType}\r\n");  
+    }
+    
     fputs($fp, "Content-length: " . strlen($data) . "\r\n\r\n");
     fputs($fp, "$data\r\n\r\n");
 
     $response = "";
     $time = time();
 
-    // badly behaving servers might not maintain or close the stream properly, we need to
-    // check for a timeout if the server doesn't send anything.
+    /*
+     * Get response. Badly behaving servers might not maintain or close the stream properly, 
+     * we need to check for a timeout if the server doesn't send 
+     * anything.
+     */
     stream_set_blocking ( $fp, 0 );
     while ( ! feof( $fp )  and ( time() - $time <  $timeout ) )
     {
@@ -257,6 +312,10 @@ class qcl_http_request extends qcl_jsonrpc_model
         $time = time();
       }
     }
+    
+    /*
+     * Close stream and return response data.
+     */
     fclose($fp);
     return $response;
   }

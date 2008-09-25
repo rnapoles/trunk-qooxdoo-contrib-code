@@ -94,15 +94,26 @@ class qcl_db_mysql extends qcl_db_abstract
 
 
 	/**
-	 * queries database
+	 * Queries database
 	 * @param string $sql
 	 * @param bool $abortOnError if true (default), raise a JSONRPC error and abort, else return false
 	 * @return PEAR_DB resultset
 	 */
 	function &query ( $sql, $abortOnError=true )
 	{
-		global $error;
-		$this->log($sql,QCL_LOG_DEBUG);
+		/*
+		 * ???
+		 */
+	  global $error;
+		
+		/*
+		 * log query
+		 */
+		$this->log("Executing sql query: $sql");
+		
+		/*
+		 * Execute sql query
+		 */
 		$res = $this->db->query( $sql );
 		if ( PEAR::isError($res) )
     {
@@ -117,7 +128,7 @@ class qcl_db_mysql extends qcl_db_abstract
 	}
 
 	/**
-	 * executes a query, alias of $this->query
+	 * Executes a query, alias of $this->query
 	 * @param string $sql
 	 * @param bool $abortOnError if true (default), raise a JSONRPC error and abort, else return false
 	 * @return array resultset
@@ -128,7 +139,7 @@ class qcl_db_mysql extends qcl_db_abstract
 	}
 
 	/**
-	 * get first row of result set
+	 * Get first row of result set
 	 * @param string 	  $sql 				      sql query
 	 * @param boolean  	$withColumnNames	if true (default), map values to column names
 	 * @return array
@@ -141,8 +152,11 @@ class qcl_db_mysql extends qcl_db_abstract
     }
 
     $this->log($sql,QCL_LOG_DEBUG);
-		$res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
-		if ( PEAR::isError ( $res ) ) {
+		
+    $res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
+		
+		if ( PEAR::isError ( $res ) ) 
+		{
 			$this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
 		}
 		return $res;
@@ -167,14 +181,17 @@ class qcl_db_mysql extends qcl_db_abstract
 	{
 		$rows = $this->getAllRecords( $sql, false );
 		$result= array();
-		foreach($rows as $row) $result[] = $row[0];
+		foreach($rows as $row) 
+		{
+		  $result[] = $row[0];
+		}
 		return $result;
 	}
 
 	/**
 	 * gets full resultset
-	 * @param string 	$sql 				sql query
-	 * @param boolean  	$withColumnNames	if true (default), map values to column names
+	 * @param string 	$sql sql query
+	 * @param boolean $withColumnNames	if true (default), map values to column names
 	 */
 	function getAllRecords( $sql, $withColumnNames=true )
 	{

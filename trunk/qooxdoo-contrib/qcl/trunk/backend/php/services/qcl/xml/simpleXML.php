@@ -1,11 +1,15 @@
 <?php
 
 /**
- * class providing a cross-version (php4/5) simple xml representation as a php object
- * this class also provides caching of the object that is parsed from the xml, and a simple locking mechanism
- * that ensures that several users can access the xml at the same time and changes in the xml will be written consecutively.
- * The object will have the lock on its corresponding xml file until it is disposed at the script end (or if you call
- * $obj->__destruct() manually)
+ * Class providing a cross-version (php4/5) simple xml 
+ * representation as a php object. This class also provides 
+ * caching of the object that is parsed from the xml, and a 
+ * simple locking mechanism that ensures that several users 
+ * can access the xml at the same time and changes in the xml
+ * will be written consecutively. The object will have the 
+ * lock on its corresponding xml file until it is disposed 
+ * at the script end (or if you call $obj->removeLock() manually)
+ * 
  **/
 class qcl_xml_simpleXML extends qcl_jsonrpc_object
 {
@@ -16,7 +20,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   var $file; 
 
   /**
-   * php4-backport of simplexml API
+   * PHP4-backport of simplexml API
    * @var XMLParser
    */
   var $__impl;
@@ -66,8 +70,9 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   }
   
   /**
-   * creates a new file with optional content but only if it
+   * Creates a new file with optional content but only if it
    * doesn't exist already
+   * @return boolean True if file was created
    */
   function createIfNotExists($path,$xml="")
   {
@@ -99,6 +104,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
    * if $xml is a file, reuse cached data if file timestamp hasn't changed. If $xml is a string, 
    * reuse cache with an id supplied by $cache if it exists.
    * @param array $atrributeIndexed array of atrributes which will be indexed (PHP4)
+   * @return SimpleXmlElement
    **/
   function &load( $xml, $cache=false, $indexedAttributes=array() )
   {
@@ -281,7 +287,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   }
   
   /**
-   * saves parse xml object tree to cache
+   * saves parsed xml object tree to cache
    * @access private
    */
   function _saveToCache()

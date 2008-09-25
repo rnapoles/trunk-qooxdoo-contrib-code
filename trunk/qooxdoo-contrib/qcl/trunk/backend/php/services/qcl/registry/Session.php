@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Dependencies
+ */
 require_once "qcl/jsonrpc/object.php";
 
 /**
