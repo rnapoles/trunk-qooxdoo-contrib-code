@@ -281,5 +281,15 @@ class String
   {
     return $this->substr($first,$last-$first);
   }
+  
+  /**
+   * Returns the string value of the object
+   * @return string
+   */
+  function toString()
+  {
+    return $this->_value;
+  }
+   
 }
 ?>
