@@ -15,11 +15,6 @@ class qcl_jsonrpc_object extends qcl_object
   //-------------------------------------------------------------
   // instance variables
   //-------------------------------------------------------------
-
-	/**
-	 * @var JsonRpcError $error
-	 */
-	var $error;
   
   /**
    * @ the path to the directory containing binary executables, relative to the SERVICE_PATH

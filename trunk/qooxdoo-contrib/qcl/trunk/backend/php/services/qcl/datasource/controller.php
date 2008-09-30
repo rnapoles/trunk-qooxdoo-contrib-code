@@ -163,7 +163,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * abort if not found
      */
-    if ( $dsModel->notFound()  )
+    if ( $dsModel->foundNothing()  )
     {
       $this->raiseError("Datasource '$name' doesn't exist." );
     }
