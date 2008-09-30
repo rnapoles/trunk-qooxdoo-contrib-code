@@ -724,7 +724,7 @@ qx.Class.define("htmlarea.command.Manager",
             * An extra <span> is needed for every text-decoration value,
             * because the color of a decoration is based on the element's color. 
             */
-           for(i=0; i<textDecorations.length; i++)
+           for(var i=0; i<textDecorations.length; i++)
            {
              spanString += '<span style="';
              spanString += 'color: ' + textDecorations[i]['color'] + ';';
@@ -776,7 +776,7 @@ qx.Class.define("htmlarea.command.Manager",
             * An extra <span> is needed for every text-decoration value,
             * because the color of a decoration is based on the element's color. 
             */
-           for(i=0; i<textDecorations.length; i++)
+           for(var i=0; i<textDecorations.length; i++)
            {
              /* Create decoration node and apply style settings */
              nodes.push(this.__doc.createElement("span"));
@@ -859,7 +859,7 @@ qx.Class.define("htmlarea.command.Manager",
 
 
        /* Cycle through saved style names and fetch computed value for each of it. */
-       for(style in usedStyles)
+       for(var style in usedStyles)
        {
          styleValue = decoration.getPropertyValue(style);
 
@@ -1446,6 +1446,7 @@ qx.Class.define("htmlarea.command.Manager",
         return range.toString();
       }
 
+      // FIXME: This code will be never executed
       return tmpBody.innerHTML;
     }
   },

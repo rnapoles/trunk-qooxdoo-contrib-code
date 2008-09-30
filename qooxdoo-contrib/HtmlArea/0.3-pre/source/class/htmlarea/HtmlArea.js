@@ -1763,7 +1763,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var sel = this.__getSelection();
 
       /* This nodes are needed to apply the exactly style settings on the paragraph */
-      var styleNodes = this.__commandManager.__commandManager.generateHelperNodes();
+      var styleNodes = this.__commandManager.generateHelperNodes();
 
       /* Generate unique ids to find the elements later */
       var spanId = "__placeholder__" + Date.parse(new Date());
