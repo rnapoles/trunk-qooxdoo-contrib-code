@@ -57,9 +57,10 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      * store request information
      */
     global $jsonInput;
-		$this->request['service']  = $jsonInput ? $jsonInput->service : "";
-    $this->request['method']   = $jsonInput ? $jsonInput->method  : "";
+		$this->request['service']  = $jsonInput ? $jsonInput->service : null;
+    $this->request['method']   = $jsonInput ? $jsonInput->method  : null;
     $this->request['remoteIp'] = $_SERVER['REMOTE_ADDR']; 
+    $this->request['params']   = $jsonInput ? $jsonInput->params  : null;
     
     /*
      * log request
@@ -77,7 +78,25 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		
    
 	}   	
+	
+	/**
+	 * Returns the full path of the current service
+	 * @return string
+	 */
+	function getServicePath()
+	{
+	  return $this->request['service'] . "." . $this->request['method'];
+	}
 
+  /**
+   * Returns the parameters of the current service request
+   * @return array
+   */
+  function getParams()
+  {
+    return $this->request['params'];
+  }
+	
 	//-------------------------------------------------------------
   // service configuration
   //-------------------------------------------------------------
