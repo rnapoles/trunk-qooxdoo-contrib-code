@@ -132,8 +132,8 @@ class ArrayList
   
   /**
    * Returns the index of the last occurrence of the specified object in this list.
-   * @param obj
-   * return integer
+   * @param mixed $obj
+   * @return int
    **/
   function lastIndexOf($obj)
   {
@@ -243,7 +243,7 @@ class ArrayList
 
   /**
    * Set the pointer of the next element of the list
-   * @return current element
+   * @return mixed current element
    */
   function next() 
   {
@@ -267,6 +267,7 @@ class ArrayList
   /**
    * Joins array elemnt with given glue character(s)
    * @param string $glue
+   * @return string
    */
   function join( $glue )
   {
