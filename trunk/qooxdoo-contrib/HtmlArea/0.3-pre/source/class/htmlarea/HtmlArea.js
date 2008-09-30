@@ -1763,7 +1763,7 @@ qx.Class.define("htmlarea.HtmlArea",
       var sel = this.__getSelection();
 
       /* This nodes are needed to apply the exactly style settings on the paragraph */
-      var styleNodes = this.__commandManager.generateHelperNodes();
+      var styleNodes = this.__commandManager.__commandManager.generateHelperNodes();
 
       /* Generate unique ids to find the elements later */
       var spanId = "__placeholder__" + Date.parse(new Date());
@@ -1780,7 +1780,8 @@ qx.Class.define("htmlarea.HtmlArea",
        * Therefore we also insert a helper node, then the paragraph and the style
        * nodes after it.
        */
-      this.__commandManager.execute("inserthtml", helperString + paragraphString + styleNodes);
+      // styleNodes is array and this caused problems
+      this.__commandManager.execute("inserthtml", helperString + paragraphString /* + styleNodes */);
 
       /* Fetch elements */
       spanNode      = this.__iframe.getWindow().document.getElementById(spanId);
@@ -1796,11 +1797,12 @@ qx.Class.define("htmlarea.HtmlArea",
       if(paragraphNode.previousSibling.innerHTML == helperString)
       {
         /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-        paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>';
+        paragraphNode.previousSibling.innerHTML = "";
+        for (var i = 0; i < styleNodes.length; i++) paragraphNode.previousSibling.appendChild(styleNodes[i]);
+        paragraphNode.previousSibling.innerHTML += '<br _moz_dirty="" type="_moz"/>';
       }
       else
       {
-        /* We do net need to pollute the generated HTML with IDs */
         spanNode.removeAttribute("id");
       }
 
