@@ -130,6 +130,7 @@ class qcl_db_PersistentObject extends qcl_object
      * later
      */
     $this->_original = $this;
+    
   }
   
   /**
@@ -143,12 +144,12 @@ class qcl_db_PersistentObject extends qcl_object
      */
     if ( $id )
     {
+      //$this->info("Loading " . $this->getClassName() . " [$id].");
       
       $this->_dbModel->findWhere(array(
         'class'    => "= '" . $this->getClassName() . "' AND ",
         'objectId' => "= '$id'"
-      ));
-      
+      )); 
     }
     else
     {
@@ -158,8 +159,10 @@ class qcl_db_PersistentObject extends qcl_object
     /*
      * Check if model data was found
      */
-    if ( $this->_dbModel->notFound() )
+    if ( $this->_dbModel->foundNothing() )
     {
+      //$this->info($this->getClassName() . " [$id] was not found. Creating it...");
+      
       /*
        * create new record in database
        */
@@ -197,12 +200,15 @@ class qcl_db_PersistentObject extends qcl_object
         }
       }
       
+      //$this->info("Object was found. Copying properties ...");
+      
       /*
        * attach object properties to this object
        */
       foreach ( $this->getPropertyNames() as $key)
       {
         $this->$key =& $object->$key;
+        //$this->info("  '$key' (" . gettype($object->$key) . ")");
       }
       
       /*
@@ -219,6 +225,13 @@ class qcl_db_PersistentObject extends qcl_object
   
   }
   
+  /**
+   * Reload object data
+   */
+  function reload()
+  {
+    $this->load($this->objectId);
+  }
   
   /**
    * Tries to get a write lock. I am sure we have a race condition
@@ -229,7 +242,7 @@ class qcl_db_PersistentObject extends qcl_object
     /*
      * Reload object to get newest data
      */
-    $this->load();
+    $this->reload();
     
     /*
      * check if we already have a lock
@@ -332,8 +345,8 @@ class qcl_db_PersistentObject extends qcl_object
       $this->raiseError("Cannot save " . $this->getClassName() . " because of write lock." );
       return; 
     }
-    $this->_dbModel->setData( serialize( &$this ) );
-    $this->_dbModel->save();    
+    $this->_dbModel->setData( serialize( $this ) );
+    $this->_dbModel->save();
   }
   
   /**
@@ -373,7 +386,7 @@ class qcl_db_PersistentObject extends qcl_object
     if ( $changed )
     {
       
-      $this->log($this->getClassName() . "[{$this->objectId}] has changed, saving ... ");
+      //$this->info($this->getClassName() . " [{$this->objectId}] has changed, saving ... ");
       
       if ( $this->isLocked )
       {
@@ -392,7 +405,7 @@ class qcl_db_PersistentObject extends qcl_object
     }
     else
     {
-      $this->log($this->getClassName() . "[{$this->objectId}] has not changed.");
+      //$this->info($this->getClassName() . " [{$this->objectId}] has not changed.");
     }
   }
   

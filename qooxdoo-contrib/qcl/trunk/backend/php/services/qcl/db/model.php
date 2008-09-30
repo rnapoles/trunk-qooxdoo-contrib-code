@@ -10,6 +10,9 @@ require_once "qcl/xml/simpleXML.php";
  * simple controller-model architecture for jsonrpc
  * common base class for models based on a (mysql) database
  * @todo: make this dbms-independent
+ * @todo: rename methods "getX()" into "x()" if they refer to 
+ * the whole model or all records. "getFoo" should only be used for
+ * model data.
  */
 class qcl_db_model extends qcl_jsonrpc_model
 {
@@ -291,17 +294,9 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     
     /*
-     * invalid datasource
+     * connect to database/datasource
      */
-    elseif ( !is_null($datasource) )
-    {
-      $this->raiseError("Parameter must be null or qcl_datasource_db_model object, is " . gettype($datasource) );
-    }
-    
-    /*
-     * connect to database
-     */
-    $this->connect();
+    $this->connect( $datasource ); 
         
     /*
      * parse schema document into $this->schemaXml
@@ -435,7 +430,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   //-------------------------------------------------------------   
 
   /**
-   * get all properties of this model
+   * Return the names of all properties of this model
    * @return array
    */
   function getProperties()
@@ -659,8 +654,9 @@ class qcl_db_model extends qcl_jsonrpc_model
   }  
   
   /**
-   * gets all database records or those that match a where condition. 
+   * Finds all database records or those that match a where condition. 
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
+   * 
    * @param string|array|null  $where   where condition to match, if null, get all, if array, match properties
    * @param string|array|null[optional] $orderBy Order by property/properties. If an array is given, the last
    * element of the array will be searched for "ASC" or "DESC" and used as sort direction
@@ -889,10 +885,17 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       $sql .= "WHERE $where ";
     }
-    if ($orderBy)
+    if ( $orderBy )
     {
-      $orderBy = $this->getColumnName($orderBy);
-      $sql .= "ORDER BY `$orderBy`"; 
+      if ( is_string($orderBy) )
+      {
+        $orderBy = $this->getColumnName($orderBy);
+        $sql .= "ORDER BY `$orderBy`";
+      }
+      else
+      {
+        $this->raiseError("OrderBy argument must be a string.");    
+      }
     }
     return $this->db->getValues($sql);    
   }  
@@ -915,11 +918,20 @@ class qcl_db_model extends qcl_jsonrpc_model
    * Whether the last query didn't find any records
    * @return boolean
    */
-  function notFound()
+  function foundNothing() 
   {
     return is_null( $this->currentRecord );
   }  
- 	
+
+  /**
+   * Whether the last query was successful
+   * @return boolean
+   */
+  function foundSomething()
+  {
+    return ! is_null( $this->currentRecord );
+  }    
+  
  	/**
    * Find database records by their primary key
    * @param array|int	$ids Id or array of ids
@@ -1032,6 +1044,16 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
 
   /**
+   * Sets the data of the currently loaded record
+   * @param mixed $record
+   * @return void 
+   */
+  function setRecord($record)
+  {
+    $this->currentRecord = $record;
+  } 
+  
+  /**
    * Gets the data of the currently loaded record as a stdClass object
    * so you can use $record->foo instead of $record['foo']
    * @return stdClass 
@@ -1042,13 +1064,24 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $obj;
   }  
   
-  /*
-   * gets the data from the last find query
+  
+  /**
+   * Gets the data from the last find query
    * @return array
    */
   function getResult()
   {
     return $this->_lastResult;
+  }
+  
+  /**
+   * Sets the data from the last find query
+   * @param array $result
+   * @return void
+   */
+  function setResult( $result )
+  {
+    $this->_lastResult = $result;
   }
   
   /**
@@ -1091,8 +1124,10 @@ class qcl_db_model extends qcl_jsonrpc_model
   }
   
   /**
-   * compare current record with array. This will only compare the keys existing in the array or
-   * the fields that are provided as second argument
+   * Compare current record with array. This will only compare 
+   * the keys existing in the array or the fields that are 
+   * provided as second argument.
+   * 
    * @param object|array $compare Model object or array data
    * @param array $fields
    * @return bool whether the values are equal or not
@@ -1173,7 +1208,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     else 
     {
       $this->findById( $id );
-      if ( $this->notFound() )
+      if ( $this->foundNothing() )
       {
         $this->raiseError("Cannot get property '$name' from model '{$this->name}: Record #$id does not exist.");
       }
@@ -1216,15 +1251,82 @@ class qcl_db_model extends qcl_jsonrpc_model
    * you need to call the update() method to commit the property change to the database.
    * Alias of setProperty
    * @return void 
-   * @param string     $name
-   * @param mixed      $value 
-   * @param int        $id if given, find and update property recordd
+   * @param string|array|qcl_db_model $first If $first is an associated array, set all 
+   * key/value pairs as properties. If it is a qcl_db_model object, copy properties.
+   * @param mixed  $value 
+   * @param int $id if given, find and update property recordId
    */  
-  function set( $name, $value, $id=null )
+  function set( $first, $value=null, $id=null )
   {
-    return $this->setProperty($name, $value, $id);
+    if ( is_array($first) )
+    {
+      foreach( $first as $key => $value )
+      {
+        $this->setProperty($key, $value, $id);
+      }
+      return true;
+    }
+    elseif ( is_a( $first, "qcl_db_model" ) )
+    {
+      return $this->set( $first->getRecord() );
+    }
+    elseif ( is_string( $first ) )
+    { 
+      return $this->setProperty( $first, $value, $id);  
+    }
+    else
+    {
+      $this->raiseError("Illegal first argument.");
+    }
   }
+  
+  /**
+   * Copies all properties that exists in both models.
+   * @param qcl_db_model $model
+   * 
+   */
+  function copySharedProperties ( $model )
+  {
+    $myProperties    = $this->getProperties();
+    $data            = $model->getRecord();
+    
+    foreach( $data as $key => $value )
+    {
+      if ( in_array($key, $myProperties) )
+      {
+        $this->setProperty($key,$value);
+      }
+    } 
+  } 
 
+  /**
+   * Compares all properties that exists in both models.
+   * @param qcl_db_model $that Other model
+   * @return bool True if all property values are identical, false if not
+   */
+  function compareSharedProperties ( $that )
+  {
+    $properties = array_intersect(
+                    $this->getProperties(),
+                    $that->getProperties()
+                  );
+    
+    $isEqual = true;
+    foreach( $properties as $name )
+    {
+      $prop1 = $this->getProperty( $name );
+      $prop2 = $that->getProperty( $name );
+      //$this->info("$prop1 => $prop2");
+      
+      if ( $prop1 !== $prop2  )
+      {
+        $isEqual = false;
+        break;
+      }
+    } 
+    return $isEqual;
+  }   
+  
   /**
    * Sets a property in the current model recordset. Unless you provide an id,
    * you need to call the update() method to commit the property change to the database.
@@ -1249,7 +1351,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * else use current record
      */
-    else
+    elseif ( $this->hasProperty("id") )
     {
       $data['id'] = $this->getProperty("id");
     }
@@ -1264,7 +1366,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
     
     /*
-     * if property name doesn't exist, either the current record is in a unconverted
+     * if property name doesn't exist, either the current 
+     * record is in a unconverted 
      * (column) format or there is a letter case problem
      */    
     else
@@ -1312,6 +1415,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   /**
    * Converts array data to a 'where' compliant sql string
+   * @param string|array $where
    */
   function toSql( $where )
   {
@@ -1320,7 +1424,7 @@ class qcl_db_model extends qcl_jsonrpc_model
       $sql = "";
       foreach ( $where as $property => $expr )
       {
-        $sql .= "`" . $this->getColumnName($property) . "` " . $expr;  
+        $sql .= "`" . $this->getColumnName($property) . "` " . $expr. " ";  
       }
       return $sql; 
     }
@@ -1552,13 +1656,55 @@ class qcl_db_model extends qcl_jsonrpc_model
   function createOrFind( $namedId )
   {
     $this->findByNamedId( $namedId );
-    if ( $this->notFound() )
+    if ( $this->foundNothing() )
     {
       $this->create( $namedId );  
     }
     return $this->getId();
   }  
 
+  //-----------------------------------------------------------------------
+  // Information on records
+  //-----------------------------------------------------------------------
+ 
+  /**
+   * Returns number of records in the database
+   * @return int
+   */
+  function countRecords()
+  {
+    return $this->db->getValue("SELECT COUNT(*)"); 
+  }
+
+  /**
+   * Returns the lowest id number 
+   * @return int
+   */
+  function minId()
+  {
+    $idCol = $this->getColumnName('id');
+    return $this->db->getValue("SELECT MIN(`$idCol`)"); 
+  }
+  
+  /**
+   * Returns the highest id number 
+   * @return int
+   */
+  function maxId()
+  {
+    $idCol = $this->getColumnName('id');
+    return $this->db->getValue("SELECT MAX(`$idCol`)"); 
+  }  
+  
+  /**
+   * Returns the ids of all records in the database
+   * @return array
+   */
+  function ids()
+  {
+    return $this->getColumnValues($this->getColumnName("id"));
+  }
+  
   //-----------------------------------------------------------------------
   // Deprecated methods, will be slowly replaced by new findBy... methods
   //-----------------------------------------------------------------------
@@ -2436,10 +2582,30 @@ class qcl_db_model extends qcl_jsonrpc_model
      * of a more generic data type
      */
     $this->type  = $modelAttrs['type'];
+
+    /*
+     * whether the setup process should upgrade the schema or just use existing tables in
+     * whatever schema they are in
+     */
+    if ( $modelAttrs['upgradeSchema'] == "no" )
+    {
+      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.");
+      return;
+    }    
+
+    /*
+     * This model doesn't have a table backend
+     */
+    if ( $modelAttrs['table']  == "no" )
+    {
+      $this->log("Model name '{$this->name}' has no table backend.");
+      return;  
+    }
     
     /*
-     * the table name is provided as the 'table' property
-     * of the class, usually prefixed by the datasource name, if applicable to the model 
+     * The table name is provided as the 'table' property
+     * of the class, usually prefixed by the datasource name, 
+     * if applicable to the model 
      */
     if ( ! $modelAttrs['table'] )
     {
@@ -2449,17 +2615,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->table = $prefix . $modelAttrs['table'];
     
     /*
-     * whether the setup process should upgrade the schema or just use existing tables in
-     * whatever schema they are in
-     */
-    if ( $modelAttrs['upgradeSchema'] == "no" )
-    {
-      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.");
-      return;
-    }
-    
-    /*
-     * return if table exists and schema hasn't changed
+     * Return if table exists and schema hasn't changed
      */
     if ( $this->db->tableExists($this->table) and !$modelXml->hasChanged() ) 
     {

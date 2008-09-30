@@ -318,6 +318,14 @@ class qcl_object extends patched_object
   {
     $this->error = $error;
   }
+  
+  /**
+   * Clears error message
+   */
+   function clearError()
+   {
+     $this->error = null;
+   }
    
   /**
    * get include path for a class name
