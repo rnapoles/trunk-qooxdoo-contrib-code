@@ -28,7 +28,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
   /**
    * Request timeout
    */
-  var $timeout  = 3;
+  var $timeout  = 1;
 
   /**
    * Request content type

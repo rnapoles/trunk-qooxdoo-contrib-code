@@ -8,8 +8,9 @@ require_once "qcl/datasource/db.model.php";
 require_once "qcl/datasource/storage.php";
 
 /**
- * datasource controller class. Can also be used as a mixin for controllers
+ * Datasource controller class. Can also be used as a mixin for controllers
  * that are not bound to a database.
+ * @todo Get rid of file-based storage and use persistend db object instead.
  */
 class qcl_datasource_controller extends qcl_session_controller
 {  
@@ -33,7 +34,7 @@ class qcl_datasource_controller extends qcl_session_controller
   var $datasourceModels = array();  
   
   /**
-   * gets and initializes the datasource model object for a 
+   * Gets and initializes the datasource model object for a 
    * datasource with the given name
    * @param string $name
    * @return qcl_datasource_db_model
@@ -183,7 +184,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * create connection to this datasource
      */
-    $dsSchemaModel->getDatasourceConnection();
+    //$dsSchemaModel->getDatasourceConnection();
     
     /*
      * store name of the datasource in the model
