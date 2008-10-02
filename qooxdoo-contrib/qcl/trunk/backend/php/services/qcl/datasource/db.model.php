@@ -1,7 +1,13 @@
 <?php
 
+/*
+ * dependencies
+ */
 require_once "qcl/db/model.php";
 
+/**
+ * Class modeling a datasource 
+ */
 class qcl_datasource_db_model extends qcl_db_model
 {
   /**
@@ -58,7 +64,7 @@ class qcl_datasource_db_model extends qcl_db_model
   }
   
   /**
-   * gets a stored model by name
+   * Gets a stored model by name
    * @param string $name
    * @return qcl_datasource_db_model   
    */
@@ -68,7 +74,7 @@ class qcl_datasource_db_model extends qcl_db_model
   }
   
   /** 
-   * stores a model object by name
+   * Stores a model object by name
    * @param string $name
    * @param qcl_datasource_db_model
    * @return void
@@ -78,6 +84,20 @@ class qcl_datasource_db_model extends qcl_db_model
     $this->models[$name] =& $model;
   }
 
+  /**
+   * Returns the url of the datasource, if any
+   * @return string
+   */
+  function getUrl()
+  {
+    $url = $this->getType() . "://" . $this->getHost();
+    if ( $port = $this->getPort() )
+    {
+      $url .= ":$port"; 
+    }
+    return $url;
+  }
+  
   /**
    * gets dsn information as array from the currently loaded datasource record
    * @return array
@@ -102,7 +122,8 @@ class qcl_datasource_db_model extends qcl_db_model
   }
   
   /**
-   * gets the database connection object of the currently loaded datasource record
+   * Returns the database connection object of the currently 
+   * loaded datasource record
    * @return qcl_db_mysql
    */
   function &getDatasourceConnection()

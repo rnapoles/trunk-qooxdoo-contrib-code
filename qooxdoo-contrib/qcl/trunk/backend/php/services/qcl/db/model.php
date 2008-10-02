@@ -293,10 +293,6 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->setDatasourceModel( &$datasource );
     }
     
-    /*
-     * connect to database/datasource
-     */
-    $this->connect( $datasource ); 
         
     /*
      * parse schema document into $this->schemaXml
@@ -304,26 +300,33 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->getSchemaXml();
     
     /*
+     * setup properties 
+     */
+    $this->setupProperties();    
+    
+    /*
+     * connect to datasource, if any
+     */
+    $this->connect( &$datasource );     
+    
+    /*
      * setup schema. if necessary, create or update tables and import intial data. 
      */
     $this->setupSchema();
     
     /*
-     * setup properties 
-     */
-    $this->setupProperties();
-    
-    /*
      * setup table links
      */
     $this->setupTableLinks();
+    
+
   } 	
 	
   /**
-   * connects to database. if this model is connected to 
+   * Connects to database. if this model is connected to 
    * a datasource model, reuse the datasource's database
    * handler
-   *
+   * @param string|array|null $dsn
    */
   function connect( $dsn=null )
   {
@@ -340,7 +343,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * try to get db handler from datasource object
      */
     $dsModel =& $this->getDatasourceModel();
-    if ( is_object( $dsModel ) )
+    if ( is_object($dsModel) and $dsModel->instanceOf( "qcl_datasource_db_model" ) )
     {
       //$this->info( get_class($this) . ": Getting db handler from datasource object...");
       $db =& $dsModel->getDatasourceConnection();
