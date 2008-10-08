@@ -67,13 +67,14 @@ qx.Class.define("soap.parameters", { extend : qx.core.Target
 					s += year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + "." + milliseconds + timezone;
 				}
 				// Array
-				else if(o.constructor.toString().indexOf("function Array()") > -1) {
+				else if( (o.constructor.toString().indexOf("function Array()") > -1) || (o instanceof Array)) {
 					for(var p in o)	{
 						if(!isNaN(p)) { // linear array
 							(/function\s+(\w*)\s*\(/ig).exec(o[p].constructor.toString());
 
 							var type = RegExp.$1;
 							switch(type) {
+							case undefined: // for Safari 2.0
 							case "":
 								type = typeof(o[p]);
 								break;

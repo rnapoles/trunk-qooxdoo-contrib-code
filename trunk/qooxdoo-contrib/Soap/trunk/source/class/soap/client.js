@@ -176,9 +176,11 @@ qx.Class.define("soap.client", { extend : qx.core.Target
                     }
                 }	
                 else {
-                    if(ell[i].attributes["name"] != null && ell[i].attributes["type"] != null) {
-                        wsdlTypes[ell[i].attributes["name"].value] = ell[i].attributes["type"].value;
-                    }
+					var name = ell[i].getAttribute("name");
+					var type = ell[i].getAttribute("type");
+					if(name != null && type != null) {
+						wsdlTypesname = type;
+					}
                 }
             }
             return wsdlTypes;
