@@ -1,13 +1,13 @@
 
 What you somehow managed to obtain is this: I got the soap client from 
-http://www.guru4.net/articoli/javascript-soap-client/en/ and integrated it 
+http://www.codeplex.com/JavaScriptSoapClient/ and integrated it 
 (as best as i could) to qooxdoo (qooxdoo.org). There is still some work to 
 be done, but it seems to work as it is. 
 
-Tested with CherryPy 3.1 and soaplib from svn (r39) on Python 2.5.2, and with 
-Qooxdoo 0.7.3
+Tested with CherryPy 3.1 and soaplib from svn (r39) patched with given diff,
+on Python 2.5.2, and with Qooxdoo 0.7.3
 
-Here's how to install and patch soaplib:
+To install and patch soaplib, do the following as root:
 
 	svn co https://svn.optio.webfactional.com/soaplib/trunk/soaplib /usr/lib/python2.5/site-packages/soaplib
 	cp backend/soaplib_r39.diff /usr/lib/python2.5/site-packages/soaplib
@@ -52,7 +52,10 @@ Make yourself home and send any questions/comments/patches to
 
 	burak [dot] arslan [at] arskom [dot] com [dot] tr
 
-Most of the work here is released under BSD license, unless otherwise noted.
+The work here is released under BSD license, except the code under "soap" directory.
+The original soap client is licensed under the GPL. This is important, as GPL is not
+compatible with qooxdoo's licensing. Use at your own risk.
 
 Take Care!
 Burak
+
