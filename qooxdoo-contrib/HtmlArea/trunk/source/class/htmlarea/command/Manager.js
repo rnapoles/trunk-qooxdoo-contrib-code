@@ -491,68 +491,66 @@ qx.Class.define("htmlarea.command.Manager",
       * @param commandObject {Object} command information
       * @return {Boolean} Success of the operation
       */
-     __insertHtml : function(value, commandObject)
-     {
-       var ret;
+    __insertHtml : qx.core.Variant.select("qx.client",
+    {
 
-       if (qx.core.Variant.isSet("qx.client", "mshtml"))
-       {
-         /* Special handling if a "br" element should be inserted */
-         if (value == htmlarea.HtmlArea.simpleLinebreak)
-         {
-           ret = this.__insertBrOnLinebreak(); 
-         }
-         else
-         {
-           this.__doc.body.focus();
-           
-           /* this.__currentRange can be a wrong range!*/
-           var storedRange = this.getCurrentRange();
-           
-           /* in this case, get the range again (we lose the cursor position by doing that) */
-           var actualRange = this.__editorInstance.getRange();
+      "mshtml" : function(value, commandObject)
+      {
+        this.__editorInstance.getContentDocument().body.focus();
 
-           if(storedRange)
-           {
-             if (this.__lastSelectionType == "Control")
-             {
-               storedRange.collapse();
-             }
+        /* Special handling if a "br" element should be inserted */
+        if (value == htmlarea.HtmlArea.simpleLinebreak)
+        {
+          return this.__insertBrOnLinebreak(); 
+        }
+        else
+        {
+          /* this.__currentRange can be a wrong range!*/
+          var storedRange = this.getCurrentRange();
 
-             /* Try to pasteHTML on the stored range */
-             try
-             {
-               storedRange.pasteHTML(value);
-               storedRange.collapse(false);
-               storedRange.select();
-             }
-             catch(e)
-             {
-               /* If this fails, use the range we read explicitly */
-               actualRange.pasteHTML(value);
-               actualRange.collapse(false);
-               actualRange.select();
-             }
-           }
+          /* in this case, get the range again (we lose the cursor position by doing that) */
+          var actualRange = this.__editorInstance.getRange();
 
-           ret = true;
-         }
-       }
-       else
-       {
-         /* Body element must have focus before executing command */
-         this.__doc.body.focus();
+          if(storedRange)
+          {
+            if (this.__lastSelectionType == "Control")
+            {
+              storedRange.collapse();
+            }
 
-         ret = this.__doc.execCommand(commandObject.identifier, false, value);
+            /* Try to pasteHTML on the stored range */
+            try
+            {
+              storedRange.pasteHTML(value);
+              storedRange.collapse(false);
+              storedRange.select();
+            }
+            catch(e)
+            {
+              /* If this fails, use the range we read explicitly */
+              actualRange.pasteHTML(value);
+              actualRange.collapse(false);
+              actualRange.select();
+            }
+          }
 
-         /* (re)-focus the editor after the execCommand */
-         this.__focusAfterExecCommand();
-       }
+         return true;
+        }
+      },
 
-       return ret;
-     },
-     
-     
+      "default" : function (value, commandObject)
+      {
+        /* Body element must have focus before executing command */
+        this.__editorInstance.getContentWindow().focus();
+
+        ret = this.__doc.execCommand(commandObject.identifier, false, value);
+
+        /* (re)-focus the editor after the execCommand */
+        this.__focusAfterExecCommand();
+      }
+    }),
+
+
      /**
      * Inserts a paragraph when hitting the "enter" key
      *
