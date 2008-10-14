@@ -1246,7 +1246,14 @@ class qcl_db_model extends qcl_jsonrpc_model
     /*
      * property name was not found
      */
-    $this->raiseError("Property '$name' does not exist.'");
+    if ( $this->hasProperty($name) )
+    {
+      return null;
+    }
+    else
+    {
+      $this->raiseError("Property '$name' does not exist.'");
+    }
   }
   
   /**
@@ -1282,7 +1289,28 @@ class qcl_db_model extends qcl_jsonrpc_model
       $this->raiseError("Illegal first argument.");
     }
   }
+
   
+  /**
+   * Returns all property values that exists in both models.
+   * @param qcl_db_model $model
+   * @return array
+   */
+  function getSharedPropertyValues ( $model )
+  {
+    $myProperties    = $this->getProperties();
+    $data            = $model->getRecord();
+    
+    foreach( $data as $key => $value )
+    {
+      if ( ! in_array($key, $myProperties) )
+      {
+        unset($data[$value]);
+      }
+    }
+    return $data; 
+  } 
+    
   /**
    * Copies all properties that exists in both models.
    * @param qcl_db_model $model
@@ -1301,14 +1329,18 @@ class qcl_db_model extends qcl_jsonrpc_model
       }
     } 
   } 
+  
+  
 
   /**
    * Compares all properties that exists in both models.
    * @param qcl_db_model $that Other model
+   * @param array[optional] $diff Array that needs to be passed by reference that will contain a list of parameters that differ
    * @return bool True if all property values are identical, false if not
    */
-  function compareSharedProperties ( $that )
+  function compareSharedProperties ( $that, &$diff )
   {
+    $diff = array(); 
     $properties = array_intersect(
                     $this->getProperties(),
                     $that->getProperties()
@@ -1317,14 +1349,14 @@ class qcl_db_model extends qcl_jsonrpc_model
     $isEqual = true;
     foreach( $properties as $name )
     {
-      $prop1 = $this->getProperty( $name );
-      $prop2 = $that->getProperty( $name );
+      $prop1 = trim($this->getProperty( $name ));
+      $prop2 = trim($that->getProperty( $name ));
       //$this->info("$prop1 => $prop2");
       
       if ( $prop1 !== $prop2  )
       {
         $isEqual = false;
-        break;
+        $diff[$name] = array($prop1,$prop2); 
       }
     } 
     return $isEqual;
@@ -1498,7 +1530,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   
   
   /**
-   * inserts a record into a table and returns last_insert_id()
+   * Inserts a record into a table and returns last_insert_id()
    * @param array|stdClass $data associative array with the column names as keys and the column data as values
    * @return int the id of the inserted row or 0 if the insert was not successful 
    */
@@ -1529,7 +1561,7 @@ class qcl_db_model extends qcl_jsonrpc_model
      * retrive record data (which might contain additional values inserted by the database)
      * if the model has an id column and a new id was returned
      */
-    if ( $this->col_id and $id ) 
+    if ( $id ) 
     {
       $this->findById($id);
     }
