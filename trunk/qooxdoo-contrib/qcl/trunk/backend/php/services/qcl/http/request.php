@@ -151,7 +151,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
     /*
      * encode data
      */
-    $data = "";
+    $data = "\n\r";
     if ( is_array( $this->data ) )
     {
       foreach ( $this->data as $key => $value )
