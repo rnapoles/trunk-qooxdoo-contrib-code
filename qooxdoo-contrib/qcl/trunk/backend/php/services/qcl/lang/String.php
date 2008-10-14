@@ -290,6 +290,25 @@ class String
   {
     return $this->_value;
   }
+  
+  /**
+   * Returns an array of parts of the string split at the given seperator instances
+   * @param string $separator A regular expression 
+   * @return array
+   */
+   function split($separator)
+   {
+     $parts = preg_split($separator,$this->_value);
+     return $parts;
+   }
    
+   /**
+    * Returns a string that is the result of a regular
+    * expression replace operation
+    */
+    function replace($search,$replace)
+    {
+      return preg_replace($search,$replace,$this->_value);
+    }
 }
 ?>
