@@ -28,13 +28,31 @@ public class HttpRoot implements Root {
     private final HttpFilesystem filesystem;
     private final String host;
     private final int port;
+    private int connectTimeout;
+    private int readTimeout;
     
     public HttpRoot(HttpFilesystem filesystem, String host, int port) {
         this.filesystem = filesystem;
         this.host = host;
         this.port = port;
+        this.connectTimeout = 0;
+        this.readTimeout = 0;
     }
 
+    public int getConnectTimeout() {
+    	return connectTimeout;
+    }
+    public void setConnectTimeout(int millis) {
+    	this.connectTimeout = millis;
+    }
+
+    public int getReadTimeout() {
+    	return readTimeout;
+    }
+    public void setReadTimeout(int millis) {
+    	this.readTimeout = millis;
+    }
+        
     @Override
     public boolean equals(Object obj) {
         HttpRoot root;

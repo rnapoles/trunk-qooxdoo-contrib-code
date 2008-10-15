@@ -41,7 +41,7 @@ public class TempFiles implements Runnable {
     }
     
     /**
-     * @param file  file or directory
+     * @param node  file or directory
      */
     public synchronized void deleteAtExit(Node node) {
         if (delete == null) {

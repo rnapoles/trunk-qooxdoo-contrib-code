@@ -128,6 +128,8 @@ public class HttpNode extends Node {
         URLConnection connection;
         
         connection = url.openConnection();
+        connection.setConnectTimeout(getRoot().getConnectTimeout());
+        connection.setReadTimeout(getRoot().getReadTimeout());
         connection.connect();
         return connection.getInputStream();
     }
