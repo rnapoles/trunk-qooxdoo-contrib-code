@@ -6,7 +6,7 @@
 require_once "qcl/object.php";
 
 /**
- * base class of all json rpc service classes
+ * Base class of all json rpc service classes
  */
 
 class qcl_jsonrpc_object extends qcl_object 

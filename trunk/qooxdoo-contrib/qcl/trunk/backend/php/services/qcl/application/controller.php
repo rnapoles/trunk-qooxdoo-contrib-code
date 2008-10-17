@@ -62,6 +62,19 @@ class qcl_application_controller extends qcl_datasource_controller
     ) );
    return $this->getResponseData();  
   }
+  
+  /**
+   * Returns a html snippet that displays a progress bar
+   * with the given progress (in percent)
+   * @param int $percent
+   * @param int $height Optional height, defaults to a slim 8 pixel bar including the 
+   * border
+   */
+  function getProgressBarHtml($percent,$height=8)
+  {
+    $html =  "<div style='width:100%;height:{$height}px;border:1px solid grey;padding:1px;'><div style='width:$percent%;height:100%;background-color:blue;'></div></div>";
+    return $html;
+  }
     
 }
 

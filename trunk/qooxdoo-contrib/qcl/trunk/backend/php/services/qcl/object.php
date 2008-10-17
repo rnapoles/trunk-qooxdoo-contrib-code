@@ -100,6 +100,15 @@ class qcl_object extends patched_object
    */
   var $isNew = true;
   
+  /**
+   * The (hopefully) globally unique id of this object.
+   * Do not use this property directly, use ::objectId() 
+   * to access it.
+   * @var string
+   * @access private
+   */
+  var $_objectId = null;
+  
 	/**
 	 * Class constructor. If the mixin class property contains 
 	 * array entries, these classes will be mixed in.
@@ -111,6 +120,11 @@ class qcl_object extends patched_object
 		 */
 	  parent::__construct();
 		
+	  /*
+	   * object id
+	   */
+	  $this->_objectId = uuid();
+	  
 	  /*
 	   * class name
 	   */
@@ -175,6 +189,16 @@ class qcl_object extends patched_object
 	 * just an empty stub
 	 */
   function __destruct() {}
+  
+  /**
+   * Returns the (hopefully) globally unique object id
+   * @return string
+   */
+  function objectId()
+  {
+    return $this->_objectId;
+  }
+  
   
   /**
    * Run once for the given class per application installation
