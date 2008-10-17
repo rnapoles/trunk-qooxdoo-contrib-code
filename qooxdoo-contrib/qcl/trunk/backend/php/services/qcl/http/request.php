@@ -156,7 +156,8 @@ class qcl_http_Request extends qcl_jsonrpc_model
     {
       foreach ( $this->data as $key => $value )
       {
-        $data .= urlencode($key) . "=" . urlencode(trim($value)) . "&";
+        $value = str_replace("&","%26",urlencode($value));
+        $data .= urlencode($key) . "=" . trim($value) . "&";
       }
     }
     else
@@ -270,7 +271,8 @@ class qcl_http_Request extends qcl_jsonrpc_model
      */
     if ( ! $fp )
     {
-      $this->raiseError("Cannot connect to $host, port $port, path $domain: $errstr");
+      $this->setError("Cannot connect to $host, port $port, path $domain: $errstr");
+      return false;
     }
 
     /*

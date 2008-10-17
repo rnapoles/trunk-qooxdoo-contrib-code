@@ -162,6 +162,62 @@ function get_file_extension ($file)
 }
 
 
+/**
+ * Build a UUID or GUID
+ * taken from http://www.soulhuntre.com/2004/10/29/uuid-guid-in-native-php/
+ * @author soulhuntre@soulhuntre.com 
+ */
+function uuid()
+{
+    // -_-_Ð_-_Ð_-_Ð_-_Ñ
+
+    // build a UUID or GUID via PHP
+    // may or may not be Microsoft GUID compatible
+    // thanks to all the internet code examples!
+    //
+    // contact me with corrections and changes please,
+    // soulhuntre@soulhuntre.com
+    //
+    // 10/29/2004 - v1.0
+    //
+    // Do whatever you want with this code, itÕs in the public domain
+
+    $rawid = strtoupper(md5(uniqid(rand(), true)));
+    $workid = $rawid;
+
+    // hopefully conform to the spec, mark this as a Òrandom" type
+    // lets handle the version byte as a number
+    $byte = hexdec( substr($workid,12,2) );
+    $byte = $byte & hexdec("0f");
+    $byte = $byte | hexdec("40");
+    $workid = substr_replace($workid, strtoupper(dechex($byte)), 12, 2);
+
+    // hopefully conform to the spec, mark this common variant
+    // lets handle the Òvariant"
+    $byte = hexdec( substr($workid,16,2) );
+    $byte = $byte & hexdec("3f");
+    $byte = $byte | hexdec("80");
+    $workid = substr_replace($workid, strtoupper(dechex($byte)), 16, 2);
+
+    // build a human readable version
+    /*$rid = substr($rawid, 0, 8).'-'
+        .substr($rawid, 8, 4).'-'
+        .substr($rawid,12, 4).'-'
+        .substr($rawid,16, 4).'-'
+        .substr($rawid,20,12);
+    */
+
+    // build a human readable version
+    $wid = substr($workid, 0, 8).'-'
+        .substr($workid, 8, 4).'-'
+        .substr($workid,12, 4).'-'
+        .substr($workid,16, 4).'-'
+        .substr($workid,20,12);
+
+    // -_-_Ð_-_Ð_-_Ð_-_Ñ
+  return $wid;
+}
+
 /*
  * we can return here if not PHP 4
  */
@@ -307,5 +363,8 @@ if ( ! function_exists("microtime_float" ) )
       return ((float)$usec + (float)$sec);
   }
 }
+
+
+
 
 ?>

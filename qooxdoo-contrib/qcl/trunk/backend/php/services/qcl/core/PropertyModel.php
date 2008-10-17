@@ -7,97 +7,84 @@ require_once "qcl/jsonrpc/model.php";
 require_once "qcl/xml/simpleXML.php";
 
 /**
- * simple controller-model architecture for jsonrpc
- * common base class for models based on a (mysql) database
- * @todo: make this dbms-independent
+ * Model that has a set of properties defined by an xml schema
+ * and which optionally can be connected to a datasource which
+ * holds all connection data etc. 
  * @todo: rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
-class qcl_db_model extends qcl_jsonrpc_model
+class qcl_jsonrpc_PropertyModel extends qcl_jsonrpc_model
 {
 
-  /**
-   * the datasource object instance
-   * @var qcl_db_mysql 
-   */
-  var $db;
-  
-  /**
-   * the name of the table in the database that holds the
-   * data of this model
-   * @var string
-   */
-  var $table;
   
   /**
    * the current record cached. Access with qcl_db_model::getRecord 
    * @access private
    * @var array
    */
-	var $currentRecord = null;
-	
-	/**
-	 * the result of the last query
-	 * @access private
-	 * @var array
-	 */
-	var $_lastResult = null;
-	
-	/**
-	 * a blueprint of an newly initialized record. 
-	 * you can pre-insert static values here
-	 * @var array
-	 */
-	var $emptyRecord = array();           
+  var $currentRecord = null;
+  
+  /**
+   * the result of the last query
+   * @access private
+   * @var array
+   */
+  var $_lastResult = null;
+  
+  /**
+   * a blueprint of an newly initialized record. 
+   * you can pre-insert static values here
+   * @var array
+   */
+  var $emptyRecord = array();           
 
-	
-	/**
-	 * the datasource model object, if any
-	 * @var qcl_datasource_model
-	 */
-	var $datasourceModel = null;
+  /**
+   * the datasource model object, if any
+   * @var qcl_datasource_model
+   */
+  var $datasourceModel = null;
 
-	/**
-	 * the datasource name or other information identifying the datasource
-	 * @var string
-	 */
-	var $datasource;
-	
-	/**
-	 * the name of the model. Should be a java-like class name such as "namespace.package.ClassName"
-	 * @var string
-	 */
-	var $name;
-	
-	/**
-	 * the type of the model, if the model implements a generic 
-	 * type in a specific way
-	 *
-	 * @var string
-	 */
-	var $type;
-	
-	/**
-	 * the class name of the model. 
-	 *
-	 * @var string
-	 */
-	var $class;
-	
-	/**
-	 * the schema as an simpleXml object, containing all
-	 * included xml files. Acces with qcl_db_model::getSchemaXml();
-	 * @access private
-	 * @var qcl_xml_simpleXML
-	 */
-	var $schemaXml;
-	
-	/**
-	 * shortcuts to property nodes in schema xml. Access with qcl_db_model::getPropertyNode($name)
-	 * @array array of object references
-	 */
-	var $propertyNodes;
+  /**
+   * the datasource name or other information identifying the datasource
+   * @var string
+   */
+  var $datasource;
+  
+  /**
+   * the name of the model. Should be a java-like class name such as "namespace.package.ClassName"
+   * @var string
+   */
+  var $name;
+  
+  /**
+   * the type of the model, if the model implements a generic 
+   * type in a specific way
+   *
+   * @var string
+   */
+  var $type;
+  
+  /**
+   * the class name of the model. 
+   *
+   * @var string
+   */
+  var $class;
+  
+  /**
+   * the schema as an simpleXml object, containing all
+   * included xml files. Acces with qcl_db_model::getSchemaXml();
+   * @access private
+   * @var qcl_xml_simpleXML
+   */
+  var $schemaXml;
+  
+  /**
+   * shortcuts to property nodes in schema xml. Access with qcl_db_model::getPropertyNode($name)
+   * @array array of object references
+   */
+  var $propertyNodes;
 
   /**
    * an associated array having the names of all properties (including linked tables) as
@@ -106,7 +93,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    * @access private
    * @var array
    */
-  var $properties = array();	
+  var $properties = array();  
 
   /**
    * an associated array having the names of all alias as
@@ -143,8 +130,8 @@ class qcl_db_model extends qcl_jsonrpc_model
    * shortcuts to property nodes which belong to metadata
    * @array array of object references
    */
-  var $metaDataProperties;	
-	
+  var $metaDataProperties;  
+  
   /**
    * the path to the model schema xml file. ususally automatically resolved.
    * @see qcl_db_model::getSchmemaXmlPath()
@@ -152,20 +139,20 @@ class qcl_db_model extends qcl_jsonrpc_model
    */
   var $schemaXmlPath = null;  
   
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // internal methods
   //-------------------------------------------------------------
 
   /**
    * constructor 
-   * @param qcl_jsonrpc_controller	$controller
+   * @param qcl_jsonrpc_controller  $controller
    * @param mixed $datasource Datasource model object or null if no datasource 
    */
-	function __construct( $controller, $datasourceModel=null )
+  function __construct( $controller, $datasourceModel=null )
   {
   
     parent::__construct(&$controller);
-	
+  
     $this->log("Constructing '" . get_class($this) . "' with controller and '" . get_class($datasourceModel) . "'.");
   
     /*
@@ -181,9 +168,9 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     $this->initialize( &$datasourceModel );
        
-	}
+  }
   
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // overloading
   //-------------------------------------------------------------   
 
@@ -268,11 +255,11 @@ class qcl_db_model extends qcl_jsonrpc_model
     {
       return $return; // PHP 5  
     }
-  }	
-     	
-	//-------------------------------------------------------------
+  } 
+      
+  //-------------------------------------------------------------
   // Initialization
-	//-------------------------------------------------------------   
+  //-------------------------------------------------------------   
 
   /**
    * initializes the model
@@ -320,8 +307,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     $this->setupTableLinks();
     
 
-  } 	
-	
+  }   
+  
   /**
    * Connects to database. if this model is connected to 
    * a datasource model, reuse the datasource's database
@@ -395,7 +382,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   //-------------------------------------------------------------
   // Datasource
-  //-------------------------------------------------------------   	
+  //-------------------------------------------------------------     
 
   /**
    * stores the name or object reference of the datasource
@@ -427,7 +414,7 @@ class qcl_db_model extends qcl_jsonrpc_model
    //}
    //$this->raiseError("No datasource model set.");
   }
- 	
+  
   //-------------------------------------------------------------
   // Properties and Columns
   //-------------------------------------------------------------   
@@ -935,27 +922,27 @@ class qcl_db_model extends qcl_jsonrpc_model
     return ! is_null( $this->currentRecord );
   }    
   
- 	/**
+  /**
    * Find database records by their primary key
-   * @param array|int	$ids Id or array of ids
+   * @param array|int $ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * @return Array Array of db record sets
    */
- 	function findById( $ids, $orderBy=null, $properties=null )
- 	{
- 	  if ( ! is_numeric($ids) and !is_array($ids) )
- 	  {
- 	    $this->raiseError("Invalid parameter id: '$ids'");
- 	  }
- 	  $rowIds = implode(",", (array) $ids );
- 	  if ( ! empty($rowIds) )
- 	  {
- 	    $result = $this->findWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $properties );
- 	    return $result;
- 	  }  
- 	  $this->raiseError("No id(s) provided.");
- 	}
+  function findById( $ids, $orderBy=null, $properties=null )
+  {
+    if ( ! is_numeric($ids) and !is_array($ids) )
+    {
+      $this->raiseError("Invalid parameter id: '$ids'");
+    }
+    $rowIds = implode(",", (array) $ids );
+    if ( ! empty($rowIds) )
+    {
+      $result = $this->findWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $properties );
+      return $result;
+    }  
+    $this->raiseError("No id(s) provided.");
+  }
 
   /**
    * find database records by their named id
@@ -988,8 +975,8 @@ class qcl_db_model extends qcl_jsonrpc_model
     
     return $result;
     
-  } 	
- 	
+  }   
+  
   /**
    * gets the record in this table that is referred to by the record from a different table (argument) 
    * @return array
@@ -1388,19 +1375,8 @@ class qcl_db_model extends qcl_jsonrpc_model
      */
     elseif ( $this->hasProperty("id") )
     {
-      if ( $name == "id" )
-      {
-        $data['id'] = $id;
-      }
-      else
-      {
-        $data['id'] = $this->getId(); 
-      }
+      $data['id'] = $this->getProperty("id");
     }
-    else
-    {
-     $this->raiseError("Model " . $this->getClassName() . " has no 'id' property."); 
-    } 
     
     /*
      * if property name exists, set it
@@ -1457,7 +1433,7 @@ class qcl_db_model extends qcl_jsonrpc_model
 
   //-------------------------------------------------------------
   // Data creation and manipulation
-  //-------------------------------------------------------------   	
+  //-------------------------------------------------------------     
   
   /**
    * Converts array data to a 'where' compliant sql string
@@ -1480,20 +1456,20 @@ class qcl_db_model extends qcl_jsonrpc_model
     }
   }
   
-	/**
-	 * creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
-	 * @param string	$namedId
-	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
-	 * @return int the id of the inserted or existing row 
-	 */
-	function createIfNotExists( $namedId, $parentId=null )
- 	{
- 		if ( $this->namedIdExists( $namedId ) )
- 		{
- 			return $this->getIdByNamedId( $namedId );
- 		}	
-	  return $this->create( $namedId, $parentId );
- 	}   
+  /**
+   * creates a new record and optionally links it to a foreign table (must be implemented in ::create() )
+   * @param string  $namedId
+   * @param int   $parentId   id of role (unused if class is qcl_access_role)
+   * @return int the id of the inserted or existing row 
+   */
+  function createIfNotExists( $namedId, $parentId=null )
+  {
+    if ( $this->namedIdExists( $namedId ) )
+    {
+      return $this->getIdByNamedId( $namedId );
+    } 
+    return $this->create( $namedId, $parentId );
+  }   
 
   /**
    * inserts a new empty record into a table and returns last_insert_id()
@@ -1692,7 +1668,7 @@ class qcl_db_model extends qcl_jsonrpc_model
   function deleteWhere ( $where )
   {
     $this->db->deleteWhere ( $this->table, $this->toSql($where) );
-  }  	
+  }   
   
   /**
    * Finds a record by its namedId or creates it if necessary
@@ -2320,7 +2296,7 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $map;
   }  
   
-	//-------------------------------------------------------------
+  //-------------------------------------------------------------
   // options: one column which contains a serialized assoc. array
   // containing additional dynamic fields that need not have their
   // own database columns
@@ -3594,5 +3570,5 @@ class qcl_db_model extends qcl_jsonrpc_model
     return $queryOperators[$type];
   }
   
-}	
+} 
 ?>
