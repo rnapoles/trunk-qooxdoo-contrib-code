@@ -64,13 +64,36 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
       nullable : true,
       init : null
     },
+
+    /** the table this cellEditor is attached to */
+    table :
+    {
+      check : "Object",
+      init : null
+    },
     
     /** metadata for the cell editor */
     metaData :
     {
       init : null,
       nullable : true
-    }      
+    },
+    
+    /** function that opens the popup ( overwrites ComboBox._openPopup() ) */
+    openPopupFunction :
+    {
+      check : "Function",
+      init : null,
+      nullable : true
+    },
+    
+    /** function that closes the popup ( overwrites ComboBox._closePopup() ) */
+    closePopupFunction :
+    {
+      check : "Function",
+      init : null,
+      nullable : true
+    }    
   },
 
   /*
@@ -81,33 +104,57 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
 
   members :
   {
-    // interface implementation
+    /*
+     * interface implementation
+     */
     createCellEditor : function(cellInfo)
     {
+      /*
+       * configure combobox in-place editor and overwrite
+       * popup functions
+       */
       var cellEditor = new qx.ui.form.ComboBox;
       cellEditor.setEditable(true);
       cellEditor.setAutoComplete(true);
+      cellEditor._openPopup  = this.getOpenPopupFunction();
+      cellEditor._closePopup = this.getClosePopupFunction();
+      cellEditor._table      = this.getTable();
       
+      /*
+       *  apply meta data
+       */ 
       var metaData = this.getMetaData();
-      
-      // jsonrpc data 
       cellEditor.setServiceName(metaData.serviceName);
       cellEditor.setServiceMethodAutoComplete(metaData.serviceMethodAutoComplete);
       cellEditor.setSeparator(metaData.separator);
-      
-      // other metadata
       cellEditor.setMetaData(metaData);
       
       cellEditor.setBorder(null);
       cellEditor.originalValue = cellInfo.value;
 
+      /*
+       * text field
+       */
       var field = cellEditor.getField();
       field.setLiveUpdate(true);
       field.setAppearance("table-editor-textfield");
 
+      /*
+       * Listbox
+       */
+      var listBox = cellEditor.getList();
+      // hack to capture the "enter" key.
+      listBox.addEventListener("enterPressed",function()
+      {
+        this.getTable().createDispatchDataEvent("changeEditedCell","Down"); 
+      },this);
+      
+      
       var value = cellInfo.value;
 
-      // replace null values
+      /*
+       * replace null values
+       */
       if ( value === null )
       {
         value = "";
@@ -118,7 +165,32 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
       field.addEventListener("appear", function() {
         this.selectAll();
       });
-
+      
+      /*
+       * catch cell action
+       */
+      cellEditor.addEventListener("cellAction", function (e)
+      {
+        
+        var direction="", key = e.getData();
+        //console.log("cell action:" + key );
+        switch(key)
+        {
+          case "Enter":
+          case "Down":
+            direction = "Down";
+            break;
+          case "Up":
+            direction = "Up";
+            break;
+        }
+        if ( direction )
+        {
+          cellInfo.table.createDispatchDataEvent("changeEditedCell",direction);  
+        }
+      });
+      
+      
       return cellEditor;
     },
 
@@ -129,8 +201,10 @@ qx.Class.define("qcl.databinding.simple.AutoCompleteComboBoxCellEditor",
     getCellEditorValue : function(cellEditor)
     {
       var value = cellEditor.getValue();
-
-      // validation function will be called with new and old value
+      
+      /* 
+       * validation function will be called with new and old value
+       */
       var validationFunc = this.getValidationFunction();
       if ( ! this._done && validationFunc )
       {

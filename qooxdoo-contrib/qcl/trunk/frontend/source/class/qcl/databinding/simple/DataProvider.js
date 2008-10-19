@@ -105,7 +105,19 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
        check : "Boolean",
        apply : "_applyEnableBoundWidgets",
        init : true
-     }
+     },
+     
+    /**
+     * The original values of the last update.
+     * This can be used to check
+     * whether a value change was caused by the data
+     * provider or a different source, e.g. the user.
+     */ 
+    originalValues :
+    {
+      check : "Map",
+      nullable : true
+    }
   },
 
 	
@@ -119,7 +131,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
   {
     
     /**
-     * enables or disables bound widgets
+     * Enables or disables bound widgets
      */
     _applyEnableBoundWidgets : function (value, oldValue)
     {
@@ -135,7 +147,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     },
     
     /**
-     * binds a widget to this data provider
+     * Binds a widget to this data provider
      *
      * @type member
      * @param vWidget {Object} the widget object
@@ -149,7 +161,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     },
 
     /**
-     * unbinds a widget from this data provider
+     * Unbinds a widget from this data provider
      *
      * @type member
      * @param widget {Object} the widget object
@@ -183,6 +195,22 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
     {
       return this.__boundWidgets;
     },
+    
+    /**
+     * Returns a list of names of the bound widgets
+     *
+     * @type member
+     * @return {Array}
+     */
+    getNames : function()
+    {
+      var names = [];
+      for ( var name in this.__boundWidgets)
+      {
+        names.push(name);
+      }
+      return names;
+    },    
 
     /**
      * gets the data that should be sent to the server
@@ -216,36 +244,46 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
      */    
     populateBoundWidgets : function(result)
     {
-      // dispatch event
+      /*
+       * check result object
+       */
       if ( typeof result != "object" )
       {
         this.error ("Server result is no hash map: " + result);
       }
-      else
+      
+      /*
+       * Retain a copy of the original values
+       */
+      this.setOriginalValues(result);
+      
+      /*
+       * set each key - value pair
+       */
+      for ( key in result )
       {
-        for ( key in result )
-        {
-          try 
-          { 
-            var widget = this.getBoundWidget(key);
-            if (typeof widget == "object" )
-            {
-              if ( widget.getUpdateTarget() != "server" ) 
-              {
-                var value  = result[key];
-                widget.setWidgetData(value);  
-              }
-            }
-            else
-            {
-              this.warn ( "`" + key + "` is not a bound widget");
-            }
-          } 
-          catch(e)
+        try 
+        { 
+          var widget = this.getBoundWidget(key);
+          if (typeof widget == "object" )
           {
-            this.warn (e);
+            if ( widget.getUpdateTarget() != "server" ) 
+            {
+              var value  = result[key];
+              widget.setWidgetData(value);  
+            }
           }
+          else
+          {
+            this.warn ( "`" + key + "` is not a bound widget");
+          }
+        } 
+        catch(e)
+        {
+          this.warn (e);
         }
+        
+
       }
     },
 

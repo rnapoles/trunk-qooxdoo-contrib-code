@@ -63,18 +63,19 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     this.setColumnVisibilityButtonVisible(false);
     this.setKeepFirstVisibleRowComplete(true);
     this.setStatusBarVisible(false);
+    this.setAlwaysUpdateCells(true);
     
     // navigation up and down
-    this.addEventListener("changeEditedChell",function(e){
+    this.addEventListener("changeEditedCell",function(e)
+    {
+      //console.log("changeEditedCell event:" +  e.getData() );
       this.stopEditing();
       var direction = e.getData();
       var col = this.getFocusedColumn(); 
       var row = this.getFocusedRow();
-      this.setFocusedCell(
-        col,
-        row + ( direction == "Up"  ? -1 * (row > 0) : 1 * ( row < this.getTableModel().getRowCount() ) ),
-        true
-      );
+      row = row + ( direction == "Up"  ? -1 * (row > 0) : 1 * ( row < this.getTableModel().getRowCount() ) );
+      this.getSelectionModel().setSelectionInterval(row,row);
+      this.setFocusedCell( col, row, true);
       this.startEditing();
     });
     
@@ -119,7 +120,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     propertyColumnLabel : 
     {
       check: "String",
-      init : "Property"
+      init : " "
     },
     
     /**
@@ -128,7 +129,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     valueColumnLabel : 
     {
       check: "String",
-      init : "Edit Value"
+      init : "Doubleclick or press 'enter' to edit"
     }
   },
   
@@ -152,7 +153,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     /**
      * applies width of value column
      */
-    _applyColumnWidthLabel : function(value,old)
+    _applyColumnWidthValue : function(value,old)
     {
       this.getTableColumnModel().getBehavior().setWidth(2,value);
     },
@@ -283,8 +284,7 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
 						break;		
             
           case "autocomplete":
-						cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditor;
-            cellEditor.setMetaData(metaData.autocomplete);
+						cellEditor = table._getCustomAutoCompleteComboBoxCellEditor(table,metaData.autocomplete);
 						break;                        								
 				}	
 			}
@@ -307,7 +307,155 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
     getDynamicCellEditor : function()
     {
       return new qx.ui.table.celleditor.Dynamic(this.createCellEditor);
-    }  
-			
-  }
+    },
+    
+    
+    /**
+     * private method to configure the autocompleting combobox in-place-editor
+     * @return qcl.databinding.simple.AutoCompleteComboBoxCellEditor
+     */  
+	  _getCustomAutoCompleteComboBoxCellEditor : function (propertyEditor,autocompleteInfo)
+    {
+      var cellEditor = new qcl.databinding.simple.AutoCompleteComboBoxCellEditor;
+      
+      /*
+       * configure autocomplete metadata
+       */
+      cellEditor.setMetaData(autocompleteInfo);
+      
+      /*
+       * set a reference to this property editor and overwrite open popup method
+       */
+      cellEditor.setTable(propertyEditor);
+      cellEditor.setOpenPopupFunction(propertyEditor._openPopup);
+      cellEditor.setClosePopupFunction(propertyEditor._closePopup);
+      
+      /*
+       * return altered combobox
+       */
+      return cellEditor;
+    },
+  
+    /**
+     * Sets the position and width of the combobox popup. Additionally dispatches an event
+     * if the popup is opened the first time. Enables the event capturing.
+     * This overwrites the native method.
+     * @type member
+     * @return {void}
+     */
+    _openPopup : function()
+    {
+      
+      /*
+       * return if empty or only one element
+       */
+      if (this._list.getChildrenLength() < 2 ) 
+      {
+        return;
+      }
+      
+      /*
+       * get popup object and dom element
+       */
+      var p = this._popup;
+      var el = this.getElement();
+      
+      /*
+       * call pre open function
+       */
+      if (!p.isCreated()) 
+      {
+        this.createDispatchEvent("beforeInitialOpen");
+      }
+
+      /*
+       * set the parent to the client document
+       */
+      var topWidget = this.getTopLevelWidget();
+      p.setParent( topWidget );
+
+      /*
+       * get property editor object
+       */
+      var tel = this._table.getElement();
+      var loc = qx.bom.element.Location.get(tel);      
+      var dim = qx.bom.element.Dimension;
+      var tw  = dim.getWidth(tel);
+      var th  = dim.getHeight(tel); 
+      
+      //console.log([loc,tw,th]);
+
+      /*
+       * set position of popup
+       */
+      p.setTop( loc.top );
+      p.setRight( 5 ); 
+      p.setWidth( parseInt( tw / 3) );
+      p.setHeight( th );
+      p.setMaxHeight( th );
+      
+      /*
+       * shrink property editor, will be restored 
+       * when popup closes.
+       */
+      this._oldPropEdWidth = tw;
+      this._table.setWidth( parseInt( tw * 2/3 ) );
+      
+      /*
+       * open popup
+       */
+      p.show();
+
+      /*
+       * save selected item
+       */
+      this._oldSelected = this.getSelected();
+      
+      /*
+       * enable event capturing
+       */
+      this.setCapture(true);
+    },
+
+  
+    /**
+     * Hides the popup and disables the event capturing.
+     * This overwrites the native method.
+     * @type member
+     * @return {void}
+     */
+    _closePopup : function()
+    {
+      /*
+       * hide popup
+       */
+      this._popup.hide();
+      
+      /*
+       * restore table width
+       */
+      if ( this._oldPropEdWidth )
+      {
+        this._table.setWidth( this._oldPropEdWidth );  
+      }
+     
+      /*
+       * disable event capturing
+       */
+      this.setCapture(false);
+      
+      /*
+       * put cursor at the end of the textfield
+       */
+      qx.client.Timer.once(function(){
+        var lastPos = this._field.getValue().length;
+        this._field.selectFromTo(lastPos,lastPos);        
+      },this,100);
+            
+    }
+   
+   
+    
+ },
+     
 });
