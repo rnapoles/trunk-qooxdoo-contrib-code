@@ -162,7 +162,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       init : false,
       apply : "_applyItemSelected"
     }
-    
   },
 
   
@@ -250,7 +249,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */
     _updateClient : function()
     {
-      
+
       /*
        * abort if databinding is turned off
        */
