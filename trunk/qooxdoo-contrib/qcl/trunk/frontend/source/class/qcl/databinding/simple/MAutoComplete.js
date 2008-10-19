@@ -436,7 +436,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
        */
       if ( input.length >= this.getMinCharNumber() )
       {
-        console.log( "sending request for " + input );
+        //console.log( "sending request for " + input );
         this._getAutoCompleteValues(input);  
       }
       
