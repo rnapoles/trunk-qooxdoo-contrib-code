@@ -30,7 +30,7 @@ class class_qcl_tool_migration extends qcl_jsonrpc_controller
     /*
      * arguments
      */
-    $dir = realpath("../../../frontend/source/xml");
+    $dir = realpath("../../../frontend/source/xml/includes/details");
     //$dir = realpath("../../../../../qooxdoo-contrib/qcl/trunk/frontend/source/xml/components");
     $application_namespace = "bibliograph";
     //$application_namespace = "qcl";
@@ -411,7 +411,7 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
         * save qxml file
         */
        $qxml_content = $qxml->join();
-       $qxml_file    = $path . ".new";
+       $qxml_file    = $path . ".new.qinc";
        file_put_contents($qxml_file,$qxml_content);
      }
 
