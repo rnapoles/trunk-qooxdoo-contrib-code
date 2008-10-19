@@ -559,7 +559,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     _handleAutoCompleteValues : function (data)
     {
       
-      console.log(data);
+      //console.log(data);
       
       /*
        * user input at event time
