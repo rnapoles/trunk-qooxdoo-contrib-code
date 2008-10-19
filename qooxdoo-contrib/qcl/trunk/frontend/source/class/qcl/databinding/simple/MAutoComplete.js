@@ -89,6 +89,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
     /** metadata for the service method  */
     metaData :
     {
+      check : "Map",
       init : null,
       nullable : true
     },
@@ -283,8 +284,14 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      */    
     _onChangeValue : function(e)
     {
-      
-      
+      /*
+       * abort if no autocompletion session  
+       */
+      if ( ! this.__autocompleteActive )
+      {
+        return;
+      }
+
       /*
        * compute values
        */
@@ -424,7 +431,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       /*
        * text fragment
        */
-      var input = content.substr(start);
+      var input = content.substr(start).replace(/\n/,"");
       
       /*
        * Store timestamp
@@ -551,6 +558,9 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
      */  
     _handleAutoCompleteValues : function (data)
     {
+      
+      console.log(data);
+      
       /*
        * user input at event time
        */
@@ -579,15 +589,15 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
       /*
        * get text fragment
        */
-      var cInput  = content.substr(start);
+      var cInput  = content.substr(start).replace(/\n/,"");
       
       /*
        * check whether input is still the same so that latecoming request
        * do not mess up the content
        */
-      if (input != cInput)
+      if ( input != cInput )
       {
-        // console.log ("we're late: " +  input + " != " + cInput );
+        //console.log ("we're late: '" +  input + "' != '" + cInput + "'." );
         return false;
       } 
           
@@ -637,40 +647,39 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           this._lastOptions = data.options;
           
         }
+   
+        // console.log("deselecting scrolling matched item into view");
+        
+        this._listBoxWidget._manager._deselectAll();  
+        
+        /*
+         * scroll matching item in the listbox into view
+         */
+        var matchedItem = this._listBoxWidget.findString(input);
+        if (matchedItem)
+        {
+          matchedItem.scrollIntoView();
+        }
       }
 
-      // console.log("deselecting scrolling matched item into view");
-      
-      
-      /* 
-       * deselect to prevent messing up the textbox
-       */
-      this._listBoxWidget._manager._deselectAll();
-      
-      /*
-       * scroll matching item in the listbox into view
-       */
-      var matchedItem = this._listBoxWidget.findString(input);
-      if (matchedItem)
-      {
-        matchedItem.scrollIntoView();
-      }
       
       /*
        * apply matched text and suggestion to content
        */
-      if (typeof data.suggest == "string")
+      if ( typeof data.suggest == "string")
       {
         var part1 = content.substr(0,start);
         var part2 = data.suggest;
         var nContent =  part1 + part2;
          
-        // console.log("setting: " + part1 + " + " + part2 );
+        //console.log("setting: " + part1 + " + " + part2 );
         
         /* 
          * set value
          */ 
+        this.__autocompleteActive = true;
         this.setValue( nContent );
+        this.__autocompleteActive = false;
         this._lastContent = nContent;
         
         /*
@@ -680,7 +689,7 @@ qx.Mixin.define("qcl.databinding.simple.MAutoComplete",
           this._textFieldWidget.selectFromTo( content.length, nContent.length );
         },this,100);
 
-        // console.log("selecting from " + content.length + " to " + nContent.length );
+         //console.log("selecting from " + content.length + " to " + nContent.length );
 
       }
     }
