@@ -17,9 +17,15 @@ class qcl_jsonrpc_object extends qcl_object
   //-------------------------------------------------------------
   
   /**
-   * @ the path to the directory containing binary executables, relative to the SERVICE_PATH
+   * the path to the directory containing binary executables, relative to the SERVICE_PATH
    */
-  var $bin_path    = "../../bin/";  
+  var $bin_path    = "../../bin/";    
+  
+  /**
+   * database for event listeners registered on this object
+   * @var array
+   */
+  var $__event_db = array();
   
   
   /**
@@ -38,9 +44,6 @@ class qcl_jsonrpc_object extends qcl_object
   {
     return parent::getInstance( $class );
   }
-  
-  
-
   
   /**
    * Run once for the given class during one session
@@ -164,6 +167,167 @@ class qcl_jsonrpc_object extends qcl_object
   }  
   
   //-------------------------------------------------------------
+  // Simple programmatic message and event system 
+  // This might later be rewritten more oo-style with event and 
+  // message objects.
+  //-------------------------------------------------------------
+  
+  /**
+   * Adds a message subscriber. This works only for objects which have been
+   * initialized during runtime. Filtering not yet supported, i.e. message name must
+   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * @todo: rewrite
+   * @param string $filter
+   * @param string $method Callback method of the current object
+   */
+  function addMessageSubscriber( $filter, $method )
+  {
+    global $message_db;
+    if ( ! $message_db )
+    {
+      $message_db = array(
+        'filters'  => array(),
+        'data'     => array()
+      );
+    }
+    
+    /*
+     * object id
+     */
+    $objectId = $this->objectId();
+    
+    /*
+     * search if we already have an entry for the filter
+     */
+    $index = array_search( $filter, $message_db['filters'] );
+    if ( $index === false )
+    {
+      /*
+       * filter not found, create new filter and data
+       */
+      $message_db['filters'][] = $filter;
+      $index = count($message_db['filters']) -1;
+      $message_db['data'][$index] = array( array( $objectId, $method ) ); 
+    }
+    else
+    {
+      /*
+       * filter found, add data
+       */
+      $message_db['data'][$index][] = array( $objectId, $method ); 
+    }
+    
+  }
+  
+  /**
+   * Dispatches a message. Filtering not yet supported, i.e. message name must
+   * match the one that has been used when subscribing the message, i.e. no wildcards!
+   * @param string $message Message name 
+   * @param mixed $data Data dispatched with message
+   * @todo: rewrite 
+   */
+  function dispatchMessage ( $message, $data=true )
+  {
+    $this->log("Message $message"); 
+    
+    /*
+     * search message database 
+     */
+    global $message_db;
+    $index = array_search ( $message, $message_db['filters'] );
+    
+    /*
+     * abort if no subcriber for this message registered
+     */
+    if ( $index === false ) return;
+    
+    /*
+     * call object methods
+     */
+    foreach ( $message_db['data'][$index] as $target )
+    {
+      list( $objectId, $method ) = $target;
+      $object =& $this->getObjectById( $objectId );
+      $object->$method($data);
+    }
+    
+  }
+  
+  /**
+   * Adds an event listener. Works only during runtime
+   * @todo: rewrite
+   * @param string $type The name of the event
+   * @param string $objectId Usually '$this->objectId()'
+   * @param string $method callback method of the object indicated by the objectId
+   * @todo rewrite
+   */
+  function addEventListener( $type, $objectId, $method )
+  {
+    $event_db =& $this->__event_db;
+    
+    if ( ! $event_db )
+    {
+      $event_db = array(
+        'types'  => array(),
+        'data'     => array()
+      );
+    }
+    
+    /*
+     * search if we already have an entry for the event type
+     */
+    $index = array_search( $type, $event_db['types'] );
+    if ( $index === false )
+    {
+      /*
+       * filter not found, create new filter and data
+       */
+      $event_db['types'][] = $type;
+      $index = count($event_db['types']) -1;
+      $event_db['data'][$index] = array( array( $objectId, $method ) ); 
+    }
+    else
+    {
+      /*
+       * filter found, add data
+       */
+      $event_db['data'][$index][] = array( $objectId, $method ); 
+    }
+    
+  }  
+  
+  /**
+   * dispatches a server event
+   * @param mixed $event Message Event type
+   * @param mixed $data Data dispatched with event
+   */
+  function dispatchEvent ( $event, $data=true )
+  {
+    $this->log("Event $event");
+    
+    /*
+     * search message database 
+     */
+    $event_db =& $this->__event_db;
+    $index = array_search ( $event, $event_db['types'] );
+    
+    /*
+     * abort if no event listener for this message has been registered
+     */
+    if ( $index === false ) return;
+    
+    /*
+     * call object methods
+     */
+    foreach ( $event_db['data'][$index] as $target )
+    {
+      list( $objectId, $method ) = $target;
+      $object =& $this->getObjectById( $objectId );
+      $object->$method($data);
+    }
+  }
+  
+  //-------------------------------------------------------------
   // session variables
   //-------------------------------------------------------------  
   
@@ -215,6 +379,7 @@ class qcl_jsonrpc_object extends qcl_object
  	 * save a persistent variable
  	 * @param string	$name	name of the variable
  	 * @param mixed		$data	data to be saved
+ 	 * @deprecated
  	 */
  	function setPersistentVar ( $name, $data )
  	{
@@ -229,6 +394,7 @@ class qcl_jsonrpc_object extends qcl_object
  	 * variables is the class name.
  	 * @param string	$name	name of the variable
  	 * @return reference a  reference to the session variable
+ 	 * @deprecated
  	 */
  	function &getPersistentVar ( $name )
  	{
@@ -246,6 +412,8 @@ class qcl_jsonrpc_object extends qcl_object
    * tries to get the given lock for 5 seconds, if not successful, abort.
    * Problem: how to avoid a race condition?
    * @param string $lockId
+   * @todo: remove this, use a persistent object instead
+   * @deprecated
    */
   function getLock( $lockId )
   {
@@ -300,6 +468,8 @@ class qcl_jsonrpc_object extends qcl_object
   /**
    * removes a lock
    * @param $lockId
+   * @todo: remove this, use a persistent object instead
+   * @deprecated
    */
   function removeLock ( $lockId )
   {

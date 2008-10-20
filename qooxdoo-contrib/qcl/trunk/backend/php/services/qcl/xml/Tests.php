@@ -55,6 +55,64 @@ class class_qcl_xml_Tests extends qcl_datasource_controller
     $find = $parser2->getNodesByAttributeValue("id","second record");
     
   }
+
+  function method_createXmlModel()
+  {
+    require_once("qcl/xml/model.php");
+    $path = "../var/tmp/xml_model.xml"; 
+    unlink($path);
+    
+    $xmlModel = new qcl_xml_model($this);
+    
+    $xmlModel->load($path);
+    $doc =& $xmlModel->getDocument();
+    
+    $admin =& $doc->addChild("role");
+    $admin->addAttribute("name","qcl.roles.admin");
+    
+    $perm1 =& $admin->addChild("permission");
+    $perm1->addAttribute("name","qcl.permissions.doAdminStuff");
+    
+    $manager =& $doc->addChild("role");
+    $manager->addAttribute("name","qcl.role.manager");
+    
+    $perm2 =& $manager->addChild("permission");
+    $perm2->addAttribute("name","qcl.permissions.doManagerStuff");
+    
+    $user =& $doc->addChild("role");
+    $user->addAttribute("name","qcl.role.user");
+
+    $perm3 =& $user->addChild("permission");
+    $perm3->addAttribute("name","qcl.permissions.doUserStuff");
+    
+    $xmlModel->save(); 
+    
+    
+  }
+  
+  function method_testXmlModel()
+  {
+    require_once("qcl/xml/model.php");
+    $path = "../var/tmp/xml_model.xml"; 
+    
+    $xmlModel = new qcl_xml_model($this);
+    $xmlModel->load($path);
+    
+    // query
+    $nodes = $xmlModel->getNodesWhere(array(
+      'name' => 'qcl.roles.admin'
+    ));
+
+      
+    $this->info("admin has the following permissions:");
+    /*
+    foreach($nodes[0]->children() as $child)
+    {
+      $attr = $child->attributes();
+      $this->info("- ". $attr['name']);
+    }*/
+    
+  }  
   
 }
 
