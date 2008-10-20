@@ -496,7 +496,7 @@ qx.Mixin.define("qcl.application.MApplication",
       // check if state has changed
       if ( hash == this.__lastHash )
       {
-        console.log("Hash hasn't changed, not adding it to history...");
+        //console.log("Hash hasn't changed, not adding it to history...");
         return;
       }
       this.__lastHash = hash;
@@ -545,41 +545,6 @@ qx.Mixin.define("qcl.application.MApplication",
           }
         } 
       },this);      
-    },
-
-    /**
-     * Handles 'qcl.commands.alert' message.
-     * @param message {qx.event.message.Message} Message object
-     * @param target {qx.core.Target} Message receiver object 
-     * @return void
-     */     
-    handleAlertMessage : function(message)
-    {
-      this.alert( message.getData() );
-    },
-    
-   /**
-     * Handles 'qcl.commands.confirmRemote' message.
-     * @param message {qx.event.message.Message} Message object
-     * @param target {qx.core.Target} Message receiver object 
-     * @return void
-     */
-    handleConfirmRemote : function(message,target)
-    {
-    
-      var data       = message.getData();
-      var display    = data.display;
-      var service    = data.service;
-      var params     = data.params;
-      
-      this.confirm(display,null,null,function(result){
-        if ( result )
-        {
-          params.push( true );
-          params.unshift( service );
-          this.updateServer.apply( this, params );
-        }
-      });
     }
   }
 });

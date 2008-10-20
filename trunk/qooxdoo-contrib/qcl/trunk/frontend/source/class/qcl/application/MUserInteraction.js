@@ -2,6 +2,7 @@
 /**
  * Mixin for application providing asynchronous
  * equivalents for prompt, alert, confirm
+ * @todo: rename qcl.commands
  */
 qx.Mixin.define("qcl.application.MUserInteraction",
 {
@@ -67,6 +68,45 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         }
       });
     },
+    
+    /**
+     * Handles 'qcl.commands.remote.*' messages. You need to add a message subscriber 
+     * in the main method of your application like so:
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.*", this.handleRemoteActions,this);
+     * @param message {qx.event.message.Message} Message object
+     * @param target {qx.core.Target} Message receiver object 
+     * @return void
+     */         
+    handleRemoteActions  : function( message )
+    {
+      var data = message.getData();
+      var name = message.getName();
+      var method = "handleRemote" + name.substr(20,1).toUpperCase() + name.substr(21);
+      if ( typeof this[method] == "function" )
+      {
+        this[method](new qx.event.message.Message(name,data));
+      }
+      else
+      {
+        this.warn("No method " + name + " exists...");
+      }
+    },
+    
+    /**
+     * Handles 'qcl.commands.remote.alert' message. You need to add a message subscriber 
+     * in the main method of your application like so:
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.alert", this.handleRemoteAlert,this);
+     * or use
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.*", this.handleRemoteActions,this);
+     * to handle all remote user interaction
+     * @param message {qx.event.message.Message} Message object
+     * @param target {qx.core.Target} Message receiver object 
+     * @return void
+     */     
+    handleRemoteAlert : function(message)
+    {
+      this.alert( message.getData() );
+    },
 
 
     /**
@@ -119,6 +159,32 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         callback.call(context, false);
       });
     },
+    
+    /**
+     * Handles 'qcl.commands.remote.confirm' message. You need to add a message subscriber 
+     * in the main method of your application like so:
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.confirm",this.handleRemoteConfirm,this);
+     * @param message {qx.event.message.Message} Message object
+     * @param target {qx.core.Target} Message receiver object 
+     * @return void
+     */
+    handleRemoteConfirm : function(message,target)
+    {
+    
+      var data       = message.getData();
+      var display    = data.display;
+      var service    = data.service;
+      var params     = data.params;
+      
+      this.confirm(display,null,null,function(result){
+        if ( result )
+        {
+          params.push( true );
+          params.unshift( service );
+          this.updateServer.apply( this, params );
+        }
+      },this);
+    },    
 
 
     /**
@@ -173,6 +239,33 @@ qx.Mixin.define("qcl.application.MUserInteraction",
       });
       p.add(c);
     },
+    
+    /**
+     * Handles 'qcl.commands.remote.offer' message. You need to add a message subscriber 
+     * in the main method of your application like so:
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.offer",this.handleRemoteOffer,this);
+     * @param message {qx.event.message.Message} Message object
+     * @param target {qx.core.Target} Message receiver object 
+     * @return void
+     */
+    handleRemoteOffer : function(message,target)
+    {
+    
+      var data       = message.getData();
+      var display    = data.display;
+      var choices    = data.choices;
+      var service    = data.service;
+      var params     = data.params;
+      
+      this.offer( display,choices,function( result ){
+        if ( result !== null && result !== false )
+        {
+          params.push( result );
+          params.unshift( service );
+          this.updateServer.apply( this, params );
+        }
+      },this );
+    },        
 
 
     /**
@@ -243,15 +336,57 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         callback.call(context, false);
       });
     },
+    
+    /**
+     * Handles 'qcl.commands.remote.prompt' message. You need to add a message subscriber 
+     * in the main method of your application like so:
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.prompt",this.handleRemotePrompt,this);
+     * @param message {qx.event.message.Message} Message object
+     * @param target {qx.core.Target} Message receiver object 
+     * @return void
+     */
+    handleRemotePrompt : function(message,target)
+    {
+      var data       = message.getData();
+      var display    = data.display;
+      var defAnswer  = data.defaultAnswer;
+      var service    = data.service;
+      var params     = data.params;
+      
+      this.prompt( display,defAnswer,function(result){
+        if ( result )
+        {
+          params.push( result );
+          params.unshift( service );
+          this.updateServer.apply( this, params );
+        }
+      },this );
+    },       
 
     /**
-     * Presents a form with multiple fields. 
+     * Presents a form with multiple fields. So far implemented: TextField/TextArea and non-editable Combobox
      *
      * @type member
      * @param msg {String} Message 
-     * @param formData {Map} Map of form field information: 
+     * @param formData {Map} Map of form field information. 
      * <pre>
-     * { 'username' : { 'label':"User Name", 'value':"", 'lines':1 } }
+     * { 
+     *  'username' : 
+     *  {
+     *    'label' : "User Name", 
+     *    'value' : "", 
+     *    'lines' : 1 
+     *  }, 
+     *  'domain'   : 
+     *  {
+     *    'label' : "Domain",
+     *    'value' : 0,
+     *    'options' : [
+     *      { 'label' : "Company", 'value' : 0, 'icon' : null }, 
+     *      { 'label' : "Home", 'value' : 1, 'icon' : null },
+     *    ]
+     *   }
+     * }
      * </pre>
      * @param callback {Function} Callback function, argument of function will be formData array with updated value properties
      * @param context {Object} "this" object in callback function
@@ -259,52 +394,112 @@ qx.Mixin.define("qcl.application.MUserInteraction",
      */
     presentForm : function (msg, formData, callback, context)
     {
-      // check form data
+      /*
+       * check form data
+       */
       if ( typeof formData != "object" )
       {
         this.error("Form data must be a map.");
       }
       
-      // controls
+      /*
+       * controls
+       */
       var controls = [];
       
-      // make sure callback is a function
+      /*
+       * make sure callback is a function
+       */
       this._checkCallback(callback);
 
-      // cancel button
+      /*
+       * cancel button
+       */
       var c = new qx.ui.form.Button(this.tr("Cancel"), "icon/16/actions/dialog-cancel.png");
 
-      // "OK" button
+      /* 
+       * "OK" button
+       */
       var b = new qx.ui.form.Button(this.tr("OK"), "icon/16/actions/dialog-ok.png");
       
-      // loop through form data array
+      /*
+       * loop through form data array
+       */
       for ( key in formData )
       {
         
         var fieldData = formData[key];
         
-        // label
+        /*
+         * label
+         */
         var l = new qx.ui.basic.Label(fieldData.label);
         l.setWidth("1*");
         
-        // text field
+        /*
+         * choose control
+         */
         if ( fieldData.lines && fieldData.lines > 1)
         {
-          var t = new qx.ui.form.TextArea(fieldData.value || "");
-          t.setHeight(lines * 16);
+          /*
+           * text area
+           */
+          var t = new qx.ui.form.TextArea( fieldData.value || "");
+          t.setHeight(fieldData.lines * 16);
+          t.setLiveUpdate(true);
+          delete fieldData.lines;
+        }
+        else if ( fieldData.lines )
+        {
+          /*
+           * text field
+           */
+          var t = new qx.ui.form.TextField(fieldData.value || "");
+          t.setHeight(24);
+          t.setLiveUpdate(true);
+          delete fieldData.lines;
+        }
+        else if ( fieldData.options && fieldData.options instanceof Array )
+        {
+          /*
+           * combobox
+           */
+          var t = new qx.ui.form.ComboBox;
+          t.setHeight(24);
+          fieldData.options.forEach(function(data){
+            t.add( new qx.ui.form.ListItem( data.label, data.icon, data.value ) );
+          });
+          if (fieldData.value) 
+          {
+            var i = t.getList().findValue(fieldData.value);
+            if (i) 
+            {
+              t.setSelected(i);
+            }
+          }
+          delete fieldData.options;
         }
         else
         {
-          var t = new qx.ui.form.TextField(fieldData.value || "");
-          t.setHeight(24);
+          this.error("Invalid Form data: " + formData.toString() );
         }
+        
+        /*
+         * control width
+         */
         t.setWidth("3*");
-        t.setLiveUpdate(true);
+        
+        /*
+         * create an event listener which dynamically updates the
+         * 'value' field in the form data
+         */
         eval('t.addEventListener("changeValue", function(event){'+  
           'formData.' + key + '.value=event.getData();' +
         '});');
         
-        // panel
+        /*
+         * panel
+         */
         var h = new qx.ui.layout.HorizontalBoxLayout;
         h.setWidth("100%");
         h.setHeight("auto");
@@ -314,17 +509,23 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         
       }
 
-      // button panel
+      /*
+       * button panel
+       */
       var p = new qx.ui.layout.HorizontalBoxLayout;
       p.setSpacing(10);
       p.setHorizontalChildrenAlign("center");
       p.add(c, b);
       controls.push(p);
 
-      // window
+      /*
+       * window
+       */
       var w = this._createWindow(this.tr("Information"), msg, "icon/16/actions/help-about.png", "icon/32/status/help-about.png", controls);
 
-      // add event listener for OK Button
+      /*
+       * add event listener for OK Button
+       */
       b.addEventListener("execute", function()
       {
         w.close();
@@ -332,7 +533,9 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         callback.call(context, formData);
       });
 
-      // add event listener for cancel Button
+      /*
+       * add event listener for cancel Button
+       */
       c.addEventListener("execute", function()
       {
         w.close();
@@ -340,6 +543,32 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         callback.call(context, false);
       });
     },
+    
+    /**
+     * Handles 'qcl.commands.remote.presentForm' message. You need to add a message subscriber 
+     * in the main method of your application like so:
+     * qx.event.message.Bus.subscribe("qcl.commands.remote.presentForm",this.handleRemotePresentForm,this);
+     * @param message {qx.event.message.Message} Message object
+     * @param target {qx.core.Target} Message receiver object 
+     * @return void
+     */
+    handleRemotePresentForm : function( message, target )
+    {
+      var data       = message.getData();
+      var display    = data.display;
+      var formData   = data.formData;
+      var service    = data.service;
+      var params     = data.params;
+      
+      this.presentForm( display,formData, function(result) {
+        if ( result )
+        {
+          params.push( result );
+          params.unshift( service );
+          this.updateServer.apply( this, params );
+        }
+      },this );
+    },    
     
     /**
      * upload window. user can select a file on the local filesystem
