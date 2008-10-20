@@ -117,12 +117,12 @@
 
 		</qx:fieldSet>
 		
-		<qx:messageSubscriber filter="qcl.auth.messages.loginFailed">
+		<qx:messageSubscriber filter="qcl.messages.login.failed">
 			var msg = message.getData();
 			if (msg) alert(msg);
 		</qx:messageSubscriber>
 		
-		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+		<qx:messageSubscriber filter="qcl.messages.login.success">
 			this.close();
 		</qx:messageSubscriber>
 		

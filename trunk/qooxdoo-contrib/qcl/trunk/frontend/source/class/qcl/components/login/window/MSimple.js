@@ -27,7 +27,7 @@ qx.Mixin.define('qcl.components.login.window.MSimple',
         'username' : username,
         'password' : password
       };
-      qx.event.message.Bus.dispatch("qcl.auth.messages.loginAttempt", data);
+      qx.event.message.Bus.dispatch("qcl.messages.login.attempt", data);
       this.passwordField.setValue("");
     }
   }

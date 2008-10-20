@@ -130,14 +130,14 @@ qx_id100433.add(qx_id100436);
 qx_id100436.addEventListener("execute", function(event){this.onSubmit(event,qx_id100436);},this);
 qx_id100371.add(qx_id100433,1,2);
 
-qx.event.message.Bus.subscribe("qcl.auth.messages.loginFailed",function(message){
+qx.event.message.Bus.subscribe("qcl.messages.login.failed",function(message){
 
 			var msg = message.getData();
 			if (msg) alert(msg);
 		
 },this);
 
-qx.event.message.Bus.subscribe("qcl.auth.messages.loginSuccess",function(message){
+qx.event.message.Bus.subscribe("qcl.messages.login.success",function(message){
 
 			this.close();
 		

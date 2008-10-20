@@ -38,7 +38,7 @@
 		
 	</qx:menu>
 		
-		<qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+		<qx:messageSubscriber filter="qcl.messages.login.success">
 			qx.event.message.Bus.dispatch("qcl.config.messages.editor.reload");
 		</qx:messageSubscriber>
 		 

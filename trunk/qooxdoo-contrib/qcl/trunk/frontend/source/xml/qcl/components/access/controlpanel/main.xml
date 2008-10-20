@@ -14,7 +14,7 @@
 		<qx:permission name="qcl.auth.permissions.manage" />
 	</qx:security>
 
-    <qx:messageSubscriber filter="qcl.auth.messages.loginSuccess">
+    <qx:messageSubscriber filter="qcl.messages.login.success">
       qx.event.message.Bus.dispatch("qcl.auth.messages.reload","");
     </qx:messageSubscriber>  
 
