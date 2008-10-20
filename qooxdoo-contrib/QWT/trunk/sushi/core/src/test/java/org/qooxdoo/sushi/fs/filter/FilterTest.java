@@ -111,7 +111,7 @@ public class FilterTest {
         Node file;
         
         try {
-            root = IO_OBJ.createTempDirectory();
+            root = IO_OBJ.getTemp().createTempDirectory();
             for (String path : paths) {
                 path = path.replace('/', ROOT.getFilesystem().getSeparatorChar());
                 file = root.join(path);

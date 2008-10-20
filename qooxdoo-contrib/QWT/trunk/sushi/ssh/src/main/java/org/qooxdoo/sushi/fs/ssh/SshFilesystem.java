@@ -148,7 +148,7 @@ public class SshFilesystem extends Filesystem {
         }
         if (!(key instanceof FileNode)) {
             // TODO: what about security?
-            key = key.copyFile(io.createTempFile());
+            key = key.copyFile(io.getTemp().createTempFile());
         }
         return new SshRoot(this, host, user, (FileNode) key, pp, timeout);
     }

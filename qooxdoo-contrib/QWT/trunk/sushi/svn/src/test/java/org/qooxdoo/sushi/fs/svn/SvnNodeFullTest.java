@@ -126,17 +126,17 @@ public class SvnNodeFullTest extends NodeTest {
         root.join("dir/dir1/dir2").mkdirs();
         root.join("dir/dir1/dir2").join("sub1").writeString("baz");
 
-        dir = work.getIO().createTempDirectory();
+        dir = work.getIO().getTemp().createTempDirectory();
         root.export(dir);
         assertEquals("foo", dir.join("file").readString());
         assertEquals("bar", dir.join("dir/sub").readString());
         assertEquals("baz", dir.join("dir/dir1/dir2/sub1").readString());
 
-        dir = work.getIO().createTempDirectory();
+        dir = work.getIO().getTemp().createTempDirectory();
         ((SvnNode) root.join("dir")).export(dir);
         assertEquals("bar", dir.join("sub").readString());
 
-        dir = work.getIO().createTempDirectory();
+        dir = work.getIO().getTemp().createTempDirectory();
         ((SvnNode) root.join("dir/dir1/dir2")).export(dir);
         assertEquals("baz", dir.join("sub1").readString());
     }
@@ -147,7 +147,7 @@ public class SvnNodeFullTest extends NodeTest {
         Node dir;
         SvnNode svn;
         
-        dir = IO.createTempDirectory();
+        dir = IO.getTemp().createTempDirectory();
         svn = create("https://qooxdoo-contrib.svn.sourceforge.net/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/QWT/branches/0.7.x");
         svn.export(dir);
     }

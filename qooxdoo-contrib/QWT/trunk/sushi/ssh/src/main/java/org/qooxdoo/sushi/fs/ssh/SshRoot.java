@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 import org.qooxdoo.sushi.fs.InstantiateException;
 import org.qooxdoo.sushi.fs.Root;
+import org.qooxdoo.sushi.fs.OnShutdown;
 import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.MultiOutputStream;
 import org.qooxdoo.sushi.util.ExitCode;
@@ -43,7 +44,7 @@ public class SshRoot implements Root, UserInfo, Runnable {
     private final String host;
     private final Session session;
     
-    // created on demaned because it's only needed for nodes, for for "exec" stuff
+    // created on demand because it's only needed for nodes, for "exec" stuff
     private ChannelSftp channelFtp;
     
     public SshRoot(SshFilesystem filesystem, String host, String user, FileNode privateKey, String passphrase, int timeout) 
@@ -56,7 +57,7 @@ public class SshRoot implements Root, UserInfo, Runnable {
         this.session = login(filesystem.getJSch(), host);
         this.session.connect(timeout);
         this.channelFtp = null;
-        filesystem.getIO().onShutdown(this);
+        OnShutdown.get().onShutdown(this);
     }
 
     //-- Root interface

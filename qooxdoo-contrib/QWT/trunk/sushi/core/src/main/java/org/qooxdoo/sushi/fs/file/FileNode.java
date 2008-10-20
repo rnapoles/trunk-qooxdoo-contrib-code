@@ -33,6 +33,7 @@ import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.MkfileException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
+import org.qooxdoo.sushi.fs.OnShutdown;
 import org.qooxdoo.sushi.fs.zip.ZipFilesystem;
 import org.qooxdoo.sushi.fs.zip.ZipNode;
 import org.qooxdoo.sushi.io.Buffer;
@@ -176,6 +177,7 @@ public class FileNode extends Node {
     //-- create
     
     /** this is not a touch because it fails if the file exists */
+    @Override
     public FileNode mkfile() throws MkfileException {
     	try {
 			if (!file.createNewFile()) {
@@ -352,6 +354,16 @@ public class FileNode extends Node {
     
     private FileNode dir() {
         return (FileNode) getParent();
+    }
+    
+    //--
+    
+    public FileNode createTempFile() throws IOException {
+        return OnShutdown.get().createFile(this);
+    }
+    
+    public FileNode createTempDirectory() throws IOException {
+        return OnShutdown.get().createDirectory(this);
     }
 }
 

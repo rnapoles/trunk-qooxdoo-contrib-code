@@ -146,7 +146,7 @@ public class SvnNode extends Node {
         FileNode tmp;
         OutputStream dest;
         
-        tmp = getIO().createTempFile();
+        tmp = getIO().getTemp().createTempFile();
         dest = tmp.createOutputStream();
         try {
             load(dest);

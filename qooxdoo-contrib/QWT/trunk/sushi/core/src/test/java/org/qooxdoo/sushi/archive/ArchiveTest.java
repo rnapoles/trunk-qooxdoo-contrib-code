@@ -89,7 +89,7 @@ public class ArchiveTest {
             zip.data.join(fileNames.get(i)).writeString(fileData.get(i));
         }
 
-        file = IO_OBJ.createTempFile();
+        file = IO_OBJ.getTemp().createTempFile();
         zip.save(file);
         zip = Archive.loadZip(file);
         assertEquals(directories.size() + fileNames.size(), zip.data.find("**/*").size());
@@ -116,7 +116,7 @@ public class ArchiveTest {
             archive.data.join(fileNames.get(i)).writeString(fileData.get(i));
         }
 
-        file = IO_OBJ.createTempFile();
+        file = IO_OBJ.getTemp().createTempFile();
         archive.save(file);
         archive = Archive.loadJar(file);
         assertEquals(directories.size() + fileNames.size(), archive.data.find("**/*").size());
@@ -126,7 +126,7 @@ public class ArchiveTest {
         for (int i = 0; i < fileNames.size(); i++) {
             assertEquals(fileData.get(i), archive.data.join(fileNames.get(i)).readString());
         }
-        reloaded = IO_OBJ.createTempFile();
+        reloaded = IO_OBJ.getTemp().createTempFile();
         archive.save(reloaded);
         // TODO do not try "diff" on jar files, because they contain a timestamp that occasionally 
         // yields differences

@@ -204,7 +204,7 @@ public class SshNode extends Node {
     public InputStream createInputStream() throws IOException {
         FileNode tmp;
         
-        tmp = getIO().createTempFile();
+        tmp = getIO().getTemp().createTempFile();
         try {
             get(tmp);
         } catch (SftpException e) {

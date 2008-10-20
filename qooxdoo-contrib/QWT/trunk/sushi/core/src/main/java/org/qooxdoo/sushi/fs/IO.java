@@ -62,10 +62,8 @@ import org.qooxdoo.sushi.xml.Xml;
  * 
  * <p>TODO: Multi-Threading. Currently, you need to know fs system internals to propertly synchronized
  * multi-threaded applications.</p>
- * 
- * <p>Technically, IO is a thread which executes on shutdown. </p>
  */
-public class IO extends Thread {
+public class IO {
     public final OS os;
     
     /** never null */
@@ -77,7 +75,8 @@ public class IO extends Thread {
     private final Xml xml;
 
     private Node home;
-    // TODO: node
+    
+    /** Intentionally not a file -- see Tempfiles for a rationale */
     private FileNode temp;
     private Node working;
     
@@ -85,9 +84,6 @@ public class IO extends Thread {
     
     private final Map<String, Filesystem> filesystems;
     private final FileFilesystem fileFilesystem;
-    
-    private final TempFiles tempFiles;
-    private final List<Runnable> onShutdown;
     
     public IO() {
         this(OS.CURRENT, new Settings(), new Buffer(), "**/.svn", "**/.svn/**/*");
@@ -110,11 +106,6 @@ public class IO extends Thread {
         
         this.xml = new Xml();
         this.defaultExcludes = new ArrayList<String>(Arrays.asList(defaultExcludes));
-        
-        this.onShutdown = new ArrayList<Runnable>();
-        this.tempFiles = new TempFiles();
-        onShutdown(tempFiles);
-        Runtime.getRuntime().addShutdownHook(this);
     }
 
     //-- configuration
@@ -139,7 +130,7 @@ public class IO extends Thread {
         return this;
     }
     
-    public Node getTemp() {
+    public FileNode getTemp() {
         return temp;
     }
 
@@ -283,7 +274,7 @@ public class IO extends Thread {
             return fs.root(url).node(HttpNode.getPath(url));
         } else if ("file".equals(protocol)) {
             try {
-                return (FileNode) node(URLDecoder.decode(url.getFile(), 
+                return node(URLDecoder.decode(url.getFile(), 
                         Settings.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException("expected on every platform", e);
@@ -337,26 +328,6 @@ public class IO extends Thread {
 
     //-- 
     
-    public FileNode createTempFile() throws IOException {
-        FileNode file;
-        
-        file = file(File.createTempFile("sushifile", "tmp", temp.getFile()));
-        tempFiles.deleteAtExit(file);
-        return file;
-    }
-    
-    public FileNode createTempDirectory() throws IOException {
-        FileNode dir;
-
-        while (true) {
-            dir = (FileNode) temp.join("sushidir" + tempFiles.random() + "tmp");
-            if (dir.getFile().mkdir()) {
-                tempFiles.deleteAtExit(dir);
-                return dir;
-            }
-        }
-    }
-
     /**
      * Returns the file or directory containing the specified resource.
      *
@@ -573,24 +544,5 @@ public class IO extends Thread {
                 "property " + name + " does not point to a directory: " + value);
         }
         return (FileNode) node(file.getAbsolutePath());
-    }
-    
-    //-- executes on shotdown
-    
-    public void onShutdown(Runnable runnable) {
-        onShutdown.add(runnable);
-    }
-
-    @Override
-    public void run() {
-        for (Runnable cleaner : onShutdown) {
-            try {
-                cleaner.run();
-            } catch (Exception e) {
-                // TODO
-                System.err.println("showdown failure: " + cleaner);
-                e.printStackTrace();
-            }
-        }
     }
 }

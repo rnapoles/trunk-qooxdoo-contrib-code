@@ -80,7 +80,7 @@ public class SchemaTest {
         FileNode schemaFile;
         Builder builder;
 
-        schemaFile = IO_OBJ.createTempFile();
+        schemaFile = IO_OBJ.getTemp().createTempFile();
         schemaFile.writeString(schema);
         builder = new Builder(schemaFile);
         builder.parseString(content);
