@@ -424,38 +424,35 @@ qx.Class.define("qcl.databinding.simple.PropertyEditor",
      * @type member
      * @return {void}
      */
-    _closePopup : function()
+    _closePopup: function()
     {
       /*
-       * hide popup
-       */
+   * hide popup
+   */
       this._popup.hide();
       
       /*
-       * restore table width
-       */
-      if ( this._oldPropEdWidth )
+   * restore table width
+   */
+      if (this._oldPropEdWidth) 
       {
-        this._table.setWidth( this._oldPropEdWidth );  
+        this._table.setWidth(this._oldPropEdWidth);
       }
-     
+      
       /*
-       * disable event capturing
-       */
+   * disable event capturing
+   */
       this.setCapture(false);
       
       /*
-       * put cursor at the end of the textfield
-       */
-      qx.client.Timer.once(function(){
+   * put cursor at the end of the textfield
+   */
+      qx.client.Timer.once(function()
+      {
         var lastPos = this._field.getValue().length;
-        this._field.selectFromTo(lastPos,lastPos);        
-      },this,100);
-            
-    }
-   
-   
-    
- },
-     
+        this._field.selectFromTo(lastPos, lastPos);
+      }, this, 100);
+      
+    }  
+  }
 });
