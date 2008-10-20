@@ -203,13 +203,15 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param string|null[optional] $orderBy  Field to order by
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * properties are to be retrieved
+   * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
+   * automatically generate the necessary join query. 
    * @return array recordset
    */
-  function findBy( $propName, $value, $orderBy=null, $properties=null )
+  function findBy( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {
     $colName = $this->getColumnName( $propName );
     $value   = $this->db->escape($value);
-    return $this->findWhere("`$colName`='$value'");
+    return $this->findWhere( "`$colName`='$value'", $orderBy, $properties, $link );
   }
 
   /**
@@ -220,15 +222,16 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param string|null[optional] $orderBy  Field to order by
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * properties are to be retrieved
+   * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
+   * automatically generate the necessary join query. 
    * @return array recordset
    */
-  function findLike( $propName, $value, $orderBy=null, $properties=null )
+  function findLike( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {
     $colName = $this->getColumnName( $propName );
     $value   = $this->db->escape($value);
-    return $this->findWhere("`$colName` LIKE '$value'");
+    return $this->findWhere("`$colName` LIKE '$value'", $orderBy, $properties, $link );
   }  
-  
   
   /**
    * Finds all database records or those that match a where condition. 
