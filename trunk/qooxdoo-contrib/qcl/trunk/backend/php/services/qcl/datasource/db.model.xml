@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schema
   include="qcl/db/model.xml">
-
+   
   <!-- 
     the default model for representing datasources
     model data is stored in a database
@@ -16,6 +16,9 @@
          <property name="namedId" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>      
+         <property name="name" type="string">
+          <sql>varchar(255) NOT NULL</sql>
+        </property>    
          <property name="prefix" type="string">
           <sql>varchar(20) NULL</sql>
         </property>             
