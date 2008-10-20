@@ -1433,9 +1433,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       //$this->info("Including '$includeFile' into '$file'...");
       $parentXml   =& $this->parseXmlSchemaFile($includeFile);
       $modelXml->extend($parentXml);
-      //$this->info($modelXml->asXml());
+      //$this->info($modelXml->asXml()); 
     }
-    
+     
     /*
      * return the aggregated schema object
      */
