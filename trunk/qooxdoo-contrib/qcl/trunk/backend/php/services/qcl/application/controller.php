@@ -18,26 +18,22 @@ class qcl_application_controller extends qcl_datasource_controller
   //-------------------------------------------------------------  
     
   /**
-   * Remotely alerts on the client. You need to call this
-   * in the method like so: 
-   * return $this->alert("foo!");
-   * @override
-   * @param string response data
+   * @see qcl_application_Client::alert
    */ 
   function alert($message)
   {
     $this->info($message);
-    $this->dispatchMessage("qcl.commands.remote.alert", $message);
-    return $this->getResponseData();  
+    $client = new qcl_application_Client(&$this);
+    return $client->alert ( $display );
   }
   
   /**
    * @see qcl_application_Client::confirm
    */
-  function confirmRemote ( $display, $service=null, $params=null )
+  function confirmRemote ( $display )
   {
     $client = new qcl_application_Client(&$this);
-    return $client->confirm ( $display, $service=null, $params=null );
+    return $client->confirm ( $display );
   }
   
   /**
