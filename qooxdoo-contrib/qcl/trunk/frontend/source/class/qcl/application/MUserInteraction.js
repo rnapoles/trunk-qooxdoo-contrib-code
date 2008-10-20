@@ -3,7 +3,7 @@
  * Mixin for application providing asynchronous
  * equivalents for prompt, alert, confirm
  */
-qx.Mixin.define("bibliograph.application.MUserInteraction",
+qx.Mixin.define("qcl.application.MUserInteraction",
 {
   members :
   {
