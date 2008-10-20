@@ -107,7 +107,7 @@ class qcl_access_services extends qcl_mixin
       /*
        * message that login was successful
        */
-      $this->dispatchMessage("qcl.auth.messages.loginSuccess"); 
+      $this->dispatchMessage("qcl.messages.login.success"); 
       
       $this->info ("Logging on user $username.");   
     }
@@ -127,7 +127,7 @@ class qcl_access_services extends qcl_mixin
       /*
        * message that login was successful
        */
-      $this->dispatchMessage("qcl.auth.messages.loginSuccess", $username );
+      $this->dispatchMessage("qcl.messages.login.success", $username );
     }
     
     
@@ -146,7 +146,7 @@ class qcl_access_services extends qcl_mixin
       /*
        * message
        */
-      $this->dispatchMessage( "qcl.auth.messages.loginFailed", $this->tr("Wrong username or password.") );
+      $this->dispatchMessage( "qcl.messages.login.failed", $this->tr("Wrong username or password.") );
     }
     
     /*
@@ -183,7 +183,7 @@ class qcl_access_services extends qcl_mixin
     /*
      * message
      */
-    $this->dispatchMessage("qcl.auth.messages.user.loggedOut");
+    $this->dispatchMessage("qcl.messages.user.logout");
     
     /*
      * return client data

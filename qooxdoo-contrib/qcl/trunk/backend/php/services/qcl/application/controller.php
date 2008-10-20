@@ -24,16 +24,16 @@ class qcl_application_controller extends qcl_datasource_controller
   {
     $this->info($message);
     $client = new qcl_application_Client(&$this);
-    return $client->alert ( $display );
+    return $client->alert ( $message );
   }
   
   /**
    * @see qcl_application_Client::confirm
    */
-  function confirmRemote ( $display )
+  function confirmRemote ( $message )
   {
     $client = new qcl_application_Client(&$this);
-    return $client->confirm ( $display );
+    return $client->confirm ( $message );
   }
   
   /**
