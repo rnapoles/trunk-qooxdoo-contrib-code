@@ -448,6 +448,14 @@ qx.Mixin.define("qcl.application.MUserInteraction",
           t.setHeight(fieldData.lines * 16);
           t.setLiveUpdate(true);
           delete fieldData.lines;
+          
+          /*
+           * create an event listener which dynamically updates the
+           * 'value' field in the form data
+           */
+          eval('t.addEventListener("changeValue", function(event){'+  
+            'formData.' + key + '.value=event.getData();' +
+          '});');          
         }
         else if ( fieldData.lines )
         {
@@ -458,6 +466,14 @@ qx.Mixin.define("qcl.application.MUserInteraction",
           t.setHeight(24);
           t.setLiveUpdate(true);
           delete fieldData.lines;
+            
+          /*
+           * create an event listener which dynamically updates the
+           * 'value' field in the form data
+           */
+          eval('t.addEventListener("changeValue", function(event){'+  
+            'formData.' + key + '.value=event.getData();' +
+          '});');          
         }
         else if ( fieldData.options && fieldData.options instanceof Array )
         {
@@ -478,6 +494,13 @@ qx.Mixin.define("qcl.application.MUserInteraction",
             }
           }
           delete fieldData.options;
+          /*
+           * create an event listener which dynamically updates the
+           * 'value' field in the form data
+           */
+          eval('t.addEventListener("changeValue", function(event){'+  
+            'formData.' + key + '.value=t.getManager().getSelectedItem().getValue();' +
+          '});');          
         }
         else
         {
@@ -489,13 +512,7 @@ qx.Mixin.define("qcl.application.MUserInteraction",
          */
         t.setWidth("3*");
         
-        /*
-         * create an event listener which dynamically updates the
-         * 'value' field in the form data
-         */
-        eval('t.addEventListener("changeValue", function(event){'+  
-          'formData.' + key + '.value=event.getData();' +
-        '});');
+
         
         /*
          * panel
