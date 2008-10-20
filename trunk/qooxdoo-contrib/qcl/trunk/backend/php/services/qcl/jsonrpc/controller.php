@@ -332,28 +332,39 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	}
 
 	//-------------------------------------------------------------
-  // messages and events
+  // Extend message and event system to the client
   //-------------------------------------------------------------
 
-	/**
-	 * dispatches a server message
-	 * @param string $message Message name 
-	 * @param mixed $data Data dispatched with message
-	 */
-	function dispatchMessage ( $message, $data=true )
-	{
+  /**
+   * dispatches a server message
+   * @param string $message Message name 
+   * @param mixed $data Data dispatched with message
+   * @override
+   */
+  function dispatchMessage ( $message, $data=true )
+  {
+    /*
+     * call parent method
+     */
+    parent::dispatchMessage( $message, $data );
+    
+    /*
+     * add to resonse data
+     */
     $this->addMessage( $message, $data );
-	}
-
+  }
+  
+  
   /**
    * adds a message to the message stack
    * @param string $message Message name
-   * @param mixed $data Message Data
+   * @param mixed[optional] $data Message Data
    * @return void
    */
-  function addMessage( $message, $data )
+  function addMessage( $message, $data=null )
   {
-		if ( is_string ($message) )
+
+    if ( is_string ($message) )
 		{
 			$this->_response['messages'][] = array(
 				'name' => $message, 
@@ -375,26 +386,33 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     return $this->_response['messages'];
   }
 
-
-	/**
-	 * dispatches a server event
-	 * @param mixed $event Message Event type
-	 * @param mixed $data Data dispatched with event
-	 */
-	function dispatchEvent ( $event, $data=true )
-	{
-		$this->log("Event $event"); // debug
+  /**
+   * dispatches a server event
+   * @param mixed $event Message Event type
+   * @param mixed $data Data dispatched with event
+   * @override
+   */
+  function dispatchEvent ( $event, $data=true )
+  {
+    /*
+     * call parent method
+     */
+    parent::dispatchEvent ( $event, $data );
+    
+    /*
+     * add to response data
+     */
     $this->addEvent( $event, $data );
-	}
-
+  }  
+  
 	/**
 	 * adds an event to the event stack
 	 * @param mixed $event Message Event type
-	 * @param mixed $data Data dispatched with event
+	 * @param mixed[optional] $data Data dispatched with event
 	 */
-	function addEvent ( $event, $data )
+	function addEvent ( $event, $data=null )
 	{
-		if ( is_string ($event) )
+	  if ( is_string ($event) )
 		{
 			$this->_response['events'][] = array(
 				'type' => $event, 

@@ -113,6 +113,14 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
       $this->raiseError( __CLASS__ . " is abstract and cannot be used directly.");
     }
     
+   /*
+    * use object id as id if no id is given
+    */ 
+   if ( ! $id )
+   {
+     $id = $this->objectId();
+   }
+    
     /*
      * initialize the object
      */
@@ -301,9 +309,10 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     }
     
     /*
-     * object id
+     * public and private object id
      */
-    $this->objectId = $id;    
+    $this->objectId = $id;   
+    $this->_objectId = $id; 
   
   }
   

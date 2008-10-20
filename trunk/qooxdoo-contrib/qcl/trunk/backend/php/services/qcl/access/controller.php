@@ -123,7 +123,7 @@ class qcl_access_controller extends qcl_db_controller
   
   
   /**
-   * checks if the requesting client is an authenticated user.
+   * Passively checks if the requesting client is an authenticated user.
    * For the actual active authentication, use qcl_access_user::authenticate()
    * @see qcl_access_user::authenticate()
    * @return bool True if request can continue, false if it should be aborted

@@ -121,9 +121,9 @@ class qcl_object extends patched_object
 	  parent::__construct();
 		
 	  /*
-	   * object id
+	   * initialize object id
 	   */
-	  $this->_objectId = uuid();
+	  $this->objectId();
 	  
 	  /*
 	   * class name
@@ -190,15 +190,52 @@ class qcl_object extends patched_object
 	 */
   function __destruct() {}
   
+  //-------------------------------------------------------------
+  // Object id and class management
+  //-------------------------------------------------------------    
+  
   /**
-   * Returns the (hopefully) globally unique object id
+   * Returns the (hopefully) globally unique object id and generates
+   * it if necessary. Registers object id in a global database.
+   * This only works during one request, i.e. at runtime. 
    * @return string
    */
   function objectId()
   {
+    if ( ! $this->_objectId )
+    {
+      /*
+       * generate object id
+       */
+      $this->_objectId = uuid();
+      
+      /*
+       * register it in global database
+       */
+      global $object_db;
+      if ( ! $object_db )
+      {
+        $object_db = array();
+      }
+      $object_db[$this->_objectId] =& $this;
+      
+    }
     return $this->_objectId;
   }
-  
+
+  /**
+   * Returns an object identified by its id.
+   * return object
+   */
+  function &getObjectById($objectId)
+  {
+    global $object_db;
+    return $object_db[$objectId];
+  }
+
+  //-------------------------------------------------------------
+  // Object initialization 
+  //-------------------------------------------------------------    
   
   /**
    * Run once for the given class per application installation
@@ -213,23 +250,17 @@ class qcl_object extends patched_object
     touch($path);
     return true;
   }
-  
-  /**
-   * Alias method for get_class($this)
-   */
-  function getClassName()
-  {
-    return get_class($this);
-  }
+ 
   
   //-------------------------------------------------------------
-  // registry during request
+  // Registry during request. This is deprecated, use 
+  // qcl_registry_Session instead
   //------------------------------------------------------------- 
 
   /**
    * Gets a registry value
    * @param string $name
-   * @deprecated
+   * @deprecated, use qcl_registry_Session
    * @return mixed
    */
   function &getRegistryVar( $name )
@@ -241,7 +272,7 @@ class qcl_object extends patched_object
    * Sets a registry value
    * @param string $name
    * @param string $value
-   * @deprecated
+   * @deprecated, use qcl_registry_Session
    * @return void
    */
   function setRegistryVar( $name, $value )
@@ -322,7 +353,7 @@ class qcl_object extends patched_object
   }
   
   //-------------------------------------------------------------
-  // object methods
+  // Error management
   //-------------------------------------------------------------
 
   /**
@@ -350,6 +381,10 @@ class qcl_object extends patched_object
    {
      $this->error = null;
    }
+
+  //-------------------------------------------------------------
+  // Instantiating new classes
+  //-------------------------------------------------------------    
    
   /**
    * get include path for a class name
@@ -435,7 +470,7 @@ class qcl_object extends patched_object
   }
 
   //-------------------------------------------------------------
-  // mixin and overloading
+  // Mixin and overloading
   //------------------------------------------------------------- 
   
   /**
@@ -488,9 +523,17 @@ class qcl_object extends patched_object
  
   
   //-------------------------------------------------------------
-  // class introspection 
+  // Object and class introspection 
   //-------------------------------------------------------------
   
+  /**
+   * Alias method for get_class($this)
+   */
+  function getClassName()
+  {
+    return get_class($this);
+  } 
+    
   /**
    * similar to instanceOf javascript function. checks if object is an instance of the
    * class or of a subclass of this class. Use this for cross-version compatibility
@@ -528,6 +571,7 @@ class qcl_object extends patched_object
    * @access private
    * @param object $instance reference to be set as singleton
    * @return void
+   * @deprecated 
    */
   function &setSingleton( $instance ) 
   {
@@ -557,11 +601,10 @@ class qcl_object extends patched_object
     }
     return $instance;
   }
-
   
 	/**
 	 * gets new instance of classname
-	 * if object is a subclass of qx_jsonrpc_controller, pass the object as constructor 
+	 * if object is a subclass of qx_jsonrpc_controller, pass the object as constructor.
 	 * to the model class, otherwise pass optional parameter
 	 * @param string 			$classname
 	 * @param mixed reference 	$controller		(optional) controller object to be passed

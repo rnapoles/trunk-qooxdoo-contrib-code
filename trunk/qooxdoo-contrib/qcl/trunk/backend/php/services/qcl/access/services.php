@@ -127,7 +127,7 @@ class qcl_access_services extends qcl_mixin
       /*
        * message that login was successful
        */
-      $this->dispatchMessage("qcl.auth.messages.loginSuccess");
+      $this->dispatchMessage("qcl.auth.messages.loginSuccess", $username );
     }
     
     
