@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs;
 import java.io.IOException;
 import java.io.Reader;
 
+/** Reads a node line-by-line. In some sense, this class is similar to Buffer, but operates on chars. */
 public abstract class LineProcessor {
     public static final int INITIAL_BUFFER_SIZE = 2;
     

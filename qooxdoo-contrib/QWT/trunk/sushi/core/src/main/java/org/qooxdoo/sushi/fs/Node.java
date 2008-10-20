@@ -280,6 +280,7 @@ public abstract class Node {
         return result;
     }
 
+    // TODO: expensive - both string and byte in memory
     public String readString() throws IOException {
         return getIO().getSettings().string(readBytes());
     }
