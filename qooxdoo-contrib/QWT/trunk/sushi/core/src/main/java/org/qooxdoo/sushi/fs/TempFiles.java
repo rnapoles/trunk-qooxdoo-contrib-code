@@ -24,15 +24,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.qooxdoo.sushi.fs.file.FileNode;
+
+/** 
+ * Shutdown hock delete temporary java.io.File (inparticular: directories, because 
+ * deleteAtExist is restricted to files).
+ * 
+ * The implementation is intentionally tied to FileNode, it doesn't work for files because:
+ * 1) I create temp file on disk only - I can't see a use case for other node implementations.   
+ * 2) node.delete() is might fail because server connections might already be closed
+ */
 public class TempFiles implements Runnable {
     /** null if the exit task has already been started */
-    private List<Node> delete;
+    private List<FileNode> delete;
 
     /** null if the exit task has already been executed */
     private final Random rand;
     
     public TempFiles() {
-        this.delete = new ArrayList<Node>();
+        this.delete = new ArrayList<FileNode>();
         this.rand = new Random();
     }
 
@@ -43,7 +53,7 @@ public class TempFiles implements Runnable {
     /**
      * @param node  file or directory
      */
-    public synchronized void deleteAtExit(Node node) {
+    public synchronized void deleteAtExit(FileNode node) {
         if (delete == null) {
             // already exiting
             tryDelete(node);
@@ -53,16 +63,16 @@ public class TempFiles implements Runnable {
     }
 
     public synchronized void run() {
-        List<Node> tmp;
+        List<FileNode> tmp;
         
         tmp = delete;
         delete = null;
-        for (Node node : tmp) {
+        for (FileNode node : tmp) {
         	tryDelete(node);
         }
     }
 
-    private boolean tryDelete(Node node) {
+    private boolean tryDelete(FileNode node) {
         try {
         	if (node.exists()) {
                 node.delete();
