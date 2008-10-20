@@ -521,7 +521,14 @@ qx.Mixin.define("qcl.application.MUserInteraction",
       /*
        * window
        */
-      var w = this._createWindow(this.tr("Information"), msg, "icon/16/actions/help-about.png", "icon/32/status/help-about.png", controls);
+      var w = this._createWindow(
+        this.tr("Information"), 
+        msg, 
+        "icon/16/actions/help-about.png", 
+        "icon/32/status/help-about.png",
+        controls,
+        600
+      );
 
       /*
        * add event listener for OK Button
@@ -687,14 +694,16 @@ qx.Mixin.define("qcl.application.MUserInteraction",
      * @param smallIcon {String} Resource string for icon in the window title bar
      * @param bigIcon {String} Resource string for icon in the main pane
      * @param controls {Array} Array of widgets that will be placed below each other in the main pane
+     * @param width {Int} Optional value for the width of the window.
      * @return {qx.ui.window.Window} 
      */
-    _createWindow : function(caption, msg, smallIcon, bigIcon, controls)
+    _createWindow : function(caption, msg, smallIcon, bigIcon, controls, width)
     {
       // window
       var w = new qx.ui.window.Window(caption, smallIcon);
       w.setMinWidth(300);
       w.setMinHeight(100);
+      if ( width ) w.setWidth(width);
       w.setShowMaximize(false);
       w.setShowMinimize(false);
       w.setShowClose(false);
