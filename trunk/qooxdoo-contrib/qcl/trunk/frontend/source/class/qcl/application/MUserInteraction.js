@@ -494,13 +494,14 @@ qx.Mixin.define("qcl.application.MUserInteraction",
             }
           }
           delete fieldData.options;
+          
           /*
            * create an event listener which dynamically updates the
            * 'value' field in the form data
            */
           eval('t.addEventListener("changeValue", function(event){'+  
-            'formData.' + key + '.value=t.getManager().getSelectedItem().getValue();' +
-          '});');          
+            'formData.' + key + '.value=this.getManager().getSelectedItem().getValue();' +
+          '},t);');          
         }
         else
         {
