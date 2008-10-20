@@ -37,7 +37,7 @@ import org.qooxdoo.sushi.io.OS;
 public class FileNodeTest extends NodeTest {
     @Override
     protected Node createWork() throws IOException {
-        return IO.createTempDirectory();
+        return IO.getTemp().createTempDirectory();
     }
     
     @Test
@@ -92,12 +92,12 @@ public class FileNodeTest extends NodeTest {
     
     @Test
     public void modeFile() throws IOException {
-        checkMode(IO.createTempFile());
+        checkMode(IO.getTemp().createTempFile());
     }
 
     @Test
     public void modeDir() throws IOException {
-        checkMode(IO.createTempDirectory());
+        checkMode(IO.getTemp().createTempDirectory());
     }
 
     private void checkMode(FileNode node) throws IOException {
@@ -127,7 +127,7 @@ public class FileNodeTest extends NodeTest {
     public void linkNormal() throws IOException {
         FileNode file;
         
-        file = IO.createTempFile();
+        file = IO.getTemp().createTempFile();
         assertTrue(file.isFile());
         assertFalse(file.isLink());
     }
@@ -140,7 +140,7 @@ public class FileNodeTest extends NodeTest {
         if (IO.os == OS.WINDOWS) {
             return;
         }
-        orig = IO.createTempFile();
+        orig = IO.getTemp().createTempFile();
         link = (FileNode) IO.getTemp().join("foo");
 
         assertTrue(orig.exists());
@@ -206,6 +206,18 @@ public class FileNodeTest extends NodeTest {
     public void filesystem() {
         assertEquals(File.separator, work.getRoot().getFilesystem().getSeparator());
         assertEquals(File.separatorChar, work.getRoot().getFilesystem().getSeparatorChar());
+    }
+
+    @Test
+    public void temp() throws IOException {
+        FileNode tmp;
+        
+        tmp = ((FileNode) work).createTempFile();
+        System.out.println(tmp.getName());
+        assertEquals("", tmp.readString());
+        tmp = ((FileNode) work).createTempDirectory();
+        System.out.println(tmp.getName());
+        assertEquals(0, tmp.list().size());
     }
 }
 

@@ -192,6 +192,6 @@ public class ConnectionFullTest {
         process = root.start(true, "sleep", "2");
         process.waitFor();
         assertTrue(process.duration() >= 2000);
-        assertTrue(process.duration() <= 2200);
+        assertTrue(process.duration() <= 2600);
     }
 }

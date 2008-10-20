@@ -17,6 +17,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <module>core</module>
     <module>ssh</module>
     <module>svn</module>
-    <module>mork</module>
+    <!-- module>mork</module -->
   </modules>
 </project>
