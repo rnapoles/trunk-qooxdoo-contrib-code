@@ -216,7 +216,7 @@ qx.Mixin.define("qcl.application.MApplication",
      * @type member
      * @param first {var} TODOC
      * @param second {var} TODOC
-     * @return {void} 
+     * @return {Map} 
      */
     setHashParam : function(first, second)
     {
@@ -242,6 +242,8 @@ qx.Mixin.define("qcl.application.MApplication",
       }
 
       window.location.hash = p.join("&");
+      //console.log(window.location.hash);
+      return hP;
     },
 
     /**
@@ -268,6 +270,7 @@ qx.Mixin.define("qcl.application.MApplication",
         
         window.location.hash = p.join("&");
       }
+      //console.log(window.location.hash);
       return hP;
     },
     
@@ -287,24 +290,31 @@ qx.Mixin.define("qcl.application.MApplication",
         this.error("Invalid parameters");
       }
 			
-			// convert to string
+			/*
+			 * convert to string
+			 */
 			if ( typeof(value) != "string" )
 			{
 				value = new String(value);
 			}
 			
 			var oldValue = this.getState(name);
-			
 			//console.log("New state for '" + name + "' :'" +value +"', old state :'" + oldValue +"'");
 			
-			// only dispatch events if value actually changes
+			/*
+			 * only dispatch events if value actually changes
+			 */
       if ( value != oldValue )
       {
-        // this will also fire the changeState event
+        /*
+         * this will also fire the changeState event
+         */
         //console.log("Setting hash param '" + name + "' to " +value);
         this.setHashParam( name, value );
         
-        // qooxdoo browser navigation button support
+        /*
+         * qooxdoo browser navigation button support
+         */
         this.addToHistory(location.hash.substr(1),description);        
       }
     },
@@ -365,7 +375,8 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     removeState : function ( name )
     {
-      return this.removeHashParam( name );
+      this.removeHashParam( name );
+      this.addToHistory(location.hash.substr(1),null);
     },
     
     /**
@@ -391,20 +402,35 @@ qx.Mixin.define("qcl.application.MApplication",
       if( value )
       {        
         var state = qx.client.History.getInstance().getState();
-        // console.log("Initial state: " + state);
+        //console.log("Initial state: " + state);
         this.__lastHash    = state; 
         this.__hashParams  = this._analyzeHashString();
         //console.log(this.__hashParams);
-        qx.client.History.getInstance().addEventListener("request", function(e) {
+        
+        /*
+         * setup event listener for history changes
+         */
+        qx.client.History.getInstance().addEventListener("request", function(e) 
+        {
           var state = e.getData();
           //console.log("'request' event received with hash'"+state+"'");
           
-          // application specific state update
+          /*
+           * application specific state update
+           */ 
           var hP = this._analyzeHashString(state);
+          
+          /*
+           * check all hash keys
+           */
           for ( var key in hP )
           {
             var value = hP[key]; 
-            //console.log("State param '"+key+"': new value '"+value+"', stored value '"+this.__hashParams[key]+"'.");
+            //console.log("State param '"+key+"': new value '"+value+"', previous value '"+this.__hashParams[key]+"'.");
+                        
+            /*
+             * fire events
+             */
             if ( value != this.__hashParams[key] )
             {
               this.__hashParams[key] = value;
@@ -554,9 +580,6 @@ qx.Mixin.define("qcl.application.MApplication",
           this.updateServer.apply( this, params );
         }
       });
-    
-    }    
-    
-    
+    }
   }
 });
