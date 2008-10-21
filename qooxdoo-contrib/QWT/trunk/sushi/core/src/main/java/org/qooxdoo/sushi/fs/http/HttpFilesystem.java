@@ -27,8 +27,14 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.RootPathException;
 
 public class HttpFilesystem extends Filesystem {
+    private int defaultConnectTimeout;
+    private int defaultReadTimeout;
+    
     public HttpFilesystem(IO io) {
         super(io, "http", '/');
+        
+        this.defaultConnectTimeout = 0;
+        this.defaultReadTimeout = 0;
     }
 
     @Override
@@ -59,5 +65,21 @@ public class HttpFilesystem extends Filesystem {
         }
         // ignores url.getPath()
         return new HttpRoot(this, url.getHost(), url.getPort());
+    }
+
+    public int getDefaultConnectTimeout() {
+        return defaultConnectTimeout;
+    }
+    
+    public void setDefaultConnectTimeout(int millis) {
+        defaultConnectTimeout = millis;
+    }
+    
+    public int getDefaultReadTimeout() {
+        return defaultReadTimeout;
+    }
+    
+    public void setDefaultReadTimeout(int millis) {
+        defaultReadTimeout = millis;
     }
 }

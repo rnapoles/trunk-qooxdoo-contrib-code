@@ -39,7 +39,8 @@ import org.qooxdoo.sushi.fs.SetLastModifiedException;
 public class HttpNode extends Node {
     private final HttpRoot root;
     private final URL url;
-    
+   
+    // CAUTION: url is not checked for url parameter
     public HttpNode(HttpRoot root, URL url) {
         super();
         this.root = root;
