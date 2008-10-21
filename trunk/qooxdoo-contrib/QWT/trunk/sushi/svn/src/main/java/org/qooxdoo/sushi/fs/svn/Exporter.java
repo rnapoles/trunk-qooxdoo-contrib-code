@@ -28,6 +28,7 @@ import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNPropertyValue;
 import org.tmatesoft.svn.core.internal.wc.SVNFileUtil;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.ISVNReporter;
@@ -133,6 +134,12 @@ public class Exporter implements ISVNReporterBaton, ISVNEditor {
     public void abortEdit() throws SVNException {
     }
 
+    public void changeDirProperty(String arg0, SVNPropertyValue arg1) throws SVNException {
+    }
+
+    public void changeFileProperty(String arg0, String arg1, SVNPropertyValue arg2) throws SVNException {
+    }
+    
     //-- 
         
     private static SVNException exception(IOException e) { 
