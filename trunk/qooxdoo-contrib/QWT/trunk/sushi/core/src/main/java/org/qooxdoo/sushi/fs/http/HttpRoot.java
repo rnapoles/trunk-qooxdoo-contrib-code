@@ -35,8 +35,8 @@ public class HttpRoot implements Root {
         this.filesystem = filesystem;
         this.host = host;
         this.port = port;
-        this.connectTimeout = 0;
-        this.readTimeout = 0;
+        this.connectTimeout = filesystem.getDefaultConnectTimeout();
+        this.readTimeout = filesystem.getDefaultReadTimeout();
     }
 
     public int getConnectTimeout() {

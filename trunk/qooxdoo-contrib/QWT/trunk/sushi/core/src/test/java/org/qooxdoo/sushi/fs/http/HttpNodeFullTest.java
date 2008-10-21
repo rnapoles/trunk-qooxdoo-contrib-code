@@ -21,8 +21,12 @@ package org.qooxdoo.sushi.fs.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,6 +46,26 @@ public class HttpNodeFullTest extends NodeReadOnlyTest {
         assertEquals("//englishediting.de/", node.getRoot().getId());
         assertEquals("index.html", node.getPath());
         assertEquals("", node.getParent().getPath());
+    }
+
+    @Ignore // TODO: doesn't work reliably
+    public void timeout() throws IOException {
+        HttpNode node;
+    
+        node = (HttpNode) IO.node("http://englishediting.de/index.html");
+        assertEquals(node.getUrl().openConnection().getReadTimeout(), node.getRoot().getReadTimeout());
+        assertEquals(node.getUrl().openConnection().getConnectTimeout(), node.getRoot().getConnectTimeout());
+        node.getRoot().setConnectTimeout(1);
+        node.getRoot().setReadTimeout(1);
+        try {
+            node.readString();
+            fail();
+        } catch (SocketTimeoutException e) {
+            // ok
+        }
+        node.getRoot().setConnectTimeout(0);
+        node.getRoot().setReadTimeout(0);
+        assertNotNull(node.readString());
     }
 
     @Test

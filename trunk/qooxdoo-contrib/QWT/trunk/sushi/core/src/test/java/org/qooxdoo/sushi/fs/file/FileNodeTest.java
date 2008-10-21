@@ -213,10 +213,8 @@ public class FileNodeTest extends NodeTest {
         FileNode tmp;
         
         tmp = ((FileNode) work).createTempFile();
-        System.out.println(tmp.getName());
         assertEquals("", tmp.readString());
         tmp = ((FileNode) work).createTempDirectory();
-        System.out.println(tmp.getName());
         assertEquals(0, tmp.list().size());
     }
 }
