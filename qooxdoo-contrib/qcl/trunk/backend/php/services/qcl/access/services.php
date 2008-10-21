@@ -181,9 +181,9 @@ class qcl_access_services extends qcl_mixin
     $userModel->setActiveUser(null);
     
     /*
-     * message
+     * message to indicate that server has logged out
      */
-    $this->dispatchMessage("qcl.messages.user.logout");
+    $this->dispatchMessage("qcl.messages.logout");
     
     /*
      * return client data
