@@ -1,12 +1,23 @@
 <?php
-require_once "qcl/io/filesystem/Abstract.php";
+
+require_once "qcl/io/filesystem/AbstractFolder.php";
 
 /**
  * Folder-like ressources
  */
-class qcl_io_filesystem_AbstractFolder extends qcl_io_filesystem_Abstract
+class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_AbstractFolder
 {
 
+  /**
+   * Checks wether resource path is valid
+   * @param string $resourcePath
+   * @retrun boolean
+   */
+  function checkResourcePath( $resourcePath )
+  {
+    
+  }  
+  
   /**
    * Creates a file resource
    * @param string $name
