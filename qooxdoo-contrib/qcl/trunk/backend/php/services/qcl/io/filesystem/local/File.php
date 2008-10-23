@@ -1,18 +1,27 @@
 <?php
-
-require_once "qcl/io/filesystem/Abstract.php";
+require_once "qcl/io/filesystem/AbstractFile.php";
 
 /**
  * PHP4/PHP5 Interface for file-like resources
  */
-class qcl_io_filesystem_AbstractFile extends qcl_io_filesystem_Abstract
+class qcl_io_filesystem_local_File extends qcl_io_filesystem_AbstractFile
 {
+  
+  /**
+   * Checks wether resource path is valid
+   * @param string $resourcePath
+   * @retrun boolean
+   */
+  function checkResourcePath( $resourcePath ) {}
   
   /**
    * Load the whole file resource into memory
    * @return bool false if file could not be loaded
    */
-  function load() {}
+  function load() 
+  {
+    return file_get_contents($this->getResourcePath());  
+  }
   
   /**
    * save a string of data back into the file resource
