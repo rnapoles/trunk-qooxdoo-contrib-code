@@ -2,7 +2,7 @@
 
 require "qcl/jsonrpc/model.php";
 
-class qcl_io_file_abstract extends qcl_jsonrpc_model
+class qcl_io_file_Abstract extends qcl_jsonrpc_model
 {
   /**
    * The file resource path

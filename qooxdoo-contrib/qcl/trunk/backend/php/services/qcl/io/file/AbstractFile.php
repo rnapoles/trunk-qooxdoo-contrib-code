@@ -3,28 +3,8 @@
 /**
  * PHP4/PHP5 Interface for file-like resources
  */
-class qcl_io_file_interface
+class qcl_io_file_AbstractFile extends qcl_io_file_abstract
 {
-  /**
-   * The file resource path
-   *
-   * @var string
-   */
-  var $resourcePath;  
-  
-  /**
-   * Constructor
-   *
-   * @param qcl_jsonrpc_controller|null $controller
-   * @param string $resourcePath
-   */
-  function __construct($controller, $resourcePath) {}
-  
-  /**
-   * Gets the file's resource path
-   * @return string
-   */
-  function getResourcePath() {}
   
   /**
    * Load the whole file resource into memory
@@ -45,11 +25,6 @@ class qcl_io_file_interface
   function open($mode) {}
     
   /**
-   * Creates an empty file resource and opens it for writing
-   */
-  function create() {}  
-  
-  /**
    * Reads a variable number of bytes from the resource
    * @param int $bytes
    * @return string|false returns the string read or false if there was an error or end of file was reached
@@ -66,6 +41,11 @@ class qcl_io_file_interface
    * Closes the file resource
    */
   function close() {}
+
+  /**
+   * Deletes the file resource
+   */
+  function delete() {}  
   
 }
 ?>
