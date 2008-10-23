@@ -2808,8 +2808,27 @@ qx.Class.define("htmlarea.HtmlArea",
         this.__getSelection().collapseToStart();
       }
     }),
-    
-    
+
+
+    /**
+     * Clears the current selection
+     * 
+     * @type member
+     * @return {void}
+     */
+     collapseToEnd : qx.core.Variant.select("qx.client",
+     {
+      "mshtml" : function()
+      {
+        this.getRange().collapse();
+      },
+      
+      "default" : function()
+      {
+        this.__getSelection().collapseToEnd();
+      }
+    }),
+
 
     /*
      -----------------------------------------------------------------------------
