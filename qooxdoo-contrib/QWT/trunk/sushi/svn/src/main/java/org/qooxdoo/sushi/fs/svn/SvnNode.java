@@ -283,6 +283,13 @@ public class SvnNode extends Node {
     @Override
     public long getLastModified() throws LastModifiedException {
         try {
+            if (!exists()) {
+                throw new LastModifiedException(this, null);
+            }
+        } catch (ExistsException e) {
+            throw new LastModifiedException(this, e);
+        }
+        try {
             return root.getRepository().info(path, -1).getDate().getTime();
         } catch (SVNException e) {
             throw new LastModifiedException(this, e);
