@@ -56,6 +56,10 @@ public class Buffer {
     }
     
     public int fill(InputStream in) throws IOException {
+        return fill(in, buffer);
+    }
+
+    public static int fill(InputStream in, byte[] buffer) throws IOException {
         int chunk;
         int ofs;
         
