@@ -22,6 +22,8 @@ package org.qooxdoo.sushi.xml;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.file.FileNode;
 import org.qooxdoo.sushi.io.OS;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,6 +64,17 @@ public class SerializerTest {
         checkSerialize("<root/>" + LF, "<root/>", "/root");
         checkSerialize("<a/>" + LF, "<root><a/></root>", "/root/a");
         checkSerialize("mhm", "<root>mhm</root>", "/root/text()");
+    }
+
+    @Test
+    public void serializeWithEncoding() throws Exception {
+        Document doc;
+        FileNode file;
+        
+        doc = BUILDER.parseString("<a><b/></a>");        
+        file = new IO().getTemp().createTempFile();
+        SERIALIZER.serialize(doc, file);        
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<a>\n<b/>\n</a>\n", file.readString());
     }
 
     @Test
