@@ -65,13 +65,13 @@ public class Glob {
     private static String translate(String glob) {
         int i;
         int max;
-        StringBuffer result;
+        StringBuilder result;
         char c;
         int j;
         String stuff;
 
         max = glob.length();
-        result = new StringBuffer();
+        result = new StringBuilder();
         for (i = 0; i < max;) {
             c = glob.charAt(i++);
             if (c == '*') {
