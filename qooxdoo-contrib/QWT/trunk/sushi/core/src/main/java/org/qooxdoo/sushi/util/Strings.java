@@ -45,9 +45,9 @@ public class Strings {
     public static String join(String separator, List<String> strings) {
         int i;
         int max;
-        StringBuffer buffer;
+        StringBuilder buffer;
         
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         max = strings.size();
         for (i = 0; i < max; i++) {
             if (i > 0) {
@@ -158,9 +158,9 @@ public class Strings {
     }
 
     public static String times(char ch, int count) {
-        StringBuffer buffer;
+        StringBuilder buffer;
         
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         while (count-- > 0) {
             buffer.append(ch);
         }
@@ -212,7 +212,7 @@ public class Strings {
     }
     
     public static String replace(String str, String in, String out) {
-        StringBuffer buffer;
+        StringBuilder buffer;
         int inLen;
         int idx;
         int prev;
@@ -221,7 +221,7 @@ public class Strings {
         if (inLen == 0) {
             throw new IllegalArgumentException();
         }
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         idx = str.indexOf(in);
         prev = 0;
         while (idx != -1) {
@@ -269,13 +269,13 @@ public class Strings {
 
     public static final String block(String first, String prefix, String body, int width, String suffix, String last) {
         String currentPrefix;
-        StringBuffer buffer;
+        StringBuilder buffer;
         int space;
         int word;
         int line;
         boolean empty;  // false if at least one word was added to the line
         
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         word = skip(body, 0, true);
         currentPrefix = first;
         while (true) {

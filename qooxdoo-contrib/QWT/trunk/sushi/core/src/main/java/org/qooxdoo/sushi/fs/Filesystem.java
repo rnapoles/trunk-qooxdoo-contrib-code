@@ -72,9 +72,9 @@ public abstract class Filesystem {
     }
     
     public String join(String head, List<String> paths) {
-        StringBuffer buffer;
+        StringBuilder buffer;
         
-        buffer = new StringBuffer(head);
+        buffer = new StringBuilder(head);
         for (String path : paths) {
             if (path.startsWith(separator)) {
                 throw new IllegalArgumentException(path);
