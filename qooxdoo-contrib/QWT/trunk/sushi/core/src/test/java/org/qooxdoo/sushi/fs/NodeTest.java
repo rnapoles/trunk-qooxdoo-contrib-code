@@ -193,7 +193,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     //
     
     @Test
-    public void modified() throws Exception {
+    public void modifiedFile() throws Exception {
         Node file;
         long modified;
         
@@ -209,6 +209,25 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         }
         sameTime(modified, file.getLastModified());
     }
+
+    @Test
+    public void modifiedDirectory() throws Exception {
+        Node dir;
+        long modified;
+        
+        dir = work.join("dir");
+        dir.mkdir();
+        sameTime(dir.getLastModified(), System.currentTimeMillis());
+        modified = System.currentTimeMillis() - 1000 * 60 * 5;
+        try {
+            dir.setLastModified(modified);
+        } catch (SetLastModifiedException e) {
+            // setLastModified is not supported - ignore
+            return;
+        }
+        sameTime(modified, dir.getLastModified());
+    }
+    
     private static void sameTime(long left, long right) {
         if (Math.abs(left - right) > 2000) {
             fail("expected: " + time(left) + ", got " + time(right));
@@ -287,8 +306,8 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         
         reader = file.createReader();
         assertSame(file, reader.getNode());
-        assertEquals((int) 'h', reader.read());
-        assertEquals((int) 'i', reader.read());
+        assertEquals('h', reader.read());
+        assertEquals('i', reader.read());
         assertEquals(-1, reader.read());
         reader.close();
     }
