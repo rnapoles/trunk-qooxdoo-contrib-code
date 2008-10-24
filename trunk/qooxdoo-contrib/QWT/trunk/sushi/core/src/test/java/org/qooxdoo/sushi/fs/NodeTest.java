@@ -198,8 +198,20 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         long modified;
         
         file = work.join("file");
+        assertFalse(file.exists());
+        try {
+            file.getLastModified();
+            fail();
+        } catch (LastModifiedException e) {
+            // ok
+        }
         file.writeBytes();
-        sameTime(file.getLastModified(), System.currentTimeMillis());
+        modified = file.getLastModified();
+        sameTime(modified, System.currentTimeMillis());
+        file.readString();
+        assertEquals(modified, file.getLastModified());
+        file.writeString("");
+        assertTrue(file.getLastModified() >= modified);
         modified = System.currentTimeMillis() - 1000 * 60 * 5;
         try {
             file.setLastModified(modified);
@@ -610,21 +622,6 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         assertEquals("A", dest.join("a").readString());
         assertEquals("B", dest.join("b").readString());
         dest.join("dir").checkDirectory();
-    }
-    
-    @Test
-    public void lastModified() throws IOException {
-        long last;
-        Node node;
-        
-        node = work.join("foo").writeString("ab");
-        last = node.getLastModified();
-        assertTrue(last <= System.currentTimeMillis());
-        node.readString();
-        assertEquals(last, node.getLastModified());
-        node.writeString("");
-        assertTrue(node.getLastModified() >= last);
-        assertTrue(node.getLastModified() <= System.currentTimeMillis());
     }
     
     //-- Object methods
