@@ -20,9 +20,9 @@
 package org.qooxdoo.sushi.xml;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -47,13 +47,14 @@ public class Serializer {
         this.transformer = createPrettyPrinter();
     }
     
+    /** Generates an xml/encoding declaration */
     public void serialize(Node src, org.qooxdoo.sushi.fs.Node dest) throws IOException {
-        Writer writer;
+        OutputStream out;
         
-        // use writer to let dest define the encoding
-        writer = dest.createWriter();
-        serialize(new DOMSource(src), new StreamResult(writer));
-        writer.close();
+        // don't use Writer to allow transformer to decide about encoding */
+        out = dest.createOutputStream();
+        serialize(new DOMSource(src), new StreamResult(out), dest.getIO().getSettings().encoding);
+        out.close();
     }
 
     public void serialize(Node src, Result dest) {
@@ -61,16 +62,28 @@ public class Serializer {
     }
     
     public void serialize(Source src, Result dest) {
+        serialize(src, dest, null);
+    }
+
+    public void serialize(Source src, Result dest, String encoding) {
+        if (encoding == null) {
+            transformer.getOutputProperties().remove(OutputKeys.ENCODING);
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");            
+        } else {
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");            
+            transformer.setOutputProperty(OutputKeys.ENCODING, encoding);            
+        }
         try {
             transformer.transform(src, dest);
         } catch (TransformerException e) {
-            // TODO: re-throw ioexception?
+            // TODO: re-throw IOException?
             throw new RuntimeException("unexpected problem with identity transformer", e);
         }
     }
 
     //-- to strings
 
+    /**  does not genereate encoding headers */
     public String serialize(Node node) {
         Result result;
         StringWriter dest;

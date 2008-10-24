@@ -384,7 +384,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         doc = IO.getXml().builder.literal("<a><b/></a>");        
         file = work.join("foo");
         file.writeXml(doc);
-        assertEquals(IO.getSettings().join("<a>", "<b/>", "</a>", ""), file.readString());
+        assertEquals(IO.getSettings().join("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<a>", "<b/>", "</a>", ""), file.readString());
         doc = file.readXml();
         assertEquals("a", doc.getDocumentElement().getLocalName());
     }
