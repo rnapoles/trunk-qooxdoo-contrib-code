@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.LastModifiedException;
+import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
@@ -281,18 +281,18 @@ public class SvnNode extends Node {
     }
 
     @Override
-    public long getLastModified() throws LastModifiedException {
+    public long getLastModified() throws GetLastModifiedException {
         try {
             if (!exists()) {
-                throw new LastModifiedException(this, null);
+                throw new GetLastModifiedException(this, null);
             }
         } catch (ExistsException e) {
-            throw new LastModifiedException(this, e);
+            throw new GetLastModifiedException(this, e);
         }
         try {
             return root.getRepository().info(path, -1).getDate().getTime();
         } catch (SVNException e) {
-            throw new LastModifiedException(this, e);
+            throw new GetLastModifiedException(this, e);
         }
     }
 

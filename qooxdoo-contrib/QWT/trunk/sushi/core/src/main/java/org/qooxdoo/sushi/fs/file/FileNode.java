@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.LastModifiedException;
+import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.MkfileException;
 import org.qooxdoo.sushi.fs.Node;
@@ -130,12 +130,12 @@ public class FileNode extends Node {
     }
 
     @Override
-    public long getLastModified() throws LastModifiedException {
+    public long getLastModified() throws GetLastModifiedException {
         long result;
         
         result = file.lastModified();
         if (result == 0 && !exists()) {
-            throw new LastModifiedException(this, new ExistsException(this, null));
+            throw new GetLastModifiedException(this, new ExistsException(this, null));
         }
         return result;
     }

@@ -202,7 +202,7 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         try {
             file.getLastModified();
             fail();
-        } catch (LastModifiedException e) {
+        } catch (GetLastModifiedException e) {
             // ok
         }
         file.writeBytes();
