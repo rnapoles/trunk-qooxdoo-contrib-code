@@ -46,8 +46,8 @@ public class Definition {
 
     private Attribute attribute;
 
-    private List isolated;
-    private List mergeable;
+    private List<Argument> isolated;
+    private List<Argument> mergeable;
 
     // TODO: use {1}, {2} if GenericException support it
     public static final String ARGUMENT_NOT_ASSIGNABLE =
@@ -65,8 +65,8 @@ public class Definition {
         this.name = name;
         this.symbol = symbol;
         this.constructor = constructor;
-        this.isolated = new ArrayList();
-        this.mergeable = new ArrayList();
+        this.isolated = new ArrayList<Argument>();
+        this.mergeable = new ArrayList<Argument>();
 
         if (constructor instanceof Internal) {
             var = (Internal) constructor;
@@ -79,7 +79,6 @@ public class Definition {
     }
 
     public void addArgument(Argument arg, Definition src) throws GenericException {
-        Selection selection;
         Type type;
 
         type = arg.getAttribute().type;
@@ -120,7 +119,7 @@ public class Definition {
         int prod, alt, maxAlt;
         int user, maxUser;
         List<Argument> args;
-        List argAttrs;  // attributes from args, but re-arranged
+        List<Attribute> argAttrs;  // attributes from args, but re-arranged
 
         selection = getSelection();
         if (selection == null) {
@@ -130,7 +129,7 @@ public class Definition {
         }
         args = new ArrayList<Argument>();
         translateArguments(transport, semantics, args);
-        argAttrs = new ArrayList();
+        argAttrs = new ArrayList<Attribute>();
         fn = Conversion.find(selection, this, args, argAttrs);
         if (grammar.isTerminal(attribute.symbol)) {
             // inherited attributes
@@ -173,13 +172,13 @@ public class Definition {
         sorted = Argument.sortAndMergeArgs(this, mergeable);
         max = isolated.size();
         for (i = 0; i < max; i++) {
-            arg = (Argument) isolated.get(i);
+            arg = isolated.get(i);
             arg.createTransport(semantics, transport);
             args.add(arg);
         }
         max = sorted.size();
         for (i = 0; i < max; i++) {
-            arg = (Argument) sorted.get(i);
+            arg = sorted.get(i);
             arg.createTransport(semantics, transport);
             args.add(arg);
         }
