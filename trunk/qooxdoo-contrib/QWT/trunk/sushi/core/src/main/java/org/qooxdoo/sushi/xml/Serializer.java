@@ -39,6 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class Serializer {
     private final Transformer transformer;
@@ -57,15 +58,17 @@ public class Serializer {
         out.close();
     }
 
-    public void serialize(Node src, Result dest) {
+    public void serialize(Node src, Result dest) throws IOException {
         serialize(new DOMSource(src), dest);
     }
     
-    public void serialize(Source src, Result dest) {
+    public void serialize(Source src, Result dest) throws IOException {
         serialize(src, dest, null);
     }
 
-    public void serialize(Source src, Result dest, String encoding) {
+    public void serialize(Source src, Result dest, String encoding) throws IOException {
+        Throwable cause;
+        
         if (encoding == null) {
             transformer.getOutputProperties().remove(OutputKeys.ENCODING);
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");            
@@ -75,9 +78,25 @@ public class Serializer {
         }
         try {
             transformer.transform(src, dest);
-        } catch (TransformerException e) {
-            // TODO: re-throw IOException?
-            throw new RuntimeException("unexpected problem with identity transformer", e);
+        } catch (TransformerException orig) {
+            Throwable last;
+
+            last = orig;
+            while (true) {
+                if (last instanceof SAXException) {
+                    cause = ((SAXException) last).getException();
+                } else {
+                    cause = last.getCause();
+                }
+                if (cause instanceof IOException) {
+                    throw (IOException) cause;
+                } else if (cause == null) {
+                    break;
+                } else {
+                    last = cause;
+                }
+            }
+            throw new RuntimeException("unexpected problem with identity transformer", orig);
         }
     }
 
@@ -93,7 +112,11 @@ public class Serializer {
         }
         dest = new StringWriter();
         result = new StreamResult(dest);
-        serialize(node, result);
+        try {
+            serialize(node, result);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         return dest.getBuffer().toString();
     }
 
