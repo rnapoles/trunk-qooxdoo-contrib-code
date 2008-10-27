@@ -39,8 +39,9 @@ qx.Class.define("timechooser.spinner.AmPm",
     this.base(arguments);
     this.__bInSuperclassConstructor = false;
     
-    this.__am = this.tr("AM");
-    this.__pm = this.tr("PM");
+    this.__am = this.tr("AM").toString(); 
+    this.__pm = this.tr("PM").toString();
+
     this.__toggle[this.__am] = this.__pm;
     this.__toggle[this.__pm] = this.__am;
 
