@@ -68,7 +68,7 @@ public class Transport {
     /**
      * @param src   list of attributes
      */
-    public Function getTransportFn(List src, int destCard) {
+    public Function getTransportFn(List<Attribute> src, int destCard) {
         Function tmp;
         int i, max, srcCard;
         String msg;
@@ -95,10 +95,10 @@ public class Transport {
                 if (max == 0) {
                     return fnCreateSequence;
                 } else {
-                    srcCard = ((Attribute) src.get(0)).type.card;
+                    srcCard = src.get(0).type.card;
                     tmp = getInitialSequence(srcCard);
                     for (i = 1; i < max; i++) {
-                        srcCard = ((Attribute) src.get(i)).type.card;
+                        srcCard = src.get(i).type.card;
                         tmp = Composition.create(getSequenceAnd(srcCard), 0, tmp);
                     }
                     return tmp;
