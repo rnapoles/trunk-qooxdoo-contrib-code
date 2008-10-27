@@ -137,7 +137,7 @@ public class Argument implements Compare {
         seq = new ArrayList<Argument>();
         sort = new ArrayList<Argument>();
         for (i = 0; i < max; i++) {
-            arg = (Argument) args.get(i);
+            arg = args.get(i);
             if (arg.modifier == Path.MERGEABLE) {
                 sort.add(arg);
             } else {
