@@ -19,8 +19,8 @@
 
 package org.qooxdoo.sushi.fs;
 
-public class LastModifiedException extends NodeException {
-    public LastModifiedException(Node node, Throwable e) {
-        super(node, "lastModified failed", e);
+public class GetLastModifiedException extends NodeException {
+    public GetLastModifiedException(Node node, Throwable e) {
+        super(node, "getLastModified failed", e);
     }
 }

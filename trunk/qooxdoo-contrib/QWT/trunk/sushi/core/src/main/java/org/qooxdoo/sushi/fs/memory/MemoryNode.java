@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.LastModifiedException;
+import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.SetLastModifiedException;
@@ -80,9 +80,9 @@ public class MemoryNode extends Node {
     }
     
     @Override 
-    public long getLastModified() throws LastModifiedException {
+    public long getLastModified() throws GetLastModifiedException {
         if (type == Type.NONE) {
-            throw new LastModifiedException(this, null);
+            throw new GetLastModifiedException(this, null);
         }
         return lastModified;
     }

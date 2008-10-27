@@ -144,7 +144,7 @@ public abstract class Node {
     public abstract boolean isDirectory() throws ExistsException;
     
     /** Throws an exception is the file does not exist */
-    public abstract long getLastModified() throws LastModifiedException;
+    public abstract long getLastModified() throws GetLastModifiedException;
     public abstract void setLastModified(long millis) throws SetLastModifiedException;
     
     //-- path functionality

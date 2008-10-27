@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
-import org.qooxdoo.sushi.fs.LastModifiedException;
+import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.LengthException;
 import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
@@ -182,11 +182,11 @@ public class SshNode extends Node {
     }
 
     @Override
-    public long getLastModified() throws LastModifiedException {
+    public long getLastModified() throws GetLastModifiedException {
         try {
             return 1000L * channel.stat(slashPath).getMTime();
         } catch (SftpException e) {
-            throw new LastModifiedException(this, e);
+            throw new GetLastModifiedException(this, e);
         }
     }
 
