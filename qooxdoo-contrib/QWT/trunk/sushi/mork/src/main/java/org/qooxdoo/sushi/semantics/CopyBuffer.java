@@ -195,7 +195,7 @@ public class CopyBuffer implements Compare {
         mergers = new ArrayList<Merger>();
         max = copyBuffers.size();
         for (i = 0; i < max; i++) {
-            ((CopyBuffer) copyBuffers.get(i)).createMergers(mergers, mapping, mergedType);
+            copyBuffers.get(i).createMergers(mergers, mapping, mergedType);
         }
         runMergers(mergers, mapping);
         merger = Merger.forSymbol(mergers, symbol);
@@ -213,7 +213,7 @@ public class CopyBuffer implements Compare {
 
         iter = states.iterator();
         while (iter.hasNext()) {
-            state = (State) iter.next();
+            state = iter.next();
             attr = state.getAttribute();
             merger = Merger.forSymbol(mergers, attr.symbol);
             if (merger == null) {
@@ -233,7 +233,7 @@ public class CopyBuffer implements Compare {
 
         max = mergers.size();
         for (i = 0; i < max; i++) {
-            merger = (Merger) mergers.get(i);
+            merger = mergers.get(i);
             state = State.merge(mapping, merger.source);
             states.add(state);
         }
@@ -269,8 +269,7 @@ public class CopyBuffer implements Compare {
             if (lefts.size() != rights.size()) {
                 throw new IllegalStateException();
             }
-            cmp = localCompare((Attribute) lefts.get(i), (Attribute) rights.get(i),
-                               rightSemantics, lefts, rights);
+            cmp = localCompare(lefts.get(i), rights.get(i), rightSemantics, lefts, rights);
             if (cmp != EQ) {
                 if (cmp == NE) {
                     return NE;
@@ -330,15 +329,9 @@ public class CopyBuffer implements Compare {
 
     public String toString(boolean raw) {
         StringBuilder buf;
-        Iterator iter;
-        State state;
-        Attribute attr;
 
         buf = new StringBuilder();
-        iter = states.iterator();
-        while (iter.hasNext()) {
-            state = (State) iter.next();
-            attr = state.getAttribute();
+        for (State state : states) {
             buf.append(state.toString(raw));
         }
         return buf.toString();
@@ -352,29 +345,20 @@ public class CopyBuffer implements Compare {
      * @return cloned seed
      */
     public Attribute cloneAttributes(CopyBuffer orig, Type type, Attribute seed) {
-        Map map; // old attributes to new attributes
-        Iterator iter;
-        List attrs;
+        Map<Attribute, Attribute> map; // old attributes to new attributes
         Attribute attr;
-        int i;
-        int max;
-        State state;
         State newState;
 
-        map = new HashMap();
-        iter = orig.states.iterator();
-        while (iter.hasNext()) {
-            state = (State) iter.next();
+        map = new HashMap<Attribute, Attribute>();
+        for (State state : orig.states) {
             attr = state.getAttribute();
             map.put(attr, new Attribute(attr.symbol, null, type));
         }
-        iter = orig.states.iterator();
-        while (iter.hasNext()) {
-            state = (State) iter.next();
+        for (State state : orig.states) {
             newState = state.cloneAttributeTransport(map, orig);
             states.add(newState);
         }
-        attr = (Attribute) map.get(seed);
+        attr = map.get(seed);
         if (attr == null) {
             throw new IllegalArgumentException();
         }
