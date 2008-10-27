@@ -22,8 +22,6 @@ package org.qooxdoo.sushi.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.sushi.util.IntBitSet;
-
 import org.qooxdoo.sushi.compiler.Syntax;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
@@ -32,6 +30,7 @@ import org.qooxdoo.sushi.semantics.CopyBuffer;
 import org.qooxdoo.sushi.semantics.Occurrence;
 import org.qooxdoo.sushi.semantics.Pusher;
 import org.qooxdoo.sushi.semantics.Type;
+import org.qooxdoo.sushi.util.IntBitSet;
 
 /**
  * Visibility of some Definition, kind of an Argument builder.
@@ -52,7 +51,7 @@ public class Path {
      * @param targets   list of Definitions
      */
     public static void translate(Syntax syntax,
-              Definition source, int move, IntBitSet stopper, List targets, int modifier) throws GenericException {
+              Definition source, int move, IntBitSet stopper, List<Definition> targets, int modifier) throws GenericException {
         translate(syntax, modifier, source, targets,
                   new int[] { move }, new IntBitSet[] { new IntBitSet(stopper) });
     }
@@ -61,10 +60,10 @@ public class Path {
      * Creates a path with no steps
      */
     public static void translate(Syntax syntax, Definition source, Definition target) throws GenericException {
-        List targets;
+        List<Definition> targets;
         IntBitSet stopper;
 
-        targets = new ArrayList();
+        targets = new ArrayList<Definition>();
         targets.add(target);
         stopper = new IntBitSet();
         stopper.add(target.getAttribute().symbol);
@@ -77,7 +76,7 @@ public class Path {
     public static void translate(Syntax syntax,
             Definition source, int[] moves, int[] symbols, Definition target, int modifier) throws GenericException {
         IntBitSet[] stoppers;
-        List targets;
+        List<Definition> targets;
         int i;
 
         if (moves.length - 1 != symbols.length) {
@@ -85,7 +84,7 @@ public class Path {
         }
 
         stoppers = new IntBitSet[moves.length];
-        targets = new ArrayList();
+        targets = new ArrayList<Definition>();
         targets.add(target);
         for (i = 0; i < symbols.length; i++) {
             stoppers[i] = new IntBitSet();
@@ -101,7 +100,7 @@ public class Path {
      * The method actually doing the work
      */
     private static void translate(Syntax syntax,
-            int modifier, Definition source, List targets, int[] moves, IntBitSet[] stoppers) throws GenericException {
+            int modifier, Definition source, List<Definition> targets, int[] moves, IntBitSet[] stoppers) throws GenericException {
         Path path;
         int count;
 
@@ -121,20 +120,20 @@ public class Path {
     private final Definition source;
 
     /** List of Definitions (in last stopper). */
-    private final List targets;
+    private final List<Definition> targets;
 
     // moves.length == stoppers.length == copyBuffers.length
     private final int[] moves;
     private final IntBitSet[] stoppers;
     private final int modifier;
 
-    private final List[] copyBuffers;
+    private final List<CopyBuffer>[] copyBuffers;
 
     /**
      * @param targets   list of Definitions
      */
     private Path(Grammar grammar,
-                 int modifier, Definition source, List targets, int[] moves, IntBitSet[] stoppers)
+                 int modifier, Definition source, List<Definition> targets, int[] moves, IntBitSet[] stoppers)
     {
         this.grammar = grammar;
         this.modifier = modifier;
@@ -148,12 +147,12 @@ public class Path {
     private int translate() throws GenericException {
         int step;
         int max;
-        List buffers;
+        List<CopyBuffer> buffers;
         Definition target;
         Argument arg;
-        List attributeSources;
+        List<Definition> attributeSources;
 
-        buffers = new ArrayList();
+        buffers = new ArrayList<CopyBuffer>();
         buffers.add(new CopyBuffer(source.getAttribute()));
         for (step = 0; step < moves.length; step++) {
             translateStep(step, buffers);
@@ -161,35 +160,31 @@ public class Path {
         }
         max = buffers.size();
         for (step = 0; step < max; step++) {
-            attributeSources = new ArrayList();
+            attributeSources = new ArrayList<Definition>();
             attributeSources.add(source);
-            arg = new Argument(modifier, (CopyBuffer) buffers.get(step), attributeSources);
+            arg = new Argument(modifier, buffers.get(step), attributeSources);
             target = lookupTarget(arg.getAttribute().symbol);
             target.addArgument(arg, source);
         }
         return max;
     }
 
-    private void translateStep(int step, List initialBuffers) {
-        int symbol;
-        List lst;
+    private void translateStep(int step, List<CopyBuffer> initialBuffers) {
         int i;
         int max;
         CopyBuffer buffer;
-        int move;
         IntBitSet targetSymbols;
 
-        move = moves[step];
         if (step == moves.length - 1) {
             targetSymbols = getTargetSymbols(targets);
         } else {
             targetSymbols = stoppers[step];
         }
 
-        copyBuffers[step] = new ArrayList();
+        copyBuffers[step] = new ArrayList<CopyBuffer>();
         max = initialBuffers.size();
         for (i = 0; i < max; i++) {
-            buffer = (CopyBuffer) initialBuffers.get(i);
+            buffer = initialBuffers.get(i);
             prefixedTransport(step, buffer, stoppers[step], targetSymbols);
         }
     }
@@ -204,7 +199,7 @@ public class Path {
         Attribute newAttr;
         CopyBuffer buffer;
         CopyBuffer tmp;
-        List resultBuffers;
+        List<CopyBuffer> resultBuffers;
 
         Attribute attr = prefixBuffer.getStart();
         resultBuffers = copyBuffers[step];
@@ -212,10 +207,10 @@ public class Path {
         transport(grammar, attr, moves[step], border, targetSymbols, resultBuffers);
         max = resultBuffers.size();
         for (i = ofs; i < max; i++) {
-            oldAttr = ((CopyBuffer) resultBuffers.get(i)).getStart();
+            oldAttr = resultBuffers.get(i).getStart();
             tmp = new CopyBuffer((Attribute) null);
             tmp.append(prefixBuffer);
-            tmp.append((CopyBuffer) resultBuffers.get(i));
+            tmp.append(resultBuffers.get(i));
             buffer = new CopyBuffer((Attribute) null);
             newAttr = buffer.cloneAttributes(tmp, oldAttr.type, oldAttr);
             buffer.setStart(newAttr);
@@ -223,16 +218,11 @@ public class Path {
         }
     }
 
-    private static IntBitSet getTargetSymbols(List defs) {
-        int i;
-        int max;
+    private static IntBitSet getTargetSymbols(List<Definition> defs) {
         IntBitSet result;
-        Definition def;
 
         result = new IntBitSet();
-        max = defs.size();
-        for (i = 0; i < max; i++) {
-            def = (Definition) defs.get(i);
+        for (Definition def : defs) {
             result.add(def.getAttribute().symbol);
         }
         return result;
@@ -245,7 +235,7 @@ public class Path {
 
         max = targets.size();
         for (i = 0; i < max; i++) {
-            def = (Definition) targets.get(i);
+            def = targets.get(i);
             if (def.getAttribute().symbol == symbol) {
                 return def;
             }
@@ -256,11 +246,11 @@ public class Path {
     //----------------------------
 
     private static void transport(Grammar grammar, Attribute seed, int move, IntBitSet rawBorder,
-                                  IntBitSet targetSymbols, List resultBuffers) {
+                                  IntBitSet targetSymbols, List<CopyBuffer> resultBuffers) {
         CopyBuffer commulated;
         IntBitSet border;
         boolean down;
-        List attrs;
+        List<Attribute> attrs;
         int i;
         int max;
         Attribute dest;
@@ -285,7 +275,7 @@ public class Path {
         attrs = commulated.getTransportAttributes();
         max = attrs.size();
         for (i = 0; i < max; i++) {
-            dest = (Attribute) attrs.get(i);
+            dest = attrs.get(i);
             if (dest != seed && targetSymbols.contains(dest.symbol)) {
                 tmp = commulated.createReduced(dest);
                 occ = null;
@@ -311,8 +301,8 @@ public class Path {
         }
     }
 
-    private static void createSplitted(CopyBuffer orig, Class cls, Occurrence occ,
-                                       Attribute origDest, List resultBuffers) {
+    private static void createSplitted(CopyBuffer orig, Class<?> cls, Occurrence occ,
+                                       Attribute origDest, List<CopyBuffer> resultBuffers) {
         int seq;
         CopyBuffer tmp;
         CopyBuffer buffer;
