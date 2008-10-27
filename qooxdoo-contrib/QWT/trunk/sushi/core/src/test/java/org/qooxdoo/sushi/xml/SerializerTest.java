@@ -18,8 +18,16 @@
  ************************************************************************ */
 
 package org.qooxdoo.sushi.xml;
-
+ 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
@@ -66,6 +74,26 @@ public class SerializerTest {
         checkSerialize("mhm", "<root>mhm</root>", "/root/text()");
     }
 
+    @Test
+    public void exceptn() throws Exception {
+        OutputStream stream;
+        final IOException e;
+        
+        e = new IOException();
+        stream = new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw e;
+            }
+            
+        };
+        try {
+            SERIALIZER.serialize(new DOMSource(BUILDER.parseString("<foo/>")), new StreamResult(stream));
+            fail();
+        } catch (IOException ex) {
+            assertSame(e, ex);
+        }
+    }
     @Test
     public void serializeWithEncoding() throws Exception {
         Document doc;
