@@ -114,15 +114,12 @@ public class Definition {
         }
     }
 
-    /**
-     * @param args  list of Arguments
-     */
     public void translate(Ag semantics, Transport transport, Grammar grammar) throws GenericException {
         Selection selection;
         Function fn;
         int prod, alt, maxAlt;
         int user, maxUser;
-        List args;
+        List<Argument> args;
         List argAttrs;  // attributes from args, but re-arranged
 
         selection = getSelection();
@@ -131,7 +128,7 @@ public class Definition {
             ((Internal) constructor).declare(attribute, semantics);
             return;
         }
-        args = new ArrayList();
+        args = new ArrayList<Argument>();
         translateArguments(transport, semantics, args);
         argAttrs = new ArrayList();
         fn = Conversion.find(selection, this, args, argAttrs);
