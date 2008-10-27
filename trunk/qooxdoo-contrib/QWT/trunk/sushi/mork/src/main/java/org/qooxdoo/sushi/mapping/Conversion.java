@@ -97,14 +97,11 @@ public class Conversion {
     }
 
     public static List<Attribute> getAttributes(List<Argument> args) {
-        int i;
-        int max;
         List<Attribute> lst;
 
-        max = args.size();
         lst = new ArrayList<Attribute>();
-        for (i = 0; i < max; i++) {
-            lst.add(args.get(i).getAttribute());
+        for (Argument arg : args) {
+            lst.add(arg.getAttribute());
         }
         return lst;
     }
