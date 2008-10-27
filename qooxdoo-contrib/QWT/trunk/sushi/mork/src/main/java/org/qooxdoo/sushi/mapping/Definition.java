@@ -164,21 +164,13 @@ public class Definition {
 
     private void translateArguments(Transport transport, Ag semantics, List<Argument> args) throws GenericException {
         List<Argument> sorted;
-        int i;
-        int max;
-        Argument arg;
 
-        max = mergeable.size();
         sorted = Argument.sortAndMergeArgs(this, mergeable);
-        max = isolated.size();
-        for (i = 0; i < max; i++) {
-            arg = isolated.get(i);
+        for (Argument arg : isolated) {
             arg.createTransport(semantics, transport);
             args.add(arg);
         }
-        max = sorted.size();
-        for (i = 0; i < max; i++) {
-            arg = sorted.get(i);
+        for (Argument arg : sorted) {
             arg.createTransport(semantics, transport);
             args.add(arg);
         }
