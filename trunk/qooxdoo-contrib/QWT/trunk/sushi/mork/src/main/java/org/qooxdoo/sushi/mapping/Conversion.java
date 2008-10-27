@@ -42,11 +42,10 @@ public class Conversion {
         "Ambiguous constructor name";
 
     private static void throwIllegalCall(
-        String kind, Selection selection, Definition def, List args) throws GenericException {
+        String kind, Selection selection, Definition def, List<Argument> args) throws GenericException {
         StringBuilder msg;
         int max;
         int i;
-        Argument arg;
 
         msg = new StringBuilder();
         msg.append("for attribute ");
@@ -59,28 +58,27 @@ public class Conversion {
         }
         msg.append("  arguments:\n");
         max = args.size();
-        for (i = 0; i < max; i++) {
-            arg = (Argument) args.get(i);
+        for (Argument arg : args) {
             msg.append("    " + arg.getAttribute().type + " " + arg.getSourcesString() + "\n");
         }
         throw new GenericException(kind, msg.toString());
     }
 
-    public static Function find(Selection selection, Definition def, List args, List outAttrs) throws GenericException {
+    public static Function find(Selection selection, Definition def, List<Argument> args, List<Attribute> outAttrs) throws GenericException {
         int i;
         int max;
         Function tmp;
         Function resultFn;
-        List resultArgs;
-        List tmpInArgs;
-        List tmpOutArgs;
+        List<Attribute> resultArgs;
+        List<Attribute> tmpInArgs;
+        List<Attribute> tmpOutArgs;
 
         resultFn = null;
         resultArgs = null;
         max = selection.size();
         for (i = 0; i < max; i++) {
             tmpInArgs = getAttributes(args);
-            tmpOutArgs = new ArrayList();
+            tmpOutArgs = new ArrayList<Attribute>();
             tmp = arrange(selection.getFunction(i), tmpInArgs, tmpOutArgs);
             if (tmp != null) {
                 if (resultFn != null) {
@@ -98,20 +96,20 @@ public class Conversion {
         return resultFn;
     }
 
-    public static List getAttributes(List args) {
+    public static List<Attribute> getAttributes(List<Argument> args) {
         int i;
         int max;
-        List lst;
+        List<Attribute> lst;
 
         max = args.size();
-        lst = new ArrayList();
+        lst = new ArrayList<Attribute>();
         for (i = 0; i < max; i++) {
-            lst.add(((Argument) args.get(i)).getAttribute());
+            lst.add(args.get(i).getAttribute());
         }
         return lst;
     }
 
-    private static Function arrange(Function fn, List inArgs, List outArgs) {
+    private static Function arrange(Function fn, List<Attribute> inArgs, List<Attribute> outArgs) {
         int i;
         int max;
 
@@ -129,8 +127,8 @@ public class Conversion {
         }
     }
 
-    private static Function arrangeArg(Function fn, int idx, List inArgs, List outArgs) {
-        Class type;
+    private static Function arrangeArg(Function fn, int idx, List<Attribute> inArgs, List<Attribute> outArgs) {
+        Class<?> type;
         Attribute attr;
 
         type = fn.getParameterTypes()[idx];
@@ -162,14 +160,14 @@ public class Conversion {
         }
     }
 
-    private static Attribute removeAssignable(Class type, List inArgs) {
+    private static Attribute removeAssignable(Class<?> type, List<Attribute> inArgs) {
         int i;
         int max;
         Attribute current;
 
         max = inArgs.size();
         for (i = 0; i < max; i++) {
-            current = (Attribute) inArgs.get(i);
+            current = inArgs.get(i);
             if (isAssignableFrom(type, current.type)) {
                 inArgs.remove(i);
                 return current;
@@ -196,7 +194,7 @@ public class Conversion {
     }
 
     public static boolean hasFormalArgument(Function fn, Type type) {
-        Class[] formalTypes;
+        Class<?>[] formalTypes;
         int i;
 
         formalTypes = fn.getParameterTypes();
@@ -208,11 +206,8 @@ public class Conversion {
         return false;
     }
 
-    public static boolean isAssignableFrom(Class formalType, Type actual) {
-        boolean found;
-        Class compType;
-        Attribute attr;
-        boolean primitive;
+    public static boolean isAssignableFrom(Class<?> formalType, Type actual) {
+        Class<?> compType;
 
         if (actual.card == Type.SEQUENCE) {
             if (List.class.isAssignableFrom(formalType)) {

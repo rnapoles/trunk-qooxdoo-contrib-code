@@ -32,15 +32,14 @@ import java.util.List;
  * Singleton class (one instance per Mapping) to create functions for transport attribution.
  */
 public class Transport {
-    // function for attribute transport
-    private Function fnCopy;
-    private Function fnCreateOption;
-    private Function fnCreateSequence;
-    private Function fnCreateSequenceValue;
-    private Function fnCreateSequenceOption;
-    private Function fnSequenceAndValue;
-    private Function fnSequenceAndOption;
-    private Function fnSequenceAndSequence;
+    private final Function fnCopy;
+    private final Function fnCreateOption;
+    private final Function fnCreateSequence;
+    private final Function fnCreateSequenceValue;
+    private final Function fnCreateSequenceOption;
+    private final Function fnSequenceAndValue;
+    private final Function fnSequenceAndOption;
+    private final Function fnSequenceAndSequence;
 
     public Transport() {
         fnCreateOption = get("createOption");
