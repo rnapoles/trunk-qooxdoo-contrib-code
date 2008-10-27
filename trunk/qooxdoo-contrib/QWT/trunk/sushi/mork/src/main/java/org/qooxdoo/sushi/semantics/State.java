@@ -272,7 +272,7 @@ public class State implements Compare {
         return EQ;
     }
 
-    public State cloneAttributeTransport(Map map, CopyBuffer orig) {
+    public State cloneAttributeTransport(Map<Attribute, Attribute> map, CopyBuffer orig) {
         int i;
         int max;
         Alternative replacement;
@@ -284,7 +284,7 @@ public class State implements Compare {
         State result;
         Attribute replacedArg;
 
-        replacedResult = (Attribute) map.get(getAttribute());
+        replacedResult = map.get(getAttribute());
         max = alternatives.size();
         result = new State(replacedResult);
         for (i = 0; i < max; i++) {
@@ -293,7 +293,7 @@ public class State implements Compare {
             maxJ = old.getArgCount();
             for (j = 0; j < maxJ; j++) {
                 tmp = old.getArgAttribute(j);
-                replacedArg = (Attribute) map.get(tmp);
+                replacedArg = map.get(tmp);
                 replacement.add(old.getArgOfs(j), (replacedArg != null)? replacedArg : tmp);
             }
             result.alternatives.add(replacement);
