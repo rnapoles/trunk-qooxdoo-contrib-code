@@ -129,9 +129,6 @@ public class Path {
 
     private final List<CopyBuffer>[] copyBuffers;
 
-    /**
-     * @param targets   list of Definitions
-     */
     private Path(Grammar grammar,
                  int modifier, Definition source, List<Definition> targets, int[] moves, IntBitSet[] stoppers)
     {
@@ -150,7 +147,7 @@ public class Path {
         List<CopyBuffer> buffers;
         Definition target;
         Argument arg;
-        List<Definition> attributeSources;
+        List<Definition> sources;
 
         buffers = new ArrayList<CopyBuffer>();
         buffers.add(new CopyBuffer(source.getAttribute()));
@@ -160,9 +157,9 @@ public class Path {
         }
         max = buffers.size();
         for (step = 0; step < max; step++) {
-            attributeSources = new ArrayList<Definition>();
-            attributeSources.add(source);
-            arg = new Argument(modifier, buffers.get(step), attributeSources);
+            sources = new ArrayList<Definition>();
+            sources.add(source);
+            arg = new Argument(modifier, buffers.get(step), sources);
             target = lookupTarget(arg.getAttribute().symbol);
             target.addArgument(arg, source);
         }
@@ -229,13 +226,7 @@ public class Path {
     }
 
     private Definition lookupTarget(int symbol) {
-        int i;
-        int max;
-        Definition def;
-
-        max = targets.size();
-        for (i = 0; i < max; i++) {
-            def = targets.get(i);
+        for (Definition def : targets) {
             if (def.getAttribute().symbol == symbol) {
                 return def;
             }
