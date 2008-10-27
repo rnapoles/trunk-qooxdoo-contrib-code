@@ -34,7 +34,7 @@ import org.qooxdoo.sushi.util.IntArrayList;
  * computation sequence and no checks for cyclic dependencies are done at
  * run-time.
  */
-public class CopyBuffer implements Compare {
+public class AgBuffer implements Compare {
     /**
      * List of States
      */
@@ -42,12 +42,12 @@ public class CopyBuffer implements Compare {
 
     private Attribute start;
 
-    public CopyBuffer(Attribute start) {
+    public AgBuffer(Attribute start) {
         this.start = start;
         this.states = new ArrayList<State>();
     }
 
-    public CopyBuffer(List<State> states) {
+    public AgBuffer(List<State> states) {
         this.states = states;
     }
 
@@ -59,7 +59,7 @@ public class CopyBuffer implements Compare {
         this.start = start;
     }
 
-    public void append(CopyBuffer right) {
+    public void append(AgBuffer right) {
         for (State rightState : right.states) {
             add(rightState);
         }
@@ -89,14 +89,14 @@ public class CopyBuffer implements Compare {
      * restrictions. This works as long as the resulting SemanticsBuffer is "cloned with creating
      * new attributes" ...
      */
-    public CopyBuffer createReduced(Attribute start) {
+    public AgBuffer createReduced(Attribute start) {
         List<Attribute> attrs;
         int i;
         Attribute attr;
         State state;
-        CopyBuffer reduced;
+        AgBuffer reduced;
 
-        reduced = new CopyBuffer(start);
+        reduced = new AgBuffer(start);
         attrs = new ArrayList<Attribute>();
         attrs.add(start);
         // size usually grows
@@ -157,7 +157,7 @@ public class CopyBuffer implements Compare {
      * Merge all attributes with >0 attributions buffers. Return the merged attribute of the
      * specified symbol.
      */
-    public Attribute merge(List<CopyBuffer> copyBuffers, int symbol, Type mergedType) {
+    public Attribute merge(List<AgBuffer> copyBuffers, int symbol, Type mergedType) {
         Map<Attribute, Merger> mapping;    // map old attribute to merger objects. null: don't merge.
         List<Merger> mergers;
         Merger merger;
@@ -216,7 +216,7 @@ public class CopyBuffer implements Compare {
     /**
      * @return LT, GT, or NE
      */
-    public int compare(CopyBuffer rightSemantics) {
+    public int compare(AgBuffer rightSemantics) {
         List<Attribute> lefts; // list of left attributes compared
         List<Attribute> rights;  // list of attributes compared
         int i;  // index of the current attributes to be compared
@@ -270,7 +270,7 @@ public class CopyBuffer implements Compare {
      * Never returns ALT.
      */
     private int localCompare(
-        Attribute left, Attribute right, CopyBuffer rightSemantics, List nextLefts, List nextRights)
+        Attribute left, Attribute right, AgBuffer rightSemantics, List nextLefts, List nextRights)
     {
         State leftState;
         State rightState;
@@ -317,7 +317,7 @@ public class CopyBuffer implements Compare {
      * @param type for new attributes
      * @return cloned seed
      */
-    public Attribute cloneAttributes(CopyBuffer orig, Type type, Attribute seed) {
+    public Attribute cloneAttributes(AgBuffer orig, Type type, Attribute seed) {
         Map<Attribute, Attribute> map; // old attributes to new attributes
         Attribute attr;
         State newState;
@@ -411,7 +411,7 @@ public class CopyBuffer implements Compare {
         } while (changes);
     }
 
-    public Attribute createSequence(Attribute start, int seq, CopyBuffer result) {
+    public Attribute createSequence(Attribute start, int seq, AgBuffer result) {
         Attribute attr;
 
         attr = createSequence(start, seq, new ArrayList(), new ArrayList(), result);
@@ -419,7 +419,7 @@ public class CopyBuffer implements Compare {
     }
 
     private Attribute createSequence(
-        Attribute attr, int seq, List origStack, List clonedStack, CopyBuffer result)
+        Attribute attr, int seq, List origStack, List clonedStack, AgBuffer result)
     {
         State orig;
         State clone;

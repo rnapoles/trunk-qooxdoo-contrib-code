@@ -21,7 +21,7 @@ package org.qooxdoo.sushi.mapping;
 
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.semantics.Attribute;
-import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.AgBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -212,9 +212,9 @@ public class ArgumentTest extends CompareBase {
 
     private void arg(String attrName, String attrs, int expectedPos) {
         Argument arg;
-        CopyBuffer sems;
+        AgBuffer sems;
 
-        sems = new CopyBuffer((Attribute) null);
+        sems = new AgBuffer((Attribute) null);
         attr = CopyBufferCompareTest.addTransport(sems, attrName, attrs, grm);
         sems.setStart(attr);
         arg = new Argument(Path.MERGEABLE, sems, new ArrayList()); // TODO: no sources

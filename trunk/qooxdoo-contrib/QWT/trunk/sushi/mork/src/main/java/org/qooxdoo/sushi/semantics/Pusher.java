@@ -39,7 +39,7 @@ public class Pusher {
     private final IntBitSet border;
     private final Grammar grm;
 
-    public static CopyBuffer run(boolean down, Attribute seed, IntBitSet border, Grammar grm) {
+    public static AgBuffer run(boolean down, Attribute seed, IntBitSet border, Grammar grm) {
         Pusher pusher;
 
         pusher = new Pusher(seed, border, grm);
@@ -50,7 +50,7 @@ public class Pusher {
         }
         // drop the seed
         pusher.states.remove(0);
-        return new CopyBuffer(pusher.states);
+        return new AgBuffer(pusher.states);
     }
 
     private Pusher(Attribute seed, IntBitSet border, Grammar grm) {

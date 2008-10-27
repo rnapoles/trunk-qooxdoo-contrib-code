@@ -26,14 +26,14 @@ import org.qooxdoo.sushi.util.IntBitSet;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Attribute;
-import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.AgBuffer;
 import org.qooxdoo.sushi.semantics.Oag;
 import org.qooxdoo.sushi.semantics.Occurrence;
 import org.qooxdoo.sushi.semantics.Pusher;
 
 public class CopyBufferPushUpTest extends TestCase {
     private Attribute seed;
-    private CopyBuffer sems;
+    private AgBuffer sems;
     private Grammar grm;
 
     public void testDirect() {

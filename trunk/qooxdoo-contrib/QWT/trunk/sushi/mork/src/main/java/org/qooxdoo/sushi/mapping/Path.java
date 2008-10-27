@@ -26,7 +26,7 @@ import org.qooxdoo.sushi.compiler.Syntax;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.Attribute;
-import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.AgBuffer;
 import org.qooxdoo.sushi.semantics.Occurrence;
 import org.qooxdoo.sushi.semantics.Pusher;
 import org.qooxdoo.sushi.semantics.Type;
@@ -127,7 +127,7 @@ public class Path {
     private final IntBitSet[] stoppers;
     private final int modifier;
 
-    private final List<CopyBuffer>[] copyBuffers;
+    private final List<AgBuffer>[] copyBuffers;
 
     private Path(Grammar grammar,
                  int modifier, Definition source, List<Definition> targets, int[] moves, IntBitSet[] stoppers)
@@ -144,13 +144,13 @@ public class Path {
     private int translate() throws GenericException {
         int step;
         int max;
-        List<CopyBuffer> buffers;
+        List<AgBuffer> buffers;
         Definition target;
         Argument arg;
         List<Definition> sources;
 
-        buffers = new ArrayList<CopyBuffer>();
-        buffers.add(new CopyBuffer(source.getAttribute()));
+        buffers = new ArrayList<AgBuffer>();
+        buffers.add(new AgBuffer(source.getAttribute()));
         for (step = 0; step < moves.length; step++) {
             translateStep(step, buffers);
             buffers = copyBuffers[step];
@@ -166,10 +166,10 @@ public class Path {
         return max;
     }
 
-    private void translateStep(int step, List<CopyBuffer> initialBuffers) {
+    private void translateStep(int step, List<AgBuffer> initialBuffers) {
         int i;
         int max;
-        CopyBuffer buffer;
+        AgBuffer buffer;
         IntBitSet targetSymbols;
 
         if (step == moves.length - 1) {
@@ -178,7 +178,7 @@ public class Path {
             targetSymbols = stoppers[step];
         }
 
-        copyBuffers[step] = new ArrayList<CopyBuffer>();
+        copyBuffers[step] = new ArrayList<AgBuffer>();
         max = initialBuffers.size();
         for (i = 0; i < max; i++) {
             buffer = initialBuffers.get(i);
@@ -187,16 +187,16 @@ public class Path {
     }
 
     private void prefixedTransport(
-        int step, CopyBuffer prefixBuffer, IntBitSet border, IntBitSet targetSymbols)
+        int step, AgBuffer prefixBuffer, IntBitSet border, IntBitSet targetSymbols)
     {
         int ofs;
         int max;
         int i;
         Attribute oldAttr;
         Attribute newAttr;
-        CopyBuffer buffer;
-        CopyBuffer tmp;
-        List<CopyBuffer> resultBuffers;
+        AgBuffer buffer;
+        AgBuffer tmp;
+        List<AgBuffer> resultBuffers;
 
         Attribute attr = prefixBuffer.getStart();
         resultBuffers = copyBuffers[step];
@@ -205,10 +205,10 @@ public class Path {
         max = resultBuffers.size();
         for (i = ofs; i < max; i++) {
             oldAttr = resultBuffers.get(i).getStart();
-            tmp = new CopyBuffer((Attribute) null);
+            tmp = new AgBuffer((Attribute) null);
             tmp.append(prefixBuffer);
             tmp.append(resultBuffers.get(i));
-            buffer = new CopyBuffer((Attribute) null);
+            buffer = new AgBuffer((Attribute) null);
             newAttr = buffer.cloneAttributes(tmp, oldAttr.type, oldAttr);
             buffer.setStart(newAttr);
             resultBuffers.set(i, buffer);
@@ -237,17 +237,17 @@ public class Path {
     //----------------------------
 
     private static void transport(Grammar grammar, Attribute seed, int move, IntBitSet rawBorder,
-                                  IntBitSet targetSymbols, List<CopyBuffer> resultBuffers) {
-        CopyBuffer commulated;
+                                  IntBitSet targetSymbols, List<AgBuffer> resultBuffers) {
+        AgBuffer commulated;
         IntBitSet border;
         boolean down;
         List<Attribute> attrs;
         int i;
         int max;
         Attribute dest;
-        CopyBuffer tmp;
+        AgBuffer tmp;
         int card;
-        CopyBuffer buffer;
+        AgBuffer buffer;
         Attribute attr;
         Occurrence occ;
 
@@ -281,7 +281,7 @@ public class Path {
                     }
                 }
                 if (occ == null) {
-                    buffer = new CopyBuffer((Attribute) null);
+                    buffer = new AgBuffer((Attribute) null);
                     attr = buffer.cloneAttributes(tmp, new Type(seed.type.type, card), dest);
                     buffer.setStart(attr);
                     resultBuffers.add(buffer);
@@ -292,18 +292,18 @@ public class Path {
         }
     }
 
-    private static void createSplitted(CopyBuffer orig, Class<?> cls, Occurrence occ,
-                                       Attribute origDest, List<CopyBuffer> resultBuffers) {
+    private static void createSplitted(AgBuffer orig, Class<?> cls, Occurrence occ,
+                                       Attribute origDest, List<AgBuffer> resultBuffers) {
         int seq;
-        CopyBuffer tmp;
-        CopyBuffer buffer;
+        AgBuffer tmp;
+        AgBuffer buffer;
         Attribute attr;
         Type type;
         Attribute dest;
 
         orig.calcOccurrences();
         for (seq = 0; seq < occ.max; seq++) {
-            tmp = new CopyBuffer((Attribute) null);
+            tmp = new AgBuffer((Attribute) null);
             dest = orig.createSequence(origDest, seq, tmp);
 
             if (seq < occ.min) {
@@ -311,7 +311,7 @@ public class Path {
             } else {
                 type = new Type(cls, Type.OPTION);
             }
-            buffer = new CopyBuffer((Attribute) null);
+            buffer = new AgBuffer((Attribute) null);
             attr = buffer.cloneAttributes(tmp, type, dest);
             buffer.setStart(attr);
             resultBuffers.add(buffer);
