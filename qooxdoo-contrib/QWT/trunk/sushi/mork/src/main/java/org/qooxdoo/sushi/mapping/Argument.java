@@ -78,7 +78,7 @@ public class Argument implements Compare {
      */
     public static Argument merge(int symbol, Definition target, List<Argument> arguments) {
         CopyBuffer buffer;
-        List<CopyBuffer> argBuffers; // List of CopyBuffers
+        List<CopyBuffer> argBuffers; 
         int i;
         int max;
         Attribute start;
