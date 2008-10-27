@@ -25,9 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.qooxdoo.sushi.util.IntArrayList;
-
 import org.qooxdoo.sushi.mapping.Transport;
+import org.qooxdoo.sushi.util.IntArrayList;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.
@@ -45,7 +44,7 @@ public class CopyBuffer implements Compare {
 
     public CopyBuffer(Attribute start) {
         this.start = start;
-        states = new ArrayList<State>();
+        this.states = new ArrayList<State>();
     }
 
     public CopyBuffer(List<State> states) {
@@ -61,12 +60,7 @@ public class CopyBuffer implements Compare {
     }
 
     public void append(CopyBuffer right) {
-        Iterator<State> iter;
-        State rightState;
-
-        iter = right.states.iterator();
-        while (iter.hasNext()) {
-            rightState = (State) iter.next();
+        for (State rightState : right.states) {
             add(rightState);
         }
     }
@@ -84,12 +78,7 @@ public class CopyBuffer implements Compare {
     }
 
     public void createSemanticsBuffer(Ag sems, Transport transport) {
-        Iterator<State> iter;
-        State state;
-
-        iter = states.iterator();
-        while (iter.hasNext()) {
-            state = (State) iter.next();
+        for (State state : states) {
             state.createSemanticsBuffer(sems, transport);
         }
     }
@@ -112,7 +101,7 @@ public class CopyBuffer implements Compare {
         attrs.add(start);
         // size usually grows
         for (i = 0; i < attrs.size(); i++) {
-            attr = (Attribute) attrs.get(i);
+            attr = attrs.get(i);
             state = lookup(attr);
             if (state != null) {
                 reduced.add(state);
@@ -127,12 +116,7 @@ public class CopyBuffer implements Compare {
      * pre:   this is kind of reduced (e.g. results from createReduced)
      */
     public boolean isDownOptional() {
-        State state;
-        Iterator<State> iter;
-
-        iter = states.iterator();
-        while (iter.hasNext()) {
-            state = (State) iter.next();
+        for (State state : states) {
             if (state.isDownOptional()) {
                 return true;
             }
@@ -150,27 +134,16 @@ public class CopyBuffer implements Compare {
      */
     public List<Attribute> getTransportAttributes() {
         List<Attribute> result;
-        int i;
-        int max;
-        State state;
 
         result = new ArrayList<Attribute>();
-        max = states.size();
-        for (i = 0; i < max; i++) {
-            state = (State) states.get(i);
+        for (State state : states) {
             result.add(state.getAttribute());
         }
         return result;
     }
 
     public State lookup(Attribute attr) {
-        int i;
-        int max;
-        State state;
-
-        max = states.size();
-        for (i = 0; i < max; i++) {
-            state = (State) states.get(i);
+        for (State state : states) {
             if (attr.equals(state.getAttribute())) {
                 return state;
             }
