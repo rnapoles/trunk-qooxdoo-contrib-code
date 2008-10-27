@@ -24,15 +24,15 @@ import org.qooxdoo.sushi.util.IntBitSet;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.semantics.Attribute;
-import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.AgBuffer;
 import org.qooxdoo.sushi.semantics.State;
 import org.qooxdoo.sushi.semantics.Type;
 
 public class CopyBufferCompareTest extends CompareBase {
     private Attribute a;
     private Attribute b;
-    private CopyBuffer sa;
-    private CopyBuffer sb;
+    private AgBuffer sa;
+    private AgBuffer sb;
 
     public void testEmpty() {
         create(new String[] {
@@ -186,15 +186,15 @@ public class CopyBufferCompareTest extends CompareBase {
         Grammar grm;
 
         grm = Grammar.forProductions(prods);
-        sa = new CopyBuffer((Attribute) null);
+        sa = new AgBuffer((Attribute) null);
         a = addTransport(sa, "a", as, grm);
         sa.setStart(a);
-        sb = new CopyBuffer((Attribute) null);
+        sb = new AgBuffer((Attribute) null);
         b = addTransport(sb, "b", bs, grm);
         sb.setStart(b);
     }
 
-    public static Attribute addTransport(CopyBuffer sems, String attrName, String as, Grammar grammar) {
+    public static Attribute addTransport(AgBuffer sems, String attrName, String as, Grammar grammar) {
         Attribute[] attrs;
         StringArrayList symbolTable;
         IntBitSet symbols;

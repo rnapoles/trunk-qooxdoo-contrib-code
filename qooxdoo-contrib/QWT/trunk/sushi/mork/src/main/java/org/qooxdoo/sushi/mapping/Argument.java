@@ -22,7 +22,7 @@ package org.qooxdoo.sushi.mapping;
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.Compare;
-import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.AgBuffer;
 import org.qooxdoo.sushi.semantics.Ag;
 import org.qooxdoo.sushi.semantics.Type;
 import java.util.ArrayList;
@@ -42,13 +42,13 @@ public class Argument implements Compare {
     private final int modifier;
 
     /** attribution to copy source attributes into attr to be passed to attr. */
-    private final CopyBuffer copyBuffer;
+    private final AgBuffer copyBuffer;
 
     /** list of definitions */
     private final List<Definition> sources;
 
     /** non-local argument */
-    public Argument(int modifier, CopyBuffer buffer, List<Definition> sources) {
+    public Argument(int modifier, AgBuffer buffer, List<Definition> sources) {
         this.modifier = modifier;
         this.attr = buffer.getStart();
         this.copyBuffer = buffer;
@@ -77,8 +77,8 @@ public class Argument implements Compare {
      * pre: list.size() > 0  && all arguments have to start with the same attribute
      */
     public static Argument merge(int symbol, Definition target, List<Argument> arguments) {
-        CopyBuffer buffer;
-        List<CopyBuffer> argBuffers; 
+        AgBuffer buffer;
+        List<AgBuffer> argBuffers; 
         int i;
         int max;
         Attribute start;
@@ -91,7 +91,7 @@ public class Argument implements Compare {
         if (max == 0) {
             throw new IllegalArgumentException();
         }
-        argBuffers = new ArrayList<CopyBuffer>();
+        argBuffers = new ArrayList<AgBuffer>();
         mergedType = null;
         resultingSources = new ArrayList<Definition>();
         for (i = 0; i < max; i++) {
@@ -111,10 +111,10 @@ public class Argument implements Compare {
             throw new IllegalStateException();
         }
         // compute with card SEQUENCE. TODO: very expensive
-        buffer = new CopyBuffer((Attribute) null);
+        buffer = new AgBuffer((Attribute) null);
         start = buffer.merge(argBuffers, symbol, new Type(mergedType.type, Type.SEQUENCE));
         card = buffer.calcCard(start);
-        buffer = new CopyBuffer((Attribute) null);
+        buffer = new AgBuffer((Attribute) null);
         // TODO: duplicate computation ...
         start = buffer.merge(argBuffers, symbol, new Type(mergedType.type, card));
         buffer.setStart(start);

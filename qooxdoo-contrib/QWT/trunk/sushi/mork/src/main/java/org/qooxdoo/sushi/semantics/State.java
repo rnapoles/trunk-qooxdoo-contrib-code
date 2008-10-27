@@ -272,7 +272,7 @@ public class State implements Compare {
         return EQ;
     }
 
-    public State cloneAttributeTransport(Map<Attribute, Attribute> map, CopyBuffer orig) {
+    public State cloneAttributeTransport(Map<Attribute, Attribute> map, AgBuffer orig) {
         int i;
         int max;
         Alternative replacement;
@@ -303,7 +303,7 @@ public class State implements Compare {
 
     //----------------------------------------------------------------------------
 
-    public Occurrence calcOccurrence(CopyBuffer copyBuffer, List stack, Attribute start) {
+    public Occurrence calcOccurrence(AgBuffer copyBuffer, List stack, Attribute start) {
         Alternative ab;
         int i;
         int j;
@@ -385,7 +385,7 @@ public class State implements Compare {
     //-----------------------------------------------------------------
 
     public void getSequence(int seq,
-        List nextAttrs, IntArrayList nextOfss, IntArrayList nextSeqs, CopyBuffer cb)
+        List nextAttrs, IntArrayList nextOfss, IntArrayList nextSeqs, AgBuffer cb)
     {
         int i;
         int max;
@@ -397,7 +397,7 @@ public class State implements Compare {
     }
 
     private static void getSequence(Alternative ab, int seq,
-        List nextAttrs, IntArrayList nextOfss, IntArrayList nextSeqs, CopyBuffer cb)
+        List nextAttrs, IntArrayList nextOfss, IntArrayList nextSeqs, AgBuffer cb)
     {
         int i;
         int max;
@@ -431,7 +431,7 @@ public class State implements Compare {
     /**
      * @return true if occurrences has changed
      */
-    public boolean recalcOccurrence(CopyBuffer cb) {
+    public boolean recalcOccurrence(AgBuffer cb) {
         int oldMin;
         int oldMax;
         int i;
@@ -452,7 +452,7 @@ public class State implements Compare {
     }
 
     // TODO: move to Alternative
-    private static int calcOcc(Alternative ab, boolean calcMax, CopyBuffer cb) {
+    private static int calcOcc(Alternative ab, boolean calcMax, AgBuffer cb) {
         int occ;
         int i;
         int max;

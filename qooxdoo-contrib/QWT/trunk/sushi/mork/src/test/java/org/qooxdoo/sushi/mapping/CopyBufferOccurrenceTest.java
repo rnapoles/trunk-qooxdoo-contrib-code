@@ -22,12 +22,12 @@ package org.qooxdoo.sushi.mapping;
 import junit.framework.TestCase;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.semantics.Attribute;
-import org.qooxdoo.sushi.semantics.CopyBuffer;
+import org.qooxdoo.sushi.semantics.AgBuffer;
 import org.qooxdoo.sushi.semantics.Occurrence;
 
 public class CopyBufferOccurrenceTest extends TestCase {
     private Attribute start;
-    private CopyBuffer sems;
+    private AgBuffer sems;
 
     public void testDirect() {
         create(new String[] {
@@ -183,7 +183,7 @@ public class CopyBufferOccurrenceTest extends TestCase {
         Grammar grm;
 
         grm = Grammar.forProductions(prods);
-        sems = new CopyBuffer((Attribute) null);
+        sems = new AgBuffer((Attribute) null);
         start = CopyBufferCompareTest.addTransport(sems, "a", as, grm);
     }
 }
