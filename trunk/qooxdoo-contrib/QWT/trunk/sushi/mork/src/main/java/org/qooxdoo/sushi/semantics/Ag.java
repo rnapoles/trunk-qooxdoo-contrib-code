@@ -24,10 +24,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.qooxdoo.sushi.util.IntBitSet;
-
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.util.IntBitSet;
 
 /**
  * Attribute grammar, supports >=0 synthesized and inherited attributes.
@@ -36,19 +35,16 @@ public class Ag {
     private final Grammar grammar;
 
     /**
-     * Attributes created from internal constructors. List of Attribute, Integer, ...
+     * Attributes created from internal constructors. List of Attribute, Integer, Attribute, Integer, ...
      */
     private final List<Object> internals;
 
-    /**
-     * List of Attributions or Object[] { Attribute, Integer }.
-     */
-    private final List<Object> attributions;
+    private final List<AttributionBuffer> attributions;
 
     public Ag(Grammar grammar) {
         this.grammar = grammar;
         this.internals = new ArrayList<Object>();
-        this.attributions = new ArrayList<Object>();
+        this.attributions = new ArrayList<AttributionBuffer>();
     }
 
     public Grammar getGrammar() {
@@ -92,7 +88,7 @@ public class Ag {
         }
         max = attributions.size();
         for (i = 0; i < max; i++) {
-            layout.add((AttributionBuffer) attributions.get(i));
+            layout.add(attributions.get(i));
         }
         // add scanner attrs if necessary; there may be unused ones.
         max = internals.size();
@@ -137,7 +133,7 @@ public class Ag {
     }
 
     public AttributionBuffer get(int i) {
-        return (AttributionBuffer) attributions.get(i);
+        return attributions.get(i);
     }
 
     public void getProduction(int prod, Collection<AttributionBuffer> result) {
@@ -176,7 +172,7 @@ public class Ag {
             getProduction(prod, tmp);
             max = tmp.size();
             for (i = 0; i < max; i++) {
-                ab = (AttributionBuffer) tmp.get(i);
+                ab = tmp.get(i);
                 buffer.append("\t\t");
                 ab.attrsToString(buffer, grammar.getSymbolTable());
                 buffer.append('\n');
@@ -189,13 +185,7 @@ public class Ag {
     }
 
     public AttributionBuffer findDefinition(int prod, AttributeOccurrence ao) {
-        int i;
-        int max;
-        AttributionBuffer ab;
-
-        max = attributions.size();
-        for (i = 0; i < max; i++) {
-            ab = (AttributionBuffer) attributions.get(i);
+        for (AttributionBuffer ab : attributions) {
             if (ab.production == prod && ab.result.equals(ao)) {
                 return ab;
             }
@@ -210,12 +200,9 @@ public class Ag {
     public void getAttributes(int symbol, Set<Attribute> internal, Set<Attribute> synthesized, Set<Attribute> inherited) {
         int i;
         int max;
-        AttributionBuffer ab;
         Attribute a;
 
-        max = attributions.size();
-        for (i = 0; i < max; i++) {
-            ab = (AttributionBuffer) attributions.get(i);
+        for (AttributionBuffer ab : attributions) {
             a = ab.result.attr;
             if (a.symbol == symbol) {
                 if (ab.result.ofs == -1) {
