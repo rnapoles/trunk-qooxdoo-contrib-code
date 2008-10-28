@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,21 +42,25 @@ public class GraphTest {
         assertEquals(2, g.size());
     }
 
+    //--
+    
+    @Test
+    public void sortEmpty() throws CyclicDependency {
+        sort();
+    }
+
     @Test
     public void sortIsolated() throws CyclicDependency {
-        List<String> lst;
-        
         g.node("a");
         g.node("b");
-        lst = g.sort();
-        assertEquals(2, lst.size());
+        sort("b", "a");
     }
 
     @Test
     public void sortTransitive() throws CyclicDependency {
         g.arrow("a", "b");
         g.arrow("b", "c");
-        assertEquals(Arrays.asList("a", "b", "c"), g.sort());
+        sort("a", "b", "c");
     }
 
     @Test
@@ -65,7 +68,28 @@ public class GraphTest {
         g.arrow("a", "b");
         g.arrow("b", "c");
         g.arrow("c", "d");
-        assertEquals(Arrays.asList("a", "b", "c", "d"), g.sort());
+        sort("a", "b", "c", "d");
+    }
+
+    @Test
+    public void sortFork() throws CyclicDependency {
+        g.arrow("a", "b");
+        g.arrow("a", "c");
+        g.arrow("b", "c");
+        sort("a", "b", "c");
+    }
+
+    @Test(expected = CyclicDependency.class)
+    public void sortCycle() throws CyclicDependency {
+        g.arrow("a", "a");
+        sort();
+    }
+
+    @Test(expected = CyclicDependency.class)
+    public void sortIndirectCycle() throws CyclicDependency {
+        g.arrow("a", "b");
+        g.arrow("b", "a");
+        sort();
     }
 
     @Test
@@ -73,12 +97,49 @@ public class GraphTest {
         g.arrow("a", "b");
         g.arrow("b", "c");
         g.arrow("a", "c");
-        assertEquals(Arrays.asList("a", "b", "c"), g.sort());
+        sort("a", "b", "c");
     }
 
-    @Test(expected = CyclicDependency.class)
-    public void sortCycle() throws CyclicDependency {
-        g.arrow("a", "a");
-        g.sort();
+    private void sort(String ... strings) throws CyclicDependency {
+        assertEquals(Arrays.asList(strings), g.sort());
     }
+
+    //--
+    
+    @Test
+    public void closure() {
+        g.arrow("a", "b");
+        closure("a",  "a", "b");
+    }
+
+    
+    @Test
+    public void closureOne() {
+        g.arrow("a", "b");
+        g.arrow("a", "c");
+        closure("a",  "a", "b", "c");
+        closure("b",  "b");
+    }
+
+    @Test
+    public void closureTwo() {
+        g.arrow("a", "b");
+        g.arrow("c", "d");
+        closure("a",  "a", "b");
+        closure("b",  "b");
+    }
+
+    private void closure(String start, String ... expected) {
+        assertEquals(Arrays.asList(expected), g.closure(start));
+    }
+    
+    //--
+    
+    @Test
+    public void string() {
+        g.arrow("a", "b");
+        g.arrow("a", "c");
+        assertEquals("[a-b|c, b, c]", g.toString());
+    }
+    
 }

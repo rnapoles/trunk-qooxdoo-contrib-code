@@ -1,6 +1,8 @@
 package org.qooxdoo.sushi.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,15 @@ public class Graph<T> {
         return nodes.size();
     }
     
-    /** creates a new node if data is not already part of the graph */
+    public List<T> data() {
+        return new ArrayList<T>(nodes.keySet());
+    }
+
+    public boolean contains(T data) {
+        return nodes.containsKey(data);
+    }
+    
+    /** Adds data to the Graph and returns true, or does nothing and returns false if data is already part of the graph. */
     public boolean node(T data) {
         if (nodes.get(data) == null) {
             doNode(data);
@@ -60,6 +70,42 @@ public class Graph<T> {
             result.add(node.data);
         }
         return result;
+    }
+    
+    public List<T> closure(T ... data) {
+        List<T> result;
+        
+        result = new ArrayList<T>(Arrays.asList(data));
+        closure(result);
+        return result;
+    }
+    
+    public void closure(List<T> result) {
+        T data;
+        Node<T> node;
+        int i;
+        
+        // size grows!
+        for (i = 0; i < result.size(); i++) {
+            data = result.get(i);
+            node = nodes.get(data);
+            if (node == null) {
+                throw new IllegalArgumentException("unkown data: " + data);
+            }
+            for (Node<T> to : node.starting) {
+                if (!result.contains(to.data)) {
+                    result.add(to.data);
+                }
+            }
+        }
+    }
+    
+    public void retain(List<T> seeds) {
+        for (T name : new ArrayList<T>(nodes.keySet())) {
+            if (!seeds.contains(name)) {
+                doRemove(nodes.get(name));
+            }
+        }
     }
     
     //--
@@ -125,6 +171,43 @@ public class Graph<T> {
         for (T data : nodes.keySet()) {
             builder.append(data);
             builder.append(' ');
+        }
+        return builder.toString();
+    }
+    
+    //--
+    
+    @Override
+    public String toString() {
+        List<String> items;
+
+        items = new ArrayList<String>();
+        for (T data : nodes.keySet()) {
+            items.add(toString(data));
+        }
+        Collections.sort(items);
+        return items.toString();
+    }
+    
+    private String toString(T name) {
+        StringBuilder builder;
+        Node<T> node;
+        boolean firstTo;
+        
+        builder = new StringBuilder();
+        node = nodes.get(name);
+        builder.append(name);
+        if (node.starting.size() > 0) {
+            builder.append("-");
+            firstTo = true;
+            for (Node<T> to : node.starting) {
+                if (firstTo) {
+                    firstTo = false;
+                } else {
+                    builder.append('|');
+                }
+                builder.append(to.data);
+            }
         }
         return builder.toString();
     }

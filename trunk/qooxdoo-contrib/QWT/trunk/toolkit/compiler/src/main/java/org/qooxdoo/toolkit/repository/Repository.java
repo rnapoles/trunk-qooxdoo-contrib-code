@@ -31,6 +31,7 @@ import java.util.List;
 import org.qooxdoo.sushi.fs.LineProcessor;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
+import org.qooxdoo.sushi.graph.CyclicDependency;
 import org.qooxdoo.sushi.util.Strings;
 import org.qooxdoo.toolkit.compiler.Naming;
 
@@ -216,7 +217,7 @@ public class Repository implements Iterable<Module> {
     
     private static final String ROOT = "_root_";
     
-    public String executable(Module ... mains) {
+    public String executable(Module ... mains) throws CyclicDependency {
         StringWriter dest;
         
         dest = new StringWriter();
@@ -228,11 +229,11 @@ public class Repository implements Iterable<Module> {
         return dest.toString();
     }
     
-    public List<Module> executable(Writer dest, boolean compress, Module ... mains) throws IOException {
+    public List<Module> executable(Writer dest, boolean compress, Module ... mains) throws IOException, CyclicDependency {
         return executable(dest, compress, Collections.<Module>emptyList(), mains);
     }
 
-    public List<Module> executable(Writer dest, boolean compress, List<Module> done, Module ... mains) throws IOException {
+    public List<Module> executable(Writer dest, boolean compress, List<Module> done, Module ... mains) throws IOException, CyclicDependency {
         List<Module> lst;
         
         lst = sequence(done, mains);
@@ -247,7 +248,7 @@ public class Repository implements Iterable<Module> {
      *               multiple modules)
      * @return modules actually loaded; never contains done modules
      */
-    public List<Module> sequence(List<Module> done, Module ... mains) {
+    public List<Module> sequence(List<Module> done, Module ... mains) throws CyclicDependency {
         DependencyGraph calls;
         DependencyGraph loads;
         List<String> called;
