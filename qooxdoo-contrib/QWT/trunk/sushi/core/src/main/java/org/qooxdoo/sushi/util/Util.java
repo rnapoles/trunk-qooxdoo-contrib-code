@@ -38,12 +38,12 @@ public class Util {
     }
 
     public static String[] split(String str, char c) {
-        List lst;
+        List<String> lst;
         int idx;
         int prev;
         String[] ar;
 
-        lst = new ArrayList();
+        lst = new ArrayList<String>();
         idx = str.indexOf(c);
         prev = 0;
         while (idx != -1) {
@@ -57,28 +57,11 @@ public class Util {
         return ar;
     }
 
-    public static void reverse(List lst) {
-        int i;
-        int last;
-        int half;
-        Object swap;
-
-        last = lst.size();
-        // dividing by 2 skips the middle object in lists with an odd number of arguments
-        half = last / 2;
-        last--;
-        for (i = 0; i < half; i++) {
-            swap = lst.get(i);
-            lst.set(i, lst.get(last - i));
-            lst.set(last - i, swap);
-        }
-    }
-
-    public static int find(List[] as, Object a) {
+    public static int find(List<?>[] as, Object a) {
         int i;
         int j;
         int max;
-        List current;
+        List<?> current;
 
         for (i = 0; i < as.length; i++) {
             current = as[i];
