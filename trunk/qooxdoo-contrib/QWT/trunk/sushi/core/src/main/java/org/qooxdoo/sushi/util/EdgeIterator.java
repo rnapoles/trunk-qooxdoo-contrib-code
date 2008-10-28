@@ -20,14 +20,14 @@
 package org.qooxdoo.sushi.util;
 
 
-public class RelationIterator<T> {
+public class EdgeIterator<T> {
     private final Graph<T> relation;
     private int leftIdx;
     private int rightIdx;
     private Object left;
     private Object right;
 
-    public RelationIterator(Graph<T> relation) {
+    public EdgeIterator(Graph<T> relation) {
         this.relation = relation;
         this.leftIdx = 0;
         this.rightIdx = 0;
@@ -35,11 +35,10 @@ public class RelationIterator<T> {
         this.right = null;
     }
 
-    public boolean hasNext() {
-        return (leftIdx < relation.getDomainSize()) && (rightIdx < relation.getRightSize(leftIdx));
-    }
-
-    public void next() {
+    public boolean step() {
+        if (leftIdx >= relation.getDomainSize() || rightIdx >= relation.getRightSize(leftIdx)) {
+            return false;
+        }
         left = relation.getLeft(leftIdx);
         right = relation.getRight(leftIdx, rightIdx);
         rightIdx++;
@@ -47,14 +46,7 @@ public class RelationIterator<T> {
             leftIdx++;
             rightIdx = 0;
         }
-    }
-    public boolean step() {
-        if (hasNext()) {
-            next();
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
 
     public Object left() {

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.EdgeIterator;
 
 /** A directed graph of nodes (with type T) and edges. */
 public class Graph<T> {
@@ -168,8 +168,8 @@ public class Graph<T> {
     
     //--  Graph as a relation
 
-    public EdgeIterator<T> iterate() {
-        return new EdgeIterator<T>(nodes.values().iterator());
+    public EdgeIterator<T> edges() {
+        return null;
     }
 
     public Set<T> getDomain() {
@@ -211,10 +211,9 @@ public class Graph<T> {
 
         result = new StringBuilder();
         result.append("{ ");
-        iter = iterate();
+        iter = edges();
         first = true;
-        while (iter.hasNext()) {
-            iter.next();
+        while (iter.step()) {
             if (!first) {
                 result.append(", ");
                 first = false;

@@ -79,8 +79,8 @@ public class Graph<T> {
         return lst.indexOf(right) != -1;
     }
 
-    public RelationIterator<T> iterate() {
-        return new RelationIterator<T>(this);
+    public EdgeIterator<T> iterate() {
+        return new EdgeIterator<T>(this);
     }
 
     /**
@@ -192,7 +192,7 @@ public class Graph<T> {
     @Override
     public String toString() {
         StringBuilder result;
-        RelationIterator<T> iter;
+        EdgeIterator<T> iter;
         boolean first;
 
         result = new StringBuilder();
@@ -236,7 +236,7 @@ public class Graph<T> {
         List<T> current;
         Iterator<T> iter;
         T right;
-        RelationIterator<T> relationIter;
+        EdgeIterator<T> relationIter;
 
         current = new ArrayList<T>();
         iter = rightCollection.iterator();

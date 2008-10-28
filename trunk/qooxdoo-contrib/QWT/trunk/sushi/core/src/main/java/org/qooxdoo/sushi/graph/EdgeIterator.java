@@ -36,35 +36,24 @@ public class EdgeIterator<T> {
         next();
     }
     
-    public boolean hasNext() {
-        return left != null;
-    }
-
-    public void next() {
+    public boolean next() {
         if (left == null) {
             throw new NoSuchElementException();
         }
         if (right + 1 < left.starting.size()) {
             right++;
+            return true;
         }
         right = 0;
         while (iterator.hasNext()) {
             left = iterator.next();
             if (left.starting.size() > 0) {
-                return;
+                return false;
             }
         }
+        return true;
     }
     
-    public boolean step() {
-        if (hasNext()) {
-            next();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public T left() {
         return left.data;
     }
