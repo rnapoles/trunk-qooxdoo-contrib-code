@@ -20,14 +20,14 @@
 package org.qooxdoo.sushi.util;
 
 
-public class GraphIterator<T> {
+public class RelationIterator<T> {
     private final Graph<T> relation;
     private int leftIdx;
     private int rightIdx;
     private Object left;
     private Object right;
 
-    public GraphIterator(Graph<T> relation) {
+    public RelationIterator(Graph<T> relation) {
         this.relation = relation;
         this.leftIdx = 0;
         this.rightIdx = 0;
