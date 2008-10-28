@@ -26,22 +26,22 @@ import java.util.List;
 import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.util.Relation;
-import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.Graph;
+import org.qooxdoo.sushi.util.GraphIterator;
 
 /**
  * Helper class for OagBuilder
  */
 public class Partition {
-    public static List[] createA(Set synthesized, Set inherited, Relation idsX) throws GenericException {
-        Relation closure;
+    public static List[] createA(Set synthesized, Set inherited, Graph idsX) throws GenericException {
+        Graph closure;
         List done;
         List partitions;
         List[] result;
         int all;
         int initialSize;
 
-        closure = new Relation();
+        closure = new Graph();
         closure.addAll(idsX);
 
         partitions = new ArrayList();
@@ -63,7 +63,7 @@ public class Partition {
         return result;
     }
 
-    private static List extractStep(Collection lefts, Collection rights, Relation relation) {
+    private static List extractStep(Collection lefts, Collection rights, Graph relation) {
         List current;
         List all;
 
@@ -85,12 +85,12 @@ public class Partition {
      * Note that lefts with no image show up in the result.
      */
     public static List getDisconnected(
-        Collection leftCollection, Relation relation, Collection rightCollection)
+        Collection leftCollection, Graph relation, Collection rightCollection)
     {
         List disconnected;
         Iterator iter;
         Object left;
-        RelationIterator relationIter;
+        GraphIterator relationIter;
 
         disconnected = new ArrayList();
         iter = leftCollection.iterator();
