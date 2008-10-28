@@ -25,6 +25,7 @@ import java.util.List;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.ScriptableObject;
+import org.qooxdoo.sushi.graph.CyclicDependency;
 
 /** 
  * I use Rhino directly, not via javax.script from Java 6 because I want:
@@ -60,11 +61,11 @@ public class JavaScriptEngine {
     }
 
     /** load once */
-    public void load(String ... name) throws JavaScriptException {
+    public void load(String ... name) throws JavaScriptException, CyclicDependency {
         load(repository.getAll(name));
     }
 
-    public void load(List<Module> modules) throws JavaScriptException {
+    public void load(List<Module> modules) throws JavaScriptException, CyclicDependency {
         Module[] array;
         
         array = new Module[modules.size()];
@@ -72,7 +73,7 @@ public class JavaScriptEngine {
         load(array);
     }
 
-    public void load(Module ... modules) throws JavaScriptException {
+    public void load(Module ... modules) throws JavaScriptException, CyclicDependency {
         List<Module> added;
         
         added = repository.sequence(loaded, modules);

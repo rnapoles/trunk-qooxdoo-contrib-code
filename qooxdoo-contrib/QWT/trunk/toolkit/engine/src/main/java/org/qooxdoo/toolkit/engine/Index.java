@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.graph.CyclicDependency;
 import org.qooxdoo.toolkit.engine.common.Transport;
 import org.qooxdoo.toolkit.repository.Compressor;
 import org.qooxdoo.toolkit.repository.Module;
@@ -87,7 +88,11 @@ public class Index {
         int q;
         int other;
         
-        modules = qooxdoo.repository.executable(dest, compress, qooxdoo.repository.getAll(names));
+        try {
+            modules = qooxdoo.repository.executable(dest, compress, qooxdoo.repository.getAll(names));
+        } catch (CyclicDependency e) {
+            throw new RuntimeException("TODO", e);
+        }
         lst = new ArrayList<String>();
         q = 0;
         other = 0;

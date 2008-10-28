@@ -19,15 +19,19 @@
 
 package org.qooxdoo.toolkit.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.graph.CyclicDependency;
 
 public class RepositoryTest {
     private static final IO IO_OBJ = new IO();
@@ -162,7 +166,7 @@ public class RepositoryTest {
         try {
             new Repository(s).executable(s);
             fail();
-        } catch (DependencyException e) {
+        } catch (CyclicDependency e) {
             // ok
         }
     }
@@ -181,7 +185,7 @@ public class RepositoryTest {
         try {
             new Repository(base, derived).executable(derived);
             fail();
-        } catch (DependencyException e) {
+        } catch (CyclicDependency e) {
             // ok
         }
     }
@@ -199,6 +203,8 @@ public class RepositoryTest {
         
         try {
             lst = new Repository(s).executable(new StringWriter(), false, s);
+        } catch (CyclicDependency e) {
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

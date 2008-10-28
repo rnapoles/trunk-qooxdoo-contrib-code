@@ -29,6 +29,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.graph.CyclicDependency;
 import org.qooxdoo.toolkit.compiler.CompilerException;
 import org.qooxdoo.toolkit.compiler.Naming;
 import org.qooxdoo.toolkit.compiler.Problem;
@@ -169,7 +170,7 @@ public class CompilerMojo extends Base {
         return task.repository;
     }
 
-    private void link(Repository all) throws IOException {
+    private void link(Repository all) throws IOException, MojoExecutionException {
         Writer dest;
         Module[] mains;
         
@@ -179,7 +180,11 @@ public class CompilerMojo extends Base {
         info("linking: " + allFile);
         dest = allFile.createWriter();
         mains = all.getAll(Base.split(roots));
-        all.executable(dest, false, mains);
+        try {
+            all.executable(dest, false, mains);
+        } catch (CyclicDependency e) {
+            throw new MojoExecutionException("cyclic dependency", e);
+        }
         dest.close();
     }
     
