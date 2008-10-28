@@ -38,7 +38,7 @@ public class Graph<T> {
         }
     }
     
-    public boolean arrow(T src, T dest) {
+    public boolean edge(T src, T dest) {
         Node<T> left;
         Node<T> right;
         

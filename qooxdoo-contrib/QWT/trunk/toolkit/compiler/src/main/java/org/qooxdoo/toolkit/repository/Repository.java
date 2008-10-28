@@ -263,7 +263,7 @@ public class Repository implements Iterable<Module> {
         calls.node(ROOT);
         for (Module main : mains) {
             for (Chunk chunk : main.chunks()) {
-                calls.arrow(ROOT, chunk.name);
+                calls.edge(ROOT, chunk.name);
             }
         }
         do {
@@ -280,7 +280,7 @@ public class Repository implements Iterable<Module> {
                     }
                     init = name + Module.SEP + Naming.CINIT;
                     if (used.lookup(init) != null) {
-                        if (calls.arrow(ROOT, init)) {
+                        if (calls.edge(ROOT, init)) {
                             changed = true;
                         }
                     }
