@@ -28,8 +28,8 @@ import org.qooxdoo.sushi.util.IntBitSet;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.misc.StringArrayList;
-import org.qooxdoo.sushi.util.Graph;
-import org.qooxdoo.sushi.util.EdgeIterator;
+import org.qooxdoo.sushi.graph.Graph;
+import org.qooxdoo.sushi.graph.EdgeIterator;
 
 /**
  * Build visit sequence for ordered attribute grammar. Based on the paper
@@ -113,7 +113,7 @@ public class OagBuilder {
 
         buffer = new StringBuilder();
         buffer.append('{');
-        iter = relation.iterate();
+        iter = relation.edges();
         while (iter.step()) {
             buffer.append(" (");
             a = (Attribute) iter.left();
@@ -134,7 +134,7 @@ public class OagBuilder {
 
         buffer = new StringBuilder();
         buffer.append('{');
-        iter = relation.iterate();
+        iter = relation.edges();
         while (iter.step()) {
             buffer.append(" (");
             ao = (AttributeOccurrence) iter.left();
@@ -221,7 +221,7 @@ public class OagBuilder {
             for (q = 0; q < idp.length; q++) {
                 if (touched[q]) {
                     touched[q] = false;
-                    iter = idpClosure[q].iterate();
+                    iter = idpClosure[q].edges();
                     while (iter.step()) {
                         left = (AttributeOccurrence) iter.left();
                         right = (AttributeOccurrence) iter.right();
@@ -267,7 +267,7 @@ public class OagBuilder {
             ids[i] = new Graph();
         }
         for (p = 0; p < idp.length; p++) {
-            iter = idp[p].iterate();
+            iter = idp[p].edges();
             while (iter.step()) {
                 left = (AttributeOccurrence) iter.left();
                 right = (AttributeOccurrence) iter.right();
@@ -367,7 +367,7 @@ public class OagBuilder {
         maxOfs = semantics.getGrammar().getLength(p);
         for (ofs = 0; ofs <= maxOfs; ofs++) {
             symbol = semantics.getGrammar().getSymbol(p, ofs);
-            iter = ds[symbol].iterate();
+            iter = ds[symbol].edges();
             while (iter.step()) {
                 edsP.edge(new AttributeOccurrence((Attribute) iter.left(), ofs - 1),
                           new AttributeOccurrence((Attribute) iter.right(), ofs - 1));

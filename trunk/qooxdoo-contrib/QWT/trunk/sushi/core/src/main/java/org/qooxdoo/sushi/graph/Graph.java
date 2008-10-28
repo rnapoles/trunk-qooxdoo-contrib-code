@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,6 +129,60 @@ public class Graph<T> {
         return result;
     }
     
+    /**
+     * @return null to indicate a cyclic dependency  TODO 
+     */
+    public List<T> sort(List<T> all) {
+        List<T> unsorted;
+        List<T> sorted;
+        List<T> current;
+        int size;
+
+        unsorted = new ArrayList<T>(all);
+        sorted = new ArrayList<T>();
+        size = all.size();
+        while (sorted.size() < size) {
+            current = getNext(sorted, unsorted);
+            if (current.size() == 0) {
+                return null; // cyclic dependency
+            }
+            sorted.addAll(current);
+            unsorted.removeAll(current);
+        }
+        return sorted;
+    }
+
+    private List<T> getNext(List<T> leftCollection, Collection<T> rightCollection) {
+        List<T> current;
+        Iterator<T> iter;
+        T right;
+        EdgeIterator<T> relationIter;
+
+        current = new ArrayList<T>();
+        iter = rightCollection.iterator();
+        while (iter.hasNext()) {
+            right = iter.next();
+            relationIter = edges();
+            while (relationIter.step()) {
+                if (relationIter.right().equals(right)) {
+                    if (relationIter.left().equals(right)) {
+                        // reflective element, do nothing
+                    } else {
+                        if (!leftCollection.contains(relationIter.left())) {
+                            relationIter = null;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (relationIter != null) {
+                current.add(right);
+            }
+        }
+
+        return current;
+    }
+
     //--
 
     // TODO: merge with other closure methods
@@ -188,7 +243,8 @@ public class Graph<T> {
     //--  Graph as a relation
 
     public EdgeIterator<T> edges() {
-        return new EdgeIterator<T>(nodes.values().iterator());
+        // TODO
+        return new EdgeIterator<T>(new ArrayList<Node<T>>(nodes.values()).iterator());
     }
 
     public Set<T> getDomain() {
