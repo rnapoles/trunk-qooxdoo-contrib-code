@@ -33,36 +33,12 @@ public class DependencyGraph {
         nodes = new HashMap<String, Node>();
     }
 
-    public void validate() {
-        for (Node node : nodes.values()) {
-            validate(node);
-        }
+    
+    public boolean node(String name) {
+        return doAdd(name) != null;
     }
     
-    private void validate(Node node) {
-        if (node.from != countTo(node)) {
-            throw new IllegalStateException(toString());
-        }
-        for (Node to : node.tos) {
-            if (nodes.get(to.name) != to) {
-                throw new IllegalStateException();
-            }
-        }
-    }
-
-    private int countTo(Node to) {
-        int count;
-        
-        count = 0;
-        for (Node node : nodes.values()) {
-            if (node.tos.contains(to)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public Node add(String name) {
+    private Node doAdd(String name) {
         Node node;
             
         node = nodes.get(name);
@@ -77,8 +53,8 @@ public class DependencyGraph {
         return new ArrayList<String>(nodes.keySet());
     }
 
-    public boolean add(String from, String to) {
-        return connect(add(from), add(to)); 
+    public boolean arrow(String from, String to) {
+        return connect(doAdd(from), doAdd(to)); 
     }
 
     public int size() {

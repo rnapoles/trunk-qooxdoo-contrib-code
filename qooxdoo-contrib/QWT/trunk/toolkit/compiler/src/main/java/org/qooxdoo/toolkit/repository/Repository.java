@@ -259,10 +259,10 @@ public class Repository implements Iterable<Module> {
         
         loads = loadGraph();
         calls = callGraph();
-        calls.add(ROOT);
+        calls.node(ROOT);
         for (Module main : mains) {
             for (Chunk chunk : main.chunks()) {
-                calls.add(ROOT, chunk.name);
+                calls.arrow(ROOT, chunk.name);
             }
         }
         do {
@@ -279,7 +279,7 @@ public class Repository implements Iterable<Module> {
                     }
                     init = name + Module.SEP + Naming.CINIT;
                     if (used.lookup(init) != null) {
-                        if (calls.add(ROOT, init)) {
+                        if (calls.arrow(ROOT, init)) {
                             changed = true;
                         }
                     }
