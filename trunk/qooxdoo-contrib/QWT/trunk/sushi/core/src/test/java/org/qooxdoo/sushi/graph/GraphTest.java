@@ -131,6 +131,24 @@ public class GraphTest {
     //--
     
     @Test
+    public void graph() {
+        Graph<String> op;
+        
+        op = new Graph<String>();
+        g.graph(op);
+        assertEquals(0, g.size());
+        op.node("foo");
+        g.graph(op);
+        assertEquals(1, g.size());
+        assertTrue(g.contains("foo"));
+        op.edge("foo", "bar");
+        g.graph(op);
+        assertTrue(g.contains("foo", "bar"));
+    }
+    
+    //--
+    
+    @Test
     public void closure() {
         g.edge("a", "b");
         closure("a",  "a", "b");
