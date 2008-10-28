@@ -61,8 +61,8 @@ public class Visits {
         }
         all = new LinkedHashSet<AttributionBuffer>();
         sems.getProduction(prod, all);
-        visitRelation.addDomain(all);
-        visitRelation.addImage(all);
+        visitRelation.getDomain(all);
+        visitRelation.getImage(all);
         lst = visitRelation.sort(new ArrayList(all));
         if (lst == null) {
             throw new GenericException("cyclic dependency in prod " + prod);

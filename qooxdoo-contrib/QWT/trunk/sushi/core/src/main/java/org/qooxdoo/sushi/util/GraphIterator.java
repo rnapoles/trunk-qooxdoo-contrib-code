@@ -36,7 +36,7 @@ public class GraphIterator<T> {
     }
 
     public boolean hasNext() {
-        return (leftIdx < relation.size()) && (rightIdx < relation.getRightSize(leftIdx));
+        return (leftIdx < relation.getDomainSize()) && (rightIdx < relation.getRightSize(leftIdx));
     }
 
     public void next() {

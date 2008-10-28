@@ -40,21 +40,21 @@ public class Graph<T> {
         rightsList = new ArrayList<List<T>>();
     }
 
-    public void addDomain(Collection<T> col) {
-        col.addAll(leftList);
+    public void getDomain(Collection<T> result) {
+        result.addAll(leftList);
     }
 
-    public void addImage(Collection<T> col) {
+    public void getImage(Collection<T> result) {
         int i;
         int max;
 
         max = rightsList.size();
         for (i = 0; i < max; i++) {
-            col.addAll(rightsList.get(i));
+            result.addAll(rightsList.get(i));
         }
     }
 
-    public int count() {
+    public int getImageSize() {
         int i;
         int max;
         int count;
@@ -77,6 +77,10 @@ public class Graph<T> {
         }
         lst = rightsList.get(i);
         return lst.indexOf(right) != -1;
+    }
+
+    public GraphIterator<T> iterate() {
+        return new GraphIterator<T>(this);
     }
 
     /**
@@ -102,6 +106,18 @@ public class Graph<T> {
         return false;
     }
 
+    public boolean edges(T left, List<T> rights) {
+        boolean modified;
+        
+        modified = false;
+        for (T right : rights) {
+            if (edge(left, right)) {
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
     /**
      * @return true if this Relation has been modified
      */
@@ -113,27 +129,11 @@ public class Graph<T> {
         modified = false;
         max = toAdd.leftList.size();
         for (i = 0; i < max; i++) {
-            if (addSpecial(toAdd.leftList.get(i), toAdd.rightsList.get(i))) {
+            if (edges(toAdd.leftList.get(i), toAdd.rightsList.get(i))) {
                 modified = true;
             }
         }
         return modified;
-    }
-
-    public int size() {
-        return leftList.size();
-    }
-
-    protected Object getLeft(int left) {
-        return leftList.get(left);
-    }
-
-    protected int getRightSize(int left) {
-        return rightsList.get(left).size();
-    }
-
-    protected Object getRight(int left, int right) {
-        return rightsList.get(left).get(right);
     }
 
     public void closure() {
@@ -155,7 +155,7 @@ public class Graph<T> {
                     right = lst.get(j);
                     idx = leftList.indexOf(right);
                     if (idx != -1) {
-                        if (addSpecial(left, rightsList.get(idx))) {
+                        if (edges(left, rightsList.get(idx))) {
                             modified = true;
                         }
                     }
@@ -163,35 +163,6 @@ public class Graph<T> {
             }
         } while (modified);
     }
-
-    private boolean addSpecial(T left, List<T> rights) {
-        int i;
-        int max;
-        boolean modified;
-        T right;
-        List<T> currentRightsList;
-        int idx;
-
-        idx = leftList.indexOf(left);
-        if (idx == -1) {
-            leftList.add(left);
-            rightsList.add(new ArrayList<T>(rights));
-            return true;
-        } else {
-            modified = false;
-            currentRightsList = rightsList.get(idx);
-            max = rights.size();
-            for (i = 0; i < max; i++) {
-                right = rights.get(i);
-                if (currentRightsList.indexOf(right) == -1) {
-                    currentRightsList.add(right);
-                    modified = true;
-                }
-            }
-            return modified;
-        }
-    }
-
 
     /**
      * @return null to indicate a cyclic dependency
@@ -214,6 +185,51 @@ public class Graph<T> {
             unsorted.removeAll(current);
         }
         return sorted;
+    }
+
+    //--
+    
+    @Override
+    public String toString() {
+        StringBuilder result;
+        GraphIterator<T> iter;
+        boolean first;
+
+        result = new StringBuilder();
+        result.append("{ ");
+        iter = iterate();
+        first = true;
+        while (iter.step()) {
+            if (!first) {
+                result.append(", ");
+                first = false;
+            }
+            result.append('(');
+            result.append(iter.left().toString());
+            result.append(',');
+            result.append(iter.right().toString());
+            result.append(')');
+        }
+        result.append(" }");
+        return result.toString();
+    }
+    
+    //--
+    
+    protected int getDomainSize() {
+        return leftList.size();
+    }
+
+    protected Object getLeft(int left) {
+        return leftList.get(left);
+    }
+
+    protected int getRightSize(int left) {
+        return rightsList.get(left).size();
+    }
+
+    protected Object getRight(int left, int right) {
+        return rightsList.get(left).get(right);
     }
 
     private List<T> getNext(List<T> leftCollection, Collection<T> rightCollection) {
@@ -245,34 +261,5 @@ public class Graph<T> {
         }
 
         return current;
-    }
-
-    public GraphIterator<T> iterate() {
-        return new GraphIterator<T>(this);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder result;
-        GraphIterator<T> iter;
-        boolean first;
-
-        result = new StringBuilder();
-        result.append("{ ");
-        iter = iterate();
-        first = true;
-        while (iter.step()) {
-            if (!first) {
-                result.append(", ");
-                first = false;
-            }
-            result.append('(');
-            result.append(iter.left().toString());
-            result.append(',');
-            result.append(iter.right().toString());
-            result.append(')');
-        }
-        result.append(" }");
-        return result.toString();
     }
 }
