@@ -40,28 +40,28 @@ public class DependencyGraphTest {
 
     @Test
     public void one() {
-        g.add("a", "b");
+        g.arrow("a", "b");
         sort("a", "b");
     }
 
     @Test
     public void transitive() {
-        g.add("a", "b");
-        g.add("b", "c");
+        g.arrow("a", "b");
+        g.arrow("b", "c");
         sort("a", "b", "c");
     }
 
     @Test
     public void fork() {
-        g.add("a", "b");
-        g.add("a", "c");
-        g.add("b", "c");
+        g.arrow("a", "b");
+        g.arrow("a", "c");
+        g.arrow("b", "c");
         sort("a", "b", "c");
     }
 
     @Test
     public void directCycle() {
-        g.add("a", "a");
+        g.arrow("a", "a");
         try {
             sort();
             fail();
@@ -72,8 +72,8 @@ public class DependencyGraphTest {
 
     @Test
     public void indirectCycle() {
-        g.add("a", "b");
-        g.add("b", "a");
+        g.arrow("a", "b");
+        g.arrow("b", "a");
         try {
             sort();
             fail();
@@ -84,16 +84,16 @@ public class DependencyGraphTest {
 
     @Test
     public void closureOne() {
-        g.add("a", "b");
-        g.add("a", "c");
+        g.arrow("a", "b");
+        g.arrow("a", "c");
         closure("a",  "a", "b", "c");
         closure("b",  "b");
     }
 
     @Test
     public void closureTwo() {
-        g.add("a", "b");
-        g.add("c", "d");
+        g.arrow("a", "b");
+        g.arrow("c", "d");
         closure("a",  "a", "b");
         closure("b",  "b");
     }
