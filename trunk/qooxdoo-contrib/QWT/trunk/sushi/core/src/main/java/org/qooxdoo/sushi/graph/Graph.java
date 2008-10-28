@@ -128,6 +128,27 @@ public class Graph<T> {
         return result;
     }
     
+    //--
+
+    // TODO: merge with other closure methods
+    public void closureHere() {
+        boolean modified;
+
+        // clone collections to cope with modification
+        do {
+            modified = false;
+            for (Node<T> left : new ArrayList<Node<T>>(nodes.values())) {
+                for (Node<T> right : new ArrayList<Node<T>>(left.starting)) {
+                    for (Node<T> rightright : right.starting) {
+                        if (edge(left.data, rightright.data)) {
+                            modified = true;
+                        }
+                    }
+                }
+            }
+        } while (modified);
+    }
+
     public List<T> closure(T ... data) {
         List<T> result;
         

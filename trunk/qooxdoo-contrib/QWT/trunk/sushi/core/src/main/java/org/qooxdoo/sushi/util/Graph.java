@@ -121,7 +121,7 @@ public class Graph<T> {
     /**
      * @return true if this Relation has been modified
      */
-    public boolean addAll(Graph<T> toAdd) {
+    public boolean graph(Graph<T> toAdd) {
         int i;
         int max;
         boolean modified;
@@ -136,7 +136,7 @@ public class Graph<T> {
         return modified;
     }
 
-    public void closure() {
+    public void closureHere() {
         int i;
         int j;
         List<T> lst;
