@@ -46,6 +46,33 @@ public class Graph<T> {
         return false;
     }
 
+    public boolean remove(T left, T right) {
+        Node<T> start;
+        Node<T> end;
+        
+        start = nodes.get(left);
+        if (start != null) {
+        	end = nodes.get(right);
+        	if (end != null && start.starting.remove(end)) {
+        		end.ending.remove(start);
+        		return true;
+        	}
+        }
+        return false;
+    }
+    
+    public int removeDirectCycles() {
+    	int count;
+    	
+    	count = 0;
+    	for (T data : nodes.keySet()) {
+    		if (remove(data, data)) {
+    			count++;
+    		}
+    	}
+    	return count;
+    }
+
     /** Adds data to the Graph and returns true, or does nothing and returns false if data is already part of the graph. */
     public boolean node(T data) {
         if (nodes.get(data) == null) {
