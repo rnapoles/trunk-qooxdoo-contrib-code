@@ -38,10 +38,25 @@ public class GraphTest {
     
     @Test
     public void edge() {
+        assertFalse(g.remove("foo", "bar"));
         assertTrue(g.edge("foo", "bar"));
+        assertTrue(g.contains("foo", "bar"));
         assertFalse(g.edge("foo", "bar"));
         assertTrue(g.edge("bar", "foo"));
         assertEquals(2, g.size());
+        assertTrue(g.remove("foo", "bar"));
+        assertFalse(g.contains("foo", "bar"));
+        assertTrue(g.remove("bar", "foo"));
+        assertFalse(g.remove("bar", "foo"));
+        assertFalse(g.edges().step());
+    }
+
+    @Test
+    public  void directCycle() {
+    	g.edge("a", "a");
+    	assertEquals(1, g.removeDirectCycles());
+    	assertFalse(g.edges().step());
+    	assertEquals(1, g.size());
     }
     
     @Test
