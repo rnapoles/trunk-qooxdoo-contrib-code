@@ -77,7 +77,7 @@ public class GraphTest {
     public void sortIsolated() throws CyclicDependency {
         g.node("a");
         g.node("b");
-        sort("b", "a");
+        sort("a", "b");
     }
 
     @Test
@@ -200,11 +200,11 @@ public class GraphTest {
         g.edge("a", "b");
         iter = g.edges();
         assertTrue(iter.step());
-        assertEquals("c", iter.left());
-        assertEquals("d", iter.right());
-        assertTrue(iter.step());
         assertEquals("a", iter.left());
         assertEquals("b", iter.right());
+        assertTrue(iter.step());
+        assertEquals("c", iter.left());
+        assertEquals("d", iter.right());
         assertFalse(iter.step());
     }
     

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class Graph<T> {
     private final Map<T, Node<T>> nodes;
     
     public Graph() {
-        this.nodes = new HashMap<T, Node<T>>();
+        this.nodes = new LinkedHashMap<T, Node<T>>();
     }
     
     /** @return number of nodes */
