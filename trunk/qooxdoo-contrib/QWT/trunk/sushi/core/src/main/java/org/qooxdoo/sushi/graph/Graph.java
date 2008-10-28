@@ -154,14 +154,10 @@ public class Graph<T> {
 
     private List<T> getNext(List<T> leftCollection, Collection<T> rightCollection) {
         List<T> current;
-        Iterator<T> iter;
-        T right;
         EdgeIterator<T> relationIter;
 
         current = new ArrayList<T>();
-        iter = rightCollection.iterator();
-        while (iter.hasNext()) {
-            right = iter.next();
+        for (T right : rightCollection) {
             relationIter = edges();
             while (relationIter.step()) {
                 if (relationIter.right().equals(right)) {
