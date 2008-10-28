@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +19,40 @@ public class Graph<T> {
         this.nodes = new LinkedHashMap<T, Node<T>>();
     }
     
+    // nodes
+    
     /** @return number of nodes */
     public int size() {
         return nodes.size();
     }
     
-    public List<T> data() {
-        return new ArrayList<T>(nodes.keySet());
+    public Iterator<T> nodes() {
+        return Collections.unmodifiableSet(nodes.keySet()).iterator();
     }
 
     public boolean contains(T data) {
         return nodes.containsKey(data);
     }
+    
+    /** Adds data to the Graph and returns true, or does nothing and returns false if data is already part of the graph. */
+    public boolean node(T data) {
+        if (nodes.get(data) == null) {
+            doNode(data);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public void retain(List<T> seeds) {
+        for (T name : new ArrayList<T>(nodes.keySet())) {
+            if (!seeds.contains(name)) {
+                doRemove(nodes.get(name));
+            }
+        }
+    }
+    
+    //-- edges
     
     public boolean contains(T left, T right) {
         Node<T> start;
@@ -46,43 +69,6 @@ public class Graph<T> {
         return false;
     }
 
-    public boolean remove(T left, T right) {
-        Node<T> start;
-        Node<T> end;
-        
-        start = nodes.get(left);
-        if (start != null) {
-        	end = nodes.get(right);
-        	if (end != null && start.starting.remove(end)) {
-        		end.ending.remove(start);
-        		return true;
-        	}
-        }
-        return false;
-    }
-    
-    public int removeDirectCycles() {
-    	int count;
-    	
-    	count = 0;
-    	for (T data : nodes.keySet()) {
-    		if (remove(data, data)) {
-    			count++;
-    		}
-    	}
-    	return count;
-    }
-
-    /** Adds data to the Graph and returns true, or does nothing and returns false if data is already part of the graph. */
-    public boolean node(T data) {
-        if (nodes.get(data) == null) {
-            doNode(data);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
     public boolean edge(T src, T dest) {
         Node<T> left;
         Node<T> right;
@@ -114,6 +100,28 @@ public class Graph<T> {
         return modified;
     }
 
+    public EdgeIterator<T> edges() {
+        // TODO
+        return new EdgeIterator<T>(new ArrayList<Node<T>>(nodes.values()).iterator());
+    }
+
+    public boolean remove(T left, T right) {
+        Node<T> start;
+        Node<T> end;
+        
+        start = nodes.get(left);
+        if (start != null) {
+        	end = nodes.get(right);
+        	if (end != null && start.starting.remove(end)) {
+        		end.ending.remove(start);
+        		return true;
+        	}
+        }
+        return false;
+    }
+
+    //-- graphs
+    
     /**
      * Adds all nodes and edges to his graph.
      * 
@@ -136,7 +144,18 @@ public class Graph<T> {
         return modified;
     }
 
-    //--
+    
+    public int removeDirectCycles() {
+    	int count;
+    	
+    	count = 0;
+    	for (T data : nodes.keySet()) {
+    		if (remove(data, data)) {
+    			count++;
+    		}
+    	}
+    	return count;
+    }
     
     /** CAUTION: removes nodes from the graph */
     public List<T> sort() throws CyclicDependency {
@@ -145,7 +164,7 @@ public class Graph<T> {
         
         result = new ArrayList<T>();
         while (nodes.size() > 0) {
-            node = start();
+            node = findStart();
             if (node == null) {
                 throw new CyclicDependency(this);
             }
@@ -204,20 +223,7 @@ public class Graph<T> {
         }
     }
     
-    public void retain(List<T> seeds) {
-        for (T name : new ArrayList<T>(nodes.keySet())) {
-            if (!seeds.contains(name)) {
-                doRemove(nodes.get(name));
-            }
-        }
-    }
-    
     //--  Graph as a relation
-
-    public EdgeIterator<T> edges() {
-        // TODO
-        return new EdgeIterator<T>(new ArrayList<Node<T>>(nodes.values()).iterator());
-    }
 
     public Set<T> getDomain() {
         Set<T> set;
@@ -294,7 +300,7 @@ public class Graph<T> {
     
     //--
     
-    private Node<T> start() {
+    private Node<T> findStart() {
         for (Node<T> node : nodes.values()) {
             if (node.ending.size() == 0) {
                 return node;
@@ -336,7 +342,7 @@ public class Graph<T> {
         
         builder = new StringBuilder();
         for (T data : nodes.keySet()) {
-            builder.append(data);
+            builder.append(toString(data));
             builder.append(' ');
         }
         return builder.toString();
@@ -379,7 +385,8 @@ public class Graph<T> {
         return builder.toString();
     }
 
-    private String toString(T data) {
+    /** You might want to override this method. */
+    protected String toString(T data) {
         return data.toString();
     }
 }
