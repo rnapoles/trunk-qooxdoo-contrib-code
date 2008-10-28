@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,28 +153,27 @@ public class Graph<T> {
 
     private List<T> getNext(List<T> leftCollection, Collection<T> rightCollection) {
         List<T> current;
-        EdgeIterator<T> relationIter;
-
+        Node<T> right;
+        
         current = new ArrayList<T>();
-        for (T right : rightCollection) {
-            relationIter = edges();
-            while (relationIter.step()) {
-                if (relationIter.right().equals(right)) {
-                    if (relationIter.left().equals(right)) {
-                        // reflective element, do nothing
-                    } else {
-                        if (!leftCollection.contains(relationIter.left())) {
-                            relationIter = null;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (relationIter != null) {
-                current.add(right);
+        for (T rightData : rightCollection) {
+        	right = nodes.get(rightData);
+        	if (right != null) {
+        		for (Node<T> left : right.ending) {
+        			if (left == right) {
+        				// reflective element, do nothing
+        			} else if (!leftCollection.contains(left.data)) {
+        				right = null;
+        				break;
+        			}
+        		}
+        		if (right != null) {
+        			current.add(rightData);
+        		}
+            } else {
+    			current.add(rightData);
             }
         }
-
         return current;
     }
 
