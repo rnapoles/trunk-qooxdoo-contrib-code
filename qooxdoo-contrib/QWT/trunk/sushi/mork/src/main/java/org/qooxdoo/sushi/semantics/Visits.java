@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.util.Graph;
-import org.qooxdoo.sushi.util.EdgeIterator;
+import org.qooxdoo.sushi.graph.Graph;
+import org.qooxdoo.sushi.graph.EdgeIterator;
 import org.qooxdoo.sushi.util.Util;
 
 /**
@@ -51,7 +51,7 @@ public class Visits {
         List lst;
 
         visitRelation = new Graph();
-        iter = edp.iterate();
+        iter = edp.edges();
         while (iter.step()) {
             left = (AttributeOccurrence) iter.left();
             right = (AttributeOccurrence) iter.right();

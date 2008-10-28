@@ -20,7 +20,7 @@
 package org.qooxdoo.sushi.semantics;
 
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.util.Graph;
+import org.qooxdoo.sushi.graph.Graph;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

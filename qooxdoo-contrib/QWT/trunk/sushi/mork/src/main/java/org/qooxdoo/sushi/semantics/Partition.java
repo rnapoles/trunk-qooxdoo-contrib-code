@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.util.Graph;
-import org.qooxdoo.sushi.util.EdgeIterator;
+import org.qooxdoo.sushi.graph.Graph;
+import org.qooxdoo.sushi.graph.EdgeIterator;
 
 /**
  * Helper class for OagBuilder
@@ -96,7 +96,7 @@ public class Partition {
         iter = leftCollection.iterator();
         while (iter.hasNext()) {
             left = iter.next();
-            relationIter = relation.iterate();
+            relationIter = relation.edges();
             while (relationIter.step()) {
                 if (relationIter.left() == left) {
                     if (!rightCollection.contains(relationIter.right())) {

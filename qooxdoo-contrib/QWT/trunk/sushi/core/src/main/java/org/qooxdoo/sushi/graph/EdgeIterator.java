@@ -19,6 +19,7 @@
 
 package org.qooxdoo.sushi.graph;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 
@@ -46,7 +47,8 @@ public class EdgeIterator<T> {
             tmp = lefts.next();
             if (tmp.starting.size() > 0) {
                 left = tmp.data;
-                rights = tmp.starting.iterator();
+                // TODO
+                rights = new ArrayList<Node<T>>(tmp.starting).iterator();
                 right = rights.next().data;
                 return true;
             }
