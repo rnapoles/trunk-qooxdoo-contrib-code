@@ -64,7 +64,7 @@ public class Attribute {
 
         max = attrs.size();
         for (i = 0; i < max; i++) {
-            attr = (Attribute) attrs.get(i);
+            attr = attrs.get(i);
             if (attr.symbol == symbol && name.equals(attr.name)) {
                 return attr;
             }
@@ -72,6 +72,11 @@ public class Attribute {
         return null;
     }
 
+    @Override
+    public int hashCode() {
+        return symbol;
+    }
+    
     @Override
     public String toString() {
         return "symbol=" + symbol + ", name=" + name + ", " + type;

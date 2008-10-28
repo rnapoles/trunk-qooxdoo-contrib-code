@@ -73,9 +73,14 @@ public class AttributionBuffer {
     }
 
     public AttributeOccurrence getArg(int i) {
-        return (AttributeOccurrence) args.get(i);
+        return args.get(i);
     }
 
+    @Override
+    public int hashCode() {
+        return production;
+    }
+    
     @Override
     public String toString() {
         StringBuilder buf;
@@ -121,7 +126,7 @@ public class AttributionBuffer {
             }
             buffer.append(function.getParameterTypes()[i].getName());
             buffer.append(' ');
-            buffer.append(((AttributeOccurrence) args.get(i)).toString(symbolTable));
+            buffer.append(args.get(i).toString(symbolTable));
         }
         buffer.append(')');
     }

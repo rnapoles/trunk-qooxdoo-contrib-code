@@ -283,15 +283,15 @@ public class OagBuilder {
      * Computes Axy. (Definition 4).
      */
     public List[][] createA(Relation[] ids) throws GenericException {
-        Set internal;
-        Set synthesized;
-        Set inherited;
+        Set<Attribute> internal;
+        Set<Attribute> synthesized;
+        Set<Attribute> inherited;
         int i;
         List[][] result;
 
-        internal = new HashSet();
-        inherited = new HashSet();
-        synthesized = new HashSet();
+        internal = new HashSet<Attribute>();
+        inherited = new HashSet<Attribute>();
+        synthesized = new HashSet<Attribute>();
         result = new List[ids.length][];
         for (i = 0; i < ids.length; i++) {
             internal.clear();
