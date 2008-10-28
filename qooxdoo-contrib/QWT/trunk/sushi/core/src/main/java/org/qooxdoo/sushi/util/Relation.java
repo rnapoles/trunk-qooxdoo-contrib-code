@@ -243,7 +243,7 @@ public class Relation<T> {
                 current.add(right);
             }
         }
-        Util.reverse(current);  // TODO
+
         return current;
     }
 
