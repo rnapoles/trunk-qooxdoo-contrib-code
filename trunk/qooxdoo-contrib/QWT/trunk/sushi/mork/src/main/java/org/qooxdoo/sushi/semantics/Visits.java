@@ -19,14 +19,15 @@
 
 package org.qooxdoo.sushi.semantics;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.util.Relation;
 import org.qooxdoo.sushi.util.RelationIterator;
 import org.qooxdoo.sushi.util.Util;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Build visit sequence for ordered attribute grammar. Based on the paper
@@ -44,7 +45,6 @@ public class Visits {
         int max;
         Relation visitRelation;
         Set<AttributionBuffer> all;
-        Visits visits;
         Object leftMapped;
         Object rightMapped;
         Object obj;
@@ -59,7 +59,7 @@ public class Visits {
             rightMapped = map(prod, right, sems, as);
             visitRelation.add(leftMapped, rightMapped);
         }
-        all = new HashSet<AttributionBuffer>();
+        all = new LinkedHashSet<AttributionBuffer>();
         sems.getProduction(prod, all);
         visitRelation.addDomain(all);
         visitRelation.addImage(all);
