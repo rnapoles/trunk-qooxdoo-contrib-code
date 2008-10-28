@@ -86,11 +86,11 @@ qx.Class.define("htmlarea.Application",
       htmlArea.set( { height: 400 } );
       ha = htmlArea;
 
-      var vb = new qx.ui.layout.VBox(8);
+      var vb = new qx.ui.layout.VBox(0);
       var vbContainer = (new qx.ui.container.Composite(vb));
 
-      var hb = new qx.ui.layout.HBox;
-      var hbContainer = new qx.ui.container.Composite(hb);
+      var toolbar = new qx.ui.toolbar.ToolBar;
+      
 
       /* *********************************************
        * 
@@ -149,45 +149,66 @@ qx.Class.define("htmlarea.Application",
        *  
        * ***************************************
        */
-      var toolbarEntries = {
-        bold :                { image : "htmlarea/image/text_bold.gif", action : htmlArea.setBold },
-        italic :              { image : "htmlarea/image/text_italic.gif", action : htmlArea.setItalic },
-        underline :           { image : "htmlarea/image/text_underline.gif", action : htmlArea.setUnderline },
-        strikethrough :       { image : "htmlarea/image/text_strikethrough.gif", action : htmlArea.setStrikeThrough },
+      var toolbarEntries = [
+        {
+          bold :                { image : "htmlarea/image/text_bold.gif", action : htmlArea.setBold },
+          italic :              { image : "htmlarea/image/text_italic.gif", action : htmlArea.setItalic },
+          underline :           { image : "htmlarea/image/text_underline.gif", action : htmlArea.setUnderline },
+          strikethrough :       { image : "htmlarea/image/text_strikethrough.gif", action : htmlArea.setStrikeThrough }
+        },
         
-        alignLeft :           { image : "htmlarea/image/align_left.gif", action : htmlArea.setJustifyLeft },
-        alignCenter :         { image : "htmlarea/image/align_center.gif", action : htmlArea.setJustifyCenter },
-        alignRight :          { image : "htmlarea/image/align_right.gif", action : htmlArea.setJustifyRight },
-        alignJustify :        { image : "htmlarea/image/align_justify.gif", action : htmlArea.setJustifyFull },
+        {
+          alignLeft :           { image : "htmlarea/image/align_left.gif", action : htmlArea.setJustifyLeft },
+          alignCenter :         { image : "htmlarea/image/align_center.gif", action : htmlArea.setJustifyCenter },
+          alignRight :          { image : "htmlarea/image/align_right.gif", action : htmlArea.setJustifyRight },
+          alignJustify :        { image : "htmlarea/image/align_justify.gif", action : htmlArea.setJustifyFull }
+        },
         
-        fontsize :            { image :  "htmlarea/image/fontsize.gif", action : fontSizeHandler },
-        fontcolor :           { image :  "htmlarea/image/color_text.gif", action : fontColorHandler },
-        textBackgroundColor : { image :  "htmlarea/image/color_bg.gif", action : textBackgroundColorHandler },
+        {
+          fontsize :            { image :  "htmlarea/image/fontsize.gif", action : fontSizeHandler },
+          fontcolor :           { image :  "htmlarea/image/color_text.gif", action : fontColorHandler },
+          textBackgroundColor : { image :  "htmlarea/image/color_bg.gif", action : textBackgroundColorHandler }
+        },
         
-        insertImage :         { image : "htmlarea/image/insert_image.gif", action : insertImageHandler },
-        insertTable :         { image : "htmlarea/image/insert_table.gif", action : insertTableHandler },
+        {
+          insertImage :         { image : "htmlarea/image/insert_image.gif", action : insertImageHandler },
+          insertTable :         { image : "htmlarea/image/insert_table.gif", action : insertTableHandler }
+        },
         
-        ol :                  { image : "htmlarea/image/list_ordered.gif", action : htmlArea.insertOrderedList },
-        ul :                  { image : "htmlarea/image/list_unordered.gif", action : htmlArea.insertUnorderedList },
+        {
+          ol :                  { image : "htmlarea/image/list_ordered.gif", action : htmlArea.insertOrderedList },
+          ul :                  { image : "htmlarea/image/list_unordered.gif", action : htmlArea.insertUnorderedList }
+        },
         
-        undo :                { image : "htmlarea/image/undo.gif", action : htmlArea.undo },
-        redo :                { image : "htmlarea/image/redo.gif", action : htmlArea.redo },
-        
-        removeFormat :        { image : "htmlarea/image/remove_format.gif", action : htmlArea.removeFormat }
-      };
+        {
+          undo :                { image : "htmlarea/image/undo.gif", action : htmlArea.undo },
+          redo :                { image : "htmlarea/image/redo.gif", action : htmlArea.redo },
+          
+          removeFormat :        { image : "htmlarea/image/remove_format.gif", action : htmlArea.removeFormat }
+        }
+      ];
       
       /* Put together toolbar entries */
       var button;
-      for (var entry in toolbarEntries)
+      //for (var entry in toolbarEntries)
+      for (var i=0, j=toolbarEntries.length; i<j; i++)
       {
-        button = new qx.ui.form.Button(null, toolbarEntries[entry].image);
-        button.set({ focusable : false, keepFocus : true, center : true });
-        button.addListener("execute", toolbarEntries[entry].action, htmlArea);
-        hbContainer.add(button);
+        var part = new qx.ui.toolbar.Part;
+        toolbar.add(part);
+        
+        for (var entry in toolbarEntries[i])
+        {
+          var infos = toolbarEntries[i][entry];
+          
+          button = new qx.ui.toolbar.Button(null, infos.image);
+          button.set({ focusable : false, keepFocus : true, center : true });
+          button.addListener("execute", infos.action, htmlArea);
+          part.add(button);
+        }        
       }
 
       /* Add toolbar and HtmlArea widget */
-      vbContainer.add(hbContainer);
+      vbContainer.add(toolbar);
       vbContainer.add(htmlArea);      
 
       doc.add(vbContainer, {left:10, top:10});
