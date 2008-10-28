@@ -155,51 +155,6 @@ public class Graph<T> {
         return result;
     }
     
-    /**
-     * @return null to indicate a cyclic dependency  TODO 
-     */
-    public List<T> sort(Collection<T> all) {
-        List<T> unsorted;
-        List<T> sorted;
-        List<T> current;
-        int size;
-
-        unsorted = new ArrayList<T>(all);
-        sorted = new ArrayList<T>();
-        size = all.size();
-        while (sorted.size() < size) {
-            current = getNext(sorted, unsorted);
-            if (current.size() == 0) {
-                return null; // cyclic dependency
-            }
-            sorted.addAll(current);
-            unsorted.removeAll(current);
-        }
-        return sorted;
-    }
-
-    private List<T> getNext(List<T> leftCollection, Collection<T> rightCollection) {
-        List<T> current;
-        Node<T> right;
-        
-        current = new ArrayList<T>();
-        for (T rightData : rightCollection) {
-        	right = nodes.get(rightData);
-      		for (Node<T> left : right.ending) {
-       			if (left == right) {
-       				// reflective element, do nothing
-       			} else if (!leftCollection.contains(left.data)) {
-       				right = null;
-       				break;
-       			}
-       		}
-       		if (right != null) {
-       			current.add(rightData);
-       		}
-        }
-        return current;
-    }
-
     //--
 
     // TODO: merge with other closure methods
