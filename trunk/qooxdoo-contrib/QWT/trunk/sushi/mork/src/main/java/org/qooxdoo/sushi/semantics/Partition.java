@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.util.Graph;
-import org.qooxdoo.sushi.util.GraphIterator;
+import org.qooxdoo.sushi.util.RelationIterator;
 
 /**
  * Helper class for OagBuilder
@@ -90,7 +90,7 @@ public class Partition {
         List disconnected;
         Iterator iter;
         Object left;
-        GraphIterator relationIter;
+        RelationIterator relationIter;
 
         disconnected = new ArrayList();
         iter = leftCollection.iterator();
