@@ -42,7 +42,7 @@ public class Partition {
         int initialSize;
 
         closure = new Graph();
-        closure.addAll(idsX);
+        closure.graph(idsX);
 
         partitions = new ArrayList();
         done = new ArrayList();

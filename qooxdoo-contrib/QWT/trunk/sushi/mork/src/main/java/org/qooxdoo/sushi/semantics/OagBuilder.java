@@ -209,10 +209,10 @@ public class OagBuilder {
         touched = new boolean[dp.length];
         for (p = 0; p < idp.length; p++) {
             idp[p] = new Graph();
-            idp[p].addAll(dp[p]);
+            idp[p].graph(dp[p]);
             idpClosure[p] = new Graph();
-            idpClosure[p].addAll(dp[p]);
-            idpClosure[p].closure();
+            idpClosure[p].graph(dp[p]);
+            idpClosure[p].closureHere();
             touched[p] = true;
         }
 
@@ -234,7 +234,7 @@ public class OagBuilder {
                                         newRight = new AttributeOccurrence(right.attr, ofs - 1);
                                         if (idp[p].edge(newLeft, newRight)) {
                                             idpClosure[p].edge(newLeft, newRight);
-                                            idpClosure[p].closure();
+                                            idpClosure[p].closureHere();
                                             touched[p] = true;
                                             modified = true;
                                         }
@@ -329,7 +329,7 @@ public class OagBuilder {
         int right;
 
         ds = new Graph();
-        ds.addAll(ids);
+        ds.graph(ids);
         for (i = 1; i < a.length; i++) {
             leftList = a[i];
             leftSize = leftList.size();
@@ -363,7 +363,7 @@ public class OagBuilder {
         EdgeIterator iter;
 
         edsP = new Graph();
-        edsP.addAll(dp);
+        edsP.graph(dp);
         maxOfs = semantics.getGrammar().getLength(p);
         for (ofs = 0; ofs <= maxOfs; ofs++) {
             symbol = semantics.getGrammar().getSymbol(p, ofs);
