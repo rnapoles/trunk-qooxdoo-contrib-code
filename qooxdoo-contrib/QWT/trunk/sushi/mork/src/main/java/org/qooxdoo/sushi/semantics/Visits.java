@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.util.Relation;
-import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.Graph;
+import org.qooxdoo.sushi.util.GraphIterator;
 import org.qooxdoo.sushi.util.Util;
 
 /**
@@ -37,27 +37,27 @@ public class Visits {
     /** Attributions or Integer objects. */
     private final Object[] visits;
 
-    public static Visits forEDP(int prod, Relation edp, Ag sems, List[][] as, Layout layout) throws GenericException {
-        RelationIterator iter;
+    public static Visits forEDP(int prod, Graph edp, Ag sems, List[][] as, Layout layout) throws GenericException {
+        GraphIterator iter;
         AttributeOccurrence left;
         AttributeOccurrence right;
         int i;
         int max;
-        Relation visitRelation;
+        Graph visitRelation;
         Set<AttributionBuffer> all;
         Object leftMapped;
         Object rightMapped;
         Object obj;
         List lst;
 
-        visitRelation = new Relation();
+        visitRelation = new Graph();
         iter = edp.iterate();
         while (iter.step()) {
             left = (AttributeOccurrence) iter.left();
             right = (AttributeOccurrence) iter.right();
             leftMapped = map(prod, left, sems, as);
             rightMapped = map(prod, right, sems, as);
-            visitRelation.add(leftMapped, rightMapped);
+            visitRelation.edge(leftMapped, rightMapped);
         }
         all = new LinkedHashSet<AttributionBuffer>();
         sems.getProduction(prod, all);

@@ -28,8 +28,8 @@ import org.qooxdoo.sushi.util.IntBitSet;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.misc.StringArrayList;
-import org.qooxdoo.sushi.util.Relation;
-import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.Graph;
+import org.qooxdoo.sushi.util.GraphIterator;
 
 /**
  * Build visit sequence for ordered attribute grammar. Based on the paper
@@ -53,14 +53,14 @@ public class OagBuilder {
 
     public static Visits[] run(Ag ag, Layout layout, boolean verbose) throws GenericException {
         OagBuilder builder;
-        Relation[] dp;
-        Relation[] idp;
-        Relation[] ids;
+        Graph[] dp;
+        Graph[] idp;
+        Graph[] ids;
         int i;
         List[][] as;
         StringArrayList symbolTable;
-        Relation[] ds;
-        Relation[] edp;
+        Graph[] ds;
+        Graph[] edp;
         Visits[] visits;
 
         builder = new OagBuilder(ag, layout);
@@ -106,9 +106,9 @@ public class OagBuilder {
         }
     }
 
-    private static String as(StringArrayList symbolTable, Relation relation) {
+    private static String as(StringArrayList symbolTable, Graph relation) {
         StringBuilder buffer;
-        RelationIterator iter;
+        GraphIterator iter;
         Attribute a;
 
         buffer = new StringBuilder();
@@ -127,9 +127,9 @@ public class OagBuilder {
         return buffer.toString();
     }
 
-    private static String aos(StringArrayList symbolTable, Relation relation) {
+    private static String aos(StringArrayList symbolTable, Graph relation) {
         StringBuilder buffer;
-        RelationIterator iter;
+        GraphIterator iter;
         AttributeOccurrence ao;
 
         buffer = new StringBuilder();
@@ -155,15 +155,15 @@ public class OagBuilder {
      * @return array indexed by productions where each Relation contains pairs of
      *         AttributeOccurrences.
      */
-    public Relation[] createDP() {
-        Relation[] dp;
+    public Graph[] createDP() {
+        Graph[] dp;
         int i;
         int max;
         AttributionBuffer ab;
 
-        dp = new Relation[semantics.getGrammar().getProductionCount()];
+        dp = new Graph[semantics.getGrammar().getProductionCount()];
         for (i = 0; i < dp.length; i++) {
-            dp[i] = new Relation();
+            dp[i] = new Graph();
         }
         max = semantics.getSize();
         for (i = 0; i < max; i++) {
@@ -173,13 +173,13 @@ public class OagBuilder {
         return dp;
     }
 
-    private void addDP(Relation dp, AttributionBuffer ab) {
+    private void addDP(Graph dp, AttributionBuffer ab) {
         int i;
         int max;
 
         max = ab.getArgCount();
         for (i = 0; i < max; i++) {
-            dp.add(ab.getArg(i), ab.result);
+            dp.edge(ab.getArg(i), ab.result);
         }
     }
 
@@ -189,9 +189,9 @@ public class OagBuilder {
      *
      * @param dp dependency relation
      */
-    public Relation[] createIDP(Relation[] dp) {
-        Relation[] idp;
-        Relation[] idpClosure;
+    public Graph[] createIDP(Graph[] dp) {
+        Graph[] idp;
+        Graph[] idpClosure;
         boolean[] touched;
         int p;
         int q;
@@ -202,15 +202,15 @@ public class OagBuilder {
         boolean modified;
         AttributeOccurrence newLeft;
         AttributeOccurrence newRight;
-        RelationIterator iter;
+        GraphIterator iter;
 
-        idp = new Relation[dp.length];
-        idpClosure = new Relation[dp.length];
+        idp = new Graph[dp.length];
+        idpClosure = new Graph[dp.length];
         touched = new boolean[dp.length];
         for (p = 0; p < idp.length; p++) {
-            idp[p] = new Relation();
+            idp[p] = new Graph();
             idp[p].addAll(dp[p]);
-            idpClosure[p] = new Relation();
+            idpClosure[p] = new Graph();
             idpClosure[p].addAll(dp[p]);
             idpClosure[p].closure();
             touched[p] = true;
@@ -232,8 +232,8 @@ public class OagBuilder {
                                     if (symbol == left.attr.symbol) {
                                         newLeft = new AttributeOccurrence(left.attr, ofs - 1);
                                         newRight = new AttributeOccurrence(right.attr, ofs - 1);
-                                        if (idp[p].add(newLeft, newRight)) {
-                                            idpClosure[p].add(newLeft, newRight);
+                                        if (idp[p].edge(newLeft, newRight)) {
+                                            idpClosure[p].edge(newLeft, newRight);
                                             idpClosure[p].closure();
                                             touched[p] = true;
                                             modified = true;
@@ -254,17 +254,17 @@ public class OagBuilder {
      *
      * @return Array indexed by symbols; relation with pairs of attributes.
      */
-    public Relation[] createIDS(Relation[] idp) {
+    public Graph[] createIDS(Graph[] idp) {
         int p;
         int i;
-        Relation[] ids;
+        Graph[] ids;
         AttributeOccurrence left;
         AttributeOccurrence right;
-        RelationIterator iter;
+        GraphIterator iter;
 
-        ids = new Relation[symbols.last() + 1];
+        ids = new Graph[symbols.last() + 1];
         for (i = 0; i < ids.length; i++) {
-            ids[i] = new Relation();
+            ids[i] = new Graph();
         }
         for (p = 0; p < idp.length; p++) {
             iter = idp[p].iterate();
@@ -272,7 +272,7 @@ public class OagBuilder {
                 left = (AttributeOccurrence) iter.left();
                 right = (AttributeOccurrence) iter.right();
                 if (left.sameSymbolOccurrence(right)) {
-                    ids[left.attr.symbol].add(left.attr, right.attr);
+                    ids[left.attr.symbol].edge(left.attr, right.attr);
                 }
             }
         }
@@ -282,7 +282,7 @@ public class OagBuilder {
     /**
      * Computes Axy. (Definition 4).
      */
-    public List[][] createA(Relation[] ids) throws GenericException {
+    public List[][] createA(Graph[] ids) throws GenericException {
         Set<Attribute> internal;
         Set<Attribute> synthesized;
         Set<Attribute> inherited;
@@ -307,19 +307,19 @@ public class OagBuilder {
     /**
      * Computes DS, the completion of IDS using A. (Definition 5).
      */
-    public Relation[] createDS(Relation[] ids, List[][] a) {
+    public Graph[] createDS(Graph[] ids, List[][] a) {
         int i;
-        Relation[] ds;
+        Graph[] ds;
 
-        ds = new Relation[ids.length];
+        ds = new Graph[ids.length];
         for (i = 0; i < ds.length; i++) {
             ds[i] = createDSx(ids[i], a[i]);
         }
         return ds;
     }
 
-    private Relation createDSx(Relation ids, List[] a) {
-        Relation ds;
+    private Graph createDSx(Graph ids, List[] a) {
+        Graph ds;
         int i;
         List leftList;
         int leftSize;
@@ -328,7 +328,7 @@ public class OagBuilder {
         int left;
         int right;
 
-        ds = new Relation();
+        ds = new Graph();
         ds.addAll(ids);
         for (i = 1; i < a.length; i++) {
             leftList = a[i];
@@ -337,46 +337,46 @@ public class OagBuilder {
             rightSize = rightList.size();
             for (left = 0; left < leftSize; left++) {
                 for (right = 0; right < rightSize; right++) {
-                    ds.add(leftList.get(left), rightList.get(right));
+                    ds.edge(leftList.get(left), rightList.get(right));
                 }
             }
         }
         return ds;
     }
 
-    public Relation[] createEDP(Relation[] dp, Relation[] ds) {
+    public Graph[] createEDP(Graph[] dp, Graph[] ds) {
         int i;
-        Relation[] eds;
+        Graph[] eds;
 
-        eds = new Relation[dp.length];
+        eds = new Graph[dp.length];
         for (i = 0; i < eds.length; i++) {
             eds[i] = createEDPx(i, dp[i], ds);
         }
         return eds;
     }
 
-    private Relation createEDPx(int p, Relation dp, Relation[] ds) {
-        Relation edsP;
+    private Graph createEDPx(int p, Graph dp, Graph[] ds) {
+        Graph edsP;
         int ofs;
         int maxOfs;
         int symbol;
-        RelationIterator iter;
+        GraphIterator iter;
 
-        edsP = new Relation();
+        edsP = new Graph();
         edsP.addAll(dp);
         maxOfs = semantics.getGrammar().getLength(p);
         for (ofs = 0; ofs <= maxOfs; ofs++) {
             symbol = semantics.getGrammar().getSymbol(p, ofs);
             iter = ds[symbol].iterate();
             while (iter.step()) {
-                edsP.add(new AttributeOccurrence((Attribute) iter.left(), ofs - 1),
+                edsP.edge(new AttributeOccurrence((Attribute) iter.left(), ofs - 1),
                           new AttributeOccurrence((Attribute) iter.right(), ofs - 1));
             }
         }
         return edsP;
     }
 
-    public Visits[] createVisits(Relation[] edp, List[][] as) throws GenericException {
+    public Visits[] createVisits(Graph[] edp, List[][] as) throws GenericException {
         int p;
         Visits[] visits;
 

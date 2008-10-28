@@ -28,14 +28,14 @@ import java.util.List;
  * Set of pairs of objects. Method names follow the Set interface (which cannot be implemented
  * because, e.g., the add methods takes two arguments.
  */
-public class Relation<T> {
+public class Graph<T> {
     /** domain objects */
     private List<T> leftList;
 
     /** List of List of image objects, corresponding indexes with leftList */
     private List<List<T>> rightsList;
 
-    public Relation() {
+    public Graph() {
         leftList = new ArrayList<T>();
         rightsList = new ArrayList<List<T>>();
     }
@@ -82,7 +82,7 @@ public class Relation<T> {
     /**
      * @return true for new elements
      */
-    public boolean add(T left, T right) {
+    public boolean edge(T left, T right) {
         int i;
         List<T> lst;
 
@@ -105,7 +105,7 @@ public class Relation<T> {
     /**
      * @return true if this Relation has been modified
      */
-    public boolean addAll(Relation<T> toAdd) {
+    public boolean addAll(Graph<T> toAdd) {
         int i;
         int max;
         boolean modified;
@@ -120,19 +120,19 @@ public class Relation<T> {
         return modified;
     }
 
-    public int getLeftSize() {
+    public int size() {
         return leftList.size();
     }
 
-    public Object getLeft(int left) {
+    protected Object getLeft(int left) {
         return leftList.get(left);
     }
 
-    public int getRightSize(int left) {
+    protected int getRightSize(int left) {
         return rightsList.get(left).size();
     }
 
-    public Object getRight(int left, int right) {
+    protected Object getRight(int left, int right) {
         return rightsList.get(left).get(right);
     }
 
@@ -220,7 +220,7 @@ public class Relation<T> {
         List<T> current;
         Iterator<T> iter;
         T right;
-        RelationIterator<T> relationIter;
+        GraphIterator<T> relationIter;
 
         current = new ArrayList<T>();
         iter = rightCollection.iterator();
@@ -247,14 +247,14 @@ public class Relation<T> {
         return current;
     }
 
-    public RelationIterator<T> iterate() {
-        return new RelationIterator<T>(this);
+    public GraphIterator<T> iterate() {
+        return new GraphIterator<T>(this);
     }
 
     @Override
     public String toString() {
         StringBuilder result;
-        RelationIterator<T> iter;
+        GraphIterator<T> iter;
         boolean first;
 
         result = new StringBuilder();

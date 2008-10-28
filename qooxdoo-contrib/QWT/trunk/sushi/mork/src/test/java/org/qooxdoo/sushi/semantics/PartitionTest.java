@@ -20,7 +20,7 @@
 package org.qooxdoo.sushi.semantics;
 
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.util.Relation;
+import org.qooxdoo.sushi.util.Graph;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +38,7 @@ public class PartitionTest extends TestCase {
     private List right;
     private Set inherited;
     private Set synthesized;
-    private Relation relation;
+    private Graph relation;
 
     @Override
     protected void setUp() throws Exception {
@@ -48,7 +48,7 @@ public class PartitionTest extends TestCase {
         right = new ArrayList();
         inherited = new HashSet();
         synthesized = new HashSet();
-        relation = new Relation();
+        relation = new Graph();
     }
 
     //--- disconnected
@@ -60,8 +60,8 @@ public class PartitionTest extends TestCase {
         left.add(B);
         right.add(C);
         right.add(D);
-        relation.add(A, C);
-        relation.add(B, D);
+        relation.edge(A, C);
+        relation.edge(B, D);
         disconnected = Partition.getDisconnected(left, relation, right);
         assertEquals(2, disconnected.size());
         assertSame(A, disconnected.get(0));
@@ -73,8 +73,8 @@ public class PartitionTest extends TestCase {
 
         left.add(A);
         right.add(C);
-        relation.add(A, B);
-        relation.add(B, C);
+        relation.edge(A, B);
+        relation.edge(B, C);
         connected = Partition.getDisconnected(left, relation, right);
         assertEquals(0, connected.size());
     }
@@ -98,10 +98,10 @@ public class PartitionTest extends TestCase {
         left.add(A);
         left.add(D);
         right.add(B);
-        relation.add(A, B);
-        relation.add(A, C);
-        relation.add(B, D);
-        relation.add(D, D);
+        relation.edge(A, B);
+        relation.edge(A, C);
+        relation.edge(B, D);
+        relation.edge(D, D);
         disconnected = Partition.getDisconnected(left, relation, right);
         assertEquals(0, disconnected.size());
     }
@@ -141,7 +141,7 @@ public class PartitionTest extends TestCase {
 
         synthesized.add(A);
         inherited.add(B);
-        relation.add(A, B);
+        relation.edge(A, B);
         partitions = Partition.createA(synthesized, inherited, relation);
         assertEquals(3, partitions.length);
         assertEquals(0, partitions[0].size());
@@ -156,10 +156,10 @@ public class PartitionTest extends TestCase {
 
         synthesized.add(A);
         synthesized.add(B);
-        relation.add(A, B);
+        relation.edge(A, B);
         inherited.add(C);
         inherited.add(D);
-        relation.add(D, C);
+        relation.edge(D, C);
         partitions = Partition.createA(synthesized, inherited, relation);
         assertEquals(2, partitions.length);
         assertTrue(partitions[0].contains(A));
@@ -192,8 +192,8 @@ public class PartitionTest extends TestCase {
         all.add(C);
         all.add(B);
         all.add(A);
-        relation.add(A, B);
-        relation.add(B, C);
+        relation.edge(A, B);
+        relation.edge(B, C);
         sorted = relation.sort(all);
         assertEquals(3, sorted.size());
         assertEquals(A, sorted.get(0));
@@ -209,8 +209,8 @@ public class PartitionTest extends TestCase {
         all.add(C);
         all.add(A);
         all.add(B);
-        relation.add(A, C);
-        relation.add(B, C);
+        relation.edge(A, C);
+        relation.edge(B, C);
         sorted = relation.sort(all);
         assertEquals(3, sorted.size());
         assertEquals(A, sorted.get(0));
@@ -227,8 +227,8 @@ public class PartitionTest extends TestCase {
         all.add(D);
         all.add(A);
         all.add(B);
-        relation.add(A, C);
-        relation.add(B, D);
+        relation.edge(A, C);
+        relation.edge(B, D);
         sorted = relation.sort(all);
         assertEquals(4, sorted.size());
         assertEquals(A, sorted.get(0));
@@ -244,9 +244,9 @@ public class PartitionTest extends TestCase {
         all = new ArrayList();
         all.add(A);
         all.add(B);
-        relation.add(A, A);
-        relation.add(B, B);
-        relation.add(A, B);
+        relation.edge(A, A);
+        relation.edge(B, B);
+        relation.edge(A, B);
         sorted = relation.sort(all);
         assertEquals(2, sorted.size());
         assertEquals(A, sorted.get(0));
@@ -263,10 +263,10 @@ public class PartitionTest extends TestCase {
         all.add(C);
         all.add(B);
         all.add(A);
-        relation.add(A, B);
-        relation.add(C, D);
-        relation.add(B, D);
-        relation.add(E, B);
+        relation.edge(A, B);
+        relation.edge(C, D);
+        relation.edge(B, D);
+        relation.edge(E, B);
         sorted = relation.sort(all);
         assertEquals(5, sorted.size());
         assertEquals(E, sorted.get(0));
@@ -283,8 +283,8 @@ public class PartitionTest extends TestCase {
         all = new ArrayList();
         all.add(A);
         all.add(B);
-        relation.add(A, B);
-        relation.add(B, A);
+        relation.edge(A, B);
+        relation.edge(B, A);
         sorted = relation.sort(all);
         assertNull(sorted);
     }
