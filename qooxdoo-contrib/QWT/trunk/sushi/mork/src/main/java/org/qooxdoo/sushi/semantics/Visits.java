@@ -20,7 +20,6 @@
 package org.qooxdoo.sushi.semantics;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,8 +37,8 @@ public class Visits {
     /** Attributions or Integer objects. */
     private final Object[] visits;
 
-    public static Visits forEDP(int prod, Graph edp, Ag sems, List[][] as, Layout layout) throws GenericException {
-        EdgeIterator iter;
+    public static Visits forEDP(int prod, Graph<AttributeOccurrence> edp, Ag sems, List<Attribute>[][] as, Layout layout) throws GenericException {
+        EdgeIterator<AttributeOccurrence> iter;
         AttributeOccurrence left;
         AttributeOccurrence right;
         int i;
@@ -54,8 +53,8 @@ public class Visits {
         visitRelation = new Graph();
         iter = edp.edges();
         while (iter.step()) {
-            left = (AttributeOccurrence) iter.left();
-            right = (AttributeOccurrence) iter.right();
+            left = iter.left();
+            right = iter.right();
             leftMapped = map(prod, left, sems, as);
             rightMapped = map(prod, right, sems, as);
             visitRelation.edge(leftMapped, rightMapped);
@@ -121,7 +120,7 @@ public class Visits {
         return visits.length;
     }
 
-    public static Object map(int prod, AttributeOccurrence ao, Ag sems, List[][] as) {
+    public static Object map(int prod, AttributeOccurrence ao, Ag sems, List<Attribute>[][] as) {
         AttributionBuffer ab;
         int symbol;
         int m;
