@@ -21,7 +21,7 @@ package org.qooxdoo.toolkit.repository;
 
 import org.qooxdoo.sushi.graph.Graph;
 
+
 public class DependencyGraph extends Graph<String> {
-    // TODO: graph of modules
     // TODO: move some static create methods here ...
 }

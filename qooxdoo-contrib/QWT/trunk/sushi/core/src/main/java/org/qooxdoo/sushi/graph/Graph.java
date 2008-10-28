@@ -183,20 +183,20 @@ public class Graph<T> {
 
         items = new ArrayList<String>();
         for (T data : nodes.keySet()) {
-            items.add(toString(data));
+            items.add(toNodeString(data));
         }
         Collections.sort(items);
         return items.toString();
     }
     
-    private String toString(T name) {
+    private String toNodeString(T data) {
         StringBuilder builder;
         Node<T> node;
         boolean firstTo;
         
         builder = new StringBuilder();
-        node = nodes.get(name);
-        builder.append(name);
+        node = nodes.get(data);
+        builder.append(toString(data));
         if (node.starting.size() > 0) {
             builder.append("-");
             firstTo = true;
@@ -206,9 +206,13 @@ public class Graph<T> {
                 } else {
                     builder.append('|');
                 }
-                builder.append(to.data);
+                builder.append(toString(to.data));
             }
         }
         return builder.toString();
+    }
+
+    private String toString(T data) {
+        return data.toString();
     }
 }

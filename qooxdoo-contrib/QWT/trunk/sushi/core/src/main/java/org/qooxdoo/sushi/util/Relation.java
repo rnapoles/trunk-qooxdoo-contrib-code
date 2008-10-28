@@ -29,7 +29,7 @@ import java.util.List;
  * because, e.g., the add methods takes two arguments.
  */
 public class Relation<T> {
-    /** domain objexts */
+    /** domain objects */
     private List<T> leftList;
 
     /** List of List of image objects, corresponding indexes with leftList */
