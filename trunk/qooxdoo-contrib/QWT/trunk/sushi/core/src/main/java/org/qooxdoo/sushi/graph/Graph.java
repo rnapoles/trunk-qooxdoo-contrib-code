@@ -2,12 +2,17 @@ package org.qooxdoo.sushi.graph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-/** A directed graph */
+import org.qooxdoo.sushi.util.RelationIterator;
+
+/** A directed graph of nodes (with type T) and edges. */
 public class Graph<T> {
     private final Map<T, Node<T>> nodes;
     
@@ -28,6 +33,21 @@ public class Graph<T> {
         return nodes.containsKey(data);
     }
     
+    public boolean contains(T left, T right) {
+        Node<T> start;
+
+        start = nodes.get(left);
+        if (start == null) {
+            return false;
+        }
+        for (Node<T> end : start.starting) {
+            if (end.data.equals(right)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Adds data to the Graph and returns true, or does nothing and returns false if data is already part of the graph. */
     public boolean node(T data) {
         if (nodes.get(data) == null) {
@@ -51,6 +71,44 @@ public class Graph<T> {
             right.ending.add(left);
             return true;
         }
+    }
+
+    public boolean edges(T left, T ... rights) {
+        return edges(left, Arrays.asList(rights));
+    }
+    
+    public boolean edges(T left, List<T> rights) {
+        boolean modified;
+        
+        modified = false;
+        for (T right : rights) {
+            if (edge(left, right)) {
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    /**
+     * Adds all nodes and edges to his graph.
+     * 
+     * @return true if this Graph has been modified
+     */
+    public boolean graph(Graph<T> graph) {
+        boolean modified;
+
+        modified = false;
+        for (Node<T> src : graph.nodes.values()) {
+            if (node(src.data)) {
+                modified = true;
+            }
+            for (Node<T> dest : src.starting) {
+                if (edge(src.data, dest.data)) {
+                    modified = true;
+                }
+            }
+        }
+        return modified;
     }
 
     //--
@@ -106,6 +164,69 @@ public class Graph<T> {
                 doRemove(nodes.get(name));
             }
         }
+    }
+    
+    //--  Graph as a relation
+
+    public EdgeIterator<T> iterate() {
+        return new EdgeIterator<T>(nodes.values().iterator());
+    }
+
+    public Set<T> getDomain() {
+        Set<T> set;
+        
+        set = new HashSet<T>();
+        getDomain(set);
+        return set;
+    }
+    
+    public void getDomain(Collection<T> result) {
+        for (Node<T> node : nodes.values()) {
+            if (node.starting.size() > 0) {
+                result.add(node.data);
+            }
+        }
+    }
+
+    public Set<T> getImage() {
+        Set<T> set;
+        
+        set = new HashSet<T>();
+        getImage(set);
+        return set;
+    }
+
+    public void getImage(Collection<T> result) {
+        for (Node<T> node : nodes.values()) {
+            if (node.ending.size() > 0) {
+                result.add(node.data);
+            }
+        }
+    }
+
+    public String toRelationString() {
+        StringBuilder result;
+        EdgeIterator<T> iter;
+        boolean first;
+
+        result = new StringBuilder();
+        result.append("{ ");
+        iter = iterate();
+        first = true;
+        while (iter.hasNext()) {
+            iter.next();
+            if (!first) {
+                result.append(", ");
+                first = false;
+            }
+            result.append('(');
+            result.append(iter.left().toString());
+            result.append(',');
+            result.append(iter.right().toString());
+            result.append(')');
+        }
+        result.append(" }");
+        return result.toString();
     }
     
     //--

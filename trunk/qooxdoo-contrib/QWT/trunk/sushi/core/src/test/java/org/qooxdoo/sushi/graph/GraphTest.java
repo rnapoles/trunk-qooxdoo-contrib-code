@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,11 +37,33 @@ public class GraphTest {
     }
     
     @Test
-    public void arrows() {
+    public void edge() {
         assertTrue(g.edge("foo", "bar"));
         assertFalse(g.edge("foo", "bar"));
         assertTrue(g.edge("bar", "foo"));
         assertEquals(2, g.size());
+    }
+    
+    @Test
+    public void edges() {
+        assertFalse(g.edges("foo"));
+        assertEquals(0, g.size());
+        g.edges("foo", "bar", "baz");
+        assertEquals(3, g.size());
+        assertTrue(g.contains("foo", "bar"));
+        assertTrue(g.contains("foo", "baz"));
+    }
+
+    @Test
+    public void contains() {
+        assertFalse(g.contains("a"));
+        assertFalse(g.contains("a", "b"));
+        g.node("a");
+        assertTrue(g.contains("a"));
+        assertFalse(g.contains("a", "b"));
+        g.edge("a", "b");
+        assertTrue(g.contains("a"));
+        assertTrue(g.contains("a", "b"));
     }
 
     //--
@@ -131,6 +155,28 @@ public class GraphTest {
 
     private void closure(String start, String ... expected) {
         assertEquals(Arrays.asList(expected), g.closure(start));
+    }
+    
+    //--
+    
+    @Test
+    public void relationSize() {
+        checkSet(g.getDomain());
+        checkSet(g.getImage());
+        g.node("a");
+        checkSet(g.getDomain());
+        checkSet(g.getImage());
+        g.edge("a", "b");
+        checkSet(g.getDomain(), "a");
+        checkSet(g.getImage(), "b");
+        g.edge("a", "a");
+        checkSet(g.getDomain(), "a");
+        checkSet(g.getImage(), "a", "b");
+    }
+
+    private void checkSet(Set<String> got, String ...expected) {
+        assertEquals(new HashSet(Arrays.asList(expected)), got);
+        
     }
     
     //--
