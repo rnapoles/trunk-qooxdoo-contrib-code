@@ -31,6 +31,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.qooxdoo.sushi.fs.GetLastModifiedException;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.file.FileNode;
@@ -159,7 +160,7 @@ public class Client implements ClientMBean {
         return "client";
     }
     
-    public Date getCreated() {
+    public Date getCreated() throws GetLastModifiedException {
         return new Date(index.getLastModified());
     }
 

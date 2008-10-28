@@ -25,7 +25,7 @@ import java.util.Date;
 import javax.servlet.ServletException;
 
 public interface ClientMBean extends MBean {
-    Date getCreated();
+    Date getCreated() throws IOException;
     long getSize();
     boolean getMinimize();
     void setMinimize(boolean minimize) throws IOException, ServletException;

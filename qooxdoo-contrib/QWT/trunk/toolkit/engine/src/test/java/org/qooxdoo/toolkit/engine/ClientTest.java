@@ -43,7 +43,7 @@ public class ClientTest {
         
         io = new IO();
         src = io.guessProjectHome(getClass()).join("src/test/java");
-        dest = io.createTempDirectory();
+        dest = io.getTemp().createTempDirectory();
         app = new Client(null, 
         		src, new String[] { "**/client/*.java"} , new String[] {},
                 "id", "org.qooxdoo.toolkit.engine.client.Main", dest);

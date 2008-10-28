@@ -12,7 +12,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <!-- CAUTION: changing versions here affects previously deployed artifacts! 
          Use the release plugin or bump the version of this pom to avoid this!  -->
     <toolkit.version>0.3.0</toolkit.version>
-    <sushi.version>1.3.3</sushi.version>
+    <sushi.version>1.3.4</sushi.version>
 
     <!-- TODO: http://jira.codehaus.org/browse/MCHECKSTYLE-42 proxy settings ignored -->
     <!--   use http://qooxdoo-contrib.sourceforge.net/maven/sites/qooxdoo/checkstyle.xml -->
