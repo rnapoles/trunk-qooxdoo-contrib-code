@@ -160,6 +160,37 @@ public class GraphTest {
     //--
     
     @Test
+    public void edgeIterator() {
+        EdgeIterator<String> iter;
+        
+        iter = g.edges();
+        assertFalse(iter.step());
+        assertFalse(iter.step());
+        g.node("a");
+        g.node("b");
+        iter = g.edges();
+        assertFalse(iter.step());
+        assertFalse(iter.step());
+
+        g.edge("c", "d");
+        iter = g.edges();
+        assertTrue(iter.step());
+        assertEquals("c", iter.left());
+        assertEquals("d", iter.right());
+        assertFalse(iter.step());
+
+        g.edge("a", "b");
+        iter = g.edges();
+        assertTrue(iter.step());
+        assertEquals("c", iter.left());
+        assertEquals("d", iter.right());
+        assertTrue(iter.step());
+        assertEquals("a", iter.left());
+        assertEquals("b", iter.right());
+        assertFalse(iter.step());
+    }
+    
+    @Test
     public void relationSize() {
         checkSet(g.getDomain());
         checkSet(g.getImage());

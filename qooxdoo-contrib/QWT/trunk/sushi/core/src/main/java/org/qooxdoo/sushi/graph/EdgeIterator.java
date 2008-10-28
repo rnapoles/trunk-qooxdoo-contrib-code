@@ -20,45 +20,47 @@
 package org.qooxdoo.sushi.graph;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 
 public class EdgeIterator<T> {
-    private final Iterator<Node<T>> iterator;
-    
-    // points to the current element
-    private Node<T> left;
-    private int right;
+    /** points behind the current  to the next candidate */
+    private final Iterator<Node<T>> lefts;
+    private Iterator<Node<T>> rights;
 
+    private T left;
+    private T right;
+    
     public EdgeIterator(Iterator<Node<T>> lefts) {
-        this.iterator = lefts;
-        this.right = -1;
-        next();
+        this.lefts = lefts;
+        this.rights = null;
     }
     
-    public boolean next() {
-        if (left == null) {
-            throw new NoSuchElementException();
-        }
-        if (right + 1 < left.starting.size()) {
-            right++;
+    public boolean step() {
+        Node<T> tmp;
+        
+        if (rights != null && rights.hasNext()) {
+            right = rights.next().data;
             return true;
-        }
-        right = 0;
-        while (iterator.hasNext()) {
-            left = iterator.next();
-            if (left.starting.size() > 0) {
-                return false;
+        } 
+        while (lefts.hasNext()) {
+            tmp = lefts.next();
+            if (tmp.starting.size() > 0) {
+                left = tmp.data;
+                rights = tmp.starting.iterator();
+                right = rights.next().data;
+                return true;
             }
         }
-        return true;
-    }
-    
-    public T left() {
-        return left.data;
+        return false;
     }
 
+    /** undefined without previously calling step() */
+    public T left() {
+        return left;
+    }
+
+    /** undefined without previously calling step() */
     public T right() {
-        return left.starting.get(right).data;
+        return right;
     }
 }
