@@ -646,6 +646,15 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       check : "Boolean",
       init  : true
+    },
+    
+    /**
+     * appearance
+     */
+    appearance :
+    {
+      refine : true,
+      init   : "htmlarea"
     }
   },
 
@@ -802,20 +811,6 @@ qx.Class.define("htmlarea.HtmlArea",
     */
 
     __loadCounter : 0,
-
-
-    /**
-     * overridden
-     * 
-     * @see qx.ui.core.Widget#_afterAppear
-     */
-    _afterAppear : function()
-    {
-      this.base(arguments);
-
-      // we need to set the designMode every time we toggle visibility back to "visible"
-      this.__setDesignMode(true);
-    },
 
 
     /**
@@ -977,6 +972,43 @@ qx.Class.define("htmlarea.HtmlArea",
       /* dispatch the "ready" event at the end of the initialization */
       this.fireEvent("ready");
     },
+    
+    
+    /**
+     * Forces the htmlArea to reset the document editable. This method can
+     * be useful (especially for Gecko) whenever the HtmlArea was hidden and 
+     * gets visible again.
+     */
+    forceEditable : qx.core.Variant.select("qx.client",
+    {
+      "gecko" : function()
+      {
+        var doc = this.__iframe.getDocument();
+        if (doc)
+        {
+          /* 
+           * Don't ask my why, but this is the only way I found to get
+           * gecko back to a state of an editable document after the htmlArea
+           * was hidden and visible again.
+           * Yes, and there are differences in Firefox 3.x and Firefox 2.x
+           */
+          if (qx.bom.client.Engine.VERSION >= "1.9")
+          {
+            doc.designMode = "Off";
+          
+            doc.body.contentEditable = false;
+            doc.body.contentEditable = true;
+          }
+          else
+          {
+            doc.body.contentEditable = true;            
+            this.__setDesignMode(true);
+          }
+        }
+      },
+        
+      "default" : function() {}
+    }),
 
 
     /**
@@ -1117,13 +1149,14 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
-                            
-      //qx.bom.Element.addListener(doc.body, "mouseup", this.__handleMouseEvent, this);                            
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
         qx.event.Registration.addListener(doc.body, "focusout", this.__handleFocusOut, this);
       }
+      
+      /* Register for the "appear" event to react on hiding/showing the htmlArea */
+      this.addListener("appear", this.forceEditable);
     },
 
 
