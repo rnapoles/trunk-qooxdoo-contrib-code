@@ -131,7 +131,7 @@ public class Graph<T> {
     /**
      * @return null to indicate a cyclic dependency  TODO 
      */
-    public List<T> sort(List<T> all) {
+    public List<T> sort(Collection<T> all) {
         List<T> unsorted;
         List<T> sorted;
         List<T> current;
@@ -158,21 +158,17 @@ public class Graph<T> {
         current = new ArrayList<T>();
         for (T rightData : rightCollection) {
         	right = nodes.get(rightData);
-        	if (right != null) {
-        		for (Node<T> left : right.ending) {
-        			if (left == right) {
-        				// reflective element, do nothing
-        			} else if (!leftCollection.contains(left.data)) {
-        				right = null;
-        				break;
-        			}
-        		}
-        		if (right != null) {
-        			current.add(rightData);
-        		}
-            } else {
-    			current.add(rightData);
-            }
+      		for (Node<T> left : right.ending) {
+       			if (left == right) {
+       				// reflective element, do nothing
+       			} else if (!leftCollection.contains(left.data)) {
+       				right = null;
+       				break;
+       			}
+       		}
+       		if (right != null) {
+       			current.add(rightData);
+       		}
         }
         return current;
     }

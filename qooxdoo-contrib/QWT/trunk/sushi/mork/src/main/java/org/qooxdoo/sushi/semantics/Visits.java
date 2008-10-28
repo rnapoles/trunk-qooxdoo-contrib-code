@@ -44,8 +44,8 @@ public class Visits {
         AttributeOccurrence right;
         int i;
         int max;
-        Graph visitRelation;
-        Set<AttributionBuffer> all;
+        Graph visitRelation;  // Attribute, AttributionBuffer, or Integer
+        Set all;
         Object leftMapped;
         Object rightMapped;
         Object obj;
@@ -64,7 +64,15 @@ public class Visits {
         sems.getProduction(prod, all);
         visitRelation.getDomain(all);
         visitRelation.getImage(all);
-        lst = visitRelation.sort(new ArrayList(all));
+
+        lst = new ArrayList();
+        for (Object data : all) {
+        	if (!visitRelation.contains(data)) {
+        		lst.add(data);
+        	}
+        }
+        all.removeAll(lst);
+        lst.addAll(visitRelation.sort(all));
         if (lst == null) {
             throw new GenericException("cyclic dependency in prod " + prod);
         }
