@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.util.Graph;
-import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.EdgeIterator;
 import org.qooxdoo.sushi.util.Util;
 
 /**
@@ -38,7 +38,7 @@ public class Visits {
     private final Object[] visits;
 
     public static Visits forEDP(int prod, Graph edp, Ag sems, List[][] as, Layout layout) throws GenericException {
-        RelationIterator iter;
+        EdgeIterator iter;
         AttributeOccurrence left;
         AttributeOccurrence right;
         int i;

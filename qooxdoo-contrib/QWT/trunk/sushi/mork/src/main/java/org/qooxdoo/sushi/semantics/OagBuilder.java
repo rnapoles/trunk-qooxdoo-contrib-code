@@ -29,7 +29,7 @@ import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
 import org.qooxdoo.sushi.misc.StringArrayList;
 import org.qooxdoo.sushi.util.Graph;
-import org.qooxdoo.sushi.util.RelationIterator;
+import org.qooxdoo.sushi.util.EdgeIterator;
 
 /**
  * Build visit sequence for ordered attribute grammar. Based on the paper
@@ -108,7 +108,7 @@ public class OagBuilder {
 
     private static String as(StringArrayList symbolTable, Graph relation) {
         StringBuilder buffer;
-        RelationIterator iter;
+        EdgeIterator iter;
         Attribute a;
 
         buffer = new StringBuilder();
@@ -129,7 +129,7 @@ public class OagBuilder {
 
     private static String aos(StringArrayList symbolTable, Graph relation) {
         StringBuilder buffer;
-        RelationIterator iter;
+        EdgeIterator iter;
         AttributeOccurrence ao;
 
         buffer = new StringBuilder();
@@ -202,7 +202,7 @@ public class OagBuilder {
         boolean modified;
         AttributeOccurrence newLeft;
         AttributeOccurrence newRight;
-        RelationIterator iter;
+        EdgeIterator iter;
 
         idp = new Graph[dp.length];
         idpClosure = new Graph[dp.length];
@@ -260,7 +260,7 @@ public class OagBuilder {
         Graph[] ids;
         AttributeOccurrence left;
         AttributeOccurrence right;
-        RelationIterator iter;
+        EdgeIterator iter;
 
         ids = new Graph[symbols.last() + 1];
         for (i = 0; i < ids.length; i++) {
@@ -360,7 +360,7 @@ public class OagBuilder {
         int ofs;
         int maxOfs;
         int symbol;
-        RelationIterator iter;
+        EdgeIterator iter;
 
         edsP = new Graph();
         edsP.addAll(dp);
