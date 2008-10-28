@@ -218,6 +218,13 @@ public class Stubs {
         if (target == null) {
             throw new GenericException(NO_SUCH_ATTRIBUTE, str);
         }
+        if (source.getName().equals("Rule")) {
+            System.out.print("translate " + source.getName());
+            for (i = 0; i < symbols.length; i++) {
+                System.out.print(" " + spec.getSyntax().getGrammar().getSymbolTable().getOrIndex(symbols[i]) + " " + symbols[i]);
+            }
+            System.out.println();
+        }
         Path.translate(spec.getSyntax(), source, moves, symbols, target, Path.ISOLATED);
         return null; // TODO
     }

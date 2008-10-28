@@ -25,8 +25,8 @@ import java.util.List;
 import org.qooxdoo.sushi.compiler.Syntax;
 import org.qooxdoo.sushi.grammar.Grammar;
 import org.qooxdoo.sushi.misc.GenericException;
-import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.AgBuffer;
+import org.qooxdoo.sushi.semantics.Attribute;
 import org.qooxdoo.sushi.semantics.Occurrence;
 import org.qooxdoo.sushi.semantics.Pusher;
 import org.qooxdoo.sushi.semantics.Type;
@@ -103,7 +103,7 @@ public class Path {
             int modifier, Definition source, List<Definition> targets, int[] moves, IntBitSet[] stoppers) throws GenericException {
         Path path;
         int count;
-
+        
         path = new Path(syntax.getGrammar(), modifier, source, targets, moves, stoppers);
         count = path.translate();
         if (count == 0 && source.getAttribute().symbol != syntax.getGrammar().getStart()) {
@@ -316,5 +316,19 @@ public class Path {
             buffer.setStart(attr);
             resultBuffers.add(buffer);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder;
+        List<String> lst;
+        
+        lst = grammar.getSymbolTable().toList();
+        builder = new StringBuilder();
+        for (int i = 0; i < stoppers.length; i++) {
+            builder.append(" ");
+            builder.append(stoppers[i].toString(lst));
+        }
+        return builder.toString();
     }
 }

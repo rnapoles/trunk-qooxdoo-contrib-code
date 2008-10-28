@@ -47,7 +47,7 @@ public class GrammarSyntax extends Syntax {
     private boolean priorities;
     private IntBitSet whiteSymbols;
     private Rule[] scannerRules;
-
+    
     public GrammarSyntax(
         StringArrayList symbolTable, Rule[] parserRules,
         boolean priorities, IntBitSet whiteSymbols, Rule[] scannerRules)

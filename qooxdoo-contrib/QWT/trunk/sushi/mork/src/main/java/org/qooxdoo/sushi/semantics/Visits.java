@@ -43,7 +43,7 @@ public class Visits {
         int i;
         int max;
         Relation visitRelation;
-        Set all;
+        Set<AttributionBuffer> all;
         Visits visits;
         Object leftMapped;
         Object rightMapped;
@@ -59,7 +59,7 @@ public class Visits {
             rightMapped = map(prod, right, sems, as);
             visitRelation.add(leftMapped, rightMapped);
         }
-        all = new HashSet();
+        all = new HashSet<AttributionBuffer>();
         sems.getProduction(prod, all);
         visitRelation.addDomain(all);
         visitRelation.addImage(all);
