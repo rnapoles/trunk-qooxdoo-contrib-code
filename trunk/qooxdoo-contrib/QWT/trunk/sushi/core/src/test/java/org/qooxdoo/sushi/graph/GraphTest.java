@@ -36,9 +36,9 @@ public class GraphTest {
     
     @Test
     public void arrows() {
-        assertTrue(g.arrow("foo", "bar"));
-        assertFalse(g.arrow("foo", "bar"));
-        assertTrue(g.arrow("bar", "foo"));
+        assertTrue(g.edge("foo", "bar"));
+        assertFalse(g.edge("foo", "bar"));
+        assertTrue(g.edge("bar", "foo"));
         assertEquals(2, g.size());
     }
 
@@ -58,45 +58,45 @@ public class GraphTest {
 
     @Test
     public void sortTransitive() throws CyclicDependency {
-        g.arrow("a", "b");
-        g.arrow("b", "c");
+        g.edge("a", "b");
+        g.edge("b", "c");
         sort("a", "b", "c");
     }
 
     @Test
     public void sortTransitiveMore() throws CyclicDependency {
-        g.arrow("a", "b");
-        g.arrow("b", "c");
-        g.arrow("c", "d");
+        g.edge("a", "b");
+        g.edge("b", "c");
+        g.edge("c", "d");
         sort("a", "b", "c", "d");
     }
 
     @Test
     public void sortFork() throws CyclicDependency {
-        g.arrow("a", "b");
-        g.arrow("a", "c");
-        g.arrow("b", "c");
+        g.edge("a", "b");
+        g.edge("a", "c");
+        g.edge("b", "c");
         sort("a", "b", "c");
     }
 
     @Test(expected = CyclicDependency.class)
     public void sortCycle() throws CyclicDependency {
-        g.arrow("a", "a");
+        g.edge("a", "a");
         sort();
     }
 
     @Test(expected = CyclicDependency.class)
     public void sortIndirectCycle() throws CyclicDependency {
-        g.arrow("a", "b");
-        g.arrow("b", "a");
+        g.edge("a", "b");
+        g.edge("b", "a");
         sort();
     }
 
     @Test
     public void sortTriangle() throws CyclicDependency {
-        g.arrow("a", "b");
-        g.arrow("b", "c");
-        g.arrow("a", "c");
+        g.edge("a", "b");
+        g.edge("b", "c");
+        g.edge("a", "c");
         sort("a", "b", "c");
     }
 
@@ -108,23 +108,23 @@ public class GraphTest {
     
     @Test
     public void closure() {
-        g.arrow("a", "b");
+        g.edge("a", "b");
         closure("a",  "a", "b");
     }
 
     
     @Test
     public void closureOne() {
-        g.arrow("a", "b");
-        g.arrow("a", "c");
+        g.edge("a", "b");
+        g.edge("a", "c");
         closure("a",  "a", "b", "c");
         closure("b",  "b");
     }
 
     @Test
     public void closureTwo() {
-        g.arrow("a", "b");
-        g.arrow("c", "d");
+        g.edge("a", "b");
+        g.edge("c", "d");
         closure("a",  "a", "b");
         closure("b",  "b");
     }
@@ -137,8 +137,8 @@ public class GraphTest {
     
     @Test
     public void string() {
-        g.arrow("a", "b");
-        g.arrow("a", "c");
+        g.edge("a", "b");
+        g.edge("a", "c");
         assertEquals("[a-b|c, b, c]", g.toString());
     }
     
