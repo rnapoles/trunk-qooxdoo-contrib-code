@@ -84,6 +84,7 @@
                   <arg value="-lst"/>
                   <arg line="${mapper.bs3}"/>
                 </java>
+                <!-- run again to test the generated mappers -->
                 <java fork="true" dir="${basedir}" classname="org.qooxdoo.sushi.compiler.Main" failonerror="true">
                   <classpath>
                     <pathelement path="${basedir}/target/classes" />                  
