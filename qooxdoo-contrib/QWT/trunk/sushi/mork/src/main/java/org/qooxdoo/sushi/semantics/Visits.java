@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.qooxdoo.sushi.misc.GenericException;
+import org.qooxdoo.sushi.graph.CyclicDependency;
 import org.qooxdoo.sushi.graph.Graph;
 import org.qooxdoo.sushi.graph.EdgeIterator;
 import org.qooxdoo.sushi.util.Util;
@@ -51,6 +52,13 @@ public class Visits {
         List lst;
 
         visitRelation = new Graph();
+        
+        // attributions first - to enforce textual order
+        all = new LinkedHashSet<AttributionBuffer>();
+        sems.getProduction(prod, all);
+        for (Object x : all) {
+        	visitRelation.node(x);
+        }
         iter = edp.edges();
         while (iter.step()) {
             left = iter.left();
@@ -59,22 +67,12 @@ public class Visits {
             rightMapped = map(prod, right, sems, as);
             visitRelation.edge(leftMapped, rightMapped);
         }
-        all = new LinkedHashSet<AttributionBuffer>();
-        sems.getProduction(prod, all);
-        visitRelation.getDomain(all);
-        visitRelation.getImage(all);
-
-        lst = new ArrayList();
-        for (Object data : all) {
-        	if (!visitRelation.contains(data)) {
-        		lst.add(data);
-        	}
-        }
-        all.removeAll(lst);
-        lst.addAll(visitRelation.sort(all));
-        if (lst == null) {
+        visitRelation.removeDirectCycles();
+        try {
+			lst = visitRelation.sort();
+		} catch (CyclicDependency e) {
             throw new GenericException("cyclic dependency in prod " + prod);
-        }
+		}
         if (layout != null) {
             max = lst.size();
             for (i = 0; i < max; i++) {
