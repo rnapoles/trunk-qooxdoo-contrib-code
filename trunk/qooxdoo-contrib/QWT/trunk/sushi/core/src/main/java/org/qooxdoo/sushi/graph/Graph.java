@@ -22,7 +22,7 @@ public class Graph<T> {
     // nodes
     
     /** @return number of nodes */
-    public int size() {
+    public int getNodeCount() {
         return nodes.size();
     }
     
@@ -35,7 +35,7 @@ public class Graph<T> {
     }
     
     /** Adds data to the Graph and returns true, or does nothing and returns false if data is already part of the graph. */
-    public boolean node(T data) {
+    public boolean addNode(T data) {
         if (nodes.get(data) == null) {
             doNode(data);
             return true;
@@ -44,17 +44,17 @@ public class Graph<T> {
         }
     }
     
-    public void retain(List<T> seeds) {
-        for (T name : new ArrayList<T>(nodes.keySet())) {
-            if (!seeds.contains(name)) {
-                doRemove(nodes.get(name));
+    public void retainNodes(List<T> datas) {
+        for (T data : new ArrayList<T>(this.nodes.keySet())) {
+            if (!datas.contains(data)) {
+                doRemove(this.nodes.get(data));
             }
         }
     }
     
     //-- edges
     
-    public boolean contains(T left, T right) {
+    public boolean containsEdge(T left, T right) {
         Node<T> start;
 
         start = nodes.get(left);
@@ -69,7 +69,7 @@ public class Graph<T> {
         return false;
     }
 
-    public boolean edge(T src, T dest) {
+    public boolean addEdge(T src, T dest) {
         Node<T> left;
         Node<T> right;
         
@@ -84,16 +84,16 @@ public class Graph<T> {
         }
     }
 
-    public boolean edges(T left, T ... rights) {
-        return edges(left, Arrays.asList(rights));
+    public boolean addEdges(T left, T ... rights) {
+        return addEdges(left, Arrays.asList(rights));
     }
     
-    public boolean edges(T left, List<T> rights) {
+    public boolean addEdges(T left, List<T> rights) {
         boolean modified;
         
         modified = false;
         for (T right : rights) {
-            if (edge(left, right)) {
+            if (addEdge(left, right)) {
                 modified = true;
             }
         }
@@ -105,7 +105,7 @@ public class Graph<T> {
         return new EdgeIterator<T>(new ArrayList<Node<T>>(nodes.values()).iterator());
     }
 
-    public boolean remove(T left, T right) {
+    public boolean removeEdge(T left, T right) {
         Node<T> start;
         Node<T> end;
         
@@ -127,16 +127,16 @@ public class Graph<T> {
      * 
      * @return true if this Graph has been modified
      */
-    public boolean graph(Graph<T> graph) {
+    public boolean addGraph(Graph<T> graph) {
         boolean modified;
 
         modified = false;
         for (Node<T> src : graph.nodes.values()) {
-            if (node(src.data)) {
+            if (addNode(src.data)) {
                 modified = true;
             }
             for (Node<T> dest : src.starting) {
-                if (edge(src.data, dest.data)) {
+                if (addEdge(src.data, dest.data)) {
                     modified = true;
                 }
             }
@@ -150,7 +150,7 @@ public class Graph<T> {
     	
     	count = 0;
     	for (T data : nodes.keySet()) {
-    		if (remove(data, data)) {
+    		if (removeEdge(data, data)) {
     			count++;
     		}
     	}
@@ -186,7 +186,7 @@ public class Graph<T> {
             for (Node<T> left : new ArrayList<Node<T>>(nodes.values())) {
                 for (Node<T> right : new ArrayList<Node<T>>(left.starting)) {
                     for (Node<T> rightright : right.starting) {
-                        if (edge(left.data, rightright.data)) {
+                        if (addEdge(left.data, rightright.data)) {
                             modified = true;
                         }
                     }

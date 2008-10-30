@@ -29,56 +29,56 @@ public class GraphTest {
     
     @Test
     public void nodes() {
-        assertTrue(g.node("foo"));
-        assertFalse(g.node("foo"));
-        assertEquals(1, g.size());
-        assertTrue(g.node("bar"));
-        assertEquals(2, g.size());
+        assertTrue(g.addNode("foo"));
+        assertFalse(g.addNode("foo"));
+        assertEquals(1, g.getNodeCount());
+        assertTrue(g.addNode("bar"));
+        assertEquals(2, g.getNodeCount());
     }
     
     @Test
     public void edge() {
-        assertFalse(g.remove("foo", "bar"));
-        assertTrue(g.edge("foo", "bar"));
-        assertTrue(g.contains("foo", "bar"));
-        assertFalse(g.edge("foo", "bar"));
-        assertTrue(g.edge("bar", "foo"));
-        assertEquals(2, g.size());
-        assertTrue(g.remove("foo", "bar"));
-        assertFalse(g.contains("foo", "bar"));
-        assertTrue(g.remove("bar", "foo"));
-        assertFalse(g.remove("bar", "foo"));
+        assertFalse(g.removeEdge("foo", "bar"));
+        assertTrue(g.addEdge("foo", "bar"));
+        assertTrue(g.containsEdge("foo", "bar"));
+        assertFalse(g.addEdge("foo", "bar"));
+        assertTrue(g.addEdge("bar", "foo"));
+        assertEquals(2, g.getNodeCount());
+        assertTrue(g.removeEdge("foo", "bar"));
+        assertFalse(g.containsEdge("foo", "bar"));
+        assertTrue(g.removeEdge("bar", "foo"));
+        assertFalse(g.removeEdge("bar", "foo"));
         assertFalse(g.edges().step());
     }
 
     @Test
     public  void directCycle() {
-    	g.edge("a", "a");
+    	g.addEdge("a", "a");
     	assertEquals(1, g.removeDirectCycles());
     	assertFalse(g.edges().step());
-    	assertEquals(1, g.size());
+    	assertEquals(1, g.getNodeCount());
     }
     
     @Test
     public void edges() {
-        assertFalse(g.edges("foo"));
-        assertEquals(0, g.size());
-        g.edges("foo", "bar", "baz");
-        assertEquals(3, g.size());
-        assertTrue(g.contains("foo", "bar"));
-        assertTrue(g.contains("foo", "baz"));
+        assertFalse(g.addEdges("foo"));
+        assertEquals(0, g.getNodeCount());
+        g.addEdges("foo", "bar", "baz");
+        assertEquals(3, g.getNodeCount());
+        assertTrue(g.containsEdge("foo", "bar"));
+        assertTrue(g.containsEdge("foo", "baz"));
     }
 
     @Test
     public void contains() {
         assertFalse(g.contains("a"));
-        assertFalse(g.contains("a", "b"));
-        g.node("a");
+        assertFalse(g.containsEdge("a", "b"));
+        g.addNode("a");
         assertTrue(g.contains("a"));
-        assertFalse(g.contains("a", "b"));
-        g.edge("a", "b");
+        assertFalse(g.containsEdge("a", "b"));
+        g.addEdge("a", "b");
         assertTrue(g.contains("a"));
-        assertTrue(g.contains("a", "b"));
+        assertTrue(g.containsEdge("a", "b"));
     }
 
     //--
@@ -90,52 +90,52 @@ public class GraphTest {
 
     @Test
     public void sortIsolated() throws CyclicDependency {
-        g.node("a");
-        g.node("b");
+        g.addNode("a");
+        g.addNode("b");
         sort("a", "b");
     }
 
     @Test
     public void sortTransitive() throws CyclicDependency {
-        g.edge("a", "b");
-        g.edge("b", "c");
+        g.addEdge("a", "b");
+        g.addEdge("b", "c");
         sort("a", "b", "c");
     }
 
     @Test
     public void sortTransitiveMore() throws CyclicDependency {
-        g.edge("a", "b");
-        g.edge("b", "c");
-        g.edge("c", "d");
+        g.addEdge("a", "b");
+        g.addEdge("b", "c");
+        g.addEdge("c", "d");
         sort("a", "b", "c", "d");
     }
 
     @Test
     public void sortFork() throws CyclicDependency {
-        g.edge("a", "b");
-        g.edge("a", "c");
-        g.edge("b", "c");
+        g.addEdge("a", "b");
+        g.addEdge("a", "c");
+        g.addEdge("b", "c");
         sort("a", "b", "c");
     }
 
     @Test(expected = CyclicDependency.class)
     public void sortCycle() throws CyclicDependency {
-        g.edge("a", "a");
+        g.addEdge("a", "a");
         sort();
     }
 
     @Test(expected = CyclicDependency.class)
     public void sortIndirectCycle() throws CyclicDependency {
-        g.edge("a", "b");
-        g.edge("b", "a");
+        g.addEdge("a", "b");
+        g.addEdge("b", "a");
         sort();
     }
 
     @Test
     public void sortTriangle() throws CyclicDependency {
-        g.edge("a", "b");
-        g.edge("b", "c");
-        g.edge("a", "c");
+        g.addEdge("a", "b");
+        g.addEdge("b", "c");
+        g.addEdge("a", "c");
         sort("a", "b", "c");
     }
 
@@ -150,38 +150,38 @@ public class GraphTest {
         Graph<String> op;
         
         op = new Graph<String>();
-        g.graph(op);
-        assertEquals(0, g.size());
-        op.node("foo");
-        g.graph(op);
-        assertEquals(1, g.size());
+        g.addGraph(op);
+        assertEquals(0, g.getNodeCount());
+        op.addNode("foo");
+        g.addGraph(op);
+        assertEquals(1, g.getNodeCount());
         assertTrue(g.contains("foo"));
-        op.edge("foo", "bar");
-        g.graph(op);
-        assertTrue(g.contains("foo", "bar"));
+        op.addEdge("foo", "bar");
+        g.addGraph(op);
+        assertTrue(g.containsEdge("foo", "bar"));
     }
     
     //--
     
     @Test
     public void closure() {
-        g.edge("a", "b");
+        g.addEdge("a", "b");
         closure("a",  "a", "b");
     }
 
     
     @Test
     public void closureOne() {
-        g.edge("a", "b");
-        g.edge("a", "c");
+        g.addEdge("a", "b");
+        g.addEdge("a", "c");
         closure("a",  "a", "b", "c");
         closure("b",  "b");
     }
 
     @Test
     public void closureTwo() {
-        g.edge("a", "b");
-        g.edge("c", "d");
+        g.addEdge("a", "b");
+        g.addEdge("c", "d");
         closure("a",  "a", "b");
         closure("b",  "b");
     }
@@ -199,20 +199,20 @@ public class GraphTest {
         iter = g.edges();
         assertFalse(iter.step());
         assertFalse(iter.step());
-        g.node("a");
-        g.node("b");
+        g.addNode("a");
+        g.addNode("b");
         iter = g.edges();
         assertFalse(iter.step());
         assertFalse(iter.step());
 
-        g.edge("c", "d");
+        g.addEdge("c", "d");
         iter = g.edges();
         assertTrue(iter.step());
         assertEquals("c", iter.left());
         assertEquals("d", iter.right());
         assertFalse(iter.step());
 
-        g.edge("a", "b");
+        g.addEdge("a", "b");
         iter = g.edges();
         assertTrue(iter.step());
         assertEquals("a", iter.left());
@@ -227,19 +227,19 @@ public class GraphTest {
     public void relationSize() {
         checkSet(g.getDomain());
         checkSet(g.getImage());
-        g.node("a");
+        g.addNode("a");
         checkSet(g.getDomain());
         checkSet(g.getImage());
-        g.edge("a", "b");
+        g.addEdge("a", "b");
         checkSet(g.getDomain(), "a");
         checkSet(g.getImage(), "b");
-        g.edge("a", "a");
+        g.addEdge("a", "a");
         checkSet(g.getDomain(), "a");
         checkSet(g.getImage(), "a", "b");
     }
 
     private void checkSet(Set<String> got, String ...expected) {
-        assertEquals(new HashSet(Arrays.asList(expected)), got);
+        assertEquals(new HashSet<String>(Arrays.asList(expected)), got);
         
     }
     
@@ -247,8 +247,8 @@ public class GraphTest {
     
     @Test
     public void string() {
-        g.edge("a", "b");
-        g.edge("a", "c");
+        g.addEdge("a", "b");
+        g.addEdge("a", "c");
         assertEquals("[a-b|c, b, c]", g.toString());
     }
     

@@ -60,8 +60,8 @@ public class PartitionTest extends TestCase {
         left.add(B);
         right.add(C);
         right.add(D);
-        relation.edge(A, C);
-        relation.edge(B, D);
+        relation.addEdge(A, C);
+        relation.addEdge(B, D);
         disconnected = Partition.getDisconnected(left, relation, right);
         assertEquals(2, disconnected.size());
         assertSame(A, disconnected.get(0));
@@ -73,8 +73,8 @@ public class PartitionTest extends TestCase {
 
         left.add(A);
         right.add(C);
-        relation.edge(A, B);
-        relation.edge(B, C);
+        relation.addEdge(A, B);
+        relation.addEdge(B, C);
         connected = Partition.getDisconnected(left, relation, right);
         assertEquals(0, connected.size());
     }
@@ -98,10 +98,10 @@ public class PartitionTest extends TestCase {
         left.add(A);
         left.add(D);
         right.add(B);
-        relation.edge(A, B);
-        relation.edge(A, C);
-        relation.edge(B, D);
-        relation.edge(D, D);
+        relation.addEdge(A, B);
+        relation.addEdge(A, C);
+        relation.addEdge(B, D);
+        relation.addEdge(D, D);
         disconnected = Partition.getDisconnected(left, relation, right);
         assertEquals(0, disconnected.size());
     }
@@ -141,7 +141,7 @@ public class PartitionTest extends TestCase {
 
         synthesized.add(A);
         inherited.add(B);
-        relation.edge(A, B);
+        relation.addEdge(A, B);
         partitions = Partition.createA(synthesized, inherited, relation);
         assertEquals(3, partitions.length);
         assertEquals(0, partitions[0].size());
@@ -156,10 +156,10 @@ public class PartitionTest extends TestCase {
 
         synthesized.add(A);
         synthesized.add(B);
-        relation.edge(A, B);
+        relation.addEdge(A, B);
         inherited.add(C);
         inherited.add(D);
-        relation.edge(D, C);
+        relation.addEdge(D, C);
         partitions = Partition.createA(synthesized, inherited, relation);
         assertEquals(2, partitions.length);
         assertTrue(partitions[0].contains(A));

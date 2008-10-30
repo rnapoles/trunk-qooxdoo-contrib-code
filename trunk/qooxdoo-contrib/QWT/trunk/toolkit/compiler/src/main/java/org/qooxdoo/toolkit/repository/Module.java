@@ -209,9 +209,9 @@ public class Module {
 
         for (Chunk chunk : chunks) {
             from = chunk.name;
-            graph.node(from);
+            graph.addNode(from);
             for (String to : chunk.deps.names()) {
-                graph.edge(from, to);
+                graph.addEdge(from, to);
             }
         }
     }
@@ -223,9 +223,9 @@ public class Module {
         
         head = head();
         from = head.name;
-        graph.node(from);
+        graph.addNode(from);
         for (String to : head.deps.names()) {
-            graph.edge(from, to);
+            graph.addEdge(from, to);
         }
     }
     
@@ -245,7 +245,7 @@ public class Module {
         for (Chunk chunk : chunks) {
             for (String vname : chunk.vnames) {
                 if (calls.contains(vname)) {
-                    if (calls.edge(vname, chunk.name)) {
+                    if (calls.addEdge(vname, chunk.name)) {
                         count++;
                     }
                 }
