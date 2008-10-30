@@ -1497,7 +1497,7 @@ qx.Class.define("htmlarea.HtmlArea",
             e.stopPropagation();
 
             /* Dispatch data event with editor content */
-            this.dispatchEvent(new qx.event.type.DataEvent("messengerContent", this.getComputedValue()), true);
+            this.dispatchEvent(new qx.event.type.Data("messengerContent", this.getComputedValue()), true);
 
             /* Reset the editor content */
             this.resetHtml();
