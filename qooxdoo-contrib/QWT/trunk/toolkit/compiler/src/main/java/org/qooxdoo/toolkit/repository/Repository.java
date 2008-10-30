@@ -260,10 +260,10 @@ public class Repository implements Iterable<Module> {
         
         loads = loadGraph();
         calls = callGraph();
-        calls.node(ROOT);
+        calls.addNode(ROOT);
         for (Module main : mains) {
             for (Chunk chunk : main.chunks()) {
-                calls.edge(ROOT, chunk.name);
+                calls.addEdge(ROOT, chunk.name);
             }
         }
         do {
@@ -280,7 +280,7 @@ public class Repository implements Iterable<Module> {
                     }
                     init = name + Module.SEP + Naming.CINIT;
                     if (used.lookup(init) != null) {
-                        if (calls.edge(ROOT, init)) {
+                        if (calls.addEdge(ROOT, init)) {
                             changed = true;
                         }
                     }
@@ -288,9 +288,9 @@ public class Repository implements Iterable<Module> {
             }
         } while (changed);
         
-        loads.retain(called);
+        loads.retainNodes(called);
         sequence = loads.sort();
-        if (loads.size() != 0) {
+        if (loads.getNodeCount() != 0) {
             throw new IllegalStateException();
         }
         Collections.reverse(sequence);

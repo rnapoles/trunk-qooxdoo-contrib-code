@@ -57,7 +57,7 @@ public class Visits {
         all = new LinkedHashSet<AttributionBuffer>();
         sems.getProduction(prod, all);
         for (Object x : all) {
-        	visitRelation.node(x);
+        	visitRelation.addNode(x);
         }
         iter = edp.edges();
         while (iter.step()) {
@@ -65,7 +65,7 @@ public class Visits {
             right = iter.right();
             leftMapped = map(prod, left, sems, as);
             rightMapped = map(prod, right, sems, as);
-            visitRelation.edge(leftMapped, rightMapped);
+            visitRelation.addEdge(leftMapped, rightMapped);
         }
         visitRelation.removeDirectCycles();
         try {
