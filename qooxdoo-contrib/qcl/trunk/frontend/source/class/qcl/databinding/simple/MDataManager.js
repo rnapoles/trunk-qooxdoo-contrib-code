@@ -610,7 +610,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             {
               case "qx.ui.form.ComboBox":
               case "qx.ui.form.ComboBoxEx":
-                this.setSelected(this.getList().findValue(data[key]));
+                var item = this.getList().findValue(data[key]);
+                if (item) this.setSelected(item);
+                break;
+              
+              case "qx.ui.form.List":
+                var item = this.findValue(data[key]);
+                if (item) this.getManager().setItemSelected(item,true);
                 break;
                 
               case "qx.manager.selection.RadioManager":
