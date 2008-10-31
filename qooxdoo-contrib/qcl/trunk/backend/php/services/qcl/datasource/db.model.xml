@@ -13,11 +13,11 @@
     
     <definition>
       <properties>
-         <property name="namedId" type="string">
+         <property name="namedId" type="string"> 
           <sql>varchar(50) NOT NULL</sql>
         </property>      
          <property name="name" type="string">
-          <sql>varchar(255) NOT NULL</sql>
+          <sql>varchar(255) NOT NULL</sql> 
         </property>    
          <property name="prefix" type="string">
           <sql>varchar(20) NULL</sql>
