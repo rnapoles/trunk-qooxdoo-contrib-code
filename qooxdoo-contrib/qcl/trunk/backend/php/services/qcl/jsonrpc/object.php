@@ -77,6 +77,15 @@ class qcl_jsonrpc_object extends qcl_object
     }
     return $path;
   }
+  
+  /**
+   * Returns the path to a directory where temporary data will be stored with
+   * a trailing slash
+   */
+  function tmpDir()
+  {
+    return realpath(QCL_TMP_PATH) . "/";
+  }
 
   //-------------------------------------------------------------
   // error and debug handling

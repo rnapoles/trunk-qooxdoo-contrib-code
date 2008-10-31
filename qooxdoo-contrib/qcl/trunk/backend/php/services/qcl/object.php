@@ -156,10 +156,13 @@ class qcl_object extends patched_object
         continue;
       }
       
+      //$this->info("Checking interface implementation for '$interface'");
+      
       /*
        * check interface methods
        */
-      foreach( get_class_methods( $interface ) as $method )
+      $methods = get_class_methods( $interface ) ;
+      foreach( $methods as $method )
       {
         if ( ! method_exists( $this, $method ) )
         {
@@ -529,7 +532,7 @@ class qcl_object extends patched_object
   /**
    * Alias method for get_class($this)
    */
-  function getClassName()
+  function className()
   {
     return get_class($this);
   } 

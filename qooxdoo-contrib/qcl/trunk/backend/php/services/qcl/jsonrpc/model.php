@@ -34,6 +34,8 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
 
  /**
   * constructor 
+   * @param qcl_jsonrpc_controller $controller Controller object. You can 
+   * also provide a qcl_jsonrpc_model object.
   */
 	function __construct( $controller=null )
   {
@@ -55,7 +57,8 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  	/**
  	 * sets controller of this model to be able to link to other models
  	 * connected to the controller
- 	 * @param object $controller
+ 	 * @param qcl_jsonrpc_controller $controller Controller object. You can 
+ 	 * also provide a qcl_jsonrpc_model object
  	 */
  	function setController ( $controller )
  	{
@@ -63,11 +66,17 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
 		{
 			$this->controller =& $controller;
 		}
+		elseif ( is_a( $controller,"qcl_jsonrpc_model" ) )
+		{
+		  $this->controller =& $controller->getController();
+		}
     else
     {
 			$this->raiseError (
-        "cql_jsonrpc_model : No controller object provided for " . get_class($this) . 
-        ". Received a '" . get_class($controller) . "' object." 
+        "No valid controller object provided for " . $this->className() . ". Received a " . 
+          is_object($controller) ? 
+            ( get_class($controller) . " object." ) : 
+            ( gettype( $controller ) . "." )
       );
     }
  	}

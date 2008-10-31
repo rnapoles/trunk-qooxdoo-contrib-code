@@ -297,6 +297,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * assemble a result array for the json response
 	 * @param mixed $first  key or hash map of key-value pairs
 	 * @param mixed $value
+   * @todo: use into qcl_jsonrpc_Response object 
 	 */
 	function set ( $first, $value=null )
 	{
@@ -315,7 +316,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	
 	/**
 	 * gets value for particular result key
-	 * 
+   * @todo: use into qcl_jsonrpc_Response object
 	 */
 	function &get ( $key )
 	{
@@ -323,8 +324,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	}
 	
 	/**
-	 * gets result for json response inclusing result data, events, and messages
+	 * Returns result for json response inclusing result data, events, and messages
 	 * @return array
+	 * @todo: use into qcl_jsonrpc_Response object
 	 */
 	function getResponseData()
 	{
