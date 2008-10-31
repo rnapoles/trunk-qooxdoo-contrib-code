@@ -1,11 +1,12 @@
 <?php
 
-require_once "qcl/io/filesystem/Abstract.php";
+require_once "qcl/io/filesystem/IResource.php";
 
 /**
- * PHP4/PHP5 Interface for file-like resources
+ * PHP4/PHP5 Interface for file-like resources. Creating an object
+ * will create a file if it doesn't exist already.
  */
-class qcl_io_filesystem_AbstractFile extends qcl_io_filesystem_Abstract
+class qcl_io_filesystem_IFile extends qcl_io_filesystem_IResource
 {
   
   /**
@@ -29,9 +30,16 @@ class qcl_io_filesystem_AbstractFile extends qcl_io_filesystem_Abstract
   /**
    * Reads a variable number of bytes from the resource
    * @param int $bytes
-   * @return string|false returns the string read or false if there was an error or end of file was reached
+   * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
    */
   function read($bytes) {}
+
+  /**
+   * Reads a line from the resource
+   * @param int $bytes
+   * @return string|false|null Tthe string read, false if there was an error and null if end of file was reached
+   */
+  function readLine($bytes) {}  
   
   /**
    * Writes to the file resource a variable number of bytes
@@ -43,11 +51,7 @@ class qcl_io_filesystem_AbstractFile extends qcl_io_filesystem_Abstract
    * Closes the file resource
    */
   function close() {}
-
-  /**
-   * Deletes the file resource
-   */
-  function delete() {}  
+  
   
 }
 ?>

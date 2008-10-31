@@ -1,15 +1,18 @@
 <?php
-
 require "qcl/jsonrpc/model.php";
 
-class qcl_io_filesystem_Abstract extends qcl_jsonrpc_model
+/**
+ * Methods common to all filesystem resources
+ */
+class qcl_io_filesystem_Resource extends qcl_jsonrpc_model
 {
   /**
    * The file resource path
    *
    * @var string
+   * @var access private
    */
-  var $resourcePath;
+  var $_resourcePath;
 
   /**
    * Checks wether resource path is valid
@@ -22,9 +25,9 @@ class qcl_io_filesystem_Abstract extends qcl_jsonrpc_model
    * Gets the file's resource path
    * @return string
    */
-  function getResourcePath() 
+  function resourcePath() 
   {
-    return $this->resourcePath;
+    return $this->_resourcePath;
   }
 
   /**
@@ -44,12 +47,24 @@ class qcl_io_filesystem_Abstract extends qcl_jsonrpc_model
      */
     if ( ! $this->checkResourcePath( $resourcePath ) )
     {
-      $this->raiseError("'$resourcePath' is not a valid resource for " . $this->getClassName() );
+      $this->raiseError("'$resourcePath' is not a valid resource for " . $this->className() );
     }
     
-    $this->resourcePath = $resourcePath;
+    $this->_resourcePath = $resourcePath;
     
   }
+  
+  
+  /**
+   * Casting as string, returns the resource path
+   * @return string
+   */
+  function toString()
+  {
+    return $this->resourcePath();
+  }
+  
+
 }
 
 ?>
