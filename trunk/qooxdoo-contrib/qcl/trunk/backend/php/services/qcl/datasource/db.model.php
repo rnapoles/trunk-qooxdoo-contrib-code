@@ -10,6 +10,12 @@ require_once "qcl/db/model.php";
  */
 class qcl_datasource_db_model extends qcl_db_model
 {
+  
+  /**
+   * The name of the schema
+   */
+  var $schemaName = "qcl_db";
+  
   /**
    * datasource name
    * @var string
@@ -39,7 +45,15 @@ class qcl_datasource_db_model extends qcl_db_model
    * @var qcl_db_mysql
    */
   var $datasourceConnectionObj;
-    
+  
+  /**
+   * Returns the name of the datasource schema
+   */
+  function schemaName()
+  {
+    return $this->schemaName;
+  }
+  
   /**
    * initializes all models that belong to this datasource
    * @abstract
@@ -176,31 +190,63 @@ class qcl_datasource_db_model extends qcl_db_model
   }   
   
   /**
-   * creates a new native datasource
+   * Checks a datasource name to be created
+   */
+  function _checkCreate( $datasource )
+  {
+    
+    if ( ! $datasource )
+    {
+      $this->raiseError ("No datasource name given.");
+    }
+    
+    /*
+     * check if datasource name exists
+     */
+    $this->findByNamedId( $datasource );
+    if ( $this->foundSomething() )
+    {
+       $this->raiseError($this->tr("A datasource with the name '%s' already exists.",$datasource) ); 
+    }    
+  }
+  
+  
+  /**
+   * Creates a new native sql datasource
    * @todo: implement external dsn
    * @return void
    * @param string $datasource datasource name
    * @param array  $options    connection data etc.
    */
-  function create ($datasource, $options = array()  )
+  function create ( $datasource, $options = array()  )
   {
+     /*
+     * check datasource name
+     */
+    $this->_checkCreate($datasource);
+    
+    /*
+     * get database connection information
+     */
     if ( $options['dsn'] )
     {
-      $db = new qcl_db_mysql(&$this,$options['dsn']);
+      $db = new qcl_db_mysql($options['dsn'], &$this );
     }
     else
     {
       $db = $this->db;
     }
     
-    // create entry
+    /*
+     * create entry
+     */
     $this->insert(array(
       "namedId"      => $datasource,
       "active"       => isset($options['active']) ? $options['active'] : 1,
       "readonly"     => isset($options['readonly']) ? $options['readonly'] : 0,
       "native"       => isset($options['native']) ? $options['native'] : 1,
       "name"         => either($options['name'],$datasource),
-      "schema"       => either($options['schema'],"default"),
+      "schema"       => either($options['schema'],$this->schemaName()),
       "type"         => either($options['type'],"mysql"),
       "host"         => either($options['host'],$db->getHost()),
       "port"         => either($options['port'],$db->getPort()),
@@ -215,6 +261,8 @@ class qcl_datasource_db_model extends qcl_db_model
 
    return true;
   }
+  
+
 }
 
 ?>
