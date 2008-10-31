@@ -310,13 +310,24 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
 
   /**
    * Return the names of all properties of this model
+   * @deprecated, use ::properties() instead
+   * @todo rename
    * @return array
    */
   function getProperties()
   {
+    return $this->properties();
+  }
+  
+  /**
+   * Return the names of all properties of this model
+   * @return array
+   */
+  function properties()
+  {
     $this->getSchemaXml(); // make sure schema has been initialized
     return array_keys($this->properties);
-  }
+  }  
   
   /**
    * Checks if property exists
@@ -364,7 +375,12 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   function &getPropertyNode ( $name )
   {
     $this->getSchemaXml(); // make sure schema has been initialized
-    return $this->propertyNodes[ $name ];
+    $node =& $this->propertyNodes[ $name ];
+    if ( ! $node )
+    {
+      $this->raiseError("Schema XML for model '{$this->name}' doesn't contain a node for property '$name'.");
+    }
+    return $node ;
   }
 
   /**
@@ -423,7 +439,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     if ( ! $this->hasProperty("namedId") )
     {
-      $this->raiseError("Model " . $this->getClassName() . " has no 'namedId' property.");  
+      $this->raiseError("Model " . $this->className() . " has no 'namedId' property.");  
     }
   }
   
@@ -486,7 +502,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function findBy( $propName, $value, $orderBy=null, $properties=null )
   {
-    $this->raiseError("Not implemented for Model " . $this->getClassName() );
+    $this->raiseError("Not implemented for Model " . $this->className() );
   }
   
   /**
@@ -528,7 +544,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function findById( $ids, $orderBy=null, $properties=null )
   {
-    $this->raiseError("Not implemented for Model " . $this->getClassName() );
+    $this->raiseError("Not implemented for Model " . $this->className() );
   }
 
   /**
@@ -540,7 +556,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null )
   {
-    $this->raiseError("Not implemented for Model " . $this->getClassName() );
+    $this->raiseError("Not implemented for Model " . $this->className() );
   }   
   
 
@@ -757,7 +773,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */    
     if ( isset( $this->currentRecord[$name] ) )
     {
-      return $this->currentRecord[$name];
+      return $this->typecast($name, $this->currentRecord[$name]);
     }
     else
     {
@@ -769,11 +785,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       {
         if ( strtolower($key) == strtolower($name) )
         {
-          return $value;
+          return $this->typecast($name,$value);
         }
         elseif ( strtolower( $this->aliases[$key] ) == strtolower($name) )
         {
-          return $value;
+          return $this->typecast($name,$value);
         }
       }
     }
@@ -788,6 +804,30 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     else
     {
       $this->raiseError("Property '$name' does not exist.'");
+    }
+  }
+  
+  /**
+   * Cast the given value to the correct php type according to its
+   * property type
+   *
+   * @param unknown_type $propertyName
+   * @param unknown_type $value
+   * @return unknown
+   */
+  function typecast($propertyName, $value)
+  {
+    $type = $this->getPropertyType( $propertyName );
+    switch ( $type )
+    {
+      case "int": 
+        return (int) $value;
+      case "boolean":
+      case "bool": 
+        return (bool) $value;
+      case "string":
+      default:
+        return $value;
     }
   }
   
@@ -944,7 +984,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     }
     else
     {
-     $this->raiseError("Model " . $this->getClassName() . " has no 'id' property."); 
+     $this->raiseError("Model " . $this->className() . " has no 'id' property."); 
     } 
     
     /*
@@ -1069,7 +1109,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function insert( $data )
   {
-    $this->raiseError("Not implemented for class " . $this->getClassName() );
+    $this->raiseError("Not implemented for class " . $this->className() );
   }
 
  /**
@@ -1141,7 +1181,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function update ( $data=null, $id=null, $keepTimestamp= false )    
   {    
-    $this->raiseError("Not implemented for class " . $this->getClassName() );
+    $this->raiseError("Not implemented for class " . $this->className() );
   }     
   
   
@@ -1159,7 +1199,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function delete ( $ids )
   {
-    $this->raiseError("Not implemented for class " . $this->getClassName() );
+    $this->raiseError("Not implemented for class " . $this->className() );
   } 
   
   
@@ -1188,7 +1228,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function countRecords()
   {
-    $this->raiseError("Not implemented for class " . $this->getClassName() );
+    $this->raiseError("Not implemented for class " . $this->className() );
   }
 
   /**
@@ -1277,6 +1317,13 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
        * store property node
        */
       $this->propertyNodes[$propName] = $propNode;
+      
+      /*
+       * make an alias to all-lowercased property name
+       * because overloading doesn't preserve letter
+       * cases
+       */
+      $this->propertyNodes[strtolower($propName)] = $propNode;
       
       /*
        * store property name as key and value

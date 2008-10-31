@@ -108,7 +108,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     /*
      * check if class is subclassed
      */
-    if ( $this->getClassName() == __CLASS__ )
+    if ( $this->className() == __CLASS__ )
     {
       $this->raiseError( __CLASS__ . " is abstract and cannot be used directly.");
     }
@@ -140,12 +140,10 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
   }
 
   /**
-   * Initializes the object
+   * Empty stub for method that Initializes the object
+   * @return void
    */
-  function initialize()
-  {
-    $this->raiseError("Not implemented");
-  }
+  function initialize() {}
   
   
    /**
@@ -234,16 +232,16 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
      */
     if ( $id )
     {
-      //$this->info("Loading " . $this->getClassName() . " [$id].");
+      //$this->info("Loading " . $this->className() . " [$id].");
       
       $this->_dbModel->findWhere(array(
-        'class'    => "= '" . $this->getClassName() . "' AND ",
+        'class'    => "= '" . $this->className() . "' AND ",
         'objectId' => "= '$id'"
       )); 
     }
     else
     {
-      $this->_dbModel->findByClass( $this->getClassName() );
+      $this->_dbModel->findByClass( $this->className() );
     }
     
     /*
@@ -251,13 +249,13 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
      */
     if ( $this->_dbModel->foundNothing() )
     {
-      //$this->info($this->getClassName() . " [$id] was not found. Creating it...");
+      //$this->info($this->className() . " [$id] was not found. Creating it...");
       
       /*
        * create new record in database
        */
       $this->_dbModel->create();
-      $this->_dbModel->setClass( $this->getClassName() );
+      $this->_dbModel->setClass( $this->className() );
       if ( $id )
       {
         $this->_dbModel->setProperty("objectId",$id);
@@ -285,7 +283,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
         
         if ( $seconds > $this->staleLockTimeout )
         {
-          $this->warn("Removing stale lock on " . $this->getClassName() );
+          $this->warn("Removing stale lock on " . $this->className() );
           $object->removeLock();
         }
       }
@@ -356,7 +354,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
       sleep(0.1);
       if ( time() - $timestamp > $this->lockTimeout )
       {
-        $this->raiseError("Cannot write read access to locked object " . $this->getClassName() );
+        $this->raiseError("Cannot write read access to locked object " . $this->className() );
       }
       $this->load();
     }
@@ -387,11 +385,11 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     }
     elseif ( $this->isLocked )
     {
-      $this->raiseError("Cannot release lock on ". $this->getClassName() . "[{$this->objectId}] : do not own lock.");
+      $this->raiseError("Cannot release lock on ". $this->className() . "[{$this->objectId}] : do not own lock.");
     }
     else
     {
-       $this->warn("No need to release lock on " . $this->getClassName() . "[{$this->objectId}]: not locked.");
+       $this->warn("No need to release lock on " . $this->className() . "[{$this->objectId}]: not locked.");
     }
   }
   
@@ -402,7 +400,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
   function getPropertyNames()
   {
     $propList = new ArrayList; 
-    foreach ( array_keys( get_class_vars( $this->getClassName() ) ) as $key )
+    foreach ( array_keys( get_class_vars( $this->className() ) ) as $key )
     {
       if ( $key{0} != "_" )
       {
@@ -426,6 +424,8 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
   
   /**
    * Saves the object to the storage
+   * FIXME: the whole object seems to be serialized although the __sleep method returns 
+   * only the property names...
    */
   function save()
   {
@@ -433,7 +433,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
          and $this->lockMode == $this->WRITE_LOCK
          and ! $this->_lockIsMine )
     {
-      $this->raiseError("Cannot save " . $this->getClassName() . " because of write lock." );
+      $this->raiseError("Cannot save " . $this->className() . " because of write lock." );
       return; 
     }
     $this->_dbModel->setData( serialize( $this ) );
@@ -477,7 +477,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     if ( $changed )
     {
       
-      //$this->info($this->getClassName() . " [{$this->objectId}] has changed, saving ... ");
+      //$this->info($this->className() . " [{$this->objectId}] has changed, saving ... ");
       
       if ( $this->isLocked )
       {
@@ -496,7 +496,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     }
     else
     {
-      //$this->info($this->getClassName() . " [{$this->objectId}] has not changed.");
+      //$this->info($this->className() . " [{$this->objectId}] has not changed.");
     }
   }
   
