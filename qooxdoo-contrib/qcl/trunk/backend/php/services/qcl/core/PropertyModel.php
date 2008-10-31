@@ -984,7 +984,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     }
     else
     {
-     $this->raiseError("Model " . $this->className() . " has no 'id' property."); 
+      $this->raiseError("Model " . $this->className() . " has no 'id' property."); 
     } 
     
     /*
@@ -992,7 +992,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */    
     if ( isset( $this->currentRecord[$name] ) )
     {
-      $this->currentRecord[$name] = $value;
+      $this->currentRecord[$name] = $this->typecast($name, $value);
       $data[$name] = $value;
     }
     
@@ -1008,14 +1008,14 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       {
         if ( strtolower($key) == strtolower($name) )
         {
-          $this->currentRecord[$key] = $value;
-          $data[$key] = $value;
+          $this->currentRecord[$key] = $this->typecast($key, $value);
+          $data[$key] = $this->currentRecord[$key];
           $found = true;
         }
         elseif ( strtolower($this->getColumnName($key) ) == strtolower($name) )
         {
-          $this->currentRecord[$key] = $value;
-          $data[$key] = $value;
+          $this->currentRecord[$key] = $this->typecast($key, $value);
+          $data[$key] = $this->currentRecord[$key];
           $found = true;
         }
       }

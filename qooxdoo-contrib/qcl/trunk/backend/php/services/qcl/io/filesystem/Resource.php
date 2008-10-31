@@ -1,5 +1,8 @@
 <?php
-require "qcl/jsonrpc/model.php";
+/*
+ * dependencies
+ */
+require_once "qcl/jsonrpc/model.php";
 
 /**
  * Methods common to all filesystem resources

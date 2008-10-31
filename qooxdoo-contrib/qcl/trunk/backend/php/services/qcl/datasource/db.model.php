@@ -183,11 +183,21 @@ class qcl_datasource_db_model extends qcl_db_model
   
   /**
    * checks if datasource is read-only
+   * @return bool result
    */
   function isReadOnly ()
   {
     return (boolean) $this->getReadonly();
   }   
+
+  /**
+   * Returns a list of fields that should be disabled in a form
+   * @return array
+   */
+  function unusedFields()
+  {
+    return array("resourcepath"); 
+  }  
   
   /**
    * Checks a datasource name to be created
@@ -197,7 +207,8 @@ class qcl_datasource_db_model extends qcl_db_model
     
     if ( ! $datasource )
     {
-      $this->raiseError ("No datasource name given.");
+      $this->setError ("No datasource name given.");
+      return false;
     }
     
     /*
@@ -206,8 +217,10 @@ class qcl_datasource_db_model extends qcl_db_model
     $this->findByNamedId( $datasource );
     if ( $this->foundSomething() )
     {
-       $this->raiseError($this->tr("A datasource with the name '%s' already exists.",$datasource) ); 
+       $this->setError( $this->tr( "A datasource with this name already exists." ) ); 
+       return false;
     }    
+    return true;
   }
   
   
@@ -223,7 +236,7 @@ class qcl_datasource_db_model extends qcl_db_model
      /*
      * check datasource name
      */
-    $this->_checkCreate($datasource);
+    if ( ! $this->_checkCreate($datasource) ) return false;
     
     /*
      * get database connection information

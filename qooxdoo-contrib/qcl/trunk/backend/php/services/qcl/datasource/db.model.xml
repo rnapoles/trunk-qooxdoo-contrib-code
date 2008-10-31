@@ -49,6 +49,9 @@
         <property name="encoding" type="string">
           <sql> varchar(20) NULL</sql>
         </property>
+        <property name="resourcepath" type="string">
+          <sql> varchar(255) NULL</sql>
+        </property>
       </properties>
       
     </definition>

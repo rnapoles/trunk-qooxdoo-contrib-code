@@ -1,5 +1,4 @@
 <?php
-
 /*
  * dependencies
  */
@@ -227,7 +226,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * parameters
      */
-    list ( $schema ) = $params;
+    list ( $schema, $selected ) = $params;
 
     /*
      * models
@@ -238,7 +237,7 @@ class qcl_datasource_controller extends qcl_session_controller
      * get all datasources or only those matching the schema,
      * sorted by name
      */
-    $where = empty($schema ) ? null : array( 'schema' => "='$schema'" );      
+    $where = empty( $schema ) ? null : array( 'schema' => "='$schema'" );      
     $datasources  = $ds->findWhere($where,"name");
     
     /*
@@ -254,6 +253,14 @@ class qcl_datasource_controller extends qcl_session_controller
       );   
     }
     $this->set("children",$listItems);
+    
+    /*
+     * selected list item
+     */
+    if ( $selected )
+    {
+      $this->set("selected",$selected);
+    }
     
     /*
      * return client data
