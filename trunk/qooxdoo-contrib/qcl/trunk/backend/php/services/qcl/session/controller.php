@@ -38,8 +38,7 @@ class qcl_session_controller extends qcl_access_controller
     /*
      * add session model
      */
-    $this->sessionModel =& $this->getNew("qcl_session_db_model");
-    
+    $this->sessionModel =& new qcl_session_db_model(&$this);
 
   }     
     
@@ -92,6 +91,7 @@ class qcl_session_controller extends qcl_access_controller
    * broadcasts a message to all connected clients
    * @param mixed $messages Message name or hash map of messages
    * @param mixed $data Data dispatched with message
+   * @todo: use into qcl_jsonrpc_Response object
    */
   function broadcastMessage ( $message, $data=true )
   {
@@ -114,6 +114,7 @@ class qcl_session_controller extends qcl_access_controller
   
   /**
    * Forwards messages to client and send logout message when timeout.
+   * @todo: use into qcl_jsonrpc_Response object
    * @return array
    */
   function method_getMessages($params)
@@ -160,6 +161,7 @@ class qcl_session_controller extends qcl_access_controller
    * overriding parent method to include message broadcasts
    * @override
    * @return array
+   * @todo: use into qcl_jsonrpc_Response object
    */
   function getResponseData()
   {
