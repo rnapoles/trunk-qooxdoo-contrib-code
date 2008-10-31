@@ -43,16 +43,16 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
      */
     if ( $id )
     {
-      //$this->info("Loading " . $this->getClassName() . " [$id].");
+      //$this->info("Loading " . $this->className() . " [$id].");
       
       $this->_dbModel->findWhere(array(
-        'class'    => "= '" . $this->getClassName() . "' AND ",
+        'class'    => "= '" . $this->className() . "' AND ",
         'objectId' => "= '$id'"
       )); 
     }
     else
     {
-      $this->_dbModel->findByClass( $this->getClassName() );
+      $this->_dbModel->findByClass( $this->className() );
     }
     
     /*
@@ -60,13 +60,13 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
      */
     if ( $this->_dbModel->foundNothing() )
     {
-      //$this->info($this->getClassName() . " [$id] was not found. Creating it...");
+      //$this->info($this->className() . " [$id] was not found. Creating it...");
       
       /*
        * create new record in database
        */
       $this->_dbModel->create();
-      $this->_dbModel->setClass( $this->getClassName() );
+      $this->_dbModel->setClass( $this->className() );
       if ( $id )
       {
         $this->_dbModel->setProperty("objectId",$id);
@@ -94,7 +94,7 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
         
         if ( $seconds > $this->staleLockTimeout )
         {
-          $this->warn("Removing stale lock on " . $this->getClassName() );
+          $this->warn("Removing stale lock on " . $this->className() );
           $object->removeLock();
         }
       }
@@ -132,7 +132,7 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
          and $this->lockMode == $this->WRITE_LOCK
          and ! $this->_lockIsMine )
     {
-      $this->raiseError("Cannot save " . $this->getClassName() . " because of write lock." );
+      $this->raiseError("Cannot save " . $this->className() . " because of write lock." );
       return; 
     }
     $this->_dbModel->setData( serialize( $this ) );

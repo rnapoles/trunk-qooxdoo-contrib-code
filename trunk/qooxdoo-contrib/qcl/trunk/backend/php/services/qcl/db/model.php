@@ -707,11 +707,19 @@ class qcl_db_model extends qcl_core_PropertyModel
   
   
   /**
-   * deletes one or more records in a table identified by id
-   * @param mixed $ids (array of) record id(s)
+   * Deletes the currently loaded record or one or more records in a table identified by id
+   * @param mixed[optional] $ids (array of) record id(s)
    */
-  function delete ( $ids )
+  function delete ( $ids=null )
   {
+    if ( is_null ($ids) )
+    {
+      $ids = $this->getId();
+      if ( ! $ids )
+      {
+        $this->raiseError("No record loaded that could be deleted!");
+      }
+    }
     $this->db->delete ( $this->table, $ids, $this->col_id );
   } 
   
