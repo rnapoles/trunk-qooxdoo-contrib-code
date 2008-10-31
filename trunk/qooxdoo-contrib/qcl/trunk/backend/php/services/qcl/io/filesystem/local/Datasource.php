@@ -8,7 +8,8 @@ require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/io/filesystem/local/Folder.php";
 
 /**
- * Class modeling a datasource. Not yet functional!
+ * Class modeling a datasource containing files stored on the local computer.
+ * Currently does not support subfolders
  */
 class qcl_io_filesystem_local_Datasource extends qcl_datasource_db_model
 {
@@ -17,7 +18,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_db_model
    * The folder containing the files in this datasource
    * @var qcl_io_filesystem_local_Folder
    */
-  var $folder = null;
+  var $folderObj = null;
   
   /**
    * The name of the schema
@@ -31,11 +32,29 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_db_model
    */
   function initializeModels( $datasource )
   {
-    $resourcePath = $this->getHost();
-    $this->info($resourcePath);
-    //$this->folder =& new qcl_io_filesystem_local_Folder(&$this,$resourcePath);
+    $resourcePath = $this->getResourcePath();
+    $this->folderObj =& new qcl_io_filesystem_local_Folder(&$this,$resourcePath);
   }
  
+  /**
+   * Returns the file object to do read and write operations with.
+   * @param string $filename
+   * @var qcl_io_filesystem_local_File
+   */
+  function &get($filename)
+  {
+    return $this->folderObj->get($filename);
+  }
+  
+  /**
+   * Returns a list of fields that should be disabled in a form
+   * @override
+   * @return array
+   */
+  function unusedFields()
+  {
+    return array( "host", "port", "username", "password", "database", "prefix", "type" );
+  }
   
   /**
    * Creates a local filesystem datasource
@@ -48,7 +67,7 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_db_model
     /*
      * check datasource name
      */
-    $this->_checkCreate($datasource);
+    if ( ! $this->_checkCreate($datasource) ) return false;
     
     /*
      * create entry
@@ -61,13 +80,13 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_db_model
       "name"         => either($options['name'],$datasource),
       "schema"       => $this->schemaName(),
       "type"         => "file",
-      "host"         => $options['host'],
-      "description"  => (string) $options['description'],
+      "resourcepath" => either($options['resourcepath'],QCL_UPLOAD_PATH),
+      "description"  => either($options['description'],""),
       "owner"        => either($options['owner'],""),
       "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,  
     ));
 
-   return true;
+    return true;
   }  
 
 }
