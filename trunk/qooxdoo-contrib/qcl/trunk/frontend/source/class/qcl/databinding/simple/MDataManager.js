@@ -145,7 +145,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     timeout :
     {
       check : "Integer",
-      init : 10000
+      init : 30000
     },
 
     /** if jsonrpc is used, whether cross-domain requests will be used  */
