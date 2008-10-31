@@ -115,7 +115,7 @@ qx.Class.define("qcl.databinding.simple.DataProvider",
      */ 
     originalValues :
     {
-      check : "Map",
+      check : "Object",
       nullable : true
     }
   },
