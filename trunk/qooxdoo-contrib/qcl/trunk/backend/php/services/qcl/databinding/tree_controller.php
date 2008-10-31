@@ -1,13 +1,14 @@
 <?php
-
-// dependencies
-require_once ("bibliograph/controller.php");
+/*
+ * dependencies
+ */
+require_once "qcl/jsonrpc/controller.php";
 
 /**
- * Abstract service class for notes
+ * Abstract service class managing models that have a tree structure.
+ * Can also be used as an interface
  */
-
-class qcl_databinding_tree_controller extends bibliograph_controller
+class qcl_databinding_tree_controller extends qcl_jsonrpc_controller
 {
   //-------------------------------------------------------------
   // class variables
@@ -17,17 +18,6 @@ class qcl_databinding_tree_controller extends bibliograph_controller
   var $icon_selected;
   var $type;
 
-  //-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-
-  /**
-   * constructor
-   */
-  function __construct()
-  {
-    parent::__construct();
-  }
 
   //-------------------------------------------------------------
   // api methods
