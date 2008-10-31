@@ -457,6 +457,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */    
     __handleDataReceived : function(result)
     {
+      /*
+       * choose method according to class 
+       * @todo: this is not very elegant
+       */
       if ( this.classname == "qcl.databinding.simple.DataProvider" )
       {
         this.populateBoundWidgets(result);
@@ -465,6 +469,11 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       {
         this.setWidgetData(result);  
       }
+      
+      /*
+       * dispatch message that widget has been updated
+       */
+      this.createDispatchEvent("widgetUpdated");      
     },
     
     /**
@@ -481,10 +490,18 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
      */  
     setWidgetData : function (data)
     {
-      // simple setter using auto-lookup of property name
+      /*
+       * simple setter using auto-lookup of property name
+       */
       if ( typeof data != "object" )
       {
         key = this._getWidgetDataProperties().split(",")[0]; // just use first one
+        
+        /*
+         * special case: combobox: this will select the listItem that has 
+         * the corresponding value if editable or set the textfield value if 
+         * editable
+         */
         if ( key == "combobox" )
         {
             if ( this.getEditable() )
@@ -503,26 +520,48 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         return;
       }
       
-      // extended setter using a hash map
+      /*
+       * extended setter using a hash map
+       */
       for ( var key in data )
       {
         switch (key)
         {
-          /* add arbitrary children to widgets, including event listeners */
+          /* 
+           * add arbitrary children to widgets, including event listeners 
+           */
           case "children":
+          
             var i, w, children = data[key];
+            
+            /*
+             * remove children first
+             */
             this.removeAll();
+            
+            /*
+             * now add new children
+             */
             for ( i=0; i<children.length;i++)
             {
+              
               var props = children[i];
-              // create new child widget Todo: ouch eval security problem!!!
+              
+              /*
+               * create new child widget 
+               * @todo: eval security problem!!!
+               */
               try 
               {
-                // classname
+                /*
+                 * classname
+                 */
                 w = eval ( "(new " + props.classname + ")" );
                 delete props.classname;
                 
-                // event listeners
+                /*
+                 *  event listeners
+                 */
                 if ( props.events && typeof props.events != "object" )
                 {
                   console.log ("props.event is a" + typeof props.events );
@@ -537,7 +576,22 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                   delete props.events;
                 }
                 
+                /*
+                 * set properties
+                 */
                 w.set(props);
+                
+                /*
+                 * listItems have to be fitted into container
+                 */
+                if ( w instanceof qx.ui.form.ListItem )
+                {
+                  w.setMaxWidth(qx.bom.element.Dimension.getWidth(this.getElement())-5);
+                }
+                
+                /*
+                 * add to document
+                 */
                 this.add(w);
               }
               catch (e)
@@ -547,7 +601,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             }
             break;
             
-          /* set selected item on combo box */
+          /*
+           * set selected item on combo box or selection manager
+           */
           case "selected":
             if ( ! data[key] ) break;
             switch (this.classname)
@@ -556,6 +612,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
               case "qx.ui.form.ComboBoxEx":
                 this.setSelected(this.getList().findValue(data[key]));
                 break;
+                
               case "qx.manager.selection.RadioManager":
                 var items = this.getItems();
                 for (var i=0; i<items.length; i++)
@@ -569,7 +626,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             }
             break;
           
-          /* qx.ui.treeVirtual.SimpleTreeDataModel */ 
+          /* 
+           * qx.ui.treeVirtual.SimpleTreeDataModel
+           */
           case "treedatamodel":
             if (! this instanceof qx.ui.treevirtual.TreeVirtual )
             {
@@ -579,7 +638,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             this.handleServerData(data.treedatamodel);
             break;
           
-          /* qx.ui.table.model.Simple */
+          /* 
+           * qx.ui.table.model.Simple 
+           */
           case "tabledatamodel":
             if ( ! this instanceof qx.ui.table.Table )
             {
@@ -589,7 +650,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             var dataModel = this.getTableModel();
             var data = data.tabledatamodel;
             
-            // just replace the whole table, for dynamic loading use remoteTableModel
+            /*
+             * just replace the whole table, for dynamic loading use remoteTableModel
+             */
             if ( data && data instanceof Array && data.length )
             {
               dataModel.setData(data);            
@@ -604,22 +667,23 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             }
             break;
           
-          /* qcl.auth */
+          /* 
+           * qcl.auth 
+           */
           case "security":
             this.setSecurity(data.security);
             break;
           
-          /* qcl.config */
+          /* 
+           * qcl.config 
+           */
           case "configMap":
             this.setConfigMap(data.configMap);
             break;  
-            
-          /* qcl.config */
-          case "configMap":
-            this.setConfigMap(data.configMap);
-            break;
-              
-          /* enabled, set with timeout to not conflict with form enabling / disabling */
+           
+          /* 
+           * enabled, set with timeout to not conflict with form enabling / disabling 
+           */
           case "enabled":
             var _this = this;
             qx.client.Timer.once(function(){
@@ -627,7 +691,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             },50);
             break;
          
-          /* default: set property */    
+          /* 
+           * default: set property 
+           */    
           default:
             var setter = "set" + key.charAt(0).toUpperCase() + key.substr(1);
             if (typeof this[setter] == "function" )
@@ -1004,14 +1070,6 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "qx.ui.listview.ListView":
           case "qx.ui.tree.Tree":
             return "selected";
-          case "qx.ui.form.PasswordField":
-          case "qx.ui.form.TextField":
-          case "qx.ui.form.TextArea":
-          case "qx.ui.form.ListItem":
-          case "qx.ui.form.Spinner":
-          case "qx.ui.form.RadioButton":
-          case "qx.ui.form.ComboBoxEx":
-            return "value";
           case "qx.ui.form.ComboBox":
             return "combobox";
           case "qx.ui.basic.Label":
@@ -1019,9 +1077,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           case "qx.ui.embed.HtmlEmbed":
             return "html";
           case "qx.ui.embed.Iframe":
-            return "userData";
+            return "userData"; // remove this
           default:
-           return null;
+            return "value";
       }
     },    
     
