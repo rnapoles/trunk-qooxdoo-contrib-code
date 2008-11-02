@@ -60,14 +60,49 @@ function is_valid_file($str)
 
 /**
  * function to properly encode string data for use in xml.
- * Currently just a wrapper vor htmlentities()
- * @todo implement
+ * Provided by snevi at im dot com dot ve
+ * at http://www.php.net/htmlentities
  * @param string $string
  * @return string xml-encoded string
  */
 function xml_entity_encode($string)
 {
-  return htmlentities($string);
+  $string = preg_replace('/[^\x09\x0A\x0D\x20-\x7F]/e', '_privateXMLEntities("$0")', htmlspecialchars($string) );
+  return $string;
+}
+
+function _privateXMLEntities($num)
+{
+  $chars = array(
+    128 => '&#8364;',
+    130 => '&#8218;',
+    131 => '&#402;',
+    132 => '&#8222;',
+    133 => '&#8230;',
+    134 => '&#8224;',
+    135 => '&#8225;',
+    136 => '&#710;',
+    137 => '&#8240;',
+    138 => '&#352;',
+    139 => '&#8249;',
+    140 => '&#338;',
+    142 => '&#381;',
+    145 => '&#8216;',
+    146 => '&#8217;',
+    147 => '&#8220;',
+    148 => '&#8221;',
+    149 => '&#8226;',
+    150 => '&#8211;',
+    151 => '&#8212;',
+    152 => '&#732;',
+    153 => '&#8482;',
+    154 => '&#353;',
+    155 => '&#8250;',
+    156 => '&#339;',
+    158 => '&#382;',
+    159 => '&#376;');
+  $num = ord($num);
+  return (($num > 127 && $num < 160) ? $chars[$num] : "&#".$num.";" );
 }
 
 
@@ -223,7 +258,7 @@ function uuid()
  * See http://www.faqs.org/rfcs/rfc2104.html
  * @param string $key
  * @param string $data
- */
+ *
 function hmacsha1($key,$data) {
     $blocksize=64;
     $hashfunc='sha1';
@@ -242,13 +277,13 @@ function hmacsha1($key,$data) {
                 )
             );
     return bin2hex($hmac);
-}
+}*/
 
 /**
  * Used to encode a field for Amazon Auth
  * (taken from the Amazon S3 PHP example library)
  * @param string $str
- */
+ *
 function hex2b64($str)
 {
     $raw = '';
@@ -257,8 +292,78 @@ function hex2b64($str)
         $raw .= chr(hexdec(substr($str, $i, 2)));
     }
     return base64_encode($raw);
-}
+}*/
 
+
+/**
+ * Function to retrieve the response to a http request
+ * Modified from code posted mail at 3v1n0 dot net at
+ * http://de2.php.net/manual/en/features.remote-files.php
+ * @param string $url
+ * @param int $range
+ * @return array Array containing the response and the status code
+ *
+function http_get($url, $range = 0)
+{
+    $url_stuff = parse_url($url);
+    $port = isset($url_stuff['port']) ? $url_stuff['port'] : 80;
+   
+    $fp = @fsockopen($url_stuff['host'], $port);
+   
+    if (!$fp)
+        return false;
+   
+    $query  = 'GET '.$url_stuff['path'].'?'.$url_stuff['query']." HTTP/1.1\r\n";
+    $query .= 'Host: '.$url_stuff['host']."\r\n";
+    $query .= 'Connection: close'."\r\n";
+    $query .= 'Cache-Control: no'."\r\n";
+    $query .= 'Accept-Ranges: bytes'."\r\n";
+    if ($range != 0)
+        $query .= 'Range: bytes='.$range.'-'."\r\n"; // -500
+    //$query .= 'Referer: http:/...'."\r\n";
+    //$query .= 'User-Agent: myphp'."\r\n";
+    $query .= "\r\n";
+   
+    fwrite($fp, $query);
+   
+    $chunksize = 1*(1024*1024);
+    $headersfound = false;
+
+    while (!feof($fp) && !$headersfound) {
+        $buffer .= @fread($fp, 1);
+        if (preg_match('/HTTP\/[0-9]\.[0-9][ ]+([0-9]{3}).*\r\n/', $buffer, $matches)) {
+            $headers['HTTP'] = $matches[1];
+            $buffer = '';
+        } else if (preg_match('/([^:][A-Za-z_-]+):[ ]+(.*)\r\n/', $buffer, $matches)) {
+            $headers[$matches[1]] = $matches[2];
+            $buffer = '';
+        } else if (preg_match('/^\r\n/', $buffer)) {
+            $headersfound = true;
+            $buffer = '';
+        }
+
+        if (strlen($buffer) >= $chunksize)
+            return false;
+    }
+
+    if (preg_match('/4[0-9]{2}/', $headers['HTTP']))
+        return false;
+    else if (preg_match('/3[0-9]{2}/', $headers['HTTP']) && !empty($headers['Location'])) {
+        $url = $headers['Location'];
+        return http_get($url, $range);
+    }
+
+    $response = "";
+    while (!feof($fp) && $headersfound) {
+        $buffer = @fread($fp, $chunksize);
+        $response .= $buffer;
+    }
+
+    $status = fclose($fp);
+
+    return array($response,$status);
+}
+*/
 
 /*
  * we can return here if not PHP 4
@@ -407,6 +512,41 @@ if ( ! function_exists("microtime_float" ) )
 }
 
 
+if (!function_exists('get_headers')) 
+{
+  /**
+   * Replicated PHP5's get_headers function 
+   * Posted by info at marc-gutt dot de
+   * http://www.php.net/manual/en/function.get-headers.php
+   */
+  function get_headers($url, $format=0) {
+      $headers = array();
+      $url = parse_url($url);
+      $host = isset($url['host']) ? $url['host'] : '';
+      $port = isset($url['port']) ? $url['port'] : 80;
+      $path = (isset($url['path']) ? $url['path'] : '/') . (isset($url['query']) ? '?' . $url['query'] : '');
+      $fp = fsockopen($host, $port, $errno, $errstr, 3);
+      if ($fp)
+      {
+          $hdr = "GET $path HTTP/1.1\r\n";
+          $hdr .= "Host: $host \r\n";
+          $hdr .= "Connection: Close\r\n\r\n";
+          fwrite($fp, $hdr);
+          while (!feof($fp) && $line = trim(fgets($fp, 1024)))
+          {
+              if ($line == "\r\n") break;
+              list($key, $val) = explode(': ', $line, 2);
+              if ($format)
+                  if ($val) $headers[$key] = $val;
+                  else $headers[] = $key;
+              else $headers[] = $line;
+          }
+          fclose($fp);
+          return $headers;
+      }
+      return false;
+  }
+}
 
 
 ?>
