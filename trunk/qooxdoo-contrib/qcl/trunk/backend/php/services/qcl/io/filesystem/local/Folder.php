@@ -35,7 +35,7 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
     parent::__construct( &$controller, $resourcePath );
     
     /*
-     * create file if it doesn't exist
+     * create folder if it doesn't exist
      */
     $filePath = $this->filePath();
     $dirname  = dirname( $filePath );

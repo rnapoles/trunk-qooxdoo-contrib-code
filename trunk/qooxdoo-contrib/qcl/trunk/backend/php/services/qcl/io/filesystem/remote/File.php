@@ -26,9 +26,8 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    * throw an error if that is not possible.
    * @param qcl_jsonrpc_controller $controller
    * @param string $resourcePath
-   * @param int $mode File permissions, defaults to 0666  
    */
-  function __construct ( $controller, $resourcePath, $mode=0666 )
+  function __construct ( $controller, $resourcePath )
   {
     /*
      * parent constructor takes care of controller and resource path
@@ -38,22 +37,19 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
     /*
      * create file if it doesn't exist
      */
-    $filePath = $this->filePath();
-    $dirname  = dirname( $filePath );
-    $basename = basename( $filePath );
-    
-    if ( ! file_exists( $filePath ) )
+    if ( ! $this->open( "r" ) )
     {
-      if ( is_writable( dirname( $dirname ) ) )
+      if ( ! $this->open( "w" ) )
       {
-        touch( $filePath );
-        chmod( $filePath, $mode );
+        $this->raiseError("Problems creating file '$resourcePath'." );  
       }
-      else
-      {
-        $this->raiseError("File '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
-      }
+      $this->close();  
     }
+    else
+    {
+      $this->close();
+    }
+    
   }       
   
   /**
@@ -62,7 +58,17 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    */
   function load() 
   {
-    return file_get_contents($this->filePath());  
+    if ( $this->open("r") )
+    {
+      $data = "";
+      while ( $b = $this->read(4096) )
+      {
+        $data .= $b;
+      }
+      $this->close();
+      return $data;
+    }
+    return false;
   }
   
   /**
@@ -72,7 +78,13 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    */
   function save($data) 
   {
-    file_put_contents($this->filePath(), $data );
+    if ( $this->open("w") )
+    {
+      $result = $this->write($data);
+      $this->close();
+      return $result;
+    }
+    return false;
   }
 
   /**
@@ -80,7 +92,7 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    * @param string $mode r(ead)|w(rite)|a(append)
    * @param boolean Result
    */
-  function open($mode) 
+  function open($mode="r") 
   {
     $fp = fopen( $this->resourcePath(), $mode );
     if ( ! $fp )
@@ -99,6 +111,10 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
    */
   function read( $bytes ) 
   {
+    if ( ! $this->_fp )
+    {
+      $this->raiseError("You have to ::open() the file first.");
+    }
     if ( feof( $this->_fp) )
     {
       return null;

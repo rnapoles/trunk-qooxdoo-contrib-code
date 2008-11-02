@@ -9,7 +9,7 @@ require_once "qcl/io/filesystem/remote/Folder.php";
 
 /**
  * Class modeling a datasource containing files stored on a remote computer.
- * Currently does not support subfolders. Supports all protocols supported by php.
+ * Currently does not support subfolders. Supports all protocols supported by php plus amazon s3
  */
 class qcl_io_filesystem_remote_Datasource extends qcl_datasource_db_model
 {
@@ -32,8 +32,13 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_db_model
    */
   function initializeModels( $datasource )
   {
-    $resourcePath = $this->getResourcePath();
-    $this->folderObj =& new qcl_io_filesystem_remote_Folder(&$this,$resourcePath);
+    if ( $this->getResourcePath() && $this->getUsername() && $this->getPassword() )
+    {
+      $resourcePath = $this->getType() . "://" . $this->getResourcePath();
+      define("S3_KEY",     $this->getUsername() );
+      define('S3_PRIVATE', $this->getPassword() );
+      $this->folderObj =& new qcl_io_filesystem_remote_Folder(&$this,$resourcePath);
+    }
   }
  
   /**
@@ -41,9 +46,13 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_db_model
    * @param string $filename
    * @var qcl_io_filesystem_remote_File
    */
-  function &get($filename)
+  function &getFile($filename)
   {
-    return $this->folderObj->get($filename);
+    if ( $this->folderObj )
+    {
+      return $this->folderObj->get($filename);  
+    }
+    $this->raiseError("Datasource not initialized.");
   }
   
   /**
@@ -53,7 +62,11 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_db_model
    */
   function unusedFields()
   {
-    return array( "host", "port", "username", "password" );
+    if ( $this->folderObj && $this->folderObj->protocol == "s3" )
+    {
+      return array( "host", "port", "database", "prefix" );
+    }
+    return array( "database", "prefix" );
   }
   
   /**
@@ -79,8 +92,12 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_db_model
       "native"       => 0,
       "name"         => either($options['name'],$datasource),
       "schema"       => $this->schemaName(),
-      "type"         => "file",
-      "resourcepath" => either($options['resourcepath'],QCL_UPLOAD_PATH),
+      "type"         => either($options['type'],"s3"),
+      "host"         => either($options['host'],""),
+      "port"         => either($options['port'],""),
+      "username"     => either($options['username'],""),
+      "password"     => either($options['password'],""),      
+      "resourcepath" => either($options['resourcepath'],""),
       "description"  => either($options['description'],""),
       "owner"        => either($options['owner'],""),
       "hidden"       => isset($options['hidden']) ? $options['hidden'] : 0,  

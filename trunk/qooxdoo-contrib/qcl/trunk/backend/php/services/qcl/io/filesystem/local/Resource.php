@@ -7,26 +7,32 @@ require_once "qcl/io/filesystem/Resource.php";
  */
 class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
 {
-  
-  /**
-   * Checks wether resource path is valid. Local files have to start 
-   * with "file://" protocol
-   * @param string $resourcePath
-   * @retrun boolean
-   */
-  function checkResourcePath( $resourcePath ) 
-  {
-    return ( substr($resourcePath,0,7) == "file://" );
-  }
 
   /**
-   * Returns the file path withoug leading "file://"
-   * @return string
+   * The supported / allowed protocols
    */
-  function filePath()
+  var $protocols = array("file");  
+    
+  
+  /**
+   * Checks whether (given) resource path is a file 
+   * @param string[optional] $resourcePath
+   * @return bool
+   */
+  function isFile($resourcePath = null)
   {
-    return substr($this->resourcePath(),7);
+    return is_file( either($resourcePath,$this->filePath() ) );
   }
+  
+  /**
+   * Checks whether (given) resource path is a directory
+   * @param string[optional] $resourcePath
+   * @return bool
+   */
+  function isDir($resourcePath=null)
+  {
+    return is_dir( either( $resourcePath, $this->filePath() ) );
+  }  
   
   /**
    * Deletes the file/folder 
@@ -65,24 +71,5 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
     return false;
   }  
   
-  /**
-   * Returns the directory in which the resource is located.
-   * @return string
-   */
-  function dirname()
-  {
-    return "file://" . dirname($this->filePath());
-  }
-  
-  /**
-   * Returns the name of the resource without the containing directory
-   * @return string
-   */
-  function basename()
-  {
-    return basename($this->filePath());  
-  }
-  
-
 }
 ?>
