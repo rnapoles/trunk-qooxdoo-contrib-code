@@ -14,13 +14,6 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
   var $implements = array("qcl_io_filesystem_IFolder");
   
   /**
-   * PHP directory object
-   * @var Directory
-   * @access private
-   */
-  var $_dir;
-  
-  /**
    * Constructor. Will create the folder if it doesn't exist and will
    * throw an error if that is not possible.
    * @param qcl_jsonrpc_controller $controller
@@ -32,54 +25,41 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
     /*
      * parent constructor takes care of controller and resource path
      */
-    parent::__construct( &$controller, $resourcePath );
-    
-    /*
-     * create file if it doesn't exist
-     */
-    $filePath = $this->filePath();
-    $dirname  = dirname( $filePath );
-    $basename = basename( $filePath );
+    parent::__construct( &$controller, $resourcePath );   
 
-    if ( ! file_exists( $filePath ) )
+    /*
+     * create directory if it doesn't exist
+     */
+    if ( ! $this->exists( $resourcePath ) )
     {
-      if ( is_writable( $dirname ) )
+      if ( ! mkdir( $resourcePath, $mode ) )
       {
-        if ( ! mkdir( $filePath, $mode ) )
-        {
-          $this->raiseError("Problems creating folder '$filePath' with permissions $mode." );
-        }
+        $this->raiseError("Problems creating folder '$resourcePath' with permissions $mode." );
       }
-      else
-      {
-        $this->raiseError("Folder '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
-      }
-    }
+    }    
   }       
   
   /**
    * Creates a file resource if it doesn't exist. Return resource.
    * @param string $name
-   * @return qcl_io_filesystem_local_File
+   * @return qcl_io_filesystem_remote_File
    */
   function &createOrGetFile( $name ) 
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
-    $controller =& $this->getController();
-    return new qcl_io_filesystem_local_File( &$controller, $resourcePath );
+    return new qcl_io_filesystem_remote_File( &$this, $resourcePath );
   }
   
   /**
    * Creates a folder resource if it doesn't exist. Return resource
    * @param string $name
-   * @return qcl_io_filesystem_local_Folder
+   * @return qcl_io_filesystem_remote_Folder
    */
   function &createOrGetFolder( $name ) 
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
-    $controller =& $this->getController();
-    return new qcl_io_filesystem_local_Folder( &$controller, $resourcePath );    
-  }  
+    return new qcl_io_filesystem_remote_Folder( &$this, $resourcePath );    
+  }
   
   /**
    * Checks if resource of the given name exists in this folder
@@ -88,10 +68,9 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function has( $name ) 
   {
-    $filePath = $this->filePath() . "/" . $name;
+    $filePath = $this->resourcePath() . "/" . $name;
     return file_exists( $filePath );    
   }    
-  
   
   /**
    * Returns the file or folder with the name if it exists
@@ -99,17 +78,16 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function &get( $name ) 
   {
-    $filePath     = $this->filePath() . "/" . $name;
     $resourcePath = $this->resourcePath() . "/" . $name;
     $controller   =& $this->getController();
     
-    if ( is_file( $filePath ) )
+    if ( $this->isFile( $resourcePath ) )
     {
-      return new qcl_io_filesystem_local_File( &$controller, $resourcePath );
+      return new qcl_io_filesystem_remote_File( &$controller, $resourcePath );
     }
-    elseif ( is_dir( $filePath ) )
+    elseif ( $this->isDir( $resourcePath ) )
     {
-      return new qcl_io_filesystem_local_Folder( &$controller, $resourcePath );  
+      return new qcl_io_filesystem_remote_Folder( &$controller, $resourcePath );  
     }
     else
     {
@@ -123,7 +101,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function open() 
   {
-    $this->_dir = dir( $this->filePath() );
+    $this->_dir = opendir( $this->resourcePath() );
   }  
   
   /**
@@ -145,7 +123,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
      */
     do
     {
-      $name = $this->_dir->read();  
+      $name = readdir($this->_dir);  
     }
     while ( $name =="." or $name == ".." );
     
@@ -168,7 +146,8 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function close()
   {
-    $this->_dir->close();
-  }   
+    closedir($this->_dir);
+  } 
+  
 }
 ?>

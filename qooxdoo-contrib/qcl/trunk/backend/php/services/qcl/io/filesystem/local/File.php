@@ -79,9 +79,9 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
    * @param string $mode r(ead)|w(rite)|a(append)
    * @param boolean Result
    */
-  function open($mode) 
+  function open($mode="r") 
   {
-    $fp = fopen( $this->resourcePath(), $mode );
+    $fp = fopen( $this->filePath(), $mode );
     if ( ! $fp )
     {
       $this->setError("Problem opening " . $this->resourcePath() );

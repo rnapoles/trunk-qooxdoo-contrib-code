@@ -1,12 +1,16 @@
 <?php
 require_once "qcl/jsonrpc/controller.php";
-require_once "qcl/io/filesystem/local/File.php";
-require_once "qcl/io/filesystem/local/Folder.php";
+require_once "qcl/io/filesystem/remote/File.php";
+require_once "qcl/io/filesystem/remote/Folder.php";
+
+define("S3_KEY",    "057HA62DAVJ2S4BNXWG2");
+define('S3_PRIVATE','eT/tEUxOZR2eXdBaVcqx0N14BJ3LQc7XUlEMfeXr');
+
 
 /**
  * Service class containing test methods
  */
-class class_qcl_io_filesystem_local_Tests extends qcl_jsonrpc_controller
+class class_qcl_io_filesystem_remote_Tests extends qcl_jsonrpc_controller
 {
   
     function method_testCreate()
@@ -23,7 +27,7 @@ class class_qcl_io_filesystem_local_Tests extends qcl_jsonrpc_controller
     
     function method_testDirContents()
     {
-      $topDir =& new qcl_io_filesystem_local_Folder( &$this, "file://" . $this->tmpDir() . "test" );
+      $topDir =& new qcl_io_filesystem_remote_Folder( &$this, "s3://fulltext.panya.de/" );
       $topDir->open();
       while ( $resource =& $topDir->next() )
       {
@@ -32,7 +36,22 @@ class class_qcl_io_filesystem_local_Tests extends qcl_jsonrpc_controller
       $topDir->close();
     }
     
+  function method_testFileDownload ( $params )
+  {
+    $fileObj =& new qcl_io_filesystem_remote_File(&$this,"s3://fulltext.panya.de/Acker1999.pdf");
     
+    $filename=$fileObj->basename();
+    header("Content-Type: application/octet-stream");
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+    $fileObj->open();
+    while( $chunk = $fileObj->read(8125) )
+    {
+      echo $chunk;  
+    }
+    $fileObj->close();
+    exit;
+    
+  }    
   
 }
 
