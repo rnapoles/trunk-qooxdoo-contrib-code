@@ -53,7 +53,6 @@
           <sql> varchar(255) NULL</sql>
         </property>
       </properties>
-      
     </definition>
   </model>
 </schema>

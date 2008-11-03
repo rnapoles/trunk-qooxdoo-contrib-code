@@ -225,7 +225,7 @@ class qcl_db_abstract extends qcl_jsonrpc_object
 	 */
 	function getUser()
 	{
-		return $this->userModel;		
+		return $this->user;		
 	}
 
 	/**

@@ -243,7 +243,8 @@ class qcl_datasource_db_model extends qcl_db_model
      */
     if ( $options['dsn'] )
     {
-      $db = new qcl_db_mysql($options['dsn'], &$this );
+      $db = new qcl_db_mysql( $options['dsn'], &$this );
+      $this->info("Using custom dsn:" . print_r($options,true) );
     }
     else
     {
@@ -258,14 +259,14 @@ class qcl_datasource_db_model extends qcl_db_model
       "active"       => isset($options['active']) ? $options['active'] : 1,
       "readonly"     => isset($options['readonly']) ? $options['readonly'] : 0,
       "native"       => isset($options['native']) ? $options['native'] : 1,
-      "name"         => either($options['name'],$datasource),
-      "schema"       => either($options['schema'],$this->schemaName()),
-      "type"         => either($options['type'],"mysql"),
-      "host"         => either($options['host'],$db->getHost()),
-      "port"         => either($options['port'],$db->getPort()),
-      "database"     => either($options['database'],$db->getDatabase()),
-      "username"     => either($options['user'],$db->getUser()),
-      "password"     => either($options['password'],$db->getPassword()),
+      "name"         => either($options['name'], $datasource),
+      "schema"       => either($options['schema'], $this->schemaName() ),
+      "type"         => either($options['type'], "mysql"),
+      "host"         => either($options['host'], $db->getHost() ),
+      "port"         => either($options['port'], $db->getPort() ),
+      "database"     => either($options['database'], $db->getDatabase() ),
+      "username"     => either($options['username'], $db->getUser() ),
+      "password"     => either($options['password'], $db->getPassword() ),
       "encoding"     => either($options['encoding'],"utf8"),
       "description"  => (string) $options['description'],
       "owner"        => either($options['owner'],""),

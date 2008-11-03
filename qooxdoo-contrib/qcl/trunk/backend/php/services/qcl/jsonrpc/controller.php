@@ -182,7 +182,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
 	function getIniValue($path)
 	{
-		$parts 	= explode(".",$path);
+	  $parts 	= explode(".",$path);
 		$value 	= $this->ini;
 		while( is_array($value) and $part = array_shift($parts) )
 		{

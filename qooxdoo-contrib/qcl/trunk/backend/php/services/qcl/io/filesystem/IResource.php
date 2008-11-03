@@ -41,15 +41,30 @@ class qcl_io_filesystem_IResource
   
   /**
    * Returns the directory in which the resource is located.
+   * @param string[optional] $resourcePath
    * @return string
    */
-  function dirname() {}
+  function dirname($resourcePath=null) {}
   
   /**
-   * Returns the name of the resource without the containing directory
+   * Returns the name of the (given) resource without the containing directory
+   * @param string[optional] $resourcePath
    * @return string
    */
-  function basename() {}  
+  function basename($resourcePath=null) {}  
+  
+  /**
+   * Returns the extension of the (given) resource path, if any.
+   * @param string[optional] $resourcePath
+   * @return string
+   */
+  function extension($resourcePath=null) {}
+  
+  /**
+   * Casting as string, returns the resource path
+   * @return string
+   */
+  function toString() {}  
 }
 
 ?>

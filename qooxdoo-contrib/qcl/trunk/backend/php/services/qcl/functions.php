@@ -1,7 +1,7 @@
 <?php
 
 /**
- * collection of functions which provide convenient shorthands or 
+ * Collection of functions which provide convenient shorthands or 
  * compatibility between php4 and php5
  */
 
