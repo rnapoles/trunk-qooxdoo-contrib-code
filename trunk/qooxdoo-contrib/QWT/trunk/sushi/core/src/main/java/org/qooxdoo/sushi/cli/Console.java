@@ -40,6 +40,7 @@ public class Console {
     public final PrintStream info;
     public final PrintStream verbose;
     public final PrintStream error;
+    public final BufferedReader input;
     
     private final MultiOutputStream verboseSwitch;
     
@@ -49,6 +50,7 @@ public class Console {
         this.verboseSwitch = MultiOutputStream.createNullStream();
         this.verbose = new PrintStream(verboseSwitch);
         this.error = error;
+        this.input = new BufferedReader(new InputStreamReader(System.in));
     }
     
     public boolean getVerbose() {
@@ -63,7 +65,22 @@ public class Console {
     }
     
     public void pressReturn() throws IOException {
-        info.println("Press return to continue, ctrl-C to abort.");
-        new BufferedReader(new InputStreamReader(System.in)).readLine();
+        readline("Press return to continue, ctrl-C to abort.\n");
+    }
+
+    public String readline(String message) throws IOException {
+        return readline(message, "");
+    }
+
+    public String readline(String message, String dflt) throws IOException {
+        String str;
+        
+        info.print(message);
+        str = input.readLine();
+        if (str.length() == 0) {
+            return dflt;
+        } else {
+            return str;
+        }
     }
 }
