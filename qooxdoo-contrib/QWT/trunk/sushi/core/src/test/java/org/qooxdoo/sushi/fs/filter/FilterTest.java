@@ -21,7 +21,6 @@ package org.qooxdoo.sushi.fs.filter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,14 +55,14 @@ public class FilterTest {
         assertEquals(dir.join("a", "b"), nodes.get(1));
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void rejectDoubleStarOnly() throws IOException {
-        try {
-            IO_OBJ.filter().include("**");
-            fail();
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
+        IO_OBJ.filter().include("**");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void rejectDoubleDoubleStar() throws IOException {
+        IO_OBJ.filter().include("**/**");
     }
     
     @Test
