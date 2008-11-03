@@ -1513,7 +1513,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $this->info("Exporting {$this->name} data to $path");
     
     /*
-     * remove old file
+     * remove old file if it exists
      */
     @unlink($path);
     
@@ -1532,6 +1532,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $recordsNode =& $dataNode->addChild("records");
 
     /*
+     * alias node
+     */
+    $aliasNode =& $schemaXml->getNode("/model/definition/aliases");
+    
+    /*
      * property groups in model schema
      */
     $propGrpsNode =& $schemaXml->getNode("/model/definition/propertyGroups");
@@ -1546,7 +1551,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * list of properties minus those which should be
      * skipped
      */
-    $propList     =  array_keys($this->properties); 
+    $propList     =  $this->properties(); 
     $skipExpNode  =& $schemaXml->getChildNodeByAttribute(&$propGrpsNode,"name","skipExport");
     if ( $skipExpNode )
     {
@@ -1574,19 +1579,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       foreach ($propList as $propName )
       {
         /*
-         * property node
-         */
-        $propNode =& $this->propertyNodes[$propName];
-        
-        /*
-         * column name is either alias or property name
-         */
-        $column = $this->getColumnName($propName);
-    
-        /*
          * column data; skip empty columns
          */
-        $columnData = $record[$column];
+        $columnData = $record[$propName];
         if ( empty($columnData) )
         {
           continue;  
@@ -1608,7 +1603,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
            */
           $propDataNode =& $recordNode->addChild("property");
           $propDataNode->addAttribute("name",$propName);
-          $dataXml->setData(&$propDataNode,$data);
+          $dataXml->setData(&$propDataNode, $data);
         }
       }
     }
@@ -1707,7 +1702,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       foreach( $properties as $propName => $propData )
       {
         $colName = $this->getColumnName($propName);
-        $data[$colName] =  xml_entity_decode($propData);
+        $data[$colName] = xml_entity_decode($propData);
       }
       
       /*

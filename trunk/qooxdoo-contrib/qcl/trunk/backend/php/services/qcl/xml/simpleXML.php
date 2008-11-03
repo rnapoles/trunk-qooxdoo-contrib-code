@@ -907,7 +907,10 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
    */
   function removeLock()
   {
-    parent::removeLock($this->cacheId);
+    if ( $this->cacheId )
+    {
+      parent::removeLock($this->cacheId);  
+    }
   }
   
   /**

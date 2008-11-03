@@ -1472,7 +1472,8 @@ class qcl_db_model extends qcl_core_PropertyModel
     /*
      * Return if table exists and schema hasn't changed
      */
-    if ( $this->db->tableExists($this->table) and !$modelXml->hasChanged() ) 
+    $tableExists = $this->db->tableExists($this->table);
+    if ( $tableExists and !$modelXml->hasChanged() ) 
     {
       //$this->info("Schema document for model name '{$this->name}', type '{$this->type}', class '{$this->class}' hasn't changed.");
       return;
@@ -1832,10 +1833,9 @@ class qcl_db_model extends qcl_core_PropertyModel
      * import initial data if necessary
      */
     $path = $this->getDataPath();
-    if ( file_exists($path) and ( $this->schemaXml->hasChanged() or $this->fileChanged($path) ) )
+    if ( ! $tableExists and file_exists($path) )
     {
-      $this->info("FIXME: Skipping import ");
-      //$this->import($path);
+      $this->import($path);
     }
     else
     {
@@ -1853,6 +1853,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * model-dependent post-setup stuff. empty stub to be overridden by subclasses if necessary
    */
   function postSetupSchema() {} 
+  
   //-------------------------------------------------------------
   // Linked tables
   //-------------------------------------------------------------    
