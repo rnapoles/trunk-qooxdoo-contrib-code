@@ -1796,19 +1796,23 @@ class qcl_db_model extends qcl_core_PropertyModel
         
         if ( ! $foreignKeyDef )
         {
-          // column does not exist, add
+          /*
+           * column does not exist, add
+           */
           $this->db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
         }
         else
         {
-          // exists but is different: modifiy
+          /*
+           * exists but is different: modifiy
+           */
           $this->db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
         }
         
         /*
          * add to unique index in link table, this works only if the table is
          * empty
-         */
+         *
         if ( $this->db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
         { 
           $uniqueIndexCols =  $this->db->getIndexColumns($link_table,"link");
@@ -1816,7 +1820,7 @@ class qcl_db_model extends qcl_core_PropertyModel
           {
             /*
              * create new unique index including column
-             */
+             *
             $uniqueIndexCols[] = $foreignKeyColName;
             $this->db->addIndex("unique",$link_table,"link",$uniqueIndexCols);
           }
@@ -1824,7 +1828,7 @@ class qcl_db_model extends qcl_core_PropertyModel
         else
         {
           $this->warn("Cannot create unique constraint in $link_table for " . implode(",",$uniqueIndexCols) . ": Table is not empty.");
-        }
+        }*/
         
       }
     }
