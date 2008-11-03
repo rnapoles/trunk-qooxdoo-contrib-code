@@ -19,10 +19,9 @@
 
 package org.qooxdoo.sushi.cli;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.Scanner;
 
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.io.MultiOutputStream;
@@ -40,7 +39,7 @@ public class Console {
     public final PrintStream info;
     public final PrintStream verbose;
     public final PrintStream error;
-    public final BufferedReader input;
+    public final Scanner input;
     
     private final MultiOutputStream verboseSwitch;
     
@@ -50,7 +49,7 @@ public class Console {
         this.verboseSwitch = MultiOutputStream.createNullStream();
         this.verbose = new PrintStream(verboseSwitch);
         this.error = error;
-        this.input = new BufferedReader(new InputStreamReader(System.in));
+        this.input = new Scanner(System.in);
     }
     
     public boolean getVerbose() {
@@ -76,7 +75,7 @@ public class Console {
         String str;
         
         info.print(message);
-        str = input.readLine();
+        str = input.nextLine();
         if (str.length() == 0) {
             return dflt;
         } else {
