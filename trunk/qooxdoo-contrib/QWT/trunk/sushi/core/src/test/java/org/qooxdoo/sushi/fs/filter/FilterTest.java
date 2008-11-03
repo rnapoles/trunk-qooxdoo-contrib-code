@@ -25,94 +25,95 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
-import org.qooxdoo.sushi.fs.Root;
 
 // TODO: generalize, don't use File nodes
 public class FilterTest {
-    private static final IO IO_OBJ = new IO();
-    private static final Root ROOT = IO_OBJ.getTemp().getRoot();
-
+    private Node root;
+    
+    @Before
+    public void setup() throws IOException {
+    	root = new IO().getTemp().createTempDirectory();
+    }
+    
     @Test
     public void empty() throws IOException {
-        Node dir;
+        create();
+        assertEquals(0, root.find().size());
+    }
+
+    @Test
+    public void children() throws IOException {
+        create("a", "b");
+        checkSet(root.find("?"), "a", "b");
+    }
+
+    @Test
+    public void grandChildren() throws IOException {
+        List<Node> nodes;
         
-        dir = create();
-        assertEquals(0, dir.find().size());
+        create("a", "b/c", "b/d");
+        nodes = root.find("*/*");
+        checkSet(nodes, "b/c", "b/d");
+    }
+
+    @Test
+    public void star() throws IOException {
+        create("1", "2", "3");
+        check("*", "1", "2", "3"); 
     }
 
     @Test
     public void doubleStar() throws IOException {
-        Node dir;
-        List<Node> nodes;
-        
-        dir = create("a/b");
-        nodes = dir.find("**/*");
-        assertEquals(2, nodes.size());
-        assertEquals(dir.join("a"), nodes.get(0));
-        assertEquals(dir.join("a", "b"), nodes.get(1));
+        create("a/b");
+        check("**/*", "a", "a/b");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void rejectDoubleStarOnly() throws IOException {
-        IO_OBJ.filter().include("**");
+        root.getIO().filter().include("**");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void rejectDoubleDoubleStar() throws IOException {
-        IO_OBJ.filter().include("**/**");
+        root.getIO().filter().include("**/**");
     }
     
     @Test
-    public void grandChildren() throws IOException {
-        Node dir;
-        List<Node> nodes;
-        
-        dir = create("a", "b/c", "b/d");
-        nodes = dir.find("*/*");
-        checkSet(nodes, dir, "b/c", "b/d");
-    }
-
-    @Test
     public void predicate() throws IOException {
-        Node dir;
         List<Node> nodes;
         
-        dir = create("a", "b/c", "b/d");
-        nodes = dir.find(IO_OBJ.filter().include("**/*").predicate(Predicate.DIRECTORY));
+        create("a", "b/c", "b/d");
+        nodes = root.find(root.getIO().filter().include("**/*").predicate(Predicate.DIRECTORY));
         assertEquals(1, nodes.size());
-        assertEquals(dir.join("b"), nodes.get(0));
+        assertEquals(root.join("b"), nodes.get(0));
     }
     
     @Test
     public void depth() throws IOException {
-        Node dir;
-        List<Node> nodes;
+        create("a", "b/c", "b/d/e");
         
-        dir = create("a", "b/c", "b/d/e");
-        
-        assertEquals(0, dir.find(IO_OBJ.filter().include("**/*").maxDepth(0)).size());
-
-        nodes = dir.find(IO_OBJ.filter().include("**/*").maxDepth(1));
-        checkSet(nodes, dir, "a", "b");
-
-        nodes = dir.find(IO_OBJ.filter().include("**/*").minDepth(2).maxDepth(2));
-        checkSet(nodes, dir, "b/c", "b/d");
-
-        nodes = dir.find(IO_OBJ.filter().include("**/*").minDepth(3));
-        checkSet(nodes, dir, "b/d/e");
+        check(filter().include("**/*").maxDepth(0) );
+        check(filter().include("**/*").maxDepth(1), "a", "b");
+        check(filter().include("**/*").minDepth(2).maxDepth(2), "b/c", "b/d");
+        check(filter().include("**/*").minDepth(3), "b/d/e");
     }
 
-    private Node create(String... paths) {
-        Node root;
+    //--
+    
+    private Filter filter() {
+    	return root.getIO().filter();
+    }
+    
+    private void create(String... paths) {
         Node file;
         
         try {
-            root = IO_OBJ.getTemp().createTempDirectory();
             for (String path : paths) {
-                path = path.replace('/', ROOT.getFilesystem().getSeparatorChar());
+                path = path.replace('/', root.getRoot().getFilesystem().getSeparatorChar());
                 file = root.join(path);
                 file.getParent().mkdirsOpt();
                 file.writeBytes();
@@ -120,13 +121,20 @@ public class FilterTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return root;
     }
     
-    private void checkSet(List<Node> nodes, Node dir, String ... names) {
+    private void check(String pattern, String ... paths) throws IOException {
+    	checkSet(root.find(pattern), paths);
+    }
+
+    private void check(Filter filter, String ... paths) throws IOException {
+    	checkSet(root.find(filter), paths);
+    }
+    
+    private void checkSet(List<Node> nodes, String ... names) {
         assertEquals(names.length, nodes.size());
         for (String name : names) {
-            assertTrue(nodes.contains(dir.join(name)));
+            assertTrue(nodes.contains(root.join(name)));
         }
     }
 }
