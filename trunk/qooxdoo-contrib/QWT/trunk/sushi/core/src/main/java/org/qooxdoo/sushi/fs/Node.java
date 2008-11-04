@@ -567,7 +567,7 @@ public abstract class Node {
     }
     
     public Node writeLines(List<String> lines) throws IOException {
-        return writeString(Strings.join(getIO().getSettings().lineSeparator, lines));
+        return lines(createWriter(), lines);
     }
 
     public Node appendLines(String ... line) throws IOException {
@@ -575,9 +575,21 @@ public abstract class Node {
     }
     
     public Node appendLines(List<String> lines) throws IOException {
-        return appendString(Strings.join(getIO().getSettings().lineSeparator, lines));
+        return lines(createAppender(), lines);
     }
 
+    private Node lines(Writer dest, List<String> lines) throws IOException {
+        String separator;
+        
+        separator = getIO().getSettings().lineSeparator;
+        for (String line : lines) {
+            dest.write(line);
+            dest.write(separator);
+        }
+        dest.close();
+        return this;
+    }
+    
     public Node writeObject(Serializable obj) throws IOException {
         ObjectOutputStream out;
 
