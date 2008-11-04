@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
-// TODO: generalize, don't use File nodes
 public class FilterTest {
     private Node root;
     
@@ -40,11 +39,16 @@ public class FilterTest {
     }
     
     @Test
-    public void empty() throws IOException {
+    public void emptyIncludes() throws IOException {
         create();
         assertEquals(0, root.find().size());
     }
 
+    @Test
+    public void child() throws IOException {
+        create("one");
+        checkSet(root.find("one"), "one");
+    }
     @Test
     public void children() throws IOException {
         create("a", "b");
@@ -70,6 +74,11 @@ public class FilterTest {
     public void doubleStar() throws IOException {
         create("a/b");
         check("**/*", "a", "a/b");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void rejectEmptyPath() throws IOException {
+        root.find("");
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -99,6 +108,7 @@ public class FilterTest {
         check(filter().include("**/*").maxDepth(0) );
         check(filter().include("**/*").maxDepth(1), "a", "b");
         check(filter().include("**/*").minDepth(2).maxDepth(2), "b/c", "b/d");
+        check(filter().include("b/*").minDepth(2).maxDepth(2), "b/c", "b/d");
         check(filter().include("**/*").minDepth(3), "b/d/e");
     }
 
