@@ -67,6 +67,16 @@ public class ZipNode extends Node {
         throw new SetLastModifiedException(this);
     }
     
+    @Override 
+    public int getMode() {
+        throw unsupported("getMode()");
+    }
+
+    @Override
+    public void setMode(int mode) {
+        throw unsupported("setMode()");
+    }
+
     @Override
     public Node delete() throws DeleteException {
         throw new DeleteException(this);

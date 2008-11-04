@@ -59,6 +59,16 @@ public class ResourceNode extends Node {
         throw new SetLastModifiedException(this);
     }
     
+    @Override 
+    public int getMode() {
+        throw unsupported("getMode()");
+    }
+
+    @Override
+    public void setMode(int mode) {
+        throw unsupported("setMode()");
+    }
+
     @Override
     public boolean exists() {
         return filesystem.inputStream(path) != null;

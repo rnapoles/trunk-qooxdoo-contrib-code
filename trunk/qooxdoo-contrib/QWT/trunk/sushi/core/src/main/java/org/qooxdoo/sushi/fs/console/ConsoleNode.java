@@ -85,14 +85,13 @@ public class ConsoleNode extends Node {
     }
 
     @Override
-    public long getLastModified() {
-        return System.currentTimeMillis();
+    public long length() {
+        throw unsupported("length()");
     }
 
     @Override
-    public long length() {
-        unsupported("length()");
-        return 0; // dummy
+    public long getLastModified() {
+        return System.currentTimeMillis();
     }
 
     @Override
@@ -100,6 +99,16 @@ public class ConsoleNode extends Node {
         throw new SetLastModifiedException(this);
     }
     
+    @Override 
+    public int getMode() {
+        throw unsupported("getMode()");
+    }
+
+    @Override
+    public void setMode(int mode) {
+        throw unsupported("setMode()");
+    }
+
     @Override
     public Node mkdir() throws MkdirException {
         throw new MkdirException(this);

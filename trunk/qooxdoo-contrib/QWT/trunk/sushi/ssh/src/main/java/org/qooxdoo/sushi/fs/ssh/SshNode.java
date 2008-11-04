@@ -41,6 +41,7 @@ import org.qooxdoo.sushi.io.Misc;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 public class SshNode extends Node {
@@ -199,7 +200,27 @@ public class SshNode extends Node {
             throw new SetLastModifiedException(this, e);
         }
     }
-    
+
+    public int getMode() throws IOException {
+        try {
+            return channel.stat(slashPath).getPermissions() & 0777;
+        } catch (SftpException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    public void setMode(int mode) throws IOException {
+        SftpATTRS stat;
+        
+        try {
+            stat = channel.stat(slashPath);
+            stat.setPERMISSIONS(mode);
+            channel.setStat(slashPath, stat);
+        } catch (SftpException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
     @Override
     public InputStream createInputStream() throws IOException {
         FileNode tmp;
@@ -219,7 +240,7 @@ public class SshNode extends Node {
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
         if (append) {
-            unsupported("createOutputStream(true)");
+            throw unsupported("createOutputStream(true)");
         }
         return new ByteArrayOutputStream() {
             @Override
