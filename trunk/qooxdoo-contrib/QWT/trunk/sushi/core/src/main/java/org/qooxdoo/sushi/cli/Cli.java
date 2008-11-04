@@ -20,6 +20,7 @@
 package org.qooxdoo.sushi.cli;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.metadata.Schema;
@@ -109,6 +110,9 @@ public abstract class Cli {
                     console.info.println("  implementation version: " + pkg.getImplementationVersion());
                     console.info.println("  implementation vendor: " + pkg.getImplementationVendor());
                 }
+                console.verbose.println("Platform encoding: " + System.getProperty("file.encoding"));
+                console.verbose.println("Default Locale: " + Locale.getDefault());
+                console.verbose.println("Scanner Locale: " + console.input.locale());
             }
         };
     }
