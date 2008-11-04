@@ -106,7 +106,10 @@ public abstract class Node {
     
     public abstract OutputStream createOutputStream(boolean append) throws IOException;
 
-    /** lists child nodes or null if this is not a directory */
+    /** 
+     * Lists child nodes or null if this is not a directory.
+     * Throws an exception if permission is denied.
+     */
     public abstract List<? extends Node> list() throws ListException;
 
     /**

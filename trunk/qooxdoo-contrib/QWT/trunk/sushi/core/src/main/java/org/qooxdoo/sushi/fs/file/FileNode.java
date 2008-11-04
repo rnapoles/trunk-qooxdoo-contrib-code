@@ -31,6 +31,7 @@ import java.util.List;
 import org.qooxdoo.sushi.fs.DeleteException;
 import org.qooxdoo.sushi.fs.ExistsException;
 import org.qooxdoo.sushi.fs.GetLastModifiedException;
+import org.qooxdoo.sushi.fs.ListException;
 import org.qooxdoo.sushi.fs.MkdirException;
 import org.qooxdoo.sushi.fs.MkfileException;
 import org.qooxdoo.sushi.fs.Node;
@@ -152,14 +153,18 @@ public class FileNode extends Node {
     
     /** @return null when called for a file; non-null otherwise */
     @Override
-    public List<FileNode> list() {
+    public List<FileNode> list() throws ListException {
         File[] children;
         List<FileNode> result;
         FileNode child;
         
         children = file.listFiles();
         if (children == null) {
-            return null;
+            if (!file.canRead()) {
+                throw new ListException(this, new IOException("permission denied"));
+            } else {
+                return null;
+            }
         }
         result = new ArrayList<FileNode>(children.length);
         for (int i = 0; i < children.length; i++) {

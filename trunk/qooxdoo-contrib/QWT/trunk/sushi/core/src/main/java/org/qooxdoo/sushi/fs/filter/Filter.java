@@ -256,7 +256,13 @@ public class Filter {
             remainingIncludes = includes;
             remainingExcludes = excludes;
         }
-        children = node.list();
+        try {
+            children = node.list();
+        } catch (IOException e) {
+            // TODO: 
+            // report this exception - I currently need it because the collect algorithm is poor ... 
+            children = null;
+        }
         if (children == null) {
             // ignore file
         } else {
