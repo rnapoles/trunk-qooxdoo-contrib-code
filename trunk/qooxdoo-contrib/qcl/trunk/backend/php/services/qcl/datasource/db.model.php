@@ -244,7 +244,7 @@ class qcl_datasource_db_model extends qcl_db_model
     if ( $options['dsn'] )
     {
       $db = new qcl_db_mysql( $options['dsn'], &$this );
-      $this->info("Using custom dsn:" . print_r($options,true) );
+      //$this->info("Using custom dsn:" . print_r($options,true) );
     }
     else
     {

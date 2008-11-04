@@ -73,7 +73,8 @@ class qcl_session_db_model extends qcl_db_model
    */
   function addMessageBroadcast( $sessionId, $message, $data )
   {
-    $msgModel = new qcl_message_db_model(&$this->controller);
+    $controller =& $this->getController();
+    $msgModel = new qcl_message_db_model( &$controller );
     $msgModel->create();
     $msgModel->setProperty("sessionId",$sessionId);
     $msgModel->setName($message);
@@ -88,7 +89,8 @@ class qcl_session_db_model extends qcl_db_model
    */
   function getBroadcastedMessages( $sessionId )
   {
-    $msgModel = new qcl_message_db_model(&$this->controller);
+    $controller =& $this->getController();
+    $msgModel   =  new qcl_message_db_model(&$controller);
     
     /*
      * get messages that have been stored for session id

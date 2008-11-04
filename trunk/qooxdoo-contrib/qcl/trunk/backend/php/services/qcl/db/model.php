@@ -1812,6 +1812,8 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * add to unique index in link table, this works only if the table is
          * empty
+         * 
+         * disabled momentarily because it doesn't seem to work right
          *
         if ( $this->db->getValue("SELECT COUNT(*) FROM $link_table") == 0 )
         { 
@@ -1834,7 +1836,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     
     /*
-     * import initial data if necessary
+     * Import initial data if necessary
      */
     $path = $this->getDataPath();
     if ( ! $tableExists and file_exists($path) )
@@ -1986,7 +1988,7 @@ class qcl_db_model extends qcl_core_PropertyModel
   }
 
   /**
-   * Gets the name of the link in the schema xml, given a model instance.
+   * Returns the name of the link in the schema xml, given a model instance.
    * Throws an error if the model is not linked.
    *
    * @param qcl_db_model $model

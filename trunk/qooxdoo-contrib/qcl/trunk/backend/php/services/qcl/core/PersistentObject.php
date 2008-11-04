@@ -16,11 +16,23 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
 
   
   /**
-   * Copy of object in its initial state (to check whether
+   * Copy of object properties in its initial state (to check whether
    * it has been modified during runtime)
-   * @var qcl_db_PersistentObject
+   * @var array
    */
   var $_original;
+  
+  /**
+   * Flag to indicate if object has changed during runtime
+   * @var bool
+   */
+  var $_hasChanged;
+
+  /**
+   * Flag to indicate that  object has been deleted
+   * @var bool
+   */
+  var $_isDeleted;  
   
   /**
    * Indicates that this is a persistent object
@@ -98,7 +110,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    * @param string[optional] $id Optional id if several objects of
    * the same class are to be persisted
    */  
-  function __construct($controller, $id=null)
+  function __construct( $controller, $id=null)
   {
     /*
      * call parent contructor
@@ -130,12 +142,6 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
      * synchronize object and model data
      */
     $this->load($id);
-
-    /*
-     * save copy of object to be able to check for modifications
-     * later
-     */
-    $this->_original = $this;
     
   }
 
@@ -145,173 +151,23 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    */
   function initialize() {}
   
-  
-   /**
-   * Method called when called method does not exist. 
-   * This will check whether method name is 
-   * 
-   * - getXxx or setXxx and then return/set the public property xxx
-   * Otherwise, raise an error.
-   * @param string $function  Method name
-   * @param array  $arguments Array or parameters passed to the method
-   * @param mixed  $return    call-time reference to return value (PHP4-only)
-   * @return mixed return value (PHP5 only) 
+  /**
+   * Overrideable method to check if this is the first time the
+   * object has been initialized
+   * return bool 
    */
-  function __call( $function, $arguments, &$return) 
+  function isNew()
   {
-    /*
-     * we need to reimplement the mixin behavior from 
-     * qcl_object because we cannot call the parent 
-     * class method
-     * @see qcl_object::__call()
-     */
-    if ( phpversion() >= 5 and isset($this->_mixinlookup[$method] ) )
-    {
-      $elems = array();
-      for ($i=0, $_i=count($args); $i<$_i; $i++) $elems[] = "\$args[$i]";
-      eval("\$result = ".$this->_mixinlookup[$method]."::"
-          .$method."(".implode(',',$elems).");");
-      return $result;
-    }
-    
-    /*
-     * php4 or no matching mixin methods found.
-     * Now we intercept method calls
-     */
-    $startsWith = strtolower( substr( $function, 0, 3 ) );
-    $endsWith   = strtolower( substr( $function, 3 ) );
-    
-    
-    /*
-     * get.. and set... for property access
-     * @todo: correct calling of method with variable arguments
-     */
-    if ( $startsWith == "set" or $startsWith == "get"  )
-    {
-      if ( $startsWith == "set" )
-      {
-        $this->$endsWith = $arguments[0];
-      }
-      elseif ( $startsWith == "get" )
-      { 
-        $return = $this->$endsWith;
-      }
-    }
-    
-    /*
-     * method not known, raise error
-     */
-    else
-    {
-      $this->raiseError("Unknown method " . get_class($this) . "::$function().");
-    }
-    
-    /*
-     * return result
-     */
-    if ( phpversion() < 5) 
-    {
-      return true; // PHP 4: return value is in &$return
-    }
-    else
-    {
-      return $return; // PHP 5  
-    }
-  } 
-       
-  
+    return $this->isNew;
+  }
   
   /**
-   * Reconstructs the object from the model data
-   * FIXME: we have ::objectId and ::_objectId/::objectId() (object uuid) now -> needs to be integrated
+   * Reconstructs the object from the model data. This _must_ set
+   * $this->_original!
    */
   function load($id=null)
   {
-    /*
-     * get or create model record
-     */
-    if ( $id )
-    {
-      //$this->info("Loading " . $this->className() . " [$id].");
-      
-      $this->_dbModel->findWhere(array(
-        'class'    => "= '" . $this->className() . "' AND ",
-        'objectId' => "= '$id'"
-      )); 
-    }
-    else
-    {
-      $this->_dbModel->findByClass( $this->className() );
-    }
-    
-    /*
-     * Check if model data was found
-     */
-    if ( $this->_dbModel->foundNothing() )
-    {
-      //$this->info($this->className() . " [$id] was not found. Creating it...");
-      
-      /*
-       * create new record in database
-       */
-      $this->_dbModel->create();
-      $this->_dbModel->setClass( $this->className() );
-      if ( $id )
-      {
-        $this->_dbModel->setProperty("objectId",$id);
-      }
-      $this->_dbModel->save();
-    }
-    else
-    {
-      /*
-       * unserialize model object
-       */
-      $object = unserialize( $this->_dbModel->getData() );
-      
-      /*
-       * check for lock
-       */
-      if ( $object->isLocked )
-      {
-        /*
-         * check timestamp to break locks by aborted
-         * processes
-         */
-        $seconds = $this->_dbModel->getSecondsSince($this->_dbModel->getModified());
-        //$this->info("Seconds since modified: $seconds");
-        
-        if ( $seconds > $this->staleLockTimeout )
-        {
-          $this->warn("Removing stale lock on " . $this->className() );
-          $object->removeLock();
-        }
-      }
-      
-      //$this->info("Object was found. Copying properties ...");
-      
-      /*
-       * attach object properties to this object
-       */
-      foreach ( $this->getPropertyNames() as $key)
-      {
-        $this->$key =& $object->$key;
-        //$this->info("  '$key' (" . gettype($object->$key) . ")");
-      }
-      
-      /*
-       * set flag that this is a reconstructed object
-       */
-      $this->isNew = false;   
-
-    }
-    
-    /*
-     * public and private object id
-     */
-    $this->objectId = $id;   
-    $this->_objectId = $id; 
-  
+    $this->raiseError("Not yet implemented");
   }
   
   /**
@@ -394,10 +250,12 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
   }
   
   /**
-   * Get all public property names of this class.
+   * Return the names of all properties that are to be persistent.
+   * By default, this returns all public property names of this class.
+   * FIXME: Adapt for PHP5
    * @return array
    */
-  function getPropertyNames()
+  function persistedProperties()
   {
     $propList = new ArrayList; 
     foreach ( array_keys( get_class_vars( $this->className() ) ) as $key )
@@ -411,16 +269,6 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     return $keys;
   }
   
-  /**
-   * Magic method which is called before object is 
-   * serialized. Returns an array of object property names
-   * that are to be serialized.
-   * @return array
-   */
-  function __sleep()
-  {
-    return $this->getPropertyNames();
-  }
   
   /**
    * Saves the object to the storage
@@ -429,15 +277,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    */
   function save()
   {
-    if ( $this->isLocked 
-         and $this->lockMode == $this->WRITE_LOCK
-         and ! $this->_lockIsMine )
-    {
-      $this->raiseError("Cannot save " . $this->className() . " because of write lock." );
-      return; 
-    }
-    $this->_dbModel->setData( serialize( $this ) );
-    $this->_dbModel->save();
+    $this->raiseError("Not yet implemented");
   }
   
   /**
@@ -446,35 +286,61 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    */
   function delete()
   {
-    $id = $this->_dbModel->getId();
-    $this->_dbModel->delete($id);
-    foreach( $this->getPropertyNames() as $key )
-    {
-      $this->$key = null;
-    }
+    $this->raiseError("Not yet implemented");
   }
   
   /**
-   * Destructor. Serializes object and saves it to database
+   * Checks if object has changed during runtime by 
+   * comparing the persisted properties to their
+   * orginal state
+   * @return bool
    */
-  function __destruct()
+  function hasChanged()
   {
+    if ( $this->_hasChanged ) return true;
     
-    /*
-     * Check if object has changed
-     */
-    $changed = false;
-    foreach($this->getPropertyNames() as $key )
+    foreach( $this->persistedProperties() as $key )
     {
-      //$this->info( $key . ": " . $this->$key . " <-> " . $this->_original->$key );
-      if ( $this->$key != $this->_original->$key )
+      //$this->info( $key . ": " . $this->$key . " <-> " . $this->_original[$key] );
+      if ( $this->$key != $this->_original[$key] )
       {
-        $changed = true; 
+        /*
+         * remember that something has changed
+         */
+        $this->_hasChanged  = true; 
         break;
       }
     }
+    return $this->_hasChanged;
+  }
+  
+  /**
+   * Set the value for the object change flag
+   * @param bool $value
+   * @return void
+   */
+  function setChanged($value)
+  {
+    $this->_hasChanged = $value;
+  }
+  
+  /**
+   * Destructor. 
+   */
+  function __destruct()
+  {
+    /*
+     * do not check for changes if deleted or there is no change
+     */
+    if ( $this->_isDeleted or $this->_hasChanged === false )
+    {
+      return;
+    }
     
-    if ( $changed )
+    /*
+     * save if data has changed
+     */   
+    if ( $this->hasChanged() )
     {
       
       //$this->info($this->className() . " [{$this->objectId}] has changed, saving ... ");
@@ -482,7 +348,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
       if ( $this->isLocked )
       {
         /*
-         * release lock and save object
+         * release lock, this implicitly saves object data
          */
         $this->releaseLock();
       }

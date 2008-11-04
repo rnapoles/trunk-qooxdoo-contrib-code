@@ -19,8 +19,8 @@ class qcl_datasource_SchemaManager extends qcl_db_PersistentObject
    * @param qcl_jsonrpc_controller $controller
    */
   function __construct( $controller )
-  {
-    parent::__construct( &$controller, __CLASS__ );    
+  {    
+    parent::__construct( &$controller, __CLASS__ );
   }
   
   /**

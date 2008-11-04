@@ -253,8 +253,7 @@ class qcl_object extends patched_object
     touch($path);
     return true;
   }
- 
-  
+
   //-------------------------------------------------------------
   // Registry during request. This is deprecated, use 
   // qcl_registry_Session instead

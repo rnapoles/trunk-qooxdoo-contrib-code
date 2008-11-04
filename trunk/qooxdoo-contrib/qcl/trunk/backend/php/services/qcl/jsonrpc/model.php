@@ -17,7 +17,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
    *
    * @var qcl_jsonrpc_controller or subclass
    */
-	var $controller = null;
+	var $_controller = null;
 
 	/**
 	 * The current model record data
@@ -64,30 +64,30 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  	{
 		if ( is_a( $controller,"qcl_jsonrpc_controller" ) )
 		{
-			$this->controller =& $controller;
+			$this->_controller =& $controller;
 		}
 		elseif ( is_a( $controller,"qcl_jsonrpc_model" ) )
 		{
-		  $this->controller =& $controller->getController();
+		  $this->_controller =& $controller->getController();
 		}
     else
     {
 			$this->raiseError (
         "No valid controller object provided for " . $this->className() . ". Received a " . 
-          is_object($controller) ? 
+          ( is_object($controller) ? 
             ( get_class($controller) . " object." ) : 
-            ( gettype( $controller ) . "." )
+            ( gettype( $controller ) . "." ) )
       );
     }
  	}
  	
  	/**
- 	 * gets controller of this model 
+ 	 * Returns controller of this model 
  	 * @return qcl_jsonrpc_controller 
  	 */
  	function &getController()
  	{
-    return $this->controller;
+    return $this->_controller;
  	}	
 
 	//-------------------------------------------------------------
