@@ -624,6 +624,23 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         dest.join("dir").checkDirectory();
     }
     
+    @Test
+    public void mode() throws Exception {
+        Node file;
+        
+        file = work.join("file");
+        file.writeBytes();
+        try {
+            file.setMode(0644);
+        } catch (UnsupportedOperationException e) {
+            // ok - quit
+            return;
+        }
+        assertEquals(0644, file.getMode());
+        file.setMode(0755);
+        assertEquals(0755, file.getMode());
+    }
+
     //-- Object methods
     
     @Test

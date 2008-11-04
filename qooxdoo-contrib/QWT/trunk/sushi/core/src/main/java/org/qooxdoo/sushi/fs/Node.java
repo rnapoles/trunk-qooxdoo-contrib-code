@@ -85,8 +85,8 @@ public abstract class Node {
         this.base = null;
     }
     
-    protected void unsupported(String op) {
-        throw new UnsupportedOperationException(getLocator() + ":" + op);
+    protected UnsupportedOperationException unsupported(String op) {
+        return new UnsupportedOperationException(getLocator() + ":" + op);
     }
     
     public abstract Root getRoot();
@@ -150,6 +150,9 @@ public abstract class Node {
     public abstract long getLastModified() throws GetLastModifiedException;
     public abstract void setLastModified(long millis) throws SetLastModifiedException;
     
+    public abstract int getMode() throws IOException;
+    public abstract void setMode(int mode) throws IOException;
+
     //-- path functionality
 
     /**

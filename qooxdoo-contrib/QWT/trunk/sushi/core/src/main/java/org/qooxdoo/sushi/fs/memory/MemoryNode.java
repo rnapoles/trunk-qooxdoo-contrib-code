@@ -79,6 +79,11 @@ public class MemoryNode extends Node {
         return type == Type.DIRECTORY;
     }
     
+    @Override
+    public long length() {
+        return root.length(path);
+    }
+
     @Override 
     public long getLastModified() throws GetLastModifiedException {
         if (type == Type.NONE) {
@@ -88,16 +93,20 @@ public class MemoryNode extends Node {
     }
     
     @Override
-    public long length() {
-        return root.length(path);
-    }
-
-    @Override
     public void setLastModified(long millis) throws SetLastModifiedException {
         lastModified = millis;
     }
     
-    
+    @Override 
+    public int getMode() {
+        throw unsupported("getMode()");
+    }
+
+    @Override
+    public void setMode(int mode) {
+        throw unsupported("setMode()");
+    }
+
     @Override
     public Node mkdir() throws MkdirException {
         boolean parentDir;
@@ -155,7 +164,7 @@ public class MemoryNode extends Node {
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
         if (append) {
-            unsupported("createOutputStream(true)");
+            throw unsupported("createOutputStream(true)");
         }
         if (type == Type.DIRECTORY) {
             throw new IOException("cannot write file over directory: " + path);

@@ -352,6 +352,7 @@ public class FileNode extends Node {
 
     //--
     
+    @Override
     public int getMode() throws IOException {
         Program stat;
         
@@ -361,6 +362,7 @@ public class FileNode extends Node {
         return Integer.parseInt(stat.exec().trim(), 8) & 0777;
     }
 
+    @Override
     public void setMode(int mode) throws IOException {
         new Program(dir(), "chmod", Integer.toOctalString(mode), getAbsolute()).execNoOutput();
     }

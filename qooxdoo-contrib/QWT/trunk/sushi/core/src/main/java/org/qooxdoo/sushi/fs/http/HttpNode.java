@@ -67,6 +67,16 @@ public class HttpNode extends Node {
         throw new SetLastModifiedException(this);
     }
     
+    @Override 
+    public int getMode() {
+        throw unsupported("getMode()");
+    }
+
+    @Override
+    public void setMode(int mode) {
+        throw unsupported("setMode()");
+    }
+    
     public URL getUrl() {
         return url;
     }
@@ -118,7 +128,7 @@ public class HttpNode extends Node {
         URLConnection connection;
 
         if (append) {
-            unsupported("createOutputStream(true)");
+            throw unsupported("createOutputStream(true)");
         }
         connection = url.openConnection();
         connection.connect();

@@ -141,6 +141,16 @@ public class SvnNode extends Node {
         return result;
     }
 
+    @Override 
+    public int getMode() {
+        throw unsupported("getMode()");
+    }
+
+    @Override
+    public void setMode(int mode) {
+        throw unsupported("setMode()");
+    }
+    
     @Override
     public InputStream createInputStream() throws IOException {
         FileNode tmp;
@@ -160,7 +170,7 @@ public class SvnNode extends Node {
     @Override
     public OutputStream createOutputStream(boolean append) throws IOException {
     	if (append) {
-    		unsupported("createOutputStream(true)");
+    		throw unsupported("createOutputStream(true)");
     	}
         return new ByteArrayOutputStream() {
             @Override
