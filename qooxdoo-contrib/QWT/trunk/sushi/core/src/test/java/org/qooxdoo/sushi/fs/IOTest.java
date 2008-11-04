@@ -213,7 +213,8 @@ public class IOTest {
         io.locateClasspathItem(Object.class).checkFile();
         io.locateClasspathItem("/java/lang/Object.class").checkFile();
         io.locateClasspathItem("/java/lang/Object.class").checkFile();
-        assertEquals("foo+bar.jar", io.locateClasspathItem(new URL("jar:file:/foo+bar.jar!/some/file.txt"), "/some/file.txt").getPath());
+        assertEquals("foo bar.jar", io.locateClasspathItem(new URL("jar:file:/foo%20bar.jar!/some/file.txt"), "/some/file.txt").getPath());
+        assertEquals("foo bar.jar", io.locateClasspathItem(new URL("jar:file:/foo+bar.jar!/some/file.txt"), "/some/file.txt").getPath());
         try {
             assertNull(io.locateClasspathItem("/nosuchresource"));
             fail();

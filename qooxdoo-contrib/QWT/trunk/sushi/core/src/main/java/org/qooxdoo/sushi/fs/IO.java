@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -361,11 +362,11 @@ public class IO {
         }
         file = locateClasspathItem(url, resourcename);
         if (!file.exists()) {
-            throw new RuntimeException("no such file or directory: " + file);
+            throw new RuntimeException(url + ": no such file or directory: " + file);
         }
         file = locateClasspathItem(url, resourcename);
         if (!file.exists()) {
-            throw new RuntimeException("no such file or directory: " + file);
+            throw new RuntimeException(url + ": no such file or directory: " + file);
         }
         return file;
     }
@@ -419,13 +420,15 @@ public class IO {
             if (!filename.startsWith("file:")) {
                 throw new IllegalArgumentException(filename);
             }
-            filename = filename.substring(5);
             idx = filename.indexOf('!');
             if (idx == -1) {
                 throw new RuntimeException("! not found: " + filename);
             }
-            filename = filename.substring(0, idx);
-            file = file(filename);
+            try {
+                file = (FileNode) node(new URL(filename.substring(0, idx)));
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(filename, e);
+            }
         } else {
             throw new RuntimeException("protocol not supported: " + protocol);
         }
