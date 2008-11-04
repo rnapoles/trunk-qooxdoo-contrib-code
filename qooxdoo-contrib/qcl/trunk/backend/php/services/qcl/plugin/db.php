@@ -34,7 +34,9 @@ class qcl_plugin_db extends qcl_db_model
     $plugin_path  =  $controller->getIniValue("service.plugin_path");
     
     // repopulate plugins table
+    // @todo 
     $this->db->execute("TRUNCATE {$this->table};" );
+    
     foreach ( scandir($plugin_path) as $dir )
     {
       $file = "$plugin_path/$dir/plugin.php";

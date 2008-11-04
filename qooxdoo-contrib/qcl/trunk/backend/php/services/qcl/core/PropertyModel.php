@@ -116,7 +116,14 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   var $schemaXmlPath = null;  
   
-
+  
+  /**
+   * The path containing data that will imported into the model data 
+   * when the model is initialized for the first time.
+   * @var string
+   */
+  var $importDataPath;
+  
   /**
    * Constructor 
    * @param qcl_jsonrpc_controller  $controller
@@ -1268,6 +1275,10 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function getDataPath()
   {
+    if ( $this->importDataPath )
+    {
+      return $this->importDataPath;
+    }
     $class = get_class($this);
     $path  = str_replace("_","/",$class) . ".data.xml";    
     return $path;

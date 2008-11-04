@@ -58,7 +58,7 @@ class qcl_db_abstract extends qcl_jsonrpc_object
    * @access private
    * @var qcl_jsonrpc_controller
    */
-  var $controller = null;  
+  var $_controller = null;  
   
 	/**
 	 * constructor
@@ -76,14 +76,15 @@ class qcl_db_abstract extends qcl_jsonrpc_object
 	   */
     if ( is_a($master,"qcl_jsonrpc_model") )
     {
-      $this->model      =& $master;
-      $this->controller =& $master->getController();
+      $this->model  =& $master;
+      $controller   =& $master->getController();
+      $this->setController( $controller ); 
     }
 	  elseif ( is_a($master,"qcl_jsonrpc_controller") )
     {
-      $this->controller =& $master;
+      $this->setController( &$master );
     }
-	  elseif ( ! is_null($master) )
+	  elseif ( ! is_null( $master ) )
 	  {
 	    $this->raiseError("Invalid master object: " .  get_class($master) );
 	  }
@@ -109,8 +110,18 @@ class qcl_db_abstract extends qcl_jsonrpc_object
    */
   function &getController()
   {
-    return $this->controller;
+    return $this->_controller;
   }  
+
+  /**
+   * setter for controller
+   * @param  qcl_jsonrpc_controller $controller
+   */
+  function &setController( $controller )
+  {
+    $this->_controller = &$controller;
+  }    
+  
   
 	/**
 	 * initializes the object

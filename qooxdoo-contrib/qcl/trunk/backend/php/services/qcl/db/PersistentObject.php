@@ -33,7 +33,7 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
   }
   
   /**
-   * Reconstructs the object from the model data
+   * Reconstructs the object from the model data. This _must_ set $this->_original
    * FIXME: we have ::objectId and ::_objectId/::objectId() (object uuid) now -> needs to be integrated
    */
   function load($id=null)
@@ -78,12 +78,22 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
       /*
        * unserialize model object
        */
-      $object = unserialize( $this->_dbModel->getData() );
+      //$this->info($this->_dbModel->getRecord());
+      $objData = $this->_dbModel->getProperty("data");
+      //$this->info($objData);
+      $data = unserialize( $objData );
+      //$this->info($data);
+      
+      /*
+       * save original data against which to check
+       * for modifications
+       */
+      $this->_original = $data;
       
       /*
        * check for lock
        */
-      if ( $object->isLocked )
+      if ( $data['isLocked'] )
       {
         /*
          * check timestamp to break locks by aborted
@@ -95,7 +105,7 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
         if ( $seconds > $this->staleLockTimeout )
         {
           $this->warn("Removing stale lock on " . $this->className() );
-          $object->removeLock();
+          $data['isLocked'] = false;
         }
       }
       
@@ -104,10 +114,10 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
       /*
        * attach object properties to this object
        */
-      foreach ( $this->getPropertyNames() as $key)
+      foreach ( $this->persistedProperties() as $key)
       {
-        $this->$key =& $object->$key;
-        //$this->info("  '$key' (" . gettype($object->$key) . ")");
+        $this->$key = $data[$key];
+        //$this->info(" Setting  '$key' to '{$this->$key}''");
       }
       
       /*
@@ -128,17 +138,51 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
    */
   function save()
   {
+    if ( $this->_isDeleted )
+    {
+      $this->raiseError("Cannot save a deleted object.");
+    }
+    
     if ( $this->isLocked 
          and $this->lockMode == $this->WRITE_LOCK
          and ! $this->_lockIsMine )
     {
-      $this->raiseError("Cannot save " . $this->className() . " because of write lock." );
+      $this->raiseError("Cannot save " . $this->className()  . " [$this->objectId]." . " because of write lock." );
       return; 
     }
-    $this->_dbModel->setData( serialize( $this ) );
+    
+    //$this->info("Saving object data for '" . $this->className() . "' [$this->objectId].");
+    
+    /*
+     * save object data
+     */
+    $data = array();
+    $properties = $this->persistedProperties();
+    
+    foreach( $properties as $property )
+    {
+      $data[$property] = $this->$property;
+      //$this->info(" Saving '$property' with value '$data[$property]'");
+    }
+    $this->_dbModel->setData( serialize( $data ) );
     $this->_dbModel->save();
+    $this->_hasChanged = false;
   }
   
-  
+  /**
+   * Deletes object properties and persistent data
+   * @return void
+   */
+  function delete()
+  {
+    $id = $this->_dbModel->getId();
+    $this->_dbModel->delete($id);
+    foreach( $this->persistedProperties() as $key )
+    {
+      $this->$key = null;
+    }
+    
+    $this->_isDeleted = true;
+  }  
 }
 ?>

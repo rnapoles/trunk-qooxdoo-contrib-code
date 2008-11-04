@@ -73,8 +73,8 @@ class qcl_datasource_controller extends qcl_session_controller
   {
     if ( ! $this->_manager )
     { 
-      //$this->info("Getting persistent Instance...");
-      $this->_manager =& new qcl_datasource_SchemaManager(&$this);
+      $this->_manager =& new qcl_datasource_SchemaManager(&$this); 
+      //$this->info("New schemamanager " . $this->_manager->objectId() );
     }
     return $this->_manager;
   }
@@ -110,7 +110,7 @@ class qcl_datasource_controller extends qcl_session_controller
     $manager =& $this->getManager();
     $class = $manager->getClassFor($schemaName);
     
-    if ( !$class )
+    if ( ! $class )
     {
       $this->raiseError("Schema '$schemaName' has no corresponding class name.'");
     }

@@ -18,20 +18,6 @@ class qcl_plugin_abstract extends qcl_jsonrpc_model
   var $author;
 
 	//-------------------------------------------------------------
-  // internal methods
-	//------------------------------------------------------------- 
-   
- 	/**
- 	 * constructor calls parent constructor
-   */
- 	function __construct($controller)
- 	{
-		parent::__construct(&$controller);
-	}
-
-	//-------------------------------------------------------------
-  // accessors 
-	//-------------------------------------------------------------  
 
 	function getNamedId()
   {
@@ -53,9 +39,6 @@ class qcl_plugin_abstract extends qcl_jsonrpc_model
     return $this->author;
   }
 	
-	//-------------------------------------------------------------
-  // public (interface) methods 
-	//-------------------------------------------------------------  
     
  	/**
 	 * checks whether plugin works (i.e., if dependencies are met)
