@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>qx.Class.define("${1:ns.classname}", 
+{
+  extend : ${2:qx.core.Object},
+
+
+  construct : function($3)
+  {
+    this.base(arguments);
+	
+    $4
+  },
+
+  members :
+  {
+  }
+});</string>
+	<key>name</key>
+	<string>qx.Class.define</string>
+	<key>tabTrigger</key>
+	<string>Class.define</string>
+	<key>uuid</key>
+	<string>D1D58444-F3E7-4290-A82A-21EA44CCF5AA</string>
+</dict>
+</plist>
