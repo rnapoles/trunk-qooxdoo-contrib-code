@@ -12,11 +12,10 @@ import os
 import sys
 import getopt
 
-QOOXDOO_PATH = os.environ['QOOXDOO_PATH'] 
-QOOXDOO_MODULES = QOOXDOO_PATH + "/frontend/framework/tool"
+import util
+util.addQooxdooClassPath()
 
-sys.path.append(QOOXDOO_MODULES)
-from modules import treegenerator
+from ecmascript.frontend import treegenerator
 import ecmalint
 
 # careful editing these, they are format strings
@@ -83,6 +82,13 @@ class TextMateLogger:
         
 
 def lint(file):
+    
+    for line in open(file).readlines():
+        match = re.search("qx\.Class\.define\(\s*[\"'](.*?)\.", line)
+        if match:
+            ns = match.groups(1)[0]
+            break
+    
     logger = TextMateLogger()
     logger.printHeader()
     try:

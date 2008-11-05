@@ -12,12 +12,11 @@ import os
 import sys
 import getopt
 
-QOOXDOO_PATH = os.environ['QOOXDOO_PATH'] 
-QOOXDOO_MODULES = QOOXDOO_PATH + "/frontend/framework/tool/modules"
+import util
+util.addQooxdooClassPath()
 
-sys.path.append(QOOXDOO_MODULES)
-import treegenerator
-import tokenizer
+from ecmascript.frontend import treegenerator
+from ecmascript.frontend import tokenizer
 
 def tokenize(file):
     try:
