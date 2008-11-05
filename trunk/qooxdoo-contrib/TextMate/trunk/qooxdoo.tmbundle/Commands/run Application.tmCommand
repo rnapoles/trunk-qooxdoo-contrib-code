@@ -22,7 +22,7 @@ done
 	<key>input</key>
 	<string>selection</string>
 	<key>keyEquivalent</key>
-	<string>@r</string>
+	<string>@b</string>
 	<key>name</key>
 	<string>Build &amp; Run</string>
 	<key>output</key>
