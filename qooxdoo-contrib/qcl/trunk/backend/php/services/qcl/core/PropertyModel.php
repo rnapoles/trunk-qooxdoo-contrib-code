@@ -603,6 +603,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     return $this->currentRecord;
   }
+ 
 
   /**
    * Sets the data of the currently loaded record
@@ -613,6 +614,30 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     $this->currentRecord = $record;
   } 
+
+  /**
+   * If the last query has found more then one record, get the text one
+   * @return array
+   */
+  function nextRecord()
+  {
+    if ( ! count( $this->_lastResult ) )
+    {
+      return false;
+    }
+    
+    /*
+     * throw away the first record
+     */
+    array_shift($this->_lastResult);
+    
+    /*
+     * and set the first element as current record
+     */
+    $this->setRecord( $this->_lastResult[0] );
+    
+    return $this->getRecord();
+  }
   
   /**
    * Gets the data of the currently loaded record as a stdClass object
