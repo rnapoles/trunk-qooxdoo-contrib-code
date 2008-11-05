@@ -52,7 +52,7 @@ public class Filter {
     //--
 
     
-    /** List of compiled paths. */
+    /** List of compiled paths. CP = (HEAD, NULL | CP); HEAD = Pattern */
     private final List<Object[]> includes;
     private final List<String> includesRepr;
     
@@ -243,18 +243,19 @@ public class Filter {
         if (currentDepth > maxDepth || includes.size() == 0 || excludesAll(excludes)) {
             return;
         }
-        if (currentDepth >= minDepth) {
+        if (currentDepth == 0) {
+        	// special case for first recursion step
+            remainingIncludes = includes;
+            remainingExcludes = excludes;
+        } else {
             name = node.getName();
             remainingIncludes = new ArrayList<Object[]>();
             remainingExcludes = new ArrayList<Object[]>();
             in = doMatch(name, includes, remainingIncludes);
             ex = doMatch(name, excludes, remainingExcludes);
-            if (in && !ex && matchPredicates(node)) {
-                result.invoke(node);
+            if (in && !ex && currentDepth >= minDepth && matchPredicates(node)) {
+            	result.invoke(node);
             }
-        } else {
-            remainingIncludes = includes;
-            remainingExcludes = excludes;
         }
         try {
             children = node.list();

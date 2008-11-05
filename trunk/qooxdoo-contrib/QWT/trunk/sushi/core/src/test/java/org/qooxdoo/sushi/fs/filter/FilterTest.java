@@ -115,8 +115,7 @@ public class FilterTest {
         check(filter().include("**/*").maxDepth(0) );
         check(filter().include("**/*").maxDepth(1), "a", "b");
         check(filter().include("**/*").minDepth(2).maxDepth(2), "b/c", "b/d");
-        // TODO: broken! 
-        // check(filter().include("b/*").minDepth(2).maxDepth(2), "b/c", "b/d");
+        check(filter().include("b/*").minDepth(2).maxDepth(2), "b/c", "b/d");
         check(filter().include("**/*").minDepth(3), "b/d/e");
     }
 
@@ -161,4 +160,3 @@ public class FilterTest {
         }
     }
 }
-
