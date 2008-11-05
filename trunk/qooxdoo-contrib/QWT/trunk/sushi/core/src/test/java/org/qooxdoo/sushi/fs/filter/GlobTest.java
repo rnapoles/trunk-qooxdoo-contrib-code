@@ -30,14 +30,12 @@ public class GlobTest {
     
     @Test
     public void empty() {
-        p = Glob.compile("", false);
-        assertTrue(Glob.matches(p, ""));
-        assertFalse(Glob.matches(p, " "));
+        assertEquals("", Glob.compile("", false));
     }
 
     @Test
     public void ignoreCase() {
-        p = Glob.compile("a", true);
+        p = (Pattern) Glob.compile("a", true);
         assertTrue(Glob.matches(p, "a"));
         assertTrue(Glob.matches(p, "A"));
         assertFalse(Glob.matches(p, "b"));
@@ -45,7 +43,7 @@ public class GlobTest {
 
     @Test
     public void suffix() {
-        p = Glob.compile("*.java", true);
+        p = (Pattern) Glob.compile("*.java", false);
         assertTrue(Glob.matches(p, "foo.java"));
         assertFalse(Glob.matches(p, "foo.txt"));
         assertTrue(Glob.matches(p, ".java"));
@@ -53,7 +51,7 @@ public class GlobTest {
 
     @Test
     public void all() {
-        p = Glob.compile("*.*", true);
+        p = (Pattern) Glob.compile("*.*", true);
         assertFalse(Glob.matches(p, ""));
         assertTrue(Glob.matches(p, "."));
         assertTrue(Glob.matches(p, "foo.bar"));
@@ -61,8 +59,9 @@ public class GlobTest {
     
     @Test
     public void x() {
-        p = Glob.compile("g.a-*.jar", true);
+        p = (Pattern) Glob.compile("g.a-*.jar", true);
         assertTrue(Glob.matches(p, "g.a-0.2.jar"));
+        assertTrue(Glob.matches(p, "g.A-0.2.jar"));
     }
 }
 

@@ -52,7 +52,7 @@ public class Filter {
     //--
 
     
-    /** List of compiled paths. CP = (HEAD, NULL | CP); HEAD = Pattern */
+    /** List of compiled paths. CP = (HEAD, NULL | CP); HEAD = Pattern | String */
     private final List<Object[]> includes;
     private final List<String> includesRepr;
     
@@ -189,7 +189,7 @@ public class Filter {
      * @param lst  array of patterns
      */
     private Object[] compileTail(List<String> lst, int start) {
-        Pattern head;
+        Object head;
         Object[] tail;
         
         if (start == lst.size()) {
@@ -257,13 +257,7 @@ public class Filter {
             	result.invoke(node);
             }
         }
-        try {
-            children = node.list();
-        } catch (IOException e) {
-            // TODO: 
-            // report this exception - I currently need it because the collect algorithm is poor ... 
-            children = null;
-        }
+        children = list(node, remainingIncludes);
         if (children == null) {
             // ignore file
         } else {
@@ -273,6 +267,34 @@ public class Filter {
         }
     }
     
+    private List<? extends Node> list(Node node, List<Object[]> includes) throws IOException {
+    	List<Node> children;
+    	Node child;
+    	
+    	children = null;
+    	for (Object[] path : includes) {
+    		if (path[0] instanceof String) {
+    			if (children == null) {
+    				children = new ArrayList<Node>();
+    			}
+  				child = node.join((String) path[0]);
+   	    		if (child.exists()) {
+   	    			children.add(child);
+    			}
+    		} else {
+    			children = null;
+    			break;
+    		}
+    	}
+        try {
+        	return node.list();    	
+        } catch (IOException e) {
+        	// TODO: 
+            // report this exception - I currently need it because the collect algorithm is poor ... 
+            return null;
+        }
+    }
+
     private boolean matchPredicates(Node node) throws IOException {
         for (Predicate p : predicates) {
             if (!p.matches(node)) {
@@ -304,7 +326,7 @@ public class Filter {
         int i;
         int max;
         Object[] path;
-        Pattern head;
+        Object head;
         Object[] tail;
         
         found = false;
@@ -314,14 +336,14 @@ public class Filter {
             if (path == null) {
                 throw new IllegalStateException("unexpected empty path");
             }
-            head = (Pattern) path[0];
+            head = path[0];
             tail = (Object[]) path[1];
             if (head == Glob.STARSTAR) {
                 remainingPaths.add(path);
-                head = (Pattern) tail[0];
+                head = tail[0];
                 tail = (Object[]) tail[1];
             }
-            if (Glob.matches(head, name)) {
+            if (matches(head, name)) {
                 if (tail != null) {
                     remainingPaths.add(tail);
                 } else {
@@ -331,7 +353,14 @@ public class Filter {
         }
         return found;
     }
-    
+    private static boolean matches(Object stringOrPattern, String name) {
+    	if (stringOrPattern instanceof String) {
+    		return name.equals(stringOrPattern);
+    	} else {
+    		return Glob.matches((Pattern) stringOrPattern, name);    	
+    	}
+    }
+
     @Override
     public String toString() {
         return "includes=" + includes + ", excludes=" + excludes;
