@@ -20,14 +20,7 @@ from ecmascript.frontend import treegenerator
 import ecmalint
 
 
-def lint(file):
-    
-    for line in open(file).readlines():
-        match = re.search("qx\.Class\.define\(\s*[\"'](.*?)\.", line)
-        if match:
-            ns = match.groups(1)[0]
-            break
-    
+def lint(file):    
     logger = TextMateLogger()
     logger.printHeader("qooxdoo JavaScript lint", "qooxdoo JavaScript lint")
     try:
