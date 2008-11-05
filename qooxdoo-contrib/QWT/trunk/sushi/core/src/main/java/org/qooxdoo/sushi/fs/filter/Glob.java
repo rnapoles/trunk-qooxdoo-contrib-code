@@ -39,13 +39,21 @@ public class Glob {
         }
     }
     
-    public static Pattern compile(String glob, boolean ignoreCase) {
+    /** @return Pattern or String */
+    public static Object compile(String glob, boolean ignoreCase) {
+    	StringBuilder regex;
+    	
         if (glob.equals("**")) {
             return STARSTAR;
         } else if (glob.equals("*")) {
             return STAR;
         } else {
-            return doCompile(translate(glob), ignoreCase);
+        	regex = new StringBuilder();
+        	if (translate(glob, regex) && !ignoreCase) {
+        		return glob;
+        	} else {
+        		return doCompile(regex.toString(), ignoreCase);
+        	}
         }
     }
 
@@ -59,19 +67,27 @@ public class Glob {
         return Pattern.compile(regexp, ignoreCase ? Pattern.CASE_INSENSITIVE : 0);
     }
     
+    private static String translate(String glob) {
+        StringBuilder result;
+
+        result = new StringBuilder();
+        translate(glob, result);
+        return result.toString();
+    }
+
     /**
      * Translate a glob PATTERN to a regular expression.
      */
-    private static String translate(String glob) {
+    private static boolean translate(String glob, StringBuilder result) {
         int i;
         int max;
-        StringBuilder result;
         char c;
         int j;
         String stuff;
-
+        int escaped;
+        
+        escaped = 0;
         max = glob.length();
-        result = new StringBuilder();
         for (i = 0; i < max;) {
             c = glob.charAt(i++);
             if (c == '*') {
@@ -105,11 +121,12 @@ public class Glob {
                     result.append(']');
                 }
             } else {
+            	escaped++;
                 result.append(escape(c));
             }
         }
         result.append('$');
-        return result.toString();
+        return escaped == max;
     }
 
     public static String escape(char c) {
