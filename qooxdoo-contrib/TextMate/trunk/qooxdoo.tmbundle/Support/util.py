@@ -18,8 +18,8 @@ def getQooxdoo():
 
     logger = TextMateLogger()    
     logger.printHeader("qooxdoo SDK not found", "qooxdoo SDK not found")
-    logger.printFooter()
     print "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog."
+    logger.printFooter()    
     
     #os.system("""CocoaDialog msgbox --title "qooxdoo SDK not found" --button1 "OK" --text "qooxdoo SDK not found" --informative-text "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog." """)
     sys.exit()
@@ -56,7 +56,7 @@ div#body {
 }
 
 div#output{
-  padding: 0;
+  padding: 0px;
   margin: 0;
   font-family: Monaco;
   font-size: 8pt;
