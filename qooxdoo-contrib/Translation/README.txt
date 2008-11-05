@@ -5,7 +5,7 @@ language-specific parts of qooxdoo, i.e.
 
   * framework
   * feedreader
-  * showcase
+  * showcaseXXX
 
 The data to be translated has originally been extracted from the JavaScript 
 source code. It is in English and is provided in form of a "po" file for each 
