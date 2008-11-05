@@ -11,10 +11,14 @@ import os
 import sys
 
 def getQooxdoo():
-    qxPath = os.environ['QOOXDOO_PATH']
-    if not qxPath:
-        os.system("""CocoaDialog msgbox --title "qooxdoo SDK not found" --button1 "OK" --text "qooxdoo SDK not found" --informative-text "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog." """)
-        sys.exit()
+    
+    if "QOOXDOO_PATH" in os.environ:
+        qxPath = os.environ['QOOXDOO_PATH']
+        if qx.path.isdir(qxPath):
+            return qxPath
+
+    os.system("""CocoaDialog msgbox --title "qooxdoo SDK not found" --button1 "OK" --text "qooxdoo SDK not found" --informative-text "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog." """)
+    sys.exit()
 
 #        os.system("""CocoaDialog msgbox --title "qooxdoo SDK not found" -‑text "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog."  --button1 OK""")
     return qxPath
