@@ -10,7 +10,7 @@
 while test `pwd` != "/"; do
   if test -e generate.py &amp;&amp; test -d source; then
     echo "&lt;html&gt;&lt;body&gt;&lt;pre&gt;"
-    ./generate build
+    ./generate.py build
     echo "&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;"
     open build/index.html
     exit 0;
