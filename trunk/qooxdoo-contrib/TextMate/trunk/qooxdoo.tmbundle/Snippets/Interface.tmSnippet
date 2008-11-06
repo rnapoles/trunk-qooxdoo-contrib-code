@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/**
+ *
+ * DESCRIPTION
+ * 
+ * @package ${package}
+ * @class ${Class}
+ * @author (your name comes here)
+ */
+qx.Interface.define('${1:package name}.${2:interface name}', 
+ {
+   extend: ${3:superinterface},
+ 
+   properties: 
+   {
+   	'${4:property name}' : {}
+   },
+ 
+   members:
+   {
+     ${5:member name} : function() { }
+   },
+ 
+   statics:
+   {
+     ${6:constant name} : ${7:constant value},
+     ${8:static method} : function()
+     {  
+     }
+   },
+ 
+   events :
+   {
+     ${9:event name} : ${10:event type}
+   }
+});</string>
+	<key>name</key>
+	<string>Interface</string>
+	<key>tabTrigger</key>
+	<string>interface</string>
+	<key>uuid</key>
+	<string>B47C1E01-5026-4DA4-BDA9-063CA0A8C2F9</string>
+</dict>
+</plist>

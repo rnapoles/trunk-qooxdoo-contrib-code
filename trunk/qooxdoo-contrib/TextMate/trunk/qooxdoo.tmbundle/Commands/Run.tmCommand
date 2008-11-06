@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>cd "$TM_DIRECTORY"
+
+while test `pwd` != "/"; do
+  if test -e generate.py &amp;&amp; test -d source; then
+    open source/index.html
+    exit 0;
+  else
+    cd ..;
+  fi;
+done
+</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>@r</string>
+	<key>name</key>
+	<string>Run</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>B089ED8A-D2FB-4B54-A9B2-B2F168194B67</string>
+</dict>
+</plist>
