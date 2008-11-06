@@ -41,7 +41,7 @@ qx.Interface.define('${1:package name}.${2:interface name}',
 	<key>name</key>
 	<string>Interface</string>
 	<key>tabTrigger</key>
-	<string>interface</string>
+	<string>Interface</string>
 	<key>uuid</key>
 	<string>B47C1E01-5026-4DA4-BDA9-063CA0A8C2F9</string>
 </dict>

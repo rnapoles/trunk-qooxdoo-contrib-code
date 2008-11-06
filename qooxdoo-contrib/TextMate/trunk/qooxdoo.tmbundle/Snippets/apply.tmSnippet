@@ -3,12 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>addListener('${2:event name}', ${3:function name}, ${4:this});</string>
+	<string>_apply${1:Property} : function(value, old)
+{
+  $2
+},</string>
 	<key>name</key>
-	<string>addListener</string>
+	<string>apply</string>
 	<key>tabTrigger</key>
-	<string>addListener</string>
+	<string>_apply</string>
 	<key>uuid</key>
-	<string>734F7A8A-7982-4782-A462-FCDB2F6CE681</string>
+	<string>0AB73295-F104-4297-8C97-D0A8D8E88692</string>
 </dict>
 </plist>
