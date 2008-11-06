@@ -174,7 +174,23 @@ qx.Class.define("htmlarea.HtmlArea",
     "messengerContent" : "qx.event.type.DataEvent",
 
     /**
-     * This event consists of two boolean values. These values represent if the text in the current cursor context is bo
+     * This event holds a data map which informs about the formatting at the
+     * current cursor position. It holds the following keys:
+     * 
+     * * bold
+     * * italic
+     * * underline
+     * * strikethrough
+     * * fontSize
+     * * fontFamily
+     * * insertUnorderedList
+     * * insertOrderedList
+     * * justifyLeft
+     * * justifyCenter
+     * * justifyRight
+     * * justifyFull
+     * 
+     * This map can be used to control/update a toolbar states.
      */
     "cursorContext"    : "qx.event.type.DataEvent",
 
