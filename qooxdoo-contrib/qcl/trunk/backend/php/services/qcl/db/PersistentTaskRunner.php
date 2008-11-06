@@ -24,12 +24,27 @@ class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
    */
   var $completed;
 
-  /*
-   * max execution time for the synchronization before
+  /**
+   * Maximum execution time for the synchronization before
    * returning control to the client
    */
   var $maxExecTime = 3;
-
+  
+  /**
+   * Timestamp for maximum execution time
+   * @var int
+   * @access private
+   */
+  var $_endTime;
+  
+  /**
+   * Flag to indicate that process has been interrupted
+   * by a different process. Not yet implemented
+   * 
+   */
+  var $interrupted;
+  
+  
   /**
    * Configures the persistent object
    */
@@ -43,7 +58,8 @@ class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
    * calling a "::task_X()" method, X being the current task number.
    * êf the counter points to a non-existing task method, the tasks are 
    * assumed to be finished and true is returned.
-   * @return mixed
+   * @return mixed True if all tasks are completed without error,
+   * false if an error occurred, and string if tasks are still running.
    */
   function run()
   {
@@ -56,22 +72,60 @@ class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
     }
     
     /*
-     * execute task method if it exists
+     * @todo Check for interrupt
      */
-    $methodName = "task_" . $this->taskNumber;
-    if ( $this->hasMethod($methodName) )
-    {
-      return $this->$methodName();  
-    }
+    
     
     /*
-     * or return True to indicated that task has been completed
+     * max execution time
      */
-    else
+    $this->_endTime = time() + $this->maxExecTime;
+
+    /*
+     * execute task until maximum execution time is over
+     * or task exits with a boolean value (true: all completed, false: error)
+     */
+    do
     {
-      $this->completed = true;
-      return true;
+      /*
+       * execute task method if it exists
+       */
+      $methodName = "task_" . $this->taskNumber;
+      //$this->info("Time :" . time() . ", End time $this->_endTime" );
+      //$this->info("Running $methodName()");
+      if ( $this->hasMethod($methodName) )
+      {
+        $result = $this->$methodName();  
+      }
+      else
+      {
+        $this->completed = true;  
+        return true;
+      }
     }
+    while ( ! ( is_bool($result) or $this->taskTimeout() ) );
+    
+    /*
+     * Return value is true if all tasks are completed without error,
+     * false if an error occurred, and string if tasks are still running.
+     * The string is sent as a status message to the server. 
+     */
+    if ( $result === true )
+    {
+      $this->completed = true;  
+    }
+    return $result;
+  }
+  
+  /**
+   * Returns true if the script has consumed more time than 
+   * the maximum execution time
+   *
+   * @return bool
+   */
+  function taskTimeout()
+  {
+    return time() > $this->_endTime;
   }
   
   /**
@@ -81,6 +135,7 @@ class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
    */
   function endTask($message)
   {
+    //$this->info("End task with '$message'");
     $this->taskNumber++;
     return $message;
   }

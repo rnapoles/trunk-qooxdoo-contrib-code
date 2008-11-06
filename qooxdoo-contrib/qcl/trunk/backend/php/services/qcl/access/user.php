@@ -16,6 +16,7 @@ define('QCL_ACTIVE_USER_SESSION_VARNAME', "qcl_access_user_activeUser");
  * 
  * Class cannot be used directly, you need to subclass it 
  * in your application service class folder
+ * @todo Refactor!
  */
 
 class qcl_access_user extends qcl_access_common
@@ -220,17 +221,17 @@ class qcl_access_user extends qcl_access_common
    }
 
    /**
-    * gets active user name
-    * @return int
+    * Returns user name of active user. Alias of ::getActiveUserNamedId()
+    * @return string
     */
    function getActiveUserName()
    {
-   		return $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME][$this->col_namedId]; 
+   		return $this->getActiveUserNamedId();
    }
 
    /**
-    * gets active user named id
-    * @return int
+    * Returns user (login) name of active user.
+    * @return string
     */
    function getActiveUserNamedId()
    {
@@ -238,8 +239,8 @@ class qcl_access_user extends qcl_access_common
    }
   
    /**
-    * gets active user full name
-    * @return int
+    * Returns full name of active user 
+    * @return string
     */
    function getActiveUserFullName()
    {
@@ -247,7 +248,7 @@ class qcl_access_user extends qcl_access_common
    }  
   
    /**
-    * checks if active user has the given permission
+    * Checks if active user has the given permission
     * respects wildcards, i.e. myapp.permissions.* covers
     * myapp.permissions.canDoFoo
     * @param string $requestedPermission the permission to check

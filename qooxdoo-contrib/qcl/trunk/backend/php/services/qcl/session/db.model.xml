@@ -11,9 +11,6 @@
     
       <!-- properties -->
       <properties>
-      
-        <!-- we don't need an id -->
-        <property replace="id" />
         
         <property name="sessionId" type="string">
           <sql>varchar(50) NOT NULL</sql>

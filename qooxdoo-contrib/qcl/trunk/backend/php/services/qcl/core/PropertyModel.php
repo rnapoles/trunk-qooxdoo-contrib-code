@@ -440,7 +440,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
  
   /**
    * Checks whether model has 'namedId' property
-   * @return void
+   * @return string the local name of the property
    */
   function _checkHasNamedId()
   {
@@ -448,6 +448,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     {
       $this->raiseError("Model " . $this->className() . " has no 'namedId' property.");  
     }
+    return $this->getPropertySchemaName("namedId");
   }
   
   /**
@@ -929,7 +930,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   } 
     
   /**
-   * Copies all properties that exists in both models.
+   * Copies all properties that exists in both models except the 'id' property.
    * @param qcl_db_model $model
    * 
    */
@@ -940,7 +941,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     
     foreach( $data as $key => $value )
     {
-      if ( in_array($key, $myProperties) )
+      if ( $key != "id" and in_array($key, $myProperties) )
       {
         $this->setProperty($key,$value);
       }
@@ -1110,8 +1111,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */
     if ( $namedId )
     {
-      $this->_checkHasNamedId();
-      $this->setNamedId($namedId);  
+      $namedIdCol = $this->_checkHasNamedId();
+      $this->currentRecord[$namedIdCol] = $namedId; // You cannot use setNamedId here because we don't have an id yet  
     }
     
     /*
