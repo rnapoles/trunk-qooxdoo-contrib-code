@@ -310,5 +310,14 @@ class String
     {
       return preg_replace($search,$replace,$this->_value);
     }
+    
+    /**
+     * Whether the current string is empty
+     * @return bool
+     */
+    function isEmpty()
+    {
+      return empty($this->_value);
+    }
 }
 ?>

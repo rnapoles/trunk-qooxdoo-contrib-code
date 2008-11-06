@@ -250,7 +250,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * gets the locale controller and sets the default locale. default is
    * a qcl_locale_manager (see there). if you want to use a different
    * controller, override this method
-   * return qcl_locale_manager
+   * @return qcl_locale_manager
    */
   function &getLocaleController()
   {
@@ -266,10 +266,16 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * translates a message
    * @return  String
    * @param   String  $msgId    Message id of the string to be translated 
-   * @param   Array   $varargs  (optional) Variable number of arguments for the sprintf formatting
+   * @param   Mixed   $varargs  (optional) Variable number of arguments for the sprintf formatting either as an array
+   * or as parameters
    */
-  function tr( $msgId, $varargs=array() )
+  function tr( $msgId, $varargs=null )
   {
+    if ( ! is_array($varargs) )
+    {
+      $varargs = func_get_args();
+      array_shift($varargs);
+    }
     $localeController =& $this->getLocaleController();
     return $localeController->tr($msgId, $varargs);
   }	

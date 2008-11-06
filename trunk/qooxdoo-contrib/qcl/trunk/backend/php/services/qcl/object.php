@@ -529,12 +529,23 @@ class qcl_object extends patched_object
   //-------------------------------------------------------------
   
   /**
-   * Alias method for get_class($this)
+   * OO alias for get_class($this)
+   * @return string
    */
   function className()
   {
     return get_class($this);
   } 
+  
+  /**
+   * OO alias for method_exists($this)
+   * @param string $method
+   * return bool
+   */
+  function hasMethod( $method )
+  {
+    return method_exists($this,$method);
+  }
     
   /**
    * similar to instanceOf javascript function. checks if object is an instance of the
