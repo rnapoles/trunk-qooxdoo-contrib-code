@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>SVN_OPTS="--no-auth-cache --non-interactive"
+
+svn up $SVN_OPTS $TM_BUNDLE_SUPPORT/..  2&gt; &gt;(CocoaDialog progressbar --indeterminate --title 'Updating Bundle' --text 'This could take a while...')
+
+osascript -e 'tell app "TextMate" to reload bundles'
+</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>^~@u</string>
+	<key>name</key>
+	<string>Update Bundle</string>
+	<key>output</key>
+	<string>discard</string>
+	<key>uuid</key>
+	<string>9632A39F-DCB1-4357-8C6A-90F74478CA3B</string>
+</dict>
+</plist>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>TPY=${TM_PYTHON:-python}
+
+"$TPY" "$TM_BUNDLE_SUPPORT/run-job.py" "$TM_FILEPATH"</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>^J</string>
+	<key>name</key>
+	<string>Run Job</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>86CC09F8-0031-4873-963C-56B362758F05</string>
+</dict>
+</plist>
