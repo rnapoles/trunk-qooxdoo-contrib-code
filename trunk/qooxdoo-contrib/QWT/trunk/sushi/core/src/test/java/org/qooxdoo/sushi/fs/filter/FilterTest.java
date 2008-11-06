@@ -45,6 +45,12 @@ public class FilterTest {
     }
 
     @Test
+    public void dir() throws IOException {
+        create("a/b", "b/c");
+        assertEquals(1, root.find("a/b").size());
+    }
+
+    @Test
     public void child() throws IOException {
         create("one");
         checkSet(root.find("one"), "one");
@@ -119,7 +125,7 @@ public class FilterTest {
         check(filter().include("**/*").minDepth(3), "b/d/e");
     }
 
-    @Test
+    @Test(expected=IOException.class)
     public void permissionDenied() throws IOException {
         assertEquals(0, root.getIO().node("/").find("lost+found/*").size());
     }

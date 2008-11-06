@@ -22,6 +22,7 @@ package org.qooxdoo.sushi.fs.filter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -230,68 +231,52 @@ public class Filter {
         doInvoke(0, root, new ArrayList<Object[]>(includes), new ArrayList<Object[]>(excludes), result);
     }
     
-    private void doInvoke(int currentDepth, Node node, List<Object[]> includes, List<Object[]> excludes, Action result)
+    private void doInvoke(int currentDepth, Node parent, List<Object[]> includes, List<Object[]> excludes, Action result)
     throws IOException {
         List<? extends Node> children;
-        int i;
         List<Object[]> remainingIncludes;
         List<Object[]> remainingExcludes;
         String name;
         boolean in;
         boolean ex;
-        
-        if (currentDepth > maxDepth || includes.size() == 0 || excludesAll(excludes)) {
+
+        if (currentDepth >= maxDepth) {
             return;
         }
-        if (currentDepth == 0) {
-        	// special case for first recursion step
-            remainingIncludes = includes;
-            remainingExcludes = excludes;
-        } else {
-            name = node.getName();
-            remainingIncludes = new ArrayList<Object[]>();
-            remainingExcludes = new ArrayList<Object[]>();
-            in = doMatch(name, includes, remainingIncludes);
-            ex = doMatch(name, excludes, remainingExcludes);
-            if (in && !ex && currentDepth >= minDepth && matchPredicates(node)) {
-            	result.invoke(node);
-            }
-        }
-        children = list(node, remainingIncludes);
+        children = list(parent, includes);
         if (children == null) {
             // ignore file
         } else {
-            for (i = 0; i < children.size(); i++) {
-                doInvoke(currentDepth + 1, (Node) children.get(i), remainingIncludes, remainingExcludes, result);
+            currentDepth++;
+            for (Node child : children) {
+                name = child.getName();
+                remainingIncludes = new ArrayList<Object[]>();
+                remainingExcludes = new ArrayList<Object[]>();
+                in = doMatch(name, includes, remainingIncludes);
+                ex = doMatch(name, excludes, remainingExcludes);
+                if (in && !ex && currentDepth >= minDepth && matchPredicates(child)) {
+                    result.invoke(child);
+                }
+                if (remainingIncludes.size() > 0 && !excludesAll(remainingExcludes)) {
+                    doInvoke(currentDepth, child, remainingIncludes, remainingExcludes, result);
+                }
             }
         }
     }
-    
+
+    // avoids node.list() call with there is exactly 1 include with a literal head
     private List<? extends Node> list(Node node, List<Object[]> includes) throws IOException {
-    	List<Node> children;
     	Node child;
     	
-    	children = null;
-    	for (Object[] path : includes) {
-    		if (path[0] instanceof String) {
-    			if (children == null) {
-    				children = new ArrayList<Node>();
-    			}
-  				child = node.join((String) path[0]);
-   	    		if (child.exists()) {
-   	    			children.add(child);
-    			}
-    		} else {
-    			children = null;
-    			break;
-    		}
-    	}
-        try {
+    	if (includes.size() == 1 && includes.get(0)[0] instanceof String) {
+            child = node.join((String) includes.get(0)[0]);
+            if (child.exists()) {
+                return Collections.singletonList(child);
+            } else {
+                return Collections.emptyList();
+            }
+    	} else {
         	return node.list();    	
-        } catch (IOException e) {
-        	// TODO: 
-            // report this exception - I currently need it because the collect algorithm is poor ... 
-            return null;
         }
     }
 
