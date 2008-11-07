@@ -1,15 +1,15 @@
 <?php
-require_once("qcl/object.php");
+require_once "qcl/core/object.php";
 /**
  * Base class for mixins. Makes sure this is not used as a 
  * standard class.
  */
-class qcl_mixin extends qcl_object
+class qcl_core_mixin extends qcl_core_object
 {
   
   /**
    * constructor. Serves only to throw an error if called, since
-   * mixins should not have constructors. 
+   * mixins cannot not have constructors in php
    */
   function __construct()
   {

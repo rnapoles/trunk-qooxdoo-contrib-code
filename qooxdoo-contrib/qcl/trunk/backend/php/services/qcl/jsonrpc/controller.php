@@ -17,7 +17,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	/**
 	 * initial configuration contained in ini.php-files in the #
 	 * service class folders
-	 * @see qcl_object::configureServie()
+	 * @see qcl_core_object::configureServie()
 	 */	
 	var $ini;
 

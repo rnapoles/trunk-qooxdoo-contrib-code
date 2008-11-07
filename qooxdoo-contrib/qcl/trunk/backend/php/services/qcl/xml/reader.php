@@ -1,13 +1,13 @@
 <?php
 
 // dependencies
-require_once ("qcl/object.php");
+require_once ("qcl/core/object.php");
 
 /**
  * Component to do XSLT - Transformations
  * @todo: php5 compatibility
  **/
-class qcl_xml_reader extends qcl_object
+class qcl_xml_reader extends qcl_core_object
 {
     
   /**

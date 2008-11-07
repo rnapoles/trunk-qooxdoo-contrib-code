@@ -2,8 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/functions.php";      // global functions
-require_once "qcl/patched_object.php"; // php4 object compatibility patch
+require_once "qcl/core/functions.php";      // global functions
 require_once "qcl/lang/String.php";    // String object similar to java
 require_once "qcl/lang/ArrayList.php"; // ArrayList object similar to java
 
@@ -56,7 +55,7 @@ $qcl_registry = array();
  * http://www.jansch.nl/2006/08/23/mixins-in-php/
  * 
  */
-class qcl_object
+class qcl_core_object
 {
   /**
    * The class name of this object
@@ -128,9 +127,9 @@ class qcl_object
    *
    * @return Object
    */
-  function qcl_object() 
+  function qcl_core_object() 
   {
-    //trigger_error("qcl_object constructor called");
+    //trigger_error("qcl_core_object constructor called");
     $args = func_get_args();
     if (method_exists($this, '__destruct')) 
     {
@@ -328,16 +327,16 @@ class qcl_object
    * @param mixed[optional] $arg4
    * @param mixed[optional] $arg5
    * @deprecated Subclass qcl_db_PersistentModel instead!
-   * @return qcl_object Instance of class
+   * @return qcl_core_object Instance of class
    */
   function &getPersistentInstance( $class, $arg1=null, $arg2=null, $arg3=null, $arg4=null, $arg5=null)
   {
-    qcl_object::includeClassfile($class);
+    qcl_core_object::includeClassfile($class);
     
     /*
      * retrieve instance
      */
-    $obj =& qcl_object::retrieve($class);
+    $obj =& qcl_core_object::retrieve($class);
     
     /*
      * create new instance if no cached copy is available
@@ -377,7 +376,7 @@ class qcl_object
     {
       $class = get_class($this);
       //$this->info("Saving serialized object of class $class.");
-      qcl_object::store($class,&$this);
+      qcl_core_object::store($class,&$this);
     }
     else
     {
@@ -469,7 +468,7 @@ class qcl_object
   {
     if ( $classname )
     {
-      return dirname( qcl_object::getClassPath( $classname ) );
+      return dirname( qcl_core_object::getClassPath( $classname ) );
     }
     elseif ( isset( $this ) and is_object($this ) )
     {

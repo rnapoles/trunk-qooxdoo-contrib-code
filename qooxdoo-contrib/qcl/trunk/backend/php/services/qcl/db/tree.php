@@ -1,7 +1,7 @@
 <?php
 
 // dependencies
-require_once ("qcl/mixin.php");
+require_once ("qcl/core/mixin.php");
 
 /**
  * mixin providing methods to model a basic tree structure based on an 
@@ -9,7 +9,7 @@ require_once ("qcl/mixin.php");
  * qcl_db_model.
  */
 
-class qcl_db_tree extends qcl_mixin
+class qcl_db_tree extends qcl_core_mixin
 {
 
 
