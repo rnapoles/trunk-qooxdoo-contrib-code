@@ -63,19 +63,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     }
   },
   
-  events : 
-  {
-    /** 
-      * Holds information about the state of undo/redo
-      * Keys are "undo" and "redo".
-      * Possible values are 0 and -1 to stay in sync with
-      * the kind the "cursorContext" event works.
-      * (1 = active/pressed, 0 = possible/not pressed, -1 = disabled)
-      */
-    "undoRedoState" : "qx.event.type.Data"
-  },
-
-
+  
   members :
   {
     /* Flag if a redo operation is possible */
@@ -87,6 +75,11 @@ qx.Class.define("htmlarea.command.UndoManager",
     /* Flag for the undo-mechanism to monitor the content changes */
     __startTyping : false,
     
+    /* Known action types */
+    __knownActionTypes : { command : true, content : true, custom : true },
+    
+    /* Map with infos about custom registered handler */
+    __registeredHandler : {},
     
     /* *******************************************************
      *
@@ -116,6 +109,22 @@ qx.Class.define("htmlarea.command.UndoManager",
         /* Mouse down listener is used to look after internal changes like image resizing etc. */
         qx.event.Registration.addListener(doc.body, "mousedown", this.__handleMouseDown, this, true);
       }
+    },
+    
+    
+    /**
+     * Inserts a paragraph when hitting the "enter" key.
+     * Decorator method for commandManager instance.
+     *
+     * @type member
+     * @return {Boolean} whether the key event should be stopped or not
+     */
+    insertParagraphOnLinebreak : function()
+    {
+      /* Use the internal collect method to add the command to the undo stack */
+      this.__collectUndoInfo("inserthtml", "", this.__commandManager.getCommandObject("inserthtml"));
+      
+      return this.__commandManager.insertParagraphOnLinebreak();
     },
     
     
@@ -157,16 +166,75 @@ qx.Class.define("htmlarea.command.UndoManager",
       }
       else
       {
-        /* Collect undo info */
-        this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
         
         /* Execute the command */
         result = this.__commandManager.execute(command, value);
+
+        if (result)
+        {
+          /* Collect undo info */
+          this.__collectUndoInfo(command, value, this.__commandManager.getCommandObject(command));
+        }
+        
+        /* Check if undo/redo steps are possible */
+        if (command == "undo" && this.__undoStack.length == 0)
+        {
+          this.__undoPossible = false;
+          
+          /* Fire an undo/redo state event */
+          this.__updateUndoRedoState();
+        }
+        else if (command == "redo" && this.__redoStack.length == 0)
+        {
+          this.__redoPossible = false;
+          
+          /* Fire an undo/redo state event */
+          this.__updateUndoRedoState();            
+        }
       }
       
       return result;
     },
     
+    
+    /**
+     * Public API method to add an undo step
+     * 
+     * @param undoRedoObject {Object} object which contains all the info to undo/redo
+     *                    the given step. This object has to define
+     *                  at least the "actionType" key to work properly.
+     *                  This object is passed to the handler methods 
+     *                  defined in the @see{registerHandler} method.
+     *             
+     * @return {void}
+     */
+    addUndoStep : function(undoRedoObject)
+    {
+      this.__addToUndoStack(undoRedoObject);
+    },
+        
+    
+    /**
+     * Register a handler for a customized actionType. This handler methods 
+     * (undo and redo) are called whenever the UndoManager encounters the 
+     * given actionType to undo/redo the change.
+     * 
+     * @param actionType {String} actionType to react on with undo and redo methods 
+     * @param undoHandler {function} undo method
+     * @param redoHandler {function} redo method
+     * @param context {Object} In this context the methods are called. When no 
+     *               context is given the context is the UndoManager itself.
+     * 
+     * @return {void}
+     * 
+     */
+    registerHandler : function(actionType, undoHandler, redoHandler, context)
+    {
+      this.__registeredHandler[actionType] = { undo    : undoHandler,
+                                               redo    : redoHandler,
+                                               context : context };
+    },
+        
     
     /* *******************************************************
      *
@@ -213,9 +281,25 @@ qx.Class.define("htmlarea.command.UndoManager",
        if (this.__undoStack.length > 0)
        {
          var undoStep = this.__undoStack.pop();
-
-         /* Pass the undo-handling to the specialized methods ("__undo" + actionType) */
-         result = this["__undo"+undoStep.actionType].call(this, undoStep);
+         
+         if (this.__knownActionTypes[undoStep.actionType.toLowerCase()])
+         {
+           /* Pass the undo-handling to the specialized methods ("__undo" + actionType) */
+           result = this["__undo"+undoStep.actionType].call(this, undoStep);
+         }
+         /* Any there any handlers which are registered to this actionType? */
+         else if(this.__registeredHandler[undoStep.actionType])
+         {
+            var handler = this.__registeredHandler[undoStep.actionType];
+            result = handler.undo.call(handler.context ? context : this, undoStep);
+            
+            // add it automatically to the redoStack
+            this.__addToRedoStack(undoStep);
+         }
+         else
+         {
+           this.error("actionType " + undoStep.actionType + " is not managed! Please provide a handler method!");
+         }
 
          /* (re)set the flags */
          this.__startTyping  = false;
@@ -422,9 +506,24 @@ qx.Class.define("htmlarea.command.UndoManager",
          if (this.__redoStack.length > 0)
          {
            var redoStep = this.__redoStack.pop();
-
-           /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
-           result = this["__redo" + redoStep.actionType].call(this, redoStep);
+           
+           if (this.__knownActionTypes[redoStep.actionType.toLowerCase()]) 
+           {
+            /* Pass the redo-handling to the specialized methods ("__redo" + actionType) */
+            result = this["__redo" + redoStep.actionType].call(this, redoStep);
+           }
+           else if(this.__registeredHandler[redoStep.actionType])
+           {
+              var handler = this.__registeredHandler[redoStep.actionType];
+              result = handler.redo.call(handler.context ? context : this, redoStep);
+              
+              // add it automatically to the undoStack
+              this.__addToUndoStack(redoStep);
+           }
+           else
+           {
+             this.error("actionType " + redoStep.actionType + " is not managed! Please provide a handler method!");
+           }
 
            /* (re)set the flags */
            this.__startTyping  = false;
@@ -572,6 +671,8 @@ qx.Class.define("htmlarea.command.UndoManager",
       undoObject.command       = command;
       undoObject.value         = value;
       undoObject.actionType    = "Custom";
+      
+      var sel = this.__editorInstance.__getSelection(); 
 
       if (commandObject.customUndo)
       {
@@ -593,7 +694,7 @@ qx.Class.define("htmlarea.command.UndoManager",
              * SPECIAL CASE
              * If the hyperlinks gets inserted on a selection treat it as a command step
              */
-            if (!this.__editorInstance.__getSelection().isCollapsed)
+            if (sel && !sel.isCollapsed)
             {
               undoObject.actionType = "Command";
             }
@@ -614,7 +715,7 @@ qx.Class.define("htmlarea.command.UndoManager",
            * need to act on a range to work should be captured.
            *
            */
-          if (this.__editorInstance.__getSelection().isCollapsed)
+          if (sel && sel.isCollapsed)
           {
             switch(command)
             {
@@ -846,11 +947,20 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @param e {DOM event} mouse event instance
      * @return {void}
      */
-    _handleMouseUp : qx.core.Variant.select("qx.client", {
+    _handleMouseUp : qx.core.Variant.select("qx.client", 
+    {
       "gecko" : function(e)
       {
         /* Get the current selected node (if available) */
         var sel = this.__editorInstance.__getSelection();
+        
+        // if no selection exists, we have no selected node
+        if (!sel)
+        {
+          this.__selectedNode = null;
+          return;
+        }
+        
         var anchorNode = sel.anchorNode;
         
         var checkNode = anchorNode.childNodes[sel.anchorOffset];
@@ -982,7 +1092,8 @@ qx.Class.define("htmlarea.command.UndoManager",
     /**
      * Fires the "undoRedoState" event to inform external components (like a toolbar)
      * about the current state of the undo/redo.
-     * The event itself it fired with a timeout to not interfere with the current key event.
+     * The event itself is fired from the HtmlArea instance and with a 
+     * timeout to not interfere with the current key event.
      * 
      * @return {void} 
      */
@@ -994,7 +1105,7 @@ qx.Class.define("htmlarea.command.UndoManager",
           undo : this.isUndoPossible() ? 0 : -1,
           redo : this.isRedoPossible() ? 0 : -1
         };
-        this.fireDataEvent("undoRedoState", data);
+        this.__editorInstance.fireDataEvent("undoRedoState", data);
       }, this, 200);
     }
   },
@@ -1018,6 +1129,6 @@ qx.Class.define("htmlarea.command.UndoManager",
     }
     catch(e) {}
     
-    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "__commands", "__doc");
+    this._disposeFields("__commandManager", "__editorInstance", "__undoStack", "__redoStack", "__commands", "__doc", "__knownActionTypes", "__registeredHandler");
   }
 });

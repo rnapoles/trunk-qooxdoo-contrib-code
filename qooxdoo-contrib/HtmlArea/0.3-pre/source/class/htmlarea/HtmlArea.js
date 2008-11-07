@@ -34,6 +34,13 @@
 qx.Class.define("htmlarea.HtmlArea",
 {
   extend : qx.ui.core.Widget,
+  
+  /*
+   * IMPORTANT NOTE
+   * If you add functionality which manipulates the content of the HtmlArea
+   * AND you want make these changes undo-/redo-able you have to make sure
+   * to implement methods in the "Manager" and "UndoManager" classes. 
+   */
 
   /*
   *****************************************************************************
@@ -94,6 +101,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleMouseEvent = qx.lang.Function.bind(this._handleMouseEvent, this);
+    this.__handleContextMenuEvent = qx.lang.Function.bind(this._handleContextMenuEvent, this);
 
     if (qx.core.Variant.isSet("qx.client", "mshtml"))
     {
@@ -206,7 +214,21 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * This event is dispatched when the document receives an "focusout" event
      */
-    "focusOut"         : "qx.event.type.Event"
+    "focusOut"         : "qx.event.type.Event",
+    
+    /**
+     * This event is dispatched when the editor gets a right click.
+     */
+    "contextmenu"      : "qx.event.type.Data",
+    
+    /** 
+     * Holds information about the state of undo/redo
+     * Keys are "undo" and "redo".
+     * Possible values are 0 and -1 to stay in sync with
+     * the kind the "cursorContext" event works.
+     * (1 = active/pressed, 0 = possible/not pressed, -1 = disabled)
+     */
+    "undoRedoState"    : "qx.event.type.Data"
   },
 
 
@@ -221,6 +243,10 @@ qx.Class.define("htmlarea.HtmlArea",
   {
     /* This string is inserted when the property "insertParagraphOnLinebreak" is false */
     simpleLinebreak : "<br>",
+    
+    /* regex to extract text content from innerHTML */
+    GetWordsRegExp     : /([^\u0000-\u0040\u005b-\u005f\u007b-\u007f]|['])+/g,
+    CleanupWordsRegExp : /[\u0000-\u0040]/gi,
     
     /**
      * Formats the style information. If the styleInformation was passed
@@ -286,10 +312,11 @@ qx.Class.define("htmlarea.HtmlArea",
      * @type static
      * @param root {Node} Root node (starting point)
      * @param outputRoot {Boolean} Controls whether the root node is also added to the output
+     * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @param postprocess {function} optional function to call which is executed with every element processing
      * @return {String} Content of current node
      */
-    __getHtml : function(root, outputRoot, postprocess)
+    __getHtml : function(root, outputRoot, skipHtmlEncoding, postprocess)
     {
       // String builder is array for large text content
       var html = [];
@@ -335,7 +362,7 @@ qx.Class.define("htmlarea.HtmlArea",
               {
                 for (i=root.firstChild; i; i=i.nextSibling)
                 {
-                  html.push(htmlarea.HtmlArea.__getHtml(i, true, postprocess));
+                  html.push(htmlarea.HtmlArea.__getHtml(i, true, skipHtmlEncoding, postprocess));
                 }
                 return html.join("");
               }
@@ -387,6 +414,10 @@ qx.Class.define("htmlarea.HtmlArea",
                   {
                     value = a.nodeValue;
                   }
+                }
+                else
+                {
+                  value = a.nodeValue; 
                 }
               }
               else
@@ -504,7 +535,8 @@ qx.Class.define("htmlarea.HtmlArea",
 
         // Node.TEXT_NODE
         case 3:
-          html.push(htmlarea.HtmlArea.__htmlEncode(root.data));
+          
+          html.push(skipHtmlEncoding ? root.data : htmlarea.HtmlArea.__htmlEncode(root.data));
           break;
 
         // Node.COMMENT_NODE
@@ -643,6 +675,16 @@ qx.Class.define("htmlarea.HtmlArea",
       check : "Boolean",
       init  : true
     },
+    
+    
+    /**
+     * If true we add a linebreak after control+enter
+     */
+    insertLinebreakOnCtrlEnter :
+    {
+      check : "Boolean",
+      init  : true
+    },
 
     
     /**
@@ -697,10 +739,10 @@ qx.Class.define("htmlarea.HtmlArea",
         style   : qx.core.Variant.select("qx.client",
         {
            "mshtml"  : 'html { margin:0px; padding:0px; } ' +
-                       'body { width:100%; height:100%;background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } ',
            "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: hidden; }' +
-                       'body { background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
+           'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } '
         }),
         body    : '<body id="bodyElement">\n',
@@ -722,27 +764,7 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__iframe;
     },
-    
-    /**
-     * replaces some content
-     * 
-     * @param search {Object} can be a string or regexp
-     * @param replace {String} content which should be set
-     * @return {Boolean}
-     */
-    replaceContent : function (search, replace)
-    {
-      if (this.__isReady)
-      {
-        var body = this.getContentBody();
-        body.innerHTML = body.innerHTML.replace(search, replace);
-
-        return true;
-      }
-
-      return false;
-    },
-
+        
 
     /**
      * Setting the value of the editor
@@ -788,16 +810,17 @@ qx.Class.define("htmlarea.HtmlArea",
      * get the current value, but it is much more expensive. So use it
      * carefully.
      * 
+     * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} computed value of the editor
      */
-    getComputedValue : function()
+    getComputedValue : function(skipHtmlEncoding)
     {
-      return this.getHtml();
+      return this.getHtml(skipHtmlEncoding);
     },
 
 
     /**
-     * returns the complete content of the editor
+     * Returns the complete content of the editor
      * 
      * @return {String}
      */
@@ -808,7 +831,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * returns the body of the document
+     * Returns the body of the document
      * 
      * @return {Object}
      */
@@ -818,6 +841,135 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         return this.__iframe.getDocument().body;
       }
+    },
+    
+    
+    /** 
+     * Returns all the words that are contained in a node.
+     * 
+     * @type member
+     * @param node {Object} the node element where the text should be retrieved from.
+     * @return {String[]} all the words.
+     */
+    getWords : function(node)
+    {
+      if (!node)
+      {
+        node = this.getContentBody();
+      }
+
+      // Clone the node
+      var nodeClone = node.cloneNode(true);
+
+      // Replace all ">" with space "> " to creat new word borders
+      nodeClone.innerHTML = nodeClone.innerHTML.replace(/>/gi, "> ");
+
+      var text  = qx.core.Variant.isSet("qx.client", "mshtml|opera") ? nodeClone.innerText : nodeClone.textContent;
+      var words = text.match(htmlarea.HtmlArea.GetWordsRegExp);
+
+      return !words ? [] : words;
+    },
+    
+    
+    /**
+     * *** IN DEVELOPMENT! ***
+     * Returns all words
+     * 
+     * @return {Map} all words
+     */
+    getWordsWithElement : function()
+    {
+      var list = this.getTextNodes();
+      var result = {};
+      var i, j, words, element, word;
+
+      for(i=0,len1=list.length; i<len1; ++i)
+      {
+        element = list[i];
+        words = element.nodeValue.split(" ");
+
+        for(j=0,len2=words.length; j<len2; ++j)
+        {
+          word = this._cleanupWord(words[j]);
+
+          if(word != null && word.length > 1)
+          {
+            if (!result[word])
+            {
+              result[word] = [];
+            }
+
+            result[word].push(element);
+          }
+        }
+      }
+
+      return result;
+    },
+    
+    
+    /**
+     * TODOC
+     * 
+     * @type member
+     * @param word {String}
+     * @return {String}
+     */
+    _cleanupWord : function (word)
+    {
+      if (!word)
+      {
+        return null;
+      }
+
+      return word.replace(htmlarea.HtmlArea.CleanupWordsRegExp, "");
+    },
+    
+
+    /**
+     * *** IN DEVELOPMENT! ***
+     * Returns all text nodes
+     * 
+     * @return {Array} Text nodes
+     */
+    getTextNodes : function()
+    {
+      return this._fetchTextNodes(this.getContentDocument().body);
+    },
+
+
+    /**
+     * *** IN DEVELOPMENT! ***
+     * Helper method for returning all text nodes
+     * 
+     * @return {Array} Text nodes
+     */
+    _fetchTextNodes : function(element)
+    {
+      var result = [];
+      var tmp;
+      
+      // Element node
+      if(element.hasChildNodes)
+      {
+        for(var i=0; i<element.childNodes.length; i++)
+        {
+          tmp = this._fetchTextNodes(element.childNodes[i]);
+          qx.lang.Array.append(result, tmp);
+        }
+      }
+
+      // Text node
+      if(element.nodeType == 3)
+      {
+        // Contains real text
+        if(element.nodeValue.length > 1)
+        {
+          result.push(element);
+        }
+      }
+
+      return result;
     },
 
 
@@ -856,11 +1008,10 @@ qx.Class.define("htmlarea.HtmlArea",
             this.debug('document not available, try again...');
           }
   
-          var self = this;
-          window.setTimeout( function ()
+          qx.event.Timer.once(function()
           {
-            self.__waitForDocumentReady();
-          }, 0);
+            this.__waitForDocumentReady();
+          }, this, 0);
         }
       }
       else
@@ -913,7 +1064,13 @@ qx.Class.define("htmlarea.HtmlArea",
 
     
     /**
-     * Starts when the iframe document is ready to set editable.
+     * Initializes the command manager, sets the document editable, renders
+     * the content and adds a needed event listeners when the document is ready
+     * for it.
+     * After the successful startup the "ready" event is thrown.
+     * 
+     * @type member
+     * @return {void}
      */
     _onDocumentIsReady : function()
     {
@@ -1031,8 +1188,8 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Returns style attribute as string of a given element
      *
-     * @param elem {Object} Element to check for styles 
-     * @return {String} style
+     * @param elem {Element} Element to check for styles 
+     * @return {String} Complete style attribute as string
      */
     __getElementStyleAsString : function(elem)
     {
@@ -1073,7 +1230,7 @@ qx.Class.define("htmlarea.HtmlArea",
      * Returns the wrapped content of the editor
      *
      * @param value {String} body.innerHTML
-     * @param useCurrentBodyStyle {Boolean} whether the current style of the body should be used
+     * @param useCurrentBodyStyle {Boolean ? null} whether the current style of the body should be used
      * @return {String} content
      */
     __getWrappedContent : function (value, useCurrentBodyStyle)
@@ -1166,6 +1323,10 @@ qx.Class.define("htmlarea.HtmlArea",
 
       /* Register mouse event - for IE one has to catch the "click" event, for all others the "mouseup" is okay */
       qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
+      
+      /* Register context menu event - use contextmenu for safari (because mac safari does not fire mouse up event on right click) and mousup for all other
+       * browsers (as ie does not give the right button number for the context menu) */
+      qx.event.Registration.addListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
 
       if (qx.core.Variant.isSet("qx.client", "mshtml"))
       {
@@ -1204,9 +1365,9 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * sets the designMode of the document
+     * Sets the designMode of the document
      * 
-     * @param onOrOff {Boolean} switch to enable/disable designMode
+     * @param onOrOff {Boolean} Set or unset the design mode on the current document
      * @return {void}
      */
     __setDesignMode : function (onOrOff)
@@ -1255,12 +1416,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
       if (this.__isLoaded)
       {
-
-        if (qx.core.Variant.isSet("qx.client", "gecko"))
-        {
-          doc.body.contentEditable = true;
-        }
-
         this.__setDesignMode(true);
 
         /*
@@ -1332,6 +1487,10 @@ qx.Class.define("htmlarea.HtmlArea",
       var isShiftPressed  = e.isShiftPressed();
       this.__currentEvent = e;
       
+      if (qx.core.Variant.isSet("qx.debug", "on")) {
+        this.debug(e.getType() + " | " + keyIdentifier);
+      }
+      
       /*
        * This block inserts a linebreak when the key combination "Ctrl+Enter" was pressed. It is
        * necessary in IE to look after the keypress and the keyup event. The keypress delivers the
@@ -1346,10 +1505,17 @@ qx.Class.define("htmlarea.HtmlArea",
           switch(keyIdentifier)
           {
             case "enter":
-              var sel = this.__getSelection();
-              var rng = this.__createRange(sel);
-              rng.collapse(true);
-              rng.pasteHTML('<br/><div class="placeholder"></div>');
+              if (this.getInsertLinebreakOnCtrlEnter())
+              {
+                var sel = this.__getSelection();
+                var rng = this.__createRange(sel);
+                rng.collapse(true);
+                rng.pasteHTML('<br/><div class="placeholder"></div>');
+              }
+              else
+              {
+                return;
+              }
             break;
             
             /*
@@ -1452,7 +1618,7 @@ qx.Class.define("htmlarea.HtmlArea",
         
         /* Stop the key events "Ctrl+Z" and "Ctrl+Y" for IE (disabling the browsers shortcuts) */
         if (this.__controlPressed && (keyIdentifier == "z" || keyIdentifier == "y" || 
-                                      keyIdentifier == "b" || 
+                                      keyIdentifier == "b" || keyIdentifier == "u" ||
                                       keyIdentifier == "i" || keyIdentifier == "k"))
         {
           e.preventDefault();
@@ -1527,53 +1693,56 @@ qx.Class.define("htmlarea.HtmlArea",
            */
           if (isCtrlPressed)
           {
+            if (!this.getInsertLinebreakOnCtrlEnter())
+            {
+              return;
+            }
+            
             e.preventDefault();
             e.stopPropagation();
 
-            switch(qx.bom.client.Engine.NAME)
+            if (qx.core.Variant.isSet("qx.client", "gecko"))
             {
-               case "gecko":
-                 /*
-                  * Insert additionally an empty div element - this ensures that
-                  * the caret is shown and the cursor moves down a line correctly
-                  *
-                  * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
-                  * only necessary to have anything AFTER the "br" element to get it work.
-                  * Strange hack, I know ;-)
-                  */
-                 this.insertHtml("<br /><div id='placeholder'></div>");
-                 //this.insertHtml("<br _moz_dirty=\"\"/><div id='placeholder'></div>");
-                 //this.insertHtml('<p><br type="_moz" /></p>');
-               break;
+               /*
+                * Insert additionally an empty div element - this ensures that
+                * the caret is shown and the cursor moves down a line correctly
+                *
+                * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
+                * only necessary to have anything AFTER the "br" element to get it work.
+                * Strange hack, I know ;-)
+                */
+               this.insertHtml("<br /><div id='placeholder'></div>");
+               //this.insertHtml("<br _moz_dirty=\"\"/><div id='placeholder'></div>");
+               //this.insertHtml('<p><br type="_moz" /></p>');
+            }
+            else if (qx.core.Variant.isSet("qx.client", "webkit"))
+            {
+               /*
+                * TODO: this mechanism works well when the user already typed in some text at the
+                * current line. If the linebreak is done without any text at the current line the
+                * cursor DOES NOT correspond -> it stays at the current line although the linebreak
+                * is inserted. Navigating to the next line with the arrow down key is possible.
+                */
+               this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
+            }
+            else if (qx.core.Variant.isSet("qx.client", "opera"))
+            {
+               /*
+                * To insert a linebreak for Opera it is necessary to work with ranges and add the
+                * br element on node-level. The selection of the node afterwards is necessary for Opera
+                * to show the cursor correctly.
+                */
+               var sel    = this.__getSelection();
+               var rng    = this.__createRange(sel);
 
-               case "webkit":
-                 /*
-                  * TODO: this mechanism works well when the user already typed in some text at the
-                  * current line. If the linebreak is done without any text at the current line the
-                  * cursor DOES NOT correspond -> it stays at the current line although the linebreak
-                  * is inserted. Navigating to the next line with the arrow down key is possible.
-                  */
-                 this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
-               break;
+               var brNode = doc.createElement("br");
+               rng.collapse(true);
+               rng.insertNode(brNode);
+               rng.collapse(true);
 
-               case "opera":
-                 /*
-                  * To insert a linebreak for Opera it is necessary to work with ranges and add the
-                  * br element on node-level. The selection of the node afterwards is necessary for Opera
-                  * to show the cursor correctly.
-                  */
-                 var sel    = this.__getSelection();
-                 var rng    = this.__createRange(sel);
-
-                 var brNode = doc.createElement("br");
-                 rng.collapse(true);
-                 rng.insertNode(brNode);
-                 rng.collapse(true);
-
-                 rng.selectNode(brNode);
-                 sel.addRange(rng);
-                 rng.collapse(true);
-               break;
+               rng.selectNode(brNode);
+               sel.addRange(rng);
+               rng.collapse(true);
             }
           }
 
@@ -1606,7 +1775,23 @@ qx.Class.define("htmlarea.HtmlArea",
           {
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
-              this.__insertParagraphOnLinebreak();
+              var sel = this.__getSelection();
+
+              if (sel)
+              {
+                // check if inside a list
+                var selNode = sel.focusNode;
+                while (selNode.nodeName.toLowerCase() != "body")
+                {
+                  if (selNode.nodeName.toLowerCase() == "li")
+                  {
+                    return;
+                  }
+                  selNode = selNode.parentNode;
+                }
+              }
+              
+              this.__commandManager.insertParagraphOnLinebreak();
               e.preventDefault();
               e.stopPropagation();
             }
@@ -1801,66 +1986,6 @@ qx.Class.define("htmlarea.HtmlArea",
 
 
     /**
-     * Inserts a paragraph when hitting the "enter" key
-     *
-     * @return {Boolean} whether the key event should be stopped or not
-     */
-    __insertParagraphOnLinebreak : function()
-    {
-
-      var doc = this.__iframe.getDocument();
-      var range  = this.getRange();
-      var sel = this.__getSelection();
-
-      /* This nodes are needed to apply the exactly style settings on the paragraph */
-      var styleNodes = this.__commandManager.__commandManager.generateHelperNodes();
-
-      /* Generate unique ids to find the elements later */
-      var spanId = "__placeholder__" + Date.parse(new Date());
-      var paragraphId = "__paragraph__" + Date.parse(new Date());
-
-      var helperString = '<span id="' + spanId + '"></span>';
-      var paragraphString = '<p id="' + paragraphId + '">';
-      
-      var spanNode;
-      var paragraphNode;
-
-      /* 
-       * A paragraph will only be inserted, if the paragraph before it has content.
-       * Therefore we also insert a helper node, then the paragraph and the style
-       * nodes after it.
-       */
-      // styleNodes is array and this caused problems
-      this.__commandManager.execute("inserthtml", helperString + paragraphString /* + styleNodes */);
-
-      /* Fetch elements */
-      spanNode      = this.__iframe.getWindow().document.getElementById(spanId);
-      paragraphNode = this.__iframe.getWindow().document.getElementById(paragraphId);
-
-      /* We do net need to pollute the generated HTML with IDs */
-      paragraphNode.removeAttribute("id");
-
-      /*
-       * If the previous paragraph only contains the helperString, it was empty before.
-       * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
-       */
-      if(paragraphNode.previousSibling.innerHTML == helperString)
-      {
-        /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-        paragraphNode.previousSibling.innerHTML = "";
-        for (var i = 0; i < styleNodes.length; i++) paragraphNode.previousSibling.appendChild(styleNodes[i]);
-        paragraphNode.previousSibling.innerHTML += '<br _moz_dirty="" type="_moz"/>';
-      }
-      else
-      {
-        spanNode.removeAttribute("id");
-      }
-
-      return true;
-    },
-
-
-    /**
      * Executes a method and prevent default
      *
      * @param method {String} name of the method which should be called
@@ -1936,12 +2061,39 @@ qx.Class.define("htmlarea.HtmlArea",
       if (qx.core.Variant.isSet("qx.debug", "on")) {
         this.debug("handleMouse " + e.getType());
       }
-
+      
       /* TODO: transform the DOM events to real qooxdoo events - just like the key events */
       this.__startExamineCursorContext();
     },
 
 
+    /**
+     * Eventlistener for all mouse up events. Fires the contextmenu event.
+     *
+     * @type member
+     * @param e {Object} Event object
+     * @return {void}
+     */
+    _handleContextMenuEvent : function(e)
+    {
+      if (e.isRightPressed())
+      {
+        var data   = {
+          x : e.getViewportLeft(),
+          y : e.getViewportTop(),
+          target : e.getTarget()
+        };
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        qx.event.Timer.once(function() {
+          this.fireDataEvent("contextmenu", data);
+        }, this, 0);
+      }
+    },
+    
+    
     /**
      * Eventlistener for focus out events to save the current selection.
      * NOTE: this method is currently only used for mshtml.
@@ -1970,7 +2122,8 @@ qx.Class.define("htmlarea.HtmlArea",
     */
 
     /**
-     * Whether the editor has loaded
+     * Service method to check if the component is already loaded.
+     * Overrides the base method.
      * 
      * @return {Boolean}
      */
@@ -2372,14 +2525,15 @@ qx.Class.define("htmlarea.HtmlArea",
     /**
      * Get html content (call own recursive method)
      * 
+     * @param skipHtmlEncoding {Boolean ? false} whether the html encoding of text nodes should be skipped
      * @return {String} current content of the editor as XHTML
      */
-    getHtml : function()
+    getHtml : function(skipHtmlEncoding)
     {
       var doc = this.__iframe.getDocument();
       if (doc == null) return null;
 
-      return htmlarea.HtmlArea.__getHtml(doc.body, false, this.getPostprocess());
+      return htmlarea.HtmlArea.__getHtml(doc.body, false, skipHtmlEncoding, this.getPostprocess());
     },
 
     /**
@@ -2418,10 +2572,9 @@ qx.Class.define("htmlarea.HtmlArea",
     __startExamineCursorContext : function()
     {
       /* setting a timeout is important to get the right result */
-      var o = this;
-      window.setTimeout(function(e) {
-        o.__examineCursorContext();
-      }, 200);
+      qx.event.Timer.once(function(e) {
+        this.__examineCursorContext();
+      }, this, 200);
     },
 
 
@@ -2678,6 +2831,26 @@ qx.Class.define("htmlarea.HtmlArea",
         return range.toString();
       }
     },
+    
+    
+    /**
+     * Clears the current selection
+     * 
+     * @type member
+     * @return {void}
+     */
+    clearSelection : qx.core.Variant.select("qx.client", {
+      "mshtml" : function()
+      {
+        this.__getSelection().empty(); 
+      },
+      
+      "default" : function()
+      {
+        this.__getSelection().collapseToStart();
+      }
+    }),
+    
 
     /*
      -----------------------------------------------------------------------------
@@ -2713,12 +2886,12 @@ qx.Class.define("htmlarea.HtmlArea",
           try {
             return sel.createRange();
           } catch(ex) {
-            return doc.createTextRange();
+            return doc.body.createTextRange();
           }
         }
         else
         {
-          return doc.createTextRange();
+          return doc.body.createTextRange();
         }
        },
 
@@ -2831,6 +3004,7 @@ qx.Class.define("htmlarea.HtmlArea",
     //   WIDGET MOUSE EVENTS
     // ************************************************************************
     qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.MSHTML ? "click" : "mouseup", this.__handleMouseEvent, this);
+    qx.event.Registration.removeListener(doc.body, qx.bom.client.Engine.WEBKIT ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
     
     if (qx.core.Variant.isSet("qx.client", "mshtml"))
     {

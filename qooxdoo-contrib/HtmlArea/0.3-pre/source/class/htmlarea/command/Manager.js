@@ -159,8 +159,8 @@ qx.Class.define("htmlarea.command.Manager",
         justifycenter         : { useBuiltin : false, identifier : "JustifyCenter", method : "__setTextAlign" },
         justifyfull           : { useBuiltin : false, identifier : "JustifyFull", method : "__setTextAlign" },
 
-        indent                : { useBuiltin : true, identifier : "Indent", method : null },
-        outdent               : { useBuiltin : true, identifier : "Outdent", method : null },
+        indent                : { useBuiltin : true, identifier : "Indent", method : "__setInOutdent" },
+        outdent               : { useBuiltin : true, identifier : "Outdent", method : "__setInOutdent" },
 
         copy                  : { useBuiltin : true, identifier : "Copy", method : null },
         cut                   : { useBuiltin : true, identifier : "Cut", method : null },
@@ -409,57 +409,108 @@ qx.Class.define("htmlarea.command.Manager",
       * @param commandObject {Object} command information
       * @return {Boolean} Success of the operation
       */
-     __insertHtml : function(value, commandObject)
+     __insertHtml : qx.core.Variant.select("qx.client",
      {
-       var ret;
-
-       if (qx.core.Variant.isSet("qx.client", "mshtml"))
+       "mshtml" : function(value, commandObject)
        {
          /* Special handling if a "br" element should be inserted */
          if (value == htmlarea.HtmlArea.simpleLinebreak)
          {
-           ret = this.__insertBrOnLinebreak(); 
+           return this.__insertBrOnLinebreak(); 
          }
          else
          {
            this.__doc.body.focus();
            
-           /* this.__currentRange can be a wrong range!*/
-           var storedRange = this.__editorInstance.getRange();
+           var sel   = this.__editorInstance.__getSelection();
+           var range = this.__editorInstance.getRange();
            
-           /* in this case, get the range again (we lose the cursor position by doing that) */
-           var actualRange = this.__editorInstance.getRange();
-
-           if(storedRange)
+           /* DO NOT allow pasteHTML on control selections (like selected images) */
+           if(range && sel.type != "Control")
            {
              /* Try to pasteHTML on the stored range */
              try
              {
-               storedRange.pasteHTML(value);
-               storedRange.collapse(false);
-               storedRange.select();
+               range.pasteHTML(value);
+               range.collapse(false);
+               range.select();
+               return true;
              }
-             catch(e)
-             {
-               /* If this fails, use the range we read explicitly */
-               actualRange.pasteHTML(value);
-               actualRange.collapse(false);
-               actualRange.select();
-             }
+             catch(e) {}
            }
-
-           ret = true;
+           else
+           {
+             return false;
+           }
          }
-       }
-       else
+       },
+       
+       "default" : function (value, commandObject)
        {
          /* Body element must have focus before executing command */
          this.__doc.body.focus();
 
-         ret = this.__doc.execCommand(commandObject.identifier, false, value);
+         return this.__doc.execCommand(commandObject.identifier, false, value);
        }
+     }),
+     
+     
+     /**
+      * Inserts a paragraph when hitting the "enter" key
+      *
+      * @return {Boolean} whether the key event should be stopped or not
+      */
+     insertParagraphOnLinebreak : function()
+     {
 
-       return ret;
+       var doc = this.__editorInstance.getIframeObject().getDocument();
+       var range  = this.__editorInstance.getRange();
+       var sel = this.__editorInstance.__getSelection();
+       
+       /* This nodes are needed to apply the exactly style settings on the paragraph */
+       var styleNodes = this.generateHelperNodes();
+
+       /* Generate unique ids to find the elements later */
+       var spanId = "__placeholder__" + Date.parse(new Date());
+       var paragraphId = "__paragraph__" + Date.parse(new Date());
+
+       var helperString = '<span id="' + spanId + '"></span>';
+       var paragraphString = '<p id="' + paragraphId + '">';
+       
+       var spanNode;
+       var paragraphNode;
+
+       /* 
+        * A paragraph will only be inserted, if the paragraph before it has content.
+        * Therefore we also insert a helper node, then the paragraph and the style
+        * nodes after it.
+        */
+       // styleNodes is array and this caused problems
+       this.execute("inserthtml", helperString + paragraphString /* + styleNodes */);
+
+       /* Fetch elements */
+       spanNode      = doc.getElementById(spanId);
+       paragraphNode = doc.getElementById(paragraphId);
+
+       /* We do net need to pollute the generated HTML with IDs */
+       paragraphNode.removeAttribute("id");
+
+       /*
+        * If the previous paragraph only contains the helperString, it was empty before.
+        * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
+        */
+       if(paragraphNode.previousSibling.innerHTML == helperString)
+       {
+         /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
+         paragraphNode.previousSibling.innerHTML = "";
+         for (var i = 0; i < styleNodes.length; i++) paragraphNode.previousSibling.appendChild(styleNodes[i]);
+         paragraphNode.previousSibling.innerHTML += '<br _moz_dirty="" type="_moz"/>';
+       }
+       
+       /* We do net need to pollute the generated HTML with IDs */
+       spanNode.removeAttribute("id");
+
+       return true;
      },
      
      
@@ -517,6 +568,26 @@ qx.Class.define("htmlarea.command.Manager",
        return commandTarget.execCommand(commandObject.identifier, false, value);
      },
      
+     
+     /**
+      * Helper function to set Indent/Outdent on a range.
+      * In IE we need to explicitly get the current range before executing
+      * the Indent/Outdent command on it.
+      *
+      * @type member
+      * @param value {String} indent/outdent value
+      * @param commandObject {Object} command object
+      * @return {Boolean} Success of operation
+      */
+     __setInOutdent : function(value, commandObject)
+     {
+       /* Get Range for IE, or document in other browsers */
+       var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.__editorInstance.getRange() : this.__doc; 
+
+       /* Execute command on it */
+       return commandTarget.execCommand(commandObject.identifier, false, value);
+     },
+     
 
     /**
      * Inserts an image
@@ -539,17 +610,22 @@ qx.Class.define("htmlarea.command.Manager",
            
            /* Get the image node */
            var sel = this.__editorInstance.__getSelection();
-           var anchorNode = sel.anchorNode;
-           var offset = sel.anchorOffset;
-           var img = anchorNode.childNodes[offset-1];
            
-           var attrNode;
-           for (var attribute in attributes)
+           // TODO: need to revert the execCommand if no selection exists?
+           if (sel)
            {
-             attrNode = this.__doc.createAttribute(attribute);
-             attrNode.nodeValue = attributes[attribute];
+             var anchorNode = sel.anchorNode;
+             var offset = sel.anchorOffset;
+             var img = anchorNode.childNodes[offset-1];
              
-             img.setAttributeNode(attrNode);
+             var attrNode;
+             for (var attribute in attributes)
+             {
+               attrNode = this.__doc.createAttribute(attribute);
+               attrNode.nodeValue = attributes[attribute];
+               
+               img.setAttributeNode(attrNode);
+             }
            }
          }
          else
@@ -575,9 +651,21 @@ qx.Class.define("htmlarea.command.Manager",
           * only working solution is to use the "pasteHTML" method of the
           * TextRange Object. 
           */
+         var sel = this.__editorInstance.__getSelection();
          var currRange = this.__editorInstance.getRange();
-         currRange.select();
-         currRange.pasteHTML(img);
+         
+         /* DO NOT allow pasteHTML at control selections (like selected images) */
+         if (sel.type != "Control")
+         {
+           currRange.select();
+           currRange.pasteHTML(img);
+           
+           return true;
+         }
+         else
+         {
+           return false;
+         }
        },
        
        "default" : function(attributes, commandObject)
@@ -596,7 +684,8 @@ qx.Class.define("htmlarea.command.Manager",
       * @param commandObject {Object} command object
       * @return {Boolean} result
       */
-     __insertHyperLink : qx.core.Variant.select("qx.client", {
+     __insertHyperLink : qx.core.Variant.select("qx.client", 
+     {
        "gecko" : function(url, commandObject)
        {
          var sel      = this.__editorInstance.__getSelection();
@@ -811,6 +900,12 @@ qx.Class.define("htmlarea.command.Manager",
      {
        /* Current selection */
        var sel = this.__editorInstance.__getSelection();
+       
+       /* Check the focusNode - if not available return a empty map */
+       if (!sel || sel.focusNode == null)
+       {
+         return {};
+       }
        
        /* Get HTML element on which the selection has ended */
        var elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
@@ -1156,10 +1251,40 @@ qx.Class.define("htmlarea.command.Manager",
          this.__doc.body.focus();
          this.__editorInstance.getRange().select();
          return this.__doc.execCommand("FontSize", false, value);
-       } else {
-         return this.__doc.execCommand("FontSize", false, value);
        }
+       /*
+        * Gecko uses span tags to save the style settings over block elements.
+        * These span tags contain CSS which has a higher priority than the
+        * font tags which are inserted via execCommand().
+        * For each span tag inside the selection the CSS property has to be 
+        * removed to hand over the control to the font size value of execCommand().
+        */
+       else if(qx.core.Variant.isSet("qx.client", "gecko"))
+       {
 
+         var parent = rng.commonAncestorContainer;
+
+         /* Check if selection is a DOM element */
+         if(parent.nodeType === 1)
+         {
+           /* 
+            * Remove the font size property if it is available, otherwise it 
+            * will interfere with the setting of the "font" element.
+            * If we try to set the font size with the CSS property we will
+            * have to transform the font sizes 1-7 to px values which will 
+            * never work out correctly.
+            */
+           var spans = parent.getElementsByTagName("span");
+           for (i=0; i<spans.length; i++) {
+             if (spans[i].style.fontSize)
+             {
+               spans[i].style.fontSize = null;
+             }
+           }
+         }
+       }
+       
+       return this.__doc.execCommand("FontSize", false, value);
      },
 
 
