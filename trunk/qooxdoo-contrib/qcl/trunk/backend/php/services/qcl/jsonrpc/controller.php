@@ -1,16 +1,20 @@
 <?php
+/*
+ * dependencies
+ */
+require_once "qcl/jsonrpc/object.php";
+require_once "qcl/jsonrpc/Request.php";
+require_once "qcl/jsonrpc/Response.php";
 
-// dependencies
-require_once ("qcl/jsonrpc/object.php");
-
-// constants
+/*
+ * constants
+ */
 define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");
 
 /**
- * simple controller-model architecture for jsonrpc
- * common base class for controllers
+ * Simple controller-model architecture for jsonrpc
+ * Common base class for controllers
  */
-
 class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 {
 
@@ -22,25 +26,17 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	var $ini;
 
 	/**
-   * request information
-   * @var array
+   * The request object 
+   * @var qcl_jsonrpc_Request
    */
-  var $request = array(
-    'service'  => null,
-    'method'   => null,
-    'remoteId' => null
-  );
-	
-	/**
-	 * response data to be serialized and returned to server
-	 * @access private
-	 * @var array
-	 */
-	var $_response = array(
-    'result'    => array(),
-    'messages'  => array(),
-    'events'    => array() 
-  );
+  var $request;
+  
+  
+  /**
+   * The response object
+   * @var qcl_jsonrpc_Response
+   */
+  var $response;
     
   /**
    * constructor , configures the service
@@ -53,31 +49,58 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		 */
     parent::__construct();
 
-		/*
-     * store request information
+    /*
+     * request object, fetches information from current
+     * request
      */
-    global $jsonInput;
-		$this->request['service']  = $jsonInput ? $jsonInput->service : null;
-    $this->request['method']   = $jsonInput ? $jsonInput->method  : null;
-    $this->request['remoteIp'] = $_SERVER['REMOTE_ADDR']; 
-    $this->request['params']   = $jsonInput ? $jsonInput->params  : null;
+    $this->request = new qcl_jsonrpc_Request;
+    
+    /*
+     * response object
+     */
+    $this->response = new qcl_jsonrpc_Response;
     
     /*
      * log request
      */
     $this->log ( 
-      "Request for " . $this->request['service'] . 
-      "." . $this->request['method'] .  
-      " from " . $this->request['remoteIp']
+      "Request for " . $this->request->service . 
+      "." . $this->request->method .  
+      " from " . $this->request->ip
     );
 
     /*
      * configure service
      */
 		$this->configureService();
-		
-   
-	}   	
+	}  
+
+	/**
+	 * Returns the current request object
+	 * @return qcl_jsonrpc_Request
+	 */
+	function &requestObject()
+	{
+	  return $this->request;
+	}
+	
+  /**
+   * Returns the current response object
+   * @return qcl_jsonrpc_Response
+   */
+  function &responseObject()
+  {
+    return $this->response;
+  }	
+	
+	/**
+	 * Gets the raw json input object
+	 * @return JsonInput
+	 */
+  function &getJsonInput()
+  {
+    return $this->request->getJsonInput();
+  }
 	
 	/**
 	 * Returns the full path of the current service
@@ -85,7 +108,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
 	function getServicePath()
 	{
-	  return $this->request['service'] . "." . $this->request['method'];
+	  return $this->request->getService() . "." . $this->request->getMethod();
 	}
 
   /**
@@ -94,7 +117,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   function getParams()
   {
-    return $this->request['params'];
+    return $this->request->getParams();
   }
 	
 	//-------------------------------------------------------------
@@ -316,27 +339,27 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		}
 		else
 		{
-			$this->_response['result'][$first] =& $value;
+			$this->response->set($first,$value);
 		}
 	}
 	
 	/**
 	 * gets value for particular result key
-   * @todo: use into qcl_jsonrpc_Response object
 	 */
 	function &get ( $key )
 	{
-		return $this->_response['result'][$key];
+		$response =& $this->getResponseObj();
+	  return $this->response->get($key);
 	}
 	
 	/**
-	 * Returns result for json response inclusing result data, events, and messages
-	 * @return array
-	 * @todo: use into qcl_jsonrpc_Response object
+	 * Returns response object for return to the client. 
+	 * Can be overridden by child classes
+	 * @return qcl_jsonrpc_Response
 	 */
-	function getResponseData()
+	function &response()
 	{
-		return $this->_response;
+		return $this->response;
 	}
 
 	//-------------------------------------------------------------
@@ -364,34 +387,25 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   
   
   /**
-   * adds a message to the message stack
+   * Adds a message to the message stack
    * @param string $message Message name
    * @param mixed[optional] $data Message Data
    * @return void
    */
   function addMessage( $message, $data=null )
   {
-
-    if ( is_string ($message) )
-		{
-			$this->_response['messages'][] = array(
-				'name' => $message, 
-				'data' => $data
-			);
-		}
-		else
-		{
-			trigger_error ("Invalid message parameter");
-		}
+    $response =& $this->responseObject();
+    $response->addMessage( $message, $data );
   }
 
   /**
-   * get messages on message stack
+   * Returns messages on message stack
    * @return array
    */
-  function getMessages()
+  function &getMessages()
   {
-    return $this->_response['messages'];
+    $response =& $this->responseObject();
+    return $response->getMessages();
   }
 
   /**
@@ -414,32 +428,24 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   }  
   
 	/**
-	 * adds an event to the event stack
+	 * Adds an event to the event stack
 	 * @param mixed $event Message Event type
 	 * @param mixed[optional] $data Data dispatched with event
 	 */
 	function addEvent ( $event, $data=null )
 	{
-	  if ( is_string ($event) )
-		{
-			$this->_response['events'][] = array(
-				'type' => $event, 
-				'data' => $data
-			);
-		}
-		else
-		{
-			trigger_error ("Invalid event parameter");
-		}
+    $reponse =& $this->responseObject();
+    $reponse->addEvent( $event, $data );
 	}
 
   /**
-   * get messages on message stack
+   * Returns messages on message stack
    * @return array
    */
-  function getEvents()
+  function &getEvents()
   {
-    return $this->_response['events'];
+    $reponse =& $this->responseObject();
+    return $this->getEvents();
   }
 
 	//-------------------------------------------------------------
@@ -447,110 +453,22 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   //-------------------------------------------------------------
 
   /**
-   * gets the unique id of the current request, if any
+   * Returns the unique id of the current request, if any
    * @return string
    */
   function getRequestId()
   {
-    return $this->_requestId;
+    return $this->request->getRequestId();
   }
 
   /**
-   * sets the unique id of the current request
+   * Rets the unique id of the current request
    * @return 
    * @param $requestId Object
    */
   function setRequestId( $requestId )
   {
-    $this->_requestId = $requestId;
-  }
-
-  /**
-   * aborts a long-running process. call with updateServer()
-   * @param string $params[1] request id
-   * @param bool   $params[2] if true, remove killfile only
-   */
-  function method_abortRequest ( $params )
-  {
-    $requestId      = $params[1];
-    $removeKillFile = $params[2];
-    $messagefile    = QCL_TMP_PATH . $requestId;
-    $killfile       = $messagefile . ".kill";
-   
-    if ( $removeKillFile ) 
-    {
-      if ( ! unlink ( $killfile ) )
-      {
-         $this->raiseError("qcl_jsonrpc_controller::method_abortRequest : Cannot remove kill file '$killfile'."); 
-      }
-      $this->dispatchEvent("requestAbortCompleted",$requestId);
-      return $this->getResponseData();
-    }
-    if ( file_exists ( $messagefile ) ) 
-    {
-      if ( ! touch ( $killfile ) )
-      {
-         $this->raiseError("qcl_jsonrpc_controller::method_abortRequest : Cannot create kill file '$killfile'."); 
-      }
-      if ( ! unlink ( $messagefile ) )      
-      {
-         $this->raiseError("qcl_jsonrpc_controller::method_abortRequest : Cannot remove message file '$messagefile'."); 
-      }
-    }
-    $this->dispatchEvent("requestAborted",$requestId);
-    return $this->getResponseData();
-  }
-
-  
-  /**
-   * communicates with progress.php through message file to output a simple progress meter or log
-   * @return 
-   * @param mixed  $i     string message, int percent of progress or current index variable (if $count is given)
-   * @param int    $count (optional) maximal number
-   */
-  function progress( $i="", $count=null )
-  {
-    $messagefile = QCL_TMP_PATH . $this->getRequestId();
-    $killfile    = $messagefile . ".kill";
-    
-    // abort process if kill file is found
-    if ( file_exists ( $killfile ) )
-    {
-       @unlink( $messagefile );
-       @unlink( $killfile );
-       $this->raiseError( "Request Aborted" ); 
-    }
-
-    if ( ! touch( $messagefile ) ) 
-    {
-      $this->raiseError ( "bibliograph_controller::progress : Cannot write to $messagefile.");
-    }
-
-    if ( $i === null )
-    {
-      // delete messagefile on a null value to terminate progress.php
-      @unlink( $messagefile );
-      return;
-    }
-    
-    if ( is_numeric($i) )
-    {
-      if ( is_numeric( $count) )
-      {
-        $i = ($i/$count) * 100;
-      }
-      $msg = "<script> progress($i);</script>";
-    }
-    else
-    {
-      $msg = "<script> message('" . addslashes($i)  . "');</script>";
-      $msg .= $i . "<br/>";
-      if ($i) $this->info($i);
-    }
-    
-    // output to log file
-    error_log( $msg, 3, $messagefile );
-    return true;
+    $this->request->setRequestId($requestId);
   }  
   
 	/**
@@ -577,14 +495,14 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
   function debugJsonRpcRequest()
   {
-    global $jsonInput;
-    $resultData = $this->_response;
+    $request   =& $this->requestObject();
+    $response  =& $this->responseObject();
     
     $msg  = "Debugging JSON request\n";
     $msg .= "**********************************************************\n";
-    $msg .= "Service: " . $jsonInput->service . "." . $jsonInput->method . "\n";
-    $msg .= "Parameters: " . var_export($jsonInput->params, true) . "\n\n";
-    $msg .= "Result Data: " . var_export($resultData, true) . "\n\n";
+    $msg .= "Service: " . $request->getService() . "." . $jsonInput->getMethod() . "\n";
+    $msg .= "Parameters: " . var_export($request->getParams(), true) . "\n\n";
+    $msg .= "Result Data: " . var_export($response->getData(), true) . "\n\n";
     $msg .= "**********************************************************\n";
   
     $this->info($msg);
@@ -598,20 +516,19 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function debugJsonRpcRequestAsHtml()
   {
     
-    global $jsonInput;
-    $responseData = $this->_response;
-    
-    $config =& $this->getConfigModel();
+    $request   =& $this->requestObject();
+    $response  =& $this->responseObject();
+    $config    =& $this->getConfigModel();
        
        
     /*
      * assemble debug array
      */
     $debugValue = array(
-      'Parameters'  => $jsonInput->params,
-      'Result'      => $responseData['result'],
-      'Events'      => $responseData['events'],
-      'Messages'    => $responseData['messages']
+      'Parameters'  => $request->getParams(),
+      'Result'      => $response->getData(),
+      'Events'      => $response->getEvents(),
+      'Messages'    => $response->getMessages()
     );
     
     
@@ -630,8 +547,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      */
     $html = "<div id='$divId' style='font-weight:bold'>" . 
             date('H:i:s') . ": " .
-            $jsonInput->service . "." .
-            $jsonInput->method . "(";
+            $request->getService() . "." .
+            $request->getMethod(). "(";
             
     /*
      * parameters
@@ -642,7 +559,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
       elseif ( is_null($p) ) $html .= "null";
       elseif ( is_bool($p) ) $html .= $p ? "true" : "false";
       else $html .= $p;
-      if ( $i < count($jsonInput->params) -1 ) $html .= ",";
+      if ( $i < count($request->getParams()) -1 ) $html .= ",";
     }
     
     $html .= ")";
@@ -650,9 +567,13 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * shorten debug output if no result data, message or event
      */
-    if ( count($responseData['result']) == 0 and
-         count($responseData['messages']) == 0 and
-         count($responseData['events']) == 0 )
+    $data     = $response->getData();
+    $messages = $response->getMessages();
+    $events   = $response->getEvents();
+    
+    if ( count($data) == 0 and
+         count($messages) == 0 and
+         count($events) == 0 )
     {
       $html .= " [No content] </div>";            
     }        

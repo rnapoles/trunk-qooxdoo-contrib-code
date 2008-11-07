@@ -149,7 +149,7 @@ class qcl_session_controller extends qcl_access_controller
         $userModel->setActiveUser(null);
       }         
     }
-    return $this->getResponseData();
+    return $this->response();
   }
 
   //-------------------------------------------------------------
@@ -163,10 +163,10 @@ class qcl_session_controller extends qcl_access_controller
    * @return array
    * @todo: use into qcl_jsonrpc_Response object
    */
-  function getResponseData()
+  function response()
   {
     $this->addBroadcastMessagesToResponse(); 
-    return parent::getResponseData();
+    return parent::response();
   }
 
   /**

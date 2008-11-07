@@ -3,8 +3,8 @@
 /*
  * dependencies
  */
-require_once ("qcl/core/mixin.php");
-require_once ("qcl/config/config.php");
+require_once "qcl/core/mixin.php";
+require_once "qcl/config/config.php";
 
 /**
  * Mixin providing methods to edit configuration data
@@ -56,7 +56,7 @@ class qcl_config_services extends qcl_core_mixin
  		 * return client data
  		 */
  		$this->set( "configMap", $result );
- 		return $this->getResponseData(); 
+ 		return $this->response(); 
  	}
  	
  	/**
@@ -95,7 +95,7 @@ class qcl_config_services extends qcl_core_mixin
     /*
      * return client data
      */
- 		return $this->getResponseData(); 
+ 		return $this->response(); 
  	}
    	
 	/**
@@ -124,7 +124,7 @@ class qcl_config_services extends qcl_core_mixin
 			$params[1]->allowUserVariants
 		);
 		$this->dispatchMessage( "qcl.config.messages.key.created", $id );
-		return $this->getResponseData();
+		return $this->response();
 	} 
 	
 	/**
@@ -153,7 +153,7 @@ class qcl_config_services extends qcl_core_mixin
 			$data[$row[$configModel->col_name]] = $row[$configModel->col_value]; 
 			$this->dispatchMessage( "qcl.config.messages.server.changeConfigKey", $data );	
 		}
-		return $this->getResponseData();
+		return $this->response();
 	}
 	
 	
@@ -168,7 +168,7 @@ class qcl_config_services extends qcl_core_mixin
 	{ 
 		$configModel =& $this->getConfigModel();
     $configModel->delete($params[1]);
-		return $this->getResponseData();
+		return $this->response();
 	} 
  
 	/**
@@ -187,7 +187,7 @@ class qcl_config_services extends qcl_core_mixin
 		$data = array();
 		$data[$params[0]] = $params[1];
 		$this->dispatchMessage( "qcl.config.messages.server.changeConfigKey", $data );
-		return $this->getResponseData();
+		return $this->response();
 	}
 	
 	/**
@@ -218,7 +218,7 @@ class qcl_config_services extends qcl_core_mixin
       );
 		}
 		$this->set( "tabledatamodel", $table );
-		return $this->getResponseData();
+		return $this->response();
 	}
 	
   /**

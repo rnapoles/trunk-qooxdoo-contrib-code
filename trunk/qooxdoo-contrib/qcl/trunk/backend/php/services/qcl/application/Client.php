@@ -26,7 +26,7 @@ class qcl_application_Client extends qcl_jsonrpc_model
     $this->info($message);
     $controller =& $this->getController();
     $controller->dispatchMessage("qcl.commands.remote.alert", $message);
-    return $controller->getResponseData();  
+    return $controller->response();  
   }
   
   /**
@@ -57,7 +57,7 @@ class qcl_application_Client extends qcl_jsonrpc_model
       'service'  => $service,
       'params'   => $params
     ) );
-   return $controller->getResponseData();  
+   return $controller->response();  
   }
   
   /**
@@ -90,7 +90,7 @@ class qcl_application_Client extends qcl_jsonrpc_model
       'service'       => $service,
       'params'        => $params
     ) );
-   return $controller->getResponseData();  
+   return $controller->response();  
   }
 
   /**
@@ -146,7 +146,7 @@ class qcl_application_Client extends qcl_jsonrpc_model
       'service'       => $service,
       'params'        => $params
     ) );
-   return $controller->getResponseData();  
+   return $controller->response();  
   }  
   
 }
