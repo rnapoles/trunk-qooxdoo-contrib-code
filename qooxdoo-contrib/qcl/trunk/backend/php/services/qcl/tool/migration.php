@@ -59,7 +59,7 @@ qx.Class.define('$application_namespace.ApplicationEventHandlers',
     $js_file = "$dir/$application_namespace.ApplicationEventHandlers.js";
     file_put_contents($js_file,$js_content);
     
-    return $this->getResponseData();
+    return $this->response();
   }
   
   

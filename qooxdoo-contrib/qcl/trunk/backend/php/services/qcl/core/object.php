@@ -369,9 +369,11 @@ class qcl_core_object
   
   /**
    * saves the object to a storage
+   * @deprecated
    */
   function save()
   {
+    $this->warn("Saving objects is deprecated. Please subclass qcl_core_PersistentObject instead.");
     if ( is_object( $this) and is_a($this,__CLASS__) )
     {
       $class = get_class($this);
@@ -822,6 +824,7 @@ class qcl_core_object
    * return string Path to file with stored data.
    * @return string path to file
    * @todo reimplement using a storage class which can be file-based, db-based, etc. 
+   * @deprecated Use persistent instance instead
    */
   function store($id=null, $data="")
   {

@@ -208,7 +208,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * return client data
      */
-    return $this->getResponseData();    
+    return $this->response();    
   }
   
   /**
@@ -265,7 +265,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * return client data
      */
-    return $this->getResponseData();
+    return $this->response();
   }
 }
 ?>
