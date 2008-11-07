@@ -81,6 +81,19 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   var $schemaXml;
   
   /**
+   * The path to the model schema xml file. ususally automatically resolved.
+   * @see qcl_db_model::getSchmemaXmlPath()
+   * @var string
+   */
+  var $schemaXmlPath = null;  
+
+  /**
+   * The timestamp of the  model schema xml file.
+   * @var string
+   */
+  var $schemaTimestamp = null;  
+  
+  /**
    * Shortcuts to property nodes in schema xml. Access with qcl_db_model::getPropertyNode($name)
    * @array array of object references
    */
@@ -109,12 +122,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   var $metaDataProperties;  
   
-  /**
-   * The path to the model schema xml file. ususally automatically resolved.
-   * @see qcl_db_model::getSchmemaXmlPath()
-   * @var string
-   */
-  var $schemaXmlPath = null;  
+
   
   
   /**
@@ -244,21 +252,21 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
 
   /**
    * initializes the model
-   * @param mixed $datasource Object reference to
+   * @param mixed $datasourceModel Object reference to
    * the datasource object, or null if model is independent of a datasource
    * @return void
    */
-  function initialize( $datasource=null )
+  function initialize( $datasourceModel=null )
   {
   
-    $this->log("Initializing '" . get_class($this) . "' with '" . get_class($datasource) . "'." );
+    $this->log("Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'." );
   
     /*
      * datasource model
      */
-    if ( is_object($datasource) )
+    if ( is_object( $datasourceModel ) )
     {
-      $this->setDatasourceModel( &$datasource );
+      $this->setDatasourceModel( &$datasourceModel );
     }
     
         
@@ -1502,8 +1510,24 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */
     //$this->info("Loading model schema file '$file'...");
     $modelXml =& new qcl_xml_simpleXML($file);
-    $modelXml->removeLock(); // we don't need a lock, since this is read-only
+    
+    /*
+     * The timestamp of the schema file. When a schema extends
+     * another schema, the newest filestamp is used.
+     */
+    if ( $modelXml->filectime > $this->schemaTimestamp )
+    {
+      $this->schemaTimestamp = $modelXml->filectime;
+    }
+    
+    /*
+     * remove lock, since we need read-only access only
+     */
+    $modelXml->removeLock(); 
 
+    /*
+     * The document object
+     */
     $doc =& $modelXml->getDocument();
     
     /*

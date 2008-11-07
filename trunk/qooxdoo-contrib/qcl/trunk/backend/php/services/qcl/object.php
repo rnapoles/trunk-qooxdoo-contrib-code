@@ -555,7 +555,7 @@ class qcl_object extends patched_object
    */
   function instanceOf( $class )
   {
-      return is_a($this,$class);    
+    return is_a($this,$class);    
   }
   
   //-------------------------------------------------------------

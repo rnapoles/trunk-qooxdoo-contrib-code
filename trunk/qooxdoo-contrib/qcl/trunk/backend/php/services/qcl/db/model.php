@@ -1,5 +1,4 @@
 <?php  
-
 /*
  * dependencies
  */
@@ -50,36 +49,52 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @var string 
    */
   var $foreignKey;
+  
+  
+  /**
+   * The persistent model table info object
+   * @var qcl_db_ModelTableInfo
+   */
+  var $modelTableInfo = null; 
 
   /**
    * initializes the model
-   * @param mixed $datasource Object reference to
-   * the datasource object, or null if model is independent of a datasource
-   * @return void
+   * @param mixed $datasourceModel Object reference to the datasource object, 
+   * or null if model is independent of a datasource
+   * @return bool Success
    */
-  function initialize( $datasource=null )
+  function initialize( $datasourceModel=null )
   {
   
     /*
      * call parent method
      */
-    parent::initialize( &$datasource );
+    parent::initialize( &$datasourceModel );
     
     /*
      * connect to datasource, if any
      */
-    $this->connect( &$datasource );     
-    
+    $this->connect( &$datasourceModel );     
+       
     /*
      * setup schema. if necessary, create or update tables and import intial data. 
      */
     $this->setupSchema();
+ 
     
     /*
      * setup table links
      */
     $this->setupTableLinks();
     
+    /*
+     * return valeu
+     */
+    if ( $this->getError() )
+    {
+      return false;
+    }
+    return true;
 
   } 	
 	
@@ -88,8 +103,11 @@ class qcl_db_model extends qcl_core_PropertyModel
    * a datasource model, reuse the datasource's database
    * handler
    * @param string|array|null $dsn
+   * @todo: don't throw error on failure but let calling
+   * function handle connection errors gracefully.
+   * @return bool Success
    */
-  function connect( $dsn=null )
+  function &connect( $dsn=null )
   {
     /*
      * disconnect if connection exists
@@ -131,7 +149,7 @@ class qcl_db_model extends qcl_core_PropertyModel
          */
         $this->log("Connecting to custom dsn ...");
         
-        require_once("qcl/db/mysql.php"); 
+        require_once "qcl/db/mysql.php"; 
         
         $this->log("Connecting to ");
         $this->log($dsn);
@@ -152,6 +170,8 @@ class qcl_db_model extends qcl_core_PropertyModel
      * store new connection
      */
     $this->db =& $db;  
+    
+    return true;
   }
   
   /**
@@ -328,7 +348,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     else
     {
-       /*
+      /*
        * replace "*" with all properties
        */
       if ( $properties == "*" )
@@ -1405,13 +1425,22 @@ class qcl_db_model extends qcl_core_PropertyModel
    * Parse xml schema file and, if it has changed, create or update
    * all needed tables and columns. schema document will be available
    * as $this->schemaXml afterwards
-   * @param string $path path of schema xml file or null if default file is used
-   * @return void
+   * @param bool $forceUpgrade If true, upgrade schema even if schema xml file hasn't changed
+   * @return bool True if tables have been upgraded, null if no upgrade has been attempted, false if there was an error
    */
-  function setupSchema($sqltype="mysql")
+  function setupSchema( $forceUpgrade=false )
   {
-    $modelXml =& $this->getSchemaXml();
-    $doc      =& $modelXml->getDocument();
+
+    /*
+     * sql type
+     */
+    $sqltype    =  $this->db->getType();
+    
+    /*
+     * the schema xml object and document
+     */
+    $modelXml   =& $this->getSchemaXml();
+    $doc        =& $modelXml->getDocument();
     
     //$this->info($doc->asXml());
 
@@ -1442,10 +1471,10 @@ class qcl_db_model extends qcl_core_PropertyModel
      * whether the setup process should upgrade the schema or just use existing tables in
      * whatever schema they are in
      */
-    if ( $modelAttrs['upgradeSchema'] == "no" )
+    if ( $modelAttrs['upgradeSchema'] == "no" and ! $forceUpgrade )
     {
       $this->log("Schema document for model name '{$this->name}' is not to be upgraded.");
-      return;
+      return null;
     }    
 
     /*
@@ -1454,7 +1483,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     if ( $modelAttrs['table']  == "no" )
     {
       $this->log("Model name '{$this->name}' has no table backend.");
-      return;  
+      return null;  
     }
     
     /*
@@ -1468,20 +1497,59 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     $prefix = $this->getTablePrefix();
     $this->table = $prefix . $modelAttrs['table'];
+
+    /*
+     * Wheter the table for this model exists already
+     */
+    $tableExists  = $this->db->tableExists($this->table);
     
     /*
-     * Return if table exists and schema hasn't changed
+     * Get the modelTableInfo persistent object to look up if this
+     * table has been initialized already. To avoid an indefinitive loop,
+     * the qcl_db_PersistentModel used by qcl_db_ModelTableInfo must
+     * be especially treated. You can upgrade its schema only be deleting
+     * the table.
      */
-    $tableExists = $this->db->tableExists($this->table);
-    if ( $tableExists and !$modelXml->hasChanged() ) 
+    $modelTableInfo = null;
+    if ( $this->instanceOf("qcl_db_PersistentModel") and $tableExists )
+    {
+      $isInitialized = true;
+      $forceUpgrade  = false;
+    }
+    else
+    {
+      /*
+       * cache object globally and in each object to avoid
+       * multiple instantiation of the same object
+       */
+      if ( ! $this->modelTableInfo )
+      {
+        require_once "qcl/db/ModelTableInfo.php";
+        global $qclDbModelTableInfo;
+        if ( ! $qclDbModelTableInfo )
+        {
+          $qclDbModelTableInfo = new qcl_db_ModelTableInfo(&$this); // pass by reference doesn't work, so two objects will always exist 
+        }
+        $this->modelTableInfo =& $qclDbModelTableInfo; 
+      }
+      $datasourceModel =& $this->getDatasourceModel();
+      $isInitialized   = $this->modelTableInfo->isInitialized( &$datasourceModel, $this->table, $this->class, $this->schemaTimestamp );
+    }
+       
+    /*
+     * Return if table exists and schema hasn't changed for the table
+     */
+    
+    if ( $tableExists and $isInitialized and ! $forceUpgrade ) 
     {
       //$this->info("Schema document for model name '{$this->name}', type '{$this->type}', class '{$this->class}' hasn't changed.");
-      return;
+      return null;
     }  
     
     /*
      * update schema
      */
+    $this->info(get_class($this->datasource)); 
     $this->info("Creating or updating tables for model name '{$this->name}', type '{$this->type}', class '{$this->class}' ...");
     
     /*
@@ -1551,27 +1619,35 @@ class qcl_db_model extends qcl_core_PropertyModel
       /*
        * @todo: check for <sql type="$sqltype">
        */
-      if ( ! is_object($property->sql) )
+      if ( ! is_object( $property->sql ) )
       {
         $this->warn("Model Property '$propName' has no definition matching the sql type.");
         continue;
       }
-      
-      $newDef    = $modelXml->getData($property->sql);
-      $oldDef    = $this->db->getColumnDefinition($table,$colName);
-      
-      //$this->info("Property '$propName', Column '$colName':" );
-      //$this->info("Old def: '$oldDef', new def:'$newDef'");
 
       /*
-       * skip column if old and new column definition are identical
+       * descriptive definition of the existing table schema,
+       */
+      $descriptiveDef = $this->db->getColumnDefinition($table,$colName);
+      
+      /*
+       * normative definition of how the table schema should look like
+       */
+      $normativeDef = trim($modelXml->getData($property->sql)); 
+      
+      //$this->info("Property '$propName', Column '$colName':" );
+      //$this->info("Old def: '$descriptiveDef', new def:'$normativeDef'");
+
+      /*
+       * Skip column if descriptive and normative column definition are identical.
+       * removing "on update" part since this won't be present in the 
+       * descriptive definition and "default null" since this is the default anyways.
        * @todo check for position and auto-increment
        */
-      if ( strtolower($newDef) == strtolower($oldDef) ) 
-      {
-        // nothing to do
-        continue;
-      }
+      $sql1 = trim(preg_replace("/on update .+$|default null/", "", strtolower( $normativeDef ) ) );
+      $sql2 = trim(preg_replace("/default null/",               "", strtolower( $descriptiveDef ) ) ); 
+      //$this->info("'$sql1' == '$sql2'? ");
+      if ( $sql1 == $sql2 ) continue; 
       
       /*
        * position
@@ -1579,19 +1655,23 @@ class qcl_db_model extends qcl_core_PropertyModel
       $position  = $attr['position'];
       if ( $position )
       {
-        $newDef .= " " . $position;
+        $normativeDef .= " " . $position;
       }      
       
-      if ( ! $oldDef )
+      /*
+       * If column does not exist, add it
+       */      
+      if ( ! $descriptiveDef )
       {
-        // column does not exist, add
-        $this->db->addColumn( $table, $colName, $newDef );
+        $this->db->addColumn( $table, $colName, $normativeDef );
       }
+      
+      /*
+       * otherwise, if it exists but is different: modifiy it
+       */      
       else
       {
-        // exists but is different: modifiy
-        $this->info( "{$table}.{$colName}: " . $oldDef);
-        $this->db->modifyColumn($table,$colName,$newDef);
+        $this->db->modifyColumn($table,$colName,$normativeDef);
       }
 
       /* 
@@ -1783,12 +1863,12 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * filter unwanted definition parts 
          */
-        $localKeyDef = preg_replace("/auto_increment/i","",$localKeyDef);
+        $localKeyDef = trim(preg_replace("/auto_increment/i","",$localKeyDef));
         
         /*
          * add or modify column if necessary
          */
-        if ($localKeyDef == $foreignKeyDef ) 
+        if ( strtolower($localKeyDef) == strtolower($foreignKeyDef) ) 
         {
           // nothing to do
           continue;
@@ -1846,19 +1926,30 @@ class qcl_db_model extends qcl_core_PropertyModel
     else
     {
       $this->info("No data to import.");
-    }  
+    }
     
     /*
-     * model- dependent post-setup actions
-     * 
+     * register table initialized for the datasource
      */
-    $this->postSetupSchema();
+    if ( $this->modelTableInfo )
+    {
+      $this->modelTableInfo->registerInitialized(&$datasourceModel, $this->table, $this->class, $this->schemaTimestamp);
+    }
+    
+    /*
+     * model- dependent post-setup actions 
+     */
+    return $this->postSetupSchema();
   }
 
   /**
-   * model-dependent post-setup stuff. empty stub to be overridden by subclasses if necessary
+   * Model-dependent post-setup stuff. empty stub to be overridden by subclasses if necessary
+   * @return bool True if upgrade has been successful, false on error
    */
-  function postSetupSchema() {} 
+  function postSetupSchema() 
+  {
+    return true;
+  } 
   
   //-------------------------------------------------------------
   // Linked tables

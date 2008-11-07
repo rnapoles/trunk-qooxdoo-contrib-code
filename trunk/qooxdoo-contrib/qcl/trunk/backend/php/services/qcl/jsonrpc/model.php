@@ -1,7 +1,8 @@
 <?php
-
-// dependencies
-require_once ("qcl/jsonrpc/object.php");
+/*
+ * dependencies
+ */
+require_once "qcl/jsonrpc/object.php";
 
 /**
  * simple controller-model architecture for jsonrpc
