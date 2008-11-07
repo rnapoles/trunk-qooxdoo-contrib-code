@@ -3,13 +3,13 @@
 /*
  * dependencies
  */
-require_once ("qcl/mixin.php");
+require_once ("qcl/core/mixin.php");
 
 /**
  * Mixin providing access services (authentication etc.)
  * to an application service
  */
-class qcl_access_services extends qcl_mixin
+class qcl_access_services extends qcl_core_mixin
 {    
 
   /**

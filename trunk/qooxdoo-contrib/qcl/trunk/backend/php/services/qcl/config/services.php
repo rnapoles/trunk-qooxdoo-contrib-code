@@ -3,13 +3,13 @@
 /*
  * dependencies
  */
-require_once ("qcl/mixin.php");
+require_once ("qcl/core/mixin.php");
 require_once ("qcl/config/config.php");
 
 /**
  * Mixin providing methods to edit configuration data
  */
-class qcl_config_services extends qcl_mixin
+class qcl_config_services extends qcl_core_mixin
 {
 	
 	//-------------------------------------------------------------

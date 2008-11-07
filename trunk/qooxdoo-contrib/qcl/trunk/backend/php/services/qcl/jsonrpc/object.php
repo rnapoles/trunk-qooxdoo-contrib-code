@@ -3,13 +3,13 @@
 /**
  * Dependencies
  */ 
-require_once "qcl/object.php";
+require_once "qcl/core/object.php";
 
 /**
  * Base class of all json rpc service classes
  */
 
-class qcl_jsonrpc_object extends qcl_object 
+class qcl_jsonrpc_object extends qcl_core_object 
 {
 
   //-------------------------------------------------------------

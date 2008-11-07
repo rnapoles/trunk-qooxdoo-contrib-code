@@ -1,10 +1,10 @@
 <?php
 
-require_once "qcl/mixin.php";
+require_once "qcl/core/mixin.php";
 /**
  * Mixin providing various utility methods
  */
-class qcl_application_utilities extends qcl_mixin
+class qcl_application_utilities extends qcl_core_mixin
 {
 
 

@@ -8,7 +8,7 @@ require_once ("qcl/jsonrpc/model.php");
  * class to run binaries through the shell from php
  **/
  	
- class qcl_system_shell extends qcl_object
+ class qcl_system_shell extends qcl_core_object
  {
 	var $error; 	// error msg
 	var $warning;	// warning msg

@@ -181,9 +181,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     /*
      * we need to reimplement the mixin behavior from 
-     * qcl_object because we cannot call the parent 
+     * qcl_core_object because we cannot call the parent 
      * class method
-     * @see qcl_object::__call()
+     * @see qcl_core_object::__call()
      */
     if ( phpversion() >= 5 and isset($this->_mixinlookup[$method] ) )
     {

@@ -28,7 +28,7 @@ class class_qcl_jsonrpc_Tests extends qcl_datasource_controller
   function method_testObjectId()
   {
     $time_start =  microtime_float();
-    $obj = new qcl_object;
+    $obj = new qcl_core_object;
     $id = $obj->objectId();
     $time_end = microtime_float(); 
     $time = $time_end - $time_start;
