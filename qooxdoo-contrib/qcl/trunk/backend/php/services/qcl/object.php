@@ -56,7 +56,7 @@ $qcl_registry = array();
  * http://www.jansch.nl/2006/08/23/mixins-in-php/
  * 
  */
-class qcl_object extends patched_object 
+class qcl_object
 {
   /**
    * The class name of this object
@@ -109,16 +109,47 @@ class qcl_object extends patched_object
    */
   var $_objectId = null;
   
+  /**
+   * PHP4 __construct() hack taken from cakephp
+   * taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
+   *
+   * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
+   * Copyright 2005-2007, Cake Software Foundation, Inc.
+   *                1785 E. Sahara Avenue, Suite 490-204
+   *                Las Vegas, Nevada 89104
+   *
+   * Licensed under The MIT License
+   * Redistributions of files must retain the above copyright notice.
+   *
+   * A hack to support __construct() on PHP 4
+   * Hint: descendant classes have no PHP4 class_name() constructors,
+   * so this constructor gets called first and calls the top-layer __construct()
+   * which (if present) should call parent::__construct()
+   *
+   * @return Object
+   */
+  function qcl_object() 
+  {
+    //trigger_error("qcl_object constructor called");
+    $args = func_get_args();
+    if (method_exists($this, '__destruct')) 
+    {
+      //$this->info("Registering shutdown function for " . get_class($this));
+      register_shutdown_function (array(&$this, '__destruct'));
+    }
+    if (method_exists($this, '__construct')) 
+    {
+      call_user_func_array(array(&$this, '__construct'), $args);
+    }
+  }
+
+  
 	/**
 	 * Class constructor. If the mixin class property contains 
 	 * array entries, these classes will be mixed in.
 	 */
 	function __construct() 
 	{
-		/*
-		 * initialize parent class
-		 */
-	  parent::__construct();
 		
 	  /*
 	   * initialize object id
