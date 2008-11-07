@@ -684,5 +684,124 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->dispatchMessage("qcl.messages.htmlDebug",$html);
   }  
   
+  /**
+   * Checks whether a method name is a service method
+   * @param string $method
+   * @return bool 
+   */
+  function isServiceMethod ( $method )
+  {
+    return (substr($method,0, strlen(JsonRpcMethodPrefix)) == JsonRpcMethodPrefix);
+  }
+  
+  /**
+   * Returns a list of all service methods that this class provides
+   * @todo Save result so that access can be regulated by source code introspection
+   * @return qcl_jsonrpc_Response
+   */
+  function method_services()
+  {
+    /*
+     * get list of method names
+     */
+    $serviceMethods = new ArrayList;
+    foreach ( $this->methods() as $method )
+    {
+      if ( $this->isServiceMethod( $method ) )
+      {
+        
+        $serviceMethods->add($method);
+      }
+    }
+    
+    /*
+     * parse source code - we have no idea where the functions are
+     */
+    $this->info("Parsing included files for method information...");
+    $methodInfo = array();
+    $counters   = array();
+    foreach ( get_included_files() as $file )
+    {
+      $code = file_get_contents($file);
+      foreach( $serviceMethods->toArray() as $method )
+      {
+        $signature = "function $method";
+        $pos = strpos( strtolower($code), $signature ) ;
+        if ( $pos !== false )
+        {
+          
+          /*
+           * get method name from code
+           */
+          $methodName = substr($code,$pos + 16, strlen( $method ) -7 );
+          
+          /*
+           * read file into array
+           */
+          $lines = file($file);
+          
+          /*
+           * forward to line with signature
+           */
+          for( $i=0; $i<count($lines); $i++ )
+          {
+            if ( strstr($lines[$i], $methodName ) ) break;  
+          }
+          $endDocLine = $i-1;
+          
+          /*
+           * go back to the beginning of the documentation
+           */
+          for( $j = $endDocLine; $j > 0; $j--)
+          {
+            $line = trim($lines[$j]);
+            if ( substr( $line, 0, 3 ) == "/**" ) break;
+          }
+          $startDocLine = $j+1;
+
+          /*
+           * now add documentation until doctags are encountered
+           */
+          for ( $i= $startDocLine; $i < $endDocLine; $i++)
+          {
+            $line = trim($lines[$i]);
+            if ( substr($line,0,3 ) ==  "* @" ) break;
+            $methodInfo[$methodName]['doc'] .= trim( str_replace("* ", " ", $line ) );     
+          }
+          
+          /*
+           * now parse doctags
+           */
+          for ( $j = $i; $j < $endDocLine; $j++ )
+          {
+            $line = trim($lines[$j]);
+            if ( substr($line,0, 3) == "* @" ) 
+            {
+              $line  = trim( substr($line, 3 ) );
+              $tag   = trim( substr( $line, 0, strpos( $line, " " ) ) );
+              $value = trim( substr( $line, strlen($tag) ) ); 
+              $counters[$method][$tag]++;
+            }
+            else
+            {
+              $value = substr($line,3);
+            }
+            if ( in_array($tag, array("param","todo","see") ) )
+            {
+              $methodInfo[$methodName][$tag][$counters[$method][$tag]-1] .= $value;
+            }   
+            else
+            {
+              $methodInfo[$methodName][$tag] .= $value;
+            }
+          }
+        }
+      }
+    }
+    //$this->info($methodInfo);
+    $this->set("services",$methodInfo);
+    return $this->response();
+  }
+  
 }	
 ?>
