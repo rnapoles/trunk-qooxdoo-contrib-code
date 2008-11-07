@@ -386,10 +386,15 @@ class qcl_core_object
     }
   }
   
-  //-------------------------------------------------------------
-  // Error management
-  //-------------------------------------------------------------
 
+  /**
+   * make a copy of this object
+   */
+  function cloneObject()
+  {
+    return clone($this);
+  }
+  
   /**
    * getter for error message
    * @return string
@@ -416,10 +421,6 @@ class qcl_core_object
      $this->error = null;
    }
 
-  //-------------------------------------------------------------
-  // Instantiating new classes
-  //-------------------------------------------------------------    
-   
   /**
    * get include path for a class name
    * @return 
@@ -578,6 +579,15 @@ class qcl_core_object
   {
     return method_exists($this,$method);
   }
+  
+  /**
+   * OO alias for get_class_methods(get_class($this))
+   * return array
+   */
+  function methods()
+  {
+    return get_class_methods( $this->className() );
+  } 
     
   /**
    * similar to instanceOf javascript function. checks if object is an instance of the
