@@ -582,7 +582,7 @@ class qcl_core_object
   
   /**
    * OO alias for get_class_methods(get_class($this))
-   * return array
+   * @return array
    */
   function methods()
   {
