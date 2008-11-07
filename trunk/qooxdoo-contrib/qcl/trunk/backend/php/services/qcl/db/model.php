@@ -257,12 +257,17 @@ class qcl_db_model extends qcl_core_PropertyModel
    * Finds all database records or those that match a where condition. 
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
    * 
-   * @param string|array|null  $where   where condition to match, if null, get all, if array, match properties
-   * @param string|array|null[optional] $orderBy Order by property/properties. If an array is given, the last
-   * element of the array will be searched for "ASC" or "DESC" and used as sort direction
-   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all. When using
-   * joined tables, the parameter must be an array containing two arrays, the first with the properties of the model table, 
-   * and the second with the properties of the joined table.
+   * @param string|array|null  $where 'Where' condition to match. If null, get all. if array, 
+   * match properties
+   * @param string|array|null[optional] $orderBy Order by property/properties. 
+   * If an array is given, the last element of the array will be searched for "ASC" or "DESC" and 
+   * used as sort direction.
+   * @param string|array|null[optional]  $properties  Array of properties to retrieve or null (default) 
+   * if all. When using joined tables, the parameter must be an array containing two arrays, 
+   * the first with the properties of the model table, and the second with the properties of the joined 
+   * table. Alternatively, you can use the syntax "prop1,prop2,prop3" for an unlinked, and 
+   * "prop1,prop2,prop3|prop1,prop2,prop3" for a linked model. It is also possible to use "*" or "*|*" to 
+   * get all properties from unlinked and linked models, respectively.
    * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
    * automatically generate the necessary join query.
    * @return Array Array of db record sets. The array keys are already converted to the property names,
@@ -274,15 +279,37 @@ class qcl_db_model extends qcl_core_PropertyModel
      * columns to retrieve
      */
     $columns = "";
-    if ( ! $properties )
+    if ( is_null( $properties ) )
     {
       $properties = array_keys($this->properties);  
+    }
+    
+    /*
+     * split at the pipe and comma characters
+     */
+    elseif ( is_string($properties) )
+    {
+      $properties = explode("|",$properties);
+      if ( count( $properties ) > 1 )
+      for ( $i=0; $i<count( $properties ); $i++  )
+      {
+        $properties[$i] = explode(",",$properties[$i] );
+      }
+      else
+      {
+        $properties = explode(",",$properties[0]);
+      }
+    }
+    
+    elseif ( ! is_array($properties) )
+    {
+      $this->raiseError("Invalid property parameter."); 
     }
     
     $cols = array();
     
     /*
-     * query involves linked tables
+     * query involved linked tables
      */
     if ( $link )
     {
@@ -319,9 +346,11 @@ class qcl_db_model extends qcl_core_PropertyModel
          if ( ! $property ) continue;
          
          /*
-          * get column name 
+          * get column name of given property
           */
          $col = $model->getColumnName($property);
+          
+         $this->info( $model->className() . ": $property -> $col");
          
          /*
           * table and column alias
@@ -344,7 +373,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     
     /*
-     * query involves only local table
+     * query involves only on unlinked table
      */
     else
     {
@@ -519,9 +548,11 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param array|int	$ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @param string[optional] $link Name of the link in the schema xml. 
+   * @see qcl_db_model::findeWhere() for details
    * @return Array Array of db record sets
    */
- 	function findById( $ids, $orderBy=null, $properties=null )
+ 	function findById( $ids, $orderBy=null, $properties=null, $link=null )
  	{
  	  if ( ! is_numeric($ids) and !is_array($ids) )
  	  {
@@ -532,7 +563,7 @@ class qcl_db_model extends qcl_core_PropertyModel
  	  {
  	    $result = $this->findWhere(
  	      array('id' => " IN ($rowIds)"), 
- 	      $orderBy, $properties 
+ 	      $orderBy, $properties, $link 
  	    );
  	    return $result;
  	  }  
@@ -544,9 +575,11 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param array|string $ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @param string[optional] $link Name of the link in the schema xml.
+   * @see qcl_db_model::findeWhere() for details
    * @return Array Array of db record sets
    */
-  function findByNamedId( $ids, $orderBy=null, $properties=null )
+  function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )
   {
     if ( ! count( (array) $ids ) )
     {
@@ -568,7 +601,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     $result = $this->findWhere( 
       array( 'namedId' => " IN ($inValues)"), 
-      $orderBy, $properties 
+      $orderBy, $properties, $link
     );
     
     return $result;
@@ -808,7 +841,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    */
   function getAllRecords($orderBy=null)
   {  
-    return $this->getRecordsWhere(null,$orderBy);
+    return $this->findWhere(null,$orderBy);
   }  
   
   /**
@@ -899,7 +932,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     $rowIds = implode(",", (array) $ids );
     if ( ! empty($rowIds) )
     {
-      return $this->getRecordsWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $fields );
+      return $this->findWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $fields );
     }  
   }
 
