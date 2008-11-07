@@ -108,14 +108,19 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    * Constructor. Reconstructs object properties
    * @param qcl_jsonrpc_controller $controller
    * @param string[optional] $id Optional id if several objects of
-   * the same class are to be persisted
+   * the same class are to be persisted. If you don't provide an id,
+   * the UUID-style object id is used. This means that you need to retrieve
+   * the objectId in order to access the persistent object in a later
+   * request. If you want only one instance of this object to exist, pass
+   * the class name of the inheriting class in its constructor to this 
+   * parent constructor. 
    */  
   function __construct( $controller, $id=null)
   {
     /*
      * call parent contructor
      */
-    parent::__construct(&$controller);
+    parent::__construct( &$controller );
     
     /*
      * check if class is subclassed

@@ -222,7 +222,7 @@ class qcl_db_abstract extends qcl_jsonrpc_object
   
   
 	/**
-	 * getter for database type
+	 * Returns database type, such as "mysql"
 	 * return string
 	 */
 	function getType()

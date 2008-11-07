@@ -122,6 +122,10 @@ class qcl_db_mysql extends qcl_db_abstract
       {
         $this->raiseError( $this->error );
       }
+      else
+      {
+        $this->warn( $this->error );
+      }
       return false;
 		}
 		return $res;
@@ -631,19 +635,22 @@ class qcl_db_mysql extends qcl_db_abstract
         COLUMN_NAME='$column';
     "); 
     
-    // @todo: Bad, bad stuff below, this needs a rework!
+    /*
+     * @todo: Ternary stuff below needs a transparent rework!
+     */
     if ( count($c) )
     {
       $definition = trim(str_replace("  "," ",implode(" ", array(
         $c['type'],
         ( $c['nullable']=="YES" ? "NULL":"NOT NULL"), 
-        ( $c['default'] ? "DEFAULT " . (
-          in_array($c['default'], array("NULL","CURRENT_TIMESTAMP") ) ?
-             $c['default'] : "'" . addslashes($c['default']) . "'" 
-        ) : "" ),
+        ( is_null($c['default']) ? "" :
+          "DEFAULT " . ( 
+            in_array($c['default'], array("CURRENT_TIMESTAMP") ) ? 
+              $c['default'] : "'" . addslashes($c['default']) . "'" 
+           ) ),
         $c['extra']
       ))));         
-      return $definition;
+      return trim($definition);
     }
     return null;
   }
@@ -671,7 +678,7 @@ class qcl_db_mysql extends qcl_db_abstract
   }  
   
   /**
-   * mofify a column 
+   * Modify a column 
    * @param string $table
    * @param string $column
    * @param string $definition
@@ -682,7 +689,8 @@ class qcl_db_mysql extends qcl_db_abstract
     $this->execute ("
       ALTER TABLE `$table` MODIFY COLUMN `$column` $definition $after;
     ");
-    $this->info("Modified $table.$column to '$definition'.");    
+    $oldDef = $this->getColumnDefinition($table,$column);
+    $this->info("Modified $table.$column from '$oldDef' to '$definition'.");    
   }    
 
   /**
@@ -1024,10 +1032,10 @@ class qcl_db_mysql extends qcl_db_abstract
      */
     $this->execute("
       DROP TRIGGER IF EXISTS `{$table}_insert_create_hash`
-    ",true);
+    ",false);
     $this->execute("
       DROP TRIGGER IF EXISTS `{$table}_update_create_hash`
-    ",true); 
+    ",false); 
     
     $col=array();
     for($i=0;$i<count($columns);$i++ )
@@ -1041,13 +1049,13 @@ class qcl_db_mysql extends qcl_db_abstract
       CREATE TRIGGER `{$table}_insert_create_hash`
       BEFORE INSERT ON `$table`
       FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
-    ",true);
+    ",false);
     
     $this->execute("
       CREATE TRIGGER `{$table}_update_create_hash`
       BEFORE UPDATE ON `$table`
       FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
-    ",true); 
+    ",false); 
     
     $this->info("Created trigger to update hash over " . implode(",",$columns) . ".");
   }
