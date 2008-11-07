@@ -445,7 +445,26 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     }
     return $id; 
   }
- 
+  
+  /**
+   * Returns the named id if it exists as property
+   * @return string
+   */
+  function getNamedId()
+  {
+    return $this->getProperty("namedId");
+  }
+  
+  /**
+   * Sets the named id if it exists as property
+   * @return string
+   */
+  function setNamedId( $namedId )
+  {
+    return $this->setProperty("namedId",$namedId);
+  }  
+  
+  
   /**
    * Checks whether model has 'namedId' property
    * @return string the local name of the property
