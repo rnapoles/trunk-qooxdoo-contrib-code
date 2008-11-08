@@ -139,7 +139,7 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * Get user model and active user object
      */
-    $userModel =& $this->getUserModel();
+    $userModel  =& $this->getUserModel();
     $activeUser =& $userModel->getActiveUser();
 
     /*
@@ -323,8 +323,7 @@ class qcl_access_controller extends qcl_db_controller
      * models
      */
     $configModel =& $this->getConfigModel();
-    $userModel   =& $this->getUserModel();
-    $activeUser  =& $userModel->getActiveUser();
+    $activeUser  =& $this->getActiveUser();
 
     /*
      * no timeout check if not authenticated or guest access
@@ -369,7 +368,7 @@ class qcl_access_controller extends qcl_db_controller
   function registerSession() {}
   
   /**
-   * gets active user
+   * Returns active user object
    * @return qcl_access_user
    */
   function &getActiveUser()
@@ -379,7 +378,7 @@ class qcl_access_controller extends qcl_db_controller
   }
   
   /**
-   * abort with error if active user doesn't have permission
+   * Abort with error if active user doesn't have permission
    * @return void
    * @param $permission String
    */
