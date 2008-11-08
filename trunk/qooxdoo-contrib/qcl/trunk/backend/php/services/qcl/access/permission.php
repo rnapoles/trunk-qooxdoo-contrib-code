@@ -1,5 +1,5 @@
 <?php
-require_once ("qcl/access/common.php");
+require_once "qcl/access/common.php";
 
 /**
  * class providing data on permissions
@@ -36,14 +36,6 @@ class qcl_access_permission extends qcl_access_common
   {
     return parent::getInstance( $class );
   }
-  
-  /**
-   * constructor 
-   */
- 	function __construct($controller)
- 	{
-		parent::__construct(&$controller); 	
- 	}   
  	
   /**
    * creates a new permission. throws an error if permission already exists
@@ -60,21 +52,6 @@ class qcl_access_permission extends qcl_access_common
    	  $roleId	    =  $roleModel->createIfNotExists("qcl.roles.Unassigned");
  		}
  		return parent::create( $namedId, $roleId );
- 	}
- 	
-  /**
-   * creates a new permission if it doesn't exist
-   * @overridden
-   * @param string $namedId
-   * @param int[optional] $roleId 
-   */
- 	function createIfNotExists( $namedId, $roleId=null )
- 	{
- 		if ( $id = $this->namedIdExists ( $namedId ) )
- 		{
- 			return $id;
- 		}
-    return $this->create( $namedId, $roleId ); 	  
  	}
  	
   /**

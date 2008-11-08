@@ -138,7 +138,7 @@ class qcl_session_controller extends qcl_access_controller
       /*
        * check the user session for timeouts etc.
        */
-      if ( ! $activeUser->checkTimeout() )
+      if ( ! $this->checkTimeout() )
       {
         /*
          * force log out

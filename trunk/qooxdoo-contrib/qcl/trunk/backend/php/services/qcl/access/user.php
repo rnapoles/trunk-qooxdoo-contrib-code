@@ -51,6 +51,14 @@ class qcl_access_user extends qcl_access_common
   var $anonymous_password = "guest";  
 
   /**
+   * The active user object
+   * Access with getActiveUser()/setActiveUser() only
+   * @access private
+   * @var qcl_access_user
+   */
+  var $_activeUser;
+  
+  /**
    * Returns singleton instance.
    * @static
    * @return qcl_access_user
@@ -66,23 +74,45 @@ class qcl_access_user extends qcl_access_common
    */
   function &getActiveUser()
   {
-    $activeUser = &$_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME];
-    if ( ! is_a( $activeUser, $this->className() ) )
+
+    /*
+     * no active user
+     */
+    if ( ! $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] )
     {
-      $activeUser = null;
+      return null;
     }
-    return $activeUser;
+        
+    /*
+     * Create one extra user model 
+     */
+    if ( ! $this->_activeUser )
+    {
+      $className  =  $this->className();
+      $controller =& $this->getController(); 
+      $this->_activeUser =& new $className(&$controller);
+      $this->_activeUser->setRecord( $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] );
+    }
+    return $this->_activeUser;
   }
    
   /**
    * Copies the active user object into the session
    * @param qcl_access_user $userObject A user object or null to logout.
    */
-  function setActiveUser($userObject)
+  function setActiveUser( $userObject )
   {
     if ( is_null( $userObject ) or is_a( $userObject, $this->className() ) )
     {
-      $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] = $userObject;
+      if ( $userObject )
+      {
+        $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] = $userObject->getRecord();
+      }
+      else
+      {
+        $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] = null;
+        $this->_activeUser = null;
+      }
     }
     else
     {
@@ -127,7 +157,7 @@ class qcl_access_user extends qcl_access_common
         return false;
       }
     }
-
+;
     /*
      * try to authenticate
      */
@@ -168,13 +198,12 @@ class qcl_access_user extends qcl_access_common
    */
   function guestAccess()
   {
-    $this->findByNamedId($this->anonymous_name);
+    $this->findByNamedId( $this->anonymous_name );
     if ( $this->foundNothing() )
     {
       $this->raiseError("Cannot grant guest acces because no user '{$this->anonymous_name}' exists.");
-    }
-    $activeUser =& $this->cloneObject();
-    $this->setActiveUser( &$activeUser );
+    }    
+    $this->setActiveUser( &$this );
   }
   
   /**
@@ -192,7 +221,7 @@ class qcl_access_user extends qcl_access_common
    * myapp.permissions.canDoFoo
    * @param string $requestedPermission the permission to check
    */
-  function hasPermission($requestedPermission)
+  function hasPermission( $requestedPermission )
   {
     /*
      * models
@@ -203,7 +232,7 @@ class qcl_access_user extends qcl_access_common
     /*
      * get all permissions of the user
      */
-    $permissions 	= $this->permissions('namedId');
+    $permissions = $this->permissions('namedId');
 
     /*
      * check if permission is granted
@@ -227,7 +256,7 @@ class qcl_access_user extends qcl_access_common
 		/*
 		 * Permission was not found
 		 */
-    $permModel->getByNamedId($requestedPermission);
+    $permModel->getByNamedId( $requestedPermission );
 		if ( $permModel->foundNothing() )
 		{
 		  /*
@@ -245,7 +274,7 @@ class qcl_access_user extends qcl_access_common
    */
   function requirePermission($permission)
   {
-    if ( $this->hasPermission($permission) )
+    if ( $this->hasPermission( $permission ) )
     {
       return true;
     }
@@ -260,13 +289,14 @@ class qcl_access_user extends qcl_access_common
   /**
    * Returns a preconfigured role model, holding only the records
    * that are linked to the current user
+   * @param string $prop Property to retrieve, defaults to "id"
    * @return qcl_access_role
    */
-  function &getRoleModel()
+  function &linkedRoleModel( $prop="id" )
   {
     $controller =& $this->getController();
     $roleModel  =& $controller->getRoleModel();
-    $roleModel->findByLinkedId($this->getId(),"user",null,$prop);
+    $roleModel->findByLinkedId( $this->getId(),"user");
     return $roleModel;
   } 
   
@@ -275,9 +305,9 @@ class qcl_access_user extends qcl_access_common
    * @param string $prop Property to retrieve, defaults to "id"
    * @return array Array of values
    */
-  function roles($prop="id")
+  function roles( $prop="id" )
   {
-    $roleModel  =& $this->getRoleModel();
+    $roleModel  =& $this->linkedRoleModel( $prop );
     return $roleModel->values();
   }   
   
@@ -286,10 +316,10 @@ class qcl_access_user extends qcl_access_common
    * @param string $prop Property to retrieve, defaults to "id"
    * @return array Array of values
    */
-  function permissions($prop="id")
+  function permissions( $prop="id" )
   {
     $permissions =  array();
-    $roleModel   =& $this->getRoleModel();
+    $roleModel =& $this->linkedRoleModel();
     if ( $roleModel->foundSomething() )
     {
       do
@@ -325,7 +355,7 @@ class qcl_access_user extends qcl_access_common
       {
         $roleNamedId          = $roleModel->getNamedId();
         $roleNames[]          = $roleModel->getName();
-        $roles[$roleNamedId]  = $roleModel->permissions();
+        $roles[$roleNamedId]  = $roleModel->permissions('namedId');
       }
       while ( $roleModel->nextRecord() );   
     }
@@ -373,13 +403,13 @@ class qcl_access_user extends qcl_access_common
     return true;
   }
 
-
   /**
    * Resets the timestamp of the last action  for the current user
    * @return void
    */
   function resetLastAction()
   {
+    $activeUser =& $this->getActiveUser();
     $activeUser->setProperty("lastAction", $this->getTimestamp() );
     $activeUser->save();
   }
