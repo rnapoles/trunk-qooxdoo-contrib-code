@@ -181,7 +181,7 @@ class qcl_db_mysql extends qcl_db_abstract
 	 * gets the values of the first cell of each row of the result set
 	 * return mixed
 	 */
-	function getValues ( $sql )
+	function values ( $sql )
 	{
 		$rows = $this->getAllRecords( $sql, false );
 		$result= array();
@@ -717,7 +717,7 @@ class qcl_db_mysql extends qcl_db_abstract
   function getPrimaryKey($table)
   {
     $database = $this->getDatabase(); 
-    return $this->getValues("
+    return $this->values("
       SELECT
         COLUMN_NAME
       FROM 

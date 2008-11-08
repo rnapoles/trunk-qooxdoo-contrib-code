@@ -14,7 +14,10 @@
     
       <!-- model properties -->
       <properties>
-        <property name="username" type="string" index="yes">
+        <property name="name" type="string">
+          <sql>varchar(100) NOT NULL</sql>
+        </property>
+        <property name="namedId" type="string" index="yes">
           <sql>varchar(50) NOT NULL</sql>
         </property>
         <property name="password" type="string">
@@ -34,9 +37,13 @@
       <!-- indexes -->
       <indexes>
         <index type="unique">
-          <property name="username" />
+          <property name="namedId" />
         </index>
       </indexes>
+      
+      <aliases>
+        <alias for="namedId">username</alias>
+      </aliases>
       
     </definition>
     

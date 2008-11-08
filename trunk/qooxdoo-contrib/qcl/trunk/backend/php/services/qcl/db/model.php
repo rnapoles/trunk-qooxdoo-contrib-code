@@ -186,7 +186,7 @@ class qcl_db_model extends qcl_core_PropertyModel
   }
    
   /**
-   * gets the record id from a reference which can be the id itself or an 
+   * Returns the record id from a reference which can be the id itself or an 
    * identifiying (dot-separated) name
    * @param mixed $ref numeric id or string name
    * @return integer id
@@ -349,8 +349,7 @@ class qcl_db_model extends qcl_core_PropertyModel
           * get column name of given property
           */
          $col = $model->getColumnName($property);
-          
-         $this->info( $model->className() . ": $property -> $col");
+         //$this->info( $model->className() . ": $property -> $col");
          
          /*
           * table and column alias
@@ -498,6 +497,40 @@ class qcl_db_model extends qcl_core_PropertyModel
   }
 
   /**
+   * Finds all records that are linked to a record in the remote
+   * model with the given id.
+   *
+   * @param int $id
+   * @param string $link
+   * @param string $orderBy
+   * @param mixed $properties
+   * @see qcl_db_model::findWhere()
+   * 
+   */
+  function findByLinkedId( $id, $link, $orderBy=null, $properties="*" )
+  {
+    return $this->findWhere("t2.id=$id", $orderBy, $properties, $link ); 
+  }
+
+  /**
+   * Finds all records that are linked to a record in the remote
+   * model with the given namedId.
+   *
+   * @param string $namedId
+   * @param string $link
+   * @param string $orderBy
+   * @param mixed $properties
+   * @see qcl_db_model::findWhere()
+   * 
+   */
+  function findByLinkedNamedId( $namedId, $link, $orderBy=null, $properties="*" )
+  {
+    $linkedModel =& $this->getJoinedModelInstance($link);
+    $namedIdCol  =  $linkedModel->getColumnName("namedId");
+    return $this->findWhere("t2.`$namedIdCol`='$namedId'", $orderBy, $properties, $link ); 
+  }  
+  
+  /**
    * Returns all values of a model property that match a where condition
    * @param string $property Name of property 
    * @param string|null[optional] $where Where condition to match, if null, get all
@@ -526,7 +559,7 @@ class qcl_db_model extends qcl_core_PropertyModel
         $this->raiseError("OrderBy argument must be a string.");    
       }
     }
-    return $this->db->getValues($sql);    
+    return $this->db->values($sql);    
   }  
 
   /**
@@ -962,37 +995,9 @@ class qcl_db_model extends qcl_core_PropertyModel
       $orderBy = implode("`,`", (array) $orderBy );
       $sql .= "ORDER BY `$orderBy`"; 
     }
-    return $this->db->getValues($sql);    
+    return $this->db->values($sql);    
   }
 
-  /**
-   * gets all distinct values of database columns that match a where condition
-   * @param string|array    $column   name of column(s) 
-   * @param string          $where    where condition to match, if null, get all
-   * @param string|null     $orderBy  (optional) order by field
-   * @return array Array of values
-   * @deprecated use new findX.. methods 
-   */
-  function getDistinctValues($column,$where=null,$orderBy=null)
-  { 
-    if ( is_array( $column ) )
-    {
-      $column = implode("`,`",$column);
-    }
-
-    $sql = "SELECT DISTINCT `$column` FROM {$this->table} \n";
-    
-    if ($where)
-    {
-      $sql .= "WHERE $where ";
-    }
-    if ($orderBy)
-    {
-      $orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-    }
-    return $this->db->getValues($sql);    
-  }
   
  /**
    * get and cache record by id 

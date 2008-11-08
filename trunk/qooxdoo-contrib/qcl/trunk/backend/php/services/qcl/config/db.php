@@ -19,10 +19,16 @@ class qcl_config_db extends qcl_db_model
    */
   var $types = array("string","number","boolean");
 		
-	//-------------------------------------------------------------
-  // public methods 
-	//-------------------------------------------------------------    
- 
+  /**
+   * Returns singleton instance.
+   * @static 
+   * @return qcl_config_db 
+   */  
+  function &getInstance( $class=__CLASS__ )
+  {
+    return parent::getInstance( $class );
+  }
+  
 	/**
 	 * creates a config property, overwriting any previous entry
 	 * requires permission "qcl.config.permissions.manage"
@@ -247,18 +253,25 @@ class qcl_config_db extends qcl_db_model
       /*
        *  no user reference given, assume active user
        */
-			$activeUser 	    = $userModel->getActiveUser(); 
-      $activeUserNameId = $userModel->getActiveUserNamedId();
-	
-			/*
-			 * get row containing key name
-			 */
-			$row = $this->db->getRow("
-				SELECT * 
-				  FROM `{$this->table}`
-				 WHERE `{$this->col_namedId}` = '$name'
-					 AND `{$this->col_user}` = '$activeUserNameId'
-			");
+			$activeUser 	    =& $userModel->getActiveUser(); 
+			if ( $activeUser )
+			{
+			  $username =  $activeUser->getNamedId();  
+        /*
+         * get row containing key name
+         */
+        $row = $this->db->getRow("
+          SELECT * 
+            FROM `{$this->table}`
+           WHERE `{$this->col_namedId}` = '$name'
+             AND `{$this->col_user}` = '$username'
+        ");			 
+			}
+			else
+			{
+			  $row = array(); 
+			}
+
 			
 			if ( ! count($row) ) 
 			{
@@ -288,7 +301,7 @@ class qcl_config_db extends qcl_db_model
 	
  
 	/**
-	 * gets all config property value that are readable by the active user
+	 * Returns all config property value that are readable by the active user
 	 * @param string $mask return only a subset of entries that start with $mask
 	 * @return array Array
 	 */
@@ -296,11 +309,14 @@ class qcl_config_db extends qcl_db_model
 	{
 		$controller    =& $this->getController();
     $userModel     =& $controller->getUserModel();
-    $activeUserId  =  $userModel->getActiveUserId();
+    $activeUser    =& $userModel->getActiveUser();
+    $activeUserId  =  $userModel->getId();
 		
 		if ( $mask )
 		{
-			// get all rows containing mask
+			/*
+			 * get all rows containing mask
+			 */
 			$rows = $this->db->getAllRecords("
 				SELECT * 
 				FROM `{$this->table}`
@@ -310,7 +326,9 @@ class qcl_config_db extends qcl_db_model
 		}
 		else
 		{
-			// get all rows 
+			/*
+			 * get all rows
+			 */ 
 			$rows = $this->db->getAllRecords("
 				SELECT * 
 				FROM `{$this->table}`
@@ -322,22 +340,30 @@ class qcl_config_db extends qcl_db_model
 		$result = array();
 		foreach ( $rows as $row )
 		{
-      // admin read do everything
+      /*
+       * admin read do everything
+       */
       if ( $isConfigManager )
       {
         $result[] = $row;
         continue;
       }
       
-      // global, default or user value
+      /*
+       * global, default or user value
+       */
       $userId = $row[$this->col_user]; 
       
       if ( $userId )
       {
-        // get key if owned by active user or if global
+        /*
+         * get key if owned by active user or if global
+         */
         if ( $userId != $activeUserId and $userId != "global" )
         {
-          // if default value look for a config entry for the user. if exists, do not return default value
+          /*
+           * if default value look for a config entry for the user. if exists, do not return default value
+           */
           if ( $userId == "default" )
           {
             $found = false;
@@ -360,7 +386,9 @@ class qcl_config_db extends qcl_db_model
         }
       }
       
-      // read permission ?
+      /*
+       * read permission ?
+       */
       $permissionRead = $row[$this->col_permissionRead];
 			if ( ! $permissionRead or $userModel->hasPermission($permissionRead) )
 			{
@@ -381,9 +409,10 @@ class qcl_config_db extends qcl_db_model
 	 */
 	function set( $name, $value, $defaultValue=false)
 	{
-		$controller    =& $this->getController();
-    $userModel     =& $controller->getUserModel();
-    $activeUser    =  $userModel->getActiveUserNamedId(); 
+		$controller =& $this->getController();
+    $userModel  =& $controller->getUserModel();
+    $activeUser =& $userModel->getActiveUser();
+    $username   =  $activeUser->getNamedId();     
     
 		if ( $defaultValue )
 		{
@@ -441,12 +470,12 @@ class qcl_config_db extends qcl_db_model
 		}
 		
 		// users can set their own entry variant with no further checking
-		if ( $owner != $activeUser )
+		if ( $owner != $username )
 		{
 			// but others need to check permission
 			if ( $permissionWrite )
       {
-        $userModel->requirePermission( $permissionWrite );
+        $activeUser->requirePermission( $permissionWrite );
       }
 			
 			if ( $owner == "default" )
@@ -454,13 +483,13 @@ class qcl_config_db extends qcl_db_model
   			if ( $defaultValue )
   			{
   				// change default value only if user has permission to do so
-          $userModel->requirePermission("qcl.config.permissions.manage");
+          $activeUser->requirePermission("qcl.config.permissions.manage");
   			}
   			else
   			{
           // create user variant 
           unset($row[$this->col_id]);
-  				$row[$this->col_user] = $activeUser;
+  				$row[$this->col_user] = $username;
   				$id = $this->insert($row);
   				$row[$this->col_id] = $id;  				
   			}

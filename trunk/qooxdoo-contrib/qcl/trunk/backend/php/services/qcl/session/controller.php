@@ -65,7 +65,7 @@ class qcl_session_controller extends qcl_access_controller
   }
 
   /**
-   * registers session and user. call from extending controller's constructor 
+   * Registers session and user. call from extending controller's constructor 
    * requires a user and a session model
    * @param string $user user name
    * @param int $timeout Timeout in seconds, defaults to 600 seconds
@@ -81,8 +81,6 @@ class qcl_session_controller extends qcl_access_controller
     $sessionModel->registerSession( $this->getSessionId(), $user);
   }
 
-
-  
   //-------------------------------------------------------------
   // messages and events
   //-------------------------------------------------------------
@@ -135,25 +133,25 @@ class qcl_session_controller extends qcl_access_controller
      */
     if ( $userModel->authenticate() )
     {
-      $activeUser = $userModel->getActiveUserNamedId();
+      $activeUser = $userModel->getActiveUser();
       
       /*
        * check the user session for timeouts etc.
        */
-      if ( ! $this->checkTimeout($activeUser) )
+      if ( ! $activeUser->checkTimeout() )
       {
         /*
          * force log out
          */
         $this->dispatchMessage("qcl.commands.logout");
-        $userModel->setActiveUser(null);
+        $userModel->logout();
       }         
     }
     return $this->response();
   }
 
   //-------------------------------------------------------------
-  // response
+  // Response
   //-------------------------------------------------------------
 
   /**

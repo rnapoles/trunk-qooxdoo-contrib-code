@@ -725,7 +725,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    *
    * @return array
    */
-  function getValues()
+  function values()
   {
     $result = $this->getResult();
     $values = array();

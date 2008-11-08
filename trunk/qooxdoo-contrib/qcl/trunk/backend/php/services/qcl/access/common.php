@@ -36,33 +36,6 @@ class qcl_access_common extends qcl_db_model
    */
   var $table_link_roles_permissions = "link_roles_permissions";
   
-	//-------------------------------------------------------------
-	// public non-rpc methods 
-	//-------------------------------------------------------------   
-
-   /**
-    * get descriptive name of role
-    * @param mixed $ref numeric id or string name
-    * @return string
-    */
-   	function getDescriptiveName($ref)
-   	{
-   		$row = $this->getByRef($ref);
-   		return $row[$this->col_descriptiveName];
-   	}
-   
-   /**
-    * gets all identifying names
-    * @return array an array of all distinct values of the namedId column
-    */
-   function getAllNamedIds()
-   {
-   	if ( ! $this->col_namedId )
-    {
-   		$this->raiseError("qcl_access_common::getAllNamedIds : model does not have a named id property");	
-   	}
-    return $this->getDistinctValues($this->col_namedId,null,$this->col_namedId);
-   }
 
 	/**
 	 * creates a new record and optionally links it to a role. Raises an error
