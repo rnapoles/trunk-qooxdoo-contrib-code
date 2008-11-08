@@ -63,7 +63,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * log request
      */
-    $this->log ( 
+    $this->log( 
       "Request for " . $this->request->service . 
       "." . $this->request->method .  
       " from " . $this->request->ip
@@ -119,10 +119,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   {
     return $this->request->getParams();
   }
-	
-	//-------------------------------------------------------------
-  // service configuration
-  //-------------------------------------------------------------
   
 	/**
 	 * reads initial configuration. looks for service.ini.php files, starting at 
@@ -184,6 +180,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 
 	/**
 	 * get service directory url
+	 * @return string
 	 */
 	function getServiceDirUrl($append="")
 	{
@@ -194,6 +191,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	
 	/**
 	 * Gets the url of the dispatcher script
+	 * @return string
 	 */
   function getDispatcherUrl()
   {
@@ -385,7 +383,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->addMessage( $message, $data );
   }
   
-  
   /**
    * Adds a message to the message stack
    * @param string $message Message name
@@ -395,6 +392,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function addMessage( $message, $data=null )
   {
     $response =& $this->responseObject();
+    if ( ! is_object($response) )
+    {
+      $this->raiseError(gettype($response));
+    }
+    
     $response->addMessage( $message, $data );
   }
 
@@ -471,6 +473,9 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->request->setRequestId($requestId);
   }  
   
+  
+  
+  
 	/**
 	 * log a message to a file on server and as a message to the client, 
 	 * depending on the log level on the server and on the client
@@ -481,7 +486,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
 	function log( $msg, $logLevel=QCL_LOG_DEBUG )
 	{
-		$message = parent::log($msg,$logLevel);
+		$message = parent::log( $msg, $logLevel );
 		$clientLogLevel = (int) $this->getSessionVar("qcl.logLevel.client");
 		if ( $clientLogLevel and $clientLogLevel <= $logLevel)
 		{
@@ -672,6 +677,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $html = "<div style='color:green'>$msg</div>";
     $this->dispatchMessage("qcl.messages.htmlDebug",$html);
   }
+  
 
   /**
    * overridden info method -> forwards info message to client

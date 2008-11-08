@@ -30,11 +30,11 @@
  */
 if ( !isset($_GET["_ScriptTransport_id"]) and function_exists("json_encode") )
 {
-	require_once dirname(__FILE__) . "/json_wrapper.php";
+  require_once dirname(__FILE__) . "/json_wrapper.php";
 }
 else
 {
-	require_once dirname(__FILE__) . "/JSON.phps";	
+  require_once dirname(__FILE__) . "/JSON.phps";  
 }
 
 
@@ -418,13 +418,13 @@ function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
     default:
         $errtype= "Unknown error ($errno)";
         break;
-    }	
+    } 
     
     // respect error_reporting level
     $errno = $errno & error_reporting();
     if($errno == 0) return true;
     
-    $errmsg = 	"PHP $errtype in $errfile, line $errline: $errstr";
+    $errmsg =   "PHP $errtype in $errfile, line $errline: $errstr";
 
     // if not called through jsonrpc request
     global $error;
@@ -433,7 +433,7 @@ function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
         echo nl2br($errmsg);
         exit(1);
     }
-	
+  
     switch($errno)
     {
       case E_WARNING:
@@ -457,15 +457,15 @@ if (JsonRpcErrorHandling == "on")
 {
     // start buffering to catch errors with handler function
     ob_start("jsonrpc_catch_errors");
-	
+  
     // This will not always work, so do some more hacking to comment out
     // uncaught errors.  You'll need to examine the http response to see
     // the uncaught errors!
     ini_set('error_prepend_string', "/*");
     ini_set('error_append_string', "*/");
-	
+  
     // error handler function for php jsonrpc
-    set_error_handler("jsonRpcErrorHandler");	
+    set_error_handler("jsonRpcErrorHandler"); 
 }
 
 //==========================================================
@@ -819,7 +819,16 @@ if (get_class($output) == "JsonRpcError")
 
 /* Give 'em what they came for! */
 $ret = array("result" => $output,
-             "id"     => $jsonInput->id);
-SendReply($json->encode($ret), $scriptTransportId);
+             "id"     => $jsonInput->id);    
+
+$jsonStr = $json->encode($ret);
+/*
+$service->info( "\n\n *** End of request {$jsonInput->id}: " . 
+                $service->className() . "." . $method . 
+                "(" .implode (", ", $jsonInput->params ) .") *** \n" );
+$service->info( $jsonStr );
+*/
+SendReply($jsonStr, $scriptTransportId);
+exit;
 
 ?>

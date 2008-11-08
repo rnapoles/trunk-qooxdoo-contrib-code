@@ -438,7 +438,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function getId()
   {
-    $id = $this->getProperty("id");
+    $id = $this->currentRecord['id'];
     if ( ! $id )
     {
       $this->raiseError("No record loaded.");
@@ -973,9 +973,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
         $this->setProperty($key,$value);
       }
     } 
-  } 
-  
-  
+  }
+    
 
   /**
    * Compares all properties that exists in both models.

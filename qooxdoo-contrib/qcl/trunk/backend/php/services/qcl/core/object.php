@@ -765,6 +765,49 @@ class qcl_core_object
   {
     $this->log ( $msg, QCL_LOG_INFO );
   }
+  
+  /**
+   * Output the current filename and line number in order to be able to
+   * trace program execution
+   * @return void
+   */
+  function trace( $message )
+  {
+     
+    /*
+     * Get backtrace
+     */
+    $backtrace = debug_backtrace();
+    
+    /*
+     * Remove first element (the call to trace())
+     */
+    $traceCall = array_shift($backtrace);
+
+    /*
+     * Location of document root in file system
+     * (will be stripped in output)
+     */
+    $path = realpath( SERVICE_PATH ) . "/" ;    
+    
+    /*
+     * Analyse previous call
+     */
+    $call = array_shift($backtrace);
+    
+    /*
+     * location of trace call
+     */
+    $location = ( isset( $traceCall['file'] ) and isset($traceCall['line'] ) ) ?
+        str_replace( $path, "", $traceCall['file'] ) . ':' . $traceCall['line'] : "(unknown)";
+
+    /*
+     * log and return location
+     */    
+    $output = " # TRACE # at $location" . ( $message ? ": $message" : "" );
+    $this->info( $output );
+    return $location;
+  }
 
   /**
    * logs a message with of level "warn"
@@ -777,16 +820,19 @@ class qcl_core_object
   }  
   
   /**
-   * gets the backtrace of invoked function calls
+   * Returns the backtrace of invoked function calls
+   * @param bool $$silent If true, do not info backtrace to logfile.
    * @return string list
    */
-  function getBacktrace()
+  function backtrace( $silent=false )
   {
-    return debug_get_backtrace(3);
+    $backtrace =  debug_get_backtrace(3);
+    if ( ! $silent ) $this->info($backtrace);
+    return $backtrace;
   }
   
   /**
-   * raises a server error and exits
+   * Raises a server error and exits
    * @param string $message
    * @param int    $number
    * @param string $file
@@ -860,6 +906,7 @@ class qcl_core_object
   
   /**
    * retrieve stored object
+   * @deprecated
    * @param string  $id   Id of data to be retrieved from filesystem
    */
   function &retrieve ( $id=null )
@@ -887,6 +934,7 @@ class qcl_core_object
   
   /**
    * remove stored object
+   * @deprecated
    */
   function remove ( $id, $prependPath = true )
   {

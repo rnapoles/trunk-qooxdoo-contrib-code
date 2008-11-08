@@ -116,7 +116,7 @@ class qcl_jsonrpc_object extends qcl_core_object
       "### Error in " . get_class($this) . " ###\n" . 
       $message . "\n" . 
       "Backtrace:\n" . 
-      $this->getBacktrace(), 
+      $this->backtrace(), 
       QCL_LOG_ERROR
     );
     

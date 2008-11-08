@@ -118,8 +118,9 @@ function xml_entity_decode($string)
   return html_entity_decode($string); 
 }
 
+
 /**
- * modification of debug_print_backtrace() - modified not to
+ * Modification of debug_print_backtrace() - modified not to
  * echo but instead to return the backtrace and to 
  * skip a variable number of entries
  *
@@ -132,7 +133,7 @@ function xml_entity_decode($string)
  * @return      string
  * @require     PHP 4.3.0 (debug_backtrace)
  */
-function debug_get_backtrace($skip=1)
+function debug_get_backtrace( $skip=1 )
 {
   /*
    * Get backtrace
@@ -142,7 +143,7 @@ function debug_get_backtrace($skip=1)
   /*
    * Skip entries
    */
-  for($i=0; $i<$skip; $i++)
+  for( $i=0; $i<$skip; $i++ )
   {
     array_shift($backtrace);
   }
@@ -161,7 +162,7 @@ function debug_get_backtrace($skip=1)
   foreach ( $backtrace as $i => $call ) 
   {
       $location = ( isset( $call['file'] ) and isset($call['line'] ) ) ?
-          str_replace( $path, "", $call['file'] ) . ':' . $call['line'] : "";
+          str_replace( $path, "", $call['file'] ) . ':' . $call['line'] : "(unknown)";
   
       $function = isset( $call['class'] ) ?
           $call['class'] . '.' . $call['function'] :

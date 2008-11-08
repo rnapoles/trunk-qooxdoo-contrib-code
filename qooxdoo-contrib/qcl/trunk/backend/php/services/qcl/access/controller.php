@@ -109,7 +109,18 @@ class qcl_access_controller extends qcl_db_controller
     
   }   
  
-
+  /**
+   * Provide guest access to backend services
+   * @todo Rework this 
+   */
+  function method_guestAccess()
+  {
+    $this->logout();
+    $this->authenticate(); // this creates guest access
+    return $this->method_authenticate();
+  }
+  
+  
   /**
    * Authenticate the user
    * @param string $param[0] username
@@ -126,27 +137,23 @@ class qcl_access_controller extends qcl_db_controller
     $password   = utf8_decode($params[1]);
     
     /*
-     * user model
+     * Get user model and active user object
      */
     $userModel =& $this->getUserModel();
-    
-    /*
-     * get the active user data (or null if nobody is logged in)
-     */
-    $activeUser = $userModel->getActiveUser();
-    
+    $activeUser =& $userModel->getActiveUser();
+
     /*
      * Authenticate user if user name has been provided
      * and password matches
      */
     if ( $username and $userModel->authenticate ( $username, $password ) )
     {
-      
+
       /*
        * get client security data
        */
       $securityData = $userModel->securityData();
-      
+
       /*
        * message that login was successful
        */
@@ -160,6 +167,7 @@ class qcl_access_controller extends qcl_db_controller
      */
     elseif ( ! $username and $activeUser  )
     {
+      
       /*
        * user already logged in, get username and security data from active user
        */
@@ -188,7 +196,7 @@ class qcl_access_controller extends qcl_db_controller
        */
       $this->dispatchMessage( "qcl.messages.login.failed", $this->tr("Wrong username or password.") );
     }
-    
+
     /*
      * return client data
      */
@@ -249,7 +257,7 @@ class qcl_access_controller extends qcl_db_controller
    */
   function authenticate()
   {
-   
+
     /*
      * models
      */
@@ -296,6 +304,7 @@ class qcl_access_controller extends qcl_db_controller
       
       /*
        * shorthand to check if we have guest access
+       * @todo remove
        */
       $this->guestAccess = true;
       
@@ -363,7 +372,7 @@ class qcl_access_controller extends qcl_db_controller
    * gets active user
    * @return qcl_access_user
    */
-  function getActiveUser()
+  function &getActiveUser()
   {
     $userModel =& $this->getUserModel();
     return $userModel->getActiveUser();
@@ -376,8 +385,15 @@ class qcl_access_controller extends qcl_db_controller
    */
   function requirePermission ( $permission )
   {
-    $userModel =& $this->getUserModel();
-    $userModel->requirePermission( $permission );
+    $activeUser =& $this->getActiveUser();
+    if ( $activeUser and $activeUser->hasPermission( $permission ) )  
+    {
+      return true;
+    }
+    else
+    {
+      return $this->raiseError( $this->tr("Not allowed.") );
+    }
   }
   
   /**
@@ -387,8 +403,15 @@ class qcl_access_controller extends qcl_db_controller
    */
   function hasPermission ( $permission )
   {
-    $userModel =& $this->getUserModel();
-    return $userModel->hasPermission( $permission );
+    $activeUser =& $this->getActiveUser();
+    if ( $activeUser and $activeUser->hasPermission( $permission ) )
+    {
+      return true;  
+    }
+    else
+    {
+      return false;
+    }
   }   
    
 } 

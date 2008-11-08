@@ -763,9 +763,9 @@ class qcl_access_services extends qcl_core_mixin
     
     /*
      * roles
-     */
+     */ 
     $roles =& $doc->addChild("roles");
-    foreach( $roleModel->getAllRecords() )
+    foreach( $roleModel->getAllRecords() as $role )
     {
       $role =& $roles->addChild("role");
       $role->addAttribute("name",$record['namedId']);

@@ -42,11 +42,11 @@ class qcl_access_role extends qcl_access_common
    * permissions that are connected to the current role
    * @return qcl_access_role
    */
-  function &getPermissionModel()
+  function &linkedPermissionModel()
   {
     $controller =& $this->getController();
     $permModel  =& $controller->getPermissionModel();
-    $permModel->findByLinkedId($this->getId(),"role");
+    $permModel->findByLinkedId( $this->getId(), "role" );
     return $permModel;
   }   
   
@@ -54,15 +54,15 @@ class qcl_access_role extends qcl_access_common
    * Returns a list of permissions connected to the current model.
    * @param string property name, defaults to "id"
    */
-  function permissions($prop="id")
+  function permissions( $prop="id" )
   {
     $permissions = array();
-    $permModel =& $this->getPermissionModel();
+    $permModel =& $this->linkedPermissionModel( $prop );
     if ( $permModel->foundSomething() )
     {
       do
       {
-        $permissions[] = $permModel->getProperty($prop);
+        $permissions[] = $permModel->getProperty( $prop );
       }
       while( $permModel->nextRecord() );
     }  
@@ -74,7 +74,7 @@ class qcl_access_role extends qcl_access_common
    * users that are connected to the current role
    * @return qcl_access_user
    */
-  function &getUserModel()
+  function &linkedUserModel()
   {
     $controller =& $this->getController();
     $userModel  =& $controller->getUserModel();
@@ -89,7 +89,7 @@ class qcl_access_role extends qcl_access_common
   function users($prop="id")
   {
     $users = array();
-    $userModel =& $this->getUserModel();
+    $userModel =& $this->linkedUserModel($prop);
     if ( $userModel->foundSomething() )
     {
       do
