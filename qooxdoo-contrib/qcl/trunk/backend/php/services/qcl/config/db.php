@@ -520,9 +520,9 @@ class qcl_config_db extends qcl_db_model
 	function updateById($id,$key,$value)
 	{
 		$row = $this->getById($id);
-		$controller    =& $this->getController();
-    $userModel     =& $controller->getUserModel();
-    $userModel->requirePermission("qcl.config.permissions.manage");
+		$controller =& $this->getController();
+    $activeUser =& $controller->getActiveUser();
+    $activeUser->requirePermission("qcl.config.permissions.manage");
     $row[$key]= $value;
     $this->update($row);
 	}
