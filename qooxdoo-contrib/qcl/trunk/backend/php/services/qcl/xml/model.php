@@ -207,18 +207,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
     $this->raiseError("Not implemented.");  
   }
 
-  /**
-   * gets all distinct values of database columns that match a where condition
-   * @param string|array    $column   name of column(s) 
-   * @param string          $where    where condition to match, if null, get all
-   * @param string|null     $orderBy  (optional) order by field
-   * @return array Array of values
-   */
-  function getDistinctValues($column,$where=null,$orderBy=null)
-  { 
-     $this->raiseError("Not implemented.");   
-  }
-   
+
   /**
    * get and cache record by id 
    * @param mixed $id

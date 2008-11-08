@@ -3,11 +3,10 @@
 /*
  * dependencies
  */
-require_once ("qcl/core/mixin.php");
+require_once "qcl/core/mixin.php";
 
 /**
- * Mixin providing access services (authentication etc.)
- * to an application service
+ * Mixin providing access services for the Access Configuration Manager
  */
 class qcl_access_services extends qcl_core_mixin
 {    
@@ -50,146 +49,8 @@ class qcl_access_services extends qcl_core_mixin
     $userModel =& $this->getUserModel();
     $userModel->requirePermission( $permision );
   }
-  
-  //-------------------------------------------------------------
-  // public rpc methods 
-  //-------------------------------------------------------------
 
-   /**
-    * default update client method: authenticate user
-    */
-   function method_updateClient($params)
-   {
-     return $this->method_authenticate($params);
-   }  
 
-  /**
-   * default update client method: authenticate user
-   * @param string $param[0] username
-   * @param string $param[1] (MD5-encoded) password
-   * @todo: the logic in this method is somewhat confusing
-   */
-  function method_authenticate( $params=array(null,null) )
-  {
-    /*
-     * arguments
-     */
-    $username   = utf8_decode($params[0]);
-    $password   = utf8_decode($params[1]);
-    
-    /*
-     * user model
-     */
-    $userModel  =& $this->getUserModel();
-    
-    /*
-     * get the active user data (or null if nobody is logged in)
-     */
-    $activeUser = $userModel->getActiveUser();
-    
-    /*
-     * authenticate user if user name has been provided
-     * and password matches
-     */
-    if ( $username and $userModel->authenticate ( $username, $password ) )
-    {
-      
-      /*
-       * get client security data
-       */
-      $security = $userModel->getSecurity($username);
-      
-      /*
-       * set active user data
-       */
-      $userModel->setActiveUser($security['userdata']);
-      
-      /*
-       * message that login was successful
-       */
-      $this->dispatchMessage("qcl.messages.login.success"); 
-      
-      $this->info ("Logging on user $username.");   
-    }
-    
-    /*
-     * otherwise, if we have no username, but a user is already
-     * logged in, use the data of this user
-     */
-    elseif ( ! $username and is_array( $activeUser ) )
-    {
-      /*
-       * user already logged in, get security data from active user
-       */
-      $userName = $activeUser[$userModel->col_username];
-      $security = $userModel->getSecurity($userName);
-      
-      /*
-       * message that login was successful
-       */
-      $this->dispatchMessage("qcl.messages.login.success", $username );
-    }
-    
-    
-    /*
-     * otherwise, we assume that invalid authentication data has been 
-     * provided
-     */
-    else
-    {
-      /*
-       * authentication failed
-       */
-      $security = null;
-      $userModel->setActiveUser(null);
-      
-      /*
-       * message
-       */
-      $this->dispatchMessage( "qcl.messages.login.failed", $this->tr("Wrong username or password.") );
-    }
-    
-    /*
-     * return client data
-     */
-    $this->set("security", $security ); 
-    return $this->response();
-  }   
-   
-  /**
-   * logout current user
-   */
-  function method_logout()
-  {
-    /*
-     * user model
-     */
-    $userModel =& $this->getUserModel();
-    
-    /*
-     * username
-     */
-    $username = $userModel->getActiveUserNamedId();
-    if ( $username)
-    {
-      $this->info ("Logging out user $username.");  
-    }
-    
-    /*
-     * delete active user
-     */
-    $userModel->setActiveUser(null);
-    
-    /*
-     * message to indicate that server has logged out
-     */
-    $this->dispatchMessage("qcl.messages.logout");
-    
-    /*
-     * return client data
-     */
-    return $this->response();
-  }   
   
   /**
    * get item data 
@@ -904,7 +765,7 @@ class qcl_access_services extends qcl_core_mixin
      * roles
      */
     $roles =& $doc->addChild("roles");
-    foreach($roleModel->getAllRecords() as $record)
+    foreach( $roleModel->getAllRecords() )
     {
       $role =& $roles->addChild("role");
       $role->addAttribute("name",$record['namedId']);

@@ -375,6 +375,16 @@ if ( phpversion() >= 5 ) return;
  * provide PHP5 compatible functions to PHP4
  */
 
+
+/** 
+ * "clone" function
+ */
+ eval('
+  function clone($object) {
+    return $object;
+  }
+ ');
+ 
 if( ! function_exists("file_put_contents") )
 {
   /**

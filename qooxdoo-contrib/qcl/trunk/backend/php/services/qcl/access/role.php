@@ -11,75 +11,95 @@ require_once ("qcl/access/common.php");
 
 class qcl_access_role extends qcl_access_common
 {    
-  //-------------------------------------------------------------
-  // class variables
-  //-------------------------------------------------------------
 
+  /**
+   * Icon representing this object
+   */
 	var $icon 				  = "icon/16/apps/system-users.png";
+	
+  /**
+   * Node type for drag & drop support
+   */	
 	var $nodeType			  = "qcl.auth.types.Role";
+	
+  /**
+   * Short name for type
+   */  	
 	var $shortName			= "role";
 	
-
-  //-------------------------------------------------------------
-  // public non rpc methods 
-  //-------------------------------------------------------------
+  /**
+   * Returns singleton instance.
+   * @static 
+   * @return qcl_access_role 
+   */  
+  function &getInstance( $class=__CLASS__ )
+  {
+    return parent::getInstance( $class );
+  }
   
   /**
-   * get list of permission (ids) that belong to a role
-   * @param mixed $roleRef role name or id
-   * @param boolean $getNamedIds 
-   * 	If true (default), get the names of the permissions,
-   * 	if null, return all the whole rows ,
-   * 	otherwise just ids
-   * @return array Array of string names or numeric ids 
+   * Return the permission model containing only those
+   * permissions that are connected to the current role
+   * @return qcl_access_role
    */
-  function getPermissions($roleRef,$getNamedIds=true)
+  function &getPermissionModel()
   {
-		$roleId = $this->getIdFromRef($roleRef);
-		if ( ! $roleId )
-		{
-			$this->raiseError("Ivalid role '$roleRef'.");
-		}
-    if ( $getNamedIds===true)
-    {
-      $this->findWhere("t1.{$this->col_id}=$roleId",null,array("","namedId"),"permission");
-    }
-    elseif ( $getNamedIds === false )
-    {
-      $this->findWhere("t1.{$this->col_id}=$roleId",null,array("","id"),"permission");
-    }
-    elseif ( is_null($getNamedIds) )
-    {
-      return $this->findWhere("t1.{$this->col_id}=$roleId",null,array("","*"),"permission");
-    }
-    return $this->getValues();
+    $controller =& $this->getController();
+    $permModel  =& $controller->getPermissionModel();
+    $permModel->findByLinkedId($this->getId(),"role");
+    return $permModel;
   }   
-
+  
   /**
-   * get a list of roles for one or all user
-   * @param mixed $userId null for all, array for a list of and integer for a single user id
-   * @return array An array, key: userId, values: array of roleIds
+   * Returns a list of permissions connected to the current model.
+   * @param string property name, defaults to "id"
    */
-  function getByUserId($userId = null)
+  function permissions($prop="id")
   {
-		$controller =&  $this->getController();
-    $userModel  =&  $controller->getUserModel();
+    $permissions = array();
+    $permModel =& $this->getPermissionModel();
+    if ( $permModel->foundSomething() )
+    {
+      do
+      {
+        $permissions[] = $permModel->getProperty($prop);
+      }
+      while( $permModel->nextRecord() );
+    }  
+    return $permissions;
+  }
+  
+  /**
+   * Return the user model containing only those
+   * users that are connected to the current role
+   * @return qcl_access_user
+   */
+  function &getUserModel()
+  {
+    $controller =& $this->getController();
+    $userModel  =& $controller->getUserModel();
+    $userModel->findByLinkedId($this->getId(),"role");
+    return $userModel;
+  }     
     
-    $result = array();
-		$sql = "SELECT * FROM {$this->table_link_user_roles} ";
-		if ( ! is_null ( $userId ) )
-		{
-			$userIdList = implode (",", (array) $userId );
-			$sql .= "WHERE `{$userModel->foreignKey}` IN ($userIdList)";
-		}
-		$rows = $this->db->getAllRecords($sql);
-		foreach ( $rows as $row )
-		{
-			$userId = $row[$userModel->foreignKey];
-			$roleId = $row[$this->foreignKey];
-			$result[$userId][] = $roleId; 
-		}
-		return $userId ? $result[$userId] : $result;
-  } 
+   /**
+   * Returns a list of users connected to the current model.
+   * @param string property name, defaults to "id"
+   */
+  function users($prop="id")
+  {
+    $users = array();
+    $userModel =& $this->getUserModel();
+    if ( $userModel->foundSomething() )
+    {
+      do
+      {
+        $users[] = $userModel->getProperty($prop);
+      }
+      while( $userModel->nextRecord() );
+    }  
+    return $users;
+  }
+  
 }
 ?>

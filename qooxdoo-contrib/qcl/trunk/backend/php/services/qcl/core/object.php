@@ -702,6 +702,7 @@ class qcl_core_object
      * instantiate and return object
      */    
     $instance =& new $classname(&$controller);
+    
     return $instance;
   }
  
