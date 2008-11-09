@@ -32,7 +32,18 @@ class qcl_databinding_widgets_ui_form_List extends qcl_databinding_widgets_Widge
      );    
   }
   
-/**
+  /**
+   * Preselect the listItem with the given value
+   * @param string $value
+   * @return void
+   */
+  function select( $value )
+  {
+    $controller =& $this->getController();
+    $controller->set("selected", (string) $value );    
+  }
+  
+  /**
    * Adds the widget data to the response and returns it.
    * @return qcl_jsonrpc_Response
    */

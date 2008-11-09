@@ -36,6 +36,14 @@ class qcl_access_common extends qcl_db_model
    */
   var $table_link_roles_permissions = "link_roles_permissions";
   
+  /**
+   * Returns the default icon representing the class
+   * @return string
+   */
+  function getIcon()
+  {
+    return "icon/16/apps/system-users.png";
+  }
 
 	/**
 	 * creates a new record and optionally links it to a role. Raises an error

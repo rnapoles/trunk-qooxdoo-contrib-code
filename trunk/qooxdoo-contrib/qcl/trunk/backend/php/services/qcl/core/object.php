@@ -64,10 +64,10 @@ class qcl_core_object
   var $class;
  
 	/**
-	 * array of class names that will be loaded as mixins. 
+	 * Array of class names that will be included as mixins. 
 	 * @var array 
 	 */
-  var $mixins = array();
+  var $include = array();
 
   /**
    * internal cache for classes that have been mixed in
@@ -163,9 +163,9 @@ class qcl_core_object
 		/*
 		 * apply mixins
 		 */
-    if ( is_array( $this->mixins ) )
+    if ( is_array( $this->include ) )
     {
-      foreach($this->mixins as $mixin)
+      foreach( $this->include as $mixin )
       {
         $this->mixin( $mixin );
       }

@@ -7,6 +7,7 @@ require_once "qcl/jsonrpc/object.php";
 /**
  * simple controller-model architecture for jsonrpc
  * common base class for data models
+ * @todo: maybe merge with PropertyModel?
  */
 
 class qcl_jsonrpc_model extends qcl_jsonrpc_object
@@ -22,7 +23,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
 
 	/**
 	 * The current model record data
-	 *
+	 * @todo: rename qcl_jsonrpc::$_data
 	 * @var array
 	 */
 	var $currentRecord = null;
@@ -90,7 +91,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
  	{
     return $this->_controller;
  	}	
-
+ 	  
 	//-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------

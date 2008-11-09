@@ -19,12 +19,7 @@ class qcl_io_filesystem_IResource
    * @return string
    */
   function resourcePath() {}
-  
-  /**
-   * Casting as string, returns the resource path
-   * @return string
-   */
-  function toString(){}
+
   
   /**
    * Deletes the file/folder 

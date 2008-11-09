@@ -256,7 +256,7 @@ class qcl_config_db extends qcl_db_model
 			$activeUser 	    =& $userModel->getActiveUser(); 
 			if ( $activeUser )
 			{
-			  $username =  $activeUser->getNamedId();  
+			  $username =  $activeUser->username();  
         /*
          * get row containing key name
          */
@@ -412,7 +412,7 @@ class qcl_config_db extends qcl_db_model
 		$controller =& $this->getController();
     $userModel  =& $controller->getUserModel();
     $activeUser =& $userModel->getActiveUser();
-    $username   =  $activeUser->getNamedId();     
+    $username   =  $activeUser->username();     
     
 		if ( $defaultValue )
 		{

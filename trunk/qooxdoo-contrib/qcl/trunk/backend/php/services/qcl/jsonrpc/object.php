@@ -92,7 +92,7 @@ class qcl_jsonrpc_object extends qcl_core_object
   //-------------------------------------------------------------
 
   /**
-   * raises a server error and exits
+   * Raises a server error and exits
    * @param string $message
    * @param int    $number
    * @param string $file
@@ -140,6 +140,39 @@ class qcl_jsonrpc_object extends qcl_core_object
     echo $message;
     exit;
   }
+  
+  /**
+   * Exits the current service with a user notice. This
+   * is technically a jsonrpc error, but has no backtrace
+   * @param string $message
+   * @return void
+   */
+  function userNotice ( $message )
+  {
+    /*
+     * write to logfile
+     */
+    $this->info("### User notice : $message");
+    
+    /*
+     * if this is a jsonrpc request, we have a global $error object
+     * that the error can be passed to.
+     */
+    global $error;
+    if ( is_object($error) )
+    {
+      $error->setError( $number, htmlentities( stripslashes( $message ) ) );
+      $error->SendAndExit();
+      // never gets here
+      exit;
+    }
+    
+    /*
+     * otherwise, it is an html request, print to output
+     */
+    echo $message;
+    exit;
+  }  
 
   /**
    * alerts a message on the client 

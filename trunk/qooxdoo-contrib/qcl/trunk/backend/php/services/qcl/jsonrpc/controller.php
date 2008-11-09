@@ -31,7 +31,6 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   var $request;
   
-  
   /**
    * The response object
    * @var qcl_jsonrpc_Response
@@ -120,6 +119,13 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     return $this->request->getParams();
   }
   
+  /**
+   * The object types that are used by this
+   * controller
+   * @var array
+   */
+  var $modelTypes = array( "user", "role", "permission", "config" );  
+  
 	/**
 	 * reads initial configuration. looks for service.ini.php files, starting at 
 	 * the top-level service directory. lower-level service.ini.php files can override 
@@ -144,6 +150,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
       {
         $classname = substr($classname,strlen(JsonRpcClassPrefix));          
       }
+      
       /*
        * get service components from classname
        */
@@ -179,26 +186,29 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	}
 
 	/**
-	 * get service directory url
+	 * Return service directory url
 	 * @return string
 	 */
 	function getServiceDirUrl($append="")
 	{
 		global $serviceComponents;
+		
 		$serverDirUrl = "http://" . getenv (HTTP_HOST) . dirname ( $_SERVER['PHP_SELF'] ) . "/";
+		
 		return $serverDirUrl . $serviceComponents[0] . "/" . $append;
 	}
 	
 	/**
-	 * Gets the url of the dispatcher script
+	 * Returns the url of the dispatcher script
 	 * @return string
 	 */
   function getDispatcherUrl()
   {
     return "http://" . getenv (HTTP_HOST) . $_SERVER['PHP_SELF']; 
   }
+  
 	/**
-	 * gets a configuration value of the pattern "foo.bar.baz"
+	 * Returns a configuration value of the pattern "foo.bar.baz"
 	 * This retrieves the values set in the service.ini.php file.
 	 */
 	function getIniValue($path)
@@ -217,6 +227,48 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   // models
   //-------------------------------------------------------------
 
+  /**
+   * Generic getter for models. Methods exist that follow the 
+   * pattern getFooModel()
+   * @param string $type
+   * @return qcl_core_PropertyModel
+   */
+  function &getModel($type)
+  {
+    /*
+     * check type
+     */
+    if ( ! in_array( $type, $this->modelTypes ) )
+    {
+      $this->raiseError("'$type' is not a valid model type.");
+    }
+    
+    /*
+     * getter method
+     */
+    $getter = "get" . strtoupper($type[0]) . substr( $type, 1 ) . "Model";
+    if ( ! $this->hasMethod( $getter ) )
+    {
+      $this->raiseError("Class has no model getter '$getter'.");
+    }
+    
+    /*
+     * get, check and return object
+     */
+    $obj =& $this->$getter();
+    
+    if ( ! is_a($obj,"qcl_core_PropertyModel" ) )
+    {
+      $this->raiseError( 
+        $this->className() . 
+        "::$getter() does not return a model object but a " .
+        ( is_object($obj) ? get_class($obj) : gettype($obj) ) 
+      );
+    }
+    
+    return $obj;
+  }
+  
   /**
    * Initializes all the models needed for the controller.
    * @type abstract
@@ -263,6 +315,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     return $this->configModel;
   }    	
 	
+  
+ 
 	//-------------------------------------------------------------
   // translation (modeled after qooxdoo syntax)
   //-------------------------------------------------------------
