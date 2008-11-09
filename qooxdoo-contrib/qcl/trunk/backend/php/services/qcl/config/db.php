@@ -124,35 +124,51 @@ class qcl_config_db extends qcl_db_model
 	} 
 	 
 	/**
-	 * gets config property value
+	 * Returns config property value
 	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
 	 * @return value of property or null if value does not exist.
 	 */
-	function get($name)
+	function get( $name )
 	{
-		$row     = $this->getRow($name);
+		$row = $this->getRow($name);
     return $this->getValue($row);
-	} 
-  
+	}  
+	
+	
+  /**
+   * Return config property type
+   * @param string $name The name of the property (i.e., myapplication.config.locale) 
+   * @return type of property or null if value does not exist.
+   */
+  function getType( $name )
+  {
+    $row  = $this->getRow($name);
+    return $row[$this->col_type];    
+  }  	
+	
   /**
    * gets the value in the correct type
+   * @todo rewrite this
    * @return mixed $value
    * @param array|null[optional,default null] $row If null, use current record
    */
   function getValue ( $row=null )
   {
-    $row    = either($row,$this->currentRecord);
-    $value  = $row[$this->col_value];
-    $type   = $row[$this->col_type];	
+    $row    = either( $row, $this->currentRecord );
+    $value  = $row['value'];
+    $type   = $row['type'];	
     
     /*
      * return value as correct type
      */
     switch ( $type )
     {
-      case "number": return floatval($value);
-      case "boolean" : return (bool) $value;
-      default: return strval($value);
+      case "number"  : 
+        return floatval($value);
+      case "boolean" : 
+        return (bool) $value;
+      default:
+        return strval($value);
     }
   }
   
@@ -161,9 +177,9 @@ class qcl_config_db extends qcl_db_model
 	 * @param string $name
 	 * @param mixed $userRef
 	 */
-	function has($name,$user=null)  
+	function has( $name, $user=null )  
   {
-    return ( count( $this->getRow($name,$user) ) > 0 );
+    return ( count( $this->getRow( $name, $user ) ) > 0 );
   }
   
 	/**
@@ -201,102 +217,94 @@ class qcl_config_db extends qcl_db_model
 	 * gets the database record for the config entry and for the specific user
 	 * @param string $name
 	 * @param mixed $userRef
+	 * @return array|null
 	 */
-	function getRow($name,$user=null)
+	function getRow( $name, $username=null )
 	{			
-		$controller  =& $this->getController();
-    $userModel   =& $controller->getUserModel();
+		$controller =& $this->getController();
+    $activeUser =& $controller->getActiveUser();
     
-    if ( $user !== null )
+    /*
+     * user reference given, this is usually only the
+     * case if a manager edits the configuration
+     */
+    if ( $username !== null )
 		{
+
+			$this->findWhere( "namedId = '$name' AND user = '$username' "); 
+			
 			/*
-			 * user reference given, this is usually only the
-       * case if a manager edits the configuration
+			 * return null if no entry exists for the user
 			 */
-			$row = $this->db->getRow("
-				SELECT * 
-				  FROM {$this->table}
-				 WHERE {$this->col_namedId} = '$name'
-				   AND {$this->col_user} = '$user'
-			");
+			if ( $this->foundNothing() )
+			{
+			  return null;
+			}
 			
 			/*
 			 *  check user status
 			 */
-			if ( $user == "default" and $userModel->hasPermission ("qcl.config.permissions.manage") )
+			if ( $username == "default" and $activeUser->hasPermission ("qcl.config.permissions.manage") )
 			{
 				/*
 				 *  admins can read default value
 				 */
-        return $row;
+        return $this->getRecord();
 			}
-			elseif ( $row[$this->col_user] == $user )
+			
+      /*
+       * active user is allowed to acces their own data
+       */			
+			elseif ( $this->getUser() == $user )
 			{
-				/*
-				 * active user is allowed to acces their own data
-				 */
-        return $row;
+        return $this->getRecord();
 			}
 			
       /*
        * if the value is protected by a read permission,
        * check permission and abort if not granted
        */
-      $permissionRead = $row[$this->col_permissionRead];
+      $permissionRead = $this->getProperty("permissionRead");
 			if( $permissionRead )
 			{
-				$userModel->requirePermisson($permissionRead);
+				$activeUser->requirePermisson($permissionRead);
 			}
 		}
+		
+		
+    /*
+     *  no user reference given, assume active user
+     */		
 		else
 		{
-      /*
-       *  no user reference given, assume active user
-       */
-			$activeUser 	    =& $userModel->getActiveUser(); 
 			if ( $activeUser )
 			{
 			  $username =  $activeUser->username();  
         /*
          * get row containing key name
          */
-        $row = $this->db->getRow("
-          SELECT * 
-            FROM `{$this->table}`
-           WHERE `{$this->col_namedId}` = '$name'
-             AND `{$this->col_user}` = '$username'
-        ");			 
+        $this->findWhere( "namedId = '$name' AND user = '$username' "); 
 			}
 			else
 			{
-			  $row = array(); 
+			  $this->setRecord(null);
 			}
 
-			
-			if ( ! count($row) ) 
+			/*
+			 * if no record has been found for the active user
+			 * or nobody is logged in, find default or global
+			 * value
+			 */
+			if ( $this->foundNothing() ) 
 			{
-  			/*
-  			 * if nothing was found, get all row containing default or global value
-  			 */
-  			$row = $this->db->getRow("
-  				SELECT * 
-  				  FROM  `{$this->table}`
-  				 WHERE  `{$this->col_namedId}` = '$name'
-  					 AND  ( `{$this->col_user}` = 'default' OR `{$this->col_user}` = 'global' )
-  			");
+			  $this->findWhere("namedId = '$name' AND  ( `user` = 'default' OR `user` = 'global' )");
 			}    
-
-			if ( ! count($row) ) 
-			{
-			  $row = null;
-			}
 		}
     
     /*
      * return result
      */
-    $this->currentRecord = $row;
-    return $row;
+    return $this->getRecord();
 	}
 	
  
@@ -305,73 +313,69 @@ class qcl_config_db extends qcl_db_model
 	 * @param string $mask return only a subset of entries that start with $mask
 	 * @return array Array
 	 */
-	function getAll( $mask=null )
+	function accessibleKeys( $mask=null )
 	{
-		$controller    =& $this->getController();
-    $userModel     =& $controller->getUserModel();
-    $activeUser    =& $userModel->getActiveUser();
-    $activeUserId  =  $userModel->getId();
+		$controller     =& $this->getController();
+    $activeUser     =& $controller->getActiveUser();
+    $username        = $activeUser->username();
+		$isConfigManager = $activeUser->hasPermission("bibliograph.config.permissions.manage");
 		
+		/*
+		 * find records
+		 */
 		if ( $mask )
 		{
 			/*
 			 * get all rows containing mask
 			 */
-			$rows = $this->db->getAllRecords("
-				SELECT * 
-				FROM `{$this->table}`
-				WHERE `{$this->col_namedId}` LIKE '$mask%'
-				ORDER BY `{$this->col_namedId}`			
-			");			
+      $this->findWhere("namedId LIKE '$mask%'", "namedId");
+			
 		}
 		else
 		{
 			/*
 			 * get all rows
 			 */ 
-			$rows = $this->db->getAllRecords("
-				SELECT * 
-				FROM `{$this->table}`
-				ORDER BY `{$this->col_namedId}`			
-			");			
+			$this->findAll(/* order by */"namedId");
 		}
 		
-    $isConfigManager = $userModel->hasPermission("bibliograph.config.permissions.manage");
-		$result = array();
-		foreach ( $rows as $row )
+		do
 		{
       /*
        * admin read do everything
        */
       if ( $isConfigManager )
       {
-        $result[] = $row;
+        $result[] = $this->getRecord();
         continue;
       }
       
       /*
        * global, default or user value
        */
-      $userId = $row[$this->col_user]; 
+      $user = $this->getUser(); 
       
-      if ( $userId )
+      if ( $user )
       {
         /*
          * get key if owned by active user or if global
          */
-        if ( $userId != $activeUserId and $userId != "global" )
+        if ( $user != $username and $user != "global" )
         {
           /*
-           * if default value look for a config entry for the user. if exists, do not return default value
+           * if default value look for a config entry for the user. if exists, 
+           * do not return default value
+           * @todo rewrite this more elegantly
            */
-          if ( $userId == "default" )
+          if ( $user == "default" )
           {
-            $found = false;
-            foreach ( $rows as $r )
+            $found     = false;
+            foreach ( $this->getResult() as $r )
             {
-              if ( $r[$this->col_namedId] == $row[$this->col_namedId] and $r[$this->col_user] == $activeUserId ) 
+              if ( $r['namedId'] == $row['namedId'] and $r['user'] == $username ) 
               {
-                $found = true; break;  
+                $found = true; 
+                break;  
               }
             }
             if ( $found ) 
@@ -389,12 +393,15 @@ class qcl_config_db extends qcl_db_model
       /*
        * read permission ?
        */
-      $permissionRead = $row[$this->col_permissionRead];
-			if ( ! $permissionRead or $userModel->hasPermission($permissionRead) )
+      $permissionRead = $this->getProperty('permissionRead');
+			if ( ! $permissionRead or $activeUser->hasPermission($permissionRead) )
 			{
-				$result[] = $row;
+				$result[] = $this->getRecord();
 			}
+			
 		}
+		while( $this->nextRecord() );
+		
 		return $result;
 	}	 
  
@@ -410,8 +417,7 @@ class qcl_config_db extends qcl_db_model
 	function set( $name, $value, $defaultValue=false)
 	{
 		$controller =& $this->getController();
-    $userModel  =& $controller->getUserModel();
-    $activeUser =& $userModel->getActiveUser();
+    $activeUser =& $controller->getActiveUser();
     $username   =  $activeUser->username();     
     
 		if ( $defaultValue )
@@ -568,10 +574,10 @@ class qcl_config_db extends qcl_db_model
 	function hasReadAccess($name)
 	{
 		$controller  =& $this->getController();
-    $userModel   =& $controller->getUserModel();
+    $activeUser  =& $controller->getActiveUser();
     $permission  =  $this->getPermissionRead($name);
     
-    return $userModel->hasPermission($permission);
+    return $activeUser->hasPermission($permission);
 	}
 	
   /**
@@ -582,10 +588,10 @@ class qcl_config_db extends qcl_db_model
   function hasWriteAccess($name)
   {
   	$controller  =& $this->getController();
-    $userModel   =& $controller->getUserModel();
+    $activeUser  =& $controller->getActiveUser();
     $permission  =  $this->getPermissionWrite($name);
     
-    return $userModel->hasPermission($permission);
+    return $activeUser->hasPermission($permission);
 	}
 }
 

@@ -897,8 +897,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * Cast the given value to the correct php type according to its
    * property type
    *
-   * @param unknown_type $propertyName
-   * @param unknown_type $value
+   * @param string $propertyName
+   * @param string $value
    * @return unknown
    */
   function typecast($propertyName, $value)

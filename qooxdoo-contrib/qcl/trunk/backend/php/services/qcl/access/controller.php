@@ -127,7 +127,9 @@ class qcl_access_controller extends qcl_db_controller
   
   
   /**
-   * Authenticate the user
+   * Actively authenticate the user with username and password. This is different
+   * from the (passive) authenticate() method.
+   * @see qcl_access_controller::authenticate()
    * @param string $param[0] username
    * @param string $param[1] (MD5-encoded) password
    * @return qcl_jsonrpc_Response Data for qcl.auth.user.Manager.setSecurity()
@@ -253,7 +255,7 @@ class qcl_access_controller extends qcl_db_controller
   /**
    * Passively checks if the requesting client is an authenticated user.
    * For the actual active authentication, use qcl_access_user::authenticate()
-   * @see qcl_access_user::authenticate()
+   * @see qcl_access_user::method_authenticate()
    * @return bool True if request can continue, false if it should be aborted
    */
   function authenticate()
@@ -353,6 +355,7 @@ class qcl_access_controller extends qcl_db_controller
      */
     if ( $seconds > $timeout )
     {
+      $userName = $activeUser->username();
       $this->info( "$userName : $seconds seconds after last activity (Timeout $timeout seconds). Logging out." );
       return false;
     }     
@@ -422,8 +425,6 @@ class qcl_access_controller extends qcl_db_controller
     }
   } 
   
-
-  
   /**
    * Checks if permission has an application-specific
    * name. This allows to reuse a global permission for a
@@ -439,6 +440,30 @@ class qcl_access_controller extends qcl_db_controller
     return $this->permisssionAliasMap[$permission];    
   }
   
- 
+  /**
+   * Overrridden method to allow debugging of response data
+   * @override
+   * @return array
+   * @todo json debug 
+   */
+  function &response()
+  {
+    /*
+     * get response object from parent method
+     */
+    $response =& parent::response(); 
+    
+    /*
+     * check if we should do a dump of it
+     */
+    $configModel =& $this->getConfigModel();
+    if ( $configModel->get("qcl.jsonrpc.Server.dumpResponse") )
+    {
+      $this->info((array) $response );
+    }
+    
+    return $response;
+  }   
+  
 } 
 ?>

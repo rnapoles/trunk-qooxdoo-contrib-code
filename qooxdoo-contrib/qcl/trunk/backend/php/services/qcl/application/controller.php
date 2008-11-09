@@ -48,6 +48,24 @@ class qcl_application_controller extends qcl_datasource_controller
     $html =  "<div style='width:100%;height:{$height}px;border:1px solid grey;padding:1px;'><div style='width:$percent%;height:100%;background-color:blue;'></div></div>";
     return $html;
   }
+  
+  /**
+   * Overrridden method to allow debugging of response data
+   * @override
+   * @return array
+   * @todo json debug 
+   */
+  function &response()
+  {
+    $this->addBroadcastMessagesToResponse();
+    
+    $configModel =& $this->getConfigModel();
+    if ( $configModel->get("qcl.components.jsonrpc.MonitorWindow.enabled") )
+    {
+      $this->debugJsonRpcRequestAsHtml();  
+    }
+    return parent::response(); 
+  }  
     
 }
 

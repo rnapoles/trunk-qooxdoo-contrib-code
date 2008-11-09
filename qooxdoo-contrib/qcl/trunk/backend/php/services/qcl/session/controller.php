@@ -161,7 +161,7 @@ class qcl_session_controller extends qcl_access_controller
    * @return array
    * @todo: use into qcl_jsonrpc_Response object
    */
-  function response()
+  function &response()
   {
     $this->addBroadcastMessagesToResponse(); 
     return parent::response();
