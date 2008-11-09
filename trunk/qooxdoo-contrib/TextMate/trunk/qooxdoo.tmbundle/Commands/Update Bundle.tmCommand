@@ -7,7 +7,7 @@
 	<key>command</key>
 	<string>SVN_OPTS="--no-auth-cache --non-interactive"
 
-svn up $SVN_OPTS $TM_BUNDLE_SUPPORT/..  2&gt; &gt;(CocoaDialog progressbar --indeterminate --title 'Updating Bundle' --text 'This could take a while...')
+svn up $SVN_OPTS "$TM_BUNDLE_SUPPORT/.."  2&gt; &gt;(CocoaDialog progressbar --indeterminate --title 'Updating Bundle' --text 'This could take a while...')
 
 osascript -e 'tell app "TextMate" to reload bundles'
 </string>
@@ -18,7 +18,7 @@ osascript -e 'tell app "TextMate" to reload bundles'
 	<key>name</key>
 	<string>Update Bundle</string>
 	<key>output</key>
-	<string>discard</string>
+	<string>showAsTooltip</string>
 	<key>uuid</key>
 	<string>9632A39F-DCB1-4357-8C6A-90F74478CA3B</string>
 </dict>
