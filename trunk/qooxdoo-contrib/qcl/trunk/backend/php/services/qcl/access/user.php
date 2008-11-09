@@ -189,9 +189,9 @@ class qcl_access_user extends qcl_access_common
     md5( $password ) === $savedPw or
     $password === md5 ( $savedPw ) )
     {
-      $activeUser =& $this->cloneObject();
-      $this->setActiveUser( &$activeUser );
+      $activeUser = $this->cloneObject();
       $activeUser->resetLastAction();
+      $this->setActiveUser( $activeUser );
       return true;
     }
     else
@@ -419,9 +419,8 @@ class qcl_access_user extends qcl_access_common
    */
   function resetLastAction()
   {
-    $activeUser =& $this->getActiveUser();
-    $activeUser->setProperty("lastAction", $this->getTimestamp() );
-    $activeUser->save();
+    $this->setProperty("lastAction", $this->getTimestamp() );
+    $this->save();
   }
 
   /**

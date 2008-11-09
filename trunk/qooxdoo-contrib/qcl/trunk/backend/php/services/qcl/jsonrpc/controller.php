@@ -594,13 +594,13 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * skip if getMessages request should be ignored
      */
-    if ( $jsonInput->method == "getMessages" and $config->get("qcl.components.jsonrpc.MonitorWindow.skipGetMessagesRequest") )
+    if ( $request->getMethod() == "getMessages" and 
+         $config->get("qcl.components.jsonrpc.MonitorWindow.skipGetMessagesRequest") )
     {
       return;
     }
-    
     $divId = md5(microtime());
-    
+
     /*
      * service and method
      */
@@ -612,7 +612,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * parameters
      */
-    foreach ( $jsonInput->params as $i =>  $p )
+    foreach ( $request->getParams() as $i =>  $p )
     {
       if ( is_string($p) ) $html .= "'$p'";
       elseif ( is_null($p) ) $html .= "null";

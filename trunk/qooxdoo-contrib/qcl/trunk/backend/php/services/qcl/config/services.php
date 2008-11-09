@@ -39,23 +39,23 @@ class qcl_config_services extends qcl_core_mixin
     /*
      * read config data into table
      */
-    $keys   = $configModel->findDistinctValues("namedId",null,"namedId");
- 		$result	= array();
-    
- 		foreach ( $keys as $key )
+    $accessibleKeys = $configModel->accessibleKeys();
+ 		foreach ( $accessibleKeys as $row )
  		{
-      $configModel->getRow($key);
-      $result[$key] = array(
+      $key   = $row['namedId'];
+      $type  = $row['type'];
+      $value = $configModel->getValue($row);
+ 		  $configMap[$key] = array(
         'name'  => $key,
-        'type'  => $configModel->getType(),
-        'value' => $configModel->getValue()
+        'type'  => $type,
+        'value' => $value
       );
  		}
  		
  		/*
  		 * return client data
  		 */
- 		$this->set( "configMap", $result );
+ 		$this->set( "configMap", $configMap );
  		return $this->response(); 
  	}
  	
@@ -72,7 +72,7 @@ class qcl_config_services extends qcl_core_mixin
     /*
      * arguments
      */
- 	  $map          =  (array) $params[1];
+ 	  $map =  (array) $params[1];
     
  	  /*
  	   * config model
@@ -261,6 +261,19 @@ class qcl_config_services extends qcl_core_mixin
       $keyNode->setCDATA(htmlentities($record['value']));
     }
     $this->Info($doc->asXml());
+  }
+  
+  function method_logFileSize()
+  {
+    $this->set("text", "Log file size: " . byteConvert( filesize( QCL_LOG_FILE) ) );
+    return $this->response(); 
+  }
+  
+  function method_deleteLogFile()
+  {
+    unlink( QCL_LOG_FILE );
+    touch ( QCL_LOG_FILE );
+    return $this->alert($this->tr("Log file deleted."));
   }
 	
 }

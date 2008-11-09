@@ -366,6 +366,20 @@ function http_get($url, $range = 0)
 }
 */
 
+/**
+ * Converts an integer in a human-Readable byte size format.
+ * Posted by olafurw at gmail.com on http://www.php.net/manual/en/function.filesize.php
+ * @param int $bytes
+ * return string
+ */
+function byteConvert($bytes)
+{
+    $s = array('B', 'Kb', 'MB', 'GB', 'TB', 'PB');
+    $e = floor(log($bytes)/log(1024));
+    
+    return sprintf('%.2f '.$s[$e], ($bytes/pow(1024, floor($e))));
+}
+
 /*
  * we can return here if not PHP 4
  */
