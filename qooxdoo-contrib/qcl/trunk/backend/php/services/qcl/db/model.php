@@ -189,6 +189,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * Returns the record id from a reference which can be the id itself or an 
    * identifiying (dot-separated) name
    * @param mixed $ref numeric id or string name
+   * @deprecated
    * @return integer id
    */
   function getIdFromRef($ref)
@@ -215,7 +216,27 @@ class qcl_db_model extends qcl_core_PropertyModel
   //-------------------------------------------------------------
   // Record Retrieval (find... methods)
   //-------------------------------------------------------------   
- 
+  
+  /**
+   * Return the singleton instance of this class (no parameter)
+   * or a specific instance (identified by the numeric id).
+   * @param int[optional] $id 
+   * @return qcl_db_model
+   */
+  function &getInstance( $id )
+  {
+    if ( $id )
+    {
+      $instance = $this->cloneObject();
+      $instance->findById($id);
+      return $instance;  
+    }
+    else
+    {
+      return parent::getInstance(__CLASS__);
+    }
+  }
+  
   /**
    * Returns a records by property value
    * @param string $propName Name of property

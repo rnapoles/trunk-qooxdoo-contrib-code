@@ -48,7 +48,12 @@ class qcl_access_controller extends qcl_db_controller
    */
   var $configModel = null;
 
-
+  /**
+   * Map pairing permission names with local aliases
+   * @var array
+   */
+  var $permisssionAliasMap;  
+  
   /**
    * Constructor. initializes access/config model
    */
@@ -171,7 +176,7 @@ class qcl_access_controller extends qcl_db_controller
       /*
        * user already logged in, get username and security data from active user
        */
-      $username     = $activeUser->getNamedId();
+      $username     = $activeUser->username();
       $securityData = $activeUser->securityData();
       
       /*
@@ -217,18 +222,14 @@ class qcl_access_controller extends qcl_db_controller
     $activeUser =& $userModel->getActiveUser();
     
     /*
-     * username
+     * delete active user
      */
     if ( $activeUser )
     {
-      $this->info ( $activeUser->getNamedId() . " logs out." );  
+      $this->info ( $activeUser->username() . " logs out." );  
+      $userModel->setActiveUser(null);      
     }
-    
-    /*
-     * delete active user
-     */
-    $userModel->setActiveUser(null);
-    
+        
     /*
      * message to indicate that server has logged out
      */
@@ -384,14 +385,11 @@ class qcl_access_controller extends qcl_db_controller
    */
   function requirePermission ( $permission )
   {
-    $activeUser =& $this->getActiveUser();
-    if ( $activeUser and $activeUser->hasPermission( $permission ) )  
+    if ( ! $this->hasPermission( $permission ) )
     {
-      return true;
-    }
-    else
-    {
-      return $this->raiseError( $this->tr("Not allowed.") );
+      $activeUser =& $this->getActiveUser();
+      $this->info("Not allowed. User '" . $activeUser->username() . "' does not have permission '$permission'" );
+      $this->userNotice( $this->tr("Not allowed.") );
     }
   }
   
@@ -402,6 +400,17 @@ class qcl_access_controller extends qcl_db_controller
    */
   function hasPermission ( $permission )
   {
+    /*
+     * check if this permission has a local 
+     */
+    if ( $alias = $this->hasPermissionAlias($permission) )
+    {
+      $permission = $alias;
+    }
+    
+    /*
+     * check if (active) user has permission 
+     */
     $activeUser =& $this->getActiveUser();
     if ( $activeUser and $activeUser->hasPermission( $permission ) )
     {
@@ -411,7 +420,25 @@ class qcl_access_controller extends qcl_db_controller
     {
       return false;
     }
-  }   
-   
+  } 
+  
+
+  
+  /**
+   * Checks if permission has an application-specific
+   * name. This allows to reuse a global permission for a
+   * specific service class without giving the user the same
+   * right in a different service class. Simple implementation
+   * uses a hash map to pair permissions with their
+   * local aliases. More elaborate implementations are certainly
+   * possible. 
+   * @param string $permission
+   */
+  function hasPermissionAlias( $permission )
+  {
+    return $this->permisssionAliasMap[$permission];    
+  }
+  
+ 
 } 
 ?>

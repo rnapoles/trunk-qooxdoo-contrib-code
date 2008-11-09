@@ -69,6 +69,16 @@ class qcl_access_user extends qcl_access_common
   }
 
   /**
+   * Return the username (login name) of the current user.
+   * Alias of getNamedId()
+   * @return string
+   */
+  function username()
+  {
+    return $this->getNamedId();   
+  }  
+  
+  /**
    * Returns the active object saved in the session
    * @return qcl_access_user
    */

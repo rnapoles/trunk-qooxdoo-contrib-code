@@ -447,6 +447,15 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   }
   
   /**
+   * Alias of getId()
+   * return int
+   */
+  function id()
+  {
+    return $this->getId();
+  }
+  
+  /**
    * Returns the named id if it exists as property
    * @return string
    */
@@ -454,6 +463,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     return $this->getProperty("namedId");
   }
+ 
   
   /**
    * Sets the named id if it exists as property
@@ -521,6 +531,22 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $this->findByNamedId ( $namedId );
     return $this->foundSomething();
   } 
+  
+  /**
+   * Returns the default icon representing the class.
+   * The default behavior is to check if a property "icon" exists
+   * in the model and to return this. If no such property
+   * exists, return null. 
+   * @return string|null
+   */
+  function getIcon()
+  {
+    if ( $this->hasProperty("icon") )
+    {
+      return $this->getProperty("icon");
+    }
+    return null;
+  }  
   
   //-------------------------------------------------------------
   // Record Retrieval (find... methods)
