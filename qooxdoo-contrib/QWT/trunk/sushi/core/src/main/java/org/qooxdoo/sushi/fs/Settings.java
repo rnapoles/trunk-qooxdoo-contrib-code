@@ -58,7 +58,7 @@ public class Settings {
         this.lineSeparator = lineSeparator;
     }
     
-    public String join(String ... lines){
+    public String join(String ... lines) {
         return Strings.join(lineSeparator, lines);
     }
 

@@ -25,7 +25,7 @@ import org.qooxdoo.sushi.util.Strings;
 
 
 public abstract class Filesystem {
-    /** separates file system name from rootPath in Locator strings */
+    /** separates file system name from rootPath in locator strings */
     public static final char SEPARTOR = ':';
 
     private final IO io;
