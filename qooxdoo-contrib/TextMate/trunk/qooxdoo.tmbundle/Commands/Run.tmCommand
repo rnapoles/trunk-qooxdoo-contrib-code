@@ -23,7 +23,7 @@ done
 	<key>name</key>
 	<string>Run</string>
 	<key>output</key>
-	<string>showAsHTML</string>
+	<string>discard</string>
 	<key>uuid</key>
 	<string>B089ED8A-D2FB-4B54-A9B2-B2F168194B67</string>
 </dict>
