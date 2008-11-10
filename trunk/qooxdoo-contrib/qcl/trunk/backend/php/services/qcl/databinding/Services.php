@@ -35,7 +35,7 @@ class qcl_databinding_Services extends qcl_core_mixin
      * list data object
      */
     require_once "qcl/databinding/widgets/ui/form/List.php";
-    $listData = new qcl_databinding_widgets_ui_form_List(&$this);
+    $listData = new qcl_databinding_widgets_qx_ui_form_List(&$this);
     
     /*
      * get role data and add add it to list object 
