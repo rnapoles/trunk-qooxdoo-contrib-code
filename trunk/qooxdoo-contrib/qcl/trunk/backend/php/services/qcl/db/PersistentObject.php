@@ -114,11 +114,14 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
       /*
        * attach object properties to this object
        */
+      //$d = array();
       foreach ( $this->persistedProperties() as $key)
       {
         $this->$key = $data[$key];
+        //$d[] = $data[$key];
         //$this->info(" Setting  '$key' to '{$this->$key}''");
       }
+      //$this->info(implode(",",$d));
       
       /*
        * set flag that this is a reconstructed object

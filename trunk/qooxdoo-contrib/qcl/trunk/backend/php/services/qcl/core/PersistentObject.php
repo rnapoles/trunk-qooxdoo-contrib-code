@@ -189,10 +189,14 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    */
   function getWriteLock()
   {
+    
     /*
-     * Reload object to get newest data
+     * Reload object to get newest data, but only if the object is new
      */
-    $this->reload();
+    if ( ! $this->isNew() )
+    {
+      $this->reload();  
+    }
     
     /*
      * check if we already have a lock
@@ -260,18 +264,17 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    * FIXME: Adapt for PHP5
    * @return array
    */
-  function persistedProperties()
+  function persistedProperties( $withValues= false )
   {
-    $propList = new ArrayList; 
+    $properties = array(); 
     foreach ( array_keys( get_class_vars( $this->className() ) ) as $key )
     {
       if ( $key{0} != "_" )
       {
-        $propList->add($key);
+        $properties[$key] = $this->$key;
       }
     }
-    $keys = $propList->toArray();
-    return $keys;
+    return $withValues ? $properties : array_keys($properties);
   }
   
   
@@ -349,6 +352,7 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     {
       
       //$this->info($this->className() . " [{$this->objectId}] has changed, saving ... ");
+      //$this->info( $this->persistedProperties(true) );
       
       if ( $this->isLocked )
       {
@@ -368,8 +372,12 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
     else
     {
       //$this->info($this->className() . " [{$this->objectId}] has not changed.");
+      //$this->info( $this->persistedProperties(true) );
+      if ( $this->isLocked and $this->_lockIsMine )
+      {
+        $this->releaseLock();     
+      }
     }
   }
-  
 }
 ?>
