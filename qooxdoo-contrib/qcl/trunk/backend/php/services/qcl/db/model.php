@@ -1491,6 +1491,14 @@ class qcl_db_model extends qcl_core_PropertyModel
   {
 
     /*
+     * return if no database connection is present
+     */
+    if ( ! $this->db )
+    {
+      $this->raiseError("Cannot setup schema - no database connection.");
+    }
+    
+    /*
      * sql type
      */
     $sqltype    =  $this->db->getType();

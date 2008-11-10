@@ -57,7 +57,7 @@ class qcl_application_controller extends qcl_datasource_controller
    */
   function &response()
   {
-    $this->addBroadcastMessagesToResponse();
+    //$this->addBroadcastMessagesToResponse();
     
     $configModel =& $this->getConfigModel();
     if ( $configModel->get("qcl.components.jsonrpc.MonitorWindow.enabled") )
