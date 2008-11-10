@@ -424,6 +424,7 @@ class qcl_core_object
   /**
    * get include path for a class name
    * @return 
+   * FIXME PHP5 is case-sensitive!
    * @param string[optional] $classname Class name, defaults to the clas name of the instance
    * @return string
    */
@@ -455,7 +456,12 @@ class qcl_core_object
     {
     	$pathname = $classname;
     }
-        
+    
+    /*
+     * normalize syntax
+     */
+    $pathname = strtolower(str_replace(".","_",$pathname));    
+    
     /*
      * return path name
      */
@@ -670,6 +676,7 @@ class qcl_core_object
 	{       
     /*
      * convert dot-separated class names
+     * FIXME: PHP5 is case-sensitive
      */
 	  if (strstr($classname,"."))
 	  {
