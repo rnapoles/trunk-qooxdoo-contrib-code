@@ -1890,10 +1890,11 @@ class qcl_db_model extends qcl_core_PropertyModel
         $this->raiseError("The <links> node must have a 'foreignKey' attribute.");
       }
       
+      
       /*
        * setup each link 
        */
-      foreach ($links->children() as $link)
+      foreach ( $links->children() as $link )
       {
         $a = $link->attributes();
         
@@ -1921,8 +1922,8 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * copy over the column definition from the main table
          */
-        $localKeyDef       = $this->db->getColumnDefinition($table,$localKeyColName);
-        $foreignKeyDef     = $this->db->getColumnDefinition($link_table,$foreignKeyColName);
+        $localKeyDef       = $this->db->getColumnDefinition( $table, $localKeyColName );
+        $foreignKeyDef     = $this->db->getColumnDefinition( $link_table, $foreignKeyColName );
         
         //$this->info("Local Key Definition: $localKeyDef");
         //$this->info("Foreign Key Definition: $foreignKeyDef");
@@ -1935,12 +1936,6 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * add or modify column if necessary
          */
-        if ( strtolower($localKeyDef) == strtolower($foreignKeyDef) ) 
-        {
-          // nothing to do
-          continue;
-        }
-        
         if ( ! $foreignKeyDef )
         {
           /*
@@ -1948,13 +1943,72 @@ class qcl_db_model extends qcl_core_PropertyModel
            */
           $this->db->addColumn($link_table,$foreignKeyColName,$localKeyDef);
         }
-        else
+        elseif ( strtolower($localKeyDef) != strtolower($foreignKeyDef) ) 
         {
           /*
            * exists but is different: modifiy
            */
           $this->db->modifyColumn($link_table,$foreignKeyColName,$localKeyDef);
         }
+        
+        /*
+         * further linked models
+         */
+        if ( count($link->children()) )
+        {
+          foreach( $link->children() as $linkedModel )
+          {
+            $a = $linkedModel->attributes();
+            
+            /*
+             * share datasource?
+             */
+            $shareDatasource = either($a['sharedatasource'],$a['shareDatasource']);
+            
+            /*
+             * model
+             */
+            $modelName = str_replace(".","_",$a['name']);
+            
+            $this->info("Linking $modelName");
+            $this->includeClassfile($modelName);
+
+            if ( $shareDatasource != "no" )
+            {
+              $model =& new $modelName( &$this, &$datasourceModel );  
+            }
+            else
+            {
+              $model =& new $modelName( &$this );
+            }
+            
+            /*
+             * get foreign key
+             */
+            $modelTable = $model->table;
+            $fkCol      = $model->getForeignKey();
+            $fkDef      = $model->db->getColumnDefinition( $modelTable, "id" );
+            $fkDef      = trim( str_replace("auto_increment","",$fkDef));
+            
+            if ( ! $fkDef )
+            {
+              $this->raiseError("Cannot get definition for 'id' in table '$modelTable'.");
+            } 
+            
+            $existing = $this->db->getColumnDefinition($link_table,$fkCol);
+            $this->info("$existing <=> $fkDef");
+            
+            if ( ! $existing )
+            {
+              $this->db->addColumn( $link_table, $fkCol, $fkDef );
+            }
+            elseif ( strtolower($existing) != strtolower($fkDef) )
+            {
+              $this->db->modifyColumn( $link_table, $fkCol, $fkDef );
+            }
+          }
+        }
+        
         
         /*
          * add to unique index in link table, this works only if the table is
