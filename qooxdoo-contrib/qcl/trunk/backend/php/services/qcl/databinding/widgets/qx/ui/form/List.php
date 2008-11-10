@@ -7,7 +7,7 @@ require_once "qcl/databinding/widgets/Widget.php";
 /**
  * Base class for objects modeling widget data
  */
-class qcl_databinding_widgets_ui_form_List extends qcl_databinding_widgets_Widget
+class qcl_databinding_widgets_qx_ui_form_List extends qcl_databinding_widgets_Widget
 {
 
   /**
