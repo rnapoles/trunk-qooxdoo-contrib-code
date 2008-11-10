@@ -111,42 +111,12 @@ class qcl_session_controller extends qcl_access_controller
   }
   
   /**
-   * Forwards messages to client and send logout message when timeout.
-   * @todo: use into qcl_jsonrpc_Response object
-   * @return array
+   * Dummy method called simply to forwards messages to client 
+   * and send logout message when timeout.
+   * @return qcl_jsonrpc_Response
    */
   function method_getMessages($params)
   {
-
-    /*
-     * set client-side log level
-     */
-    //$this->setSessionVar("qcl.logLevel.client",$logLevel);        
-    
-    /*
-     * models
-     */
-    $userModel   =& $this->getUserModel();
-    
-    /*
-     * if authenticated, check timeout 
-     */
-    if ( $userModel->authenticate() )
-    {
-      $activeUser = $userModel->getActiveUser();
-      
-      /*
-       * check the user session for timeouts etc.
-       */
-      if ( ! $this->checkTimeout() )
-      {
-        /*
-         * force log out
-         */
-        $this->dispatchMessage("qcl.commands.logout");
-        $userModel->logout();
-      }         
-    }
     return $this->response();
   }
 

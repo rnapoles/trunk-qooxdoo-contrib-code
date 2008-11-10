@@ -419,7 +419,7 @@ class qcl_access_user extends qcl_access_common
    */
   function resetLastAction()
   {
-    $this->setProperty("lastAction", $this->getTimestamp() );
+    $this->setProperty( "lastAction", $this->getTimestamp() );
     $this->save();
   }
 

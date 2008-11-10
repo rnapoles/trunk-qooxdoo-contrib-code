@@ -20,8 +20,8 @@
         <property name="objectId" type="string" index="yes">
           <sql>varchar(100) NULL</sql>
         </property>
-        <property name="data" type="blob">
-          <sql>blob</sql>
+        <property name="data" type="string">
+          <sql>longblob</sql>
         </property>
       </properties> 
 

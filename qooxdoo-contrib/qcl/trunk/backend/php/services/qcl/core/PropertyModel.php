@@ -1248,6 +1248,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       {
         $this->warn("Ignoring nonexistent model property '$key' ({$this->name}).");
         unset( $data[ $key ] );
+        //$this->backtrace();
       }      
 
       //$this->info("$key => $columnName : $value"); 
