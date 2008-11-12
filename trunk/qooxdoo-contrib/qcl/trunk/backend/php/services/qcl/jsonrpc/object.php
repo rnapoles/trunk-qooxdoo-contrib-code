@@ -208,6 +208,16 @@ class qcl_jsonrpc_object extends qcl_core_object
       exit;
   }  
   
+  /**
+   * Raises an error about a missing method implementation
+   * @param string class name
+   * @todo: get class and method name from backtrace.
+   */
+  function notImplemented( $class = __CLASS__ )
+  {
+    $this->raiseError( "Method (see backtrace) not implemented for class $class" );
+  }
+  
   //-------------------------------------------------------------
   // Simple programmatic message and event system 
   // This might later be rewritten more oo-style with event and 

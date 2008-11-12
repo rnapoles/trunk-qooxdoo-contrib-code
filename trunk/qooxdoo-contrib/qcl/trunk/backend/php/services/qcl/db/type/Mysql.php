@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/db/abstract.php";
+require_once "qcl/db/type/Abstract.php";
 require_once "DB.php"; // load pear DB library
 
 /**
@@ -12,7 +12,7 @@ require_once "DB.php"; // load pear DB library
  * relying on PEAR::DB for database access
  * @todo: remove PEAR:DB dependency, it is not really needed.
  */
-class qcl_db_mysql extends qcl_db_abstract
+class qcl_db_type_Mysql extends qcl_db_type_Abstract
 {
 	/**
 	 * connects to database
@@ -143,9 +143,9 @@ class qcl_db_mysql extends qcl_db_abstract
 	}
 
 	/**
-	 * Get first row of result set
-	 * @param string 	  $sql 				      sql query
-	 * @param boolean  	$withColumnNames	if true (default), map values to column names
+	 * Returns the first row of result set
+	 * @param string $sql Sql query
+	 * @param boolean $withColumnNames If true (default), map values to column names
 	 * @return array
 	 */
 	function getRow ( $sql, $withColumnNames=true )
@@ -167,7 +167,7 @@ class qcl_db_mysql extends qcl_db_abstract
 	}
 
 	/**
-	 * gets the value of the first cell of the first row of the result set
+	 * Returns the value of the first cell of the first row of the result set
 	 * useful for example for "SELECT count(*) ... " queries
 	 * return mixed
 	 */
@@ -178,7 +178,7 @@ class qcl_db_mysql extends qcl_db_abstract
 	}
 
 	/**
-	 * gets the values of the first cell of each row of the result set
+	 * Returns the values of the first cell of each row of the result set
 	 * return mixed
 	 */
 	function values ( $sql )
@@ -193,7 +193,7 @@ class qcl_db_mysql extends qcl_db_abstract
 	}
 
 	/**
-	 * gets full resultset
+	 * Returns full resultset
 	 * @param string 	$sql sql query
 	 * @param boolean $withColumnNames	if true (default), map values to column names
 	 */
@@ -208,6 +208,22 @@ class qcl_db_mysql extends qcl_db_abstract
 		return $res;
 	}
 
+  /**
+   * Returns the next record from the database
+   * @param boolean $withColumnNames  if true (default), map values to column names
+   */
+  function nextRecord( $withColumnNames=true )
+  {
+    $this->info("Not implemented");
+    $this->log($sql,QCL_LOG_DEBUG);
+    $res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
+    if ( PEAR::isError ( $res ) )
+    {
+      $this->raiseError( $res->getMessage() . ": " . $res->getUserInfo() );
+    }
+    return $res;
+  }	
+	
 	/**
 	 * inserts a record into a table and returns last_insert_id()
 	 * @param string $table table name
