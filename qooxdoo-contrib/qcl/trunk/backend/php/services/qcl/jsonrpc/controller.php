@@ -538,7 +538,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * @param int $logLevel  
 	 * @return string message that was written to the logfile
 	 */
-	function log( $msg, $logLevel=QCL_LOG_DEBUG )
+	function log( $msg, $logLevel="debug" )
 	{
 		$message = parent::log( $msg, $logLevel );
 		$clientLogLevel = (int) $this->getSessionVar("qcl.logLevel.client");
