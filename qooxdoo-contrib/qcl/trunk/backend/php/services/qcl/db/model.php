@@ -16,7 +16,7 @@ class qcl_db_model extends qcl_core_PropertyModel
 
   /**
    * the datasource object instance
-   * @var qcl_db_mysql 
+   * @var qcl_db_type_Mysql 
    */
   var $db;
   
@@ -149,7 +149,7 @@ class qcl_db_model extends qcl_core_PropertyModel
          */
         $this->log("Connecting to custom dsn ...");
         
-        require_once "qcl/db/mysql.php"; 
+        require_once "qcl/db/type/Mysql.php"; 
         
         $this->log("Connecting to ");
         $this->log($dsn);
@@ -157,7 +157,7 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * connect to new database 
          */
-        $db =& new qcl_db_mysql($dsn, &$this);
+        $db =& new qcl_db_type_Mysql($dsn, &$this);
         
         if ( $db->error )
         {
@@ -583,18 +583,6 @@ class qcl_db_model extends qcl_core_PropertyModel
     return $this->db->values($sql);    
   }  
 
-  /**
-   * Returns all distinct values of a model property that match a where condition
-   * @param string $property Name of property 
-   * @param string|null[optional] $where Where condition to match, if null, get all
-   * @param string|null[optional] $orderBy Property to order by 
-   * @param bool[optional, default false] If true, get only distinct values
-   * @return array Array of values
-   */
-  function findDistinctValues( $property, $where=null, $orderBy=null )
-  { 
-    return $this->findValues( $property, $where, $orderBy, true );
-  }
 
   
  	/**
@@ -681,6 +669,19 @@ class qcl_db_model extends qcl_core_PropertyModel
       return $this->findById( $id );
     }
   }
+  
+  /**
+   * Function that needs to be implemented by model if the
+   * result set is to be retrieved record by record after
+   * calling a search...() method.
+   * @return array
+   */
+  function _nextRecord()
+  {
+    return $this->db->nextRecord();
+  }
+
+  
   //-------------------------------------------------------------
   // Data creation and manipulation
   //-------------------------------------------------------------   	
@@ -1966,11 +1967,15 @@ class qcl_db_model extends qcl_core_PropertyModel
             $shareDatasource = either($a['sharedatasource'],$a['shareDatasource']);
             
             /*
-             * model
+             * linked model
              */
             $modelName = str_replace(".","_",$a['name']);
+            if ( ! $modelName )
+            {
+              $this->raiseError("linkedModel node has no 'name' attribute.");
+            }
             
-            $this->info("Linking $modelName");
+            $this->info("Linking $modelName ...");
             $this->includeClassfile($modelName);
 
             if ( $shareDatasource != "no" )
@@ -1995,9 +2000,10 @@ class qcl_db_model extends qcl_core_PropertyModel
               $this->raiseError("Cannot get definition for 'id' in table '$modelTable'.");
             } 
             
+            /*
+             * add or modify column
+             */
             $existing = $this->db->getColumnDefinition($link_table,$fkCol);
-            $this->info("$existing <=> $fkDef");
-            
             if ( ! $existing )
             {
               $this->db->addColumn( $link_table, $fkCol, $fkDef );
@@ -2184,7 +2190,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    *
    * @return string Name of the local key
    */
-  function getLocalKey ()
+  function getLocalKey()
   {
     return $this->localKey;
   }    
@@ -2194,7 +2200,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    *
    * @return string Name of the local key
    */
-  function getForeignKey ()
+  function getForeignKey()
   {
     return $this->foreignKey;
   }
@@ -2204,25 +2210,45 @@ class qcl_db_model extends qcl_core_PropertyModel
    * Throws an error if the model is not linked.
    *
    * @param qcl_db_model $model
-   * @return string
+   * @return mixed Array if link(s) ar found, false if not found
    */
-  function getLinkByModel( $model )
+  function getLinksByModel( $model )
   {
     if ( ! is_a($model,"qcl_db_model" ) )
     {
       $this->raiseError("Argument needs to be a qcl_db_model or subclass.");
     }
+   
+    $links = array();
     
+    /*
+     * is the other model the main link for this model?
+     */
     foreach ( $this->linkNodes as $linkName => $linkNode )
     {
-      $attrs = $linkNode->attributes();
-      $class = strtolower( str_replace(".","_", $attrs['model'] ) ); 
-      if ( is_a($model,$class) )
+      
+      $a = $linkNode->attributes(); 
+      if ( $model->instanceOf( $a['model'] ) )
       {
-        return $linkName;
+        $links[] =  $linkName;
+      }
+      
+      /*
+       * or is it a model which is a secondary link ?
+       */
+      if ( count( $linkNode->children() ) )
+      {
+        foreach ( $linkNode->children() as $linkedModelNode )
+        {
+          $a = $linkedModelNode->attributes();
+          if ( $model->instanceOf( $a['name'] ) )
+          {
+             $links[] = $linkName;
+          }
+        }
       }
     }
-    $this->raiseError("The model '" . get_class($this) . "' is not linked to model '" . get_class($model) . "'.");
+    return count( $links ) ? $links : false;
   }
   
   
@@ -2231,20 +2257,25 @@ class qcl_db_model extends qcl_core_PropertyModel
    *
    * @param string|object $first Either the object to link to or the name of the link in the schema xml
    * @param int $linkedId Id of the recordset in the remote model
-   * @param int|null $localId[optional, default null] The id of the local dataset. If not given as an argument, 
-   * the id of the currently loaded record is used.
+   * @param array[optional} $linkData Additional data to store in the link
+   * @param int|null $localId[optional, default null] The id of the local dataset. 
+   * If not given as an argument, the id of the currently loaded record is used.
    */
-  function createLink($first,$linkedId=null,$localId=null)
+  function createLink($first, $linkedId=null, $localId=null)
   {
     /*
      * context data
      */
-    $link         =  is_object($first) ? $this->getLinkByModel( $first ) : $first;
+    $links        =  is_object($first) ? $this->getLinksByModel( $first ) : $first;
+    if ( ! $links )
+    {
+      $this->raiseError("Invalid first parameter.");
+    }
     $linkedId     =  is_object($first) ? $first->getId() : $linkedId;
     $localId      =  either($localId, $this->getId() );
-    $linkTable    =  $this->getLinkTable($link);
+    $linkTable    =  $this->getLinkTable( $links[0] );
     $foreignkey   =  $this->getForeignKey();
-    $joinedModel  =& $this->getJoinedModelInstance($link);
+    $joinedModel  =& $this->getJoinedModelInstance( $links[0] );
     $jmForeignKey =  $joinedModel->getForeignKey();
     
 
@@ -2272,6 +2303,97 @@ class qcl_db_model extends qcl_core_PropertyModel
   }
   
   /**
+   * Link a variable number of models
+   * @param qcl_db_model $model2 Model to link with
+   * @param qcl_db_model $model3 Optional model to link with
+   * @param qcl_db_model $model4 Optional model to link with
+   */
+  function linkWith()
+  {
+    /* 
+     * this model 
+     */
+    $thisId      =  $this->getId();
+    $thisFKey    =  $this->getForeignKey();
+
+    /*
+     * data to insert into link model
+     */    
+    $data  = array();
+    $links = null;
+    
+    for( $i=0; $i < func_num_args(); $i++ )
+    {
+      
+      /*
+       * remote model
+       */
+      $that  =& func_get_arg($i);
+      if ( ! is_a($that, __CLASS__ ) )
+      {
+        $this->raiseError("Invalid parameter $i. Must be a " . __CLASS__ ); 
+      }
+      $thatId   =  $that->getId();
+      $thatFKey =  $that->getForeignKey();
+      
+      /*
+       * links to this model, defined by the first argument
+       */
+      if ( ! $links )
+      {
+        $l =  $this->getLinksByModel( &$that ); 
+        if ( ! $l )
+        {
+          $this->raiseError("Model '" . $this->className() . "' is not linked to model '" . $model->className() . "'.");
+        }
+        $links = $l;
+      }
+      
+      
+      /*
+       * create link entries
+       */
+      foreach ( $links as $link )
+      {
+        $linkTable   = $this-> $this->getLinkTable( $link );
+        $data[$linkTable][$thisFKey] = $thisId;
+        $data[$linkTable][$thatFKey] = $thatId;
+      }
+    }
+    
+    /*
+     * insert data. Since we cannot create unique
+     * indexes dynamicall, we check first before
+     * inserting
+     */
+    foreach ( $data as $table => $row )
+    {
+      /*
+       * where query
+       */
+      $where = array();
+      foreach ( $row as $key => $value )
+      {
+        $where[] = "`$key`=$value";
+      }
+      $where = "WHERE " .implode(" AND ", $where );
+      $count = $this->db->getValue("SELECT COUNT(*) FROM $table $where ");
+      if ( $count )
+      {
+        $this->warn("Table $table: $where already exists.");
+      }
+      else
+      {
+        $id = $this->db->insert( $table, $row );
+      }
+      
+    }
+    return true;
+    
+  }
+  
+  
+  /**
    * removes a link between this model and a different model identified in a schema xml link
    *
    * @param string $link Name of the link
@@ -2294,7 +2416,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      * remove from table
      */
     $this->db->deleteWhere($linkTable, "`$foreignkey`=$localId AND `$jmForeignKey`=$linkedId" );
-  }  
+  }
 
 }	
 ?>

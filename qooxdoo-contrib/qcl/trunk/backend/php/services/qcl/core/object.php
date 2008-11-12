@@ -597,13 +597,15 @@ class qcl_core_object
     
   /**
    * similar to instanceOf javascript function. checks if object is an instance of the
-   * class or of a subclass of this class. Use this for cross-version compatibility
-   * @param string $class
+   * class or of a subclass of this class. Use this for cross-version compatibility.
+   * 
+   * @param string $class Class name. Can be java(script)-like separated by dots.
    * @return boolean 
    */
   function instanceOf( $class )
   {
-    return is_a($this,$class);    
+    $class = str_replace(".","_",$class);
+    return is_a( $this, $class );
   }
   
   //-------------------------------------------------------------

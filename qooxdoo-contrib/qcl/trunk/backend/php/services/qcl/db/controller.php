@@ -15,7 +15,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
 
   /**
    * the database connection pooled by all directly connected models
-   * @var qcl_db_mysql
+   * @var qcl_db_type_Mysql
    * @access private
    */
   var $_connection = null;
@@ -105,7 +105,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
       $this->raiseError("No dsn information available.");
     }
     
-    require_once("qcl/db/mysql.php"); 
+    require_once("qcl/db/type/Mysql.php"); 
     
     $this->log("Connecting to ");
     $this->log($dsn);
@@ -113,7 +113,7 @@ class qcl_db_controller extends qcl_jsonrpc_controller
     /*
      * connect to new database 
      */
-    $db =& new qcl_db_mysql( $dsn, &$this );
+    $db =& new qcl_db_type_Mysql( $dsn, &$this );
     
     if ( $db->error )
     {

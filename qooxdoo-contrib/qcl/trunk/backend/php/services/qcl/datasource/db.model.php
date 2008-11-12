@@ -42,7 +42,7 @@ class qcl_datasource_db_model extends qcl_db_model
 
   /**
    * the database connection object of the currently loaded record
-   * @var qcl_db_mysql
+   * @var qcl_db_type_Mysql
    */
   var $datasourceConnectionObj;
   
@@ -138,7 +138,7 @@ class qcl_datasource_db_model extends qcl_db_model
   /**
    * Returns the database connection object of the currently 
    * loaded datasource record
-   * @return qcl_db_mysql
+   * @return qcl_db_type_Mysql
    */
   function &getDatasourceConnection()
   {
@@ -146,7 +146,7 @@ class qcl_datasource_db_model extends qcl_db_model
     {
       $this->log("Connecting current datasource ...");
       
-      require_once("qcl/db/mysql.php"); 
+      require_once("qcl/db/type/Mysql.php"); 
       
       $dsn = $this->getDatasourceDsn();
       $this->log("Connecting to ");
@@ -155,7 +155,7 @@ class qcl_datasource_db_model extends qcl_db_model
       /*
        * connect to new database 
        */
-      $db =& new qcl_db_mysql($dsn, &$this);
+      $db =& new qcl_db_type_Mysql($dsn, &$this);
       
       if ( $db->error )
       {
@@ -243,7 +243,7 @@ class qcl_datasource_db_model extends qcl_db_model
      */
     if ( $options['dsn'] )
     {
-      $db = new qcl_db_mysql( $options['dsn'], &$this );
+      $db = new qcl_db_type_Mysql( $options['dsn'], &$this );
       //$this->info("Using custom dsn:" . print_r($options,true) );
     }
     else

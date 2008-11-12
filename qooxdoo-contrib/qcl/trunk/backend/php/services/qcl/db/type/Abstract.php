@@ -6,7 +6,7 @@ require_once ("qcl/jsonrpc/object.php");
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
  */
-class qcl_db_abstract extends qcl_jsonrpc_object
+class qcl_db_type_Abstract extends qcl_jsonrpc_object
 {
 
 	/**
@@ -306,10 +306,19 @@ class qcl_db_abstract extends qcl_jsonrpc_object
 	function getValue ( $sql ) {}
 	
 	/**
-	 * gets whole result set mapped to array
+	 * Returns whole result set mapped to array
 	 */
 	function getAllRecords( $sql ) {}
 	
+  /**
+   * Returns the next record from the database
+   * @param boolean $withColumnNames  if true (default), map values to column names
+   */
+  function nextRecord( $withColumnNames=true )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+   	
 	/**
 	 * inserts a record into a table and returns last_insert_id()
 	 * @param string $table table name

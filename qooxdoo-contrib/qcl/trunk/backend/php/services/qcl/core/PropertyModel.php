@@ -132,6 +132,15 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   var $importDataPath;
   
+  
+  /**
+   * Flag to indicate whether result of an sql search
+   * is to be retrieved (false) or if the search is
+   * only prepared and then retrieved record by record
+   * with the qcl_core_PropertyModel::nextRecord() function (true)
+   */
+  var $_isSearch = false;
+  
   /**
    * Constructor 
    * @param qcl_jsonrpc_controller  $controller
@@ -549,11 +558,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   }  
   
   //-------------------------------------------------------------
-  // Record Retrieval (find... methods)
+  // Record Retrieval (search/find... methods)
   //-------------------------------------------------------------   
  
   /**
-   * Returns a records by property value
+   * Returns records by property value
    * @param string $propName Name of property
    * @param string $value Value to find
    * @param string|null[optional] $orderBy  Field to order by
@@ -565,6 +574,23 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     $this->raiseError("Not implemented for Model " . $this->className() );
   }
+
+  /**
+   * Prepares a search of records by property value and returns the first record 
+   * found (if any).
+   * @param string $propName Name of property
+   * @param string $value Value to find
+   * @param string|null[optional] $orderBy  Field to order by
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * properties are to be retrieved
+   * @return array recordset
+   */
+  function searchBy( $propName, $value, $orderBy=null, $properties=null )
+  {
+    $this->_isSearch = true;
+    return $this->findBy(  $propName, $value, $orderBy, $properties );
+  }  
+  
   
   /**
    * Returns all database records optionally sorted by property
@@ -576,7 +602,73 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     return $this->findWhere( null, $orderBy, $properties );
   }  
+
+  /**
+   * Prepares a search for all database records optionally sorted by property and
+   * returns the first record found (if any)
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return array 
+   */
+  function searchAll( $orderBy=null, $properties=null )
+  {
+    $this->_isSearch = true;
+    return $this->findWhere( null, $orderBy, $properties );
+  }  
+
+  /**
+   * Returns all values of a model property that match a where condition
+   * @param string $property Name of property 
+   * @param string|null[optional] $where Where condition to match, if null, get all
+   * @param string|null[optional] $orderBy Property to order by 
+   * @param bool[optional, default false] If true, get only distinct values
+   * @return array Array of values
+   */
+  function findValues( $property, $where=null, $orderBy=null, $distinct=false )
+  { 
+    $this->notImplemented( __CLASS__ );
+  }
+    
+  /**
+   * Returns all database records or those that match a  condition. 
+   * 
+   * @param string|array|null  $where 'Where' condition to match. If null, get all.  
+   * @param string|array|null[optional] $orderBy Order by property/properties. 
+   * @param string|array|null[optional]  $properties  Array of properties to retrieve or null (default) 
+   * @return Array Array of db record sets. The array keys are already converted to the property names,
+   * so you do not have to deal with column names at all.
+   */
+  function findWhere( $where=null, $orderBy=null, $properties=null )
+  {
+    $this->notImplemented(__CLASS__);
+  }
   
+  /**
+   * Prepares a search for all database records or those that match a  condition. 
+   * 
+   * @param string|array|null  $where 'Where' condition to match. If null, get all.  
+   * @param string|array|null[optional] $orderBy Order by property/properties. 
+   * @param string|array|null[optional]  $properties  Array of properties to retrieve or null (default) 
+   * @return Array Array of db record sets. The array keys are already converted to the property names,
+   * so you do not have to deal with column names at all.
+   */
+  function searchWhere( $where=null, $orderBy=null, $properties=null )
+  {
+    $this->notImplemented(__CLASS__);
+  }  
+    
+  /**
+   * Returns all distinct values of a model property that match a where condition
+   * @param string $property Name of property 
+   * @param string|null[optional] $where Where condition to match, if null, get all
+   * @param string|null[optional] $orderBy Property to order by 
+   * @param bool[optional, default false] If true, get only distinct values
+   * @return array Array of values
+   */
+  function findDistinctValues( $property, $where=null, $orderBy=null )
+  { 
+    return $this->findValues( $property, $where, $orderBy, true );
+  }  
   
   /**
    * Whether the last query didn't find any records
@@ -597,7 +689,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   }    
   
   /**
-   * Find database records by their primary key
+   * Return database records by their primary key
    * @param array|int $ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
@@ -609,7 +701,21 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   }
 
   /**
-   * find database records by their named id
+   * Prepares a search for database records by their primary key and returns
+   * the first record (if any).
+   * @param array|int $ids Id or array of ids
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return Array Array of db record sets
+   */
+  function searchById( $ids, $orderBy=null, $properties=null )
+  {
+    $this->_isSearch = true;
+    return $this->findById( $ids, $orderBy, $properties); 
+  }  
+  
+  /**
+   * Return database records by their named id
    * @param array|string $ids Id or array of ids
    * @param string|null[optional] $orderBy     Order by property
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
@@ -619,6 +725,20 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   {
     $this->raiseError("Not implemented for Model " . $this->className() );
   }   
+
+  /**
+   * Prepares a search for database records by their named id and returns
+   * the first record (if any).
+   * @param array|string $ids Id or array of ids
+   * @param string|null[optional] $orderBy     Order by property
+   * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
+   * @return Array Array of db record sets
+   */
+  function searchByNamedId( $ids, $orderBy=null, $properties=null )
+  {
+    $this->_isSearch = true;
+    return $this->findByNamedId( $ids, $orderBy, $properties );
+  }    
   
 
   //-------------------------------------------------------------
@@ -675,23 +795,41 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function nextRecord()
   {
-    if ( ! count( $this->_lastResult ) )
+    if ( $this->_isSearch )
     {
-      return false;
+      return $this->_nextRecord(); 
     }
-    
-    /*
-     * throw away the first record
-     */
-    array_shift($this->_lastResult);
-    
-    /*
-     * and set the first element as current record
-     */
-    $this->setRecord( $this->_lastResult[0] );
-    
+    else
+    {
+      if ( ! count( $this->_lastResult ) )
+      {
+        return false;
+      }
+      
+      /*
+       * throw away the first record
+       */
+      array_shift($this->_lastResult);
+      
+      /*
+       * and set the first element as current record
+       */
+      $this->setRecord( $this->_lastResult[0] );
+    }
     return $this->getRecord();
   }
+  
+  /**
+   * Function that needs to be implemented by model if the
+   * result set is to be retrieved record by record after
+   * calling a search...() method.
+   * @return array
+   */
+  function _nextRecord()
+  {
+    $this->raiseError("Not implemented for Model " . $this->className() );
+  }
+  
   
   /**
    * Gets the data of the currently loaded record as a stdClass object
