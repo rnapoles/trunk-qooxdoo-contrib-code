@@ -286,7 +286,7 @@ class qcl_jsonrpc_object extends qcl_core_object
      * search message database 
      */
     global $message_db;
-    $index = array_search ( $message, $message_db['filters'] );
+    $index = array_search ( $message, (array) $message_db['filters'] );
     
     /*
      * abort if no subcriber for this message registered
@@ -355,13 +355,13 @@ class qcl_jsonrpc_object extends qcl_core_object
    */
   function dispatchEvent ( $event, $data=true )
   {
-    $this->log("Event $event");
+    $this->debug("Event $event");
     
     /*
      * search message database 
      */
     $event_db =& $this->__event_db;
-    $index = array_search ( $event, $event_db['types'] );
+    $index = array_search ( $event, (array) $event_db['types'] );
     
     /*
      * abort if no event listener for this message has been registered
