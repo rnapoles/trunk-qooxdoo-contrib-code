@@ -155,9 +155,8 @@ class qcl_http_Request extends qcl_jsonrpc_model
     if ( is_array( $this->data ) )
     {
       foreach ( $this->data as $key => $value )
-      {
-        $value = str_replace("&","%26",urlencode($value));
-        $data .= urlencode($key) . "=" . trim($value) . "&";
+      {        
+        $data .= urlencode($key) . "=" . trim( $this->safe_urlencode($value) ) . "&";
       }
     }
     else
@@ -177,6 +176,26 @@ class qcl_http_Request extends qcl_jsonrpc_model
       $this->raiseError("Request method {$this->method} not yet supported.");
     }
     return $this->response;
+  }
+  
+  function safe_urlencode($value)
+  {
+    /*
+     * urlencode
+     */
+    $value = urlencode($value);
+    
+    /*
+     * replace remaining ampersands
+     */
+    $value = str_replace("&","%26", $value );
+    
+    /*
+     * replace remaining percent signs
+     */
+    $value = preg_replace("/(%)([^2][^5])/","%25$2",$value);
+        
+    return $value;
   }
 
   /**

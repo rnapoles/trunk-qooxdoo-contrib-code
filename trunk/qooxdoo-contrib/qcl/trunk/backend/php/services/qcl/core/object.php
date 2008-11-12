@@ -5,6 +5,7 @@
 require_once "qcl/core/functions.php";      // global functions
 require_once "qcl/lang/String.php";    // String object similar to java
 require_once "qcl/lang/ArrayList.php"; // ArrayList object similar to java
+require_once "qcl/log/Logger.php";
 
 /**
  * path to log file
@@ -12,23 +13,6 @@ require_once "qcl/lang/ArrayList.php"; // ArrayList object similar to java
 if ( ! defined( "QCL_LOG_FILE") )
 {
   define( "QCL_LOG_FILE" ,  QCL_LOG_PATH . "qcl.log" );  
-}
-
-/**
- * log levels
- */
-define( "QCL_LOG_OFF", 		0 );
-define( "QCL_LOG_DEBUG", 	1 );
-define( "QCL_LOG_INFO", 	2 );
-define( "QCL_LOG_WARN", 	3 );
-define( "QCL_LOG_ERROR", 	4 );
-
-/**
- * log level
- */
-if ( ! defined("QCL_LOG_LEVEL") )
-{
-	 define("QCL_LOG_LEVEL",QCL_LOG_ERROR);
 }
 
 /**
@@ -107,6 +91,12 @@ class qcl_core_object
    * @access private
    */
   var $_objectId = null;
+  
+  /**
+   * The logger object
+   * @var qcl_log_Logger
+   */
+  var $_logger;
   
   /**
    * PHP4 __construct() hack taken from cakephp
@@ -215,6 +205,11 @@ class qcl_core_object
        */
       $this->setRegistryVar( "qcl.interfaces.checked.{$this->class}.$interface", true );
     }
+    
+    /*
+     * setup the logger for this object
+     */
+    $this->setUpLogger();
 	}
 	
 	/**
@@ -497,7 +492,7 @@ class qcl_core_object
    */
   function includeClassfile ( $classname )
   {
-    $path = $this->getClassPath($classname);
+    $path = qcl_core_object::getClassPath($classname);
     if ( ! file_exists ( $path ) )
     {
   		$this->raiseError ( "Class '$classname' cannot be loaded: file '" . addslashes($path) .  "' does not exist." );    	
@@ -626,7 +621,11 @@ class qcl_core_object
 	 */
 	function &getInstance( $class = __CLASS__ )
 	{
-    return $this->getSingleton( $class );
+     if ( ! $GLOBALS[$class] )
+     {
+       $GLOBALS[$class] =& new $class;
+     }
+     return $GLOBALS[$class]; 
 	}
 
   /**
@@ -639,7 +638,7 @@ class qcl_core_object
   function &setSingleton( $instance ) 
   {
     $classname = get_class ( $instance );
-    $GLOBALS['qcl_jsonrpc_singletons'][$classname] =& $instance;
+    $GLOBALS[$classname] =& $instance;
     return $instance;
   }
 	
@@ -657,12 +656,11 @@ class qcl_core_object
 	 */
 	function &getSingleton( $classname, $controller = null ) 
 	{
-    $instance =& $GLOBALS['qcl_jsonrpc_singletons'][$classname];
-    if ( ! $instance )  
+    if ( ! $GLOBALS[$classname] )  
     {
-      $instance =& $this->getNew( $classname, &$controller );
+      $GLOBALS[$classname] =& $this->getNew( $classname, &$controller );  
     }
-    return $instance;
+    return $GLOBALS[$classname];
   }
   
 	/**
@@ -680,7 +678,7 @@ class qcl_core_object
      * convert dot-separated class names
      * FIXME: PHP5 is case-sensitive
      */
-	  if (strstr($classname,"."))
+	  if ( strstr( $classname,".") )
 	  {
 	    $classname = strtolower(str_replace(".","_",$classname));
 	  }
@@ -692,7 +690,9 @@ class qcl_core_object
     {
       $path = $this->includeClassFile($classname);
       
-      // check class
+      /*
+       * Check class
+       */
       if ( ! class_exists ( $classname) )
       {
     		$this->raiseError ( get_class($this) . "::getNew : Cannot instantiate class '$classname': file '" . addslashes($path) .  "' does not contain class definition." );    	
@@ -700,80 +700,82 @@ class qcl_core_object
     }
     
     /*
-     * provide the controller if given
+     * Provide the controller if given
      */
     if ( ! $controller and is_a ( $this, "qcl_jsonrpc_controller" ) )
     {
-    	$controller =& $this;
+      return new $classname(&$this);
     }
-    
-    /*
-     * instantiate and return object
-     */    
-    $instance =& new $classname(&$controller);
-    
-    return $instance;
+    else
+    {
+      return new $classname(&$controller);
+    }
   }
  
   //-------------------------------------------------------------
   // logging
   //-------------------------------------------------------------
+
+  function setupLogger()
+  {
+    $this->_logger =& qcl_log_Logger::getInstance();
+    $this->_logger->registerFilter("debug", "Verbose debugging");
+    $this->_logger->registerFilter("info",  "Important messages");
+    $this->_logger->registerFilter("warn",  "Warnings");
+    $this->_logger->registerFilter("error", "Non-fatal errors");
+    
+    $this->_logger->setFilterEnabled("debug",false);
+  }
+  
+  /**
+   * Logs a message if the filters are enabled
+   * @return void
+   * @param mixed $msg 
+   * @param string|array $filters
+   */
+  function log ( $msg, $filters="debug" )
+  {
+    if ( ! $this->_logger )
+    {
+      $this->raiseError("No logger object exists.");
+    }
+    $this->_logger->log($msg, $filters );
+  } 
   
 	/**
-	 * log to file on server
-	 * @param string $message
-	 * @param int $logLevel  
-	 * @return message written to file
-	 */
-	function log( $msg, $logLevel=QCL_LOG_DEBUG )
-	{
-		if ( is_array($msg) or is_object($msg) )
-    {
-      $msg = var_export ( $msg, true );
-    }
-    
-    $message = date("y-m-j H:i:s");
-		if ( QCL_LOG_SHOW_CLASS_NAME )
-		{
-			$message .= " [" . get_class($this) ."]";
-		}
-		$message .= ": " . $msg . "\n";
-		$this->writeLog($message,$logLevel);	
-		return $message;		
-	}
-
-	/**
-	 * write to log file
-	 * @param string $message
-	 * @param int $logLevel 
-	 */
-	function writeLog( $message, $logLevel=QCL_LOG_DEBUG )
-	{
-		if ( QCL_LOG_LEVEL and QCL_LOG_LEVEL <= $logLevel)
-		{
-			@error_log($message,3,QCL_LOG_FILE);			
-		}			
-	}
-
-	/**
-	 * log a debug message 
+	 * Log a debug message 
    * @return void
    * @param mixed $msg 	
    */
-	function debug($msg,$html=false)
+	function debug($msg)
 	{
-    $this->log ( $msg, QCL_LOG_DEBUG );
+    $this->log ( $msg, "debug" );
   }	
 	
   /**
-   * logs a message with of level "info"
+   * Logs a message with of level "info"
    * @return void
    * @param mixed $msg 
    */
   function info ( $msg )	
   {
-    $this->log ( $msg, QCL_LOG_INFO );
+    $this->log ( $msg, "info" );
   }
+  
+  
+  /**
+   * Logs a message with of level "warn"
+   * @return void
+   * @param $msg string
+   */
+  function warn ( $msg )  
+  {
+    $this->log ( "*** WARNING *** " . $msg, "warn" );
+  }  
+
+  //-------------------------------------------------------------
+  // debugging
+  //-------------------------------------------------------------
   
   /**
    * Output the current filename and line number in order to be able to
@@ -818,15 +820,6 @@ class qcl_core_object
     return $location;
   }
 
-  /**
-   * logs a message with of level "warn"
-   * @return void
-   * @param $msg string
-   */
-  function warn ( $msg )	
-  {
-    $this->log ( "*** WARNING *** " . $msg, QCL_LOG_WARN );
-  }  
   
   /**
    * Returns the backtrace of invoked function calls
@@ -854,12 +847,12 @@ class qcl_core_object
     {
       $message .= " in $file, line $line.";
     }
-    $this->log( 
+    $logger =& qcl_log_Logger::getInstance();
+    $logger->writeLog( 
       "### Error in " . get_class($this) . " ###\n" . 
       $message . "\n" . 
       "Backtrace:\n" . 
-      $this->getBacktrace(), 
-      QCL_LOG_ERROR
+      $this->getBacktrace()
     );
     echo $message;
     exit;

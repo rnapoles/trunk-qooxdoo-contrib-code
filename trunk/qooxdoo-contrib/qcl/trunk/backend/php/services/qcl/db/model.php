@@ -2253,41 +2253,84 @@ class qcl_db_model extends qcl_core_PropertyModel
   
   
   /**
-   * Create a link between this model and a different model identified in a schema xml link
+   * Create a link between this model and a different model.
+   * This method is for links that connect two models only. For three or more models, use
+   * @see qcl_db_model::unlinkFrom()
    *
    * @param string|object $first Either the object to link to or the name of the link in the schema xml
-   * @param int $linkedId Id of the recordset in the remote model
-   * @param array[optional} $linkData Additional data to store in the link
-   * @param int|null $localId[optional, default null] The id of the local dataset. 
-   * If not given as an argument, the id of the currently loaded record is used.
+   * @param int[optional] $linkedId Id of the recordset in the remote model. if not given, the id
+   * of the remote model passed as first argument is used.
+   * @param int[optional] $localId The id of the local dataset. If not given as an argument, 
+   * the id of the currently loaded record is used.
    */
-  function createLink($first, $linkedId=null, $localId=null)
+  function createLink($first, $linkedId=null, $localId=null, $remove=false)
   {
     /*
      * context data
      */
-    $links        =  is_object($first) ? $this->getLinksByModel( $first ) : $first;
-    if ( ! $links )
+    if ( is_a( $first,"qcl_db_model" ) )
+    {
+      $links = $this->getLinksByModel( &$first );
+    }
+    elseif ( ! $first or ! is_string( $first ) )    
     {
       $this->raiseError("Invalid first parameter.");
     }
-    $linkedId     =  is_object($first) ? $first->getId() : $linkedId;
-    $localId      =  either($localId, $this->getId() );
-    $linkTable    =  $this->getLinkTable( $links[0] );
-    $foreignkey   =  $this->getForeignKey();
-    $joinedModel  =& $this->getJoinedModelInstance( $links[0] );
-    $jmForeignKey =  $joinedModel->getForeignKey();
     
+    /*
+     * linked id
+     */
+    if ( ! $linkedId )
+    {
+      if ( is_object( $first ) and $first->instanceOf("qcl_db_model") )
+      {
+        $linkedId = $first->getId();  
+      }
+      else
+      {
+        $this->raiseError("Invalid linked object or local id.");
+      }
+    }
 
+    /*
+     * local id
+     */
+    if ( ! $localId )
+    {
+      $this->info("Local id: '$localId''");
+      $localId = $this->getId();
+    } 
     if ( ! $localId or ! is_numeric($localId) )
     {
       $this->raiseError("Invalid local id '$localId");
-    }    
-    
-    if ( ! $linkedId or ! is_numeric($linkedId) )
-    {
-      $this->raiseError("Invalid linked id '$linkedId");
     }
+        
+    /*
+     * linked table
+     */
+    $linkTable = $this->getTablePrefix() . $this->getLinkTable( $links[0] );
+    
+    /*
+     * foreign key of this model
+     */
+    $foreignkey =  $this->getForeignKey();
+    
+    /*
+     * the joined model
+     */
+    if ( is_object($first) )
+    {
+      $joinedModel =& $first;
+    }
+    else
+    {
+      $joinedModel =& $this->getJoinedModelInstance( $links[0] );
+    }
+    
+    /*
+     * the foreign key of the joined model
+     */
+    $jmForeignKey =  $joinedModel->getForeignKey();
     
     /*
      * link data
@@ -2296,10 +2339,39 @@ class qcl_db_model extends qcl_core_PropertyModel
     $data[$foreignkey]   = $localId;
     $data[$jmForeignKey] = $linkedId;
     
-    /*
-     * insert into table
-     */
-    $this->db->insert($linkTable, $data);
+    
+    if ( $remove )
+    {
+      /*
+       * remove from table
+       */
+      return $this->db->deleteWhere($linkTable, "`$foreignkey`=$localId AND `$jmForeignKey`=$linkedId" );      
+    }
+    else
+    {
+      /*
+       * insert into table
+       */
+      return $this->db->insert($linkTable, $data);
+    }
+  }
+  
+  
+  /**
+   * Removes a link between this model and a different model.
+   * This method is for links that connect two models only. For three or more models, use
+   * @see qcl_db_model::unlinkFrom()
+   *
+   * @param string|object $first Either the object to unlink from or 
+   * the name of the link in the schema xml.
+   * @param int[optional] $linkedId Id of the recordset in the remote model. if not given, the id
+   * of the remote model passed as first argument is used.
+   * @param int[optional] $localId The id of the local dataset. If not given as an argument, 
+   * the id of the currently loaded record is used.
+   */
+  function removeLink( $first, $linkedId, $localId=null )
+  {
+    return $this->createLink( &$first, $linkedId, $localId, true);
   }
   
   /**
@@ -2443,30 +2515,7 @@ class qcl_db_model extends qcl_core_PropertyModel
   }
   
   
-  /**
-   * removes a link between this model and a different model identified in a schema xml link
-   *
-   * @param string $link Name of the link
-   * @param int $linkedId Id of the recordset in the remote model
-   * @param int|null $localId[optional, default null] The id of the local dataset. If not given as an argument, 
-   * the id of the currently loaded record is used.
-   */
-  function removeLink($link,$linkedId,$localId=null)
-  {
-    /*
-     * context data
-     */
-    $localId      =  either($localId, $this->getId() );
-    $linkTable    =  $this->getLinkTable($link);
-    $foreignkey   =  $this->getForeignKey();
-    $joinedModel  =& $this->getJoinedModelInstance($link);
-    $jmForeignKey =  $joinedModel->getForeignKey();
-    
-    /*
-     * remove from table
-     */
-    $this->db->deleteWhere($linkTable, "`$foreignkey`=$localId AND `$jmForeignKey`=$linkedId" );
-  }
+
 
 }	
 ?>

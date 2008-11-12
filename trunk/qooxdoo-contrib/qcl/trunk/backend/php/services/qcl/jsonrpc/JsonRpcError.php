@@ -208,17 +208,25 @@ function jsonRpcErrorHandler($errno, $errstr, $errfile, $errline)
         echo nl2br($errmsg);
         exit(1);
     }
-  
+    
+    /*
+     * get logger
+     */
+    require_once dirname(__FILE__) . "/../log/Logger.php";
+    $logger =& qcl_log_Logger::getInstance();
+    
     switch($errno)
     {
       case E_WARNING:
       case E_NOTICE:
-          require_once dirname(__FILE__) . "/../core/object.php";
-          qcl_core_object::writeLog($errmsg);
+          $errmsg = str_replace( array("<br>","<br/>","<br />"),"\n", $errmsg ) ;
+          $errmsg = strip_tags($errmsg) ."\n\n";
+          $logger->log( $errmsg, "warn" );
           break;
       
       default:
         // return jsonrpc error
+        qcl_log_Logger::writeLog(debug_get_backtrace());
         $error->SetError($errno, $errmsg);
         $error->SendAndExit();
     }   

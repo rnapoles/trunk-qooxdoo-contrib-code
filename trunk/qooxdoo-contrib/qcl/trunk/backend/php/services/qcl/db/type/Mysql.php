@@ -155,7 +155,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $this->raiseError ( "No database connection. Aborting.");
     }
 
-    $this->log($sql,QCL_LOG_DEBUG);
+    $this->log($sql,"debug");
 		
     $res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
 		
@@ -199,7 +199,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	 */
 	function getAllRecords( $sql, $withColumnNames=true )
 	{
-		$this->log($sql,QCL_LOG_DEBUG);
+		$this->log($sql,"debug");
 		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
 		if ( PEAR::isError ( $res ) )
 		{
@@ -215,7 +215,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   function nextRecord( $withColumnNames=true )
   {
     $this->info("Not implemented");
-    $this->log($sql,QCL_LOG_DEBUG);
+    $this->log($sql,"debug");
     $res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
     if ( PEAR::isError ( $res ) )
     {
