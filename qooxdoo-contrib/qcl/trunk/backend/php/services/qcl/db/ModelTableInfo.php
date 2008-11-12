@@ -27,7 +27,7 @@ class qcl_db_ModelTableInfo extends qcl_db_PersistentObject
   /**
    * Register initialization timestamp for table and datasource
    *
-   * @param qcl_datasource_db_model $datasourceModel Datasource model object or null if not connected
+   * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
    * @param string $class
    * @param int $timestamp
@@ -51,7 +51,7 @@ class qcl_db_ModelTableInfo extends qcl_db_PersistentObject
   /**
    * Checks if initialization of table and datasource
    *
-   * @param qcl_datasource_db_model $datasourceModel Datasource model object or null if not connected
+   * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @param string $table
    * @param string $class
    * @param string $timestamp
@@ -66,7 +66,7 @@ class qcl_db_ModelTableInfo extends qcl_db_PersistentObject
   
   /**
    * Returns the string name of the datasource model object
-   * @param qcl_datasource_db_model $datasourceModel Datasource model object or null if not connected
+   * @param qcl_datasource_type_db_Model $datasourceModel Datasource model object or null if not connected
    * @return string
    */
   function _getDatasourceName( $datasourceModel )
@@ -75,7 +75,7 @@ class qcl_db_ModelTableInfo extends qcl_db_PersistentObject
     {
       return "__NO_DATASOURCE";
     }
-    elseif ( is_a( $datasourceModel, "qcl_datasource_db_model" ) )
+    elseif ( is_a( $datasourceModel, "qcl_datasource_type_db_Model" ) )
     {
       return $datasourceModel->getDatasourceName();
     }

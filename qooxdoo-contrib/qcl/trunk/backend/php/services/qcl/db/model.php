@@ -122,7 +122,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      * try to get db handler from datasource object
      */
     $dsModel =& $this->getDatasourceModel();
-    if ( is_object($dsModel) and $dsModel->instanceOf( "qcl_datasource_db_model" ) )
+    if ( is_object($dsModel) and $dsModel->instanceOf( "qcl_datasource_type_db_Model" ) )
     {
       //$this->info( get_class($this) . ": Getting db handler from datasource object...");
       $db =& $dsModel->getDatasourceConnection();
@@ -2389,9 +2389,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     
     /*
-     * Insert or delet data. Since we cannot create unique
-     * indexes dynamicall, we check first before
-     * inserting
+     * Insert or delet data. 
      */
     foreach ( $data as $table => $row )
     {
@@ -2411,6 +2409,10 @@ class qcl_db_model extends qcl_core_PropertyModel
          * link the models
          */
         case "link":
+          /* Since we cannot create unique
+           * indexes dynamicall, we check first before
+           * inserting
+           */
           $count = $this->db->getValue("SELECT COUNT(*) FROM $table WHERE $where ");
           if ( $count )
           {

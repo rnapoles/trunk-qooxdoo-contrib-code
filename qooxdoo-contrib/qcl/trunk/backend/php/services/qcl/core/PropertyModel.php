@@ -305,19 +305,19 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function setDatasourceModel( $datasource )
   {
-    if ( is_object ( $datasource ) and is_a( $datasource, "qcl_datasource_db_model") )
+    if ( is_object ( $datasource ) and is_a( $datasource, "qcl_datasource_type_db_Model") )
     {
       $this->datasourceModel =& $datasource;
     }
     else
     {
-      $this->raiseError("Argument must be a qcl_datasource_db_model object");
+      $this->raiseError("Argument must be a qcl_datasource_type_db_Model object");
     }
   }  
   
   /**
    * Retrieves the datasource object
-   * @return qcl_datasource_db_model
+   * @return qcl_datasource_type_db_Model
    */
   function &getDatasourceModel()
   {

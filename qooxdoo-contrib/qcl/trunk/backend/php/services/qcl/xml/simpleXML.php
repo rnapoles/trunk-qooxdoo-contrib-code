@@ -177,7 +177,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
             //$this->info("Timestamp doesn't match:" .$this->filectime );
           }
         }
-        elseif ( ! is_bool( $object) )
+        elseif ( ! is_bool( $object) or ! is_null( $object ) )
         {
           $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
         }
@@ -248,7 +248,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       }
       elseif ( is_string ( $xml ) )
       {
-        $this->info("Loading document from string...\n$xml");
+        $this->info("Loading document from string... " . substr($xml,0,30) . "..." );
         $this->doc =& $this->__impl->load_string($xml);
         //$this->info($this->doc->asXML()); die;
       }

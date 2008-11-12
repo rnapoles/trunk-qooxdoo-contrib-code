@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/datasource/db.model.php";
+require_once "qcl/datasource/type/db/Model.php";
 require_once "qcl/io/filesystem/remote/File.php";
 require_once "qcl/io/filesystem/remote/Folder.php";
 
@@ -11,7 +11,7 @@ require_once "qcl/io/filesystem/remote/Folder.php";
  * Class modeling a datasource containing files stored on a remote computer.
  * Currently does not support subfolders. Supports all protocols supported by php plus amazon s3
  */
-class qcl_io_filesystem_remote_Datasource extends qcl_datasource_db_model
+class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
 {
 
   /**

@@ -3,7 +3,7 @@
  * dependencies
  */
 require_once "qcl/session/controller.php";
-require_once "qcl/datasource/db.model.php";
+require_once "qcl/datasource/type/db/Model.php";
 require_once "qcl/datasource/SchemaManager.php";
 
 /**
@@ -32,7 +32,7 @@ class qcl_datasource_controller extends qcl_session_controller
    * datasource with the given name. Caches the result during a
    * request.
    * @param string $name
-   * @return qcl_datasource_db_model
+   * @return qcl_datasource_type_db_Model
    */
   function &getDatasourceModel($name)
   {
@@ -123,7 +123,7 @@ class qcl_datasource_controller extends qcl_session_controller
   /**
    * Returns the datasource model object for the given schema name
    * @param string $dsSchemaName
-   * @return qcl_datasource_db_model
+   * @return qcl_datasource_type_db_Model
    */
   function &getSchemaModel( $dsSchemaName )
   {
@@ -136,7 +136,7 @@ class qcl_datasource_controller extends qcl_session_controller
   /**
    * Returns the datasource model object used by a named datasource
    * @param string $name name of the datasource, must be in the datasources table
-   * @return qcl_datasource_db_model
+   * @return qcl_datasource_type_db_Model
    */
   function &getDatasourceModelByName($name)
   {
@@ -149,7 +149,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * get abstract datasource model to retrieve more specific one
      */
-    $dsModel  =& new qcl_datasource_db_model( &$this );
+    $dsModel  =& new qcl_datasource_type_db_Model( &$this );
 
     /*
      * retrieve record that matches the datasource name
@@ -231,7 +231,7 @@ class qcl_datasource_controller extends qcl_session_controller
     /*
      * models
      */
-    $ds =& new qcl_datasource_db_model(&$this); 
+    $ds =& new qcl_datasource_type_db_Model(&$this); 
 
     /*
      * get all datasources or only those matching the schema,

@@ -215,7 +215,7 @@ class qcl_jsonrpc_object extends qcl_core_object
    */
   function notImplemented( $class = __CLASS__ )
   {
-    $this->raiseError( "Method (see backtrace) not implemented for class $class" );
+    $this->raiseError( "Method (see backtrace) not implemented for class $class. You may have to subclass this class in order to use it." );
   }
   
   //-------------------------------------------------------------
