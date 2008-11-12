@@ -80,8 +80,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      * setup schema. if necessary, create or update tables and import intial data. 
      */
     $this->setupSchema();
- 
-    
+
     /*
      * setup table links
      */
@@ -1491,6 +1490,8 @@ class qcl_db_model extends qcl_core_PropertyModel
   function setupSchema( $forceUpgrade=false )
   {
 
+     $this->log("Setting up model schema for '" .$this->className() . "' ...", "framework" );
+    
     /*
      * return if no database connection is present
      */
@@ -1541,7 +1542,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     if ( $modelAttrs['upgradeSchema'] == "no" and ! $forceUpgrade )
     {
-      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.");
+      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.","framework");
       return null;
     }    
 
@@ -1550,7 +1551,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     if ( $modelAttrs['table']  == "no" )
     {
-      $this->log("Model name '{$this->name}' has no table backend.");
+      $this->log("Model name '{$this->name}' has no table backend.","framework");
       return null;  
     }
     
@@ -1610,14 +1611,17 @@ class qcl_db_model extends qcl_core_PropertyModel
     
     if ( $tableExists and $isInitialized and ! $forceUpgrade ) 
     {
-      //$this->info("Schema document for model name '{$this->name}', type '{$this->type}', class '{$this->class}' hasn't changed.");
+      $this->log(
+        "Schema document for model name '{$this->name}', ".
+        "type '{$this->type}', class '{$this->class}' hasn't changed.",
+        "framework"
+      );
       return null;
     }  
     
     /*
      * update schema
-     */
-    $this->info(get_class($this->datasource)); 
+     */ 
     $this->info("Creating or updating tables for model name '{$this->name}', type '{$this->type}', class '{$this->class}' ...");
     
     /*
@@ -1630,6 +1634,8 @@ class qcl_db_model extends qcl_core_PropertyModel
       $this->schemaXml->hasChanged = true;
     }
    
+    $this->log("Creating aliases...","framework");
+    
     /*
      * create alias table
      */
@@ -1643,9 +1649,7 @@ class qcl_db_model extends qcl_core_PropertyModel
         $aliasMap[$a['for']] = $modelXml->getData($alias);
       }
     }
-    //$this->info("Aliases:");
-    //$this->info($aliasMap);
-
+  
     /*
      * drop indexes this speeds up things immensely. they will be recreated
      * further dow.
@@ -1660,7 +1664,10 @@ class qcl_db_model extends qcl_core_PropertyModel
         $this->db->dropIndex($table,$name);
       }
     }
-            
+
+    
+    $this->log("Setting up table columns...","framework");
+    
     /*
      * properties as columns
      */
@@ -1703,8 +1710,8 @@ class qcl_db_model extends qcl_core_PropertyModel
        */
       $normativeDef = trim($modelXml->getData($property->sql)); 
       
-      //$this->info("Property '$propName', Column '$colName':" );
-      //$this->info("Old def: '$descriptiveDef', new def:'$normativeDef'");
+      $this->log("Property '$propName', Column '$colName':","framework" );
+      $this->debug("Old def: '$descriptiveDef', new def:'$normativeDef'");
 
       /*
        * Skip column if descriptive and normative column definition are identical.
@@ -1775,7 +1782,9 @@ class qcl_db_model extends qcl_core_PropertyModel
     $constraints =& $this->schemaXml->getNode("/model/definition/constraints"); 
     if ( $constraints )
     {
-      $this->info("Checking constraints...");
+      
+      $this->log("Checking constraints...","framework");
+      
       foreach ( $constraints->children() as $constraint )
       {
         $attrs = $constraint->attributes();
@@ -1826,6 +1835,8 @@ class qcl_db_model extends qcl_core_PropertyModel
     $indexes =& $doc->model->definition->indexes;
     if ( $indexes )
     {
+      $this->log("Creating indexes ...","framework");
+      
       foreach ( $indexes->children() as $index )
       {
         $attrs        = $index->attributes();
@@ -1861,7 +1872,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     $links = $doc->model->links;
     if ( is_object($links) and count($links->children() ) )
     {
-      $this->info("Creating or updating linked tables...");
+      $this->log("Creating or updating linked tables...","framework");
       
       $a = $links->attributes();
       
@@ -2048,11 +2059,12 @@ class qcl_db_model extends qcl_core_PropertyModel
     $path = $this->getDataPath();
     if ( ! $tableExists and file_exists($path) )
     {
+      $this->log("Importing data ...","framework");
       $this->import($path);
     }
     else
     {
-      $this->info("No data to import.");
+      $this->log("No data to import.","framework");
     }
     
     /*
@@ -2443,7 +2455,7 @@ class qcl_db_model extends qcl_core_PropertyModel
         $l =  $this->getLinksByModel( &$that ); 
         if ( ! $l )
         {
-          $this->raiseError("Model '" . $this->className() . "' is not linked to model '" . $model->className() . "'.");
+          $this->raiseError("Model '" . $this->className() . "' is not linked to model '" . $that->className() . "'.");
         }
         $links = $l;
       }

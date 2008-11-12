@@ -61,8 +61,26 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
    * @param mixed   $xml see qcl_xml_simpleXML::load() 
    * @param mixed   $cache see qcl_xml_simpleXML::load() 
    **/
-  function __construct( $xml=null, $cache=true )
-  {
+  function __construct( $xml=null, $cache=true, $debug=false )
+  { 
+    /*
+     * parent constructor
+     */
+    parent::__construct();
+    
+    /*
+     * debugging
+     */
+    $logger =& $this->getLogger();
+    if ( ! $logger->isRegistered("xml") )
+    {
+      $logger->registerFilter("xml","XML-related debugging");
+    }
+    $logger->setFilterEnabled("xml",$debug);
+    
+    /*
+     * load xml document
+     */
     if ( $xml )
     {
       $this->load( $xml, $cache );
@@ -113,7 +131,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       /*
        * use simplexml backport library
        */
-      require_once('qcl/xml/lib/parser_php4.php');
+      require_once 'qcl/xml/lib/parser_php4.php';
     }
     
     /*
@@ -123,7 +141,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     {
       $this->removeLock($cacheId);  
     }
-    
+
     /*
      * if xml is a file name, store location
      */
@@ -155,26 +173,26 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
          * get lock because some other process could be just writing the cache
          */
         $this->getLock($cacheId);
-        
+
         /*
          * use cached object if exists and if the file modification date matches the signature in the cached object
          */
         $doc =& $this->retrieve($cacheId);
-        
+     
         if ( is_object($doc) )
         { 
-          //$this->info( "Cache file exists with timestamp " . $doc->__filectime );
+          $this->log( "Cache file exists with timestamp " . $doc->__filectime, "xml" );
         
           if ( $this->filectime == $doc->__filectime )
           {
-            //$this->info("Timestamp matches. Getting xml document object ($xml) from cache ($cacheId)...");
+            $this->log("Timestamp matches. Getting xml document object ($xml) from cache ($cacheId)...","xml");
             $this->doc =& $doc;
             $this->hasChanged = false;
             return;
           }
           else
           {
-            //$this->info("Timestamp doesn't match:" .$this->filectime );
+            $this->log("Timestamp doesn't match:" .$this->filectime, "xml" );
           }
         }
         elseif ( ! is_bool( $object) or ! is_null( $object ) )
@@ -203,11 +221,12 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
          * get document
          */
         $doc =& $this->retrieve($cache);
+        
         if ( is_object($doc) )
         {
           $this->doc =& $doc;
           $this->hasChanged = false;
-          //$this->info("Getting xml document object from cache (#$cache)...");
+          $this->log("Getting xml document object from cache (#$cache)...","xml");
           return;
         }
       }

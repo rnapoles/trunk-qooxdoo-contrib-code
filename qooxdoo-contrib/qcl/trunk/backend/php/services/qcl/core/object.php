@@ -716,15 +716,36 @@ class qcl_core_object
   // logging
   //-------------------------------------------------------------
 
+  /**
+   * Setup logger object
+   */
   function setupLogger()
   {
-    $this->_logger =& qcl_log_Logger::getInstance();
-    $this->_logger->registerFilter("debug", "Verbose debugging");
-    $this->_logger->registerFilter("info",  "Important messages");
-    $this->_logger->registerFilter("warn",  "Warnings");
-    $this->_logger->registerFilter("error", "Non-fatal errors");
+
+    $logger =& qcl_log_Logger::getInstance();
+    $this->_logger =& $logger;
     
-    $this->_logger->setFilterEnabled("debug",false);
+    if ( ! $logger->isRegistered("debug") )
+    {
+      $logger->registerFilter("debug",     "Verbose debugging");
+      $logger->registerFilter("info",      "Important messages");
+      $logger->registerFilter("warn",      "Warnings");
+      $logger->registerFilter("error",     "Non-fatal errors");
+      $logger->registerFilter("framework", "Framework-related debugging");
+      
+      $logger->setFilterEnabled("debug",false);
+      $logger->setFilterEnabled("framework",false);
+    }
+     $logger->setFilterEnabled("framework",false);
+  }
+  
+  /**
+   * Get logger object
+   * @return qcl_log_Logger
+   */
+  function &getLogger()
+  {
+    return $this->_logger;
   }
   
   /**
@@ -815,8 +836,8 @@ class qcl_core_object
     /*
      * log and return location
      */    
-    $output = " # TRACE # at $location" . ( $message ? ": $message" : "" );
-    $this->info( $output );
+    $output = "\n # TRACE # at $location" . ( $message ? ": $message" : "" );
+    @error_log($output,3,QCL_LOG_FILE);
     return $location;
   }
 
