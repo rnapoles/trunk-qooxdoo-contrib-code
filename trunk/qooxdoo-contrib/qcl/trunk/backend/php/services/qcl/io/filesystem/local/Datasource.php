@@ -3,7 +3,7 @@
 /*
  * dependencies
  */
-require_once "qcl/datasource/db.model.php";
+require_once "qcl/datasource/type/db/Model.php";
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/io/filesystem/local/Folder.php";
 
@@ -11,7 +11,7 @@ require_once "qcl/io/filesystem/local/Folder.php";
  * Class modeling a datasource containing files stored on the local computer.
  * Currently does not support subfolders
  */
-class qcl_io_filesystem_local_Datasource extends qcl_datasource_db_model
+class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
 {
 
   /**

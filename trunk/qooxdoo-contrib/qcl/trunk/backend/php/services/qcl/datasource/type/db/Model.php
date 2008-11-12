@@ -1,14 +1,19 @@
 <?php
-
 /*
  * dependencies
  */
 require_once "qcl/db/model.php";
 
 /**
- * Class modeling a datasource 
+ * Class modeling datasource information that is stored in a 
+ * typical sql database. Note that this is not the datasource itself,
+ * which can be of any type, but only the information ON the datasource
+ * plus some methods to operate with this information. This is the normal
+ * case, all other datasource models inherit from this. If you want to 
+ * use a different storage for your datasource information, you must write
+ * custom child classes for the other datasource models.
  */
-class qcl_datasource_db_model extends qcl_db_model
+class qcl_datasource_type_db_Model extends qcl_db_model
 {
   
   /**
@@ -17,28 +22,28 @@ class qcl_datasource_db_model extends qcl_db_model
   var $schemaName = "qcl_db";
   
   /**
-   * datasource name
+   * Datasource name
    * @var string
    */
   var $datasource;
   
   /**
-   * models that are attached to this datasource
+   * Models that are attached to this datasource
    * @var array
    */
   var $models = array();
   
   /**
-   * the current dsn as an array
+   * The current dsn as an array
    * @var array
    */
   var $dsn = null;
 
   /**
-   * the path to the model schema xml file
+   * The path to the model schema xml file
    * @var string
    */
-  var $schemaXmlPath = "qcl/datasource/db.model.xml";
+  var $schemaXmlPath = "qcl/datasource/type/db/Model.xml";
 
   /**
    * the database connection object of the currently loaded record
@@ -55,13 +60,13 @@ class qcl_datasource_db_model extends qcl_db_model
   }
   
   /**
-   * initializes all models that belong to this datasource
+   * Initializes all models that belong to this datasource
    * @abstract
    * @param string $datasource Name of the datasource
    */
   function initializeModels( $datasource )
   {
-    $this->raiseError("Abstract method initializeModel not yet implemented in class qcl_datasource_db_model. You need to subclass this class in order to use it.");
+    $this->notImplemented();
     
     /* Example:
     $controller =& $this->getController();
@@ -80,7 +85,7 @@ class qcl_datasource_db_model extends qcl_db_model
   /**
    * Gets a stored model by name
    * @param string $name
-   * @return qcl_datasource_db_model   
+   * @return qcl_datasource_type_db_Model   
    */
   function &getModel ( $name )
   {
@@ -90,7 +95,7 @@ class qcl_datasource_db_model extends qcl_db_model
   /** 
    * Stores a model object by name
    * @param string $name
-   * @param qcl_datasource_db_model
+   * @param qcl_datasource_type_db_Model
    * @return void
    */
   function setModel ( $name, $model )
