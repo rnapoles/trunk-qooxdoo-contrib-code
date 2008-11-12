@@ -2304,12 +2304,39 @@ class qcl_db_model extends qcl_core_PropertyModel
   
   /**
    * Link a variable number of models
+   * @param qcl_db_model $model2 Model
+   */
+  function linkWith()
+  {
+    $params =& func_get_args();
+    array_unshift( $params, "link" );
+    return call_user_func_array( array(&$this, "_modifyLink" ), $params);
+  }
+
+  /**
+   * Unlink a variable number of models
+   * @param qcl_db_model $model2 Model
+   */
+  function unlinkFrom()
+  {
+    $params =& func_get_args();
+    array_unshift( $params, "unlink" );
+    return call_user_func_array( array(&$this, "_modifyLink" ), $params);
+  }  
+  
+  /**
+   * Create or delete a link a variable number of models
    * @param qcl_db_model $model2 Model to link with
    * @param qcl_db_model $model3 Optional model to link with
    * @param qcl_db_model $model4 Optional model to link with
    */
-  function linkWith()
-  {
+  function _modifyLink()
+  {    
+    /*
+     * action
+     */
+    $action = $that  =& func_get_arg(0);
+    
     /* 
      * this model 
      */
@@ -2322,7 +2349,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     $data  = array();
     $links = null;
     
-    for( $i=0; $i < func_num_args(); $i++ )
+    for( $i=1; $i < func_num_args(); $i++ )
     {
       
       /*
@@ -2355,14 +2382,14 @@ class qcl_db_model extends qcl_core_PropertyModel
        */
       foreach ( $links as $link )
       {
-        $linkTable   = $this-> $this->getLinkTable( $link );
+        $linkTable   = $this->getTablePrefix() . $this->getLinkTable( $link );
         $data[$linkTable][$thisFKey] = $thisId;
         $data[$linkTable][$thatFKey] = $thatId;
       }
     }
     
     /*
-     * insert data. Since we cannot create unique
+     * Insert or delet data. Since we cannot create unique
      * indexes dynamicall, we check first before
      * inserting
      */
@@ -2376,17 +2403,38 @@ class qcl_db_model extends qcl_core_PropertyModel
       {
         $where[] = "`$key`=$value";
       }
-      $where = "WHERE " .implode(" AND ", $where );
-      $count = $this->db->getValue("SELECT COUNT(*) FROM $table $where ");
-      if ( $count )
-      {
-        $this->warn("Table $table: $where already exists.");
-      }
-      else
-      {
-        $id = $this->db->insert( $table, $row );
-      }
+      $where = implode(" AND ", $where );
       
+      switch ( $action )
+      {
+        /*
+         * link the models
+         */
+        case "link":
+          $count = $this->db->getValue("SELECT COUNT(*) FROM $table WHERE $where ");
+          if ( $count )
+          {
+            $this->warn("Table $table: $where already exists.");
+          }
+          else
+          {
+            $id = $this->db->insert( $table, $row );
+          }
+          break;
+        
+        /*
+         * unlink the models
+         */
+        case "unlink":
+          $this->db->deleteWhere( $table, $where );
+          break;
+        
+        /*
+         * unknown action 
+         */
+        default:
+          $this->raiseError("Unknown link action '$action'");
+      }
     }
     return true;
     
