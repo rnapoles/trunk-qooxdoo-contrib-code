@@ -37,7 +37,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		/*
 		 * connecting
 		 */
-    $this->log("Connecting to $dsn.");
+    $this->log("Connecting to $dsn.","db");
 
 		if ( is_string ( $dsn ) or is_array ( $dsn ) )
     {
@@ -109,7 +109,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		/*
 		 * log query
 		 */
-		$this->log("Executing sql query: $sql");
+		$this->log("Executing sql query: $sql","db");
 		
 		/*
 		 * Execute sql query
@@ -155,7 +155,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $this->raiseError ( "No database connection. Aborting.");
     }
 
-    $this->log($sql,"debug");
+    $this->log($sql,"db");
 		
     $res = $this->db->getRow( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED  );
 		
@@ -199,7 +199,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	 */
 	function getAllRecords( $sql, $withColumnNames=true )
 	{
-		$this->log($sql,"debug");
+		$this->log($sql,"db");
 		$res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
 		if ( PEAR::isError ( $res ) )
 		{
@@ -215,7 +215,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   function nextRecord( $withColumnNames=true )
   {
     $this->info("Not implemented");
-    $this->log($sql,"debug");
+    $this->log ( $sql,"db");
     $res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
     if ( PEAR::isError ( $res ) )
     {

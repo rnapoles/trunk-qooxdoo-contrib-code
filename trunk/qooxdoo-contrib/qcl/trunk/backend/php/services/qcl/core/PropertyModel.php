@@ -151,7 +151,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   
     parent::__construct(&$controller);
   
-    $this->log("Constructing '" . get_class($this) . "' with controller and '" . get_class($datasourceModel) . "'.");
+    $this->log( "Constructing model '" . $this->className() . 
+                "' controlled by '" . $controller->className() . "'" .
+                ( is_object($datasourceModel) ? 
+                  " and by datasource model class '" . get_class($datasourceModel) . "'." : ". " ),
+                "framework");
   
     /*
      * overload the outmost class. only needed in PHP 4.
@@ -268,7 +272,10 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   function initialize( $datasourceModel=null )
   {
   
-    $this->log("Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'." );
+    $this->log(
+     "Initializing '" . get_class( $this ) . "' with '" . get_class( $datasourceModel ) . "'.", 
+     "framework" 
+    );
   
     /*
      * datasource model
@@ -1507,6 +1514,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   function setupProperties()
   {
 
+    $this->log("Setting up properties...", "framework" );
+    
     /*
      * defintion node
      */
@@ -1655,7 +1664,6 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */  
   function &getSchemaXml($path=null)
   {
-    
     /*
      * if schema file has already been parsed, return it
      */
@@ -1691,9 +1699,10 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * load model schema xml file
      */
-    //$this->info("Loading model schema file '$file'...");
-    $modelXml =& new qcl_xml_simpleXML($file);
+    $this->log("Parsing model schema file '$file'...","framework");
     
+    $modelXml =& new qcl_xml_simpleXML($file);
+
     /*
      * The timestamp of the schema file. When a schema extends
      * another schema, the newest filestamp is used.
@@ -1721,7 +1730,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     
     if ( $includeFile  )
     {
-      //$this->info("Including '$includeFile' into '$file'...");
+      $this->log("Including '$includeFile' into '$file'...", "framework" );
       $parentXml   =& $this->parseXmlSchemaFile($includeFile);
       $modelXml->extend($parentXml);
       //$this->info($modelXml->asXml()); 

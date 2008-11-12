@@ -11,7 +11,9 @@ require_once "qcl/core/object.php";
 class qcl_log_Logger extends qcl_core_object
 {
   
-  var $filters;
+  var $filters = array();
+  
+  var $classFilters = array();
   
   function __construct()
   {
@@ -33,7 +35,10 @@ class qcl_log_Logger extends qcl_core_object
    * Overwrite setupLogger method to avoid indefinitive loop
    */
   function setupLogger() {}
-    
+  
+  /**
+   * register a filter
+   */
   function registerFilter( $filter, $description )
   {
     if ( ! $this->filters[$filter] )
@@ -43,6 +48,16 @@ class qcl_log_Logger extends qcl_core_object
         'description' => $description 
       );
     }
+  }
+  
+  function filterByClass($classes)
+  {
+    $this->classFilters = $classes;
+  }
+  
+  function isRegistered($filter)
+  {
+    return isset( $this->filters[$filter]);
   }
  
   function setFilterEnabled( $filter, $value )
@@ -71,6 +86,18 @@ class qcl_log_Logger extends qcl_core_object
     if ( ! $filters )
     {
       $this->raiseError("You must provide at least one filter");
+    }
+    
+    
+    /**
+     * filter by classes
+     */
+    if ( count($this->classFilters) )
+    {
+      if ( ! in_array($this->className(),$this->classFilters) )
+      {
+        return;
+      }
     }
     
     if ( is_array($msg) or is_object($msg) )

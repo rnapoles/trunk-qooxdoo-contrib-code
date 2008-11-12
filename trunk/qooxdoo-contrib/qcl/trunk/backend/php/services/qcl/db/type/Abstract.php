@@ -362,6 +362,21 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 	 */
 	function disconnect() {}
 	
+	/**
+	 * Setup the logger object
+	 */
+  function setupLogger()
+  {
+    parent::setupLogger();
+    
+    $logger =& $this->getLogger();
+    if ( ! $logger->isRegistered("db") )
+    {
+      $logger->registerFilter("db", "Database-related debug messages");      
+      $logger->setFilterEnabled("db",false);
+    }
+  }	
+	
 }
 
 
