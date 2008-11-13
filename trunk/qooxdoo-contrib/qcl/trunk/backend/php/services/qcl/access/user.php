@@ -232,6 +232,11 @@ class qcl_access_user extends qcl_access_common
    */
   function hasPermission( $requestedPermission )
   {
+    if ( ! $this->foundSomething() )
+    {
+      $this->raiseError("You can check permissions only on a initialized user. In most cases, this is the active user.");
+    }    
+    
     /*
      * models
      */
