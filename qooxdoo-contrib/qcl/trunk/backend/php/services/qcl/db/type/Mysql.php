@@ -191,6 +191,20 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		}
 		return $result;
 	}
+	
+	/**
+	 * Checks whether a certain where statement returns any
+	 * rows
+	 * @param string $table Table name
+	 * @param string $where Where statement
+	 * @return bool
+	 */
+	function exists($table, $where) 
+	{
+	   $count = $this->getValue("SELECT COUNT(*) FROM $table WHERE $where ");
+	   return $count > 0;
+	}
+	
 
 	/**
 	 * Returns full resultset
