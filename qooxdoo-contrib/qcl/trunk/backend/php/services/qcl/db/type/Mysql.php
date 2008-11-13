@@ -430,9 +430,9 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
    */
   function getFullTextSql( $table, $indexName, $expr )
   {
-    $fullSql = $this->getCreateTableSql( $table );
-
-    // add a plus sign ( AND operator) to each search word
+     /*
+      *  add a plus sign ( AND operator) to each search word
+      */
     $searchWords = explode(" ",$expr);
     foreach($searchWords as $index => $word)
     {
@@ -442,11 +442,27 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       }
     }
 
-    // remove dupliate plus signs (in case the user has added them)
+    /*
+     * remove dupliate plus signs (in case the user has added them)
+     */
     $expr = str_replace("++","+", implode(" ",$searchWords) );
 
-    preg_match("/FULLTEXT KEY `$indexName` \(([^\)]+)\)/", $fullSql, $matches );
-    return "MATCH (" . $matches[1] . ") AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
+    /*
+     * get index columns
+     */
+    $fullTextCols = $this->getIndexColumns($table, $indexName);
+    if( !count($fullTextCols) )
+    {
+      $this->raiseError("Model has no fulltext index '$indexName'");
+    }
+    
+    /*
+     * construct sql query
+     */
+    $fullTextCols = implode( ",",$fullTextCols );
+    $sql = "MATCH ($fullTextCols) AGAINST ('" . addslashes ( $expr ) . "' IN BOOLEAN MODE)" ;
+
+    return $sql;
   }	
 	
 	
@@ -802,7 +818,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       WHERE `Key_name`='$index'
     ");
     $result = array();
-    foreach($records as $record)
+    foreach( $records as $record )
     {
       $result[] = $record['Column_name'];
     }
