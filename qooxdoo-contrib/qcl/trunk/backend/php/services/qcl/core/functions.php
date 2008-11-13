@@ -197,6 +197,23 @@ function get_file_extension ($file)
   return "";
 }
 
+/**
+ * Returns the type of the passed variable. If variable
+ * is an object and the second parameter is true, the name
+ * of the class is returned.
+ * @param mixed $var
+ * @param bool[optional] $returnClassname
+ * 
+ */
+function typeof( $var, $returnClassname = false )
+{
+  $type = gettype( $var );
+  if ( is_object( $var) and $returnClassname )
+  {
+    $type = get_class( $var );
+  }
+  return $type;
+}
 
 /**
  * Build a UUID or GUID
