@@ -2155,7 +2155,7 @@ class qcl_db_model extends qcl_core_PropertyModel
   {
     $linkNode =& $this->getLinkNode( $name );
     $attrs= $linkNode->attributes();
-    return $attrs['table'];
+    return $this->getTablePrefix() . $attrs['table']; 
   }
 
   /**
@@ -2320,7 +2320,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     /*
      * linked table
      */
-    $linkTable = $this->getTablePrefix() . $this->getLinkTable( $links[0] );
+    $linkTable =  $this->getLinkTable( $links[0] );
     
     /*
      * foreign key of this model
@@ -2466,7 +2466,7 @@ class qcl_db_model extends qcl_core_PropertyModel
        */
       foreach ( $links as $link )
       {
-        $linkTable   = $this->getTablePrefix() . $this->getLinkTable( $link );
+        $linkTable   = $this->getLinkTable( $link );
         $data[$linkTable][$thisFKey] = $thisId;
         $data[$linkTable][$thatFKey] = $thatId;
       }
