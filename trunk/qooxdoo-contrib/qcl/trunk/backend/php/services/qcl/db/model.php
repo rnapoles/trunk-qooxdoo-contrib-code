@@ -293,7 +293,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @return Array Array of db record sets. The array keys are already converted to the property names,
    * so you do not have to deal with column names at all.
    */
-  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null )
+  function findWhere( $where=null, $orderBy=null, $properties=null, $link=null, $conditions=null )
   {
     /*
      * columns to retrieve
@@ -343,7 +343,7 @@ class qcl_db_model extends qcl_core_PropertyModel
             break;
           case 1: 
             $alias="t2"; 
-            $model = $this->getJoinedModelInstance($link); 
+            $model =& $this->getJoinedModelInstance( $link ); 
             break;
         }
       
@@ -438,15 +438,15 @@ class qcl_db_model extends qcl_core_PropertyModel
       /*
        * link table
        */
-      $linkTable   = $this->getLinkTable($link);
+      $linkTable   = $this->getLinkTable( $link );
       $localKey    = $this->getLocalKey();
       $foreignKey  = $this->getForeignKey(); 
       
       /*
        * joined model
        */
-      $joinedTable =  $this->getJoinedTable($link);
-      $joinedModel =& $this->getJoinedModelInstance($link);
+      $joinedTable =  $this->getJoinedTable( $link );
+      $joinedModel =& $this->getJoinedModelInstance( $link );
       $joinedLKey  =  $joinedModel->getLocalKey();
       $joinedFKey  =  $joinedModel->getForeignKey();
       
@@ -516,6 +516,9 @@ class qcl_db_model extends qcl_core_PropertyModel
     return $result;
   }
 
+  
+  
+  
   /**
    * Finds all records that are linked to a record in the remote
    * model with the given id.
@@ -549,6 +552,21 @@ class qcl_db_model extends qcl_core_PropertyModel
     $namedIdCol  =  $linkedModel->getColumnName("namedId");
     return $this->findWhere("t2.`$namedIdCol`='$namedId'", $orderBy, $properties, $link ); 
   }  
+ 
+ /**
+   * Finds all records that are linked to the given model in 
+   * its current state.
+   *
+   * @param qcl_db_model $model
+   * @param string $orderBy
+   * @param mixed $properties
+   */
+  function findByLinkedModel( $model, $orderBy=null, $properties="*" )
+  {
+    $links = $this->getLinksByModel( &$model ); 
+    $id    = $model->getId();
+    return $this->findWhere("t2.id=$id", $orderBy, $properties, $links[0] ); 
+  }     
   
   /**
    * Returns all values of a model property that match a where condition
@@ -2159,30 +2177,57 @@ class qcl_db_model extends qcl_core_PropertyModel
   }
 
   /**
-   * Gets the class of the model that is joined to this model for the specific link name
+   * Gets the class of the model that is joined to this model for the specific link name.
    *
    * @param string $Name of the link
-   * @return string Name of the joined model
+   * @return string Name of the joined model or false if no such name could be found
    */
   function getJoinedModelClass( $name )
   {
     $linkNode =& $this->getLinkNode( $name );
-    $attrs= $linkNode->attributes();
-    return $attrs['model'];
+    $attrs = $linkNode->attributes();
+    $modelName = $attrs['model'];
+
+    if ( ! $modelName and $linkNode->linkedModel )
+    {
+      $children  = $linkNode->children();
+      $attrs     = $children[0]->attributes();
+      $modelName = $attrs['name'];      
+    }
+    if ( $modelName )
+    {
+      return str_replace(".","_",$modelName);  
+    }
+    return false;
   }   
   
   /**
    * Gets an instance of the model that is joined to this model for the specific link name
    *
    * @param string $Name of the link
-   * @return qcl_db_model 
+   * @return qcl_db_model Model instance or false if no model could be found.
    */
   function &getJoinedModelInstance( $name )
   {
     $modelClass =  $this->getJoinedModelClass( $name );
-    $controller =& $this->getController();
-    $modelObj   =& $controller->getNew( $modelClass );
-    return $modelObj;
+    if ( $modelClass )
+    {
+      $controller =& $this->getController();
+      $dsModel    =& $this->getDatasourceModel();
+      
+      /*
+       * load model code
+       */
+      $controller->includeClassfile( $modelClass );
+      
+      /*
+       * create new model instance, passing controller and
+       * datasource model to it
+       */
+      $modelObj =& new $modelClass(&$controller,&$dsModel);
+      return $modelObj;
+    }
+    return false;
   } 
   
   /**
@@ -2394,19 +2439,51 @@ class qcl_db_model extends qcl_core_PropertyModel
   {
     $params =& func_get_args();
     array_unshift( $params, "link" );
-    return call_user_func_array( array(&$this, "_modifyLink" ), $params);
+    return call_user_func_array( array( &$this, "_modifyLink" ), $params);
   }
 
   /**
    * Unlink a variable number of models
    * @param qcl_db_model $model2 Model
+   * @param bool
    */
   function unlinkFrom()
   {
     $params =& func_get_args();
     array_unshift( $params, "unlink" );
-    return call_user_func_array( array(&$this, "_modifyLink" ), $params);
+    return call_user_func_array( array( &$this, "_modifyLink" ), $params);
   }  
+  
+  /**
+   * Checks whether models are linked
+   * @param qcl_db_model $model2 Model
+   * @param bool
+   */
+  function isLinkedWith()
+  {
+    $params =& func_get_args();
+    array_unshift( $params, "data" );
+    $data = call_user_func_array( array( &$this, "_modifyLink" ), $params);
+    $linked = true;
+    foreach( $data as $table => $row )
+    {
+      /*
+       * where query
+       */
+      $where = array();
+      foreach ( $row as $key => $value )
+      {
+        $where[] = "`$key`=$value";
+      }
+      $where = implode(" AND ", $where );
+      
+      /*
+       * check if link exists
+       */
+      if ( ! $this->db->exists($table,$where) ) $linked = false;
+    }
+    return $linked;
+  }    
   
   /**
    * Create or delete a link a variable number of models
@@ -2471,6 +2548,11 @@ class qcl_db_model extends qcl_core_PropertyModel
         $data[$linkTable][$thatFKey] = $thatId;
       }
     }
+    
+    /*
+     * return data only
+     */
+    if ( $action == "data" ) return $data;
     
     /*
      * Insert or delet data. 

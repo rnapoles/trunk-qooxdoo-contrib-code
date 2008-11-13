@@ -457,7 +457,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $id = $this->currentRecord['id'];
     if ( ! $id )
     {
-      $this->raiseError("No record loaded.");
+      $this->raiseError("No record loaded in model " . $this->className() );
     }
     return $id; 
   }

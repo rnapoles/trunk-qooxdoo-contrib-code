@@ -19,6 +19,7 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
    * Adds a menu button item to the Menu
    *
    * @param string $label
+   * @param string $service 
    * @param array $properties Associative array of qooxdoo widget properties 
    * @param array[optional] $events Associative array containing as keys the
    * names of the events which will trigger the javascript code contained
@@ -62,7 +63,35 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
   }
   
   /**
-   * Adds a checkBox button item to the Menu
+   * Adds a button that calls a server service on click
+   * @param string $label
+   * @param string $icon
+   * @param string $service Service name
+   * @param array  $params Parameters to be passed to the function
+   * @param string $properties  
+   */
+  function addServiceButton( $label, $icon, $service, $params, $properties=array(), $class="qx.ui.menu.Button"  )
+  {
+    if ( $icon )
+    {
+      $properties['icon'] = $icon;  
+    }
+    
+    if ( ! is_list($params) )
+    {
+      $this->raiseError("Parameters must be a list!");
+    }
+    $events = array( 
+      'execute' => "var p=" . json_encode($params) . ";". 
+                   "p.unshift('$service'); " .
+                   "var app = this.getApplication();" .
+                   "app.executeService.apply(app,p);"
+    );
+    $this->addButton( $label, $properties, $events, $class );
+  }
+  
+  /**
+   * Adds a checkBox button item to the menu
    *
    * @param string $label
    * @param bool[optional,default false] 
@@ -75,6 +104,25 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
   {
     $properties['checked'] = $checked;
     $this->addButton( $label, $properties, $events, "qx.ui.menu.CheckBox");
+  }
+
+  /**
+   * Adds a checkBox button item to the menu with a service method callback
+   *
+   * @param string $label
+   * @param string $service Service name
+   * @param array  $params Parameters to be passed to the function
+   * @param bool   $checked 
+   * @param array[optional] $properties
+   */
+  function addServiceCheckBox( $label, $service, $params, $checked=false, $properties=array()  )
+  {
+    if ( !is_bool($checked) )
+    {
+      $this->raiseError("'Checked' parameter must be boolean.");
+    }
+    $properties['checked'] = $checked;
+    $this->addServiceButton( $label, null, $service, $params, $properties, "qx.ui.menu.CheckBox");
   }
 
   /**

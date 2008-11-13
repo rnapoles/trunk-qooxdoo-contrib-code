@@ -118,6 +118,29 @@ function xml_entity_decode($string)
   return html_entity_decode($string); 
 }
 
+/**
+ * Checks whether the input array is a list and not 
+ * an associative array
+ * @param array $var
+ * @return bool
+ */
+function is_list( $var )
+{
+  if ( ! is_array( $var ) ) return false;
+  
+  /*
+   * check only first 100 keys for performance
+   */
+  $keys = array_slice( array_keys( $var ), 0, 100);
+  foreach ( $keys as $key )
+  {
+    if ( ! is_numeric( $key ) )
+    {
+      return false;
+    }
+  }
+  return true;
+}
 
 /**
  * Modification of debug_print_backtrace() - modified not to
