@@ -605,10 +605,19 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
            * menus are added to document and connected to widget
            */          
           case "menu":
-            var w = new qx.ui.menu.Menu;
-            w.addToDocument();
+            if ( this.getMenu() )
+            {
+              var w = this.getMenu();
+              w.removeAll();
+            }  
+            else
+            {
+              var w = new qx.ui.menu.Menu;
+              w.addToDocument();
+              this.setMenu(w);  
+            }
             w.setWidgetData({'children':data.menu});
-            this.setMenu(w);
+            
             break;             
             
           /*
