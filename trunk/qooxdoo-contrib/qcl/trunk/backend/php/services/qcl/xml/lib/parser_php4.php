@@ -452,6 +452,11 @@ class SimpleXmlElement
      */
     function SimpleXmlElement($name, $attrs = array(), $parents = 0, $namespace="" )
     {
+        if ( !$name )
+        {
+          trigger_error("Missing element name.");
+        }
+      
         //Make the keys of the attr array lower case, and store the value
         $this->tagAttrs = array_change_key_case($attrs, CASE_LOWER);
         

@@ -249,7 +249,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       /*
        * prohibited tag names
        */
-      $xmlTag =& new SimpleXmlElement;
+      $xmlTag =& new SimpleXmlElement('dummy');
       $this->invalidTags = $xmlTag->invalidTags;
       
       /*
