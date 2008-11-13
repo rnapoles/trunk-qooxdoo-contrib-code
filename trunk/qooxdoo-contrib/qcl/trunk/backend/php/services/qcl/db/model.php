@@ -2440,10 +2440,10 @@ class qcl_db_model extends qcl_core_PropertyModel
        * remote model
        */
       $that  =& func_get_arg($i);
-      if ( ! is_a($that, __CLASS__ ) )
+      if ( ! is_a( $that, __CLASS__ ) )
       {
-        $this->raiseError("Invalid parameter $i. Must be a " . __CLASS__ ); 
-      }
+        $this->raiseError("Invalid parameter $i. Must be a " . __CLASS__  . " but is a '" . typeof( $that, true ) . "'.'" ); 
+      } 
       $thatId   =  $that->getId();
       $thatFKey =  $that->getForeignKey();
       
@@ -2497,8 +2497,7 @@ class qcl_db_model extends qcl_core_PropertyModel
            * indexes dynamicall, we check first before
            * inserting
            */
-          $count = $this->db->getValue("SELECT COUNT(*) FROM $table WHERE $where ");
-          if ( $count )
+          if ( $this->db->exists($table, $where) )
           {
             $this->warn("Table $table: $where already exists.");
           }

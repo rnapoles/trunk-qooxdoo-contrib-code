@@ -2,9 +2,7 @@
 require_once "qcl/jsonrpc/controller.php";
 require_once "qcl/io/filesystem/remote/File.php";
 require_once "qcl/io/filesystem/remote/Folder.php";
-
-define("S3_KEY",    "057HA62DAVJ2S4BNXWG2");
-define('S3_PRIVATE','eT/tEUxOZR2eXdBaVcqx0N14BJ3LQc7XUlEMfeXr');
+require_once "./s3_keys.php";
 
 
 /**

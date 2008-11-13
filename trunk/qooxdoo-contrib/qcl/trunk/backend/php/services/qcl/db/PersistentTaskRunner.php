@@ -6,15 +6,15 @@
 require_once "qcl/db/PersistentObject.php";
 
 /*
- * Class to synchronize between a bibliograph database and
- * a bookends database
+ * Class to run tasks that need to be distributed over a whole series 
+ * of requests.
  */
 class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
 {
   
   /**
    * Counter for the different tasks
-   * the synchronizer has to perform
+   * the class has to perform
    */
   var $taskNumber = 0;
   
@@ -25,7 +25,7 @@ class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
   var $completed;
 
   /**
-   * Maximum execution time for the synchronization before
+   * Maximum execution time for the task before
    * returning control to the client
    */
   var $maxExecTime = 3;

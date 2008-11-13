@@ -201,7 +201,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 	 */
 	function exists($table, $where) 
 	{
-	   $count = $this->getValue("SELECT COUNT(*) FROM $table WHERE $where ");
+	   $count = $this->getValue("SELECT 1 FROM $table WHERE $where LIMIT 1");
 	   return $count > 0;
 	}
 	
