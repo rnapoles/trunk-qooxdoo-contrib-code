@@ -602,6 +602,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             break;
             
           /*
+           * menus are added to document and connected to widget
+           */          
+          case "menu":
+            var w = new qx.ui.menu.Menu;
+            w.addToDocument();
+            w.setWidgetData({'children':data.menu});
+            this.setMenu(w);
+            break;             
+            
+          /*
            * set selected item on combo box or selection manager
            */
           case "selected":
