@@ -569,13 +569,12 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                 else if ( typeof props.events == "object" )
                 {
                   for ( var type in props.events )
-                  {
-                    var evalCode = props.events[type]; // creating local variable for closure
-                    w.addEventListener(type,function(event){eval(evalCode)});
+                  { 
+                    eval('w.addEventListener(type,function(event){' + props.events[type] + '});');
                   }
                   delete props.events;
                 }
-                
+
                 /*
                  * set properties
                  */
@@ -588,11 +587,12 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                 {
                   w.setMaxWidth(qx.bom.element.Dimension.getWidth(this.getElement())-5);
                 }
-                
+
                 /*
-                 * add to document
+                 * all others are added to widget
                  */
                 this.add(w);
+             
               }
               catch (e)
               {
@@ -618,7 +618,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
             }
             w.setWidgetData({'children':data.menu});
             
-            break;             
+            break;    
             
           /*
            * set selected item on combo box or selection manager
