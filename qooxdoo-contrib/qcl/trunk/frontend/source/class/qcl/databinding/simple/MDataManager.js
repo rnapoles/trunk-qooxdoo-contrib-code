@@ -562,15 +562,50 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                 /*
                  *  event listeners
                  */
-                if ( props.events && typeof props.events != "object" )
-                {
-                  console.log ("props.event is a" + typeof props.events );
-                }
-                else if ( typeof props.events == "object" )
+                if ( typeof props.events == "object" )
                 {
                   for ( var type in props.events )
                   { 
-                    eval('w.addEventListener(type,function(event){' + props.events[type] + '});');
+                    eval('var f= function(event){'+props.events[type]+'};');
+                    
+                    /*
+                     * attach to widget parent
+                     */
+                    if ( type.substr(0,7) == "parent." )
+                    {
+                      try
+                      {
+                        var t = type.substr(7);
+                        if ( ! this.__eventsAttached )
+                        {
+                          this.__eventsAttached = [];
+                        }
+                        if ( ! this.__eventsAttached[t] )
+                        {
+                          this.addEventListener(t,f,this);
+                          this.__eventsAttached[t] =true;  
+                        }                
+                      }
+                      catch (e)
+                      {
+                        console.warn(e);
+                      }
+                    }
+                    
+                    /*
+                     * attach to widget
+                     */
+                    else
+                    {
+                      try
+                      {
+                        w.addEventListener(type,f,w);  
+                      }  
+                      catch (e)
+                      {
+                        console.warn(e);
+                      }
+                    }
                   }
                   delete props.events;
                 }
@@ -581,9 +616,9 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
                 w.set(props);
                 
                 /*
-                 * listItems have to be fitted into container
+                 * listItems and menu items have to be fitted into container
                  */
-                if ( w instanceof qx.ui.form.ListItem )
+                if ( w instanceof qx.ui.form.ListItem  ) 
                 {
                   w.setMaxWidth(qx.bom.element.Dimension.getWidth(this.getElement())-5);
                 }
