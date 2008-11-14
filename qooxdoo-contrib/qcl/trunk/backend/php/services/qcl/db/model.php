@@ -628,7 +628,20 @@ class qcl_db_model extends qcl_core_PropertyModel
  	  }  
  	  $this->raiseError("No id(s) provided.");
  	}
-
+ 	
+ 	/**
+ 	 * Loads a model record identified by id.
+ 	 * Alias of qcl_db_model::findById().
+ 	 * 
+ 	 * @param int $id
+ 	 * @return void
+ 	 */
+ 	function load($id)
+ 	{
+    $this->checkInt($id);
+ 	  $this->findById($id); 	    
+ 	}
+ 
   /**
    * find database records by their named id
    * @param array|string $ids Id or array of ids

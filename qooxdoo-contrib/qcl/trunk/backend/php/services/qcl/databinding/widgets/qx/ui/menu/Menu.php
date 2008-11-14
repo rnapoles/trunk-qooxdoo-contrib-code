@@ -47,6 +47,14 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
     {
       $menuItem['events'] = $events; 
     }
+
+    /*
+     * add appear event for correct resizing
+     *
+    if ( ! $menuItem['events']['appear'] )
+    {
+      $menuItem['events']['appear'] = "" 
+    }*/
     
     /*
      * properties
@@ -58,7 +66,10 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
         $menuItem[$key] = $value;
       }
     }
-     
+    
+
+    
+    
     $this->menuItems[] = $menuItem; 
   }
   
@@ -70,7 +81,7 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
    * @param array  $params Parameters to be passed to the function
    * @param string $properties  
    */
-  function addServiceButton( $label, $icon, $service, $params, $properties=array(), $class="qx.ui.menu.Button"  )
+  function addServiceButton( $label, $icon, $service, $params, $properties=array() )
   {
     if ( $icon )
     {
@@ -82,13 +93,48 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
       $this->raiseError("Parameters must be a list!");
     }
     $events = array( 
-      'execute' => "var p=" . json_encode($params) . ";". 
+      "execute"   => "var p=" . json_encode($params) . ";". 
                    "p.unshift('$service'); " .
-                   "var app = this.getApplication();" .
-                   "app.executeService.apply(app,p);"
+                   "this.setDataBinding(true);".
+                   "this.setServiceName('foo');" .
+                   "this.updateClient.apply(this,p);"
     );
-    $this->addButton( $label, $properties, $events, $class );
+    $this->addButton( $label, $properties, $events, "qx.ui.menu.Button" );
   }
+
+  /**
+   * Adds a button with a submenu that calls a server service on click. The 
+   * menu is loaded on demand after a 300ms timeout.
+   * @param string $label
+   * @param string $icon
+   * @param string $service Service name
+   * @param array  $params Parameters to be passed to the function
+   * @param string $properties  
+   */
+  function addServiceMenuButton( $label, $icon, $service, $params, $properties=array() )
+  {
+    if ( $icon )
+    {
+      $properties['icon'] = $icon;  
+    }
+    
+    if ( ! is_list($params) )
+    {
+      $this->raiseError("Parameters must be a list!");
+    }
+    $events = array( 
+      "mouseover"     =>  "var _this=this;".
+                          "this._updateTimeout = window.setTimeout(function(){" .
+                            "var p=" . json_encode($params) . ";". 
+                            "p.unshift('$service'); " .
+                            "_this.setDataBinding(true);".
+                            "_this.setServiceName('foo');" .
+                            "_this.updateClient.apply(_this,p);" .
+                            "},300);",
+      "mouseout"        =>  "window.clearTimeout(this._updateTimeout);"
+    );
+    $this->addButton( $label, $properties, $events, "qx.ui.menu.Button" );
+  }  
   
   /**
    * Adds a checkBox button item to the menu
@@ -122,7 +168,7 @@ class qcl_databinding_widgets_qx_ui_menu_Menu extends qcl_databinding_widgets_Wi
       $this->raiseError("'Checked' parameter must be boolean.");
     }
     $properties['checked'] = $checked;
-    $this->addServiceButton( $label, null, $service, $params, $properties, "qx.ui.menu.CheckBox");
+    $this->addServiceButton( $label, null, $service, $params, $properties, "execute", "qx.ui.menu.CheckBox");
   }
 
   /**

@@ -974,5 +974,36 @@ class qcl_core_object
     }
     return false; 
   }
+  
+  function checkType( $type, $var )
+  {
+    $ntype = gettype($var);
+    if ( $ntype != $type )
+    {
+      $this->raiseError("'$var' is of type '$ntype' and not of required type '$type'.");
+    }
+    else return $var;
+  }
+  
+  function checkString( $var )
+  {
+    return $this->checkType("string",$var);
+  }
+  
+  function checkBool( $var )
+  {
+    return $this->checkType("bool",$var);
+  }
+  
+  function checkInt( $var )
+  {
+    if ( is_numeric($var) ) $var = (int) $var;
+    return $this->checkType("integer",$var);
+  }
+  
+  function checkArray( $var )
+  {
+    return $this->checkType("array",$var);
+  }  
 }
 ?>
