@@ -37,6 +37,26 @@ class qcl_application_controller extends qcl_datasource_controller
   }
   
   /**
+   * Returns the parameter in the request that indicates if the user
+   * has confirmed a message.
+   * @param bool[optional,default true] $boolVal Boolean value to compare the value with
+   * @return bool
+   */
+  function isConfirmed( $boolVal=true )
+  {
+    $params  = $this->getParams();
+    $confirm = end($params);
+    if ( is_bool( $confirm ) )
+    {
+      return $confirm === $boolVal;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  
+  /**
    * Returns a html snippet that displays a progress bar
    * with the given progress (in percent)
    * @param int $percent
