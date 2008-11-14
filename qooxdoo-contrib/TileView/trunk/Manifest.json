@@ -1,0 +1,35 @@
+{
+  "info" : 
+  {
+    "name" : "TileView",
+
+    "summary" : "TileView",
+    "description" : "Provides an enhanced list and list-item that look similar to the 'tiles' used by file explorers",
+
+    "keywords" : ["ui", "tile", "tileview", "list"],
+    "homepage" : "http://contrib.qooxdoo.org/TileView",
+
+    "license" : "LGPL/EPL",
+    "authors" :
+    [
+      {
+        "name" : "Matthew Gregory",
+        "email" : "matthew+qooxdoo@nogsnet.com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["0.8"]
+  },
+
+  "provides" :
+  {
+    "namespace"   : "tileview",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "library"
+  }
+}
+
