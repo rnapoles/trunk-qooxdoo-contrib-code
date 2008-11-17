@@ -764,13 +764,15 @@ class qcl_core_object
   } 
   
 	/**
-	 * Log a debug message 
+	 * Log a debug message. This method should be used only for 
+	 * temporary debugging. Such method calls should be able to 
+	 * be expunged completely by a global search/replace.
    * @return void
    * @param mixed $msg 	
    */
 	function debug($msg)
 	{
-    $this->log ( $msg, "debug" );
+    $this->log ( ">>> DEBUG <<< " . $msg, "info" );
   }	
 	
   /**
@@ -794,6 +796,16 @@ class qcl_core_object
     $this->log ( "*** WARNING *** " . $msg, "warn" );
   }  
 
+  /**
+   * Logs a message with of level "error"
+   * @return void
+   * @param $msg string
+   */
+  function error ( $msg )  
+  {
+    $this->log ( "### ERROR ### " . $msg, "error" );
+  }    
+  
   //-------------------------------------------------------------
   // debugging
   //-------------------------------------------------------------

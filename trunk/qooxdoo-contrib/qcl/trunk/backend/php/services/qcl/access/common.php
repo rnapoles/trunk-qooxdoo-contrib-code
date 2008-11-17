@@ -48,12 +48,12 @@ class qcl_access_common extends qcl_db_model
 	/**
 	 * creates a new record and optionally links it to a role. Raises an error
 	 * if the namedId of the record already exists
+	 * @todo rewrite
 	 * @override
 	 * @param string	$namedId
-	 * @param int		$parentId 	id of role (unused if class is qcl_access_role)
 	 * @return int the id of the inserted row 
 	 */
-	function create( $namedId, $parentId=null )
+	function create( $namedId )
   {
  		/*
  		 * check
@@ -74,26 +74,11 @@ class qcl_access_common extends qcl_db_model
 		$data = array();
 		$data[$this->col_namedId] = $namedId;
 		$itemId = $this->insert($data);
-		
-		/*
-		 * link to role 
-		 */
-    if ( $parentId )
-    {
-  		if ( is_a( $this, "qcl_access_user") )
-  		{
-  			$this->addToRole ( $itemId, $parentId );
-  		}
-  		elseif ( is_a( $this, "qcl_access_permission") )
-  		{
-  			$this->addToRole ( $itemId, $parentId );	
-  		}
-    }	
-    
+	
     /*
      * load item data
      */
-    $this->findById($itemId);
+    $this->load($itemId);
     
     /*
      * return item id

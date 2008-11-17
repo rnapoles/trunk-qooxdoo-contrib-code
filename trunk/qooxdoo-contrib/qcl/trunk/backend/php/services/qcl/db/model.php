@@ -653,7 +653,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    */
   function findByNamedId( $ids, $orderBy=null, $properties=null, $link=null )
   {
-    if ( ! count( (array) $ids ) )
+    if ( !  $ids  )
     {
       $this->raiseError("Invalid parameter.");
     }
@@ -767,7 +767,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     /*
      * convert property names to local aliases
      */
-    //$data = $this->unschematize($data);   
+    $data = $this->unschematize($data);   
     
     
     /*
@@ -1680,21 +1680,6 @@ class qcl_db_model extends qcl_core_PropertyModel
         $aliasMap[$a['for']] = $modelXml->getData($alias);
       }
     }
-  
-    /*
-     * drop indexes this speeds up things immensely. they will be recreated
-     * further dow.
-     */
-    $indexes =& $doc->model->definition->indexes;
-    if ( $indexes )
-    {
-      foreach ( $indexes->children() as $index )
-      {
-        $attrs   = $index->attributes();
-        $name    = $attrs['name'];
-        $this->db->dropIndex($table,$name);
-      }
-    }
 
     
     $this->log("Setting up table columns...","framework");
@@ -1742,7 +1727,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       $normativeDef = trim($modelXml->getData($property->sql)); 
       
       $this->log("Property '$propName', Column '$colName':","framework" );
-      $this->debug("Old def: '$descriptiveDef', new def:'$normativeDef'");
+      $this->log("Old def: '$descriptiveDef', new def:'$normativeDef'");
 
       /*
        * Skip column if descriptive and normative column definition are identical.
@@ -1752,8 +1737,29 @@ class qcl_db_model extends qcl_core_PropertyModel
        */
       $sql1 = trim(preg_replace("/on update .+$|default null/", "", strtolower( $normativeDef ) ) );
       $sql2 = trim(preg_replace("/default null/",               "", strtolower( $descriptiveDef ) ) ); 
-      //$this->info("'$sql1' == '$sql2'? ");
+      
+      //$this->log("'$sql1' == '$sql2'? ");
+      
+      /*
+       * continue with the next property if nothing has changed
+       */
       if ( $sql1 == $sql2 ) continue; 
+      
+      /*
+       * Dropping indexes before changing the schema speeds up things immensely. 
+       * They will be recreated further dow. This must only be done at
+       * the first change of schema and not at all if nothing changes.
+       */
+      if ( ! $indexes )
+      {
+        $indexes =& $doc->model->definition->indexes;
+        foreach ( $indexes->children() as $index )
+        {
+          $attrs   = $index->attributes();
+          $name    = $attrs['name'];
+          $this->db->dropIndex($table,$name);
+        }
+      }      
       
       /*
        * position

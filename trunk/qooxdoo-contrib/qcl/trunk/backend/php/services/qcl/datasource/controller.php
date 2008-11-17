@@ -34,7 +34,7 @@ class qcl_datasource_controller extends qcl_session_controller
    * @param string $name
    * @return qcl_datasource_type_db_Model
    */
-  function &getDatasourceModel($name)
+  function &getDatasourceModel( $name )
   {
     if ( ! $name or !is_string($name) )
     {
