@@ -11,9 +11,6 @@ require_once "qcl/core/mixin.php";
 class qcl_access_services extends qcl_core_mixin
 {    
 
-  
-
-  
   /**
    * gets a model of the given type
    * @param string $type (role|user|permission)

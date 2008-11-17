@@ -1130,7 +1130,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * Copies all properties that exists in both models except the 'id' property.
    * @param qcl_db_model $model
-   * 
+   * @return void
    */
   function copySharedProperties ( $model )
   {
@@ -1301,7 +1301,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * get default data record
      */
-    $this->setRecord($this->emptyRecord); 
+    $this->setRecord( $this->emptyRecord ); 
     
     /*
      * set named id if given
@@ -1342,7 +1342,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $this->raiseError("Not implemented for class " . $this->className() );
   }
 
- /**
+  /**
    * Converts property names to the local aliases
    * @param array $data Associative array with the property names as keys
    * @return array

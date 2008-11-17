@@ -103,7 +103,7 @@ class qcl_access_controller extends qcl_db_controller
     
     /*
      * @todo
-     * hack!!!! The controller object's reference is not correctly
+     * PHP4 hack!!!! The controller object's reference is not correctly
      * passed on to the model objects - somewhere there is a copy 
      * passed for whatever reason.
      */

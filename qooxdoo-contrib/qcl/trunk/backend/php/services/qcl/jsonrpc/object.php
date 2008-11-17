@@ -112,12 +112,9 @@ class qcl_jsonrpc_object extends qcl_core_object
     /*
      * write to server log
      */
-    $this->log( 
-      "### Error in " . get_class($this) . " ###\n" . 
-      $message . "\n" . 
+    $this->error( $message . "\n" . 
       "Backtrace:\n" . 
-      $this->backtrace(), 
-      QCL_LOG_ERROR
+      $this->backtrace()
     );
     
     /*
@@ -355,7 +352,7 @@ class qcl_jsonrpc_object extends qcl_core_object
    */
   function dispatchEvent ( $event, $data=true )
   {
-    $this->debug("Event $event");
+    $this->log("Event $event");
     
     /*
      * search message database 

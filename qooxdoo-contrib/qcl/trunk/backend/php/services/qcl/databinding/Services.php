@@ -34,7 +34,7 @@ class qcl_databinding_Services extends qcl_core_mixin
     /*
      * list data object
      */
-    require_once "qcl/databinding/widgets/ui/form/List.php";
+    require_once "qcl/databinding/widgets/qx/ui/form/List.php";
     $listData = new qcl_databinding_widgets_qx_ui_form_List(&$this);
     
     /*
