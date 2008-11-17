@@ -1,4 +1,4 @@
-qx.Class.define("${ns}.${class}"), 
+qx.Class.define("${ns}.${class}", 
 {
   extend : qx.core.Object,
 
