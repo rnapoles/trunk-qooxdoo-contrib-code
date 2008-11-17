@@ -20,7 +20,14 @@ public class Life {
     }
 
     public static Life load(IO io) throws IOException, LoaderException {
-        return load(file(io));
+        Node file;
+        
+        file = file(io);
+        if (file.exists()) {
+            return load(file);
+        } else {
+            return new Life();
+        }
     }
 
     public static Life load(Node file) throws IOException, LoaderException {
