@@ -1052,7 +1052,7 @@ qx.Class.define("rpcexample.Application",
       var dm = new rpcexample.RemoteDataModel();
 
       // Set the column headings
-      dm.setColumns([ "Year", "Leap Year" ]);
+      dm.setColumns([ "Year", "Leap Year" ], [ "year", "leap" ]);
 
       // Instantiate a table
       var table = new qx.ui.table.Table(dm);
