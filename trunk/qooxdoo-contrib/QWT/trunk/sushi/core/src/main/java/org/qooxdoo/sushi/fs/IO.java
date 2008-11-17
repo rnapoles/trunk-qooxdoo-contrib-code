@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -275,10 +278,9 @@ public class IO {
             return fs.root(url).node(HttpNode.getPath(url));
         } else if ("file".equals(protocol)) {
             try {
-                return node(URLDecoder.decode(url.getFile(), 
-                        Settings.UTF_8).replace('/', File.separatorChar)); // ' ' might be encoded by %20 on windows
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("expected on every platform", e);
+                return file(new File(new URI(url.toString())));
+            } catch (URISyntaxException e1) {
+                throw new RuntimeException(e1);
             }
         } else if (url.getProtocol().equals("jar")) {
             filename = url.getFile();
@@ -286,9 +288,9 @@ public class IO {
                 throw new IllegalArgumentException(filename);
             }
             filename = filename.substring(5);
-            idx = filename.indexOf('!');
+            idx = filename.indexOf("!/");
             if (idx == -1) {
-                throw new RuntimeException("! not found: " + filename);
+                throw new RuntimeException("!/ not found: " + filename);
             }
             try {
                 zip = file(filename.substring(0, idx)).openZip();
@@ -403,6 +405,7 @@ public class IO {
         FileNode file;
         String protocol;
         int idx;
+        JarURLConnection c;
         
         if (!resourcename.startsWith("/")) {
             throw new IllegalArgumentException("absolute resourcename expected: " + resourcename);
@@ -416,13 +419,14 @@ public class IO {
             }
             file = file(filename.substring(0, filename.length() - resourcename.length()));
         } else if ("jar".equals(protocol)) {
+            // obtaining the jar file follows the code in java.net.JarURLConnection 
             filename = url.getFile();
             if (!filename.startsWith("file:")) {
                 throw new IllegalArgumentException(filename);
             }
-            idx = filename.indexOf('!');
+            idx = filename.indexOf("!/");
             if (idx == -1) {
-                throw new RuntimeException("! not found: " + filename);
+                throw new RuntimeException("!/ not found: " + filename);
             }
             try {
                 file = (FileNode) node(new URL(filename.substring(0, idx)));
