@@ -10,11 +10,7 @@ import org.qooxdoo.sushi.metadata.annotation.Value;
 @Type
 public class Jar {
     @Value
-    private String groupId;
-    @Value
-    private String artifactId;
-    @Value
-    private String version;
+    private Id id;
 
     @Value
     private String sha;
@@ -23,37 +19,21 @@ public class Jar {
     private List<String> directories;
     
     public Jar() {
-        this("unkown.group", "unkown-artifact", "unkown-version", "");
+        this(new Id(), "");
     }
     
-    public Jar(String groupId, String artifactId, String version, String sha) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
+    public Jar(Id id, String sha) {
+        this.id = id;
         this.sha = sha;
         this.directories = new ArrayList<String>();
     }
     
-    public String getGroupId() {
-        return groupId;
+    public Id getId() {
+        return id;
     }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
-    
-    public String getArtifactId() {
-        return artifactId;
-    }
-    public void setArtifactId(String artifactId) {
-        this.artifactId = artifactId;
-    }
-    
-    public String getVersion() {
-        return version;
-    }
-    public void setVersion(String version) {
-        this.version = version;
+    public void setId(Id id) {
+        this.id = id;
     }
     
     public String getSha() {
@@ -65,9 +45,5 @@ public class Jar {
     
     public List<String> directories() {
         return directories;
-    }
-    
-    public String toId() {
-        return groupId + ":" + artifactId + ":" + version;
     }
 }
