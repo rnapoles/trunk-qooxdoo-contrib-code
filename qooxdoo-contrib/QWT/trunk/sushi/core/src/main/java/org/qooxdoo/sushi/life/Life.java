@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.ComplexType;
 import org.qooxdoo.sushi.metadata.Schema;
@@ -14,6 +15,14 @@ import org.qooxdoo.sushi.metadata.xml.LoaderException;
 
 @Type
 public class Life {
+    public static Node file(IO io) {
+        return io.getHome().join(".m2/life.xml");
+    }
+
+    public static Life load(IO io) throws IOException, LoaderException {
+        return load(file(io));
+    }
+
     public static Life load(Node file) throws IOException, LoaderException {
         return (Life) TYPE.loadXml(file).get();
     }
@@ -35,6 +44,19 @@ public class Life {
     public Jar lookup(Id id) {
         for (Jar jar : jars) {
             if (id.equals(jar.getId())) {
+                return jar;
+            }
+        }
+        return null;
+    }
+    
+    public Jar lookup(Node node) throws IOException {
+        return lookup(Jar.hash(node));
+    }
+
+    public Jar lookup(String hash) {
+        for (Jar jar : jars) {
+            if (hash.equals(jar.getHash())) {
                 return jar;
             }
         }
