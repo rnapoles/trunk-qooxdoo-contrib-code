@@ -32,9 +32,9 @@ public class Life {
         return jars;
     }
 
-    public Jar lookup(String groupId, String artifactId, String version) {
+    public Jar lookup(Id id) {
         for (Jar jar : jars) {
-            if (groupId.equals(jar.getGroupId()) && artifactId.equals(jar.getArtifactId()) && version.equals(jar.getVersion())) {
+            if (id.equals(jar.getId())) {
                 return jar;
             }
         }
@@ -44,5 +44,4 @@ public class Life {
     public void save(Node file) throws IOException {
         file.writeString(TYPE.instance(this).toXml());
     }
-    
 }
