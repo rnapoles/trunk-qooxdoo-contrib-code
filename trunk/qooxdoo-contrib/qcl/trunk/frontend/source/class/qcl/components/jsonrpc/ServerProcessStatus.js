@@ -30,8 +30,12 @@ qx.Mixin.define('qcl.components.jsonrpc.ServerProcessStatus',
     /**
      * Starts the server process 
      */
-    start : function()
+    start : function( message )
     {
+      if ( message )
+      {
+        this.displayLabel.setText( message );
+      }
       this.setDataBinding(true);
       var service = this.getProcessService();
       this.setServiceName(service.substr(0,service.lastIndexOf(".")));
