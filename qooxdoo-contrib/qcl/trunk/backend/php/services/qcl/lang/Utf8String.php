@@ -5,17 +5,8 @@
  * Relies heavily on functions from the source code of PunBB
  *
  */
-class String
+class Utf8String
 {
-
-  /**
-   * If size of the string is set, it will indicate the maximun size of
-   * _value.
-   *
-   * @param int
-   * @access private
-   */
-  var $_size = null;
 
   /**
    * String value.
@@ -28,13 +19,22 @@ class String
   
   /**
    * Constructor
+   * @param string $str Ut8-encoded string
    */
-  function String( $str = null, $size = null )
+  function Utf8String( $str = null )
   {
-    $this->_size = $size;
-    $this->set( (string)$str );
+    $this->set( (string) $str );
   }
   
+  
+  /**
+   * imports from a non-utf8 string
+   * @param string $str
+   */
+  function import( $str )
+  {
+    $this->set( utf8_encode($str) );
+  }
   
   /**
    * Returns the character (Unicode code point) at the specified index.
@@ -302,10 +302,11 @@ class String
    /**
     * Returns a string that is the result of a regular
     * expression replace operation
+    * @return Utf8String
     */
-    function replace($search,$replace)
+    function &replace($search,$replace)
     {
-      return preg_replace($search,$replace,$this->_value);
+      return new Utf8String(preg_replace($search,$replace,$this->_value));
     }
     
     /**
@@ -320,7 +321,7 @@ class String
     function toAscii()
     {
       require_once "qcl/lib/punbb_utf8/utils/ascii.php";
-      
+      return utf8_strip_non_ascii( utf8_accents_to_ascii( $this->_value) );
     }
     
 }

@@ -1,7 +1,8 @@
 <?php
 
 /**
- * String manipulation class.
+ * String manipulation class. Assumes that the string is ASCII or some other
+ * native character set. For UTF-8 encoded strings, use the Utf8String class.
  *
  * Adapted from http://www.phpclasses.org/browse/package/2396.html
  * @author Original author: Alexander Ramos Jardim (http://www.labma.ufrj.br/~alex/)
