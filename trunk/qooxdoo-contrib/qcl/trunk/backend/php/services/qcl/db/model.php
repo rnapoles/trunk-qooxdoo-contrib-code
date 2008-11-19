@@ -1753,11 +1753,15 @@ class qcl_db_model extends qcl_core_PropertyModel
       if ( ! $indexes )
       {
         $indexes =& $doc->model->definition->indexes;
-        foreach ( $indexes->children() as $index )
+        
+        if ( $indexes )
         {
-          $attrs   = $index->attributes();
-          $name    = $attrs['name'];
-          $this->db->dropIndex($table,$name);
+          foreach ( $indexes->children() as $index )
+          {
+            $attrs   = $index->attributes();
+            $name    = $attrs['name'];
+            $this->db->dropIndex($table,$name);
+          }
         }
       }      
       
