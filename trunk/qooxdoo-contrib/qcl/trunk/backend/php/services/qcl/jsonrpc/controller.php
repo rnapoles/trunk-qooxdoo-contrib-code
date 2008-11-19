@@ -411,7 +411,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
 	function &response()
 	{
-		return $this->response;
+	  return $this->response;
 	}
 
 	//-------------------------------------------------------------
@@ -722,7 +722,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   }
   
   /**
-   * overridden info method -> forwards info message to client
+   * Overridden info method -> forwards info message to client
    * @param string $msg
    */
   function info($msg)
@@ -734,7 +734,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   
 
   /**
-   * overridden info method -> forwards info message to client
+   * Overridden info method -> forwards info message to client
    * @param string $msg
    */
   function warn($msg)

@@ -39,8 +39,12 @@ class qcl_log_Logger extends qcl_core_object
   /**
    * register a filter
    */
-  function registerFilter( $filter, $description )
+  function registerFilter( $filter, $description=null )
   {
+    if ( ! $filter )
+    {
+      $this->raiseError("No filter given.");
+    }
     if ( ! $this->filters[$filter] )
     {
       $this->filters[$filter] = array(

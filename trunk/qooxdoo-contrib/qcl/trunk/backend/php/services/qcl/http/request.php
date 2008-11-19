@@ -183,17 +183,13 @@ class qcl_http_Request extends qcl_jsonrpc_model
     /*
      * urlencode
      */
-    $value = urlencode($value);
+    $value = urlencode( $value );
     
     /*
-     * replace remaining ampersands
+     * double-encode ampersands
      */
-    $value = str_replace("&","%26", $value );
-    
-    /*
-     * replace remaining percent signs
-     */
-    $value = preg_replace("/(%)([^2][^5])/","%25$2",$value);
+    $value = str_replace("%26","%2526", $value );
+    $value = str_replace("#", "%23", $value);
         
     return $value;
   }

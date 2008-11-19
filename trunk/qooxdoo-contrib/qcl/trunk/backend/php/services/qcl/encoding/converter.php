@@ -4,24 +4,12 @@
  * class to convert from one text encoding to another
  */
 
-require_once("qcl/jsonrpc/model.php");
+require_once "qcl/jsonrpc/model.php";
 
 class qcl_encoding_converter extends qcl_jsonrpc_model 
 {
   var $converter_cmd = "";  
   
-	//-------------------------------------------------------------
-  // internal methods
-  //-------------------------------------------------------------
-    
-  /**
-   * constructor
-   */
-  function __construct($controller)
-  {
-    parent::__construct(&$controller);
-  }    
-
 	//-------------------------------------------------------------
   // API methods
   //-------------------------------------------------------------
@@ -50,6 +38,6 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
       $this->raiseError("No character conversion library found in your PHP installation. Please upgrade.");  
     }
 	}
-
+	
 }
 ?>

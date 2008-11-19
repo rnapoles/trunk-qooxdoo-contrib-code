@@ -3,8 +3,9 @@
  * dependencies
  */
 require_once "qcl/core/functions.php";      // global functions
-require_once "qcl/lang/String.php";    // String object similar to java
-require_once "qcl/lang/ArrayList.php"; // ArrayList object similar to java
+require_once "qcl/lang/String.php";         // String object similar to java
+require_once "qcl/lang/Utf8String.php";     // Class with methods to deal with Utf8 Strings
+require_once "qcl/lang/ArrayList.php";      // ArrayList object similar to java
 require_once "qcl/log/Logger.php";
 
 /**
@@ -885,7 +886,7 @@ class qcl_core_object
       "### Error in " . get_class($this) . " ###\n" . 
       $message . "\n" . 
       "Backtrace:\n" . 
-      $this->getBacktrace()
+      $this->backtrace()
     );
     echo $message;
     exit;
@@ -942,6 +943,7 @@ class qcl_core_object
   /**
    * retrieve stored object
    * @deprecated
+   * @todo remove method
    * @param string  $id   Id of data to be retrieved from filesystem
    */
   function &retrieve ( $id=null )
@@ -953,10 +955,10 @@ class qcl_core_object
     
     $path = QCL_TMP_PATH . $id;
     
-    if ( is_valid_file($path) )
+    if ( is_valid_file( $path ) )
     {
-      $data = file_get_contents($path);
-      $obj = @unserialize($data);
+      $data = @file_get_contents( $path );
+      $obj = @unserialize( $data );
     
       if ( is_object( $obj ) or is_array( $obj ) )
       {
@@ -979,9 +981,9 @@ class qcl_core_object
     }
     if ( $prependPath) $path = QCL_TMP_PATH . $id;
     else $path = $id;
-    if ( is_valid_file($path) )
+    if ( is_valid_file( $path ) )
     {
-      unlink ($path);
+      @unlink ($path);
       return true;
     }
     return false; 

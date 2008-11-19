@@ -123,5 +123,25 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
     return $controller->trn( $singularMessageId, $pluralMessageId, $count, $varargs );
   }  
   
+  /**
+   * Redirects info method to controller's method.
+   * @see qcl_jsonrpc_controller::info()
+   */
+  function info( $msg )
+  {
+    $controller =& $this->getController();
+    $controller->info( $msg );
+  }  
+
+  /**
+   * Redirects warn method to controller's method.
+   * @see qcl_jsonrpc_controller::warn()
+   */
+  function warn( $msg )
+  {
+    $controller =& $this->getController();
+    $controller->warn( $msg );
+  }    
+  
 }	
 ?>
