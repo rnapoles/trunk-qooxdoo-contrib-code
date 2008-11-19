@@ -163,10 +163,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * we can use this as datasource and get the 
      * controller from it
      */
-    if ( is_null($datasourceModel) and is_a($controller,"qcl_datasource_type_db_Model") )
+    if ( is_null( $datasourceModel ) and is_a( $controller, "qcl_datasource_type_db_Model" ) )
     {
       $datasourceModel =& $controller;
-      $controller      =& $controller->getController();
     }
 
     /*
@@ -177,10 +176,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * debug message
      */
+    $c = $this->getController();
     $this->log( "Constructing model '" . $this->className() . 
-                "' controlled by '" . $controller->className() . "'" .
-                ( is_object($datasourceModel) ? 
-                  " and by datasource model class '" . get_class($datasourceModel) . "'." : ". " ),
+                "' controlled by '" . $c->className() . "'" .
+                ( is_object( $datasourceModel ) ? 
+                  " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
                 "framework");    
                 
     /*
