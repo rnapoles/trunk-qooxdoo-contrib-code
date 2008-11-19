@@ -60,7 +60,10 @@ class qcl_datasource_type_db_Model extends qcl_db_model
   }
   
   /**
-   * Initializes all models that belong to this datasource
+   * Initializes all models that belong to this datasource. It is recommended to
+   * initialize only the models that are needed at every request and use getters
+   * which instantiate the objects on demand for other models.
+   * 
    * @abstract
    * @param string $datasource Name of the datasource
    */
@@ -69,11 +72,8 @@ class qcl_datasource_type_db_Model extends qcl_db_model
     $this->notImplemented();
     
     /* Example:
-    $controller =& $this->getController();
-    $this->recordModel     =& new bibliograph_models_record_default( &$controller, &$this );
-    $this->folderModel     =& new bibliograph_models_record_default( &$controller, &$this );
-    $this->attachmentModel =& new bibliograph_models_attachment_default( &$controller, &$this );
-    $this->noteModel       =& new bibliograph_models_note_default( &$controller, &$this );
+    $this->_fooModel =& new my_custom_FooModel( &$this );
+    $this->_barModel =& new my_custom_BarModel( &$this );
      */
   }
   
