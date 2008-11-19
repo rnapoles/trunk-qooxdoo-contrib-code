@@ -143,19 +143,12 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   
   /**
    * Constructor 
-   * @param qcl_jsonrpc_controller  $controller
+   * @param qcl_jsonrpc_controller  $controller You can also pass a qcl_jsonrpc_model object here,
+   * since the controller can be retrieved from them model.
    * @param mixed $datasource Datasource model object or null if no datasource 
    */
   function __construct( $controller, $datasourceModel=null )
   {
-  
-    parent::__construct(&$controller);
-  
-    $this->log( "Constructing model '" . $this->className() . 
-                "' controlled by '" . $controller->className() . "'" .
-                ( is_object($datasourceModel) ? 
-                  " and by datasource model class '" . get_class($datasourceModel) . "'." : ". " ),
-                "framework");
   
     /*
      * overload the outmost class. only needed in PHP 4.
@@ -165,6 +158,31 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       overload( get_class($this) );
     }
     
+    /*
+     * if $controller parameter is a datasource model,
+     * we can use this as datasource and get the 
+     * controller from it
+     */
+    if ( is_null($datasourceModel) and is_a($controller,"qcl_datasource_type_db_Model") )
+    {
+      $datasourceModel =& $controller;
+      $controller      =& $controller->getController();
+    }
+
+    /*
+     * call parent constructor
+     */
+    parent::__construct( &$controller );
+
+    /*
+     * debug message
+     */
+    $this->log( "Constructing model '" . $this->className() . 
+                "' controlled by '" . $controller->className() . "'" .
+                ( is_object($datasourceModel) ? 
+                  " and by datasource model class '" . get_class($datasourceModel) . "'." : ". " ),
+                "framework");    
+                
     /*
      *  initialize the model
      */

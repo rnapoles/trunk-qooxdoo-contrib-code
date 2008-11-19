@@ -321,7 +321,7 @@ class Utf8String
     function toAscii()
     {
       require_once "qcl/lib/punbb_utf8/utils/ascii.php";
-      return utf8_strip_non_ascii( utf8_accents_to_ascii( $this->_value) );
+      return ( utf8_accents_to_ascii( $this->_value) );
     }
     
 }
