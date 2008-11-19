@@ -53,7 +53,8 @@ function is_valid_file($str)
   if ( strlen($str) > 512 ) return false;
   if ( ! file_exists($str) ) return false;
   if ( ! is_readable( $str ) ) return false;
-  if ( ! @is_file($str) ) return false; 
+  if ( ! @is_file( $str ) ) return false;
+  if ( ! @file_exists( $str ) ) return false; 
   return true;
 }
 
