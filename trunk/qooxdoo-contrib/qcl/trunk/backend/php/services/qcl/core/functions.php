@@ -108,16 +108,99 @@ function _privateXMLEntities($num)
 
 
 /**
- * function to decode character data containing xml entities
- * Currently just a wrapper vor htmlentity_decode()
- * @todo implement
+ * Converts a string containing xml entities to a string
+ * in the given encoding (default utf-8).
+ * Taken from http://webworkpro.de/webwork/sonderzeichen-in-unicode/
  * @param string $string
- * @return string 
+ * @param string $encoding
+ * @todo implement other encodings
+ * @return string Utf8-encoded string
  */
-function xml_entity_decode($string)
+function xml_entity_decode($string, $encoding="utf-8" )
 {
-  return html_entity_decode($string); 
+  static $trans_table = null;
+  
+  if( is_null( $trans_table ) )
+  {
+    $translation_table = get_html_translation_table(HTML_ENTITIES);
+    foreach ($translation_table as $key => $value) 
+    {
+      $trans_table["&#".ord($key).";"] = $key;
+    }
+  }
+  return strtr($string, $trans_table);
 }
+
+
+/**
+ * Converts a string containing html entities to a utf-8 string
+ * without touching charactes that are already utf-8. Needed only in php4,
+ * because php5 can do this natively.
+ * @param string $string
+ * @param string $encoding
+ * @todo implement other encodings
+ * @return string Utf8-encoded string
+ */
+function html_entity_decode_utf8( $string )
+{
+  static $trans_table = null;
+  
+  if( is_null( $trans_table ) )
+  {
+    $translation_table = get_html_translation_table( HTML_ENTITIES );
+    foreach ($translation_table as $key => $value) 
+    {
+      $trans_table[$value] = utf8_encode($key);
+    }
+    
+    /*
+     * html entities that are not converted
+     */
+    $trans_table["&dash;"] = "-"; 
+  }
+  return strtr($string, $trans_table);
+}
+
+/**
+ * Converts a utf-8 encoded string into a string.
+ * Taken from http://webworkpro.de/webwork/sonderzeichen-in-unicode/
+ * that can be used in xml
+ * @todo test this
+ * @param string $string
+ * 
+ */
+function xmlentities($string) 
+{
+  static $translation_table = null;
+  if ( is_null( $translation_table ) )
+  {
+    $translation_table = get_html_translation_table(HTML_ENTITIES);
+    foreach ($translation_table as $key => $value) 
+    {
+      $translation_table[$key] = "&#".ord($key).";";
+    }
+  }
+  return strtr($string, $translation_table);
+}
+
+
+/**
+ * Converts a html string into utf8, stripping tags and converting
+ * hmtl entities into unicode, and <p> and <br> into new line 
+ * @param string string
+ * @return string
+ */
+function html2utf8( $str )
+{
+  return strip_tags(
+            html_entity_decode_utf8( 
+              str_replace( array("<br/>","<br />","<br>","<p>"), "\n",
+                $str 
+               )
+             )
+          );  
+}
+
 
 /**
  * Checks whether the input array is a list and not 

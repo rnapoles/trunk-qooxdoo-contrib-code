@@ -2,7 +2,7 @@
 require_once "qcl/jsonrpc/controller.php";
 require_once "qcl/io/filesystem/remote/File.php";
 require_once "qcl/io/filesystem/remote/Folder.php";
-require_once "./s3_keys.php";
+require_once "qcl/io/filesystem/remote/s3_keys.php";
 
 
 /**
