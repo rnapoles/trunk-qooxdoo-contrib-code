@@ -156,8 +156,13 @@ class qcl_http_Request extends qcl_jsonrpc_model
     {
       foreach ( $this->data as $key => $value )
       {        
-        $data .= urlencode($key) . "=" . trim( $this->safe_urlencode($value) ) . "&";
+        $data .= urlencode($key) . "=" . $this->safe_urlencode($value). "&";
       }
+      
+      /*
+       * save for debugging
+       */
+      $this->data = $data;
     }
     else
     {
@@ -166,15 +171,22 @@ class qcl_http_Request extends qcl_jsonrpc_model
     
     /*
      * send request
+     * FIXME Does this work in PHP5 also? It should
      */
     if ($this->method == "POST")
     {
-       $this->response = $this->post_request_php4($this->url, $data, $this->timeout, $headers);
+       $response = $this->post_request_php4($this->url, $data, $this->timeout, $headers);
     }
     else
     {
       $this->raiseError("Request method {$this->method} not yet supported.");
     }
+    
+    /*
+     * save response
+     */
+    $this->response = $response;
+    
     return $this->response;
   }
   
@@ -189,10 +201,24 @@ class qcl_http_Request extends qcl_jsonrpc_model
      * double-encode ampersands
      */
     $value = str_replace("%26","%2526", $value );
+    
+    /*
+     * encode hash sign
+     */
     $value = str_replace("#", "%23", $value);
         
     return $value;
   }
+  
+  function safe_urldecode($value)
+  {
+    /*
+     * decode
+     */
+    $value = urldecode( $value );
+    
+    return $value;
+  }  
 
   /**
    * Get the raw response data including http headers
