@@ -134,31 +134,34 @@ function xml_entity_decode($string, $encoding="utf-8" )
 
 /**
  * Converts a string containing html entities to a utf-8 string
- * without touching charactes that are already utf-8. Needed only in php4,
- * because php5 can do this natively.
+ * without touching charactes that are already utf-8. 
+ * Needed for PHP4
  * @param string $string
- * @param string $encoding
- * @todo implement other encodings
+ * @param string $quote_stye
  * @return string Utf8-encoded string
  */
-function html_entity_decode_utf8( $string )
+function html_entity_decode_utf8( $string, $quote_style = ENT_COMPAT )
 {
-  static $trans_table = null;
-  
-  if( is_null( $trans_table ) )
+  if ( phpversion() < 5 )
   {
-    $translation_table = get_html_translation_table( HTML_ENTITIES );
-    foreach ($translation_table as $key => $value) 
-    {
-      $trans_table[$value] = utf8_encode($key);
-    }
+    static $trans_table = null;
     
-    /*
-     * html entities that are not converted
-     */
-    $trans_table["&dash;"] = "-"; 
+    if( is_null( $trans_table ) )
+    {
+      $translation_table = get_html_translation_table( HTML_ENTITIES );
+      foreach ($translation_table as $key => $value) 
+      {
+        $trans_table[$value] = utf8_encode($key);
+      }
+      
+      /*
+       * html entities that are not converted
+       */
+      $trans_table["&dash;"] = "-"; 
+    }
+    return strtr($string, $trans_table);
   }
-  return strtr($string, $trans_table);
+  return html_entity_decode( $string, $quote_style, "utf-8");
 }
 
 /**
