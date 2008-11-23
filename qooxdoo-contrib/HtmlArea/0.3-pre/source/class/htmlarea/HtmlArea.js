@@ -522,7 +522,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
           for (i = root.firstChild; i; i = i.nextSibling)
           {
-            html.push(htmlarea.HtmlArea.__getHtml(i, true, postprocess));
+            html.push(htmlarea.HtmlArea.__getHtml(i, true, skipHtmlEncoding, postprocess));
           }
           
           // Close
