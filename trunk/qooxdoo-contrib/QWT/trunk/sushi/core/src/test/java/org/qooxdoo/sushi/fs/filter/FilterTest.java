@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.io.OS;
 
 public class FilterTest {
     private Node root;
@@ -127,6 +128,9 @@ public class FilterTest {
 
     @Test(expected=IOException.class)
     public void permissionDenied() throws IOException {
+    	if (OS.CURRENT != OS.LINUX) {
+    		throw new IOException();
+    	}
         assertEquals(0, root.getIO().node("/").find("lost+found/*").size());
     }
 
