@@ -73,12 +73,12 @@ public class TemplateTest {
         assertEquals("", template.status(destdir));
         
         template.getSourceDir().join("folder").mkdir();
-        assertEquals("A folder/\n", template.status(destdir));
+        assertEquals("A folder\n", template.status(destdir));
         template.copy(destdir);
         assertEquals("", template.status(destdir));
         
         template.getSourceDir().join("superdir/subdir").mkdirs();
-        assertEquals("A superdir/\nA superdir/subdir/\n", template.status(destdir));
+        assertEquals("A superdir\nA superdir/subdir\n", template.status(destdir));
         template.copy(destdir);
         assertEquals("", template.status(destdir));
 
