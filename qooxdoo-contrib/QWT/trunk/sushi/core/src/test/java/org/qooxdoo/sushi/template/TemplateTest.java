@@ -1,4 +1,4 @@
-package org.qooxdoo.sushi.util;
+package org.qooxdoo.sushi.template;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -9,6 +9,8 @@ import java.io.IOException;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.template.Template;
+import org.qooxdoo.sushi.template.TemplateException;
 
 public class TemplateTest {
 	private Template template;
