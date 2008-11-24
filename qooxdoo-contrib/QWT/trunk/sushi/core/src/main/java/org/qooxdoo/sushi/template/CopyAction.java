@@ -7,7 +7,7 @@ import org.qooxdoo.sushi.fs.Node;
 public class CopyAction extends Action {
     @Override
     public void directory(Node dest) throws IOException {
-        dest.mkdirsOpt();
+        dest.mkdirs();
     }
 
     @Override
