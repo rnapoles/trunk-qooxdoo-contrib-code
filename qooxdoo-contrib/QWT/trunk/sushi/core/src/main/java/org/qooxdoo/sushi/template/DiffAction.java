@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.util.Diff;
+import org.qooxdoo.sushi.util.Strings;
 
 public class DiffAction extends Action {
     private final Node base;
@@ -20,12 +21,12 @@ public class DiffAction extends Action {
 
     @Override
     public void file(Node dest, String prev, String next, int mode) throws IOException {
+        status.append("### ").append(dest.getRelative(base)).append('\n');
         if (prev == null) {
-            return;
+        	status.append(Strings.indent(next, "+ "));
+        } else {
+        	status.append(Diff.diff(prev, next));
         }
-        
-        status.append("[[[" + dest.getRelative(base) + "]]]\n");
-        status.append(Diff.diff(prev, next));
     }
 
     public String get() {
