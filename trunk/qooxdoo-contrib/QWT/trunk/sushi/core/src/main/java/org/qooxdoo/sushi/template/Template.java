@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.util;
+package org.qooxdoo.sushi.template;
 
 import java.io.IOException;
 import java.util.HashMap;
