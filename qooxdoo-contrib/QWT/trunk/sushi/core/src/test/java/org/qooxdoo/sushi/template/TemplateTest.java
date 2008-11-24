@@ -72,8 +72,8 @@ public class TemplateTest {
         template.copy(destdir);
         assertEquals("", template.status(destdir));
         
-        template.getSourceDir().join("dir").mkdir();
-        assertEquals("A dir/\n", template.status(destdir));
+        template.getSourceDir().join("folder").mkdir();
+        assertEquals("A folder/\n", template.status(destdir));
         template.copy(destdir);
         assertEquals("", template.status(destdir));
         
@@ -82,17 +82,17 @@ public class TemplateTest {
         template.copy(destdir);
         assertEquals("", template.status(destdir));
 
-        template.getSourceDir().join("dir/file").writeLines("home: ${home}", "machine: ${machine}");
-        assertEquals("A dir/file\n", template.status(destdir));
+        template.getSourceDir().join("folder/file").writeLines("home: ${home}", "machine: ${machine}");
+        assertEquals("A folder/file\n", template.status(destdir));
         template.copy(destdir);
         assertEquals("", template.status(destdir));
         
         template.variables().put("machine", "fritz");
-        assertEquals("M file\nM dir/file\n", template.status(destdir));
+        assertEquals("M file\nM folder/file\n", template.status(destdir));
         assertEquals("[[[file]]]\n" +
                 "- machine: walter\n" +
                 "+ machine: fritz\n" +
-                "[[[dir/file]]]\n" + 
+                "[[[folder/file]]]\n" + 
                 "- machine: walter\n" +
                 "+ machine: fritz\n", template.diff(destdir));
         template.copy(destdir);
@@ -110,13 +110,12 @@ public class TemplateTest {
         file = template.getSourceDir().join("file");
         file.writeLines("foo");
         file.setMode(0700);
-        
-        file = template.getSourceDir().join("file2");
-        file.writeLines("bar");
-        file.setMode(0655);
-
         template.copy(destdir);
         assertEquals(0700, destdir.join("file").getMode());
-        assertEquals(0655, destdir.join("file2").getMode());
+
+        file.setMode(0655);
+        assertEquals("m file\n", template.status(destdir));
+        template.copy(destdir);
+        assertEquals(0655, destdir.join("file").getMode());
     }
 }

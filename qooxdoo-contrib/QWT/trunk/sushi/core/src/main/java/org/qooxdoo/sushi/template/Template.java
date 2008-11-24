@@ -26,6 +26,7 @@ import java.util.Map;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
 
+/** TODO adjust directory modes */
 public class Template {
     private final Node sourcedir;
 	private final String pathPrefix;
@@ -86,6 +87,7 @@ public class Template {
         String content;
         String replaced;
         String old;
+        int mode;
         
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
@@ -102,13 +104,16 @@ public class Template {
 			    dest.getParent().mkdirsOpt();
 		        content = src.readString();
 		        replaced = replace(contentPrefix, contentSuffix, content);
+	            mode = src.getMode();
 		        if (dest.exists()) {
 		            old = dest.readString();
 		            if (!old.equals(replaced)) {
-	                    action.file(dest, old, replaced, src.getMode());
+	                    action.file(dest, old, replaced, mode);
+		            } else if (mode != dest.getMode()) {
+	                    action.file(dest, old, null, mode);
 		            }
 		        } else {
-                    action.file(dest, null, replaced, src.getMode());
+                    action.file(dest, null, replaced, mode);
 		        }
 			}
 		}

@@ -22,8 +22,10 @@ public class StatusAction extends Action {
     public void file(Node dest, String prev, String next, int mode) throws IOException {
         if (prev == null) {
             status.append("A " + dest.getRelative(base) + "\n");
-        } else {
+        } else if (next != null) {
             status.append("M " + dest.getRelative(base) + "\n");
+        } else {
+        	status.append("m " + dest.getRelative(base) + "\n");
         }
     }
 
