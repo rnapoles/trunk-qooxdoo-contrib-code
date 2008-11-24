@@ -2003,6 +2003,11 @@ qx.Class.define("htmlarea.HtmlArea",
           this.__currentEvent.preventDefault();
           this.__currentEvent.stopPropagation();
         }
+        
+        // Whenever a hotkey is pressed update the current cursorContext
+        // Since this examination is done within a timeout we can be sure
+        // the execution is performed before we're looking at the cursor context.
+        this.__startExamineCursorContext();
       }
     },
 
