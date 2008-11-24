@@ -1,12 +1,21 @@
 package org.qooxdoo.sushi.util;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
+
+import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 
 public class TemplateTest {
-	private Template template = new Template(new IO());
+	private Template template;
+	
+	public TemplateTest() throws IOException {
+        template = new Template(new IO().getTemp().createTempDirectory());
+	}
 
 	@Test
 	public void replace() throws TemplateException {
@@ -35,4 +44,18 @@ public class TemplateTest {
 			// ok
 		}
 	}
+
+	@Test
+    public void copy() throws IOException {
+        Node destdir;
+        
+        destdir = template.getSourceDir().getIO().getTemp().createTempDirectory();
+        template.variables().put("home", "mhm");
+        template.variables().put("machine", "walter");
+        
+        template.getSourceDir().join("file").writeLines("home: ${home}", "machine: ${machine}");
+        template.getSourceDir().join("dir").mkdir();
+        template.getSourceDir().join("dir/file").writeLines("home: ${home}", "machine: ${machine}");
+        template.copy(destdir);
+    }
 }

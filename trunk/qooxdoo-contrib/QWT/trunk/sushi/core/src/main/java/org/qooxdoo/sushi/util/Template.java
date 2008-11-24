@@ -23,11 +23,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
 
 public class Template {
+    private final Node sourcedir;
 	private final String pathPrefix;
 	private final String pathSuffix;
 	private final String contentPrefix;
@@ -35,12 +35,13 @@ public class Template {
 	private final Map<String, String> variables;
 	private final Filter files;
 	
-	public Template(IO io) {
-		this("__", "__", "${", "}", new HashMap<String, String>(), io.filter().includeAll());
+	public Template(Node srcdir) {
+		this(srcdir, "__", "__", "${", "}", new HashMap<String, String>(), srcdir.getIO().filter().includeAll());
 	}
 	
-	public Template(String pathPrefix, String pathSuffix, String contentPrefix, String contentSuffix, 
+	public Template(Node srcdir, String pathPrefix, String pathSuffix, String contentPrefix, String contentSuffix, 
 			Map<String, String> variables, Filter files) {
+	    this.sourcedir = srcdir;
 		this.pathPrefix = pathPrefix;
 		this.pathSuffix = pathSuffix;
 		this.contentPrefix = contentPrefix;
@@ -49,29 +50,47 @@ public class Template {
 		this.files = files;
 	}
 
+    public Node getSourceDir() {
+        return sourcedir;
+    }
+    
 	public Map<String, String> variables() {
 		return variables;
 	}
 	
-	public void copy(Node srcdir, Node destdir) throws IOException, TemplateException {
+	public void copy(Node destdir) throws IOException {
+	    apply(destdir, new TemplateAction() {
+
+            @Override
+            public void directory(Node dest) throws IOException {
+                dest.mkdirsOpt();
+            }
+
+            @Override
+            public void file(Node src, Node dest) throws IOException {
+                String content;
+                String replaced;
+                
+                content = src.readString();
+                replaced = replace(contentPrefix, contentSuffix, content);
+                dest.getParent().mkdirsOpt();
+                dest.writeString(replaced);
+            }});
+	}
+	
+	public void apply(Node destdir, TemplateAction action) throws IOException, TemplateException {
 		String path;
 		Node dest;
-		String content;
-		String replaced;
 
-		srcdir.checkDirectory();
+		sourcedir.checkDirectory();
 		destdir.checkDirectory();
-
-		for (Node src : srcdir.find(files)) {
-			path = src.getRelative(srcdir);
+		for (Node src : sourcedir.find(files)) {
+			path = src.getRelative(sourcedir);
 			dest = destdir.join(replace(pathPrefix, pathSuffix, path));
 			if (src.isDirectory()) {
-				dest.mkdirsOpt();
+			    action.directory(dest);
 			} else {
-				content = src.readString();
-				replaced = replace(contentPrefix, contentSuffix, content);
-				dest.getParent().mkdirsOpt();
-				dest.writeString(replaced);
+			    action.file(src, dest);
 			}
 		}
 	}
