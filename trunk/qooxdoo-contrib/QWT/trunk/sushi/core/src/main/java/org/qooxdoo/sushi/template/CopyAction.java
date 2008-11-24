@@ -11,7 +11,8 @@ public class CopyAction extends Action {
     }
 
     @Override
-    public void file(Node dest, String prev, String next) throws IOException {
+    public void file(Node dest, String prev, String next, int mode) throws IOException {
         dest.writeString(next);
+        dest.setMode(mode);
     }
 }
