@@ -69,6 +69,9 @@ public class TemplateTest {
 
         template.getSourceDir().join("file").writeLines("home: ${home}", "machine: ${machine}");
         assertEquals("A file\n", template.status(destdir));
+        assertEquals("### file\n" +
+        		"+ home: mhm\n" +
+                "+ machine: walter\n", template.diff(destdir));
         template.copy(destdir);
         assertEquals("", template.status(destdir));
         
@@ -89,10 +92,10 @@ public class TemplateTest {
         
         template.variables().put("machine", "fritz");
         assertEquals("M file\nM folder/file\n", template.status(destdir));
-        assertEquals("[[[file]]]\n" +
+        assertEquals("### file\n" +
                 "- machine: walter\n" +
                 "+ machine: fritz\n" +
-                "[[[folder/file]]]\n" + 
+                "### folder/file\n" + 
                 "- machine: walter\n" +
                 "+ machine: fritz\n", template.diff(destdir));
         template.copy(destdir);
