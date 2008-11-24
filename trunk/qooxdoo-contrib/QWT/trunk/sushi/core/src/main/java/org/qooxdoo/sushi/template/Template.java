@@ -58,39 +58,56 @@ public class Template {
 		return variables;
 	}
 	
+    public String status(Node destdir) throws IOException {
+        StatusAction action;
+        
+        action = new StatusAction(destdir);
+        apply(destdir, action);
+        return action.get();
+    }
+    
+    public String diff(Node destdir) throws IOException {
+        DiffAction action;
+        
+        action = new DiffAction(destdir);
+        apply(destdir, action);
+        return action.get();
+    }
+    
 	public void copy(Node destdir) throws IOException {
-	    apply(destdir, new TemplateAction() {
-
-            @Override
-            public void directory(Node dest) throws IOException {
-                dest.mkdirsOpt();
-            }
-
-            @Override
-            public void file(Node src, Node dest) throws IOException {
-                String content;
-                String replaced;
-                
-                content = src.readString();
-                replaced = replace(contentPrefix, contentSuffix, content);
-                dest.getParent().mkdirsOpt();
-                dest.writeString(replaced);
-            }});
+	    apply(destdir, new CopyAction());
 	}
 	
-	public void apply(Node destdir, TemplateAction action) throws IOException, TemplateException {
+	public void apply(Node destdir, Action action) throws IOException, TemplateException {
 		String path;
 		Node dest;
-
+        String content;
+        String replaced;
+        String old;
+        
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
 		for (Node src : sourcedir.find(files)) {
 			path = src.getRelative(sourcedir);
 			dest = destdir.join(replace(pathPrefix, pathSuffix, path));
 			if (src.isDirectory()) {
-			    action.directory(dest);
+		        if (dest.exists()) {
+		            // nothing to to
+		        } else {
+                    action.directory(dest);
+		        }
 			} else {
-			    action.file(src, dest);
+			    dest.getParent().mkdirsOpt();
+		        content = src.readString();
+		        replaced = replace(contentPrefix, contentSuffix, content);
+		        if (dest.exists()) {
+		            old = dest.readString();
+		            if (!old.equals(replaced)) {
+	                    action.file(dest, old, replaced);
+		            }
+		        } else {
+                    action.file(dest, null, replaced);
+		        }
 			}
 		}
 	}

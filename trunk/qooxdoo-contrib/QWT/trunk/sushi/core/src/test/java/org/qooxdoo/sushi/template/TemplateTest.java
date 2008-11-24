@@ -55,9 +55,39 @@ public class TemplateTest {
         template.variables().put("home", "mhm");
         template.variables().put("machine", "walter");
         
+        assertEquals("", template.status(destdir));
+        assertEquals("", template.diff(destdir));
+
         template.getSourceDir().join("file").writeLines("home: ${home}", "machine: ${machine}");
-        template.getSourceDir().join("dir").mkdir();
-        template.getSourceDir().join("dir/file").writeLines("home: ${home}", "machine: ${machine}");
+        assertEquals("A file\n", template.status(destdir));
         template.copy(destdir);
+        assertEquals("", template.status(destdir));
+        
+        template.getSourceDir().join("dir").mkdir();
+        assertEquals("A dir/\n", template.status(destdir));
+        template.copy(destdir);
+        assertEquals("", template.status(destdir));
+        
+        template.getSourceDir().join("superdir/subdir").mkdirs();
+        assertEquals("A superdir/\nA superdir/subdir/\n", template.status(destdir));
+        template.copy(destdir);
+        assertEquals("", template.status(destdir));
+
+        template.getSourceDir().join("dir/file").writeLines("home: ${home}", "machine: ${machine}");
+        assertEquals("A dir/file\n", template.status(destdir));
+        template.copy(destdir);
+        assertEquals("", template.status(destdir));
+        
+        template.variables().put("machine", "fritz");
+        assertEquals("M file\nM dir/file\n", template.status(destdir));
+        assertEquals("[[[file]]]\n" +
+                "- machine: walter\n" +
+                "+ machine: fritz\n" +
+                "[[[dir/file]]]\n" + 
+                "- machine: walter\n" +
+                "+ machine: fritz\n", template.diff(destdir));
+        template.copy(destdir);
+        assertEquals("", template.status(destdir));
+        assertEquals("", template.diff(destdir));
     }
 }
