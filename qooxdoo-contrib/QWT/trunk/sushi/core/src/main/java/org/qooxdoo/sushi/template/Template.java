@@ -32,22 +32,24 @@ public class Template {
 	private final String pathSuffix;
 	private final String contentPrefix;
 	private final String contentSuffix;
+	private final char contentEscape;
 	private final Map<String, String> variables;
-	private final Filter files;
+	private final Filter filter;
 	
 	public Template(Node srcdir) {
-		this(srcdir, "__", "__", "${", "}", new HashMap<String, String>(), srcdir.getIO().filter().includeAll());
+		this(srcdir, "__", "__", "${", "}", '\\', new HashMap<String, String>(), srcdir.getIO().filter().includeAll());
 	}
 	
-	public Template(Node srcdir, String pathPrefix, String pathSuffix, String contentPrefix, String contentSuffix, 
-			Map<String, String> variables, Filter files) {
+	public Template(Node srcdir, String pathPrefix, String pathSuffix, String contentPrefix, String contentSuffix, char contentEscape, 
+			Map<String, String> variables, Filter filter) {
 	    this.sourcedir = srcdir;
 		this.pathPrefix = pathPrefix;
 		this.pathSuffix = pathSuffix;
 		this.contentPrefix = contentPrefix;
 		this.contentSuffix = contentSuffix;
+		this.contentEscape = contentEscape;
 		this.variables = variables;
-		this.files = files;
+		this.filter = filter;
 	}
 
     public Node getSourceDir() {
@@ -87,7 +89,7 @@ public class Template {
         
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
-		for (Node src : sourcedir.find(files)) {
+		for (Node src : sourcedir.find(filter)) {
 			path = src.getRelative(sourcedir);
 			dest = destdir.join(replace(pathPrefix, pathSuffix, path));
 			if (src.isDirectory()) {
@@ -103,10 +105,10 @@ public class Template {
 		        if (dest.exists()) {
 		            old = dest.readString();
 		            if (!old.equals(replaced)) {
-	                    action.file(dest, old, replaced);
+	                    action.file(dest, old, replaced, src.getMode());
 		            }
 		        } else {
-                    action.file(dest, null, replaced);
+                    action.file(dest, null, replaced, src.getMode());
 		        }
 			}
 		}
@@ -136,13 +138,18 @@ public class Template {
 			if (end == -1) {
 				throw new TemplateException("missing end marker");
 			}
-			var = content.substring(start + prefix.length(), end);
-			replaced = variables.get(var);
-			if (replaced == null) {
-				throw new TemplateException("undefined variable: " + var);
+			if (start > 0 && content.charAt(start - 1) == contentEscape) {
+			    buffer.append(content.substring(last, start - 1));
+			    buffer.append(content.substring(start, end + suffix.length()));
+			} else {
+			    var = content.substring(start + prefix.length(), end);
+			    replaced = variables.get(var);
+			    if (replaced == null) {
+			        throw new TemplateException("undefined variable: " + var);
+			    }
+			    buffer.append(content.substring(last, start));
+			    buffer.append(replaced);
 			}
-			buffer.append(content.substring(last, start));
-			buffer.append(replaced);
 			last = end + suffix.length();
 		}
 	}

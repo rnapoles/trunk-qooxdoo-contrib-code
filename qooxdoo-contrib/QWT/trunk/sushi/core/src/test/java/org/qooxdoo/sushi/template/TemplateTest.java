@@ -29,7 +29,7 @@ public class TemplateTest {
 		assertEquals("", template.replace("a", "b", ""));
 		str = "xy";
 		assertSame(str, template.replace("a", "b", str));
-		assertEquals("one", template.replace("a", "b", "a1b"));
+        assertEquals("one", template.replace("a", "b", "a1b"));
 		assertEquals("onetwo", template.replace("(", ")", "(1)(2)"));
 		assertEquals("aonebtwoc", template.replace("(", ")", "a(1)b(2)c"));
 		assertEquals("onetwo", template.replace("_", "_", "_1__2_"));
@@ -46,6 +46,15 @@ public class TemplateTest {
 			// ok
 		}
 	}
+
+    @Test
+    public void escape() throws TemplateException {
+        template.variables().put("1", "one");
+        template.variables().put("2", "two");
+        
+        assertEquals("a1b", template.replace("a", "b", "\\a1b"));
+        assertEquals("a1bab", template.replace("a", "b", "\\a1b\\ab"));
+    }
 
 	@Test
     public void copy() throws IOException {
@@ -89,5 +98,25 @@ public class TemplateTest {
         template.copy(destdir);
         assertEquals("", template.status(destdir));
         assertEquals("", template.diff(destdir));
+    }
+	
+    @Test
+    public void mode() throws IOException {
+        Node destdir;
+        Node file;
+        
+        destdir = template.getSourceDir().getIO().getTemp().createTempDirectory();
+
+        file = template.getSourceDir().join("file");
+        file.writeLines("foo");
+        file.setMode(0700);
+        
+        file = template.getSourceDir().join("file2");
+        file.writeLines("bar");
+        file.setMode(0655);
+
+        template.copy(destdir);
+        assertEquals(0700, destdir.join("file").getMode());
+        assertEquals(0655, destdir.join("file2").getMode());
     }
 }
