@@ -24,8 +24,10 @@ public class DiffAction extends Action {
         status.append("### ").append(dest.getRelative(base)).append('\n');
         if (prev == null) {
         	status.append(Strings.indent(next, "+ "));
-        } else {
+        } else if (next != null) {
         	status.append(Diff.diff(prev, next));
+        } else {
+            status.append("[chmod " + Integer.toOctalString(mode) + "]\n");
         }
     }
 
