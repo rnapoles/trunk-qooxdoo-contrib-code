@@ -49,7 +49,7 @@ public class QooxdooLibraryInitializer
 
   public String getDescription( IPath containerPath, IJavaScriptProject project )
   {
-    return ContainerDescription;
+    return containerPath.lastSegment();
   }
 
   public String getDescription() {
