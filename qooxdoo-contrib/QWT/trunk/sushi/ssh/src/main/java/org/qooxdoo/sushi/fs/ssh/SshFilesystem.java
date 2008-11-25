@@ -141,6 +141,9 @@ public class SshFilesystem extends Filesystem {
             key = dir.join("id_dsa");
             if (!key.exists()) {
                 key = dir.join("id_rsa");
+                if (!key.exists()) {
+                    key = dir.join("identity");
+                }
             }
         }
         if (!key.isFile()) {
