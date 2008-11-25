@@ -56,7 +56,8 @@ public class ChildMethod {
         return name;
     }
 
-    public Object invoke(Object obj) {
+    /** @throws ArgumentException for every checked exception thrown by the underlying method */
+    public Object invoke(Object obj) throws ArgumentException {
         Throwable cause;
         
         try {
@@ -73,7 +74,7 @@ public class ChildMethod {
             if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
             }
-            throw new RuntimeException("unexpected checked exception", e);
+            throw new ArgumentException(cause.getMessage(), cause);
         }
     }
 }

@@ -201,6 +201,7 @@ public class SshNode extends Node {
         }
     }
 
+    @Override
     public int getMode() throws IOException {
         try {
             return channel.stat(slashPath).getPermissions() & 0777;
@@ -209,6 +210,7 @@ public class SshNode extends Node {
         }
     }
 
+    @Override
     public void setMode(int mode) throws IOException {
         SftpATTRS stat;
         
