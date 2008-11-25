@@ -2,11 +2,13 @@ package org.eclipse.wst.jsdt.qooxdoo.functional.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -88,17 +90,40 @@ public class QxProjectUtil {
   public static IFile createQxFileWithContents( SammyIDE sammy,
                                                 String fileName,
                                                 String fileContents )
-    throws CoreException, JavaScriptModelException
+    throws CoreException, JavaScriptModelException, IOException
   {
     IProject project = sammy.createGenericProject();
     JsNature.addJsNature( project, new NullProgressMonitor() );
     addDefaultLibToLibraryPath( new NullProgressMonitor(), project );
+    addSettings( project );
     IFile result = project.getFile( fileName );
     result.create( new ByteArrayInputStream( fileContents.getBytes() ),
                    true,
                    new NullProgressMonitor() );
     createUserLibrary( JavaScriptCore.create( project ) );
     return result;
+  }
+
+  private static void addSettings( IProject project )
+    throws CoreException, IOException
+  {
+    IFolder folder = project.getFolder( ".settings" );
+    if( !folder.exists() ) {
+      folder.create( true, true, new NullProgressMonitor() );
+    }
+    IFile jsdtPrefs = folder.getFile( "org.eclipse.wst.jsdt.core.prefs" );
+    InputStream source = QxProjectUtil.class.getClassLoader()
+      .getResourceAsStream( QxProjectUtil.class.getPackage()
+        .getName()
+        .replace( '.', java.io.File.separatorChar )
+                            + java.io.File.separator
+                            + "org.eclipse.wst.jsdt.core.prefs" );
+    try {
+      jsdtPrefs.create( source, true, new NullProgressMonitor() );
+    } finally {
+      source.close();
+    }
+
   }
 }
 /*******************************************************************************
