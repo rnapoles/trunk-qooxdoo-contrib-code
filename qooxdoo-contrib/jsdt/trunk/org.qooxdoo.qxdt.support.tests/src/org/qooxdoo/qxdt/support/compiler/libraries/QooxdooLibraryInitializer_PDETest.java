@@ -6,12 +6,32 @@ import java.util.Arrays;
 
 import org.eclipse.wst.jsdt.core.compiler.libraries.LibraryLocation;
 import org.eclipse.wst.jsdt.support.qooxdoo.core.compiler.libraries.QooxdooLibraryInitializer;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class QooxdooLibraryInitializer_PDETest {
 
   @Test
-  public void libraryAvailable() throws Exception {
+  public void bootstrappingAvailable() throws Exception {
+    LibraryLocation ll = new QooxdooLibraryInitializer().getLibraryLocation();
+    char[][] cfileNames = ll.getLibraryFileNames();
+    String[] fileNames = convertToStrings( cfileNames );
+    assertContains( "qx.0.7.2.js", fileNames );
+  }
+
+  @Test
+  public void ignoreHiddenFiles() throws Exception {
+    LibraryLocation ll = new QooxdooLibraryInitializer().getLibraryLocation();
+    char[][] cfileNames = ll.getLibraryFileNames();
+    String[] fileNames = convertToStrings( cfileNames );
+    for( String each : fileNames ) {
+      assertFalse( each, each.startsWith( "." ) );
+    }
+  }
+
+  @Test
+  @Ignore
+  public void qooxdooClassesAvailable() throws Exception {
     LibraryLocation ll = new QooxdooLibraryInitializer().getLibraryLocation();
     char[][] cfileNames = ll.getLibraryFileNames();
     String[] fileNames = convertToStrings( cfileNames );
