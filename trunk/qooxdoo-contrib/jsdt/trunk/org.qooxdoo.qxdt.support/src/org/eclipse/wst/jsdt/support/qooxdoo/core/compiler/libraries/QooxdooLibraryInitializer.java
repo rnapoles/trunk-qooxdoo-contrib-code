@@ -33,7 +33,9 @@ public class QooxdooLibraryInitializer
         Enumeration<String> entryPaths = ( Enumeration<String> )bundle.getEntryPaths( "/libraries/" );
         while( entryPaths.hasMoreElements() ) {
           IPath each = new Path( entryPaths.nextElement() );
-          result.add( each.lastSegment().toCharArray() );
+          if( !each.lastSegment().startsWith( "." ) ) {
+            result.add( each.lastSegment().toCharArray() );
+          }
         }
         return result.toArray( new char[ result.size() ][ 0 ] );
       }
@@ -56,7 +58,6 @@ public class QooxdooLibraryInitializer
 
   /*
    * (non-Javadoc)
-   * 
    * @see org.eclipse.wst.jsdt.core.IJsGlobalScopeContainer#getKind()
    */
   public int getKind() {
