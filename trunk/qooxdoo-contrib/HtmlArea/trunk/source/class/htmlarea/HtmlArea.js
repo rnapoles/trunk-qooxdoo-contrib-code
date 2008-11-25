@@ -621,7 +621,7 @@ qx.Class.define("htmlarea.HtmlArea",
            "mshtml"  : 'html { margin:0px; padding:0px; } ' +
                        'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; width:100%; height:100%; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } ',
-           "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: hidden; }' +
+           "default" : 'html { width:100%; height:100%;margin:0px; padding:0px; overflow-y: auto; overflow-x: auto; }' +
                        'body { font-size: 100.01%; font-family : Verdana, Geneva, Arial, Helvetica, sans-serif; background-color:transparent; overflow:show; background-image:none; margin:0px; padding:5px; }' +
                        'p { margin:0px; padding:0px; } '
         }),
@@ -1123,7 +1123,7 @@ qx.Class.define("htmlarea.HtmlArea",
        * To hide the horizontal scrollbars in gecko browsers set the "overflow-x" explicit to "hidden"
        * In mshtml browsers this does NOT work. The property "overflow-x" overwrites the value of "overflow-y".
        **/
-      var geckoOverflow = qx.core.Client.getInstance().isGecko() ? " html, body {overflow-x: hidden; } " : "";
+      var geckoOverflow = qx.core.Client.getInstance().isGecko() ? " html, body {overflow-x: visible; } " : "";
 
       var wrap = this.__contentWrap[this.getContentType()];
 
