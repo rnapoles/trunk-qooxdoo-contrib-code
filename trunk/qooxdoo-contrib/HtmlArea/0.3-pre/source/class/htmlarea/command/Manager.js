@@ -166,8 +166,8 @@ qx.Class.define("htmlarea.command.Manager",
         cut                   : { useBuiltin : true, identifier : "Cut", method : null },
         paste                 : { useBuiltin : true, identifier : "Paste", method : null },
         
-        insertorderedlist     : { useBuiltin : true, identifier : "InsertOrderedList", method : null },
-        insertunorderedlist   : { useBuiltin : true, identifier : "InsertUnorderedList", method : null },
+        insertorderedlist     : { useBuiltin : false, identifier : "InsertOrderedList", method : "__insertList" },
+        insertunorderedlist   : { useBuiltin : false, identifier : "InsertUnorderedList", method : "__insertList" },
 
         inserthorizontalrule  : { useBuiltin : false, identifier : "InsertHtml", method : "__insertHr" },
         insertimage           : { useBuiltin : false, identifier : "InsertImage", method : "__insertImage" },
@@ -588,6 +588,81 @@ qx.Class.define("htmlarea.command.Manager",
        return commandTarget.execCommand(commandObject.identifier, false, value);
      },
      
+    
+     /**
+      * Inserts a list.
+      * Ensures that the list is inserted without indents. If any indents are
+      * present they are removed before inserting the list. 
+      * This only applies for IE since other browsers are removing the indents
+      * as default. 
+      * 
+      * @type member
+      * @param attributes {Map} map with attributes which should be applied (e.g. "src", "border", "width" and "height")
+      * @param commandObject {Object} command object
+      * @return {Boolean} Success of operation
+      */
+     __insertList : function(value, commandObject)
+     {
+       // See http://bugzilla.qooxdoo.org/show_bug.cgi?id=1608 for details
+       if (qx.core.Variant.isSet("qx.client", "mshtml"))
+       {
+         // Get the focusNode as starting node for looking after blockquotes. 
+         var focusNode = this.__editorInstance.getFocusNode();
+         this.__manualOutdent(focusNode);
+       }
+       
+       /* Body element must have focus before executing command */
+       this.__doc.body.focus();
+
+       var returnValue = this.__doc.execCommand(commandObject.identifier, false, value);
+       
+       if (qx.core.Variant.isSet("qx.client", "webkit"))
+       {
+         // Get the parent of the current focusNode as starting node for 
+         // looking after blockquotes for webkit.
+         var focusNode = this.__editorInstance.getFocusNode();
+         this.__manualOutdent(focusNode.parentNode);
+       }
+       
+       return returnValue;      
+     },
+     
+     
+     
+     /**
+      * This little helper method takes a node as argument and looks along the 
+      * parent hierarchy for any "blockquote" elements and removes them.
+      * 
+      * @type member
+      * @param startNode {Node} starting point of the lookup
+      * @return {void}
+      */
+     __manualOutdent : function(startNode)
+     {
+       var blockquotes = [];
+       var parent = startNode.parentNode;
+       
+       while (parent.nodeName.toLowerCase() == "blockquote")
+       {
+         blockquotes.push(parent);
+         parent = parent.parentNode;
+       }
+       
+       // if indents are found move the focusNode to the current parent
+       // -> the first parent node which is *no* blockquote
+       if (blockquotes.length > 0)
+       {
+         // move focus node out of blockquotes
+         parent.appendChild(startNode);
+         
+         // delete blockquote nodes
+         // only the last in the array is needed since the it will also remove
+         // the child "blockquote" elements
+         parent.removeChild(blockquotes[blockquotes.length-1]);
+       }
+     },
+
+
 
     /**
      * Inserts an image
