@@ -1,0 +1,49 @@
+===== OpenAjaxGadgets =====
+
+A demonstration of qooxdoo applications that can be used as gadgets in mashup
+applications implementing OpenAjax Alliance standards such as the OpenAjax 
+Hub[1] and the OpenAjax Widget Metadata Specification[2].
+
+Contains a publisher gadget that sends messages over the Hub and a receiver
+gadget that displays them.
+
+These gadgets have been tested using the OpenAjax Alliance Reference 
+Implementation[3].
+
+
+===== Installation =====
+
+This section assumes that you've successfully set up and configured the OpenAjax
+Reference Implementation (AKA the Sample Mashup Application).
+
+1. Use qooxdoo's create-application.py to prepare a new skeleton. Use qxpub as
+   the application name.
+  
+2. Copy the contents of qxpub from your OpenAjaxGadgets SVN checkout into your
+   application directory, overwriting any files already present.
+  
+3. Run generate.py build to create the deployment version of qxpub.
+
+4. Copy qxpub_oam.xml into your application's newly created build directory
+
+5. Create a symbolic link to your qxpub/build application directory in the 
+   Sample Mashup App's gadgets directory (e.g. 
+   /var/www/openajax-svn/gadgets/trunk/samples/gadgets) using qxpub as the link
+   name. (You could of course just create a new directory and copy the contents 
+   of the build directory, but you'd have to do it again each time you made any
+   changes to the application.)    
+  
+6. Run your OpenAjax Widget Repository's install script again to make sure the
+   new application is added to the widget database.
+  
+7. Repeat steps 1-6, substituting qxrec for qxpub.  
+
+If all went well, you should be able to add the two new gadgets to a mashup in
+the Sample Mashup Application and send messages from one to the other.
+
+
+
+
+[1]http://www.openajax.org/member/wiki/OpenAjax_Hub
+[2]http://www.openajax.org/member/wiki/OpenAjax_Metadata_Specification_Widget_Metadata
+[3]http://sourceforge.net/projects/openajaxallianc 
