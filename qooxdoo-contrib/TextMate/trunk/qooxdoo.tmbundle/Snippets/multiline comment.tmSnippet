@@ -4,10 +4,8 @@
 <dict>
 	<key>content</key>
 	<string>/**
-  * ${1:default value}
-  */</string>
-	<key>keyEquivalent</key>
-	<string>/</string>
+ * ${1:default value}
+ */</string>
 	<key>name</key>
 	<string>multiline comment</string>
 	<key>tabTrigger</key>
