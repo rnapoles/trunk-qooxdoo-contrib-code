@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget name="Qooxdoo OpenAjax Publisher" id="http://localhost/~dwagner/workspace/qxpub/source/"
+  spec="0.1b"
+  xmlns="http://qooxdoo.org/metadata"
+  jsClass="QxpubWrapper">
+  
+  <description>
+    Demonstration of an OpenAjax-Compatible qooxdoo application.
+    Qxpubwrapper is used to expose the OpenAjax hub supplied by the mashup 
+    application to the actual qooxdoo app (qxpub).
+    qxpub creates a text field and a slider and publishes any changes the user 
+    makes over the hub as a topic and a property, respectively.  
+  </description>    
+
+  <require type="javascript" src="resource/QxpubWrapper.js"/>
+ 
+  <topic name="org.qooxdoo.oaa.testmsg" publish="true"/>
+  
+  <property name="propertytest" datatype="String" default="" readonly="false" publish="true" topic="org.qooxdoo.oaa.propertyTest"/>    
+    
+  <javascript src="script/qxpub.js"/>  
+    
+</widget>

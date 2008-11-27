@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget name="Qooxdoo OpenAjax Receiver" id="http://localhost/~dwagner/workspace/qxrec/source/"
+  spec="0.1b"
+  xmlns="http://qooxdoo.org/metadata"
+  jsClass="QxrecWrapper">
+  
+  <description>
+    Demonstration of an OpenAjax-Compatible qooxdoo application.
+    Qxrecwrapper is used to expose the OpenAjax hub supplied by the mashup 
+    application to the actual qooxdoo app (qxrec).
+    qxrec listens for one topic and one property and displays their values.  
+  </description>    
+    
+  <require type="javascript" src="script/QxrecWrapper.js"/>  
+  
+  <topic name='org.qooxdoo.oaa.testmsg' subscribe='true'/>
+  
+  <property name="propertytest" datatype="String" default="" readonly="false" subscribe="true" topic="org.qooxdoo.oaa.propertyTest"/>
+  
+  <javascript src="resource/qxrec.js"/>
+  
+</widget>
