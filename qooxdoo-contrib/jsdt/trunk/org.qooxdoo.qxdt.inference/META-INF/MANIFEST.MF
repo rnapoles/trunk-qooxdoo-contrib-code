@@ -12,4 +12,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.wst.jsdt.core,
  org.aspectj.runtime;resolution:=optional,
  org.eclipse.wst.jsdt.ui
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
