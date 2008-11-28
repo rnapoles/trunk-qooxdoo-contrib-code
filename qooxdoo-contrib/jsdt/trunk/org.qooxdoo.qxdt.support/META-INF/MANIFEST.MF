@@ -9,4 +9,5 @@ Require-Bundle: org.eclipse.wst.jsdt.ui,
  org.eclipse.wst.jsdt.core
 Bundle-Activator: org.qooxdoo.qxdt.support.QxSupport
 Export-Package: org.qooxdoo.qxdt.support
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
