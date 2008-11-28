@@ -222,7 +222,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * 							      the given step. This object has to define
      * 								  at least the "actionType" key to work properly.
      * 								  This object is passed to the handler methods 
-     * 								  defined in the @see{registerHandler} method.
+     * 								  defined in the @see{htmlarea.command.UndoManager.registerHandler} method.
      * 					   
      * @return {void}
      */
