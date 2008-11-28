@@ -2573,13 +2573,26 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     __examineCursorContext : function()
     {
+
       if (this._processingExamineCursorContext || this.getEditable() == false) {
         return;
       }
 
       this._processingExamineCursorContext = true;
-      var doc = this.getContentDocument();
 
+      var eventMap = this.getContextInformation();
+      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
+
+      this._processingExamineCursorContext = false;
+    },
+
+    /**
+     * TODOC
+     *
+     */
+    getContextInformation : function()
+    {
+      var doc = this.getContentDocument();
 
       /*
         ----------
@@ -2695,12 +2708,9 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyRight        : justifyRight ? 1 : 0,
         justifyFull         : justifyFull ? 1 : 0
       };
-      
-      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
 
-      this._processingExamineCursorContext = false;
+      return eventMap;
     },
-
 
     /**
      * returns the attribute value of a given element
