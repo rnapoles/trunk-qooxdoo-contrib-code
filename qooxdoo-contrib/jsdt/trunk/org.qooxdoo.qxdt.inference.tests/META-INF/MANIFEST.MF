@@ -14,3 +14,4 @@ Require-Bundle: org.junit4,
  de.mkempka.sammy.ide,
  org.eclipse.wst.jsdt.core,
  org.qooxdoo.qxdt.support
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
