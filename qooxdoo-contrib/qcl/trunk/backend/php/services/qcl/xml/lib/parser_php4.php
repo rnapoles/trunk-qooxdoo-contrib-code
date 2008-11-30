@@ -541,7 +541,7 @@ class SimpleXmlElement
      * @param string $name
      * @param mixed  $value
      * @param string $namespace (not yet supported)
-     * @return object referene to newly added child
+     * @return SimpleXmlElement
      */
     function &addChild($name, $value=null , $namespace=null)
     {
@@ -588,7 +588,7 @@ class SimpleXmlElement
      * @param array $attrs
      * @param int $parents
      * @param bool $cleanTagName
-     * @return object reference to newly created child
+     * @return SimpleXmlElement
      */
     function &_AddChild($name, $attrs, $parents, $cleanTagName = true)
     {    

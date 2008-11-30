@@ -19,6 +19,9 @@
         <property name="name" type="string">
           <sql> varchar(255) NOT NULL default ''</sql>
         </property>
+        <property name="active" type="bool">
+          <sql>tinyint(1) default 0</sql>
+        </property>        
       </properties>
  
     </definition>

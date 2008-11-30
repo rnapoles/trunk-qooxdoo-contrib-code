@@ -96,6 +96,8 @@ class qcl_db_model extends qcl_core_PropertyModel
     return true;
 
   } 	
+  
+  
 	
   /**
    * Connects to database. if this model is connected to 
@@ -172,6 +174,9 @@ class qcl_db_model extends qcl_core_PropertyModel
     
     return true;
   }
+  
+
+  
   
   /**
    * Returns the column name from a property name. 
@@ -343,7 +348,7 @@ class qcl_db_model extends qcl_core_PropertyModel
             break;
           case 1: 
             $alias="t2"; 
-            $model =& $this->getJoinedModelInstance( $link ); 
+            $model =& $this->getLinkedModelInstance( $link ); 
             break;
         }
       
@@ -446,7 +451,7 @@ class qcl_db_model extends qcl_core_PropertyModel
        * joined model
        */
       $joinedTable =  $this->getJoinedTable( $link );
-      $joinedModel =& $this->getJoinedModelInstance( $link );
+      $joinedModel =& $this->getLinkedModelInstance( $link );
       $joinedLKey  =  $joinedModel->getLocalKey();
       $joinedFKey  =  $joinedModel->getForeignKey();
       
@@ -548,7 +553,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    */
   function findByLinkedNamedId( $namedId, $link, $orderBy=null, $properties="*" )
   {
-    $linkedModel =& $this->getJoinedModelInstance($link);
+    $linkedModel =& $this->getLinkedModelInstance($link);
     $namedIdCol  =  $linkedModel->getColumnName("namedId");
     return $this->findWhere("t2.`$namedIdCol`='$namedId'", $orderBy, $properties, $link ); 
   }  
@@ -2163,13 +2168,22 @@ class qcl_db_model extends qcl_core_PropertyModel
     }    
   }  
 
+  /**
+   * Returns an array of SimpleXmlElements that contain 
+   * link information
+   * @return array
+   */
+  function &getLinkNodes()
+  {
+    return $this->linkNodes;
+  }
   
   /**
    * Return the schema xml node containing information on the given link name
    * @param string $name
    * @return SimpleXmlElement 
    */
-  function &getLinkNode ( $name )
+  function &getLinkNode ( $name=null )
   {
     if ( ! is_array( $this->linkNodes ) )
     {
@@ -2205,7 +2219,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param string $Name of the link
    * @return string Name of the joined model or false if no such name could be found
    */
-  function getJoinedModelClass( $name )
+  function getLinkedModelClass( $name )
   {
     $linkNode =& $this->getLinkNode( $name );
     $attrs = $linkNode->attributes();
@@ -2230,9 +2244,9 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param string $Name of the link
    * @return qcl_db_model Model instance or false if no model could be found.
    */
-  function &getJoinedModelInstance( $name )
+  function &getLinkedModelInstance( $name )
   {
-    $modelClass =  $this->getJoinedModelClass( $name );
+    $modelClass =  $this->getLinkedModelClass( $name );
     if ( $modelClass )
     {
       $controller =& $this->getController();
@@ -2261,7 +2275,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    */
   function getJoinedTable( $name )
   {
-    $joinedModel =& $this->getJoinedModelInstance( $name );
+    $joinedModel =& $this->getLinkedModelInstance( $name );
     return $joinedModel->getTableName();
   }  
   
@@ -2404,7 +2418,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     else
     {
-      $joinedModel =& $this->getJoinedModelInstance( $links[0] );
+      $joinedModel =& $this->getLinkedModelInstance( $links[0] );
     }
     
     /*
@@ -2630,7 +2644,255 @@ class qcl_db_model extends qcl_core_PropertyModel
     
   }
   
+  /**
+   * Exports model data to an xml file, creating an extra file with link information
+   * <links model="qcl.foo.Model">
+   * <!-- links that connect to only one other model -->
+   *  <link name="singlelink" model="qcl.bar.Model">
+   *    <origin namedId="qcl.foo.Instance1">
+   *      <target namedId="qcl.bar.Instance1" />
+   *      <target namedId="qcl.bar.Instance2" />
+   *    </origin> 
+   *  </link>
+   *  <!-- link that connects several models -->
+   *  <link name="multilink">
+   *    <origin namedId="qcl.foo.Instance1">
+   *      <target>
+   *        <model name="qcl.bar.Model" namedId="qcl.bar.Instance123" />
+   *        <model name="qcl.boo.Model" namedId="qcl.boo.Instance123" />
+   *      </target>
+   *    </origin>
+   *  </link>
+   * </links>
+   * @see qcl_core_PropertyModel
+   * @param string $path file path, defaults to the location of the inital data file
+   */
+  function exportLinkData($path=null)
+  {    
+    
+    /*
+     * links in model schema
+     */
+    $linkNodes =& $this->getLinkNodes(); 
+    if ( ! count($linkNodes) ) return;
+    
+    /*
+     * links
+     */
+    $localKey   = $this->getLocalKey();
+    $foreignKey = $this->getForeignKey();
+    
+    foreach( $linkNodes as $linkNode )
+    {
+      $attrs = $linkNode->attributes();
+      $name  = $attrs['name'];
+      $table = $attrs['table'];
+
+      /*
+       * get file path and delete file if it exists
+       */
+      $path = dirname(either($path,$this->getDataPath() ) ) . "/$table.data.xml";
+      @unlink($path);
+      $this->info("Exporting Link data '$name' of {$this->name} data to $path");
+      
+      /*
+       * create new xml file
+       */
+      $dataXml =& new qcl_xml_simpleXML();
+      $dataXml->createIfNotExists($path);
+      $dataXml->load($path);          
+
+      /*
+       * create the main nodes
+       */
+      $doc         =& $dataXml->getDocument();
+      $linksNode   =& $doc->addChild("links"); 
+      $linksNode->addAttribute("model", $this->name() );
+      
+      /*
+       * model names
+       */
+      $model = $attrs['model'];
+      if ( $model )
+      {
+        $models = array($model);
+      }
+      else
+      {
+        $models = array();
+        foreach ( $linkNode->children() as $child )
+        {
+          $attrs = $child->attributes();
+          $models[] = $attrs['name'];
+        }
+      }
+      
+      /*
+       * instantiate linked models
+       */
+      $controller =& $this->getController();
+      foreach( $models as $modelName )
+      {
+        $this->_models[$modelName] =& $controller->getNew( $modelName );
+      }
+
+      /*
+       * link node
+       */
+      $linkNode =& $linksNode->addChild("link");
+      $linkNode->setAttribute("name",$name);
+      
+      /*
+       * save model name if it is a single link
+       */
+      if ( count($models) == 1 )
+      {
+        $linkNode->setAttribute("model",$models[0]);
+      }
   
+      /*
+       * get all link data
+       */
+      $linkData = $this->db->getAllRecords("
+        SELECT * FROM " . $this->getTablePrefix() . $table . "
+        ORDER BY `$foreignKey`
+      ");
+      
+      $id = null;
+      
+      foreach ( $linkData as $row )
+      {
+        /*
+         * load model data
+         */
+        $_id = $row[$foreignKey];
+        $this->load($_id);
+        if ( $this->foundNothing() )
+        {
+          $this->warn("Invalid entry/entries in $table for $foreignKey = $_id. Deleting...");
+          $this->db->deleteWhere($table,"$foreignKey=$_id");
+          continue;
+        }
+        
+        /*
+         * create a link data node foreach data record
+         * that has links
+         */
+        if ( $id != $_id )
+        {
+          $id = $_id;
+          $originNode =& $linkNode->addChild("origin");    
+          if ( $this->hasProperty("namedId") )
+          {
+            $originNode->addAttribute("namedId", $this->getNamedId() );
+          }
+          else
+          {
+            $originNode->addAttribute("id", $id );
+          }          
+        }
+        
+        /*
+         * data node, eithe
+         */
+        $targetNode =& $originNode->addChild("target");
+        
+        
+        /*
+         * multilinks, syntax is
+         * <target>
+         *  <model name="model.name" namedId="named.id.of.record" />
+         * </target>
+         * 
+         * or
+         * <target>
+         *  <model name="model.name" id="11" />
+         * </target>
+         * 
+         */
+        if ( count($models) > 1 )
+        {
+       
+          /*
+           * for each linked model, create taget node
+           */
+          foreach ( $models as $modelName )
+          {  
+            /*
+             * link data
+             * @todo: share datasource, override getNew method
+             */
+            $model =& $this->_models[$modelName];
+            $modelFk = $model->getForeignKey();
+            $modelId = $row[ $modelFk ];
+            $model->load( $modelId );
+            if ( $model->foundSomething() )
+            {
+              $modelNode =& $targetNode->addChild("model");
+              $modelNode->addAttribute("name", $modelName); 
+              if ( $model->hasProperty("namedId") )
+              {
+                $modelNode->addAttribute("namedId", $model->getNamedId() );
+              }
+              else
+              {
+                $modelNode->addAttribute("id", $model->getId() );
+              }
+            }
+            else
+            {
+              $this->warn("Invalid entry in $table for $foreignKey = $id and $modelFk = $modelId");
+            }
+          }
+        }
+        
+        /*
+         * single link, syntax
+         * <target namedId="named.id.of.record"/>
+         */
+        else
+        {
+          $model =& $this->_models[ $models[0] ];
+          $modelFk = $model->getForeignKey();
+          $modelId = $row[ $modelFk ];
+          $model->load( $modelId );
+          if ( $model->foundSomething() )
+          {
+            if ( $model->hasProperty("namedId") )
+            {
+              $targetNode->addAttribute("namedId", $model->getNamedId() );
+            }
+            else
+            {
+              $targetNode->addAttribute("id", $model->getId() );
+            }
+          }
+          else
+          {
+            $this->warn("Invalid entry in $table for $foreignKey = $id and $modelFk = $modelId");
+          }
+        }
+      }
+      
+      /*
+       * save xml
+       */
+      $dataXml->save();
+    }
+    
+
+  }
+    /**
+   * imports initial data for the model from an xml 
+   * document into the database. The schema of the xml file is the following:
+   * In this example, col1 and col2 are metadata columns/properties which allow
+   * searching the xml document easily via xpath. both attributes and child nodes of
+   * a <record> node will be imported into the database
+   */
+  function import($path)
+  {
+    
+  }
 
 
 }	

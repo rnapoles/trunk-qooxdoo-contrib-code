@@ -130,6 +130,7 @@ class qcl_jsonrpc_model extends qcl_jsonrpc_object
   function info( $msg )
   {
     $controller =& $this->getController();
+    if ( ! $controller ) $this->raiseError("Cannot info '$msg'. No controller object available.");
     $controller->info( $msg );
   }  
 

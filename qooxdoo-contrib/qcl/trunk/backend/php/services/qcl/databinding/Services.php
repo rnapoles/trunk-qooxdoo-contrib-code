@@ -94,12 +94,18 @@ class qcl_databinding_Services extends qcl_core_mixin
     {
       do 
       {
-        $label = $model->getProperty($labelProperty);
-        $listData->add( 
-          $model->id(), 
-          $translate ? $this->tr($label) : $label,
-          $model->getIcon()
-        );
+        /*
+         * filter out inactive items
+         */
+        if ( ! $model->hasProperty("active") or $model->getActive() )
+        {
+          $label = $model->getProperty($labelProperty);
+          $listData->add( 
+            $model->id(), 
+            $translate ? $this->tr($label) : $label,
+            $model->getIcon()
+          );          
+        }
       }
       while( $model->nextRecord() );
       

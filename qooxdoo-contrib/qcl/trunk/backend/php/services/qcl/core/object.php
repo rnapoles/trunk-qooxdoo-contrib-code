@@ -671,7 +671,7 @@ class qcl_core_object
 	 * @param string 			$classname
 	 * @param mixed reference 	$controller		(optional) controller object to be passed
 	 * 											to the singleton constructor  
-	 * @return object reference to singleton instance
+	 * @return qcl_core_object
 	 */
 	function &getNew( $classname, $controller = null ) 
 	{       
@@ -705,12 +705,14 @@ class qcl_core_object
      */
     if ( ! $controller and is_a ( $this, "qcl_jsonrpc_controller" ) )
     {
-      return new $classname(&$this);
+      $instance =& new $classname(&$this);
     }
     else
     {
-      return new $classname(&$controller);
+      $instance =& new $classname(&$controller);
     }
+    
+    return $instance;
   }
  
   //-------------------------------------------------------------
@@ -773,7 +775,8 @@ class qcl_core_object
    */
 	function debug($msg)
 	{
-    $this->log ( ">>> DEBUG <<< " . $msg, "info" );
+    if ( ! is_scalar($msg) ) $msg = print_r($msg,true);
+	  $this->log ( ">>> DEBUG <<< " . $msg, "info" );
   }	
 	
   /**
