@@ -1,12 +1,13 @@
 <?php
-
+/*
+ * depemdencies
+ */
+require_once ("qcl/jsonrpc/model.php");
 
 /**
  * http request model
+ * @todo rename into qcl_net_httpRequest
  */
-
-require_once ("qcl/jsonrpc/model.php");
-
 class qcl_http_Request extends qcl_jsonrpc_model
 {
 
@@ -175,7 +176,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
      */
     if ($this->method == "POST")
     {
-       $response = $this->post_request_php4($this->url, $data, $this->timeout, $headers);
+       $response = $this->post($this->url, $data, $this->timeout, $headers);
     }
     else
     {
@@ -239,49 +240,18 @@ class qcl_http_Request extends qcl_jsonrpc_model
     return substr( $content, strpos($content,"\n\n") +1 );
   }
 
-  /**
-   * post request using php5 functions
-   * taken from http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
-   * @return
-   * @param string $url 
-   * @param mixed $data 
-   * @param array $optional_headers Object[optional]
-   */
-  function post_request_php5($url, $data, $timeout = 10, $optional_headers = null)
-  {
-    $params = array (
-      'http' => array (
-        'method' => 'POST',
-        'content' => $data
-      )
-    );
-    if ($optional_headers !== null)
-    {
-      $params['http']['header'] = $optional_headers;
-    }
-    $ctx = stream_context_create($params);
-    $fp = @ fopen($url, 'rb', false, $ctx);
-    if (!$fp)
-    {
-      $this->raiseError("Problem with $url, $php_errormsg");
-    }
-    $response = @ stream_get_contents($fp);
-    if ($response === false)
-    {
-      $this->raiseError("Problem reading data from $url, $php_errormsg");
-    }
-    return $response;
-  }
 
   /**
-   * post request using php4 functions
+   * PHP4/PHP5 POST request
    * taken from http://www.enyem.com/wiki/index.php/Send_POST_request_(PHP)
-   * @return
+   * 
    * @param string $url 
    * @param string $data
-   * @param array[optional] $optional_headers 
+   * @param array[optional] $optional_headers
+   * @return string
+   * @todo use curl if available 
    */
-  function post_request_php4($url, $data, $timeout=10, $optional_headers = null)
+  function post($url, $data, $timeout=10, $optional_headers = null)
   {
     $start    = strpos($url, '//') + 2;
     $end      = either(strpos($url,"/",$start),strlen($url));

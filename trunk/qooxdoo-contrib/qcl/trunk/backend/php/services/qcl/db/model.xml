@@ -11,15 +11,15 @@
 
       <!-- model properties -->
       <properties> 
-        <property name="id" type="int"/>
+        <property name="id" type="int" skipExport="true"/>
         <!-- 'id' column int(11) NOT NULL AUTO_INCREMENT was added during table creation and defined as primary key -->
-        <property name="created" type="string">
+        <property name="created" type="string" skipExport="true">
           <sql>timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'</sql>
         </property>
-        <property name="modified" type="string">
+        <property name="modified" type="string" skipExport="true">
           <sql>timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</sql>
         </property>
-      </properties> 
+      </properties>  
       
       <!-- constraints -->
       <constraints> 
@@ -30,17 +30,10 @@
       </constraints>
       
       <propertyGroups>
-      
+       
         <!-- metadata -->
         <propertyGroup name="metaData">
           <property name="id"/>
-        </propertyGroup>
-      
-        <!-- skip when export data -->
-        <propertyGroup name="skipExport">
-          <property name="id"/>
-          <property name="created"/>
-          <property name="modified"/>
         </propertyGroup>
         
       </propertyGroups>

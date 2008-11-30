@@ -190,6 +190,14 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
        
   }
   
+  /**
+   * Returns model name
+   */
+  function name()
+  {
+    return $this->name;
+  }
+  
   //-------------------------------------------------------------
   // overloading
   //-------------------------------------------------------------   
@@ -1768,8 +1776,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * exports model data to an xml file
    *
    * @param string $path file path, defaults to the location of the inital data file
+   * @return qcl_xml_simpleXML The xml document object
    */
-  function export($path=null)
+  function &export($path=null)
   {
     /*
      * schema document
@@ -1780,7 +1789,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * path of exported file
      */
-    $path    = either($path,$this->getDataPath());
+    $path = either($path,$this->getDataPath());
     $this->info("Exporting {$this->name} data to $path");
     
     /*
@@ -1824,15 +1833,20 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */
     $propList     =  $this->properties(); 
     $skipExpNode  =& $schemaXml->getChildNodeByAttribute(&$propGrpsNode,"name","skipExport");
-    if ( $skipExpNode )
+    
+    foreach( $this->propertyNodes as $propNode )
     {
-      foreach($skipExpNode->children() as $skipPropNode )
+      $attrs = $propNode->attributes();
+      $skipExpAttr = either($attrs['skipExport'],$attrs['skipexport']);
+      if ( $skipExpAttr == "true" )
       {
-        $skipPropAttr = $skipPropNode->attributes();
-        $skipPropList[] = $skipPropAttr['name'];
+        $skipPropList[] = $attrs['name'];
       }
     }
+    
+    $skipPropList = array_unique($skipPropList);
     $propList = array_diff($propList,$skipPropList);
+    
     $this->info("Exporting properties " . implode(",",$propList) . ", skipping properties " . implode(",",$skipPropList) . ".");
     
     /*
@@ -1883,6 +1897,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * save xml
      */
     $dataXml->save();
+    return $dataXml;
   }
   
 

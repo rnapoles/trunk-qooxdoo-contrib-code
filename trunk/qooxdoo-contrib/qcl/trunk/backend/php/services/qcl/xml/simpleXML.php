@@ -333,7 +333,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   
   /**
    * get document root node
-   * return SimpleXmlElement
+   * @return SimpleXmlElement
    */
   function &getDocument()
   {
