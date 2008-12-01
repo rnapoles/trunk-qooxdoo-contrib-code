@@ -1118,29 +1118,27 @@ qx.Class.define("htmlarea.command.Manager",
      {
        /* Current selection */
        var sel = this.__editorInstance.__getSelection();
-       
+
        /* Check the focusNode - if not available return a empty map */
        if (!sel || sel.focusNode == null)
        {
          return {};
        }
-       
+
        /* Get HTML element on which the selection has ended */
        var elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
 
        /*
         * Name of styles, which apply on the element, will be saved here.
-        * font-size is stored here as default, because <font size="xy"> does not
-        * appear as style property.
         */
-       var usedStyles = { "font-size" : true };
-       
+       var usedStyles = {};
+
        /* This map will be build to save the style settings over the <hr> element. */
        var styleSettings = {};
-  
+
        /* Retrieve element's computed style. */
        var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
-  
+
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
 
@@ -1168,7 +1166,17 @@ qx.Class.define("htmlarea.command.Manager",
              usedStyles[styleAttribute] = true;
            }
          }
-       }
+
+         /*
+          * We need to save the font size, which is set on font tags,
+          * separately.
+          */
+         if( (elem.tagName.toUpperCase() == "FONT") && (elem.size) )
+         {
+           usedStyles["legacy-font-size"] = elem.size;
+         }
+
+       } // for
 
 
        /* Cycle through saved style names and fetch computed value for each of it. */
@@ -1191,6 +1199,13 @@ qx.Class.define("htmlarea.command.Manager",
          else if(style == "text-decoration")
          {
            styleSettings[style] = this.__getTextDecorations(elementAndParents);
+         }
+         /*
+          * We need to treat font-size special ...
+          */
+         else if(style == "legacy-font-size")
+         {
+           styleSettings[style] = usedStyles[style];
          }
          else
          {
