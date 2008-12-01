@@ -106,9 +106,17 @@ class class_qcl_db_Tests extends qcl_datasource_controller
   {
     list($modelName) = $params;
     $model =& $this->getNew($modelName);
-    $model->export();
+    $model->exportLinkData();
   }  
- 
+
+  function method_testImportLinkData($params)
+  {
+    list($modelName) = $params;
+    $model =& $this->getNew($modelName);
+    $model->importLinkData();
+  }    
+  
+  
 }
 
 ?>

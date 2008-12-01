@@ -1731,8 +1731,8 @@ class qcl_db_model extends qcl_core_PropertyModel
        */
       $normativeDef = trim($modelXml->getData($property->sql)); 
       
-      $this->log("Property '$propName', Column '$colName':","framework" );
-      $this->log("Old def: '$descriptiveDef', new def:'$normativeDef'");
+      //$this->debug("Property '$propName', Column '$colName':");
+      //$this->debug("Old def: '$descriptiveDef', new def:'$normativeDef'");
 
       /*
        * Skip column if descriptive and normative column definition are identical.
@@ -1852,8 +1852,8 @@ class qcl_db_model extends qcl_core_PropertyModel
             // analyze existing primary key
             $oldPrimaryKeys = $this->db->getPrimaryKey($table);
             
-            $this->info("Old primary key: " . implode(",",$oldPrimaryKeys) );
-            $this->info("New primary key: " . implode(",",$primaryKeys) );
+            //$this->debug("Old primary key: " . implode(",",$oldPrimaryKeys) );
+            //$this->debug("New primary key: " . implode(",",$primaryKeys) );
 
             if ( $oldPrimaryKeys != $primaryKeys )
             {
@@ -1916,6 +1916,9 @@ class qcl_db_model extends qcl_core_PropertyModel
      * creating link tables
      */
     $links = $doc->model->links;
+    
+    $this->log( "Model has " . ( is_object($links) ? count($links->children() ) : "no" ) . " links.", "framework" );    
+    
     if ( is_object($links) and count($links->children() ) )
     {
       $this->log("Creating or updating linked tables...","framework");
@@ -1983,8 +1986,8 @@ class qcl_db_model extends qcl_core_PropertyModel
         $localKeyDef       = $this->db->getColumnDefinition( $table, $localKeyColName );
         $foreignKeyDef     = $this->db->getColumnDefinition( $link_table, $foreignKeyColName );
         
-        //$this->info("Local Key Definition: $localKeyDef");
-        //$this->info("Foreign Key Definition: $foreignKeyDef");
+        //$this->debug("Local Key Definition: $localKeyDef");
+        //$this->debug("Foreign Key Definition: $foreignKeyDef");
         
         /*
          * filter unwanted definition parts 
@@ -2032,7 +2035,7 @@ class qcl_db_model extends qcl_core_PropertyModel
               $this->raiseError("linkedModel node has no 'name' attribute.");
             }
             
-            $this->info("Linking $modelName ...");
+            $this->log("Linking $modelName ...","framework");
             $this->includeClassfile($modelName);
 
             if ( $shareDatasource != "no" )
@@ -2107,6 +2110,9 @@ class qcl_db_model extends qcl_core_PropertyModel
     {
       $this->log("Importing data ...","framework");
       $this->import($path);
+      
+      $this->log("Importing link data ...","framework");
+      $this->importLinkData();
     }
     else
     {
@@ -2175,6 +2181,10 @@ class qcl_db_model extends qcl_core_PropertyModel
    */
   function &getLinkNodes()
   {
+    if ( ! $this->linkNodesn )
+    {
+      $this->setupTableLinks();
+    }
     return $this->linkNodes;
   }
   
@@ -2308,6 +2318,13 @@ class qcl_db_model extends qcl_core_PropertyModel
    */
   function getLinksByModel( $model )
   {
+    $linkNodes = $this->getLinkNodes();
+    
+    if ( ! is_array( $linkNodes ) or ! count($linkNodes) )
+    {
+      $this->raiseError("Model has no links.");
+    }
+    
     if ( ! is_a($model,"qcl_db_model" ) )
     {
       $this->raiseError("Argument needs to be a qcl_db_model or subclass.");
@@ -2318,7 +2335,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     /*
      * is the other model the main link for this model?
      */
-    foreach ( $this->linkNodes as $linkName => $linkNode )
+    foreach ( $linkNodes as $linkName => $linkNode )
     {
       
       $a = $linkNode->attributes(); 
@@ -2539,7 +2556,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      * this model 
      */
     $thisId      =  $this->getId();
-    $thisFKey    =  $this->getForeignKey();
+    $thisFKey    =  $this->getForeignKey() or $this->raiseError( $this->name(). " has no foreign key!" );;
 
     /*
      * data to insert into link model
@@ -2559,7 +2576,7 @@ class qcl_db_model extends qcl_core_PropertyModel
         $this->raiseError("Invalid parameter $i. Must be a " . __CLASS__  . " but is a '" . typeof( $that, true ) . "'.'" ); 
       } 
       $thatId   =  $that->getId();
-      $thatFKey =  $that->getForeignKey();
+      $thatFKey =  $that->getForeignKey() or $this->raiseError( $that->name(). " has no foreign key!" );
       
       /*
        * links to this model, defined by the first argument
@@ -2879,21 +2896,189 @@ class qcl_db_model extends qcl_core_PropertyModel
        */
       $dataXml->save();
     }
-    
-
   }
-    /**
-   * imports initial data for the model from an xml 
-   * document into the database. The schema of the xml file is the following:
-   * In this example, col1 and col2 are metadata columns/properties which allow
-   * searching the xml document easily via xpath. both attributes and child nodes of
-   * a <record> node will be imported into the database
+
+  /**
+   * Imports initial link data for the model from an xml 
+   * for the structure, 
+   * @see qcl_db_model::exportLinkData()
+   * @param string $path
    */
-  function import($path)
+  function importLinkData($path=null)
   {
     
+    $controller =& $this->getController();
+    
+    /*
+     * links in model schema
+     */
+    $this->setupTableLinks();
+    $linkNodes = $this->getLinkNodes();
+    
+    if ( ! count( $linkNodes ) ) 
+    {
+      $this->log("Model does not have links. Cannot import link data.","framework");
+      return;
+    }
+    
+    /*
+     * links
+     */
+    $localKey   = $this->getLocalKey();
+    $foreignKey = $this->getForeignKey();
+    
+    foreach( $linkNodes as $linkNode )
+    {
+      $attrs     = $linkNode->attributes();
+      $linkName  = $attrs['name'];
+      $table     = $attrs['table'];
+
+      /*
+       * get file path
+       */
+      $path = dirname(either($path,$this->getDataPath() ) ) . "/$table.data.xml";
+      if ( ! file_exists($path) )
+      {
+        $this->log("No link data available for link '$linkName' of model '{$this->name}' ","framework");
+        continue;
+      }
+      
+      $this->log("Importing link data for link '$linkName' of model '{$this->name}'...","framework");
+      
+      /*
+       * parse xml file
+       */
+      $dataXml   =& new qcl_xml_simpleXML($path);
+      $dataDoc   =& $dataXml->getDocument();
+
+      /*
+       * main node
+       */
+      $linksNode =& $dataDoc->links or $this->raiseError("No links node available.");
+      $attrs = $linksNode->attributes();
+      if ( $attrs['model'] != $this->name() )
+      {
+        $this->log( "Origin model in xml ('" . $attrs['model'] . "'') does not fit this model ('" . $this->name() . "'). Skipping...", "framework");
+        return;
+      }
+      
+      foreach ( $linksNode->children() as $linkNode )
+      {
+        
+        /*
+         * link node attributes
+         */
+        $attrs  = $linkNode->attributes();
+        $tModel = $attrs['model'];
+        $tName  = $attrs['name'];
+
+        /*
+         * if target link name is not the current link name, skip
+         */
+        if ( $tName != $linkName ) continue;
+        
+        /*
+         * target model
+         */
+        if( $tModel )
+        {
+          /*
+           * @todo check if model name fits with schema xml
+           */
+          $targetModel =& $controller->getNew( $tModel );
+        }
+        else
+        {
+          $this->raiseError("Importing multilinks not yet implemented.");        
+        }
+        
+        /*
+         * origin nodes
+         */
+        foreach ( $linkNode->children() as $originNode )
+        {
+          
+          $attrs    = $originNode->attributes();
+          $oNamedId = either($attrs['namedId'],$attrs['namedid']);
+          $oId      = $attrs['id'];
+          
+          /*
+           * load origin record
+           */
+          if ( $oId )
+          {
+            $this->load( $oId );
+          }
+          elseif ( $oNamedId )
+          {
+            $this->findByNamedId( $oNamedId );
+          }
+          else
+          {
+            $this->raiseError("No identifier for origin record.");
+          }
+          
+          /*
+           * does origin record exist?
+           */
+          if ( $this->foundNothing() )
+          {
+            $this->raiseError("Origin record '$oNamedId/$oId' does not exist for model '{$this->name}'");
+          }
+          
+          foreach ( $originNode->children() as $targetNode )
+          {
+            $attrs    = $targetNode->attributes();
+            $tNamedId = either($attrs['namedId'],$attrs['namedid']);
+            $tId      = $attrs['id'];
+
+            /*
+             * single links
+             */
+            if( $tModel )
+            {
+              /*
+               * load target record
+               */
+              if ( $tNamedId )
+              {
+                $targetModel->findByNamedId($tNamedId);
+              }
+              elseif ( $tId )
+              {
+                $targetModel->load( $tId );
+              }
+              else
+              {
+                $this->warn("Missing identifier for target node.");
+                continue;
+              }
+              
+              /*
+               * link with target record
+               */
+              if ( $targetModel->foundSomething() )
+              {
+                //$this->info("Linking '{$this->name}' #$oNamedId/$oId' with '$tModel' #$tNamedId/$tId.");
+                $this->linkWith(&$targetModel);  
+              }
+              else
+              {
+                $this->raiseError("Target record '$tNamedId/$tId' does not exist for model '$tModel'");
+              }
+            }
+            
+            /*
+             * multilinks, not yet implemented
+             */
+            else
+            {
+              $this->raiseError("Importing multilinks not yet implemented.");
+            }
+          }
+        }
+      }          
+    }
   }
-
-
 }	
 ?>

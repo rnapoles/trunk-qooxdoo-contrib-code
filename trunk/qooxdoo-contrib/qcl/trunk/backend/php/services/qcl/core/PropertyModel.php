@@ -182,7 +182,10 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
                 ( is_object( $datasourceModel ) ? 
                   " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
                 "framework");    
+
                 
+    $this->_logger->setFilterEnabled("framework",true);
+                    
     /*
      *  initialize the model
      */
@@ -1837,7 +1840,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     foreach( $this->propertyNodes as $propNode )
     {
       $attrs = $propNode->attributes();
-      $skipExpAttr = either($attrs['skipExport'],$attrs['skipexport']);
+      $skipExpAttr = either($attrs['skipExport'],$attrs['skipexport']); 
       if ( $skipExpAttr == "true" )
       {
         $skipPropList[] = $attrs['name'];
@@ -1944,7 +1947,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $schemaXml    =& $this->getSchemaXml();
     $schemaXmlDoc =& $this->schemaXml->getDocument();
     
-    $this->info("Importing data from '$path' into {$this->name}..." );
+    $this->log("Importing data from '$path' into {$this->name}...", "framework" );
     
     /*
      * open xml data file and get record node
@@ -1999,7 +2002,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       $id = $this->insert($data);
       if ($id) $count++;
     }
-    $this->info("$count records imported.");
+    $this->log("$count records imported.","framework");
   }
   
   //-------------------------------------------------------------
