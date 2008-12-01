@@ -18,7 +18,7 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * ${1:Your namen (sourceforge account)}
+     * ${1:Your namen} (${1:Your sourceforge account})
 
 ************************************************************************ */</string>
 	<key>name</key>
