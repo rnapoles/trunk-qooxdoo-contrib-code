@@ -665,12 +665,12 @@ class qcl_core_object
   }
   
 	/**
-	 * gets new instance of classname
-	 * if object is a subclass of qx_jsonrpc_controller, pass the object as constructor.
-	 * to the model class, otherwise pass optional parameter
-	 * @param string 			$classname
-	 * @param mixed reference 	$controller		(optional) controller object to be passed
-	 * 											to the singleton constructor  
+	 * Returns new instance of classname. If the calling object is a subclass 
+	 * of qx_jsonrpc_controller, pass the object as constructor to the model class, 
+	 * otherwise pass optional parameter
+	 * @param string $classname PHP class name or dot-separated class name
+	 * @param qcl_jsonrpc_controller[optional] $controller (optional) controller object 
+	 * to be passed to the singleton constructor  
 	 * @return qcl_core_object
 	 */
 	function &getNew( $classname, $controller = null ) 
@@ -739,7 +739,6 @@ class qcl_core_object
       $logger->setFilterEnabled("debug",false);
       $logger->setFilterEnabled("framework",false);
     }
-     $logger->setFilterEnabled("framework",false);
   }
   
   /**
