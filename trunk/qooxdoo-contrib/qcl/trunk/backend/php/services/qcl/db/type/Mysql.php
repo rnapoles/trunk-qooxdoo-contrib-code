@@ -228,7 +228,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
    */
   function nextRecord( $withColumnNames=true )
   {
-    $this->info("Not implemented");
+    $this->raiseError("Not implemented");
     $this->log ( $sql,"db");
     $res = $this->db->getAll( $sql, $withColumnNames ? DB_FETCHMODE_ASSOC : DB_FETCHMODE_ORDERED );
     if ( PEAR::isError ( $res ) )
@@ -623,7 +623,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   }
 
   /**
-   * creates a table wit an numeric, unique, self-incrementing 'id' column, 
+   * Creates a table wit an numeric, unique, self-incrementing 'id' column, 
    * which is also the primary key, with utf-8 as default character set
    */
   function createTable($table)
@@ -636,6 +636,24 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     ");
   }
   
+  
+  /**
+   * Deletes a table from the database
+   * @param string|array $table Drop one or several tables
+   */
+  function dropTable( $table )
+  {
+    if ( is_array($table) )
+    {
+      foreach( $table as $t )
+      {
+        $this->dropTable( $t );
+      }
+      return;
+    }
+    $this->execute("DROP TABLE `$table`");
+  }  
+    
   /**
    * checks if a column exists in the database
    * @param string $table
@@ -715,7 +733,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $this->execute ("
         ALTER TABLE `$table` ADD COLUMN `$column` $definition $after;
       ");    
-      $this->info("Added $table.$column with definition '$definition'.");
+      $this->log("Added $table.$column with definition '$definition'.","tableMaintenance");
     }
     else
     {
@@ -736,7 +754,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       ALTER TABLE `$table` MODIFY COLUMN `$column` $definition $after;
     ");
     $oldDef = $this->getColumnDefinition($table,$column);
-    $this->info("Modified $table.$column from '$oldDef' to '$definition'.");    
+    $this->log("Modified $table.$column from '$oldDef' to '$definition'.","tableMaintenance");    
   }    
 
   /**
@@ -752,7 +770,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
    $this->execute ("
       ALTER TABLE `$table` CHANGE COLUMN `$oldColumn` `$newColumn` $definition $after
     ");
-    $this->info("Renamed $table.$oldColumn to $table.$newColumn.");
+    $this->log("Renamed $table.$oldColumn to $table.$newColumn.","tableMaintenance"); 
   }
   
   /**
@@ -787,7 +805,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       ALTER TABLE `$table` 
       ADD PRIMARY KEY  (`" . implode("`,`", $columns) . "`);
     ");
-    $this->info("Added primary key to table '$table'." );
+    $this->log("Added primary key to table '$table'.","tableMaintenance" );
   }
   
   /**
@@ -799,7 +817,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     $this->execute("
       ALTER TABLE `$table` DROP PRIMARY KEY;
     ");   
-    $this->info("Removed primary key from table '$table'." ); 
+    $this->log("Removed primary key from table '$table'.","tableMaintenance" ); 
   }
   
   /**
@@ -815,7 +833,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $this->execute ("
         ALTER TABLE `$table` DROP INDEX `$index`
       ");
-       $this->info("Removed index '$index' from table '$table'." );
+       $this->log("Removed index '$index' from table '$table'.","tableMaintenance" );
     }
   }
   
@@ -854,7 +872,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       $this->execute ("
         ALTER TABLE `$table` ADD $type `$index` (`" . implode("`,`", $columns) . "`);
       ");
-      $this->info("Added $type index '$index' to table '$table' indexing columns " . implode(",",$columns) . ".");
+      $this->log("Added $type index '$index' to table '$table' indexing columns " . implode(",",$columns) . ".","tableMaintenance");
     }
     else
     {
@@ -907,7 +925,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
               ALTER TABLE `$table` MODIFY COLUMN $columnName $columnDef
             ");
           }
-          $this->info("Modified $table.$columnName to $columnDef.");
+          $this->log("Modified $table.$columnName to $columnDef.","tableMaintenance");
         }
       }
       else
@@ -921,7 +939,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
           $this->execute ("
             ALTER TABLE `$table` CHANGE COLUMN $oldColumnName $columnName $columnDef $after
           ");
-          $this->info("Renamed $table.$oldColumnName to $table.$columnName.");
+          $this->log("Renamed $table.$oldColumnName to $table.$columnName.","tableMaintenance");
         }
         else
         {
@@ -947,7 +965,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
               ALTER TABLE `$table` ADD COLUMN $columnName $columnDef $after
             ");
           }
-          $this->info("Added $table.$columnName.");
+          $this->log("Added $table.$columnName.","tableMaintenance");
         }
       }
       $after = "AFTER $columnName";
@@ -1103,7 +1121,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
       FOR EACH ROW SET NEW.hash = md5(concat_ws(',',$col_sql));
     ",false); 
     
-    $this->info("Created trigger to update hash over " . implode(",",$columns) . ".");
+    $this->log("Created trigger to update hash over " . implode(",",$columns) . ".","tableMaintenance");
   }
   
 }

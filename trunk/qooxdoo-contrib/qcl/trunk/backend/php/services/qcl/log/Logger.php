@@ -37,9 +37,12 @@ class qcl_log_Logger extends qcl_core_object
   function setupLogger() {}
   
   /**
-   * register a filter
+   * Register a filter
+   * @param string $filter Filter name
+   * @param string $description Short description of what messages the filter is for.
+   * @param bool[optional,default true] $state True if enabled, false if disabled 
    */
-  function registerFilter( $filter, $description=null )
+  function registerFilter( $filter, $description=null, $state=true )
   {
     if ( ! $filter )
     {
@@ -48,7 +51,7 @@ class qcl_log_Logger extends qcl_core_object
     if ( ! $this->filters[$filter] )
     {
       $this->filters[$filter] = array(
-        'enabled'     => true,
+        'enabled'     => $state,
         'description' => $description 
       );
     }

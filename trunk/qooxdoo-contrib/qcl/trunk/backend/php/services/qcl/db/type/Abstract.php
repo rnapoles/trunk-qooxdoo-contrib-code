@@ -1,7 +1,15 @@
 <?php
-
-require_once ("qcl/jsonrpc/object.php"); 
+/*
+ * dependencies
+ */
+require_once "qcl/jsonrpc/object.php"; 
  
+/*
+ * constants
+ */
+define("QCL_LOG_DB","db");
+define("QCL_LOG_TABLE_MAINTENANCE","tableMaintenance");
+
 /**
  * abstract class for objects which do database queries
  * implemented by subclasses with specific database adapters
@@ -282,34 +290,52 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 	/**
 	 * makes connection
 	 */
-	function connect () {}
-	
+	function connect ()
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * queries database
 	 */
-	function query ( $sql ) {}
-	
+	function query ( $sql )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * executes a query, alias of $this->query
 	 */
-	function execute ( $sql ) {}
-
+	function execute ( $sql )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * get first row of result set
 	 */
-	function getRow ( $sql ) {}
-
+	function getRow ( $sql )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
 	/**
-	 * gets the value of the first cell cell of the first row of the result set
-	 * useful for example for "SELECT count(*) ... " queries
+	 * Returns the value of the first cell cell of the first row of the result set.
+	 * Useful for example for "SELECT count(*) ... " queries
+	 * @return mixed
 	 */
-	function getValue ( $sql ) {}
-	
+	function getValue ( $sql )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * Returns whole result set mapped to array
+	 * @return array
 	 */
-	function getAllRecords( $sql ) {}
-	
+	function getAllRecords( $sql )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
   /**
    * Returns the next record from the database
    * @param boolean $withColumnNames  if true (default), map values to column names
@@ -324,44 +350,74 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 	 * @param string $table table name
 	 * @param array $data associative array with the column names as keys and the column data as values
 	 */
-	function insert ( $table, $data ) {}
-	
+	function insert ( $table, $data )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * updates a record in a table identified by id
 	 * @param string $table table name
 	 * @param array $data associative array with the column names as keys and the column data as values
 	 * @param string $idColumn name of column containing the record id 
 	 */
-	function update ( $table, $data, $idColumn ) {}
-
+	function update ( $table, $data, $idColumn )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * deletes a record in a table identified by id
 	 * @param string $table table name
 	 * @param string $idColumn name of column containing the record id 
 	 */
-	function delete ( $table, $data, $idColumn ) {}
-
+	function delete ( $table, $data, $idColumn )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * deletes one or more records in a table matching a where condition
 	 * @param string 	$where where condition
 	 */
-	function deleteWhere ( $where ){} 
-	
+	function deleteWhere ( $where )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
 	 * escapes strings for use in sql queries
 	 */
-	function escape ( $string ) {}
-	
+	function escape ( $string )
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
-	 * gets last inserted primary key
+	 * Returns last inserted primary key
 	 */
-	function getLastInsertId() {}
-	
+	function getLastInsertId()
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+  
 	/**
-	 * disconnects from database
+	 * Disconnects from database
 	 */
-	function disconnect() {}
-	
+	function disconnect()
+  {
+    $this->notImplemented( __CLASS__ );
+  }
+
+  /**
+   * Deletes a table from the database
+   * @param string $table
+   */
+  function dropTable( $table )
+  {
+    $this->notImplemented( __CLASS__ );
+  }  
+  
 	/**
 	 * Setup the logger object
 	 */
@@ -370,10 +426,10 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
     parent::setupLogger();
     
     $logger =& $this->getLogger();
-    if ( ! $logger->isRegistered("db") )
+    if ( ! $logger->isRegistered( QCL_LOG_TABLE_MAINTENANCE ) )
     {
-      $logger->registerFilter("db", "Database-related debug messages");      
-      $logger->setFilterEnabled("db",false);
+      $logger->registerFilter( QCL_LOG_DB, "Detailed log messages on database connection and queries",false);
+      $logger->registerFilter( QCL_LOG_TABLE_MAINTENANCE, "Modification of table schemas in an sql database",false); 
     }
   }	
 	

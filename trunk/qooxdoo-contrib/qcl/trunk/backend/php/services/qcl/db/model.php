@@ -95,8 +95,16 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     return true;
 
-  } 	
+  }
   
+  /**
+   * Returns the database connection object for this model
+   * @return qcl_db_type_Abstract
+   */
+  function &db()
+  {
+    return $this->db;
+  }
   
 	
   /**
@@ -1526,7 +1534,7 @@ class qcl_db_model extends qcl_core_PropertyModel
   function setupSchema( $forceUpgrade=false )
   {
 
-     $this->log("Setting up model schema for '" .$this->className() . "' ...", "framework" );
+     $this->log("Setting up model schema for '" .$this->className() . "' ...", "propertyModel" );
     
     /*
      * return if no database connection is present
@@ -1578,7 +1586,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     if ( $modelAttrs['upgradeSchema'] == "no" and ! $forceUpgrade )
     {
-      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.","framework");
+      $this->log("Schema document for model name '{$this->name}' is not to be upgraded.","propertyModel");
       return null;
     }    
 
@@ -1587,7 +1595,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     if ( $modelAttrs['table']  == "no" )
     {
-      $this->log("Model name '{$this->name}' has no table backend.","framework");
+      $this->log("Model name '{$this->name}' has no table backend.","propertyModel");
       return null;  
     }
     
@@ -1650,7 +1658,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       $this->log(
         "Schema document for model name '{$this->name}', ".
         "type '{$this->type}', class '{$this->class}' hasn't changed.",
-        "framework"
+        "propertyModel"
       );
       return null;
     }  
@@ -1670,7 +1678,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       $this->schemaXml->hasChanged = true;
     }
    
-    $this->log("Creating aliases...","framework");
+    $this->log("Creating aliases...","propertyModel");
     
     /*
      * create alias table
@@ -1687,7 +1695,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
 
     
-    $this->log("Setting up table columns...","framework");
+    $this->log("Setting up table columns...","propertyModel");
     
     /*
      * properties as columns
@@ -1829,7 +1837,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     if ( $constraints )
     {
       
-      $this->log("Checking constraints...","framework");
+      $this->log("Checking constraints...","propertyModel");
       
       foreach ( $constraints->children() as $constraint )
       {
@@ -1881,7 +1889,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     $indexes =& $doc->model->definition->indexes;
     if ( $indexes )
     {
-      $this->log("Creating indexes ...","framework");
+      $this->log("Creating indexes ...","propertyModel");
       
       foreach ( $indexes->children() as $index )
       {
@@ -1917,11 +1925,11 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     $links = $doc->model->links;
     
-    $this->log( "Model has " . ( is_object($links) ? count($links->children() ) : "no" ) . " links.", "framework" );    
+    $this->log( "Model has " . ( is_object($links) ? count($links->children() ) : "no" ) . " links.", "propertyModel" );    
     
     if ( is_object($links) and count($links->children() ) )
     {
-      $this->log("Creating or updating linked tables...","framework");
+      $this->log("Creating or updating linked tables...","propertyModel");
       
       $a = $links->attributes();
       
@@ -2035,7 +2043,7 @@ class qcl_db_model extends qcl_core_PropertyModel
               $this->raiseError("linkedModel node has no 'name' attribute.");
             }
             
-            $this->log("Linking $modelName ...","framework");
+            $this->log("Linking $modelName ...","propertyModel");
             $this->includeClassfile($modelName);
 
             if ( $shareDatasource != "no" )
@@ -2108,15 +2116,15 @@ class qcl_db_model extends qcl_core_PropertyModel
     $path = $this->getDataPath();
     if ( ! $tableExists and file_exists($path) )
     {
-      $this->log("Importing data ...","framework");
+      $this->log("Importing data ...","propertyModel");
       $this->import($path);
       
-      $this->log("Importing link data ...","framework");
+      $this->log("Importing link data ...","propertyModel");
       $this->importLinkData();
     }
     else
     {
-      $this->log("No data to import.","framework");
+      $this->log("No data to import.","propertyModel");
     }
     
     /*
@@ -2682,10 +2690,19 @@ class qcl_db_model extends qcl_core_PropertyModel
    *  </link>
    * </links>
    * @see qcl_core_PropertyModel
-   * @param string $path file path, defaults to the location of the inital data file
+   * @param string $dir directory path where link data is to be put, defaults to the 
+   * directory containing the inital data file
+   * @param bool $isBackup if true, prepend "backup_" before the filename
    */
-  function exportLinkData($path=null)
+  function exportLinkData($dir=null, $isBackup=false)
   {    
+    /*
+     * check dir
+     */
+    if ( ! is_null($dir) and ! is_dir($dir) )
+    {
+      $this->raiseError("'$dir' is not a directory.");
+    }
     
     /*
      * links in model schema
@@ -2708,7 +2725,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       /*
        * get file path and delete file if it exists
        */
-      $path = dirname(either($path,$this->getDataPath() ) ) . "/$table.data.xml";
+      $path = either( $dir, dirname($this->getDataPath() ) ) . "/" . ( $isBackup ? "backup_" : "") . "$table.data.xml";
       @unlink($path);
       $this->info("Exporting Link data '$name' of {$this->name} data to $path");
       
@@ -2917,7 +2934,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     
     if ( ! count( $linkNodes ) ) 
     {
-      $this->log("Model does not have links. Cannot import link data.","framework");
+      $this->log("Model does not have links. Cannot import link data.","propertyModel");
       return;
     }
     
@@ -2939,11 +2956,11 @@ class qcl_db_model extends qcl_core_PropertyModel
       $path = dirname(either($path,$this->getDataPath() ) ) . "/$table.data.xml";
       if ( ! file_exists($path) )
       {
-        $this->log("No link data available for link '$linkName' of model '{$this->name}' ","framework");
+        $this->log("No link data available for link '$linkName' of model '{$this->name}' ","propertyModel");
         continue;
       }
       
-      $this->log("Importing link data for link '$linkName' of model '{$this->name}'...","framework");
+      $this->log("Importing link data for link '$linkName' of model '{$this->name}'...","propertyModel");
       
       /*
        * parse xml file
@@ -2958,7 +2975,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       $attrs = $linksNode->attributes();
       if ( $attrs['model'] != $this->name() )
       {
-        $this->log( "Origin model in xml ('" . $attrs['model'] . "'') does not fit this model ('" . $this->name() . "'). Skipping...", "framework");
+        $this->log( "Origin model in xml ('" . $attrs['model'] . "'') does not fit this model ('" . $this->name() . "'). Skipping...", "propertyModel");
         return;
       }
       
