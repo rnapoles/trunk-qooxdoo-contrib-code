@@ -6,6 +6,11 @@
 require_once "qcl/jsonrpc/model.php";
 require_once "qcl/xml/simpleXML.php";
 
+/*
+ * constants
+ */
+define("QCL_LOG_PROPERTY_MODEL","propertyModel");
+
 /**
  * Model that has a set of properties defined by an xml schema
  * and which optionally can be connected to a datasource which
@@ -183,8 +188,15 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
                   " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
                 "framework");    
 
-                
-    $this->_logger->setFilterEnabled("framework",true);
+    /*
+     * create filter
+     */
+    $logger =& $this->getLogger();
+    if ( ! $logger->isRegistered("propertyModel") )
+    {
+      $logger->registerFilter("propertyModel","Log messages concerning the setup and initializing of model properties.");
+      $logger->setFilterEnabled("propertyModel",false);
+    }
                     
     /*
      *  initialize the model
@@ -249,13 +261,13 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */
     if ( $startsWith == "set" )
     {
-      //$this->info("setting $endsWith = " . $arguments[0] . "(" . gettype($arguments[0]) . ")." . print_r($arguments,true));
+      //$this->debug("setting $endsWith = " . $arguments[0] . "(" . gettype($arguments[0]) . ")." . print_r($arguments,true));
       $this->setProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
     }
     elseif ( $startsWith == "get" )
     { 
       $return = $this->getProperty( $endsWith, $arguments[0], $arguments[1], $arguments[2] );
-      //$this->info("getting $endsWith = $return");
+      //$this->debug("getting $endsWith = $return");
     }
     
     /*
@@ -987,7 +999,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * return the result
      */
-    //$this->info("The data is " . ($isEqual ? "equal" : "not equal") ); 
+    //$this->debug("The data is " . ($isEqual ? "equal" : "not equal") ); 
     return $isEqual;
   }
   
@@ -1195,7 +1207,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     {
       $prop1 = trim($this->getProperty( $name ));
       $prop2 = trim($that->getProperty( $name ));
-      //$this->info("$prop1 => $prop2");
+      //$this->debug("$prop1 => $prop2");
       
       if ( $prop1 !== $prop2  )
       {
@@ -1216,7 +1228,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function setProperty( $name, $value, $id=null )
   { 
-    //$this->info("set property '$name' = '$value' (" . gettype($value) .") on record #$id");
+    //$this->debug("set property '$name' = '$value' (" . gettype($value) .") on record #$id");
     
     /*
      * retrieve record if id is given
@@ -1425,7 +1437,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
         //$this->backtrace();
       }      
 
-      //$this->info("$key => $columnName : $value"); 
+      //$this->debug("$key => $columnName : $value"); 
 
     }
  
@@ -1543,7 +1555,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   function setupProperties()
   {
 
-    $this->log("Setting up properties...", "framework" );
+    $this->log("Setting up properties...", "propertyModel" );
     
     /*
      * defintion node
@@ -1595,12 +1607,12 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
        * store property name as key and value
        */
       $this->properties[$propName] = $propName; 
-      //$this->info(gettype($propNode)); 
+      //$this->debug(gettype($propNode)); 
     } 
     
-//    $this->info("Properties:");
-//    $this->info(array_keys($this->propertyNodes));
-//    $this->info(array_keys(get_object_vars($this)));
+//    $this->debug("Properties:");
+//    $this->debug(array_keys($this->propertyNodes));
+//    $this->debug(array_keys(get_object_vars($this)));
     
     /*
      * aliases
@@ -1641,8 +1653,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
         $this->aliases[$column] = $propName;
       }
     }    
-    //$this->info("Alias Map:");
-    //$this->info($aliasMap);
+    //$this->debug("Alias Map:");
+    //$this->debug($aliasMap);
     
     /*
      * setup metadata array with shortcuts to property nodes
@@ -1657,15 +1669,15 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
         {
           $attrs = $metaDataPropNode->attributes();
           $name  = $attrs['name'];
-          //$this->info("$name => " . gettype($this->propertyNodes[$name]) );
+          //$this->debug("$name => " . gettype($this->propertyNodes[$name]) );
           if ( isset($this->propertyNodes[$name]) )
           {
             $this->metaDataProperties[$name] =& $this->propertyNodes[$name];  
           }
         }
       }
-      //$this->info("Metadata properties:"); 
-      //$this->info( array_keys($this->metaDataProperties));      
+      //$this->debug("Metadata properties:"); 
+      //$this->debug( array_keys($this->metaDataProperties));      
     }
   }  
   
@@ -1728,7 +1740,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * load model schema xml file
      */
-    $this->log("Parsing model schema file '$file'...","framework");
+    $this->log("Parsing model schema file '$file'...","propertyModel");
     
     $modelXml =& new qcl_xml_simpleXML($file);
 
@@ -1759,10 +1771,10 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     
     if ( $includeFile  )
     {
-      $this->log("Including '$includeFile' into '$file'...", "framework" );
+      $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
       $parentXml   =& $this->parseXmlSchemaFile($includeFile);
       $modelXml->extend($parentXml);
-      //$this->info($modelXml->asXml()); 
+      //$this->debug($modelXml->asXml()); 
     }
      
     /*
@@ -1793,7 +1805,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * path of exported file
      */
     $path = either($path,$this->getDataPath());
-    $this->info("Exporting {$this->name} data to $path");
+    $this->log("Exporting {$this->name} data to $path","propertyModel");
     
     /*
      * remove old file if it exists
@@ -1823,7 +1835,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * property groups in model schema
      */
     $propGrpsNode =& $schemaXml->getNode("/model/definition/propertyGroups");
-    //$this->info($propGrpsNode->asXml());
+    //$this->debug($propGrpsNode->asXml());
     
     /*
      * metatdata property names
@@ -1850,7 +1862,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $skipPropList = array_unique($skipPropList);
     $propList = array_diff($propList,$skipPropList);
     
-    $this->info("Exporting properties " . implode(",",$propList) . ", skipping properties " . implode(",",$skipPropList) . ".");
+    $this->log("Exporting properties " . implode(",",$propList) . ", skipping properties " . implode(",",$skipPropList) . ".","propertyModel");
     
     /*
      * export all records
@@ -1947,7 +1959,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $schemaXml    =& $this->getSchemaXml();
     $schemaXmlDoc =& $this->schemaXml->getDocument();
     
-    $this->log("Importing data from '$path' into {$this->name}...", "framework" );
+    $this->log("Importing data from '$path' into {$this->name}...", "propertyModel" );
     
     /*
      * open xml data file and get record node
@@ -2002,7 +2014,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       $id = $this->insert($data);
       if ($id) $count++;
     }
-    $this->log("$count records imported.","framework");
+    $this->log("$count records imported.","propertyModel");
   }
   
   //-------------------------------------------------------------

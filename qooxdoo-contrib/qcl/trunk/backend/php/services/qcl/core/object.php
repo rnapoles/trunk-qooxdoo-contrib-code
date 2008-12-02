@@ -720,7 +720,8 @@ class qcl_core_object
   //-------------------------------------------------------------
 
   /**
-   * Setup logger object
+   * Setup logger object. This will get a reference to a global 
+   * logger object singleton and attach it to the object.
    */
   function setupLogger()
   {
