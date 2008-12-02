@@ -29,7 +29,6 @@ qx.Class.define("tileview.TileView",
     this.base(arguments);
     var flow = new flowlayout.FlowLayout();
     this.getChildrenContainer().setLayout(flow);
-    this.getChildrenContainer().setHeight(800);
   },
   members :
   {
