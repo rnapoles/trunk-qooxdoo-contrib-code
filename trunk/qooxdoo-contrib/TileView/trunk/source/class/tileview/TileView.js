@@ -24,24 +24,31 @@
 qx.Class.define("tileview.TileView",
 {
   extend : qx.ui.form.List,
+
   construct : function()
   {
     this.base(arguments);
-    var flow = new flowlayout.FlowLayout();
-    this.getChildrenContainer().setLayout(flow);
+    this.getChildrenContainer().setLayout(this.__flowLayout = new flowlayout.FlowLayout());
   },
+
   members :
   {
+    __flowLayout : null,
+
     _onAddChild : function(e)
     {
-      var el = e.getData();
-      el.set(
+      e.getData().set(
       {
         width    : 250,
         minWidth : 250,
         maxWidth : 250
       });
       this.base(arguments, e);
+    },
+
+    _applyOrientation : function (value)
+    {
+      this.getChildrenContainer().setAllowStretchY(false);
     }
   }
 });
