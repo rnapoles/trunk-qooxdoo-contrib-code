@@ -303,14 +303,14 @@ class qcl_access_user extends qcl_access_common
   /**
    * Returns a preconfigured role model, holding only the records
    * that are linked to the current user
-   * @param string $prop Property to retrieve, defaults to "id"
+   * @param string|array $properties
    * @return qcl_access_role
    */
-  function &linkedRoleModel( $prop="id" )
+  function &linkedRoleModel($properties="*")
   {
     $controller =& $this->getController();
     $roleModel  =& $controller->getRoleModel();
-    $roleModel->findByLinkedId( $this->getId(),"user");
+    $roleModel->findByLinkedId( $this->getId(), "user", null, $properties );
     return $roleModel;
   } 
   
@@ -321,7 +321,7 @@ class qcl_access_user extends qcl_access_common
    */
   function roles( $prop="id" )
   {
-    $roleModel  =& $this->linkedRoleModel( $prop );
+    $roleModel  =& $this->linkedRoleModel($prop);
     return $roleModel->values();
   }   
   
@@ -395,27 +395,6 @@ class qcl_access_user extends qcl_access_common
     return $securityData;
   }
 
-  /**
-   * add user(s) to role(s)
-   * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
-   * @param mixed $roleRefs (array or number) role refs (id or namedId)
-   */
-  function addToRole( $userRefs, $roleRefs )
-  {
-    $this->raiseError("Not implemented");
-    return true;
-  }
-
-  /**
-   * removes user(s) from  role(s)
-   * @param mixed $userRefs (array or number) user ref(s) (id or namedId)
-   * @param mixed $roleRefs (array or number) role refs (id or namedId)  or "*" to remove from all roles
-   */
-  function removeFromRole( $userRefs, $roleRefs  )
-  {
-    $this->raiseError("Not implemented");
-    return true;
-  }
 
   /**
    * Resets the timestamp of the last action  for the current user

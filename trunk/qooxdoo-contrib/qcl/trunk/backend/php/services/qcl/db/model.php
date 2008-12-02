@@ -2517,6 +2517,18 @@ class qcl_db_model extends qcl_core_PropertyModel
   }  
   
   /**
+   * Remove all links from the current model instance ta variable number of models
+   * @param qcl_db_model $model2 Model
+   * @param bool
+   */
+  function unlinkFromAll()
+  {
+    $params =& func_get_args();
+    array_unshift( $params, "unlinkFromAll" );
+    return call_user_func_array( array( &$this, "_modifyLink" ), $params);
+  }    
+  
+  /**
    * Checks whether models are linked
    * @param qcl_db_model $model2 Model
    * @param bool
@@ -2583,7 +2595,11 @@ class qcl_db_model extends qcl_core_PropertyModel
       {
         $this->raiseError("Invalid parameter $i. Must be a " . __CLASS__  . " but is a '" . typeof( $that, true ) . "'.'" ); 
       } 
-      $thatId   =  $that->getId();
+      
+      if( $action != "unlinkFromAll" )
+      {
+        $thatId   =  $that->getId();  
+      }
       $thatFKey =  $that->getForeignKey() or $this->raiseError( $that->name(). " has no foreign key!" );
       
       /*
@@ -2657,7 +2673,14 @@ class qcl_db_model extends qcl_core_PropertyModel
         case "unlink":
           $this->db->deleteWhere( $table, $where );
           break;
-        
+
+        /*
+         * unlink the models
+         */
+        case "unlinkFromAll":
+          $this->db->deleteWhere( $table, "`$thisFKey`=$thisId" );
+          break;          
+          
         /*
          * unknown action 
          */
