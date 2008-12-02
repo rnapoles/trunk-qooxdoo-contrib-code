@@ -27,21 +27,17 @@ qx.Class.define("tileview.TileViewItem",
   construct : function(label, icon, description, status)
   {
     this.base(arguments, label, icon);
-    
-    if (description != null) 
+
+    if (description != null)
     {
       this.setDescription(description);
     }
-    if (status != null) 
+    if (status != null)
     {
       this.setStatus(status);
-    }       
-
-//    this.setWidth(250);    
-//    this.setMinWidth(250);    
-//    this.setMaxWidth(250);            
-
+    }
   },
+
   /*
   *****************************************************************************
      EVENTS
@@ -55,8 +51,8 @@ qx.Class.define("tileview.TileViewItem",
     {
       refine : true,
       init : "tileviewitem"
-    },    
-   
+    },
+
     /** The second line of text of the tileview.TileViewItem instance */
     description :
     {
@@ -73,7 +69,7 @@ qx.Class.define("tileview.TileViewItem",
       nullable : true,
       dispose : true,
       check : "String"
-    }    
+    }
 
   },
   members :
@@ -94,30 +90,28 @@ qx.Class.define("tileview.TileViewItem",
       switch(id)
       {
         case "label":
-//        control = this.base(arguments, id);
           control = new qx.ui.basic.Label(this.getLabel());
           control.setAnonymous(true);
           control.setRich(this.getRich());
-  //        */
           this._getChildControl("labelcont").addAt(control, 0);
           break;
-          
+
         case "description":
           control = new qx.ui.basic.Label(this.getDescription());
           control.setAnonymous(true);
           control.setRich(this.getRich());
           this._getChildControl("labelcont").addAt(control, 1);
           break;
-          
+
         case "status":
           control = new qx.ui.basic.Label(this.getStatus());
           control.setAnonymous(true);
           control.setRich(this.getRich());
           this._getChildControl("labelcont").addAt(control, 2);
-          break;          
-                    
+          break;
+
         case "labelcont":
-          control = new qx.ui.container.Composite(new qx.ui.layout.VBox(5));
+          control = new qx.ui.container.Composite(new qx.ui.layout.VBox(1));
           control.setAnonymous(true);
           this._add(control);
           break;
@@ -125,11 +119,11 @@ qx.Class.define("tileview.TileViewItem",
 
       return control || this.base(arguments, id);
     },
-    
+
     /**
      * Updates the visibility of the label
      */
-    // overridden    
+    // overridden
     _handleLabel : function()
     {
       if (this.getShow() === "icon")
@@ -141,7 +135,7 @@ qx.Class.define("tileview.TileViewItem",
         this._showChildControl("labelcont");
       }
     },
-    
+
     // property apply
     _applyRich : function(value)
     {
@@ -152,23 +146,23 @@ qx.Class.define("tileview.TileViewItem",
 
     // property apply
     _applyGap : function(value)
-    { 
+    {
       this.base(arguments, value);
       this._getChildControl("labelcont").setSpacing(value);
     },
-    
+
     // property apply
     _applyLabel : function(value)
     {
       this._getChildControl("label").setContent(value);
     },
-    
+
     // property apply
     _applyDescription : function(value)
     {
       this._getChildControl("description").setContent(value);
     },
-    
+
     // property apply
     _applyStatus : function(value)
     {
