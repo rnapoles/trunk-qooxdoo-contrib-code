@@ -2988,8 +2988,8 @@ class qcl_db_model extends qcl_core_PropertyModel
       /*
        * parse xml file
        */
-      $dataXml   =& new qcl_xml_simpleXML($path);
-      $dataDoc   =& $dataXml->getDocument();
+      $dataXml =& $this->parseXmlDataFile($path); 
+      $dataDoc =& $dataXml->getDocument();
 
       /*
        * main node

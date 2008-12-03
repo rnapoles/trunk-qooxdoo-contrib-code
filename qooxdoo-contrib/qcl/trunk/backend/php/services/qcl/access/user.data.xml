@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data>
+    <records>
+      <record>
+        <property name="name">Administrator</property>
+        <property name="namedId">admin</property>
+        <property name="password">admin</property>
+        <property name="active">1</property>
+      </record>
+      <record>
+        <property name="name">User 1</property>
+        <property name="namedId">user1</property>
+        <property name="password">user1</property>
+        <property name="active">1</property>
+      </record>
+      <record>
+        <property name="name">Guest User</property>
+        <property name="namedId">guest</property>
+        <property name="password">guest</property>
+        <property name="active">1</property>
+      </record>
+    </records>
+  </data>
+</root>
