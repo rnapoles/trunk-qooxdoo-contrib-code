@@ -833,6 +833,8 @@ qx.Class.define("htmlarea.command.Manager",
              var sibling = true;
              
              // check if the image is one the same hierarchy level
+             // IMPORTANT: if e.g. the user copy-and-pastes a text styled with
+             // FONT elements Gecko does add the image inside this font element
              if (formatElements[img.previousSibling.nodeName.toLowerCase()])
              {
                startNode = img.previousSibling;
@@ -856,7 +858,7 @@ qx.Class.define("htmlarea.command.Manager",
                // append the elements to the documentFragment
                documentFragment.appendChild(formatElements.root);
                
-               // set the inline element to later insert a textnode
+               // set the inline element to later insert a text node
                inline = formatElements.inline;
              }
              else
@@ -1182,8 +1184,15 @@ qx.Class.define("htmlarea.command.Manager",
          child = child.child;
        }
        
-       // close the spans
-       for (var i=0, j=closings.length; i<j; i++)
+       // SPECIAL CASE: only one font element
+       // Gecko "optimizes" this by removing the empty font element completely
+       if (closings.length == 1 && closings[0] == "</font>")
+       {
+         formatString += "<span></span>";
+       }
+       
+       // close the elements
+       for (var i=closings.length-1; i>=0; i--)
        {
          formatString += closings[i];
        }
@@ -1300,6 +1309,14 @@ qx.Class.define("htmlarea.command.Manager",
          }
        }
        
+       // SPECIAL HANDLING
+       // if any "text-decoration" is used it is necessary to add an extra inner 
+       // child to make sure an inner span is created which holds the color 
+       if (collectedStyles['color'] && collectedStyles['text-decoration'])
+       {
+         child = child.child = {};
+         child['color'] = collectedStyles['color'];
+       }   
        
        return grouped;
      },
@@ -1329,8 +1346,6 @@ qx.Class.define("htmlarea.command.Manager",
          /* Get HTML element on which the selection has ended */
          elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
        }
-       
-       console.debug(elem);
 
        /*
         * Name of styles, which apply on the element, will be saved here.
