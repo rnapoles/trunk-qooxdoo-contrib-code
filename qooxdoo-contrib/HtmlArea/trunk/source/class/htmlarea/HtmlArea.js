@@ -990,6 +990,12 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _onDocumentIsReady : function()
     {
+      // Release the blocker element to ensure everything works fine
+      // during startup. This is especially important to prevent that the 
+      // first click of the user hits the blocker node and the focus event
+      // does not arrive the HtmlArea component (=iframe document and body)
+      this.release();
+      
       /* *******************************************
        *    INTIALIZE THE AVAILABLE COMMANDS       *
        * ***************************************** */
@@ -1947,7 +1953,11 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleFocusEvent : function(e)
     {
-      this.setFocused(e.type == "focus");
+      // call the "_apply" method directly
+      // otherwise the property system won't execute the "_apply" method
+      // if the property value doesn't change
+      // this is especially important for the first click of the user
+      this._applyFocused(e.type == "focus");
 
       if (e.type == "focus")
       { 
@@ -2578,8 +2588,20 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
       this._processingExamineCursorContext = true;
-      var doc = this.getContentDocument();
 
+      var eventMap = this.getContextInformation();
+      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
+
+      this._processingExamineCursorContext = false;
+    },
+
+    /**
+     * TODOC
+     *
+     */
+    getContextInformation : function()
+    {
+      var doc = this.getContentDocument();
 
       /*
         ----------
@@ -2695,12 +2717,9 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyRight        : justifyRight ? 1 : 0,
         justifyFull         : justifyFull ? 1 : 0
       };
-      
-      this.dispatchEvent(new qx.event.type.DataEvent("cursorContext", eventMap), true);
 
-      this._processingExamineCursorContext = false;
+      return eventMap;
     },
-
 
     /**
      * returns the attribute value of a given element
