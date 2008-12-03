@@ -99,6 +99,12 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   var $schemaTimestamp = null;  
   
   /**
+   * The timestamp of an xml data file
+   * @var array
+   */
+  var $dataTimestamp = array();
+  
+  /**
    * Shortcuts to property nodes in schema xml. Access with qcl_db_model::getPropertyNode($name)
    * @array array of object references
    */
@@ -1730,7 +1736,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   }
   
   /**
-   * parses an xml schema file, processing includes
+   * Parses an xml schema file, processing includes
    * @param string $file
    * @return qcl_xml_simpleXML
    */
@@ -1766,21 +1772,72 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * does the model schema inherit from another schema?
      */
-    $rootAttrs   = $doc->attributes();
-    $includeFile = $rootAttrs['include'];
+    $rootAttrs    = $doc->attributes();
+    $includeFiles = $rootAttrs['include'];
     
-    if ( $includeFile  )
+    if ( $includeFiles )
     {
-      $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
-      $parentXml   =& $this->parseXmlSchemaFile($includeFile);
-      $modelXml->extend($parentXml);
-      //$this->debug($modelXml->asXml()); 
+      foreach( explode(",",$includeFiles) as $includeFile )
+      {
+        $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
+        $parentXml   =& $this->parseXmlSchemaFile( $includeFile );
+        $modelXml->extend($parentXml);
+        //$this->debug($modelXml->asXml());
+      } 
     }
      
     /*
      * return the aggregated schema object
      */
     return $modelXml;
+  }
+  
+  /**
+   * Parses an xml data file, processing includes
+   * @param string $file
+   * @return qcl_xml_simpleXML
+   */
+  function &parseXmlDataFile( $file )
+  {
+
+    /*
+     * load model schema xml file
+     */
+    $this->log("Parsing model data file '$file'...","propertyModel");
+    
+    $dataXml =& new qcl_xml_simpleXML($file);
+    
+    /*
+     * remove lock, since we need read-only access only
+     */
+    $dataXml->removeLock(); 
+
+    /*
+     * The document object
+     */
+    $doc =& $dataXml->getDocument();
+    
+    /*
+     * does the  data inherit from another file?
+     */
+    $rootAttrs    = $doc->attributes();
+    $includeFiles = $rootAttrs['include'];
+    
+    if ( $includeFiles )
+    {
+      foreach( explode(",",$includeFiles) as $includeFile )
+      {
+        $this->log("Including '$includeFile' into '$file'...", "propertyModel" );
+        $parentXml   =& $this->parseXmlSchemaFile( $includeFile );
+        $dataXml->extend($parentXml);
+        //$this->debug($dataXml->asXml());
+      } 
+    }
+     
+    /*
+     * return the aggregated schema object
+     */
+    return $dataXml;
   }
  
   //-------------------------------------------------------------
@@ -1964,9 +2021,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * open xml data file and get record node
      */
-    $dataXml     =& new qcl_xml_simpleXML($path);
-    $dataDoc     = $dataXml->getDocument(); // don't use pass by reference here
-    $recordsNode = $dataXml->getNode("/data/records");
+    $dataXml     =& $this->parseXmlDataFile($path);
+    $dataDoc     =  $dataXml->getDocument(); // don't use pass by reference here
+    $recordsNode =  $dataXml->getNode("/data/records");
     
     if ( ! is_object($recordsNode) )
     {

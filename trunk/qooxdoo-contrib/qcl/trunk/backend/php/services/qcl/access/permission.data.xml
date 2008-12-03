@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data>
+    <records>
+      <record>
+        <property name="namedId">*</property>
+        <property name="name">General: All permissions</property>
+        <property name="note">This permission allows the user to do everything. Only grant to the administrator</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.*</property>
+        <property name="name">Security Management: General Permission</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.permission.create</property>
+        <property name="name">Access: Create a new permission</property>
+      </record>  
+      <record>
+        <property name="namedId">qcl.auth.permissions.user.create</property>
+        <property name="name">Access: Create a new user</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.role.create</property>
+        <property name="name">Acess: Create a role</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.create</property>
+        <property name="name">Access: Create a permission</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.item.delete</property>
+        <property name="name">Security management: Delete an item</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.item.edit</property>
+        <property name="name">Security management: Edit an item</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.item.move</property>
+        <property name="name">Access: Move permissions</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.item.remove</property>
+        <property name="name">Access: Remove permissions</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.manage</property>
+        <property name="name">Acess: Manager permissions</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.move</property>
+        <property name="name">Access: move permissions</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.config.permissions.manage</property>
+        <property name="name">Access: Manage permissions</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.config.permissions.editor.createKey</property>
+        <property name="name">Config: Create a new config key</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.config.permissions.editor.deleteKey</property>
+        <property name="name">Config: Delete a config key</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.config.permissions.editor.editKey</property>
+        <property name="name">Config: Edit a config key</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.auth.permissions.permission.create</property>
+        <property name="name">Access: Create a new permission</property>
+      </record>
+      <record>
+        <property name="namedId">qcl.permissions.users.manage</property>
+      </record>
+    
+    </records>
+  </data>
+</root>

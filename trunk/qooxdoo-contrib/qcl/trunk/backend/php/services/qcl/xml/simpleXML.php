@@ -97,7 +97,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
      
     if ( is_valid_file($path) ) 
     {
-      $this->info("'$path' exists. No need to create it.");
+      $this->log("'$path' exists. No need to create it.","xml");
       return false;
     }
     
@@ -108,7 +108,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     
     if ( file_put_contents($path,$xml) )
     {
-      $this->info("Created root node in '$path'...");
+      $this->log("Created root node in '$path'...","xml");
       return true;
     }
 
@@ -167,7 +167,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         $this->filectime = filectime($xml);
         $this->cacheId   = $cacheId;
         
-        //$this->info("Cache Id is: $cacheId");
+        //$this->debug("Cache Id is: $cacheId");
         
         /*
          * get lock because some other process could be just writing the cache
@@ -195,7 +195,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
             $this->log("Timestamp doesn't match:" .$this->filectime, "xml" );
           }
         }
-        elseif ( ! is_bool( $object) or ! is_null( $object ) )
+        elseif ( ! is_bool( $doc) or ! is_null( $doc ) )
         {
           $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
         }
@@ -232,7 +232,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       }
     }
     
-    $this->info("No cache available. Parsing document...");
+    $this->log("No cache available. Parsing document...","xml");
     
     /*
      * object not cached, create it from xml file
@@ -262,14 +262,14 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
        */
       if ( $isFile )
       {
-        $this->info("Loading document from file $xml...");
+        $this->log("Loading document from file $xml...","xml");
         $this->doc =& $this->__impl->load_file($xml);
       }
       elseif ( is_string ( $xml ) )
       {
-        $this->info("Loading document from string... " . substr($xml,0,30) . "..." );
+        $this->log("Loading document from string... " . substr($xml,0,30) . "...", "xml" );
         $this->doc =& $this->__impl->load_string($xml);
-        //$this->info($this->doc->asXML()); die;
+        //$this->debug($this->doc->asXML()); die;
       }
       else
       {
@@ -280,12 +280,12 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     {
       if ( $isFile )
       {
-        //$this->info("Loading document from file $xml...");
+        $this->log("Loading document from file $xml...","xml");
         $this->doc = simplexml_load_file($xml);
       }
       elseif ( is_string ( $xml ) )
       {
-        //$this->info("Loading document from string...");
+        $this->log("Loading document from string...","xml");
         $this->doc = simplexml_load_string($xml);
       }
       else
@@ -317,7 +317,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       $this->doc->__filectime = $this->filectime;
     }
     
-    //$this->info("Saving xml document object to the cache...");
+    $this->log("Saving xml document object to the cache...","xml");
     $this->store($this->cacheId, $this->doc);
     $this->hasChanged = true;
   }
@@ -504,7 +504,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     {
       $cdata = (string) $node;
     }
-    //$this->info("$pathOrNode : $cdata");
+    //$this->debug("$pathOrNode : $cdata");
     return $cdata;
   }
   
@@ -586,7 +586,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     {
       $attr = $child->attributes();
       $tag  = $child->getName();
-      //if ($GLOBALS['debug']==true) $this->info("<$tag $name='{$attr[$name]}' =='$value'? >");
+      //if ($GLOBALS['debug']==true) $this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
       if ( $attr[$name] == $value )
       {
         return $child;
@@ -620,7 +620,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       if ( $childAttrs[$name] == $value )
       {
         $found = true;
-        $this->info("Removed node containing $name = $value...");
+        //$this->debug("Removed node containing $name = $value...","xml");
         if (phpversion() < 5)
         {
           $node->removeChild($child);
@@ -691,11 +691,12 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       $doc       =& $this->getDocument();
       $parentDoc =& $parentXml->getDocument();  
       
-      //$this->info("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
+      $this->log("Extending document ...","xml");
+      //$this->debug("Extending \n\n" . $doc->asXml() . "\n\nwith\n\n". $parentDoc->asXml());
       
       $this->_extend(&$doc, &$parentDoc);
       
-      //$this->info("Result: \n\n". $doc->asXml() );
+      //$this->debug("Result: \n\n". $doc->asXml() );
       
       if ( $parentXml->hasChanged )
       {
@@ -723,7 +724,6 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
      * iterate through source children and populate matching
      * target children
      */
-    
     $sourceChildren =& $source->children();
     
     for($i=0; $i<count($sourceChildren); $i++ )
@@ -738,7 +738,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       
       $tag = $sourceChild->getName();
       $targetChild =& $target->$tag;      
-      //$this->info("$tag -> " . gettype($targetChild) );
+      //$this->debug("$tag -> " . gettype($targetChild) );
 
       $doCopyNode  = true;      
       
@@ -757,17 +757,18 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         if ( count($tgtChildAttrs) and count($srcChildAttrs) )
         {
           /*
-           * check if source 'extends' or 'name' attribute matches target 'name' attribute
+           * check if source 'extends' a 'name' attribute or if attributes are the same
+           * @todo Check if we can remove the "extend" stuff
            */
           if (
             $tgtChildAttrs['extends'] == $srcChildAttrs['name'] or
-            $tgtChildAttrs['name']    == $srcChildAttrs['name']
+            $tgtChildAttrs == $srcChildAttrs
           )
           {
             /*
              * extend the node
              */
-            //$this->info("Extending tag $tag '{$tgtChildAttrs['extends']}'' with '{$tgtChildAttrs['name']}'.");
+            //$this->debug("Extending tag $tag '{$tgtChildAttrs['extends']}'' with '{$tgtChildAttrs['name']}'.");
             
             $this->_extend(&$targetChild,&$sourceChild);
             
@@ -786,7 +787,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         }
         elseif ( $tgtChildAttrs == $srcChildAttrs)
         {
-          //$this->info("Identical tag '$tag'' exists in target and source.");
+          //$this->debug("Identical tag '$tag'' exists in target and source.");
           /*
            * unique node present in both nodes, just recurse
            */
@@ -795,7 +796,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         }
         else
         {
-          //$this->info("Tag $tag exists in target and source but is not identical");
+          //$this->debug("Tag $tag exists in target and source but is not identical");
         }
       }
       
@@ -821,7 +822,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
           $srcChildName = $srcChildAttrs['name'];
           if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
           {
-            //$this->info("$srcChildName exists, not adding node...");
+            //$this->debug("$srcChildName exists, not adding node...");
             continue;
           }
           
@@ -831,7 +832,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
           $cdata = $this->getData(&$sourceChild);
           $targetChild =& $target->addChild($tag,$cdata);
           
-          //$this->info("Creating single node $tag.");
+          //$this->debug("Creating single node $tag.");
           
           foreach( $srcChildAttrs as $key => $value )
           {
@@ -846,7 +847,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
 
         elseif ( is_array( $sourceChild ) )
         {
-          //$this->info( count($sourceChild) . " nodes.");
+          //$this->debug( count($sourceChild) . " nodes.");
           /*
            * we need to copy over an array of nodes
            */
@@ -871,10 +872,10 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
              * this node
              */
             $srcChildName = $sAttrs['name'];
-            //$this->info("<$tag name='$name'>");
+            //$this->debug("<$tag name='$name'>");
             if ( $srcChildName and $this->getChildNodeByAttribute(&$target, "replace", $srcChildName ) )
             {
-              //$this->info("$srcChildName exists, not adding node...");
+              //$this->debug("$srcChildName exists, not adding node...");
               continue;
             }
             
@@ -882,7 +883,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
              * add new child to target node 
              */
             $cdata = $this->getData(&$s);
-            //$this->info("Creating sibling node $tag");
+            //$this->debug("Creating sibling node $tag");
             $targetChild =& $target->addChild($tag,$cdata);
             
             /*
@@ -942,6 +943,4 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   }
   
 }
-
-
 ?>

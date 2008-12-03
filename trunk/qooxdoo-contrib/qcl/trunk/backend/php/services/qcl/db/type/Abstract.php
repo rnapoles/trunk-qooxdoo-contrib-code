@@ -78,6 +78,15 @@ class qcl_db_type_Abstract extends qcl_jsonrpc_object
 		 * initialize parent class
 		 */
 	  parent::__construct();
+
+    /*
+     * if first argument is master
+     */	  
+	  if ( is_a($dsn,"qcl_jsonrpc_controller") or is_a($dsn,"qcl_jsonrpc_controller") )
+	  {
+	    $master = $dsn; // cannot pass by reference here
+      $dsn = $this->notImplemented(__CLASS__);
+	  }
 	  
 	  /*
 	   * store master objects if given
