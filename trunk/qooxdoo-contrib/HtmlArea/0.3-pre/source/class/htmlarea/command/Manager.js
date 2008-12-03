@@ -468,8 +468,9 @@ qx.Class.define("htmlarea.command.Manager",
        var sel = this.__editorInstance.__getSelection();
        
        /* This nodes are needed to apply the exactly style settings on the paragraph */
-       var styleNodes = this.generateHelperNodes();
-
+       var styleNodes = this.__generateHelperNodes();
+       var helperStyle = this.__generateHelperString();
+       
        /* Generate unique ids to find the elements later */
        var spanId = "__placeholder__" + Date.parse(new Date());
        var paragraphId = "__paragraph__" + Date.parse(new Date());
@@ -485,8 +486,7 @@ qx.Class.define("htmlarea.command.Manager",
         * Therefore we also insert a helper node, then the paragraph and the style
         * nodes after it.
         */
-       // styleNodes is array and this caused problems
-       this.execute("inserthtml", helperString + paragraphString /* + styleNodes */);
+       this.execute("inserthtml", helperString + paragraphString + helperStyle);
 
        /* Fetch elements */
        spanNode      = doc.getElementById(spanId);
@@ -501,10 +501,22 @@ qx.Class.define("htmlarea.command.Manager",
         */
        if(paragraphNode.previousSibling.innerHTML == helperString)
        {
+         helperNodeFragment = this.__generateHelperNodes();
+         brNode             = this.__doc.createElement("br");
+         
+         var mozDirty = this.__doc.createAttribute("_moz_dirty");
+         mozDirty.nodeValue = "";
+         brNode.setAttributeNode(mozDirty);
+         
+         var type     = this.__doc.createAttribute("type");
+         type.nodeValue = "_moz"; 
+         brNode.setAttributeNode(type);
+         
          /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-         paragraphNode.previousSibling.innerHTML = "";
-         for (var i = 0; i < styleNodes.length; i++) paragraphNode.previousSibling.appendChild(styleNodes[i]);
-         paragraphNode.previousSibling.innerHTML += '<br _moz_dirty="" type="_moz"/>';
+         paragraphNode.previousSibling.appendChild(helperNodeFragment);
+         paragraphNode.previousSibling.appendChild(brNode);
+         
+         //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
        }
        
        /* We do net need to pollute the generated HTML with IDs */
@@ -701,7 +713,79 @@ qx.Class.define("htmlarea.command.Manager",
                
                img.setAttributeNode(attrNode);
              }
+             
+             // Gecko does not transfer the styles of the previous sibling to the 
+             // element which comes right after the inserted image.
+             // -> we have to insert a corresponding span element for ourselves
+             
+             // these elements can have influence on the format
+             var formatElements = { "font": true,
+                                    "span": true };
+             var startNode = null;
+             var sibling = true;
+             
+             // check if the image is one the same hierarchy level
+             // IMPORTANT: if e.g. the user copy-and-pastes a text styled with
+             // FONT elements Gecko does add the image inside this font element
+             if (formatElements[img.previousSibling.nodeName.toLowerCase()])
+             {
+               startNode = img.previousSibling;
+             }
+             else if (formatElements[img.parentNode.nodeName.toLowerCase()])
+             {
+               startNode = img.parentNode;
+               sibling = false;
+             }
+             
+             // documentFragment - will hold the span(s)
+             var documentFragment = this.__doc.createDocumentFragment();
+             var inline;
+             
+             if (sibling && startNode != null)
+             {
+               // if the image is a sibling of the format elements we have to
+               // check for the current styles and apply them with span element(s)
+               var formatElements = this.__generateImageFormatElements(startNode);
+               
+               // append the elements to the documentFragment
+               documentFragment.appendChild(formatElements.root);
+               
+               // set the inline element to later insert a text node
+               inline = formatElements.inline;
+             }
+             else
+             {
+               // if the image is within a e.g. "font" element or a "font" 
+               // element with several nested "span" elements
+               // -> just add a "span" element and use the inheritance
+               inline = this.__doc.createElement("span");
+               documentFragment.appendChild(inline);
+             }
+               
+             // the inner-most span needs a TextNode for selection
+             var inlineText = this.__doc.createTextNode("");
+             inline.appendChild(inlineText);
+             
+             // get the image parent node 
+             var imageParent = img.parentNode;
+             
+             // image is last child -> append
+             if (img == imageParent.lastChild)
+             {
+               imageParent.appendChild(documentFragment);
+             }
+             // image is anywhere in between -> use nextSibling 
+             else
+             {
+               imageParent.insertBefore(documentFragment, img.nextSibling);
+             }
+             
+             // get the current range and select the *content* of the new span
+             var rng = this.__editorInstance.getRange();
+             rng.selectNodeContents(inline);
            }
+           
+           return true;
          }
          else
          {
@@ -749,6 +833,78 @@ qx.Class.define("htmlarea.command.Manager",
          return this.__doc.execCommand(commandObject.identifier, false, attributes.src);  
        }
      }),
+     
+     
+     /**
+      * Generate "span" elements to "save" the formatting after an image
+      * was inserted.
+      * 
+      * @param startNode {Node} start node for getting current styles
+      * @return {Node} format elements
+      */
+     __generateImageFormatElements : function(startNode)
+     {
+       // be sure to check for childs of the previous sibling
+       // e.g. a font element with a nested span inside
+       while (startNode.firstChild && startNode.firstChild.nodeType == 1)
+       {
+         startNode = startNode.firstChild;
+       }
+       
+       // get the current style of this element
+       var grouped = this.__getCurrentStylesGrouped(startNode);
+       
+       var root, inlineStyle, legacyFont; 
+       var styles = "";
+       var parent = null;
+       var inline = null;
+       var child = grouped.child;
+       
+       while (child)
+       {
+         // Since non-default font sizes are managed by "font" tags with "size"
+         // attributes it is necessary to handle this in a special way
+         // if a "legacy-font-size" entry is within the grouped styles it is 
+         // necessary to create a font element to achieve the correct format
+         inline = this.__doc.createElement(child["legacy-font-size"] ? "font" : "span");
+         
+         inlineStyle = this.__doc.createAttribute("style");
+         inline.setAttributeNode(inlineStyle);
+         
+         // apply the styles
+         for (var styleKey in child)
+         {
+           if (styleKey != "child" && styleKey != "legacy-font-size")
+           {
+             styles += styleKey + ":" + child[styleKey] + ";";
+           }
+           else if (styleKey == "legacy-font-size")
+           {
+             legacyFont = this.__doc.createAttribute("size");
+             legacyFont.nodeValue = child[styleKey];
+             inline.setAttributeNode(legacyFont);
+           }
+         }
+         inlineStyle.nodeValue = styles;
+         
+         if (parent != null)
+         {
+           parent.appendChild(inline);
+         }
+         else
+         {
+           root = inline;
+         }
+         
+         parent = inline;
+         child = child.child;
+         styles = "";
+       }
+       
+       return { root : root,
+                inline : inline };
+     },
+     
      
      /**
       * Inserts a hyperlink. In Gecko browser these is achieved by
@@ -855,7 +1011,7 @@ qx.Class.define("htmlarea.command.Manager",
         * <hr> tag.
         */
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-         htmlText += this.generateHelperString();
+         htmlText += this.__generateHelperString();
        }
   
        return this.__insertHtml(htmlText, commandObject);
@@ -865,103 +1021,180 @@ qx.Class.define("htmlarea.command.Manager",
       * Helper function which generates a string containing HTML which can be used to apply the
       * current style to an element.
       * 
+      * *** ONLY IN USE FOR GECKO ***
+      * 
+      * @type member
       * @return {String} String containing tags with special style settings.
       */
-     generateHelperString : function()
+     __generateHelperString : function()
      {
-       /* Fetch current styles */
-       var collectedStyles = this.getCurrentStyles();
+       var formatString = "";
+       var spanBegin = '<span style="';
+       var closings = [];
        
-       var styleString = "";
-       var spanString = "";
-       var htmlText = "";
-
-       /* Cycle over collected styles and generate output string */
-       for(var attribute in collectedStyles)
+       // retrieve the current styles as structure
+       var structure = this.__getCurrentStylesGrouped();
+       
+       // first traverse the "child" chain
+       var child = structure.child;
+       var legacyFont = false;
+       while (child)
        {
-         /* "text-decoration" is special. */
-         if(attribute == "text-decoration")
+         legacyFont = child["legacy-font-size"] != null;
+         
+         // Since non-default font sizes are managed by "font" tags with "size"
+         // attributes it is necessary to handle this in a special way
+         // if a "legacy-font-size" entry is within the grouped styles it is 
+         // necessary to create a font element to achieve the correct format
+         formatString += legacyFont ? '<font style="' : spanBegin;         
+         for (var style in child)
          {
-           var textDecorations = collectedStyles[attribute];
-
-           /*
-            * An extra <span> is needed for every text-decoration value,
-            * because the color of a decoration is based on the element's color. 
-            */
-           for(var i=0; i<textDecorations.length; i++)
-           {
-             spanString += '<span style="';
-             spanString += 'color: ' + textDecorations[i]['color'] + ';';
-             spanString += 'text-decoration: ' + textDecorations[i]['text-decoration'] + ';';
-             spanString += '">';
-           }
+           formatString += (style != "child" && style != "legacy-font-size") ? style + ':' + child[style] + ';' : "";
          }
-         else
-         {
-           /* Put together style string for <span> */
-           styleString += attribute + ":" + collectedStyles[attribute] + "; ";
-         }
+         formatString += legacyFont ? '" size="'+ child["legacy-font-size"] +'">' : '">';
+         
+         // adjust level and check for next level
+         closings.push(legacyFont ? "</font>" : "</span>");
+         child = child.child;
        }
-
-       /* This span conatains all styles settings, except "text-decoration" */
-       htmlText += '<span style="' + styleString + '">';
-
-       /* Put it all together */
-       return spanString + htmlText;
+       
+       // SPECIAL CASE: only one font element
+       // Gecko "optimizes" this by removing the empty font element completely
+       if (closings.length == 1 && closings[0] == "</font>")
+       {
+         formatString += "<span></span>";
+       }
+       
+       // close the elements
+       for (var i=closings.length-1; i>=0; i--)
+       {
+         formatString += closings[i];
+       }
+       
+       return formatString;
      },
+     
 
      /**
-      * Helper function which generates <span>-tags which can be used to apply the
-      * current style to an element.
+      * Helper function which generates a documentFragment of <span>-tags 
+      * which can be used to apply the current style to an element.
       * 
-      * @return {Array} Array containing styled elements
+      * *** ONLY IN USE FOR GECKO ***
+      * 
+      * @type member
+      * @return {DocumentFragment} documentFragment containing styled elements
       */
-     generateHelperNodes : function()
+     __generateHelperNodes : function()
      {
+       var fragment = this.__doc.createDocumentFragment();
+       
+       // retrieve the current styles as structure
+       var structure = this.__getCurrentStylesGrouped();
+       console.dir(structure);
+       
+       // first traverse the "child" chain
+       var parent = fragment; 
+       var child = structure.child;
+       var element;
+       var legacyFont = false;
+       while (child)
+       {
+         legacyFont = child["legacy-font-size"] != null;
+         
+         element = this.__doc.createElement(legacyFont ? "font" : "span");
+         parent.appendChild(element);
+         
+         // attach styles
+         for (var style in child)
+         {
+           if (style != "child" && style != "legacy-font-size")
+           {
+             qx.bom.element.Style.set(element, style, child[style]);
+           }
+         }
+         
+         if (legacyFont)
+         {
+           var sizeAttr = this.__doc.createAttribute("size");
+           sizeAttr.nodeValue = child["legacy-font-size"];
+           element.setAttributeNode(sizeAttr);
+         }
+         
+         parent = element;
+         child = child.child;
+       }
+       console.debug(element.innerHTML);
+       
+       return fragment;
+     },
+     
+     
+     /**
+      * Works with the current styles and creates a hierarchy which can be 
+      * used to create nodes or strings out of the hierarchy.
+      * 
+      * *** ONLY IN USE FOR GECKO ***
+      * 
+      * @param elem {Node ? null} optional element as root node
+      * @return {Map} Hierarchy with style information 
+      */
+     __getCurrentStylesGrouped : function(elem)
+     {
+       var grouped = {};
+       var child = null;
+       
        /* Fetch current styles */
-       var collectedStyles = this.getCurrentStyles();
-
-       var nodes = [];
-       var styleString = "";
-       var decorationNode;
-
-       /* Create style node */
-       var styleNode = this.__doc.createElement("span");
-
+       var collectedStyles = this.getCurrentStyles(elem);
+       
+       child = grouped.child = {};
+       
        /* Cycle over collected styles and generate output string */
        for(var attribute in collectedStyles)
        {
-         /* "text-decoration" is special. */
-         if(attribute == "text-decoration")
+         // "text-decoration" is special
+         if (attribute != "text-decoration")
          {
-           var textDecorations = collectedStyles[attribute];
-
-           /*
-            * An extra <span> is needed for every text-decoration value,
-            * because the color of a decoration is based on the element's color. 
-            */
-           for(var i=0; i<textDecorations.length; i++)
-           {
-             /* Create decoration node and apply style settings */
-             nodes.push(this.__doc.createElement("span"));
-             qx.bom.element.Style.set(nodes[nodes.length - 1], 'color',          textDecorations[i]['color']);
-             qx.bom.element.Style.set(nodes[nodes.length - 1], 'textDecoration', textDecorations[i]['text-decoration']);
-           }
-         }
-         else
-         {
-           /* Put together style string for <span> */
-           styleString += attribute + ":" + collectedStyles[attribute] + "; ";
+           child[attribute] = collectedStyles[attribute];
          }
        }
-
-       /* Set styles settings on element */
-       qx.bom.element.Style.setCss(styleNode, styleString);
-
-       /* Add style node: */
-       nodes.push(styleNode);
-
-       return nodes;
+       
+       // Check for any text-decorations -> special handling, because one has
+       // create for each text-decoration one corresponding span element to 
+       // ensure the correct rendering in Gecko
+       if (collectedStyles["text-decoration"])
+       {
+         var textDecorations = collectedStyles["text-decoration"];
+         
+         /*
+          * An extra <span> is needed for every text-decoration value,
+          * because the color of a decoration is based on the element's color. 
+          */
+         for(i=0, j=textDecorations.length; i<j; i++)
+         {
+           if (child == null)
+           {
+             child = grouped.child = {};
+           }
+           else
+           {
+             child = child.child = {};
+           }
+           
+           child['color'] = textDecorations[i]['color'];
+           child['text-decoration'] = textDecorations[i]['text-decoration'];
+         }
+       }
+       
+       // SPECIAL HANDLING
+       // if any "text-decoration" is used it is necessary to add an extra inner 
+       // child to make sure an inner span is created which holds the color 
+       if (collectedStyles['color'] && collectedStyles['text-decoration'])
+       {
+         child = child.child = {};
+         child['color'] = collectedStyles['color'];
+       }   
+       
+       return grouped;
      },
 
      
@@ -969,29 +1202,32 @@ qx.Class.define("htmlarea.command.Manager",
       * Internal helper function which retrieves all style settings, which are set
       * on the focus node and saves them on a span element.
       *
-      * @return {String} the span element.
+      * @type member
+      * @param elem {Element ? null} optional element reference the lookup should start
+      * @return {Map} map with all style settings with style attributes as keys.
       */
-     getCurrentStyles : function()
+     getCurrentStyles : function(elem)
      {
-       /* Current selection */
-       var sel = this.__editorInstance.__getSelection();
-       
-       /* Check the focusNode - if not available return a empty map */
-       if (!sel || sel.focusNode == null)
+       if (elem == null)
        {
-         return {};
+         /* Current selection */
+         var sel = this.__editorInstance.__getSelection();
+         
+         /* Check the focusNode - if not available return a empty map */
+         if (!sel || sel.focusNode == null)
+         {
+           return {};
+         }
+         
+         /* Get HTML element on which the selection has ended */
+         elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
        }
-       
-       /* Get HTML element on which the selection has ended */
-       var elem = (sel.focusNode.nodeType == 3) ? sel.focusNode.parentNode : sel.focusNode;
 
        /*
         * Name of styles, which apply on the element, will be saved here.
-        * font-size is stored here as default, because <font size="xy"> does not
-        * appear as style property.
         */
-       var usedStyles = { "font-size" : true };
-       
+       var usedStyles = {};
+
        /* This map will be build to save the style settings over the <hr> element. */
        var styleSettings = {};
   
@@ -1025,11 +1261,21 @@ qx.Class.define("htmlarea.command.Manager",
              usedStyles[styleAttribute] = true;
            }
          }
-       }
+
+         /*
+          * We need to save the font size, which is set on font tags,
+          * separately.
+          */
+         if( (elem.tagName.toUpperCase() == "FONT") && (elem.size) )
+         {
+           usedStyles["legacy-font-size"] = elem.size;
+         }
+
+       } // for
 
 
        /* Cycle through saved style names and fetch computed value for each of it. */
-       for(var style in usedStyles)
+       for(style in usedStyles)
        {
          styleValue = decoration.getPropertyValue(style);
 
@@ -1048,6 +1294,13 @@ qx.Class.define("htmlarea.command.Manager",
          else if(style == "text-decoration")
          {
            styleSettings[style] = this.__getTextDecorations(elementAndParents);
+         }
+         /*
+          * We need to treat font-size special ...
+          */
+         else if(style == "legacy-font-size")
+         {
+           styleSettings[style] = usedStyles[style];
          }
          else
          {
