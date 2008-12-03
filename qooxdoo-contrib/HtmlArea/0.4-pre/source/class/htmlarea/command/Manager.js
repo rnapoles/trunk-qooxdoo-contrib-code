@@ -727,15 +727,15 @@ qx.Class.define("htmlarea.command.Manager",
          var focusNode = this.__editorInstance.getFocusNode();
          this.__manualOutdent(focusNode);
        }
-
+       
        /* Body element must have focus before executing command */
        this.__editorInstance.getContentWindow().focus();
 
        var returnValue = this.__doc.execCommand(commandObject.identifier, false, value);
-
+       
        /* (re)-focus the editor after the execCommand */
        this.__focusAfterExecCommand();
-
+       
        if (qx.core.Variant.isSet("qx.client", "webkit"))
        {
          // Get the parent of the current focusNode as starting node for 
@@ -743,7 +743,7 @@ qx.Class.define("htmlarea.command.Manager",
          var focusNode = this.__editorInstance.getFocusNode();
          this.__manualOutdent(focusNode.parentNode);
        }
-
+       
        return returnValue;
      },
      
@@ -1354,10 +1354,10 @@ qx.Class.define("htmlarea.command.Manager",
 
        /* This map will be build to save the style settings over the <hr> element. */
        var styleSettings = {};
-
+  
        /* Retrieve element's computed style. */
        var decoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
-
+  
        /* Get element's ancestors to fetch all style attributes, which apply on element. */
        var parents = qx.dom.Hierarchy.getAncestors(elem);
 
@@ -2210,7 +2210,6 @@ qx.Class.define("htmlarea.command.Manager",
         return this.__executeCommand(commandObject.identifier, false, value);
       }
     })
-
   },
 
 
