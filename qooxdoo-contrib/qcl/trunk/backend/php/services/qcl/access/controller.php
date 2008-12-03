@@ -294,9 +294,8 @@ class qcl_access_controller extends qcl_db_controller
     else
     {
       /*
-       * we have an anonymous user, grant guest access
-       * @todo: each guest user should have an individual
-       * userid.
+       * We have an anonymous user, grant guest access
+       * 
        */
       $userModel->guestAccess();
     

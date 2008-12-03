@@ -8,7 +8,7 @@ require_once "qcl/access/common.php";
 /*
  * Constants
  */
-define('QCL_ACTIVE_USER_SESSION_VARNAME', "qcl_access_user_activeUser");
+define('QCL_ACTIVE_USER_ID_VAR', "qcl_access_user_activeUserId");
 
 /**
  * class providing data on users
@@ -16,6 +16,7 @@ define('QCL_ACTIVE_USER_SESSION_VARNAME', "qcl_access_user_activeUser");
  *
  * Class cannot be used directly, you need to subclass it
  * in your application service class folder
+ * @todo separate user model class and active user class
  */
 class qcl_access_user extends qcl_access_common
 {
@@ -88,7 +89,7 @@ class qcl_access_user extends qcl_access_common
     /*
      * no active user
      */
-    if ( ! $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] )
+    if ( ! $_SESSION[QCL_ACTIVE_USER_ID_VAR] )
     {
       return null;
     }
@@ -101,7 +102,7 @@ class qcl_access_user extends qcl_access_common
       $className  =  $this->className();
       $controller =& $this->getController(); 
       $this->_activeUser =& new $className(&$controller);
-      $this->_activeUser->setRecord( $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] );
+      $this->_activeUser->load( $_SESSION[QCL_ACTIVE_USER_ID_VAR] );
     }
     return $this->_activeUser;
   }
@@ -112,15 +113,23 @@ class qcl_access_user extends qcl_access_common
    */
   function setActiveUser( $userObject )
   {
+    /*
+     * logout previous user if any
+     */
+    $this->logout();
+    
+    /*
+     * set new active user
+     */
     if ( is_null( $userObject ) or is_a( $userObject, $this->className() ) )
     {
       if ( $userObject )
       {
-        $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] = $userObject->getRecord();
+        $_SESSION[QCL_ACTIVE_USER_ID_VAR] = $userObject->getId();
       }
       else
       {
-        $_SESSION[QCL_ACTIVE_USER_SESSION_VARNAME] = null;
+        $_SESSION[QCL_ACTIVE_USER_ID_VAR] = null;
         $this->_activeUser = null;
       }
     }
@@ -131,15 +140,7 @@ class qcl_access_user extends qcl_access_common
     }
   }
 
-  /**
-   * Whether the given user name is the name of a guest (anonymous) user
-   * @return bool True if user name is guest
-   * @todo: we need some more sophisticated stuff here
-   */
-  function isGuest()
-  {
-    return ( $this->getNamedId() == $this->anonymous_name ) ;
-  }  
+
   
   /**
    * Authenticate a user with a password.
@@ -173,8 +174,8 @@ class qcl_access_user extends qcl_access_common
     $this->findByNamedId( $username );
     if ( $this->foundNothing() )
     {
-      $this->setError($this->tr("Unknown user name."));
-      $this->setActiveUser(null);
+      $this->setError( $this->tr("Unknown user name.") );
+      $this->setActiveUser( null );
       return false;
     }
     	
@@ -207,21 +208,71 @@ class qcl_access_user extends qcl_access_common
    */
   function guestAccess()
   {
-    $this->findByNamedId( $this->anonymous_name );
-    if ( $this->foundNothing() )
+    /*
+     * purge all stale uests that haven't been active for 1 hour
+     */    
+    $this->purgeStaleGuests();
+    
+    /*
+     * role model
+     */
+    $controller =& $this->getController();
+    $roleModel  =& $controller->getRoleModel();
+    $roleModel->findByNamedId("qcl.roles.Guest");
+    if ( $roleModel->foundNothing() )
     {
-      $this->raiseError("Cannot grant guest acces because no user '{$this->anonymous_name}' exists.");
-    }    
+      $this->raiseError("No guest role available.");
+    }
+    
+    /*
+     * create a new guest user and link it to the guest role
+     */
+    $username = "guest_" . microtime_float();
+    $this->create($username);
+    $this->linkWith(&$roleModel);
     $this->setActiveUser( &$this );
   }
   
   /**
-   * Deletes the active user
+   * Whether the given user name is the name of a guest (anonymous) user
+   * @return bool True if user name is guest
+   * @todo: we need some more sophisticated stuff here
+   */
+  function isGuest()
+  {
+    return ( substr( $this->getNamedId(), 0, 6 ) == "guest_" );
+  }  
+  
+  /**
+   * Purge all guests that are inactive for more than
+   * one hour
+   */
+  function purgeStaleGuests()
+  {
+    $this->findWhere("
+      SUBSTR(`username`,0,6) = 'guest_' AND
+      ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
+        OR `lastAction` IS NULL ) 
+    ",null,"id");
+    
+    if ( count($this->values() ) )
+    {
+      $this->delete( $this->values() );  
+    }
+    
+  }
+  
+  /**
+   * Logs out the the active user 
    * @return void
    */
   function logout()
   {
-    $this->setActiveUser(null);
+    if (  $this->_activeUser and $this->_activeUser->isGuest() )
+    {
+      $this->_activeUser->delete();
+    }
+    $this->_activeUser = null;
   }
 
   /**
