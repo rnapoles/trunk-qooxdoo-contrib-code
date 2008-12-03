@@ -31,7 +31,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * shortcuts to schema xml nodes with information on table links
    * @var array
    */
-  var $linkNodes = null;
+  var $linkNodes = array();
   
   /**
    * the local key of this table, usually the id property. acces with ::getLocalKey()
@@ -871,7 +871,20 @@ class qcl_db_model extends qcl_core_PropertyModel
         $this->raiseError("No record loaded that could be deleted!");
       }
     }
-    $this->db->delete ( $this->table, $ids, $this->col_id );
+    
+    /*
+     * unlink from other models
+     */
+    foreach( $this->links() as $link )
+    {
+      $table = $this->getLinkTable( $link );
+      $this->db->delete ( $table, $ids, $this->getForeignKey() );
+    }    
+    
+    /*
+     * delete records
+     */
+    $this->db->delete ( $this->table, $ids );
   } 
   
   /**
@@ -2370,6 +2383,14 @@ class qcl_db_model extends qcl_core_PropertyModel
     return count( $links ) ? $links : false;
   }
   
+  /**
+   * Return the names of all the links of this model
+   * @return array
+   */
+  function links()
+  {
+    return array_keys( $this->linkNodes ); 
+  }
   
   /**
    * Create a link between this model and a different model.
