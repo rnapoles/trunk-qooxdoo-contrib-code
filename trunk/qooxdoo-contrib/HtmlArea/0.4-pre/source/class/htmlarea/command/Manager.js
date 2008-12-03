@@ -552,73 +552,97 @@ qx.Class.define("htmlarea.command.Manager",
     }),
 
 
-     /**
-     * Inserts a paragraph when hitting the "enter" key
-     *
-     * @type member
-     * @return {Boolean} whether the key event should be stopped or not
-     */
-    insertParagraphOnLinebreak : function()
+    /**
+    * Inserts a paragraph when hitting the "enter" key
+    *
+    * @type member
+    * @signature function()
+    * @return {Boolean} whether the key event should be stopped or not
+    */
+    insertParagraphOnLinebreak : qx.core.Variant.select("qx.client",
     {
-      /* This nodes are needed to apply the exactly style settings on the paragraph */
-      var helperNodes;
-      var helperStyle = this.__generateHelperString();
-
-      /* Generate unique ids to find the elements later */
-      var spanId = "__placeholder__" + Date.parse(new Date());
-      var paragraphId = "__paragraph__" + Date.parse(new Date());
-
-      var helperString = '<span id="' + spanId + '"></span>';
-      var paragraphString = '<p id="' + paragraphId + '">';
-      
-      var spanNode;
-      var paragraphNode;
-      var brNode;
-
-      /* 
-       * A paragraph will only be inserted, if the paragraph before it has content.
-       * Therefore we also insert a helper node, then the paragraph and the style
-       * nodes after it.
-       */
-      this.execute("inserthtml", helperString + paragraphString + helperStyle);
-
-      /* Fetch elements */
-      spanNode      = this.__doc.getElementById(spanId);
-      paragraphNode = this.__doc.getElementById(paragraphId);
-
-      /* We do net need to pollute the generated HTML with IDs */
-      paragraphNode.removeAttribute("id");
-
-      /*
-       * If the previous paragraph only contains the helperString, it was empty before.
-       * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
-       */
-      if(paragraphNode.previousSibling.innerHTML == helperString)
+      "gecko" : function()
       {
-        helperNodeFragment = this.__generateHelperNodes();
-        brNode             = this.__doc.createElement("br");
-        
-        var mozDirty = this.__doc.createAttribute("_moz_dirty");
-        mozDirty.nodeValue = "";
-        brNode.setAttributeNode(mozDirty);
-        
-        var type     = this.__doc.createAttribute("type");
-        type.nodeValue = "_moz"; 
-        brNode.setAttributeNode(type);
-        
-        /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-        paragraphNode.previousSibling.appendChild(helperNodeFragment);
-        paragraphNode.previousSibling.appendChild(brNode);
-        
-        //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
-      }
-      /* We do net need to pollute the generated HTML with IDs */
-      spanNode.removeAttribute("id");
+				 /* This nodes are needed to apply the exactly style settings on the paragraph */
+				var helperNodes;
+				var helperStyle = this.__generateHelperString();
 
-      return true;
-    },
-     
-     
+				/* Generate unique ids to find the elements later */
+				var spanId = "__placeholder__" + Date.parse(new Date());
+				var paragraphId = "__paragraph__" + Date.parse(new Date());
+
+				var helperString = '<span id="' + spanId + '"></span>';
+				var paragraphString = '<p id="' + paragraphId + '">';
+
+				var spanNode;
+				var paragraphNode;
+				var brNode;
+
+				/* 
+				 * A paragraph will only be inserted, if the paragraph before it has content.
+				 * Therefore we also insert a helper node, then the paragraph and the style
+				 * nodes after it.
+				 */
+				this.execute("inserthtml", helperString + paragraphString + helperStyle);
+
+				/* Fetch elements */
+				spanNode      = this.__doc.getElementById(spanId);
+				paragraphNode = this.__doc.getElementById(paragraphId);
+
+				/* We do net need to pollute the generated HTML with IDs */
+				paragraphNode.removeAttribute("id");
+
+				/*
+				 * If the previous paragraph only contains the helperString, it was empty before.
+				 * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
+				 */
+				if(paragraphNode.previousSibling.innerHTML == helperString)
+				{
+				  helperNodeFragment = this.__generateHelperNodes();
+				  brNode             = this.__doc.createElement("br");
+
+				  var mozDirty = this.__doc.createAttribute("_moz_dirty");
+				  mozDirty.nodeValue = "";
+				  brNode.setAttributeNode(mozDirty);
+
+				  var type     = this.__doc.createAttribute("type");
+				  type.nodeValue = "_moz"; 
+				  brNode.setAttributeNode(type);
+
+				  /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
+				  paragraphNode.previousSibling.appendChild(helperNodeFragment);
+				  paragraphNode.previousSibling.appendChild(brNode);
+
+				  //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
+				}
+				/* We do net need to pollute the generated HTML with IDs */
+				spanNode.removeAttribute("id");
+
+				return true;
+			},
+
+			/**
+			 * Gecko does not copy the paragraph's background color, so do this
+			 * manually.
+			 */
+			"webkit" : function()
+			{
+
+				var styles = this.getCurrentStyles();
+				var doc = this.__editorInstance.getContentDocument();
+				var backgroundColor = "transparent";
+
+				if (styles["background-color"]) {
+					backgroundColor = styles["background-color"];
+				}
+
+				this.__editorInstance.insertHtml("<p style='background-color:" + backgroundColor + ";'><br class='webkit-block-placeholder' />");
+			},
+
+			"default" : function(){}
+			}),
+
+
      /**
       * ONLY IE
       * Inserts a simple linebreak ('<br>') at the current position.
@@ -1251,8 +1275,7 @@ qx.Class.define("htmlarea.command.Manager",
        
        return fragment;
      },
-     
-     
+
      /**
       * Works with the current styles and creates a hierarchy which can be 
       * used to create nodes or strings out of the hierarchy.
