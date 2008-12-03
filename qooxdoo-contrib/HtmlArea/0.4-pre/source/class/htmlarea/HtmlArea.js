@@ -1616,128 +1616,21 @@ qx.Class.define("htmlarea.HtmlArea",
            */
           if (isCtrlPressed)
           {
-            if (!this.getInsertLinebreakOnCtrlEnter())
+            if (this.getInsertLinebreakOnCtrlEnter())
+            {
+              this.__handleCtrlEnter(doc);
+
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            else
             {
               return;
             }
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (qx.core.Variant.isSet("qx.client", "gecko"))
-            {
-              /*
-               * Insert additionally an empty div element - this ensures that
-               * the caret is shown and the cursor moves down a line correctly
-               *
-               * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
-               * only necessary to have anything AFTER the "br" element to get it work.
-               * Strange hack, I know ;-)
-               */
-              this.insertHtml("<br /><div id='placeholder'></div>");
-            }
-            else if (qx.core.Variant.isSet("qx.client", "webkit"))
-            {
-              /*
-               * TODO: this mechanism works well when the user already typed in some text at the
-               * current line. If the linebreak is done without any text at the current line the
-               * cursor DOES NOT correspond -> it stays at the current line although the linebreak
-               * is inserted. Navigating to the next line with the arrow down key is possible.
-               */
-              this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
-            }
-            else if (qx.core.Variant.isSet("qx.client", "opera"))
-            {
-              /*
-               * To insert a linebreak for Opera it is necessary to work with ranges and add the
-               * br element on node-level. The selection of the node afterwards is necessary for Opera
-               * to show the cursor correctly.
-               */
-              var sel    = this.__getSelection();
-              var rng    = this.__createRange(sel);
-
-              var brNode = doc.createElement("br");
-              rng.collapse(true);
-              rng.insertNode(brNode);
-              rng.collapse(true);
-
-              rng.selectNode(brNode);
-              sel.addRange(rng);
-              rng.collapse(true);
-            }
           }
-
-          /*
-           * Special handling for IE when hitting the "Enter" key
-           * instead of letting the IE insert a <p> insert manually a <br>
-           * if the corresponding property is set
-           */
-          if (qx.core.Variant.isSet("qx.client", "mshtml"))
+          else
           {
-            if (!this.getInsertParagraphOnLinebreak())
-            {
-
-              /*
-               * Insert a "br" element to force a line break. If the insertion succeeds
-               * stop the key event otherwise let the browser handle the linebreak e.g.
-               * if the user is currently editing an (un)ordered list.
-               */
-              if (this.__commandManager.execute("inserthtml", htmlarea.HtmlArea.simpleLinebreak))
-              {
-                e.preventDefault();
-                e.stopPropagation();
-              }              
-            }
-          }
-          /*
-           * Special handling for Firefox when hitting the "Enter" key
-           */
-          else if(qx.core.Variant.isSet("qx.client", "gecko"))
-          {
-            if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
-            {
-              var sel = this.__getSelection();
-
-              if (sel)
-              {
-                // check if inside a list
-                var selNode = sel.focusNode;
-                while (selNode.nodeName.toLowerCase() != "body")
-                {
-                  if (selNode.nodeName.toLowerCase() == "li")
-                  {
-                    return;
-                  }
-                  selNode = selNode.parentNode;
-                }
-              }
-
-              this.__commandManager.insertParagraphOnLinebreak();
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }
-          else if(qx.core.Variant.isSet("qx.client", "webkit"))
-          {
-            if (this.getInsertParagraphOnLinebreak() && isShiftPressed)
-            {
-              
-              var sel = this.__getSelection();
-              var helperString = "";
-
-              /* Insert bogus node if we are on an empty line: */
-              if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
-              {
-                helperString = "<br class='webkit-block-placeholder' />";
-              }
-
-              this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
-
-              /* Stop event */
-              e.preventDefault();
-              e.stopPropagation();
-
-            }
+            this.__handleEnter(isShiftPressed, e);
           }
           break;
 
@@ -1909,6 +1802,163 @@ qx.Class.define("htmlarea.HtmlArea",
        this.__currentEvent = null;
     },
 
+		/**
+		 * Internal function to react on the "enter" key while the crtl key is
+		 * pressed. It inserts special HTML code (or DOM nodes) to create a
+	   * line break.
+		 * 
+     * @param doc {Object} The document element of the htmlarea's iframe.
+     * @return void
+		 * @signature function(isShiftPressed, e)
+		 */
+    __handleCtrlEnter  : qx.core.Variant.select("qx.client",
+    {
+
+      "gecko" : function(doc)
+      {
+        /*
+         * Insert additionally an empty div element - this ensures that
+         * the caret is shown and the cursor moves down a line correctly
+         *
+         * ATTENTION: the "div" element itself gets not inserted by Gecko, it is
+         * only necessary to have anything AFTER the "br" element to get it work.
+         * Strange hack, I know ;-)
+         */
+        this.insertHtml("<br /><div id='placeholder'></div>");
+      },
+
+      "webkit" : function(doc)
+      {
+        /*
+         * TODO: this mechanism works well when the user already typed in some text at the
+         * current line. If the linebreak is done without any text at the current line the
+         * cursor DOES NOT correspond -> it stays at the current line although the linebreak
+         * is inserted. Navigating to the next line with the arrow down key is possible.
+         */
+        this.insertHtml("<div><br class='webkit-block-placeholder' /></div>");
+      },
+
+      "opera" : function(doc)
+      {
+        /*
+         * To insert a linebreak for Opera it is necessary to work with ranges and add the
+         * br element on node-level. The selection of the node afterwards is necessary for Opera
+         * to show the cursor correctly.
+         */
+        var sel    = this.__getSelection();
+        var rng    = this.__createRange(sel);
+
+        var brNode = doc.createElement("br");
+        rng.collapse(true);
+        rng.insertNode(brNode);
+        rng.collapse(true);
+
+        rng.selectNode(brNode);
+        sel.addRange(rng);
+        rng.collapse(true);
+      },
+
+      "default" : function() {}
+
+    }),
+
+
+		/**
+		 * Internal function to react on the "enter" key. It uses various
+		 * methods to insert special HTML code and cancles the event or 
+		 * just forwards it to the browser.
+		 * 
+     * @param isShiftPressed {Boolean} Flag indicating if the shift key is hold
+     * down
+     * @param e {qx.event.type.KeyEvent} Incoming key event
+     * @return void
+		 * @signature function(isShiftPressed, e)
+		 */
+    __handleEnter  : qx.core.Variant.select("qx.client",
+    {
+
+      /*
+       * Special handling for IE when hitting the "Enter" key
+       * instead of letting the IE insert a <p> insert manually a <br>
+       * if the corresponding property is set
+       */
+      "mshtml" : function(isShiftPressed, e)
+      {
+        if (!this.getInsertParagraphOnLinebreak())
+        {
+          /*
+           * Insert a "br" element to force a line break. If the insertion succeeds
+           * stop the key event otherwise let the browser handle the linebreak e.g.
+           * if the user is currently editing an (un)ordered list.
+           */
+          if (this.__commandManager.execute("inserthtml", htmlarea.HtmlArea.simpleLinebreak))
+          {
+            e.preventDefault();
+            e.stopPropagation();
+          }              
+        }
+      },
+
+
+      /*
+       * Special handling for Firefox when hitting the "Enter" key
+       */
+      "gecko" : function(isShiftPressed, e)
+      {
+        if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
+        {
+          var sel = this.__getSelection();
+
+          if (sel)
+          {
+            // check if inside a list
+            var selNode = sel.focusNode;
+            while (selNode.nodeName.toLowerCase() != "body")
+            {
+              if (selNode.nodeName.toLowerCase() == "li")
+              {
+                return;
+              }
+              selNode = selNode.parentNode;
+            }
+          }
+
+          this.__commandManager.insertParagraphOnLinebreak();
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+
+      "webkit" : function(isShiftPressed, e)
+      {
+        if (this.getInsertParagraphOnLinebreak())
+        {
+          if(isShiftPressed)
+          {
+            var sel = this.__getSelection();
+            var helperString = "";
+
+            /* Insert bogus node if we are on an empty line: */
+            if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
+            {
+              helperString = "<br class='webkit-block-placeholder' />";
+            }
+
+            this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
+          }
+          else
+          {
+            this.__commandManager.insertParagraphOnLinebreak();
+          }
+
+          /* Stop event */
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      
+      "default" : function() {}
+    }),
 
     /**
      * Executes a method and prevent default
@@ -2147,7 +2197,6 @@ qx.Class.define("htmlarea.HtmlArea",
     {
       return this.__commandManager.execute("underline");
     },
-
 
     /**
      * Sets the current selection content to strikethrough font style
