@@ -303,17 +303,36 @@ class qcl_jsonrpc_object extends qcl_core_object
   }
   
   /**
-   * Adds an event listener. Works only during runtime
-   * @todo: rewrite
+   * Adds an event listener. Works only during runtime, i.e. event bindings are not 
+   * persisted.
+   * @todo: rewrite using event objects and support persisted event bindings
    * @param string $type The name of the event
-   * @param string $objectId Usually '$this->objectId()'
-   * @param string $method callback method of the object indicated by the objectId
+   * @param string|qcl_jsonrpc_object $object The object or the object id retrieved by '$this->objectId()'
+   * @param string $method callback method of the object 
    * @todo rewrite
    */
-  function addEventListener( $type, $objectId, $method )
+  function addEventListener( $type, $object, $method )
   {
-    $event_db =& $this->__event_db;
+    /*
+     * object id
+     */
+    if ( is_a( $object,"qcl_jsonrpc_object" ) )
+    {
+      $objectId = $object->objectId();
+    }
+    elseif ( is_string($object) and ! empty( $object ) )
+    {
+      $objectId = $object;
+    }
+    else    
+    {
+      $this->raiseError("Invalid object or object id");
+    }
     
+    /*
+     * event database
+     */
+    $event_db =& $this->__event_db;
     if ( ! $event_db )
     {
       $event_db = array(

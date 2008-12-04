@@ -46,8 +46,8 @@ class qcl_access_common extends qcl_db_model
   }
 
 	/**
-	 * creates a new record and optionally links it to a role. Raises an error
-	 * if the namedId of the record already exists
+	 * Creates a new record and optionally links it to a role. Raises an error
+	 * if the namedId of the record already exists.
 	 * @todo rewrite
 	 * @override
 	 * @param string	$namedId
@@ -58,11 +58,10 @@ class qcl_access_common extends qcl_db_model
  		/*
  		 * check
  		 */
-    if ( in_array($namedId, $this->$reservedNames ) )
+    if ( in_array( $namedId, $this->reservedNames ) )
  		{
  			$this->raiseError ( "'$namedId' is a reserved name and cannto be used." );
  		}
-
  		if ( $this->namedIdExists ( $namedId ) )
  		{
  			$this->raiseError ( "'$namedId' already exists." );

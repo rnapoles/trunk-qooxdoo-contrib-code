@@ -250,14 +250,15 @@ class qcl_access_user extends qcl_access_common
   function purgeStaleGuests()
   {
     $this->findWhere("
-      SUBSTR(`username`,0,6) = 'guest_' AND
+      SUBSTR(`username`,1,6) = 'guest_' AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
         OR `lastAction` IS NULL ) 
     ",null,"id");
-    
-    if ( count($this->values() ) )
+    $ids = $this->values();
+    $this->debug($ids);
+    if ( count( $ids ) )
     {
-      $this->delete( $this->values() );  
+      $this->delete( $ids );  
     }
     
   }
