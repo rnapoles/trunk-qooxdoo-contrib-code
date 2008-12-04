@@ -90,4 +90,14 @@ class TextMateLogger:
 
     def printFooter(self):
         print HTML_FOOTER
+        
+class PopupLogger:
+    def printHeader(self, title, heading):
+        pass
+
+    def log(self, filename, row, column, msg):
+        print "row: %s, column: %s, Message: %s" % (row, column, msg)
+
+    def printFooter(self):
+        pass
 

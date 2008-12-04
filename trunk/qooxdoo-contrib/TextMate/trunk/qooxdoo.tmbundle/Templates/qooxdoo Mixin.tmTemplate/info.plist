@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>command</key>
+	<string>TPY=${TM_PYTHON:-python}
+
+"$TPY" "$TM_BUNDLE_SUPPORT/create.py" mixin.js "$TM_NEW_FILE" &gt; "$TM_NEW_FILE"</string>
+	<key>extension</key>
+	<string>js</string>
+	<key>name</key>
+	<string>qooxdoo Mixin</string>
+	<key>uuid</key>
+	<string>A5537311-FDDC-45A3-ABE1-5420A82ECE21</string>
+</dict>
+</plist>

@@ -7,18 +7,18 @@
 	<key>command</key>
 	<string>TPY=${TM_PYTHON:-python}
 
-"$TPY" "$TM_BUNDLE_SUPPORT/lint.py" "$TM_FILEPATH"</string>
+"$TPY" "$TM_BUNDLE_SUPPORT/lint.py" "$TM_FILEPATH" popup</string>
 	<key>input</key>
 	<string>document</string>
 	<key>keyEquivalent</key>
-	<string>^L</string>
+	<string>@s</string>
 	<key>name</key>
-	<string>Lint</string>
+	<string>Lint popup</string>
 	<key>output</key>
-	<string>showAsHTML</string>
+	<string>showAsTooltip</string>
 	<key>scope</key>
 	<string>source.js</string>
 	<key>uuid</key>
-	<string>F7526CCE-EDFA-49F2-82AF-9FC9770C33A8</string>
+	<string>CE5C12DE-CF0E-40CF-8F51-AFBDBCE88A24</string>
 </dict>
 </plist>
