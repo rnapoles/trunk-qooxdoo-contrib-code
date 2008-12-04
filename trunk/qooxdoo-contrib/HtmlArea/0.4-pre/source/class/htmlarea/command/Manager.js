@@ -1203,8 +1203,8 @@ qx.Class.define("htmlarea.command.Manager",
          }
          formatString += legacyFont ? '" size="'+ child["legacy-font-size"] +'">' : '">';
          
-         // adjust level and check for next level
-         closings.push(legacyFont ? "</font>" : "</span>");
+         // memorize the element to close and adjust object structure
+         closings.unshift(legacyFont ? "</font>" : "</span>");
          child = child.child;
        }
        
@@ -1216,7 +1216,7 @@ qx.Class.define("htmlarea.command.Manager",
        }
        
        // close the elements
-       for (var i=closings.length-1; i>=0; i--)
+       for (var i=0, j=closings.length; i<j; i++)
        {
          formatString += closings[i];
        }
@@ -1275,7 +1275,8 @@ qx.Class.define("htmlarea.command.Manager",
        
        return fragment;
      },
-
+     
+     
      /**
       * Works with the current styles and creates a hierarchy which can be 
       * used to create nodes or strings out of the hierarchy.
