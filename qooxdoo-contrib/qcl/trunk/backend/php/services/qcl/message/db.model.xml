@@ -15,9 +15,6 @@
         <property name="sessionId" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>  
-        <property name="requestId" type="string">
-          <sql>varchar(150) NOT NULL</sql>
-        </property>  
         <property name="name" type="string">
           <sql>varchar(100) NOT NULL</sql>
         </property>         

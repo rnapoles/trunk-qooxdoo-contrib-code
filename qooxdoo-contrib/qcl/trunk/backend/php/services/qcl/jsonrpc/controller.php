@@ -37,6 +37,14 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
   var $response;
     
+  
+  /**
+   * The id of the session, default to PHP session id
+   * @var string
+   * @access private
+   */
+  var $_sessionId;
+  
   /**
    * constructor , configures the service
    */
@@ -118,6 +126,61 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   {
     return $this->request->getParams();
   }
+  
+  
+  /**
+   * Returns the serverData part of the jsonrpc request
+   * @param string[optional] $key If provided, get only a key, otherwise return the map
+   * @return mixed Either the value of the given key, or the whole map
+   */
+  function getServerData( $key=null )
+  {
+    $serverData = $this->request->getServerData();
+    if ( is_null($key) )
+    {
+      return $serverData;
+    }
+    elseif ( is_object( $serverData ) )
+    {
+      return $serverData->$key;
+    }
+    return null;
+  }
+   
+  
+  /**
+   * Returns the current session id. Defaults to PHP session id.
+   * Override in parent classes for more sophisticated session handling
+   * @return string session id
+   */
+  function getSessionId()
+  {
+    if ( ! $this->_sessionId )
+    {
+      $this->_sessionId = session_id();
+    }
+    return $this->_sessionId;
+  }  
+  
+  /**
+   * Sets the session id
+   * @param string $sessionId
+   * @return void
+   */
+  function setSessionId( $sessionId )
+  {
+    $this->_sessionId = $sessionId;
+  }
+  
+    
+  /**
+   * Resets the session id
+   * @return void
+   */
+  function resetSessionId( )
+  {
+    $this->_sessionId = null;
+  }  
   
   /**
    * The object types that are used by this

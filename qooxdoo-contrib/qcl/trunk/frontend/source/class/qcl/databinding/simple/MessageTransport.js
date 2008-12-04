@@ -271,13 +271,28 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
         
         switch (_this.getTransport())
         {
-          // use JSON-RPC
+          /*
+           * use JSON-RPC
+           */
           case "jsonrpc":
             var rpc = new qx.io.remote.Rpc();
             rpc.setTimeout(_this.getTimeout());
             rpc.setUrl(_this.getServiceUrl());
             rpc.setServiceName(_this.getServiceName() );
             rpc.setCrossDomain(_this.getAllowCrossDomainRequests());
+            
+            /*
+             * session id
+             */
+            var app = qx.core.Init.getInstance().getApplication();
+            if ( typeof app.getSessionId == "function" )
+            {
+              rpc.setServerData({ 'sessionId' : app.getSessionId() } );
+            }
+            
+            /*
+             * request with handler function 
+             */      
             var request = rpc.callAsync(
               function(data, ex, id)
               { 
@@ -360,6 +375,19 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
             rpc.setServiceName(this.getServiceName() );
             rpc.setCrossDomain(this.getAllowCrossDomainRequests());
             var _this = this;
+
+            /*
+             * session id
+             */
+            var app = qx.core.Init.getInstance().getApplication();
+            if ( typeof app.getSessionId == "function" )
+            {
+              rpc.setServerData({ 'sessionId' : app.getSessionId() } );
+            }            
+            
+            /*
+             * request with handler function
+             */            
             var request = rpc.callAsync(
             function(data, ex, id)
             {

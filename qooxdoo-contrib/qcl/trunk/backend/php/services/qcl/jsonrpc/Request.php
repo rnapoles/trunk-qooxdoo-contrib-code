@@ -47,10 +47,12 @@ class qcl_jsonrpc_Request extends  qcl_core_object
   function __construct()
   {
     global $jsonInput;
-    $this->jsonInput = $jsonInput;
-    $this->service   = $jsonInput ? $jsonInput->service : null;
-    $this->method    = $jsonInput ? $jsonInput->method  : null;
-    $this->params    = $jsonInput ? $jsonInput->params  : null;
+    $this->jsonInput  = $jsonInput;
+    $this->service    = $jsonInput->service;
+    $this->method     = $jsonInput->method;
+    $this->params     = $jsonInput->params;
+    $this->serverData = $jsonInput->server_data;
+    
     $this->ip = $_SERVER['REMOTE_ADDR'];
   }
   
@@ -95,6 +97,11 @@ class qcl_jsonrpc_Request extends  qcl_core_object
   function getParams()
   {
     return $this->params;
+  }
+  
+  function getServerData()
+  {
+    return $this->serverData;
   }
   
   function getIp()

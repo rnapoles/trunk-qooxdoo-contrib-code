@@ -27,6 +27,10 @@
 #module(qcl.application)
 
 ************************************************************************ */
+
+/**
+ * @todo move mixin providing .getApplication() method for each widget here.
+ */
 qx.Mixin.define("qcl.application.MApplication",
 {
 
@@ -50,7 +54,17 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       check : "Array",
       init : []
-    }   
+    },
+    
+    /**
+     * The session id connecting this particular browser instance
+     * with the server
+     */
+    sessionId :
+    {
+      check : "String",
+      nullable : true
+    }
 
   },
 

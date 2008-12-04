@@ -9,6 +9,7 @@ require_once "qcl/access/common.php";
  * Constants
  */
 define('QCL_ACTIVE_USER_ID_VAR', "qcl_access_user_activeUserId");
+define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
 
 /**
  * class providing data on users
@@ -95,7 +96,7 @@ class qcl_access_user extends qcl_access_common
     }
         
     /*
-     * Create one extra user model 
+     * Create a user model instance
      */
     if ( ! $this->_activeUser )
     {
@@ -104,11 +105,16 @@ class qcl_access_user extends qcl_access_common
       $this->_activeUser =& new $className(&$controller);
       $this->_activeUser->load( $_SESSION[QCL_ACTIVE_USER_ID_VAR] );
     }
+    
+    /*
+     * return the existing or created instance
+     */
     return $this->_activeUser;
   }
    
   /**
-   * Copies the active user object into the session
+   * Sets the active user. This will copy the user id into the 
+   * session variable, in case the client doesn't provide a session id.
    * @param qcl_access_user $userObject A user object or null to logout.
    */
   function setActiveUser( $userObject )
@@ -126,6 +132,7 @@ class qcl_access_user extends qcl_access_common
       if ( $userObject )
       {
         $_SESSION[QCL_ACTIVE_USER_ID_VAR] = $userObject->getId();
+        $this->_activeUser =& $userObject;
       }
       else
       {
@@ -175,7 +182,6 @@ class qcl_access_user extends qcl_access_common
     if ( $this->foundNothing() )
     {
       $this->setError( $this->tr("Unknown user name.") );
-      $this->setActiveUser( null );
       return false;
     }
     	
@@ -197,7 +203,6 @@ class qcl_access_user extends qcl_access_common
     else
     {
       $this->setError($this->tr( "Wrong Password" ) );
-      $this->setActiveUser(null);
       return false;
     }
   }
@@ -209,9 +214,9 @@ class qcl_access_user extends qcl_access_common
   function guestAccess()
   {
     /*
-     * purge all stale uests that haven't been active for 1 hour
+     * purge all anonymous users that haven't been active for more than one hour
      */    
-    $this->purgeStaleGuests();
+    $this->purgeAnonymous();
     
     /*
      * role model
@@ -227,7 +232,7 @@ class qcl_access_user extends qcl_access_common
     /*
      * create a new guest user and link it to the guest role
      */
-    $username = "guest_" . microtime_float();
+    $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float();
     $this->create($username);
     $this->linkWith(&$roleModel);
     $this->setActiveUser( &$this );
@@ -238,24 +243,23 @@ class qcl_access_user extends qcl_access_common
    * @return bool True if user name is guest
    * @todo: we need some more sophisticated stuff here
    */
-  function isGuest()
+  function isAnonymous()
   {
-    return ( substr( $this->getNamedId(), 0, 6 ) == "guest_" );
+    return ( substr( $this->getNamedId(), 0, strlen(QCL_ANONYMOUS_USER_PREFIX) ) == QCL_ANONYMOUS_USER_PREFIX );
   }  
   
   /**
-   * Purge all guests that are inactive for more than
+   * Purge all anonymous guests that are inactive for more than
    * one hour
    */
-  function purgeStaleGuests()
+  function purgeAnonymous()
   {
     $this->findWhere("
-      SUBSTR(`username`,1,6) = 'guest_' AND
+      SUBSTR(`username`,1,6) = '" . QCL_ANONYMOUS_USER_PREFIX . "'AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
         OR `lastAction` IS NULL ) 
     ",null,"id");
     $ids = $this->values();
-    $this->debug($ids);
     if ( count( $ids ) )
     {
       $this->delete( $ids );  
@@ -269,7 +273,7 @@ class qcl_access_user extends qcl_access_common
    */
   function logout()
   {
-    if (  $this->_activeUser and $this->_activeUser->isGuest() )
+    if (  $this->_activeUser and $this->_activeUser->isAnonymous() )
     {
       $this->_activeUser->delete();
     }

@@ -75,8 +75,10 @@ class qcl_db_controller extends qcl_jsonrpc_controller
     return $this->_connection;
   }  
   
+  
+  
   /**
-   * connects to a database
+   * Connects to a database
    * @param mixed $first [optional] If string, treat as dsn. If boolean, whether 
    * to use the userdata database (true) or the database containing 
    * the application data tables (false, default)

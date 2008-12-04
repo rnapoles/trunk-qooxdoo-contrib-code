@@ -8,7 +8,8 @@ require_once "qcl/session/db.model.php";
 
 /**
  * Base class that keeps track of connected clients 
- * and dispatches or broadcasts messages.
+ * and dispatches or broadcasts messages. A "session" means the
+ * connection established by a particular browser instance.
  */
 class qcl_session_controller extends qcl_access_controller
 {
@@ -39,6 +40,28 @@ class qcl_session_controller extends qcl_access_controller
      * add session model
      */
     $this->sessionModel =& new qcl_session_db_model(&$this);
+    
+    /*
+     * Does the request contain a session id?
+     */
+    $sessionId = $this->getServerData("sessionId");
+    if ( $sessionId )
+    {
+      /*
+       * yes, set session id (this will also set the active user)
+       */
+      $this->setSessionId( $sessionId );
+      //$this->debug("Getting session id from request: $sessionId");
+    }    
+    else
+    {
+      /*
+       * no, create a new session 
+       */
+      $sessionId = $this->getSessionId();
+      //$this->debug("New session id: $sessionId ");
+    }
+        
 
   }     
     
@@ -54,39 +77,127 @@ class qcl_session_controller extends qcl_access_controller
   {
     return $this->sessionModel;
   }
-  
-  /**
-   * returns the current session id
-   * @return string session id
-   */
-  function getSessionId()
-  {
-    return session_id();
-  }
 
   /**
    * Registers session and user. call from extending controller's constructor 
    * requires a user and a session model
-   * @param string $user user name
    * @param int $timeout Timeout in seconds, defaults to 600 seconds
    */
-  function registerSession($user, $timeout=600)
+  function registerSession($timeout=600)
   {
+    /*
+     * models
+     */
+    $activeUser   =& $this->getActiveUser();
     $sessionModel =& $this->getSessionModel();
     
-    // delete all expired sessions
+    /*
+     * delete all expired sessions
+     */
     $sessionModel->expungeStaleSessions($timeout);
     
-    // register current session (will be ignored if already present)
-    $sessionModel->registerSession( $this->getSessionId(), $user);
+    /*
+     * register current session (will be ignored if already present)
+     */
+    $sessionModel->registerSession( $this->getSessionId(), $activeUser->getId() );
   }
-
+  
+  /**
+   * Sets the session id and the active user, if any
+   * @override
+   */
+  function setSessionId( $sessionId )
+  {
+    parent::setSessionId( $sessionId );
+    
+    /*
+     * if session already exists, get user id
+     */
+    $sessionModel =& $this->getSessionModel();
+    $sessionModel->findByNamedId( $sessionId );
+    if ( $sessionModel->foundSomething() )
+    {
+      $activeUserId = $sessionModel->get("userId");
+      if ( ! $activeUserId )
+      {
+        $this->raiseError("Session is not connected with a user id!"); 
+      }
+      $userModel    =& $this->getUserModel();
+      $userModel->load($activeUserId);
+      $userModel->setActiveUser( $userModel->cloneObject() );
+    }
+  }
+  
+  /**
+   * Returns the current session id. Defaults to PHP session id.
+   * Override in parent classes for more sophisticated session handling
+   * @return string session id
+   */
+  function getSessionId()
+  {
+    if ( ! $this->_sessionId )
+    {
+      /*
+       * create random session id
+       */
+      $sessionId = md5(microtime());
+      $this->_sessionId = $sessionId;
+      
+      /*
+       * notify client of session id
+       */
+      $this->dispatchMessage("qcl.commands.setSessionId", $sessionId );
+    }
+    return $this->_sessionId;
+  }    
+  
+  /**
+   * Logout current user
+   * @override
+   * @return void
+   */
+  function logout()
+  {
+    /*
+     *  models
+     */
+    $userModel    =& $this->getUserModel();
+    $sessionModel =& $this->getSessionModel();
+    $activeUser   =& $userModel->getActiveUser();
+    
+    if ( ! $activeUser ) 
+    {
+      $this->warn("Cannot log out, no user is logged in.");
+      return false;
+    }
+    
+    $sessionId = $this->getSessionId();
+    $userId    = $activeUser->getId();
+    $username  = $activeUser->username();
+    
+    if ( $sessionModel->isRegistered( $sessionId, $userId ) )
+    {
+      $sessionModel->unregisterSession( $sessionId, $userId );
+      $this->info ( "$username logs out." );
+    }
+    else
+    {
+      $this->warn("User $userId is not registered for session $sessionId");
+    }
+    $userModel->setActiveUser(null);      
+           
+    /*
+     * message to indicate that server has logged out
+     */
+    $this->dispatchMessage( "qcl.commands.logout", $username );
+  }     
+  
   //-------------------------------------------------------------
   // messages and events
   //-------------------------------------------------------------
 
   /**
-   * broadcasts a message to all connected clients
+   * Broadcasts a message to all connected clients
    * @param mixed $messages Message name or hash map of messages
    * @param mixed $data Data dispatched with message
    * @todo: use into qcl_jsonrpc_Response object
@@ -99,7 +210,6 @@ class qcl_session_controller extends qcl_access_controller
     {
       $sessionModel =& $this->getSessionModel();
       $sessionModel->addMessageBroadcast( 
-        $this->getSessionId(), 
         $message, 
         $data 
       );

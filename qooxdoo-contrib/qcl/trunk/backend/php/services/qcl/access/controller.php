@@ -157,6 +157,13 @@ class qcl_access_controller extends qcl_db_controller
     {
 
       /*
+       * create new session
+       */
+      $this->resetSessionId();
+      $this->getSessionId();
+      $this->registerSession();
+      
+      /*
        * get client security data
        */
       $securityData = $userModel->securityData();
@@ -164,7 +171,7 @@ class qcl_access_controller extends qcl_db_controller
       /*
        * message that login was successful
        */
-      $this->dispatchMessage("qcl.messages.login.success"); 
+      $this->dispatchMessage("qcl.messages.login.success", $username ); 
       $this->info ("Logging on user $username.");   
     }
     
@@ -184,7 +191,7 @@ class qcl_access_controller extends qcl_db_controller
       /*
        * message that login was successful
        */
-      $this->dispatchMessage("qcl.messages.login.success", $username );
+      $this->dispatchMessage( "qcl.messages.login.success" );
     }
     
     /*
@@ -218,24 +225,25 @@ class qcl_access_controller extends qcl_db_controller
   function logout()
   {
     /*
-     * user model
+     *  models
      */
     $userModel  =& $this->getUserModel();
     $activeUser =& $userModel->getActiveUser();
-    
+
     /*
      * delete active user
      */
     if ( $activeUser )
     {
-      $this->info ( $activeUser->username() . " logs out." );  
+      $username = $activeUser->username();
+      $this->info ( "$username logs out." );  
       $userModel->setActiveUser(null);      
     }
         
     /*
      * message to indicate that server has logged out
      */
-    $this->dispatchMessage("qcl.messages.logout");
+    $this->dispatchMessage( "qcl.commands.logout", $username );
   }   
   
   /**
@@ -256,23 +264,26 @@ class qcl_access_controller extends qcl_db_controller
    * Passively checks if the requesting client is an authenticated user.
    * For the actual active authentication, use qcl_access_user::authenticate()
    * @see qcl_access_user::method_authenticate()
-   * @return bool True if request can continue, false if it should be aborted
+   * @return bool True if request can continue, false if it should be aborted with 
+   * a "access denied" exception
+   * @todo implement (see Bugzilla bug 1659)
    */
   function authenticate()
   {
-
     /*
      * models
      */
     $userModel   =& $this->getUserModel();
     $configModel =& $this->getConfigModel();
-    $activeUser  =& $userModel->getActiveUser();
+    $activeUser  =& $userModel->getActiveUser();    
     
     /*
      * check authentication 
      */
     if ( $activeUser )
     {
+      //$this->debug($activeUser->getId());
+      
       /*
        * user has been authenticated
        * check the user session for timeouts etc.
@@ -330,7 +341,7 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * no timeout check if not authenticated or guest access
      */    
-    if ( ! $activeUser or $activeUser->isGuest() )
+    if ( ! $activeUser or $activeUser->isAnonymous() )
     {
       return true;
     }
@@ -344,7 +355,7 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * register this session if parent class provides this. 
      */
-    $this->registerSession( $userName, $timeout );
+    $this->registerSession( $timeout );
         
     //$this->info("bibliograph_controller::authenticate: User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
     $activeUser->resetLastAction();
@@ -369,6 +380,7 @@ class qcl_access_controller extends qcl_db_controller
    * empty stub to be overridden by parent classes
    */
   function registerSession() {}
+  
   
   /**
    * Returns active user object

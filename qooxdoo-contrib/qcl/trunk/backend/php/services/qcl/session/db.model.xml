@@ -15,15 +15,38 @@
         <property name="sessionId" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>
+        <property name="userId" type="string">
+          <sql>int(11) NOT NULL</sql>
+        </property>    
+        
+        <!-- deprecated -->
         <property name="user" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>
+        <property name="messages" type="string">
+          <sql>longblob</sql>
+        </property>
+        
       </properties>
       
       <aliases>
         <alias for="namedId">sessionId</alias>
       </aliases>
       
+      <!-- indexes -->
+      <indexes>
+        <index type="unique">
+          <property name="namedId" />
+          <property name="userId"  />
+        </index>
+
+        <!-- deprecated -->
+        <index type="unique">
+          <property name="user"  />
+          <property name="namedId" />
+        </index>
+      </indexes>
+            
     </definition>
     
   </model>

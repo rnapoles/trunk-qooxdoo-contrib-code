@@ -317,7 +317,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       rpc.setUrl(this.getServiceUrl());
       rpc.setServiceName(serviceName);
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
-
+      
+      /*
+       * session id
+       */
+      var app = qx.core.Init.getInstance().getApplication();
+      if ( typeof app.getSessionId == "function" )
+      {
+        rpc.setServerData({ 'sessionId' : app.getSessionId() } );
+      }
+      
       /*
        * tag the current object instance for closures
        */
@@ -849,6 +858,15 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       rpc.setTimeout( this.getTimeout() );
       rpc.setUrl( this.getServiceUrl() );
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
+
+      /*
+       * session id
+       */
+      var app = qx.core.Init.getInstance().getApplication();
+      if ( typeof app.getSessionId == "function" )
+      {
+        rpc.setServerData({ 'sessionId' : app.getSessionId() } );
+      }
       
       /*
        * reference present object instance for closures
