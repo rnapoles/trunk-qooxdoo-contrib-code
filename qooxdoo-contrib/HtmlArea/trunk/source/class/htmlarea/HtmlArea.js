@@ -1068,6 +1068,43 @@ qx.Class.define("htmlarea.HtmlArea",
       /* dispatch the "ready" event at the end of the initialization */
       this.createDispatchEvent("ready");
     },
+    
+    
+    /**
+     * Forces the htmlArea to reset the document editable. This method can
+     * be useful (especially for Gecko) whenever the HtmlArea was hidden and 
+     * gets visible again.
+     */
+    forceEditable : qx.core.Variant.select("qx.client",
+    {
+      "gecko" : function()
+      {
+        var doc = this.getContentDocument();
+        if (doc)
+        {
+          /* 
+           * Don't ask my why, but this is the only way I found to get
+           * gecko back to a state of an editable document after the htmlArea
+           * was hidden and visible again.
+           * Yes, and there are differences in Firefox 3.x and Firefox 2.x
+           */
+          if (qx.bom.client.Engine.VERSION >= "1.9")
+          {
+            doc.designMode = "Off";
+          
+            doc.body.contentEditable = false;
+            doc.body.contentEditable = true;
+          }
+          else
+          {
+            doc.body.contentEditable = true;            
+            this.__setDesignMode(true);
+          }
+        }
+      },
+        
+      "default" : function() {}
+    }),
 
 
     /**
@@ -1226,6 +1263,9 @@ qx.Class.define("htmlarea.HtmlArea",
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
 
       qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
+      
+      /* Register for the "appear" event to react on hiding/showing the htmlArea */
+      this.addEventListener("appear", this.forceEditable);
     },
 
 
