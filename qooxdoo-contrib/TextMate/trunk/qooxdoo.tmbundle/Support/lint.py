@@ -13,15 +13,18 @@ import sys
 import getopt
 
 import util
-from util import TextMateLogger
 util.addQooxdooClassPath()
 
 from ecmascript.frontend import treegenerator
 import ecmalint
 
 
-def lint(file):    
-    logger = TextMateLogger()
+def lint(file, popup):    
+    if popup: 
+        logger = util.PopupLogger()        
+    else: 
+        logger = util.TextMateLogger()        
+
     logger.printHeader("qooxdoo JavaScript lint", "qooxdoo JavaScript lint")
     try:
         lint = ecmalint.Lint(file, logger)
@@ -37,13 +40,15 @@ def lint(file):
     
 
 def main(argv=None):
-	if argv is None:
-		argv = sys.argv
-	
-	if len(argv) > 2:
-	    return
-	
-	lint(argv[1])
+    if argv is None:
+		    argv = sys.argv	
+
+    if len(argv) == 3:
+        popup = argv[2] == "popup"
+    else:
+        popup = False
+
+    lint(argv[1], popup)
 
 if __name__ == "__main__":
 	sys.exit(main())
