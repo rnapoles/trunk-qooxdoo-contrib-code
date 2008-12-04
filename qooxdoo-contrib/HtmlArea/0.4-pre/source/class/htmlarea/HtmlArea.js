@@ -862,7 +862,7 @@ qx.Class.define("htmlarea.HtmlArea",
       this.base(arguments);
 
       // we need to set the designMode every time we toggle visibility back to "visible"
-      this.__setDesignMode(true);
+      this.forceEditable();
     },
 
 
@@ -1263,9 +1263,6 @@ qx.Class.define("htmlarea.HtmlArea",
       qx.html.EventRegistration.addEventListener(doc.body, qx.core.Client.getInstance().isWebkit() ? "contextmenu" : "mouseup", this.__handleContextMenuEvent);
 
       qx.html.EventRegistration.addEventListener(doc, "focusout", this.__handleFocusOut);
-      
-      /* Register for the "appear" event to react on hiding/showing the htmlArea */
-      this.addEventListener("appear", this.forceEditable);
     },
 
 
