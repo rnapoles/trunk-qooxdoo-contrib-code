@@ -29,12 +29,12 @@
         <property name="note" type="string">
           <sql>mediumtext NULL</sql>
         </property>
-        <property name="lastAction" type="date" skipExport="true"> 
-          <sql>datetime NULL</sql>
-        </property> 
         <property name="active" type="bool">
           <sql>tinyint(1) default 0</sql>
         </property>           
+        <property name="lastAction" type="date" skipExport="true"> 
+          <sql>datetime NULL</sql>
+        </property> 
       </properties>
 
       <!-- indexes -->
