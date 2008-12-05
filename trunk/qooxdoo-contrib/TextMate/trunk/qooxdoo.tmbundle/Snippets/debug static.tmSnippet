@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>this.debug(${1:});</string>
+	<string>qx.log.Logger.debug(${1:});</string>
 	<key>name</key>
-	<string>this.debug</string>
+	<string>qx.log.Logger.debug</string>
 	<key>scope</key>
 	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>debug</string>
 	<key>uuid</key>
-	<string>808B3447-0A7F-4F03-BBEB-E3F3FEA3442B</string>
+	<string>BD3B5692-FF8F-45E7-8590-F0D095BC255A</string>
 </dict>
 </plist>
