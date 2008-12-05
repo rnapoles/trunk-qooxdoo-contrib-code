@@ -12,8 +12,6 @@ import org.eclipse.wst.jsdt.qooxdoo.validation.ClassModifier;
 import org.eclipse.wst.jsdt.qooxdoo.validation.IClassModifier;
 import org.eclipse.wst.jsdt.qooxdoo.validation.PropertiesModifier;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.MixinAttributesModifier;
 
 public class TypeAssembler {
 
@@ -32,10 +30,6 @@ public class TypeAssembler {
     if( classModificationStack.size() > 0 ) {
       classModificationStack.peek().endVisit( field );
     }
-  }
-
-  public void visit( final IObjectLiteralField field, Mixin type ) {
-    doVisit( field, new MixinConfigurationDelegator( typeManager, type ) );
   }
 
   public void visit( final IObjectLiteralField field, InferredType classDef ) {
@@ -131,10 +125,10 @@ public class TypeAssembler {
 
   private class MixinConfigurationDelegator extends AbstractDelegator {
 
-    private Mixin type;
+    private InferredType type;
 
     public MixinConfigurationDelegator( ITypeManagement typeManager,
-                                        Mixin classDef )
+        InferredType classDef )
     {
       super();
       this.type = classDef;
@@ -160,9 +154,6 @@ public class TypeAssembler {
       classModificationStack.push( new PropertiesModifier( classDef ) );
     }
 
-    public void visit( IObjectLiteralField field, Mixin type ) {
-      // FIXME m_kempka IMPLEMENT ME May 15, 2008
-    }
   }
 
   private final class MembersHandler extends AbstractTypeConfigurationHandler {
@@ -175,9 +166,6 @@ public class TypeAssembler {
       classModificationStack.push( new AttributesModifier( classDef, false ) );
     }
 
-    public void visit( IObjectLiteralField field, Mixin type ) {
-      classModificationStack.push( new MixinAttributesModifier( type ) );
-    }
   }
 
   private final class StaticsHandler extends AbstractTypeConfigurationHandler {
@@ -190,8 +178,5 @@ public class TypeAssembler {
       classModificationStack.push( new AttributesModifier( classDef, true ) );
     }
 
-    public void visit( IObjectLiteralField field, Mixin type ) {
-      // FIXME m_kempka IMPLEMENT ME May 15, 2008
-    }
   }
 }
