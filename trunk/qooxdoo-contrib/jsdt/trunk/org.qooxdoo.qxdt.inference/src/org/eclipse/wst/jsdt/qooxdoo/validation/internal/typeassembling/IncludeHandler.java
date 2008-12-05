@@ -7,7 +7,6 @@ import org.eclipse.wst.jsdt.core.ast.ISingleNameReference;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
 
 public class IncludeHandler extends AbstractTypeConfigurationHandler {
 
@@ -21,10 +20,6 @@ public class IncludeHandler extends AbstractTypeConfigurationHandler {
     IExpression initializer = field.getInitializer();
     currentClassDefinition.addMixin( getMixinName( initializer ) );
 	}  
-
-  public void visit( IObjectLiteralField field, Mixin type ) {
-    // FIXME m_kempka IMPLEMENT ME May 15, 2008
-  }
 
   private char[] getMixinName( IExpression initializer ) {
     char[] result = "".toCharArray();

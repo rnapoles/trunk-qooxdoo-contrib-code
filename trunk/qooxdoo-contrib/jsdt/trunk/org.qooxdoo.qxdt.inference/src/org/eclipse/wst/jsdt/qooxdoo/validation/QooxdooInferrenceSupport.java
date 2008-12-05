@@ -13,7 +13,6 @@ import org.eclipse.wst.jsdt.core.infer.InferEngine;
 import org.eclipse.wst.jsdt.core.infer.InferredAttribute;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.ITypeManagement;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
 import org.eclipse.wst.jsdt.qooxdoo.validation.internal.typeassembling.TypeAssembler;
 
 public class QooxdooInferrenceSupport extends InferEngine
@@ -25,12 +24,6 @@ public class QooxdooInferrenceSupport extends InferEngine
   private Stack<IObjectLiteralField> memberTypeStack = new Stack<IObjectLiteralField>();
 
   public QooxdooInferrenceSupport() {
-  }
-
-  // interface methods from ITypeManagement
-  // //////////////////////////////////////////////
-  public Mixin getMixin( InferredType type ) {
-    return new Mixin( type );
   }
 
   @Override
@@ -64,11 +57,7 @@ public class QooxdooInferrenceSupport extends InferEngine
     if( isInQooxdooClass() ) {
       InferredType classDef = classDefinitionStack.peek();
       memberTypeStack.push( field );
-      if( "my.cool.MMixin".equals( new String( classDef.getName() ) ) ) {
-        typeassembler.visit( field, getMixin( classDef ) );
-      } else {
-        typeassembler.visit( field, classDef );
-      }
+      typeassembler.visit( field, classDef );
       result = true;
     }
     return result;

@@ -91,7 +91,7 @@ public abstract class AbstractFileContentsValidates_PDETest extends Assert {
   protected List<IMarker> getErrorMarkers( TextEditorOperator teo )
     throws CoreException
   {
-    return teo.getMarkers();
+    return teo.getMarkers(IMarker.SEVERITY_ERROR);
   }
 
   private void triggerAutoBuild( TextEditorOperator teo ) {

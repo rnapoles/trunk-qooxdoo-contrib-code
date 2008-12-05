@@ -5,7 +5,6 @@ import org.eclipse.wst.jsdt.core.ast.IObjectLiteralField;
 import org.eclipse.wst.jsdt.core.infer.InferredType;
 import org.eclipse.wst.jsdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.wst.jsdt.internal.compiler.classfmt.ClassFileConstants;
-import org.eclipse.wst.jsdt.qooxdoo.validation.internal.mixins.Mixin;
 
 final class ConstructHandler extends AbstractTypeConfigurationHandler {
 
@@ -22,7 +21,4 @@ final class ConstructHandler extends AbstractTypeConfigurationHandler {
     }
   }
 
-  public void visit( IObjectLiteralField field, Mixin type ) {
-    // FIXME m_kempka IMPLEMENT ME May 15, 2008
-  }
 }
