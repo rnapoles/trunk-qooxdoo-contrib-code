@@ -86,7 +86,7 @@ class TextMateLogger:
         print HTML_HEADER_FORMAT % (title, heading)
 
     def log(self, filename, row, column, msg):
-        print "<a href='txmt://open?url=file://%s&line=%s&column=%s'>%s</a><br>" % (filename, row, column, msg)
+        print "<a href='txmt://open?url=file://%s&line=%s&column=%s'>%s</a><br>" % (repr(filename), row, column, msg.encode('ascii', 'xmlcharrefreplace'))
 
     def printFooter(self):
         print HTML_FOOTER
@@ -96,7 +96,7 @@ class PopupLogger:
         pass
 
     def log(self, filename, row, column, msg):
-        print "row: %s, column: %s, Message: %s" % (row, column, msg)
+        print "row: %s, column: %s, Message: %s" % (row, column, msg.encode('ascii', 'replace'))
 
     def printFooter(self):
         pass

@@ -21,6 +21,8 @@
 });</string>
 	<key>name</key>
 	<string>qx.Class.define</string>
+	<key>scope</key>
+	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>Class</string>
 	<key>uuid</key>

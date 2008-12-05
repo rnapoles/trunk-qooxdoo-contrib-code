@@ -40,6 +40,8 @@ qx.Interface.define('${1:package name}.${2:interface name}',
 });</string>
 	<key>name</key>
 	<string>Interface</string>
+	<key>scope</key>
+	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>Interface</string>
 	<key>uuid</key>
