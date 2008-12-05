@@ -9,6 +9,8 @@
 },</string>
 	<key>name</key>
 	<string>apply</string>
+	<key>scope</key>
+	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>_apply</string>
 	<key>uuid</key>

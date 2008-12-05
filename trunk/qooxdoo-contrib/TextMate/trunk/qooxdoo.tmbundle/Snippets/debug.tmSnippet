@@ -7,6 +7,8 @@
 </string>
 	<key>name</key>
 	<string>debug</string>
+	<key>scope</key>
+	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>debug</string>
 	<key>uuid</key>

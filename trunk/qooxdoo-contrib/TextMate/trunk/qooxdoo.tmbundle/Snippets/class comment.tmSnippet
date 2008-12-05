@@ -18,11 +18,13 @@
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
-     * ${1:Your namen} (${1:Your sourceforge account})
+     * $TM_FULLNAME (${1:Your sourceforge account})
 
 ************************************************************************ */</string>
 	<key>name</key>
 	<string>class header</string>
+	<key>scope</key>
+	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>header</string>
 	<key>uuid</key>

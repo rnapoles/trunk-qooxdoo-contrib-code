@@ -6,6 +6,8 @@
 	<string>console.log(${1:default value});</string>
 	<key>name</key>
 	<string>log</string>
+	<key>scope</key>
+	<string>source.js</string>
 	<key>tabTrigger</key>
 	<string>log</string>
 	<key>uuid</key>
