@@ -6,6 +6,11 @@ require_once "qcl/session/controller.php";
 require_once "qcl/datasource/type/db/Model.php";
 require_once "qcl/datasource/SchemaManager.php";
 
+/*
+ * constants
+ */
+if ( defined("QCL_LOG_DATASOURCE") ) define("QCL_LOG_DATASOURCE","datasource");
+
 /**
  * Datasource controller class. Can also be used as a mixin for controllers
  * that are not bound to a database.
@@ -93,7 +98,7 @@ class qcl_datasource_controller extends qcl_session_controller
    */
   function registerDatasourceSchema( $schemaName, $class, $title, $description=null )
   {    
-    $this->info("Registering class '$class' for schema '$schemaName'");
+    $this->log("Registering class '$class' for schema '$schemaName'", QCL_LOG_DATASOURCE);
     $manager =& $this->getManager();
     if ( ! $title ) $title = $schemaName;
     $manager->register($schemaName, $class, $title, $description); 
@@ -119,7 +124,7 @@ class qcl_datasource_controller extends qcl_session_controller
       $this->raiseError("Schema '$schemaName' has no corresponding class name.'");
     }
     
-    //$this->info("Found class $class for schema $schemaName");
+    //$this->debug("Found class $class for schema $schemaName");
 
     return $class;
   }
@@ -133,7 +138,7 @@ class qcl_datasource_controller extends qcl_session_controller
   {
     $class = $this->getClassForSchema($dsSchemaName);
     
-    //$this->info("Datasource schema '$dsSchemaName' corresponds to class '$class.");
+    //$this->debug("Datasource schema '$dsSchemaName' corresponds to class '$class.");
     return $this->getNew( $class );
   }
   
@@ -172,7 +177,7 @@ class qcl_datasource_controller extends qcl_session_controller
      * get schema name
      */
     $dsSchemaName = $dsModel->getSchema();
-    //$this->info("Datasource '$name' has schema name '$dsSchemaName'");
+    //$this->debug("Datasource '$name' has schema name '$dsSchemaName'");
     
     /*
      * get datasource schema model and copy over record data

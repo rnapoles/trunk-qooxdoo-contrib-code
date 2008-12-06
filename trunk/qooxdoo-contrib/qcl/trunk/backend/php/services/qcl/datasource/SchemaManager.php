@@ -15,7 +15,8 @@ class qcl_datasource_SchemaManager extends qcl_db_PersistentObject
   var $data = array();
   
   /**
-   * Constructor. Makes sure only one instance of this class is initialized.
+   * Constructor. Makes sure only one instance of this class is initialized
+   * by passing the class name as id for the persistent instance
    * @param qcl_jsonrpc_controller $controller
    */
   function __construct( $controller )
