@@ -12,21 +12,19 @@ require_once "qcl/core/object.php";
 class qcl_jsonrpc_object extends qcl_core_object 
 {
 
-  //-------------------------------------------------------------
-  // instance variables
-  //-------------------------------------------------------------
-  
   /**
    * the path to the directory containing binary executables, relative to the SERVICE_PATH
+   * @deprecated
+   * @todo move everything related to execution of binaries to a separate class
    */
   var $bin_path    = "../../bin/";    
   
   /**
    * database for event listeners registered on this object
+   * @todo mover everything related to events and messages to event package
    * @var array
    */
   var $__event_db = array();
-  
   
   /**
    * Gets singleton instance. If you want to use this method on a static class that extends this class,
@@ -49,6 +47,8 @@ class qcl_jsonrpc_object extends qcl_core_object
    * Run once for the given class during one session
    * Implementing method must call parent method before executing action like so:
    * if ( ! parent::runOncePerClassAndSession() ) return;
+   * @todo rewrite using external class
+   * @return bool
    */
   function runOncePerClassAndSession()
   {
@@ -57,14 +57,12 @@ class qcl_jsonrpc_object extends qcl_core_object
     $this->setSessionVar($flag,true);
     return true;
   }  
-  
-  //-------------------------------------------------------------
-  // public methods
-  //-------------------------------------------------------------
-  
+
   /**
-   * gets file path to binary executables depending on operating system
-   * @return 
+   * Returns file path to binary executables depending on operating system
+   * @return string
+   * @deprecated
+   * @todo move to external class
    */
   function getOsBinDir()
   {
@@ -81,15 +79,13 @@ class qcl_jsonrpc_object extends qcl_core_object
   /**
    * Returns the path to a directory where temporary data will be stored with
    * a trailing slash
+   * @deprecated
+   * @todo move to external system class
    */
   function tmpDir()
   {
     return realpath(QCL_TMP_PATH) . "/";
   }
-
-  //-------------------------------------------------------------
-  // error and debug handling
-  //-------------------------------------------------------------
 
   /**
    * Raises a server error and exits
@@ -198,6 +194,7 @@ class qcl_jsonrpc_object extends qcl_core_object
 
   /**
    * debug a variable as html and exit 
+   * @todo move to logger class
    */
   function debugVarHtml($var)
   {
@@ -225,7 +222,7 @@ class qcl_jsonrpc_object extends qcl_core_object
    * Adds a message subscriber. This works only for objects which have been
    * initialized during runtime. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
-   * @todo: rewrite
+   * @todo move to external class
    * @param string $filter
    * @param string $method Callback method of the current object
    */
@@ -273,7 +270,7 @@ class qcl_jsonrpc_object extends qcl_core_object
    * match the one that has been used when subscribing the message, i.e. no wildcards!
    * @param string $message Message name 
    * @param mixed $data Data dispatched with message
-   * @todo: rewrite 
+   * @todo move to external class
    */
   function dispatchMessage ( $message, $data=true )
   {
@@ -309,7 +306,7 @@ class qcl_jsonrpc_object extends qcl_core_object
    * @param string $type The name of the event
    * @param string|qcl_jsonrpc_object $object The object or the object id retrieved by '$this->objectId()'
    * @param string $method callback method of the object 
-   * @todo rewrite
+   * @todo move to external class
    */
   function addEventListener( $type, $object, $method )
   {
@@ -365,13 +362,14 @@ class qcl_jsonrpc_object extends qcl_core_object
   }  
   
   /**
-   * dispatches a server event
+   * Dispatches a server event
    * @param mixed $event Message Event type
    * @param mixed $data Data dispatched with event
+   * @todo move to external class
    */
   function dispatchEvent ( $event, $data=true )
   {
-    $this->log("Event $event");
+    $this->log("Event $event","event");
     
     /*
      * search message database 
@@ -554,11 +552,13 @@ class qcl_jsonrpc_object extends qcl_core_object
   }
 
   /**
-   * tests if file has changed since last check
+   * Tests if file has changed since last check
    * returns true on first check and throws an error
    * if file does not exist
    * @param string $path File path
    * @return boolean
+   * @deprecated
+   * @todo move to file class
    */
   function fileChanged($path)
   {
@@ -581,8 +581,6 @@ class qcl_jsonrpc_object extends qcl_core_object
     }
     return false;
   }
-  
-
   
 }
 

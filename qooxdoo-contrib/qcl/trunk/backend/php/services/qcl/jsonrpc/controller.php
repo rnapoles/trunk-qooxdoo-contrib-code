@@ -10,6 +10,7 @@ require_once "qcl/jsonrpc/Response.php";
  * constants
  */
 define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");
+define("QCL_LOG_REQUEST", "request");
 
 /**
  * Simple controller-model architecture for jsonrpc
@@ -73,7 +74,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     $this->log( 
       "Request for " . $this->request->service . 
       "." . $this->request->method .  
-      " from " . $this->request->ip
+      " from " . $this->request->ip,
+      QCL_LOG_REQUEST
     );
 
     /*
