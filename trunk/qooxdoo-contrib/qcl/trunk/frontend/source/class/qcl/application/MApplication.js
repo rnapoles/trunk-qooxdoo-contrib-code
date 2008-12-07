@@ -340,7 +340,16 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     getState : function ( name )
     {
-      return this.getHashParam( name );
+      var value = this.getHashParam( name );
+      switch (value)
+      {
+        case "null": return null;
+        case "false": return false;
+        case "true": return true; 
+        case "undefined": return undefined;
+        case "NaN" : return undefined;
+        default: return value;
+      }
     },
 
     /**
