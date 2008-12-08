@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # configure paths
-export launcher=`find ~/eclipse -name "org.eclipse.equinox.launcher_*.jar" | sort | tail -1`
+export launcher=`find ~/eclipse34 -name "org.eclipse.equinox.launcher_*.jar" | sort | tail -1`
 export tmpdir=~/.hudson/jobs/qxdt/workspace/build
 export homedir=~/qxdt
 
