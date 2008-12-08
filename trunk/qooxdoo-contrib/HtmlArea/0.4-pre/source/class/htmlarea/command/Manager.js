@@ -565,7 +565,7 @@ qx.Class.define("htmlarea.command.Manager",
       {
 				 /* This nodes are needed to apply the exactly style settings on the paragraph */
 				var helperStyle = this.__generateHelperString();
-
+				
 				/* Generate unique ids to find the elements later */
 				var spanId = "__placeholder__" + Date.parse(new Date());
 				var paragraphId = "__paragraph__" + Date.parse(new Date());
@@ -621,20 +621,31 @@ qx.Class.define("htmlarea.command.Manager",
 			},
 
 			/**
-			 * Gecko does not copy the paragraph's background color, so do this
-			 * manually.
+			 * Gecko does not copy the paragraph's background color, and text
+			 * alignment so do this manually.
 			 */
 			"webkit" : function()
 			{
 
 				var styles = this.getCurrentStyles();
-				var backgroundColor = "transparent";
+				var elementStyleString = "";
 
-				if (styles["background-color"]) {
-					backgroundColor = styles["background-color"];
+				// We need to copy the background color and text alignment for Webkit
+				var relevantStyles = {
+					"background-color" : true,
+					"text-align": true
+				};
+
+				// Iterate over current styles and save relevant ones to string.
+				for(var style in styles)
+				{
+					if (relevantStyles[style]) {
+						elementStyleString += style + ":" + styles[style] + ";"
+					}
 				}
 
-				this.__editorInstance.insertHtml("<p style='background-color:" + backgroundColor + ";'><br class='webkit-block-placeholder' />");
+				// Insert the HTML containing the generated style string.
+				this.__editorInstance.insertHtml("<p style='" + elementStyleString + "'><br class='webkit-block-placeholder' />");
 			},
 
 			"default" : function(){}
@@ -1452,6 +1463,8 @@ qx.Class.define("htmlarea.command.Manager",
            styleSettings[style] = styleValue;
          }
        }
+
+			console.info(styleSettings)
 
        return styleSettings;
      },
