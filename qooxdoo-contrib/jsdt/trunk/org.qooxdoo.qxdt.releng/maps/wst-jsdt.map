@@ -7,13 +7,13 @@
 ! from the HEAD branch
 
 plugin@org.eclipse.wst.jsdt.doc=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/docs/org.eclipse.wst.jsdt.doc
-plugin@org.eclipse.wst.jsdt.core=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.eclipse.wst.jsdt.core
-#plugin@org.eclipse.wst.jsdt.core=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.core
+#plugin@org.eclipse.wst.jsdt.core=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.eclipse.wst.jsdt.core
+plugin@org.eclipse.wst.jsdt.core=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.core
 plugin@org.eclipse.wst.jsdt.manipulation=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.manipulation
 plugin@org.eclipse.wst.jsdt.support.firefox=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.support.firefox
 plugin@org.eclipse.wst.jsdt.support.ie=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.support.ie
-plugin@org.eclipse.wst.jsdt.ui=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.eclipse.wst.jsdt.ui
-#plugin@org.eclipse.wst.jsdt.ui=v200804040626,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.ui
+#plugin@org.eclipse.wst.jsdt.ui=SVN,trunk,https://qooxdoo-contrib.svn.sourceforge.net,/svnroot/qooxdoo-contrib/trunk/qooxdoo-contrib/jsdt,/org.eclipse.wst.jsdt.ui
+plugin@org.eclipse.wst.jsdt.ui=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.ui
 plugin@org.eclipse.wst.jsdt.web.core=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.core
 plugin@org.eclipse.wst.jsdt.web.support.jsp=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.support.jsp
 plugin@org.eclipse.wst.jsdt.web.ui=HEAD,:pserver:anonymous@dev.eclipse.org:/cvsroot/webtools,,sourceediting/plugins/org.eclipse.wst.jsdt.web.ui
