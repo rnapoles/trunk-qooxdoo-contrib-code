@@ -240,35 +240,6 @@
 			     passphrase="${passphrase}"
 			     command="rm ${uploadDirectory}/features/*"/>
 	</target>
-	<!-- ===================================================================== -->
-	<!-- Steps to do to test the build results -->
-	<!-- ===================================================================== -->
-	<target name="test">
-		<property name="testDirectory" value="${buildDirectory}/tests"/>
-		<!-- Extract Eclipse SDK + Test Framework + Test Feature -->
-		<untar src="${user.home}/downloads/eclipse-SDK-3.3-linux-gtk.tar.gz"
-		       dest="${testDirectory}"
-		       compression="gzip"/>
-		<unzip src="${user.home}/downloads/eclipse-test-framework-3.3.zip"
-		       dest="${testDirectory}"/>
-		<unzip src="${buildDirectory}/I.feature/com.yoxos.yim.test-feature.zip"
-		       dest="${testDirectory}"/>
-		<!-- Run Tests -->
-		<ant antfile="${user.home}/yim.rcp/runtests.xml">
-		  <property name="os"   value="linux"/>
-		  <property name="ws"   value="gtk"/>
-	      <property name="arch" value="x86"/>
-		  <property name="reportDir" 
-		  	        value="${buildDirectory}/I.feature/testreports"/>
-		  <property name="test-workspace" value="${testDirectory}/workspace"/>
-		  <property name="eclipse-home"   value="${testDirectory}/eclipse"/>
-          <property name="extra-vmargs" 
-				    value="-Declipse.pluginCustomization=${buildDirectory}/features/com.yoxos.yim.test/plugin_customization.ini"/>
-
-		</ant>
-		<!-- remove test Directory  -->
-	    <!-- <delete dir="${testDirectory}" quiet="true"/-->
-	</target>
 
 	<!-- ===================================================================== -->
 	<!-- Steps to do to publish the build results -->
