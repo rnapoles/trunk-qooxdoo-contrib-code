@@ -2371,12 +2371,12 @@ qx.Class.define("htmlarea.HtmlArea",
      * Insert an image
      *
      * @type member
-     * @param url {String} url of the image to insert
+     * @param attributes {Map} Map of HTML attributes to apply
      * @return {Boolean} Success of operation
      */
-    insertImage : function(url)
+    insertImage : function(attributes)
     {
-      return this.__commandManager.execute("insertimage", url);
+      return this.__commandManager.execute("insertimage", attributes);
     },
 
 

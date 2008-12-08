@@ -835,7 +835,7 @@ qx.Class.define("htmlarea.command.Manager",
              // check if the image is one the same hierarchy level
              // IMPORTANT: if e.g. the user copy-and-pastes a text styled with
              // FONT elements Gecko does add the image inside this font element
-             if (formatElements[img.previousSibling.nodeName.toLowerCase()])
+             if (qx.dom.Node.isElement(img.previousSibling) && formatElements[img.previousSibling.nodeName.toLowerCase()])
              {
                startNode = img.previousSibling;
              }
