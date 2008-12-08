@@ -1,3 +1,5 @@
+2008-12-08:
+  - resolve Mixins
 2008-05-20:
   - fix for NPE while reporting unused private method
   - added all methods for properties, regarding a properties configuration 
