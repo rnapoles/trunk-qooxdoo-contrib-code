@@ -405,7 +405,6 @@ class qcl_jsonrpc_object extends qcl_core_object
  	 */
  	function setSessionVar ( $name, $data )
  	{
- 		require_once "qcl/registry/Session.php";
  	  $reg =& qcl_registry_Session::getInstance();
  		$reg->set($name,$data);
  	}
@@ -418,7 +417,6 @@ class qcl_jsonrpc_object extends qcl_core_object
  	 */
  	function getSessionVar ( $name )
  	{
- 	  require_once "qcl/registry/Session.php";
     $reg =& qcl_registry_Session::getInstance();
     return $reg->get($name);
  	}
