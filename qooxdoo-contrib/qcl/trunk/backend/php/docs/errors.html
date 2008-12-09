@@ -36,199 +36,447 @@
       <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
 
 <a href="#Post-parsing">Post-parsing</a><br>
+<a href="#ArrayList.php">ArrayList.php</a><br>
+<a href="#Client.php">Client.php</a><br>
 <a href="#common.php">common.php</a><br>
 <a href="#config.php">config.php</a><br>
 <a href="#controller.php">controller.php</a><br>
 <a href="#converter.php">converter.php</a><br>
+<a href="#Datasource.php">Datasource.php</a><br>
+<a href="#db.model.php">db.model.php</a><br>
 <a href="#db.php">db.php</a><br>
 <a href="#dispatcher.php">dispatcher.php</a><br>
+<a href="#File.php">File.php</a><br>
+<a href="#Folder.php">Folder.php</a><br>
+<a href="#functions.php">functions.php</a><br>
+<a href="#IFile.php">IFile.php</a><br>
+<a href="#IFolder.php">IFolder.php</a><br>
+<a href="#IResource.php">IResource.php</a><br>
+<a href="#JsonRpcRequest.php">JsonRpcRequest.php</a><br>
+<a href="#json_wrapper.php">json_wrapper.php</a><br>
+<a href="#manager.php">manager.php</a><br>
+<a href="#migration.php">migration.php</a><br>
+<a href="#mixin.php">mixin.php</a><br>
 <a href="#model.php">model.php</a><br>
 <a href="#model_qooxdoo.php">model_qooxdoo.php</a><br>
+<a href="#mysql.php">mysql.php</a><br>
 <a href="#object.php">object.php</a><br>
-<a href="#pear.php">pear.php</a><br>
+<a href="#PageLoad.php">PageLoad.php</a><br>
+<a href="#parser_php4.php">parser_php4.php</a><br>
+<a href="#patched_object.php">patched_object.php</a><br>
 <a href="#permission.php">permission.php</a><br>
+<a href="#PersistentModel.php">PersistentModel.php</a><br>
+<a href="#PersistentObject.php">PersistentObject.php</a><br>
+<a href="#PropertyModel.php">PropertyModel.php</a><br>
 <a href="#reader.php">reader.php</a><br>
 <a href="#request.php">request.php</a><br>
+<a href="#Request.php">Request.php</a><br>
+<a href="#Resource.php">Resource.php</a><br>
+<a href="#Response.php">Response.php</a><br>
 <a href="#role.php">role.php</a><br>
+<a href="#SchemaManager.php">SchemaManager.php</a><br>
+<a href="#services.php">services.php</a><br>
+<a href="#Session.php">Session.php</a><br>
 <a href="#session.php">session.php</a><br>
 <a href="#shell.php">shell.php</a><br>
+<a href="#simpleXML.php">simpleXML.php</a><br>
+<a href="#String.php">String.php</a><br>
 <a href="#transformer.php">transformer.php</a><br>
 <a href="#tree.php">tree.php</a><br>
+<a href="#tree_controller.php">tree_controller.php</a><br>
 <a href="#user.php">user.php</a><br>
+<a href="#utilities.php">utilities.php</a><br>
+<a name="Post-parsing"></a>
+<h1>Post-parsing</h1>
+<h2>Warnings:</h2><br>
+<b>Warning</b> - class qcl_registry_Request in package qcl parent not found in @see parent::getInstance()<br>
+<b>Warning</b> - class qcl_registry_Request in package qcl parent not found in @see parent::getInstance()<br>
+<b>Warning</b> - 
+duplicate define element "JsonRpcClassPrefix" in file /Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/object.php will be ignored.
+Use an @ignore tag on the original if you want this case to be documented.<br>
 <a name="abstract.php"></a>
 <h1>abstract.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_plugin_abstract<br>
-<b>Warning on line 68</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/plugin/abstract.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_db_abstract<br>
+<b>Warning on line 68</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/plugin/abstract.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 347</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/abstract.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 181</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="ArrayList.php"></a>
+<h1>ArrayList.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class ArrayList<br>
+<b>Warning on line 276</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/lang/ArrayList.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="Client.php"></a>
+<h1>Client.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_application_Client<br>
+<b>Warning on line 23</b> - Unknown tag "@override" used<br>
+<b>Warning on line 153</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/application/Client.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="common.php"></a>
 <h1>common.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 10</b> - no @package tag was used in a DocBlock for class qcl_access_common<br>
-<b>Warning on line 81</b> - Unknown tag "@override" used<br>
-<b>Warning on line 115</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/common.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_access_common<br>
+<b>Warning on line 74</b> - Unknown tag "@override" used<br>
+<b>Warning on line 140</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/common.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="config.php"></a>
 <h1>config.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 24</b> - no @package tag was used in a DocBlock for class qcl_config<br>
-<b>Warning on line 163</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/config.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 150</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/config.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="controller.php"></a>
 <h1>controller.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_session_controller<br>
-<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_locale_controller<br>
-<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_config_controller<br>
 <b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_access_controller<br>
+<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_session_controller<br>
+<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_db_controller<br>
+<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_application_controller<br>
 <b>Warning on line 14</b> - no @package tag was used in a DocBlock for class qcl_jsonrpc_controller<br>
-<b>Warning on line 96</b> - Unknown tag "@override" used<br>
-<b>Warning on line 155</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/locale/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 178</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 184</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/session/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 198</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 438</b> - Unknown tag "@override" used<br>
-<b>Warning on line 451</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 607</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 15</b> - no @package tag was used in a DocBlock for class qcl_datasource_controller<br>
+<b>Warning on line 53</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/application/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 95</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 118</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 119</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 127</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 165</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 165</b> - Unknown tag "@override" used<br>
+<b>Warning on line 203</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/session/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 203</b> - Unknown tag "@type" used<br>
+<b>Warning on line 263</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/datasource/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 281</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 301</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 320</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 330</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 345</b> - Unknown tag "@override" used<br>
+<b>Warning on line 396</b> - Unknown tag "@override" used<br>
+<b>Warning on line 557</b> - Unknown tag "@override" used<br>
+<b>Warning on line 760</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 59</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 337</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 385</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 456</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 504</b> - "@return" tag was used without any parameters, illegal<br>
 <a name="converter.php"></a>
 <h1>converter.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_encoding_converter<br>
 <b>Warning on line 37</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 54</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/encoding/converter.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 54</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/encoding/converter.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="Datasource.php"></a>
+<h1>Datasource.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_local_Datasource<br>
+<b>Warning on line 74</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/local/Datasource.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="db.model.php"></a>
+<h1>db.model.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_session_db_model<br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_message_db_model<br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_datasource_db_model<br>
+<b>Warning on line 20</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/message/db.model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 124</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/session/db.model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 220</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 267</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/datasource/db.model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="db.php"></a>
 <h1>db.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_db<br>
 <b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_plugin_db<br>
-<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_config_db<br>
-<b>Warning on line 91</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/plugin/db.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 310</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/db.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 542</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/db.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 12</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_config_db<br>
+<b>Warning on line 71</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/plugin/db.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 560</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/db.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 48</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 142</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 28</b> - "@return" tag was used without any parameters, illegal<br>
 <a name="dispatcher.php"></a>
 <h1>dispatcher.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 239</b> - no @package tag was used in a DocBlock for class JsonRpcError<br>
-<b>Warning on line 799</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/dispatcher.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 241</b> - no @package tag was used in a DocBlock for class JsonRpcError<br>
+<b>Warning on line 824</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/dispatcher.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="File.php"></a>
+<h1>File.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 8</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_local_File<br>
+<b>Warning on line 173</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/local/File.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="Folder.php"></a>
+<h1>Folder.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 8</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_local_Folder<br>
+<b>Warning on line 173</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/local/Folder.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="functions.php"></a>
+<h1>functions.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 16</b> - no @package tag was used in a DocBlock for file /Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/functions.php<br>
+<b>Warning on line 16</b> - Unknown tag "@argument" used<br>
+<b>Warning on line 16</b> - Unknown tag "@argument" used<br>
+<b>Warning on line 99</b> - Unknown tag "@require" used<br>
+<h2>Errors:</h2><br>
+<b>Error on line 145</b> - debug_get_backtrace function's DocBlock has @package tag, illegal. ignoring tag "@package PHP_Compat"<br>
+<a name="IFile.php"></a>
+<h1>IFile.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_IFile<br>
+<b>Warning on line 56</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/IFile.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="IFolder.php"></a>
+<h1>IFolder.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 8</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_IFolder<br>
+<b>Warning on line 56</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/IFolder.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="IResource.php"></a>
+<h1>IResource.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 7</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_IResource<br>
+<b>Warning on line 14</b> - Unknown tag "@retrun" used<br>
+<b>Warning on line 54</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/IResource.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="JsonRpcRequest.php"></a>
+<h1>JsonRpcRequest.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_http_JsonRpcRequest<br>
+<b>Warning on line 100</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/http/JsonRpcRequest.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="json_wrapper.php"></a>
+<h1>json_wrapper.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 7</b> - no @package tag was used in a DocBlock for class JSON<br>
+<b>Warning on line 20</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/json_wrapper.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="manager.php"></a>
+<h1>manager.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 14</b> - no @package tag was used in a DocBlock for class qcl_locale_manager<br>
+<b>Warning on line 186</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/locale/manager.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 90</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="migration.php"></a>
+<h1>migration.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 6</b> - no @package tag was used in a DocBlock for class class_qcl_tool_migration<br>
+<b>Warning on line 423</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/tool/migration.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="mixin.php"></a>
+<h1>mixin.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 7</b> - no @package tag was used in a DocBlock for class qcl_mixin<br>
+<b>Warning on line 20</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/mixin.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="model.php"></a>
 <h1>model.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 8</b> - no @package tag was used in a DocBlock for class qcl_session_model<br>
 <b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_jsonrpc_model<br>
-<b>Warning on line 12</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_db_model<br>
-<b>Warning on line 100</b> - Unknown tag "@override" used<br>
-<b>Warning on line 105</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 131</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/session/model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 136</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 593</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 604</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 628</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 639</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 1131</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 14</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 14</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 15</b> - no @package tag was used in a DocBlock for class qcl_db_model<br>
+<b>Warning on line 25</b> - no @package tag was used in a DocBlock for class qcl_xml_model<br>
+<b>Warning on line 124</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 523</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 564</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 2080</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/model.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 675</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 690</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 703</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 833</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 1047</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 24</b> - Unclosed pre tag in DocBlock, parsing will be incorrect<br>
+<b>Error on line 1341</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 1356</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 1369</b> - "@return" tag was used without any parameters, illegal<br>
 <a name="model_qooxdoo.php"></a>
 <h1>model_qooxdoo.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 8</b> - Unknown tag "@todo:" used<br>
 <b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_locale_model_qooxdoo<br>
-<b>Warning on line 174</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/locale/model_qooxdoo.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 157</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/locale/model_qooxdoo.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 38</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 93</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 158</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 21</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 76</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 141</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="mysql.php"></a>
+<h1>mysql.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 14</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 15</b> - no @package tag was used in a DocBlock for class qcl_db_mysql<br>
+<b>Warning on line 1055</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/mysql.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 525</b> - "@return" tag was used without any parameters, illegal<br>
 <a name="object.php"></a>
 <h1>object.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 5</b> - no @package tag was used in a DocBlock for class patched_object<br>
-<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_jsonrpc_object<br>
-<b>Warning on line 64</b> - no @package tag was used in a DocBlock for class qcl_object<br>
-<b>Warning on line 157</b> - Unknown tag "@todo:" used<br>
-<b>Warning on line 268</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/object.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
-<b>Warning on line 335</b> - Unknown tag "@argument" used<br>
-<b>Warning on line 335</b> - Unknown tag "@argument" used<br>
-<b>Warning on line 455</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/object.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_jsonrpc_object<br>
+<b>Warning on line 59</b> - no @package tag was used in a DocBlock for class qcl_object<br>
+<b>Warning on line 191</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 237</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 268</b> - Unknown tag "@deprecated," used<br>
+<b>Warning on line 272</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 280</b> - Unknown tag "@deprecated," used<br>
+<b>Warning on line 348</b> - Unknown tag "@depreated" used<br>
+<b>Warning on line 361</b> - Unknown tag "@depreated" used<br>
+<b>Warning on line 374</b> - Unknown tag "@depreated" used<br>
+<b>Warning on line 426</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 482</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 527</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/object.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 852</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/object.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 45</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 65</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 115</b> - "@return" tag was used without any parameters, illegal<br>
-<a name="pear.php"></a>
-<h1>pear.php</h1>
+<b>Error on line 68</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 397</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="PageLoad.php"></a>
+<h1>PageLoad.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 10</b> - no @package tag was used in a DocBlock for class qcl_db_pear<br>
-<b>Warning on line 576</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/pear.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 7</b> - no @package tag was used in a DocBlock for class qcl_registry_PageLoad<br>
+<b>Warning on line 37</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/registry/PageLoad.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 525</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 18</b> - @access was passed neither "public" nor "private."  Was passed: "static"<br>
+<a name="parser_php4.php"></a>
+<h1>parser_php4.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 53</b> - no @package tag was used in a DocBlock for class XMLParser<br>
+<b>Warning on line 377</b> - no @package tag was used in a DocBlock for class SimpleXmlElement<br>
+<b>Warning on line 822</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/lib/parser_php4.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="patched_object.php"></a>
+<h1>patched_object.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 6</b> - no @package tag was used in a DocBlock for class patched_object<br>
+<b>Warning on line 46</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/patched_object.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="permission.php"></a>
 <h1>permission.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_access_permission<br>
-<b>Warning on line 143</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/permission.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 71</b> - Unknown tag "@overridden" used<br>
+<b>Warning on line 88</b> - Unknown tag "@overridden" used<br>
+<b>Warning on line 173</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/permission.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="PersistentModel.php"></a>
+<h1>PersistentModel.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_db_PersistentModel<br>
+<b>Warning on line 14</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/PersistentModel.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="PersistentObject.php"></a>
+<h1>PersistentObject.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 13</b> - no @package tag was used in a DocBlock for class qcl_db_PersistentObject<br>
+<b>Warning on line 14</b> - no @package tag was used in a DocBlock for class qcl_core_PersistentObject<br>
+<b>Warning on line 20</b> - Unknown tag "@acces" used<br>
+<b>Warning on line 143</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/PersistentObject.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 503</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/core/PersistentObject.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="PropertyModel.php"></a>
+<h1>PropertyModel.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 16</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 17</b> - no @package tag was used in a DocBlock for class qcl_core_PropertyModel<br>
+<b>Warning on line 86</b> - Unknown tag "@array" used<br>
+<b>Warning on line 109</b> - Unknown tag "@array" used<br>
+<b>Warning on line 316</b> - Unknown tag "@deprecated," used<br>
+<b>Warning on line 852</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 1781</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/core/PropertyModel.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="reader.php"></a>
 <h1>reader.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_xml_reader<br>
-<b>Warning on line 133</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/reader.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 9</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 10</b> - no @package tag was used in a DocBlock for class qcl_xml_reader<br>
+<b>Warning on line 151</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/reader.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 98</b> - "@return" tag was used without any parameters, illegal<br>
 <b>Error on line 116</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 134</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="Request.php"></a>
+<h1>Request.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 5</b> - no @package tag was used in a DocBlock for class qcl_registry_Request<br>
+<b>Warning on line 68</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/registry/Request.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 16</b> - @access was passed neither "public" nor "private."  Was passed: "static"<br>
 <a name="request.php"></a>
 <h1>request.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 10</b> - no @package tag was used in a DocBlock for class qcl_http_request<br>
-<b>Warning on line 263</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/http/request.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 10</b> - no @package tag was used in a DocBlock for class qcl_http_Request<br>
+<b>Warning on line 324</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/http/request.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 24</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 112</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 171</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 205</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 45</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 208</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 242</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="Resource.php"></a>
+<h1>Resource.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 7</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_Resource<br>
+<b>Warning on line 8</b> - no @package tag was used in a DocBlock for class qcl_io_filesystem_local_Resource<br>
+<b>Warning on line 16</b> - Unknown tag "@retrun" used<br>
+<b>Warning on line 21</b> - Unknown tag "@retrun" used<br>
+<b>Warning on line 69</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/Resource.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 87</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/io/filesystem/local/Resource.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 14</b> - DocBlock has multiple @var tags, illegal. ignoring additional tag "@var access private"<br>
+<a name="Response.php"></a>
+<h1>Response.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 3</b> - no @package tag was used in a DocBlock for class qcl_jsonrpc_Response<br>
+<b>Warning on line 30</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/jsonrpc/Response.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="role.php"></a>
 <h1>role.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_access_role<br>
-<b>Warning on line 120</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/role.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 84</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/role.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="SchemaManager.php"></a>
+<h1>SchemaManager.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 8</b> - no @package tag was used in a DocBlock for class qcl_datasource_SchemaManager<br>
+<b>Warning on line 88</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/datasource/SchemaManager.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="services.php"></a>
+<h1>services.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_access_services<br>
+<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_config_services<br>
+<b>Warning on line 71</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 198</b> - Unknown tag "@todo:" used<br>
+<b>Warning on line 267</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/services.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 959</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/services.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="session.php"></a>
 <h1>session.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_config_session<br>
-<b>Warning on line 81</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/session.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 89</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/config/session.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="Session.php"></a>
+<h1>Session.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_registry_Session<br>
+<b>Warning on line 77</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/registry/Session.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 24</b> - @access was passed neither "public" nor "private."  Was passed: "static"<br>
 <a name="shell.php"></a>
 <h1>shell.php</h1>
 <h2>Warnings:</h2><br>
 <b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_system_shell<br>
-<b>Warning on line 130</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/system/shell.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 130</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/system/shell.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
 <b>Error on line 99</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="simpleXML.php"></a>
+<h1>simpleXML.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 14</b> - no @package tag was used in a DocBlock for class qcl_xml_simpleXML<br>
+<b>Warning on line 924</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/simpleXML.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<h2>Errors:</h2><br>
+<b>Error on line 524</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="String.php"></a>
+<h1>String.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class String<br>
+<b>Warning on line 313</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/lang/String.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="transformer.php"></a>
 <h1>transformer.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_xml_transformer<br>
-<b>Warning on line 282</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/transformer.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 9</b> - no @package tag was used in a DocBlock for class qcl_xml_transformer<br>
+<b>Warning on line 133</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/xml/transformer.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="tree.php"></a>
 <h1>tree.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 10</b> - no @package tag was used in a DocBlock for class qcl_db_tree<br>
-<b>Warning on line 273</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/tree.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 12</b> - no @package tag was used in a DocBlock for class qcl_db_tree<br>
+<b>Warning on line 258</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/db/tree.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <h2>Errors:</h2><br>
-<b>Error on line 172</b> - "@return" tag was used without any parameters, illegal<br>
-<b>Error on line 206</b> - "@return" tag was used without any parameters, illegal<br>
+<b>Error on line 133</b> - "@return" tag was used without any parameters, illegal<br>
+<a name="tree_controller.php"></a>
+<h1>tree_controller.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 11</b> - no @package tag was used in a DocBlock for class qcl_databinding_tree_controller<br>
+<b>Warning on line 172</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/databinding/tree_controller.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
 <a name="user.php"></a>
 <h1>user.php</h1>
 <h2>Warnings:</h2><br>
-<b>Warning on line 14</b> - no @package tag was used in a DocBlock for class qcl_access_user<br>
-<b>Warning on line 475</b> - File "/Users/cboulanger/Documents/Computer/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/user.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<b>Warning on line 21</b> - no @package tag was used in a DocBlock for class qcl_access_user<br>
+<b>Warning on line 519</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/access/user.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
+<a name="utilities.php"></a>
+<h1>utilities.php</h1>
+<h2>Warnings:</h2><br>
+<b>Warning on line 7</b> - no @package tag was used in a DocBlock for class qcl_application_utilities<br>
+<b>Warning on line 60</b> - File "/Users/bibliograph/Documents/Workspaces/Yoxos/qcl/trunk/backend/php/services/qcl/application/utilities.php" has no page-level DocBlock, use @package in the first DocBlock to create one<br>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Wed, 02 Apr 2008 23:40:56 +0200 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+		    Documentation generated on Tue, 09 Dec 2008 18:57:35 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
 	      </div>
       </td></tr></table>
     </td>
