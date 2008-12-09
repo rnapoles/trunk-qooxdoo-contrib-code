@@ -6,8 +6,8 @@ require_once "qcl/core/PropertyModel.php";
 
 /**
  * Model base class for models based on a (mysql) database
- * @todo: make this dbms-independent
- * @todo: rename methods "getX()" into "x()" if they refer to 
+ * @todo make this dbms-independent
+ * @todo rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
@@ -112,7 +112,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * a datasource model, reuse the datasource's database
    * handler
    * @param string|array|null $dsn
-   * @todo: don't throw error on failure but let calling
+   * @todo don't throw error on failure but let calling
    * function handle connection errors gracefully.
    * @return bool Success
    */
@@ -467,7 +467,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       if ( $linkTable != $joinedTable )
       {
         /*
-         * @todo: this might not be compatible with other than mysql
+         * @todo this might not be compatible with other than mysql
          */
         $sql .= "     JOIN (`$linkTable` AS l,`$joinedTable` AS t2) \n";
         $sql .= "       ON ( t1.`$localKey` = l.`$foreignKey` AND l.`$joinedFKey` = t2.`$joinedLKey` ) \n";
@@ -698,7 +698,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @return array
    * @param Array   $record  record from a different table that contains a key corresponding to the foreign id of this table
    * @param Boolean $idOnly if true, return only the value of the foreign key column
-   * @todo: one should be able to pass a model object as argument
+   * @todo one should be able to pass a model object as argument
    */
   function findByForeignKey( $record, $idOnly = false )
   {
@@ -785,7 +785,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     
     /*
      * created timestamp by setting it to null
-     * @todo: is this compatible with all dbms?
+     * @todo is this compatible with all dbms?
      */
     if ( $this->hasProperty("created")
           and ( $col_created = $this->getPropertyName("created") )
@@ -1734,7 +1734,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       }
       
       /*
-       * @todo: check for <sql type="$sqltype">
+       * @todo check for <sql type="$sqltype">
        */
       if ( ! is_object( $property->sql ) )
       {
@@ -2898,7 +2898,7 @@ class qcl_db_model extends qcl_core_PropertyModel
           {  
             /*
              * link data
-             * @todo: share datasource, override getNew method
+             * @todo share datasource, override getNew method
              */
             $model =& $this->_models[$modelName];
             $modelFk = $model->getForeignKey();

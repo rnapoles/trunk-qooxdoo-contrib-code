@@ -54,7 +54,7 @@ class qcl_datasource_type_z3950_Model  extends qcl_datasource_type_db_Model
     
     $this->getById($name);
     
-    // @todo: options?
+    // @todo options?
     $data = unserialize( $this->getPropertyValue('data') );
     if ( ! is_array ( $data ) )
     {

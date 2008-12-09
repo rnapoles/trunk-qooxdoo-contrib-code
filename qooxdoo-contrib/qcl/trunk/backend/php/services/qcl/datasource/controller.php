@@ -229,7 +229,7 @@ class qcl_datasource_controller extends qcl_session_controller
   function method_getDatasourceComboBoxData( $params )
   {
     /*
-     * @todo: security
+     * @todo security
      */
 
     /*

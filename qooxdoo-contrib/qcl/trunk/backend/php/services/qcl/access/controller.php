@@ -315,12 +315,6 @@ class qcl_access_controller extends qcl_db_controller
        */
       $this->configModel =& $this->getSingleton("qcl_config_session");    
       
-      /*
-       * shorthand to check if we have guest access
-       * @todo remove
-       */
-      $this->guestAccess = true;
-      
       return true;
     }  
   }
@@ -366,7 +360,7 @@ class qcl_access_controller extends qcl_db_controller
     if ( $seconds > $timeout )
     {
       $userName = $activeUser->username();
-      $this->info( "$userName : $seconds seconds after last activity (Timeout $timeout seconds). Logging out." );
+      $this->info( "$userName : $seconds seconds after last activity (Timeout $timeout seconds)." );
       return false;
     }     
     

@@ -6,7 +6,7 @@ require_once "qcl/core/object.php";
 
 /*
  * Default logger: logs to filesystem
- * @todo: use persistent object instead of session
+ * @todo use persistent object instead of session
  */
 class qcl_log_Logger extends qcl_core_object
 {

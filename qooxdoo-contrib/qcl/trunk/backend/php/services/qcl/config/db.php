@@ -7,7 +7,7 @@ require_once ("qcl/db/model.php");
  * 
  * Class cannot be used directly, you need to subclass it in 
  * your application service class folder
- * @todo: use qcl_model records instead of custom sql
+ * @todo use qcl_model records instead of custom sql
  */
 
 class qcl_config_db extends qcl_db_model

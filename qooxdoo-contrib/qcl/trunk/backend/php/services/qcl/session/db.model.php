@@ -36,7 +36,7 @@ class qcl_session_db_model extends qcl_db_model
     /*
      * Delete sessions that exist with the same id but
      * a different user
-     * @todo: this can be removed when session ids are
+     * @todo this can be removed when session ids are
      * no longer tied to the php session.
      * remove AND user != 0 and update table schema
      */

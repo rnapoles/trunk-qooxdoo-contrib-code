@@ -121,7 +121,7 @@ class qcl_xml_model extends qcl_jsonrpc_model
     foreach ( $nodes as $node )
     {
       $result[] = (array) $node;
-      //@todo: filter out columns
+      //@todo filter out columns
     }
     return $result;
   }

@@ -205,7 +205,7 @@ class qcl_jsonrpc_object extends qcl_core_object
   /**
    * Raises an error about a missing method implementation
    * @param string class name
-   * @todo: get class and method name from backtrace.
+   * @todo get class and method name from backtrace.
    */
   function notImplemented( $class = __CLASS__ )
   {
@@ -302,7 +302,7 @@ class qcl_jsonrpc_object extends qcl_core_object
   /**
    * Adds an event listener. Works only during runtime, i.e. event bindings are not 
    * persisted.
-   * @todo: rewrite using event objects and support persisted event bindings
+   * @todo rewrite using event objects and support persisted event bindings
    * @param string $type The name of the event
    * @param string|qcl_jsonrpc_object $object The object or the object id retrieved by '$this->objectId()'
    * @param string $method callback method of the object 
@@ -478,7 +478,7 @@ class qcl_jsonrpc_object extends qcl_core_object
    * tries to get the given lock for 5 seconds, if not successful, abort.
    * Problem: how to avoid a race condition?
    * @param string $lockId
-   * @todo: remove this, use a persistent object instead
+   * @todo remove this, use a persistent object instead
    * @deprecated
    */
   function getLock( $lockId )
@@ -534,7 +534,7 @@ class qcl_jsonrpc_object extends qcl_core_object
   /**
    * removes a lock
    * @param $lockId
-   * @todo: remove this, use a persistent object instead
+   * @todo remove this, use a persistent object instead
    * @deprecated
    */
   function removeLock ( $lockId )

@@ -231,7 +231,7 @@ class qcl_datasource_type_db_Model extends qcl_db_model
   
   /**
    * Creates a new native sql datasource
-   * @todo: implement external dsn
+   * @todo implement external dsn
    * @return void
    * @param string $datasource datasource name
    * @param array  $options    connection data etc.

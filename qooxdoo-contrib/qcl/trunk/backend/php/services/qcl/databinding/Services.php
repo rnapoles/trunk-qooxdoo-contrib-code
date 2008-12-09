@@ -68,7 +68,7 @@ class qcl_databinding_Services extends qcl_core_mixin
       }
       
       /*
-       * @todo: filter by value
+       * @todo filter by value
        */
       
       /*

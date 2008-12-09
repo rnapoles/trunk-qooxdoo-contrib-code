@@ -182,7 +182,7 @@ class qcl_session_controller extends qcl_access_controller
     }
     else
     {
-      $this->warn("User $userId is not registered for session $sessionId");
+      $this->warn("User $userId is not registered for session $sessionId. Logging out.");
     }
     $userModel->setActiveUser(null);      
            
@@ -200,7 +200,7 @@ class qcl_session_controller extends qcl_access_controller
    * Broadcasts a message to all connected clients
    * @param mixed $messages Message name or hash map of messages
    * @param mixed $data Data dispatched with message
-   * @todo: use into qcl_jsonrpc_Response object
+   * @todo use into qcl_jsonrpc_Response object
    */
   function broadcastMessage ( $message, $data=true )
   {
@@ -239,7 +239,7 @@ class qcl_session_controller extends qcl_access_controller
    * overriding parent method to include message broadcasts
    * @override
    * @return array
-   * @todo: use into qcl_jsonrpc_Response object
+   * @todo use into qcl_jsonrpc_Response object
    */
   function &response()
   {
