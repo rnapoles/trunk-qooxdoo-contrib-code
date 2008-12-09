@@ -2713,14 +2713,14 @@ qx.Class.define("htmlarea.HtmlArea",
       /*
        * UNDERLINE
        */
-      var isUnderline = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textDecoration == "underline" :
-                                                                       focusNodeStyle.getPropertyValue("text-decoration") == "underline";
+      var isUnderline = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textDecoration.indexOf("underline") !== -1 :
+                                                                       focusNodeStyle.getPropertyValue("text-decoration").indexOf("underline") !== -1;
 
       /*
        * STRIKETHROUGH
        */
-      var isStrikeThrough = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textDecoration == "line-through" :
-                                                                           focusNodeStyle.getPropertyValue("text-decoration") == "line-through";
+      var isStrikeThrough = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNodeStyle.textDecoration.indexOf("line-through") !== -1 :
+                                                                           focusNodeStyle.getPropertyValue("text-decoration").indexOf("line-through") !== -1;
 
       /*
        * FONT SIZE
