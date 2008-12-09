@@ -14,7 +14,7 @@
     <td class="header_menu">
         
                                     
-                              		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+                                                                                          		  [ <a href="../classtrees_qcl.html" class="menu">class tree: qcl</a> ]
 		  [ <a href="../elementindex_qcl.html" class="menu">index: qcl</a> ]
 		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
     </td>
@@ -30,6 +30,9 @@
 	</div>
       <b>Packages:</b><br />
               <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
             <br /><br />
                   
       
@@ -78,114 +81,79 @@
 <li><div class="src-line"><a name="a36"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
 <li><div class="src-line"><a name="a37"></a>&nbsp;&nbsp;<span class="src-key">var&nbsp;</span><a href="../qcl/qcl_access_common.html#var$table_link_roles_permissions">$table_link_roles_permissions</a>&nbsp;=&nbsp;<span class="src-str">&quot;link_roles_permissions&quot;</span><span class="src-sym">;</span></div></li>
 <li><div class="src-line"><a name="a38"></a>&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------</span></div></li>
-<li><div class="src-line"><a name="a40"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//&nbsp;public&nbsp;non-rpc&nbsp;methods&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a41"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">//-------------------------------------------------------------&nbsp;&nbsp;&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a42"></a>&nbsp;</div></li>
-<li><div class="src-line"><a name="a43"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
-<li><div class="src-line"><a name="a44"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;get&nbsp;descriptive&nbsp;name&nbsp;of&nbsp;role</span></div></li>
-<li><div class="src-line"><a name="a45"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;mixed&nbsp;$ref&nbsp;numeric&nbsp;id&nbsp;or&nbsp;string&nbsp;name</span></div></li>
-<li><div class="src-line"><a name="a46"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
-<li><div class="src-line"><a name="a47"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a48"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodgetDescriptiveName">getDescriptiveName</a><span class="src-sym">(</span><span class="src-var">$ref</span><span class="src-sym">)</span></div></li>
-<li><div class="src-line"><a name="a49"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a50"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$row&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_model.html#methodgetByRef">getByRef</a><span class="src-sym">(</span><span class="src-var">$ref</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a51"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$row</span><span class="src-sym">[</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">col_descriptiveName</span><span class="src-sym">]</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a52"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a53"></a>&nbsp;&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a54"></a>&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
-<li><div class="src-line"><a name="a55"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;gets&nbsp;all&nbsp;identifying&nbsp;names</span></div></li>
-<li><div class="src-line"><a name="a56"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;array&nbsp;an&nbsp;array&nbsp;of&nbsp;all&nbsp;distinct&nbsp;values&nbsp;of&nbsp;the&nbsp;namedId&nbsp;column</span></div></li>
-<li><div class="src-line"><a name="a57"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a58"></a>&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodgetAllNamedIds">getAllNamedIds</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
-<li><div class="src-line"><a name="a59"></a>&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a60"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-sym">!&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">col_namedId&nbsp;</span><span class="src-sym">)</span></div></li>
-<li><div class="src-line"><a name="a61"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a62"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a><span class="src-sym">(</span><span class="src-str">&quot;qcl_access_common::getAllNamedIds&nbsp;:&nbsp;model&nbsp;does&nbsp;not&nbsp;have&nbsp;a&nbsp;named&nbsp;id&nbsp;property&quot;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a63"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a64"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_model.html#methodgetDistinctValues">getDistinctValues</a><span class="src-sym">(</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">col_namedId</span><span class="src-sym">,</span><span class="src-id">null</span><span class="src-sym">,</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">col_namedId</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a65"></a>&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a66"></a>&nbsp;</div></li>
-<li><div class="src-line"><a name="a67"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
-<li><div class="src-line"><a name="a68"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;creates&nbsp;a&nbsp;new&nbsp;record&nbsp;and&nbsp;optionally&nbsp;links&nbsp;it&nbsp;to&nbsp;a&nbsp;role.&nbsp;Raises&nbsp;an&nbsp;error</span></div></li>
-<li><div class="src-line"><a name="a69"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;if&nbsp;the&nbsp;namedId&nbsp;of&nbsp;the&nbsp;record&nbsp;already&nbsp;exists</span></div></li>
-<li><div class="src-line"><a name="a70"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@override</span></div></li>
-<li><div class="src-line"><a name="a71"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;$namedId</span></div></li>
-<li><div class="src-line"><a name="a72"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parentId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;of&nbsp;role&nbsp;(unused&nbsp;if&nbsp;class&nbsp;is&nbsp;qcl_access_role)</span></div></li>
-<li><div class="src-line"><a name="a73"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;int&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;inserted&nbsp;row&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a74"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a75"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodcreate">create</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId</span>=<span class="src-id">null&nbsp;</span><span class="src-sym">)</span></div></li>
-<li><div class="src-line"><a name="a76"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a77"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
-<li><div class="src-line"><a name="a78"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;check</span></div></li>
-<li><div class="src-line"><a name="a79"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a80"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/in_array">in_array</a><span class="src-sym">(</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">$reservedNames&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
-<li><div class="src-line"><a name="a81"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a82"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-str">&quot;</span><span class="src-str">'<span class="src-var">$namedId</span>'&nbsp;<span class="src-id">is</span>&nbsp;<span class="src-id">a</span>&nbsp;<span class="src-id">reserved</span>&nbsp;<span class="src-id">name</span>&nbsp;<span class="src-id">and</span>&nbsp;<span class="src-id">cannto</span>&nbsp;<span class="src-id">be</span>&nbsp;<span class="src-id">used</span>.</span><span class="src-str">&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a83"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a84"></a>&nbsp;</div></li>
-<li><div class="src-line"><a name="a85"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_core_PropertyModel.html#methodnamedIdExists">namedIdExists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$namedId&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
-<li><div class="src-line"><a name="a86"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a87"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-str">&quot;</span><span class="src-str">'<span class="src-var">$namedId</span>'&nbsp;<span class="src-id">already</span>&nbsp;<span class="src-id">exists</span>.</span><span class="src-str">&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a88"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a89"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a90"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
-<li><div class="src-line"><a name="a91"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;insert&nbsp;new&nbsp;empty&nbsp;record</span></div></li>
-<li><div class="src-line"><a name="a92"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a93"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$data&nbsp;</span>=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a94"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$data</span><span class="src-sym">[</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">col_namedId</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-var">$namedId</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a95"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$itemId&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_model.html#methodinsert">insert</a><span class="src-sym">(</span><span class="src-var">$data</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a96"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a97"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
-<li><div class="src-line"><a name="a98"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;link&nbsp;to&nbsp;role&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a99"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a100"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$parentId&nbsp;</span><span class="src-sym">)</span></div></li>
-<li><div class="src-line"><a name="a101"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a102"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_a">is_a</a><span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">&quot;qcl_access_user&quot;</span><span class="src-sym">)&nbsp;)</span></div></li>
-<li><div class="src-line"><a name="a103"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a104"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">addToRole&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$itemId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a105"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a106"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">elseif&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/is_a">is_a</a><span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">,&nbsp;</span><span class="src-str">&quot;qcl_access_permission&quot;</span><span class="src-sym">)&nbsp;)</span></div></li>
-<li><div class="src-line"><a name="a107"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a108"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-id">addToRole&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$itemId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a109"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a110"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a111"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a112"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
-<li><div class="src-line"><a name="a113"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;load&nbsp;item&nbsp;data</span></div></li>
-<li><div class="src-line"><a name="a114"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a115"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_model.html#methodfindById">findById</a><span class="src-sym">(</span><span class="src-var">$itemId</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a116"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a117"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
-<li><div class="src-line"><a name="a118"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;return&nbsp;item&nbsp;id</span></div></li>
-<li><div class="src-line"><a name="a119"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a120"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$itemId</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a121"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a122"></a>&nbsp;&nbsp;</div></li>
-<li><div class="src-line"><a name="a123"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
-<li><div class="src-line"><a name="a124"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;creates&nbsp;a&nbsp;new&nbsp;record&nbsp;if&nbsp;its&nbsp;named&nbsp;id&nbsp;doesn't&nbsp;already&nbsp;exist&nbsp;and&nbsp;optionally&nbsp;links&nbsp;it&nbsp;to&nbsp;a&nbsp;role.</span></div></li>
-<li><div class="src-line"><a name="a125"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;false&nbsp;if&nbsp;record&nbsp;exists&nbsp;otherwise&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;record</span></div></li>
-<li><div class="src-line"><a name="a126"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;$namedId</span></div></li>
-<li><div class="src-line"><a name="a127"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parentId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;of&nbsp;role&nbsp;(unused&nbsp;if&nbsp;class&nbsp;is&nbsp;qcl_access_role)</span></div></li>
-<li><div class="src-line"><a name="a128"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;int&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;inserted&nbsp;row&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a129"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
-<li><div class="src-line"><a name="a130"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodcreateIfNotExists">createIfNotExists</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId</span>=<span class="src-id">null&nbsp;</span><span class="src-sym">)</span></div></li>
-<li><div class="src-line"><a name="a131"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a132"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$id&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_core_PropertyModel.html#methodnamedIdExists">namedIdExists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$namedId&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
-<li><div class="src-line"><a name="a133"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
-<li><div class="src-line"><a name="a134"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$id</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a135"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a136"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_access_common.html#methodcreate">create</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
-<li><div class="src-line"><a name="a137"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;</span></div></li>
-<li><div class="src-line"><a name="a138"></a>&nbsp;</div></li>
-<li><div class="src-line"><a name="a139"></a><span class="src-sym">}</span></div></li>
-<li><div class="src-line"><a name="a140"></a>&nbsp;</div></li>
-<li><div class="src-line"><a name="a141"></a><span class="src-php">?&gt;</span></div></li>
+<li><div class="src-line"><a name="a39"></a>&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a40"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;Returns&nbsp;the&nbsp;default&nbsp;icon&nbsp;representing&nbsp;the&nbsp;class</span></div></li>
+<li><div class="src-line"><a name="a41"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;string</span></div></li>
+<li><div class="src-line"><a name="a42"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a43"></a>&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodgetIcon">getIcon</a><span class="src-sym">(</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a44"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a45"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-str">&quot;icon/16/apps/system-users.png&quot;</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a46"></a>&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a47"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a48"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a49"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Creates&nbsp;a&nbsp;new&nbsp;record&nbsp;and&nbsp;optionally&nbsp;links&nbsp;it&nbsp;to&nbsp;a&nbsp;role.&nbsp;Raises&nbsp;an&nbsp;error</span></div></li>
+<li><div class="src-line"><a name="a50"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;if&nbsp;the&nbsp;namedId&nbsp;of&nbsp;the&nbsp;record&nbsp;already&nbsp;exists.</span></div></li>
+<li><div class="src-line"><a name="a51"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@todo&nbsp;rewrite</span></div></li>
+<li><div class="src-line"><a name="a52"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@override</span></div></li>
+<li><div class="src-line"><a name="a53"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;$namedId</span></div></li>
+<li><div class="src-line"><a name="a54"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;int&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;inserted&nbsp;row&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a55"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a56"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodcreate">create</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a57"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a58"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a59"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;check</span></div></li>
+<li><div class="src-line"><a name="a60"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a61"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><a href="http://www.php.net/in_array">in_array</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_access_common.html#var$reservedNames">reservedNames</a>&nbsp;<span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a62"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a63"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-str">&quot;</span><span class="src-str">'<span class="src-var">$namedId</span>'&nbsp;<span class="src-id">is</span>&nbsp;<span class="src-id">a</span>&nbsp;<span class="src-id">reserved</span>&nbsp;<span class="src-id">name</span>&nbsp;<span class="src-id">and</span>&nbsp;<span class="src-id">cannto</span>&nbsp;<span class="src-id">be</span>&nbsp;<span class="src-id">used</span>.</span><span class="src-str">&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a64"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a65"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_core_PropertyModel.html#methodnamedIdExists">namedIdExists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$namedId&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a66"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a67"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_jsonrpc_object.html#methodraiseError">raiseError</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-str">&quot;</span><span class="src-str">'<span class="src-var">$namedId</span>'&nbsp;<span class="src-id">already</span>&nbsp;<span class="src-id">exists</span>.</span><span class="src-str">&quot;&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a68"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a69"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a70"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a71"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;insert&nbsp;new&nbsp;empty&nbsp;record</span></div></li>
+<li><div class="src-line"><a name="a72"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a73"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$data&nbsp;</span>=&nbsp;<span class="src-key">array</span><span class="src-sym">(</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a74"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$data</span><span class="src-sym">[</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><span class="src-var">col_namedId</span><span class="src-sym">]&nbsp;</span>=&nbsp;<span class="src-var">$namedId</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a75"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$itemId&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_model.html#methodinsert">insert</a><span class="src-sym">(</span><span class="src-var">$data</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a76"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a77"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a78"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;load&nbsp;item&nbsp;data</span></div></li>
+<li><div class="src-line"><a name="a79"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a80"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_db_model.html#methodload">load</a><span class="src-sym">(</span><span class="src-var">$itemId</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a81"></a>&nbsp;&nbsp;&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a82"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/*</span></div></li>
+<li><div class="src-line"><a name="a83"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;return&nbsp;item&nbsp;id</span></div></li>
+<li><div class="src-line"><a name="a84"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a85"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$itemId</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a86"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a87"></a>&nbsp;&nbsp;</div></li>
+<li><div class="src-line"><a name="a88"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-comm">/**</span></div></li>
+<li><div class="src-line"><a name="a89"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;creates&nbsp;a&nbsp;new&nbsp;record&nbsp;if&nbsp;its&nbsp;named&nbsp;id&nbsp;doesn't&nbsp;already&nbsp;exist&nbsp;and&nbsp;optionally&nbsp;links&nbsp;it&nbsp;to&nbsp;a&nbsp;role.</span></div></li>
+<li><div class="src-line"><a name="a90"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;returns&nbsp;false&nbsp;if&nbsp;record&nbsp;exists&nbsp;otherwise&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;record</span></div></li>
+<li><div class="src-line"><a name="a91"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;$namedId</span></div></li>
+<li><div class="src-line"><a name="a92"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$parentId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;of&nbsp;role&nbsp;(unused&nbsp;if&nbsp;class&nbsp;is&nbsp;qcl_access_role)</span></div></li>
+<li><div class="src-line"><a name="a93"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;int&nbsp;the&nbsp;id&nbsp;of&nbsp;the&nbsp;inserted&nbsp;row&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a94"></a><span class="src-comm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span></div></li>
+<li><div class="src-line"><a name="a95"></a>&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">function&nbsp;</span><a href="../qcl/qcl_access_common.html#methodcreateIfNotExists">createIfNotExists</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId</span>=<span class="src-id">null&nbsp;</span><span class="src-sym">)</span></div></li>
+<li><div class="src-line"><a name="a96"></a>&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a97"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">if&nbsp;</span><span class="src-sym">(&nbsp;</span><span class="src-var">$id&nbsp;</span>=&nbsp;<span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_core_PropertyModel.html#methodnamedIdExists">namedIdExists</a>&nbsp;<span class="src-sym">(&nbsp;</span><span class="src-var">$namedId&nbsp;</span><span class="src-sym">)&nbsp;)</span></div></li>
+<li><div class="src-line"><a name="a98"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">{</span></div></li>
+<li><div class="src-line"><a name="a99"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$id</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a100"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a101"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="src-key">return&nbsp;</span><span class="src-var">$this</span><span class="src-sym">-&gt;</span><a href="../qcl/qcl_access_common.html#methodcreate">create</a><span class="src-sym">(&nbsp;</span><span class="src-var">$namedId</span><span class="src-sym">,&nbsp;</span><span class="src-var">$parentId&nbsp;</span><span class="src-sym">)</span><span class="src-sym">;</span></div></li>
+<li><div class="src-line"><a name="a102"></a>&nbsp;&nbsp;<span class="src-sym">}&nbsp;&nbsp;&nbsp;</span></div></li>
+<li><div class="src-line"><a name="a103"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a104"></a><span class="src-sym">}</span></div></li>
+<li><div class="src-line"><a name="a105"></a>&nbsp;</div></li>
+<li><div class="src-line"><a name="a106"></a><span class="src-php">?&gt;</span></div></li>
 </ol>
 </div>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Tue, 09 Dec 2008 18:55:50 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+		    Documentation generated on Tue, 09 Dec 2008 19:16:46 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
 	      </div>
       </td></tr></table>
     </td>
