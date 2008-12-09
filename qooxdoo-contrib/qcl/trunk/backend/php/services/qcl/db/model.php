@@ -227,27 +227,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    
   //-------------------------------------------------------------
   // Record Retrieval (find... methods)
-  //-------------------------------------------------------------   
-  
-  /**
-   * Return the singleton instance of this class (no parameter)
-   * or a specific instance (identified by the numeric id).
-   * @param int[optional] $id 
-   * @return qcl_db_model
-   */
-  function &getInstance( $id )
-  {
-    if ( $id )
-    {
-      $instance = $this->cloneObject();
-      $instance->findById($id);
-      return $instance;  
-    }
-    else
-    {
-      return parent::getInstance(__CLASS__);
-    }
-  }
+  //-------------------------------------------------------------
   
   /**
    * Returns a records by property value
