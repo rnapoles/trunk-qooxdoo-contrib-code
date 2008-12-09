@@ -241,7 +241,7 @@ class qcl_access_user extends qcl_access_common
   /**
    * Whether the given user name is the name of a guest (anonymous) user
    * @return bool True if user name is guest
-   * @todo: we need some more sophisticated stuff here
+   * @todo we need some more sophisticated stuff here
    */
   function isAnonymous()
   {

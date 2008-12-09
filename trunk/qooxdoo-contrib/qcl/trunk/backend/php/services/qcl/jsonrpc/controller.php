@@ -443,7 +443,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * assemble a result array for the json response
 	 * @param mixed $first  key or hash map of key-value pairs
 	 * @param mixed $value
-   * @todo: use into qcl_jsonrpc_Response object 
+   * @todo use into qcl_jsonrpc_Response object 
 	 */
 	function set ( $first, $value=null )
 	{

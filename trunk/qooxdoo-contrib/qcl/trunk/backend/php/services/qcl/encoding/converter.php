@@ -17,7 +17,7 @@ class qcl_encoding_converter extends qcl_jsonrpc_model
   /**
    * converts from one encoding to another one, using available
    * php function 
-   * @todo: extend to allow usage of external libraries
+   * @todo extend to allow usage of external libraries
    * @param string $src_encoding
    * @param string $tgt_encoding
    * @param string $string

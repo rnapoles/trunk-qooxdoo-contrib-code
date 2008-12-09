@@ -5,7 +5,7 @@ require_once ("qcl/core/object.php");
 
 /**
  * Component to do XSLT - Transformations
- * @todo: php5 compatibility
+ * @todo php5 compatibility
  **/
 class qcl_xml_reader extends qcl_core_object
 {

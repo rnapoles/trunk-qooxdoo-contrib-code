@@ -15,7 +15,7 @@ define("QCL_LOG_PROPERTY_MODEL","propertyModel");
  * Model that has a set of properties defined by an xml schema
  * and which optionally can be connected to a datasource which
  * holds all connection data etc. 
- * @todo: rename methods "getX()" into "x()" if they refer to 
+ * @todo rename methods "getX()" into "x()" if they refer to 
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
@@ -263,7 +263,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     
     /*
      * get.. and set... for property access
-     * @todo: correct calling of method with variable arguments
+     * @todo correct calling of method with variable arguments
      */
     if ( $startsWith == "set" )
     {
@@ -1126,7 +1126,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * key/value pairs as properties. 
    * @param mixed  $value 
    * @param int $id if given, find and update property recordId
-   * @todo: 
+   * @todo 
    */  
   function set( $first, $value=null, $id=null )
   {

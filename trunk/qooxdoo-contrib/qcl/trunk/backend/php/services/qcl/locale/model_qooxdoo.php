@@ -4,7 +4,7 @@ require_once ("qcl/jsonrpc/model.php");
 
 /**
  * locale model using the  the qooxdoo translation system.
- * @todo: externally set paths
+ * @todo externally set paths
  */
 class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
 {

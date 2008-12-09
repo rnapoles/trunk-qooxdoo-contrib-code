@@ -61,7 +61,7 @@ class qcl_access_services extends qcl_core_mixin
   function method_getItemData($params)
   {
     /*
-     * @todo: security
+     * @todo security
      */
     
     /*
@@ -83,7 +83,7 @@ class qcl_access_services extends qcl_core_mixin
 
     /*
      * convert to table data model
-     * @todo: rework this "meta" stuff
+     * @todo rework this "meta" stuff
      */
     $data   = array();
     foreach($itemData as $key => $value )
@@ -110,7 +110,7 @@ class qcl_access_services extends qcl_core_mixin
   function method_createItem($params)
   {
     /*
-     * @todo: security
+     * @todo security
      * 
      */
 
@@ -204,7 +204,7 @@ class qcl_access_services extends qcl_core_mixin
   function method_deleteItem($params)
   {
     /*
-     * @todo: security!
+     * @todo security!
      */ 
     
     /*
@@ -222,14 +222,14 @@ class qcl_access_services extends qcl_core_mixin
       case "user":
         $model =& $this->getUserModel();
         $model->delete($itemId);
-        //@todo: this should be automatic 
+        //@todo this should be automatic 
         $model->removeFromRole ( $itemId, $parentId ); 
         break;
         
       case "permission": 
         $model =& $this->getPermissionModel();
         $model->delete($itemId); 
-        //@todo: this should be automatic
+        //@todo this should be automatic
         $model->removeFromRole ( $itemId, $parentId ); 
         break;
         

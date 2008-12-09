@@ -351,7 +351,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     }
     else
     {
-      //@todo: implement
+      //@todo implement
       trigger_error("Not implemented");
     }
   }
@@ -396,7 +396,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     
     /*
      * traverse object tree along the path
-     * @todo: php5 simpleXML has native xpath support
+     * @todo php5 simpleXML has native xpath support
      */    
     if ( phpversion() < 5 )
     { 

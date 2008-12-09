@@ -10,7 +10,7 @@ require_once "DB.php"; // load pear DB library
  * Base class for rpc objects which do database queries
  * in a mysql database
  * relying on PEAR::DB for database access
- * @todo: remove PEAR:DB dependency, it is not really needed.
+ * @todo remove PEAR:DB dependency, it is not really needed.
  */
 class qcl_db_type_Mysql extends qcl_db_type_Abstract
 {
@@ -700,7 +700,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
     "); 
     
     /*
-     * @todo: Ternary stuff below needs a transparent rework!
+     * @todo Ternary stuff below needs a transparent rework!
      */
     if ( count($c) )
     {
@@ -991,7 +991,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   function createHierarchyFunctions($table, $col_id, $col_parentId, $col_label)
   {
     /*
-     * @todo: check permissions
+     * @todo check permissions
      */
     
     /*
@@ -1072,7 +1072,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   function createTimestampTrigger( $table, $col_created )
   {
     /*
-     * @todo: check permissions
+     * @todo check permissions
      */
     $this->execute("
       DROP TRIGGER IF EXISTS `{$table}_create_timestamp` 
@@ -1092,7 +1092,7 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
   function createHashTriggers ( $table, $columns)
   {
     /*
-     * @todo: check permisions
+     * @todo check permisions
      */
     $this->execute("
       DROP TRIGGER IF EXISTS `{$table}_insert_create_hash`

@@ -23,7 +23,7 @@ class qcl_config_services extends qcl_core_mixin
  	function method_updateClient($params)
  	{
  		/*
- 		 * @todo: security
+ 		 * @todo security
  		 */
 
  		/*
@@ -66,7 +66,7 @@ class qcl_config_services extends qcl_core_mixin
  	function method_updateServer($params)
  	{
     /*
-     * @todo: Security
+     * @todo Security
      */
  	  
     /*
@@ -194,7 +194,7 @@ class qcl_config_services extends qcl_core_mixin
 	 * gets all config property value that are readable by the active user
 	 * @param string $param[0] return only a subset of entries that start with $mask
 	 * @return array tabledatamodel
-	 * @todo: encrypt data?
+	 * @todo encrypt data?
 	 */
 	function method_getAll( $params )
 	{
