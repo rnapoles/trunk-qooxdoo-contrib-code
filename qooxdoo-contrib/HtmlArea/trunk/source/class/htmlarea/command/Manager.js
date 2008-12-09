@@ -552,73 +552,106 @@ qx.Class.define("htmlarea.command.Manager",
     }),
 
 
-     /**
-     * Inserts a paragraph when hitting the "enter" key
-     *
-     * @type member
-     * @return {Boolean} whether the key event should be stopped or not
-     */
-    insertParagraphOnLinebreak : function()
+    /**
+    * Inserts a paragraph when hitting the "enter" key
+    *
+    * @type member
+    * @signature function()
+    * @return {Boolean} whether the key event should be stopped or not
+    */
+    insertParagraphOnLinebreak : qx.core.Variant.select("qx.client",
     {
-      /* This nodes are needed to apply the exactly style settings on the paragraph */
-      var helperNodes;
-      var helperStyle = this.__generateHelperString();
-
-      /* Generate unique ids to find the elements later */
-      var spanId = "__placeholder__" + Date.parse(new Date());
-      var paragraphId = "__paragraph__" + Date.parse(new Date());
-
-      var helperString = '<span id="' + spanId + '"></span>';
-      var paragraphString = '<p id="' + paragraphId + '">';
-      
-      var spanNode;
-      var paragraphNode;
-      var brNode;
-
-      /* 
-       * A paragraph will only be inserted, if the paragraph before it has content.
-       * Therefore we also insert a helper node, then the paragraph and the style
-       * nodes after it.
-       */
-      this.execute("inserthtml", helperString + paragraphString + helperStyle);
-
-      /* Fetch elements */
-      spanNode      = this.__doc.getElementById(spanId);
-      paragraphNode = this.__doc.getElementById(paragraphId);
-
-      /* We do net need to pollute the generated HTML with IDs */
-      paragraphNode.removeAttribute("id");
-
-      /*
-       * If the previous paragraph only contains the helperString, it was empty before.
-       * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
-       */
-      if(paragraphNode.previousSibling.innerHTML == helperString)
+      "gecko" : function()
       {
-        helperNodeFragment = this.__generateHelperNodes();
-        brNode             = this.__doc.createElement("br");
-        
-        var mozDirty = this.__doc.createAttribute("_moz_dirty");
-        mozDirty.nodeValue = "";
-        brNode.setAttributeNode(mozDirty);
-        
-        var type     = this.__doc.createAttribute("type");
-        type.nodeValue = "_moz"; 
-        brNode.setAttributeNode(type);
-        
-        /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-        paragraphNode.previousSibling.appendChild(helperNodeFragment);
-        paragraphNode.previousSibling.appendChild(brNode);
-        
-        //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
-      }
-      /* We do net need to pollute the generated HTML with IDs */
-      spanNode.removeAttribute("id");
+				 /* This nodes are needed to apply the exactly style settings on the paragraph */
+				var helperStyle = this.__generateHelperString();
+				
+				/* Generate unique ids to find the elements later */
+				var spanId = "__placeholder__" + Date.parse(new Date());
+				var paragraphId = "__paragraph__" + Date.parse(new Date());
 
-      return true;
-    },
-     
-     
+				var helperString = '<span id="' + spanId + '"></span>';
+				var paragraphString = '<p id="' + paragraphId + '">';
+
+				var spanNode;
+				var paragraphNode;
+				var brNode;
+
+				/* 
+				 * A paragraph will only be inserted, if the paragraph before it has content.
+				 * Therefore we also insert a helper node, then the paragraph and the style
+				 * nodes after it.
+				 */
+				this.execute("inserthtml", helperString + paragraphString + helperStyle);
+
+				/* Fetch elements */
+				spanNode      = this.__doc.getElementById(spanId);
+				paragraphNode = this.__doc.getElementById(paragraphId);
+
+				/* We do net need to pollute the generated HTML with IDs */
+				paragraphNode.removeAttribute("id");
+
+				/*
+				 * If the previous paragraph only contains the helperString, it was empty before.
+				 * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
+				 */
+				if(paragraphNode.previousSibling.innerHTML == helperString)
+				{
+				  var helperNodeFragment = this.__generateHelperNodes();
+				  brNode             = this.__doc.createElement("br");
+
+				  var mozDirty = this.__doc.createAttribute("_moz_dirty");
+				  mozDirty.nodeValue = "";
+				  brNode.setAttributeNode(mozDirty);
+
+				  var type     = this.__doc.createAttribute("type");
+				  type.nodeValue = "_moz"; 
+				  brNode.setAttributeNode(type);
+
+				  /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
+				  paragraphNode.previousSibling.appendChild(helperNodeFragment);
+				  paragraphNode.previousSibling.appendChild(brNode);
+
+				  //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
+				}
+				/* We do net need to pollute the generated HTML with IDs */
+				spanNode.removeAttribute("id");
+
+				return true;
+			},
+
+			/**
+			 * Gecko does not copy the paragraph's background color, and text
+			 * alignment so do this manually.
+			 */
+			"webkit" : function()
+			{
+
+				var styles = this.getCurrentStyles();
+				var elementStyleString = "";
+
+				// We need to copy the background color and text alignment for Webkit
+				var relevantStyles = {
+					"background-color" : true,
+					"text-align": true
+				};
+
+				// Iterate over current styles and save relevant ones to string.
+				for(var style in styles)
+				{
+					if (relevantStyles[style]) {
+						elementStyleString += style + ":" + styles[style] + ";"
+					}
+				}
+
+				// Insert the HTML containing the generated style string.
+				this.__editorInstance.insertHtml("<p style='" + elementStyleString + "'><br class='webkit-block-placeholder' />");
+			},
+
+			"default" : function(){}
+			}),
+
+
      /**
       * ONLY IE
       * Inserts a simple linebreak ('<br>') at the current position.
@@ -1293,7 +1326,7 @@ qx.Class.define("htmlarea.command.Manager",
           * An extra <span> is needed for every text-decoration value,
           * because the color of a decoration is based on the element's color. 
           */
-         for(i=0, j=textDecorations.length; i<j; i++)
+         for(var i=0, j=textDecorations.length; i<j; i++)
          {
            if (child == null)
            {
@@ -1367,8 +1400,6 @@ qx.Class.define("htmlarea.command.Manager",
        /* Helper vars */
        var styleAttribute;
        var styleValue;
-       var parentStyleValue;
-       var parentDecoration;
        var i, j;
 
        /* Read style attributes set on element and all parents */
@@ -1399,7 +1430,7 @@ qx.Class.define("htmlarea.command.Manager",
 
 
        /* Cycle through saved style names and fetch computed value for each of it. */
-       for(style in usedStyles)
+       for(var style in usedStyles)
        {
          styleValue = decoration.getPropertyValue(style);
 
@@ -1433,6 +1464,8 @@ qx.Class.define("htmlarea.command.Manager",
          }
        }
 
+			console.info(styleSettings)
+
        return styleSettings;
      },
 
@@ -1450,7 +1483,7 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __getTextDecorations : function(parents)
      {
-       var elem, decorationValue, colorValue, parentStyleValue;
+       var elem, decorationValue, colorValue;
        var decorationValues = [];
 
        /* Cycle through parents */
@@ -1459,7 +1492,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style */
-         parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
+         var parentDecoration = this.__editorInstance.getContentWindow().getComputedStyle(elem, null);
          
          /* Store values */
          decorationValue = parentDecoration.getPropertyValue("text-decoration");
@@ -1495,7 +1528,6 @@ qx.Class.define("htmlarea.command.Manager",
      __getBackgroundColor : function(parents)
      {
        var elem, parentDecoration, parentStyleValue;
-       var styleSettings = "";
 
        /* Cycle through parents */
        for(var i=0; i<parents.length; i++)
@@ -1585,7 +1617,7 @@ qx.Class.define("htmlarea.command.Manager",
          /* Walk through all list elements and check if they are selected */
          for(i=0; i<lists.length; i++)
          {
-           listElement = lists[i];
+           var listElement = lists[i];
   
            /* 
             * Check if the entire list element has been selected.
@@ -1607,7 +1639,7 @@ qx.Class.define("htmlarea.command.Manager",
            /* Walk through all list entries in list element: */
            for(j=0; j<listElement.childNodes.length; j++)
            {
-             listEntryElement = listElement.childNodes[j];
+             var listEntryElement = listElement.childNodes[j];
   
              /*
               * Anchor node and focus nodes are special:
