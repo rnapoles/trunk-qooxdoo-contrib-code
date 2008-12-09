@@ -1,0 +1,166 @@
+<html>
+<head>
+<title>Docs for page utf8.php</title>
+<link rel="stylesheet" type="text/css" href="../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">utf8</td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                                                
+                              		  [ <a href="../classtrees_utf8.html" class="menu">class tree: utf8</a> ]
+		  [ <a href="../elementindex_utf8.html" class="menu">index: utf8</a> ]
+		  	    [ <a href="../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../li_qcl.html">qcl</a><br />
+              <a href="../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../li_gS3.html">gS3</a><br />
+              <a href="../li_utf8.html">utf8</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../utf8/_lib---punbb_utf8---utf8.php.html">		utf8.php
+		</a><br>
+	  </div><br />
+	subpackage <b>ascii</b><br>  <div class="package">
+			<a href="../utf8/ascii/_lib---punbb_utf8---utils---ascii.php.html">		ascii.php
+		</a><br>
+	  </div><br />
+	subpackage <b>bad</b><br>  <div class="package">
+			<a href="../utf8/bad/_lib---punbb_utf8---utils---bad.php.html">		bad.php
+		</a><br>
+	  </div><br />
+	subpackage <b>patterns</b><br>  <div class="package">
+			<a href="../utf8/patterns/_lib---punbb_utf8---utils---patterns.php.html">		patterns.php
+		</a><br>
+	  </div><br />
+	subpackage <b>position</b><br>  <div class="package">
+			<a href="../utf8/position/_lib---punbb_utf8---utils---position.php.html">		position.php
+		</a><br>
+	  </div><br />
+	subpackage <b>strings</b><br>  <div class="package">
+			<a href="../utf8/strings/_lib---punbb_utf8---mbstring---core.php.html">		core.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---native---core.php.html">		core.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---ord.php.html">		ord.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---strcasecmp.php.html">		strcasecmp.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---strcspn.php.html">		strcspn.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---stristr.php.html">		stristr.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---strrev.php.html">		strrev.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---strspn.php.html">		strspn.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---str_ireplace.php.html">		str_ireplace.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---str_pad.php.html">		str_pad.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---str_split.php.html">		str_split.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---substr_replace.php.html">		substr_replace.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---trim.php.html">		trim.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---ucfirst.php.html">		ucfirst.php
+		</a><br>
+			<a href="../utf8/strings/_lib---punbb_utf8---ucwords.php.html">		ucwords.php
+		</a><br>
+	  </div><br />
+	subpackage <b>unicode</b><br>  <div class="package">
+			<a href="../utf8/unicode/_lib---punbb_utf8---utils---unicode.php.html">		unicode.php
+		</a><br>
+	  </div><br />
+	subpackage <b>utils</b><br>  <div class="package">
+			<a href="../utf8/utils/_lib---punbb_utf8---utils---specials.php.html">		specials.php
+		</a><br>
+	  </div><br />
+	subpackage <b>validation</b><br>  <div class="package">
+			<a href="../utf8/validation/_lib---punbb_utf8---utils---validation.php.html">		validation.php
+		</a><br>
+	  </div><br />
+      
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Procedural File: utf8.php</h1>
+Source Location: /lib/punbb_utf8/utf8.php<br /><br />
+
+<br>
+<br>
+
+
+<h2>Page Details:</h2>
+This is the dynamic loader for the library. It checks whether you have  the mbstring extension available and includes relevant files  on that basis, falling back to the native (as in written in PHP) version  if mbstring is unavailabe.<br /><br /><p>It's probably easiest to use this, if you don't want to understand  the dependencies involved, in conjunction with PHP versions etc. At  the same time, you might get better performance by managing loading  yourself. The smartest way to do this, bearing in mind performance,  is probably to &quot;load on demand&quot; - i.e. just before you use these  functions in your code, load the version you need.</p><p>It makes sure the the following functions are available;  utf8_strlen, utf8_strpos, utf8_strrpos, utf8_substr,  utf8_strtolower, utf8_strtoupper  Other functions in the ./native directory depend on these  six functions being available</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>see:</b>&nbsp;&nbsp;</td><td><a href="http://sourceforge.net/projects/phputf8">http://sourceforge.net/projects/phputf8</a></td>
+  </tr>
+  <tr>
+    <td><b>filesource:</b>&nbsp;&nbsp;</td><td><a href="../__filesource/fsource_utf8__libpunbb_utf8utf8.php.html">Source Code for this file</a></td>
+  </tr>
+  <tr>
+    <td><b>license:</b>&nbsp;&nbsp;</td><td><a href="http://www.gnu.org/copyleft/lesser.html">LGPL</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+<h4>Includes:</h4>
+<div class="tags">
+require_once(UTF8.'/utils/unicode.php') [line <a href="../__filesource/fsource_utf8__libpunbb_utf8utf8.php.html#a65">65</a>]<br />
+require_once(UTF8.'/native/core.php') [line <a href="../__filesource/fsource_utf8__libpunbb_utf8utf8.php.html#a66">66</a>]<br />
+require_once(UTF8.'/mbstring/core.php') [line <a href="../__filesource/fsource_utf8__libpunbb_utf8utf8.php.html#a63">63</a>]<br />
+Load the smartest implementations of utf8_strpos, utf8_strrpos<br /><br /><p>and utf8_substr</p><br />require_once(UTF8.'/substr_replace.php') [line <a href="../__filesource/fsource_utf8__libpunbb_utf8utf8.php.html#a73">73</a>]<br />
+Load the native implementation of utf8_substr_replace<br /><br /></div>
+<br /><br />
+<br /><br />
+  <hr />
+	<a name="defineUTF8"></a>
+	<h3>UTF8 <span class="smalllinenumber">[line <a href="../__filesource/fsource_utf8__libpunbb_utf8utf8.php.html#a30">30</a>]</span></h3>
+	<div class="tags">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>UTF8 = dirname(__FILE__)</code>
+    </td></tr></table>
+    </td></tr></table>
+
+    Put the current directory in this constant<br /><br />    <br />
+		</div>
+	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+<br />
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:19:57 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

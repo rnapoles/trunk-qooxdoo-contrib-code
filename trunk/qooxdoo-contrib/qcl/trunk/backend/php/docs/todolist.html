@@ -14,7 +14,7 @@
     <td class="header_menu">
         
                                     
-                              		  [ <a href="classtrees_qcl.html" class="menu">class tree: qcl</a> ]
+                                                                                          		  [ <a href="classtrees_qcl.html" class="menu">class tree: qcl</a> ]
 		  [ <a href="elementindex_qcl.html" class="menu">index: qcl</a> ]
 		  	    [ <a href="elementindex.html" class="menu">all elements</a> ]
     </td>
@@ -30,6 +30,9 @@
 	</div>
       <b>Packages:</b><br />
               <a href="li_qcl.html">qcl</a><br />
+              <a href="li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="li_gS3.html">gS3</a><br />
+              <a href="li_utf8.html">utf8</a><br />
             <br /><br />
                   
       
@@ -39,21 +42,65 @@
 
 <div align="center"><h1>Todo List</h1></div>
 <h2>qcl</h2>
+<h3><a href="qcl/qcl_jsonrpc_object.html#var$bin_path">qcl_jsonrpc_object::$bin_path</a></h3>
+<ul>
+    <li>move everything related to execution of binaries to a separate class</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#var$__event_db">qcl_jsonrpc_object::$__event_db</a></h3>
+<ul>
+    <li>mover everything related to events and messages to event package</li>
+</ul>
 <h3><a href="qcl/qcl_jsonrpc_object.html#methodaddEventListener">qcl_jsonrpc_object::addEventListener()</a></h3>
 <ul>
-    <li>rewrite</li>
+    <li>move to external class</li>
 </ul>
 <h3><a href="qcl/qcl_session_db_model.html#methodaddMessageBroadcast">qcl_session_db_model::addMessageBroadcast()</a></h3>
 <ul>
     <li>base64encode and separate with CR</li>
 </ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methodaddMessageSubscriber">qcl_jsonrpc_object::addMessageSubscriber()</a></h3>
+<ul>
+    <li>move to external class</li>
+</ul>
+<h3><a href="qcl/qcl_access_controller.html#methodauthenticate">qcl_access_controller::authenticate()</a></h3>
+<ul>
+    <li>implement (see Bugzilla bug 1659)</li>
+</ul>
+<h3><a href="qcl/qcl_access_common.html#methodcreate">qcl_access_common::create()</a></h3>
+<ul>
+    <li>rewrite</li>
+</ul>
 <h3><a href="qcl/qcl_db_tree.html#methodcreatePath">qcl_db_tree::createPath()</a></h3>
 <ul>
     <li>to be implemented</li>
 </ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methoddebugVarHtml">qcl_jsonrpc_object::debugVarHtml()</a></h3>
+<ul>
+    <li>move to logger class</li>
+</ul>
+<h3><a href="qcl/qcl_io_filesystem_remote_Resource.html#methoddelete">qcl_io_filesystem_remote_Resource::delete()</a></h3>
+<ul>
+    <li>implement, if possible at all</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methoddispatchEvent">qcl_jsonrpc_object::dispatchEvent()</a></h3>
+<ul>
+    <li>move to external class</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methoddispatchMessage">qcl_jsonrpc_object::dispatchMessage()</a></h3>
+<ul>
+    <li>move to external class</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methodfileChanged">qcl_jsonrpc_object::fileChanged()</a></h3>
+<ul>
+    <li>move to file class</li>
+</ul>
 <h3><a href="qcl/qcl_db_tree.html#methodgetIdByPath">qcl_db_tree::getIdByPath()</a></h3>
 <ul>
     <li>to be implemented</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methodgetOsBinDir">qcl_jsonrpc_object::getOsBinDir()</a></h3>
+<ul>
+    <li>move to external class</li>
 </ul>
 <h3><a href="qcl/qcl_core_PropertyModel.html#methodgetProperties">qcl_core_PropertyModel::getProperties()</a></h3>
 <ul>
@@ -67,33 +114,81 @@
 <ul>
     <li>replace by ::getInstance()</li>
 </ul>
+<h3><a href="qcl/qcl_config_db.html#methodgetValue">qcl_config_db::getValue()</a></h3>
+<ul>
+    <li>rewrite this</li>
+</ul>
 <h3><a href="qcl/qcl_databinding_tree_controller.html#methodmethod_delete">qcl_databinding_tree_controller::method_delete()</a></h3>
 <ul>
     <li>add function that expunges such notes permanently</li>
+</ul>
+<h3><a href="qcl/qcl_access_controller.html#methodmethod_guestAccess">qcl_access_controller::method_guestAccess()</a></h3>
+<ul>
+    <li>Rework this</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_controller.html#methodmethod_services">qcl_jsonrpc_controller::method_services()</a></h3>
+<ul>
+    <li>Save result so that access can be regulated by source code introspection</li>
 </ul>
 <h3><a href="qcl/qcl_databinding_tree_controller.html#methodmethod_update">qcl_databinding_tree_controller::method_update()</a></h3>
 <ul>
     <li>pass datasource info from client!</li>
 </ul>
+<h3><a href="qcl/qcl_http_Request.html#methodpost">qcl_http_Request::post()</a></h3>
+<ul>
+    <li>use curl if available</li>
+</ul>
+<h3><a href="qcl/qcl_access_user.html">qcl_access_user</a></h3>
+<ul>
+    <li>separate user model class and active user class</li>
+</ul>
 <h3><a href="qcl/qcl_datasource_controller.html">qcl_datasource_controller</a></h3>
 <ul>
     <li>Get rid of file-based storage and use persistend db object instead.</li>
 </ul>
-<h3><a href="qcl/qcl_object.html#methodstore">qcl_object::store()</a></h3>
+<h3><a href="qcl/qcl_http_Request.html">qcl_http_Request</a></h3>
+<ul>
+    <li>rename into qcl_net_httpRequest</li>
+</ul>
+<h3><a href="qcl/qcl_io_filesystem_remote_Resource.html#methodrename">qcl_io_filesystem_remote_Resource::rename()</a></h3>
+<ul>
+    <li>Implement where possible</li>
+</ul>
+<h3><a href="qcl/qcl_application_controller.html#methodresponse">qcl_application_controller::response()</a></h3>
+<ul>
+    <li>json debug</li>
+</ul>
+<h3><a href="qcl/qcl_access_controller.html#methodresponse">qcl_access_controller::response()</a></h3>
+<ul>
+    <li>json debug</li>
+</ul>
+<h3><a href="qcl/qcl_core_object.html#methodretrieve">qcl_core_object::retrieve()</a></h3>
+<ul>
+    <li>remove method</li>
+</ul>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methodrunOncePerClassAndSession">qcl_jsonrpc_object::runOncePerClassAndSession()</a></h3>
+<ul>
+    <li>rewrite using external class</li>
+</ul>
+<h3><a href="qcl/qcl_core_object.html#methodstore">qcl_core_object::store()</a></h3>
 <ul>
     <li>reimplement using a storage class which can be file-based, db-based, etc.</li>
 </ul>
-<h3><a href="qcl/_functions.php.html#functionxml_entity_decode">xml_entity_decode()</a></h3>
+<h3><a href="qcl/qcl_jsonrpc_object.html#methodtmpDir">qcl_jsonrpc_object::tmpDir()</a></h3>
 <ul>
-    <li>implement</li>
+    <li>move to external system class</li>
 </ul>
-<h3><a href="qcl/_functions.php.html#functionxml_entity_encode">xml_entity_encode()</a></h3>
+<h3><a href="qcl/_core---functions.php.html#functionxmlentities">xmlentities()</a></h3>
 <ul>
-    <li>implement</li>
+    <li>test this</li>
+</ul>
+<h3><a href="qcl/_core---functions.php.html#functionxml_entity_decode">xml_entity_decode()</a></h3>
+<ul>
+    <li>implement other encodings</li>
 </ul>
         <div class="credit">
 		    <hr />
-		    Documentation generated on Tue, 09 Dec 2008 18:57:35 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+		    Documentation generated on Tue, 09 Dec 2008 19:20:03 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
 	      </div>
       </td></tr></table>
     </td>

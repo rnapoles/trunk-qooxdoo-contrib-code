@@ -1,0 +1,263 @@
+<html>
+<head>
+<title>Docs for page position.php</title>
+<link rel="stylesheet" type="text/css" href="../../media/style.css">
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" height="48" width="100%">
+  <tr>
+    <td class="header_top">utf8</td>
+  </tr>
+  <tr><td class="header_line"><img src="../../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+  <tr>
+    <td class="header_menu">
+        
+                                                                                                
+                              		  [ <a href="../../classtrees_utf8.html" class="menu">class tree: utf8</a> ]
+		  [ <a href="../../elementindex_utf8.html" class="menu">index: utf8</a> ]
+		  	    [ <a href="../../elementindex.html" class="menu">all elements</a> ]
+    </td>
+  </tr>
+  <tr><td class="header_line"><img src="../../media/empty.png" width="1" height="1" border="0" alt=""  /></td></tr>
+</table>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="200" class="menu">
+	<div id="todolist">
+			<p><a href="../../todolist.html">Todo List</a></p>
+	</div>
+      <b>Packages:</b><br />
+              <a href="../../li_qcl.html">qcl</a><br />
+              <a href="../../li_Crypt_HMAC.html">Crypt_HMAC</a><br />
+              <a href="../../li_gS3.html">gS3</a><br />
+              <a href="../../li_utf8.html">utf8</a><br />
+            <br /><br />
+                        <b>Files:</b><br />
+      	  <div class="package">
+			<a href="../../utf8/_lib---punbb_utf8---utf8.php.html">		utf8.php
+		</a><br>
+	  </div><br />
+	subpackage <b>ascii</b><br>  <div class="package">
+			<a href="../../utf8/ascii/_lib---punbb_utf8---utils---ascii.php.html">		ascii.php
+		</a><br>
+	  </div><br />
+	subpackage <b>bad</b><br>  <div class="package">
+			<a href="../../utf8/bad/_lib---punbb_utf8---utils---bad.php.html">		bad.php
+		</a><br>
+	  </div><br />
+	subpackage <b>patterns</b><br>  <div class="package">
+			<a href="../../utf8/patterns/_lib---punbb_utf8---utils---patterns.php.html">		patterns.php
+		</a><br>
+	  </div><br />
+	subpackage <b>position</b><br>  <div class="package">
+			<a href="../../utf8/position/_lib---punbb_utf8---utils---position.php.html">		position.php
+		</a><br>
+	  </div><br />
+	subpackage <b>strings</b><br>  <div class="package">
+			<a href="../../utf8/strings/_lib---punbb_utf8---mbstring---core.php.html">		core.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---native---core.php.html">		core.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---ord.php.html">		ord.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---strcasecmp.php.html">		strcasecmp.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---strcspn.php.html">		strcspn.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---stristr.php.html">		stristr.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---strrev.php.html">		strrev.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---strspn.php.html">		strspn.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---str_ireplace.php.html">		str_ireplace.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---str_pad.php.html">		str_pad.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---str_split.php.html">		str_split.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---substr_replace.php.html">		substr_replace.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---trim.php.html">		trim.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---ucfirst.php.html">		ucfirst.php
+		</a><br>
+			<a href="../../utf8/strings/_lib---punbb_utf8---ucwords.php.html">		ucwords.php
+		</a><br>
+	  </div><br />
+	subpackage <b>unicode</b><br>  <div class="package">
+			<a href="../../utf8/unicode/_lib---punbb_utf8---utils---unicode.php.html">		unicode.php
+		</a><br>
+	  </div><br />
+	subpackage <b>utils</b><br>  <div class="package">
+			<a href="../../utf8/utils/_lib---punbb_utf8---utils---specials.php.html">		specials.php
+		</a><br>
+	  </div><br />
+	subpackage <b>validation</b><br>  <div class="package">
+			<a href="../../utf8/validation/_lib---punbb_utf8---utils---validation.php.html">		validation.php
+		</a><br>
+	  </div><br />
+      
+      
+                </td>
+    <td>
+      <table cellpadding="10" cellspacing="0" width="100%" border="0"><tr><td valign="top">
+
+<h1>Procedural File: position.php</h1>
+Source Location: /lib/punbb_utf8/utils/position.php<br /><br />
+
+<br>
+<br>
+
+
+<h2>Page Details:</h2>
+Locate a byte index given a UTF-8 character index<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>version:</b>&nbsp;&nbsp;</td><td>$Id: position.php,v 1.1 2006/10/01 00:01:31 harryf Exp $</td>
+  </tr>
+  <tr>
+    <td><b>filesource:</b>&nbsp;&nbsp;</td><td><a href="../../__filesource/fsource_utf8_position_libpunbb_utf8utilsposition.php.html">Source Code for this file</a></td>
+  </tr>
+</table>
+</div>
+<br /><br />
+<br /><br />
+<br /><br />
+<br />
+  <hr />
+	<a name="functionutf8_byte_position"></a>
+	<h3>utf8_byte_position <span class="smalllinenumber">[line <a href="../../__filesource/fsource_utf8_position_libpunbb_utf8utilsposition.php.html#a30">30</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>mixed utf8_byte_position(
+string 0, int 1)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		Given a string and a character index in the string, in<br /><br /><p>terms of the UTF-8 character position, returns the byte  index of that character. Can be useful when you want to  PHP's native string functions but we warned, locating  the byte can be expensive  Takes variable number of parameters - first must be  the search string then 1 to n UTF-8 character positions  to obtain byte indexes for - it is more efficient to search  the string for multiple characters at once, than make  repeated calls to this function</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>- int if only one input int, array if more</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Chris Smith&lt;<a href="mailto:chris@jalakai.co.uk">chris@jalakai.co.uk</a>&gt;</td>
+  </tr>
+</table>
+</div>
+    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>0</b>&nbsp;&nbsp;</td>
+        <td>string to locate index in</td>
+      </tr>
+		      <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>1</b>&nbsp;&nbsp;</td>
+        <td>(n times)</td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+  <hr />
+	<a name="functionutf8_locate_current_chr"></a>
+	<h3>utf8_locate_current_chr <span class="smalllinenumber">[line <a href="../../__filesource/fsource_utf8_position_libpunbb_utf8utilsposition.php.html#a131">131</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int utf8_locate_current_chr(
+string &$str, int $idx)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		Given a string and any byte index, returns the byte index<br /><br /><p>of the start of the current UTF-8 character, relative to supplied  position. If the current character begins at the same place as the  supplied byte index, that byte index will be returned. Otherwise  this function will step backwards, looking for the index where  curent UTF-8 character begins</p><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>byte index of start of next UTF-8 character</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Chris Smith&lt;<a href="mailto:chris@jalakai.co.uk">chris@jalakai.co.uk</a>&gt;</td>
+  </tr>
+</table>
+</div>
+    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>&$str</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+		      <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$idx</b>&nbsp;&nbsp;</td>
+        <td>byte index in the string</td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+  <hr />
+	<a name="functionutf8_locate_next_chr"></a>
+	<h3>utf8_locate_next_chr <span class="smalllinenumber">[line <a href="../../__filesource/fsource_utf8_position_libpunbb_utf8utilsposition.php.html#a159">159</a>]</span></h3>
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code_border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
+		<code>int utf8_locate_next_chr(
+string &$str, int $idx)</code>
+    </td></tr></table>
+    </td></tr></table><br />
+
+		Given a string and any byte index, returns the byte index  of the start of the next UTF-8 character, relative to supplied  position. If the next character begins at the same place as the  supplied byte index, that byte index will be returned.<br /><br /><br /><br />
+<h4>Tags:</h4>
+<div class="tags">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><b>return:</b>&nbsp;&nbsp;</td><td>byte index of start of next UTF-8 character</td>
+  </tr>
+  <tr>
+    <td><b>author:</b>&nbsp;&nbsp;</td><td>Chris Smith&lt;<a href="mailto:chris@jalakai.co.uk">chris@jalakai.co.uk</a>&gt;</td>
+  </tr>
+</table>
+</div>
+    <br /><br />
+	
+    		<h4>Parameters</h4>
+    <table border="0" cellspacing="0" cellpadding="0">
+		      <tr>
+        <td class="type">string&nbsp;&nbsp;</td>
+        <td><b>&$str</b>&nbsp;&nbsp;</td>
+        <td></td>
+      </tr>
+		      <tr>
+        <td class="type">int&nbsp;&nbsp;</td>
+        <td><b>$idx</b>&nbsp;&nbsp;</td>
+        <td>byte index in the string</td>
+      </tr>
+				</table>
+    	<div class="top">[ <a href="#top">Top</a> ]</div><br /><br />
+	</div>
+
+        <div class="credit">
+		    <hr />
+		    Documentation generated on Tue, 09 Dec 2008 19:18:59 +0100 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+	      </div>
+      </td></tr></table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
