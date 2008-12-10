@@ -14,7 +14,7 @@
 
    Authors:
      * Alexander Back (aback)
-     * Jonathan Rass (jonathan_rass) 
+     * Jonathan Weiß (jonathan_rass) 
 
 ************************************************************************ */
 
@@ -291,7 +291,7 @@ qx.Class.define("htmlarea.command.UndoManager",
          else if(this.__registeredHandler[undoStep.actionType])
          {
             var handler = this.__registeredHandler[undoStep.actionType];
-            result = handler.undo.call(handler.context ? context : this, undoStep);
+            result = handler.undo.call(handler.context ? handler.context : this, undoStep);
             
             // add it automatically to the redoStack
             this.__addToRedoStack(undoStep);
@@ -515,7 +515,7 @@ qx.Class.define("htmlarea.command.UndoManager",
            else if(this.__registeredHandler[redoStep.actionType])
            {
               var handler = this.__registeredHandler[redoStep.actionType];
-              result = handler.redo.call(handler.context ? context : this, redoStep);
+              result = handler.redo.call(handler.context ? handler.context : this, redoStep);
               
               // add it automatically to the undoStack
               this.__addToUndoStack(redoStep);
@@ -1118,7 +1118,7 @@ qx.Class.define("htmlarea.command.UndoManager",
   {
     try
     {
-      qx.event.Registration.removeListener(doc.body, "keypress", this.__handleKeyPress);
+      qx.event.Registration.removeListener(this.__doc.body, "keypress", this.__handleKeyPress);
       qx.event.Registration.removeListener(this.__doc, "mouseup", this.__handleMouseUp);
       
       if (qx.core.Variant.isSet("qx.client", "mshtml"))

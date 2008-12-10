@@ -14,7 +14,7 @@
 
    Authors:
      * Alexander Back (aback)
-     * Jonathan Rass (jonathan_rass)
+     * Jonathan Weiß (jonathan_rass)
 
    ======================================================================
 
@@ -169,7 +169,13 @@ qx.Class.define("htmlarea.Application",
           fontcolor :           { image :  "htmlarea/image/color_text.gif", action : fontColorHandler },
           textBackgroundColor : { image :  "htmlarea/image/color_bg.gif", action : textBackgroundColorHandler }
         },
-        
+
+        {
+	        indet :               { image : "htmlarea/image/indent.gif", action : htmlArea.insertIndent },
+	        outdent :             { image : "htmlarea/image/outdent.gif", action : htmlArea.insertOutdent }
+				},
+
+
         {
           insertImage :         { image : "htmlarea/image/insert_image.gif", action : insertImageHandler },
           insertTable :         { image : "htmlarea/image/insert_table.gif", action : insertTableHandler }

@@ -1255,7 +1255,7 @@ qx.Class.define("htmlarea.command.Manager",
           * An extra <span> is needed for every text-decoration value,
           * because the color of a decoration is based on the element's color. 
           */
-         for(i=0, j=textDecorations.length; i<j; i++)
+         for(var i=0, j=textDecorations.length; i<j; i++)
          {
            if (child == null)
            {
@@ -1329,12 +1329,10 @@ qx.Class.define("htmlarea.command.Manager",
        /* Helper vars */
        var styleAttribute;
        var styleValue;
-       var parentStyleValue;
-       var parentDecoration;
        var i, j;
 
        /* Read style attributes set on element and all parents */
-       for(i=0; i<elementAndParents.length; i++)
+       for(var i=0; i<elementAndParents.length; i++)
        {
          elem = elementAndParents[i];
          /* Cycle though style properties */
@@ -1361,7 +1359,7 @@ qx.Class.define("htmlarea.command.Manager",
 
 
        /* Cycle through saved style names and fetch computed value for each of it. */
-       for(style in usedStyles)
+       for(var style in usedStyles)
        {
          styleValue = decoration.getPropertyValue(style);
 
@@ -1411,7 +1409,7 @@ qx.Class.define("htmlarea.command.Manager",
       */
      __getTextDecorations : function(parents)
      {
-       var elem, decorationValue, colorValue, parentStyleValue;
+       var elem, decorationValue, colorValue;
        var decorationValues = [];
 
        /* Cycle through parents */
@@ -1420,7 +1418,7 @@ qx.Class.define("htmlarea.command.Manager",
          elem = parents[i];
 
          /* Retrieve computed style */
-         parentDecoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
+         var parentDecoration = this.__editorInstance.getIframeObject().getWindow().getComputedStyle(elem, null);
          
          /* Store values */
          decorationValue = parentDecoration.getPropertyValue("text-decoration");
@@ -1455,7 +1453,6 @@ qx.Class.define("htmlarea.command.Manager",
      __getBackgroundColor : function(parents)
      {
        var elem, parentDecoration, parentStyleValue;
-       var styleSettings = "";
 
        /* Cycle through parents */
        for(var i=0; i<parents.length; i++)
@@ -1518,11 +1515,11 @@ qx.Class.define("htmlarea.command.Manager",
        /* If it is the <body> tag, a whole bunch of elements has been selected */
        if (element.tagName == "BODY")
        {
-         for (i=0; i<listTypes.length; i++)
+         for (var i=0; i<listTypes.length; i++)
          {
            /* Search for list elements... */
            tmp = element.getElementsByTagName(listTypes[i]);
-           for (j=0; j<tmp.length; j++)
+           for (var j=0; j<tmp.length; j++)
            {
              if (tmp[j])
              {
@@ -1542,9 +1539,9 @@ qx.Class.define("htmlarea.command.Manager",
        if(lists.length > 0)
        {
          /* Walk through all list elements and check if they are selected */
-         for(i=0; i<lists.length; i++)
+         for(var i=0; i<lists.length; i++)
          {
-           listElement = lists[i];
+           var listElement = lists[i];
   
            /* 
             * Check if the entire list element has been selected.
@@ -1566,7 +1563,7 @@ qx.Class.define("htmlarea.command.Manager",
            /* Walk through all list entries in list element: */
            for(j=0; j<listElement.childNodes.length; j++)
            {
-             listEntryElement = listElement.childNodes[j];
+             var listEntryElement = listElement.childNodes[j];
   
              /*
               * Anchor node and focus nodes are special:

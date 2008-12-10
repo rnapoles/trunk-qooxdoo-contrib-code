@@ -15,7 +15,7 @@
    Authors:
      * Alexander Back (aback)
      * Michael Haitz (mhaitz)
-     * Jonathan Rass (jonathan_rass)
+     * Jonathan Weiß (jonathan_rass)
 
    Contributors:
      * Petr Kobalicek (e666e)
@@ -883,12 +883,12 @@ qx.Class.define("htmlarea.HtmlArea",
       var result = {};
       var i, j, words, element, word;
 
-      for(i=0,len1=list.length; i<len1; ++i)
+      for(var i=0,len1=list.length; i<len1; ++i)
       {
         element = list[i];
         words = element.nodeValue.split(" ");
 
-        for(j=0,len2=words.length; j<len2; ++j)
+        for(var j=0,len2=words.length; j<len2; ++j)
         {
           word = this._cleanupWord(words[j]);
 
@@ -1412,8 +1412,6 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _applyEditable : function(propValue, propOldValue, propData)
     {
-      var doc = this.__iframe.getDocument();
-
       if (this.__isLoaded)
       {
         this.__setDesignMode(true);
@@ -1881,6 +1879,7 @@ qx.Class.define("htmlarea.HtmlArea",
               {
                 /* Fetch all text nodes from body element */
                 var elements = document.evaluate("//text()[string-length(normalize-space(.))>0]", doc.body, null, XPathResult.ANY_TYPE, null);
+								var currentItem;
 
                 /* Iterate over result */
                 while(currentItem = elements.iterateNext())
