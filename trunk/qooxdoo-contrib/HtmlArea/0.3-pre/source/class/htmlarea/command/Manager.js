@@ -14,7 +14,7 @@
 
    Authors:
      * Alexander Back (aback)
-     * Jonathan Rass (jonathan_rass)
+     * Jonathan Weiß (jonathan_rass)
 
 ************************************************************************ */
 
@@ -142,9 +142,8 @@ qx.Class.define("htmlarea.command.Manager",
       this.__commands = {
         bold                  : { useBuiltin : true, identifier : "Bold", method : null },
         italic                : { useBuiltin : true, identifier : "Italic", method : null },
-        underline             : { useBuiltin : true, identifier : "Underline", method : null },
-        strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null },
-
+        underline             : { useBuiltin : false, identifier : "Underline", method : "__setUnderline" },
+        strikethrough         : { useBuiltin : false, identifier : "StrikeThrough", method : "__setStrikeThrough" },
         fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : false, identifier : "FontSize", method : "__setFontSize" },
 
@@ -213,6 +212,15 @@ qx.Class.define("htmlarea.command.Manager",
       {
         var commandObject = this.__commands[command];
 
+				/**
+				 * We have to make sure that the elements inside the selection are
+				 * inside a paragraph before executing a command. Otherwise executing
+				 * commands will cause problems for our paragraph handling.
+				 */
+				if (this.__paragraphMissing()) {
+					this.__insertHelperParagraph();
+				}
+
         /* Pass all useBuiltin commands right to the browser */
         if (commandObject.useBuiltin)
         {
@@ -236,6 +244,57 @@ qx.Class.define("htmlarea.command.Manager",
         this.error("Command " + command + " is currently not supported!");
       }
     },
+
+
+    /**
+     * Checks if the focus node is not inside a paragraph tag.
+     *
+     * @type member
+     * @return {Boolean} True if no paragraph is found, otherwise false.
+     */
+		__paragraphMissing : function()
+		{
+			var focusNode = this.__editorInstance.__getSelection().focusNode;
+			var isInParagraph = false;
+			var bodyIsFocusNode = false;
+
+			if (focusNode)
+			{
+				if (focusNode.nodeType == 3)
+				{
+					// Check the focus node is inside a paragraph tag.
+					var parents = qx.dom.Hierarchy.getAncestors(focusNode);
+
+					for(var i=0, j=parents.length; i<j; i++)
+					{
+						if (parents[i].tagName == "P")
+						{
+							isInParagraph = true;
+							break;
+						}
+					}
+
+				}
+				else if (focusNode.nodeType == 1 && focusNode.tagName == "BODY")
+				{
+					// TODO: Additional checks needed?
+					bodyIsFocusNode = true;
+				}
+			}
+
+			return bodyIsFocusNode || !isInParagraph;
+		},
+
+    /**
+     * Inserts a paragraph tag around selection or at the insert point
+     * using executeCommand.
+     *
+     * @type member
+     */
+		__insertHelperParagraph : function()
+		{
+			this.__executeCommand("formatBlock", false, "p");
+		},
 
 
     /**
@@ -456,75 +515,104 @@ qx.Class.define("htmlarea.command.Manager",
      
      
      /**
-      * Inserts a paragraph when hitting the "enter" key
-      *
-      * @return {Boolean} whether the key event should be stopped or not
-      */
-     insertParagraphOnLinebreak : function()
+     * Inserts a paragraph when hitting the "enter" key
+     *
+     * @type member
+     * @signature function()
+     * @return {Boolean} whether the key event should be stopped or not
+     */
+     insertParagraphOnLinebreak : qx.core.Variant.select("qx.client",
      {
-
-       var doc = this.__editorInstance.getIframeObject().getDocument();
-       var range  = this.__editorInstance.getRange();
-       var sel = this.__editorInstance.__getSelection();
-       
-       /* This nodes are needed to apply the exactly style settings on the paragraph */
-       var styleNodes = this.__generateHelperNodes();
-       var helperStyle = this.__generateHelperString();
-       
-       /* Generate unique ids to find the elements later */
-       var spanId = "__placeholder__" + Date.parse(new Date());
-       var paragraphId = "__paragraph__" + Date.parse(new Date());
-
-       var helperString = '<span id="' + spanId + '"></span>';
-       var paragraphString = '<p id="' + paragraphId + '">';
-       
-       var spanNode;
-       var paragraphNode;
-
-       /* 
-        * A paragraph will only be inserted, if the paragraph before it has content.
-        * Therefore we also insert a helper node, then the paragraph and the style
-        * nodes after it.
-        */
-       this.execute("inserthtml", helperString + paragraphString + helperStyle);
-
-       /* Fetch elements */
-       spanNode      = doc.getElementById(spanId);
-       paragraphNode = doc.getElementById(paragraphId);
-
-       /* We do net need to pollute the generated HTML with IDs */
-       paragraphNode.removeAttribute("id");
-
-       /*
-        * If the previous paragraph only contains the helperString, it was empty before.
-        * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
-        */
-       if(paragraphNode.previousSibling.innerHTML == helperString)
+       "gecko" : function()
        {
-         helperNodeFragment = this.__generateHelperNodes();
-         brNode             = this.__doc.createElement("br");
-         
-         var mozDirty = this.__doc.createAttribute("_moz_dirty");
-         mozDirty.nodeValue = "";
-         brNode.setAttributeNode(mozDirty);
-         
-         var type     = this.__doc.createAttribute("type");
-         type.nodeValue = "_moz"; 
-         brNode.setAttributeNode(type);
-         
-         /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
-         paragraphNode.previousSibling.appendChild(helperNodeFragment);
-         paragraphNode.previousSibling.appendChild(brNode);
-         
-         //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
-       }
-       
-       /* We do net need to pollute the generated HTML with IDs */
-       spanNode.removeAttribute("id");
+ 				 /* This nodes are needed to apply the exactly style settings on the paragraph */
+ 				var helperStyle = this.__generateHelperString();
 
-       return true;
-     },
-     
+ 				/* Generate unique ids to find the elements later */
+ 				var spanId = "__placeholder__" + Date.parse(new Date());
+ 				var paragraphId = "__paragraph__" + Date.parse(new Date());
+
+ 				var helperString = '<span id="' + spanId + '"></span>';
+ 				var paragraphString = '<p id="' + paragraphId + '">';
+
+ 				var spanNode;
+ 				var paragraphNode;
+ 				var brNode;
+
+ 				/* 
+ 				 * A paragraph will only be inserted, if the paragraph before it has content.
+ 				 * Therefore we also insert a helper node, then the paragraph and the style
+ 				 * nodes after it.
+ 				 */
+ 				this.execute("inserthtml", helperString + paragraphString + helperStyle);
+
+ 				/* Fetch elements */
+ 				spanNode      = this.__doc.getElementById(spanId);
+ 				paragraphNode = this.__doc.getElementById(paragraphId);
+
+ 				/* We do net need to pollute the generated HTML with IDs */
+ 				paragraphNode.removeAttribute("id");
+
+ 				/*
+ 				 * If the previous paragraph only contains the helperString, it was empty before.
+ 				 * Empty paragraphs are problematic in Gecko, because they are not rendered properly.
+ 				 */
+ 				if(paragraphNode.previousSibling.innerHTML == helperString)
+ 				{
+ 				  var helperNodeFragment = this.__generateHelperNodes();
+ 				  brNode             = this.__doc.createElement("br");
+
+ 				  var mozDirty = this.__doc.createAttribute("_moz_dirty");
+ 				  mozDirty.nodeValue = "";
+ 				  brNode.setAttributeNode(mozDirty);
+
+ 				  var type     = this.__doc.createAttribute("type");
+ 				  type.nodeValue = "_moz"; 
+ 				  brNode.setAttributeNode(type);
+
+ 				  /* Insert a bogus node to set the lineheight and the style nodes to apply the styles. */
+ 				  paragraphNode.previousSibling.appendChild(helperNodeFragment);
+ 				  paragraphNode.previousSibling.appendChild(brNode);
+
+ 				  //paragraphNode.previousSibling.innerHTML = styleNodes + '<br _moz_dirty="" type="_moz"/>'; 
+ 				}
+ 				/* We do net need to pollute the generated HTML with IDs */
+ 				spanNode.removeAttribute("id");
+
+ 				return true;
+ 			},
+
+			/**
+			 * Gecko does not copy the paragraph's background color, and text
+			 * alignment so do this manually.
+			 */
+			"webkit" : function()
+			{
+
+				var styles = this.getCurrentStyles();
+				var elementStyleString = "";
+
+				// We need to copy the background color and text alignment for Webkit
+				var relevantStyles = {
+					"background-color" : true,
+					"text-align": true
+				};
+
+				// Iterate over current styles and save relevant ones to string.
+				for(var style in styles)
+				{
+					if (relevantStyles[style]) {
+						elementStyleString += style + ":" + styles[style] + ";"
+					}
+				}
+
+				// Insert the HTML containing the generated style string.
+				this.__editorInstance.insertHtml("<p style='" + elementStyleString + "'><br class='webkit-block-placeholder' />");
+			},
+
+			"default" : function(){}
+			}),
+
      
      /**
       * ONLY IE
@@ -1090,7 +1178,6 @@ qx.Class.define("htmlarea.command.Manager",
        
        // retrieve the current styles as structure
        var structure = this.__getCurrentStylesGrouped();
-       console.dir(structure);
        
        // first traverse the "child" chain
        var parent = fragment; 
@@ -1123,7 +1210,6 @@ qx.Class.define("htmlarea.command.Manager",
          parent = element;
          child = child.child;
        }
-       console.debug(element.innerHTML);
        
        return fragment;
      },
@@ -1738,11 +1824,12 @@ qx.Class.define("htmlarea.command.Manager",
 
 
      /**
-      * Sets a background image
+      * Sets the background image of the document
       * 
-      * @param value {Array} Array with infos to url, background-repeat and background-position
+      * @type member
+      * @param value {Array} Array consisting of url [0], background-repeat [1] and background-position [2]
       * @param commandObject {Object} command infos
-      * @return {Boolean} success of operation
+      * @return {Boolean} Success of operation
       */
      __setBackgroundImage : function(value, commandObject)
      {
@@ -1901,7 +1988,97 @@ qx.Class.define("htmlarea.command.Manager",
 
       // FIXME: This code will be never executed
       return tmpBody.innerHTML;
-    }
+    },
+
+    /**
+      * TODOC
+      *
+      * @type member
+      * @param value {String} color info
+      * @param commandObject {Object} command infos
+      * @return {Boolean} Success of operation
+      */
+     __setUnderline  : qx.core.Variant.select("qx.client", {
+       "webkit" : function(value, commandObject)
+       {
+         var contextMap = this.__editorInstance.getContextInformation();
+         var focusNode = this.__editorInstance.getFocusNode();
+ 
+         if(contextMap.underline)
+         {
+           // underline is already set as text-decoration, so remove it
+           focusNode.style.textDecoration = "none";
+         }
+         else
+         {
+           /*
+            * Text decoration is set to strikethrough, so add a new element
+            * to apply both
+            */
+           if(contextMap.strikethrough)
+           {
+             // Create a new span tag, apply a style on it and append it
+             var helper = this.__doc.createElement("span");
+             qx.bom.element.Style.set(helper, "textDecoration", "underline");
+             focusNode.appendChild(helper);
+ 
+             // Set the cursor behind the created element
+             var sel = this.__editorInstance.__getSelection();
+             sel.extend(helper, 0);
+             if (!sel.isCollapsed) {
+               sel.collapseToEnd();
+             }
+ 
+             // Focus the HA again
+             this.__focusAfterExecCommand();
+           }
+           else
+           {
+             // Just add the value for text-decoration
+             focusNode.style.textDecoration = "underline";
+           }
+         }
+ 
+         return true;
+       },
+ 
+       "default" : function(value, commandObject)
+       {
+         return this.__executeCommand(commandObject.identifier, false, value);
+       }
+     }),
+ 
+     /**
+      * TODOC
+      *
+      * @type member
+      * @param value {String} color info
+      * @param commandObject {Object} command infos
+      * @return {Boolean} Success of operation
+      */
+     __setStrikeThrough  : qx.core.Variant.select("qx.client", {
+       "webkit" : function(value, commandObject)
+       {
+         var focusNode = this.__editorInstance.getFocusNode();
+         var helper = this.__doc.createElement("span");
+         qx.bom.element.Style.set(helper, "textDecoration", "line-through");
+         focusNode.appendChild(helper);
+         var sel = this.__editorInstance.__getSelection();
+         sel.extend(helper, 0);
+         if (!sel.isCollapsed) {
+           sel.collapseToEnd();
+         }
+ 
+         this.__focusAfterExecCommand();
+         return true;
+       },
+ 
+       "default" : function(value, commandObject)
+       {
+         return this.__executeCommand(commandObject.identifier, false, value);
+       }
+     })
+
   },
 
 
