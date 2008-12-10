@@ -352,7 +352,7 @@ qx.Class.define("htmlarea.command.Manager",
 				}
 			}
 
-			return bodyIsFocusNode || !isInParagraph;
+			return bodyIsFocusNode || (!isInParagraph);
 		},
 
     /**
