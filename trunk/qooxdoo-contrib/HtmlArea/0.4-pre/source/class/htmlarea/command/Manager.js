@@ -822,7 +822,9 @@ qx.Class.define("htmlarea.command.Manager",
        /* Body element must have focus before executing command */
        this.__editorInstance.getContentWindow().focus();
 
-       var returnValue = this.__doc.execCommand(commandObject.identifier, false, value);
+       // If a saved range is available use it
+       var target = this.__currentRange !== null ? this.__currentRange : this.__doc;
+       var returnValue = target.execCommand(commandObject.identifier, false, value);
        
        /* (re)-focus the editor after the execCommand */
        this.__focusAfterExecCommand();
@@ -2164,7 +2166,7 @@ qx.Class.define("htmlarea.command.Manager",
            * will receive the following events
            * call _visualizeFocus to get the right feedback to the user (editor is active)
            */
-          qx.ui.core.ClientDocument.getInstance().setActiveChild(this);
+          qx.ui.core.ClientDocument.getInstance().setActiveChild(this.__editorInstance);
 
           /* 
            * sometimes IE can't select the range, but this is not important, so 
@@ -2173,7 +2175,7 @@ qx.Class.define("htmlarea.command.Manager",
           try
           {
             /* Select range before focus body element */
-            var range = this.__commandManager.__commandManager.getCurrentRange();
+            var range = this.getCurrentRange();
   
             if (range)
             {
@@ -2185,8 +2187,8 @@ qx.Class.define("htmlarea.command.Manager",
             this.debug ("can't select range in __focusAfterExecCommand.");
           }
 
-          this._visualizeFocus();
-        }, this.__editorInstance, 50);
+          this.__editorInstance._visualizeFocus();
+        }, this, 50);
       },
         
       "webkit" : function()
