@@ -283,10 +283,19 @@ qx.Class.define("htmlarea.command.Manager",
       {
         var commandObject = this.__commands[command];
 
+				/**
+				 * We have to make sure that the elements inside the selection are
+				 * inside a paragraph before executing a command. Otherwise executing
+				 * commands will cause problems for our paragraph handling.
+				 */
+				if (this.__paragraphMissing()) {
+					this.__insertHelperParagraph();
+				}
+
         /* Pass all useBuiltin commands right to the browser */
         if (commandObject.useBuiltin)
         {
-          return this.__executeCommand(commandObject.identifier, false, value);
+	        return this.__executeCommand(commandObject.identifier, false, value);
         }
         else
         {
@@ -307,6 +316,55 @@ qx.Class.define("htmlarea.command.Manager",
       }
     },
 
+    /**
+     * Checks if the focus node is not inside a paragraph tag.
+     *
+     * @type member
+     * @return {Boolean} True if no paragraph is found, otherwise false.
+     */
+		__paragraphMissing : function()
+		{
+			var focusNode = this.__editorInstance.__getSelection().focusNode;
+			var isInParagraph = false;
+			var bodyIsFocusNode = false;
+
+			if (focusNode)
+			{
+				if (focusNode.nodeType == 3)
+				{
+					// Check the focus node is inside a paragraph tag.
+					var parents = qx.dom.Hierarchy.getAncestors(focusNode);
+
+					for(var i=0, j=parents.length; i<j; i++)
+					{
+						if (parents[i].tagName == "P")
+						{
+							isInParagraph = true;
+							break;
+						}
+					}
+
+				}
+				else if (focusNode.nodeType == 1 && focusNode.tagName == "BODY")
+				{
+					// TODO: Additional checks needed?
+					bodyIsFocusNode = true;
+				}
+			}
+
+			return bodyIsFocusNode || !isInParagraph;
+		},
+
+    /**
+     * Inserts a paragraph tag around selection or at the insert point
+     * using executeCommand.
+     *
+     * @type member
+     */
+		__insertHelperParagraph : function()
+		{
+			this.__executeCommand("formatBlock", false, "p");
+		},
 
     /**
      * Internal method to deal with special cases when executing commands
