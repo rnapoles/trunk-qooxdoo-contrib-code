@@ -440,30 +440,21 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   //-------------------------------------------------------------  
 	
 	/**
-	 * assemble a result array for the json response
-	 * @param mixed $first  key or hash map of key-value pairs
-	 * @param mixed $value
-   * @todo use into qcl_jsonrpc_Response object 
+	 * Set a part or the full response
+	 * @see qcl_jsonrpc_response::set()
+	 * @todo rename to setResponseData()
 	 */
-	function set ( $first, $value=null )
+	function set ( $first, $second=null )
 	{
-		if ( is_array( $first ) )
-		{
-			foreach( $first as $key => $value )
-			{
-				$this->set ( $key, $value );
-			}
-		}
-		else
-		{
-			$this->response->set($first,$value);
-		}
+		$this->response->set($first, $second);
 	}
 	
 	/**
-	 * gets value for particular result key
+	 * Returns value for particular response key
+	 * @param string $key
+	 * @todo rename to getResponseData
 	 */
-	function &get ( $key )
+	function &get ( $keyl )
 	{
 		$response =& $this->getResponseObj();
 	  return $this->response->get($key);

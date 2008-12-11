@@ -25,18 +25,35 @@ class qcl_jsonrpc_Response
   var $messages = array();
   
   /**
-   * Sets a property of the response data 
-   *
-   * @param string $property
+   * Set a part or the full response
+   * @param mixed $first Can be any of the following: 
+   * 1) The key of a key-value pair. The value is the second argument. 
+   * 2) A hash map of key-value pairs. No second argument.
+   * 3) A string response that is the complete response value. No second argument.
+   * @param string[optional] $second
    * @param mixed $value
    */
-  function set( $property, $value )
+  function set( $first, $second=null )
   {
-    if ( ! $property )
+    if ( is_array( $first ) and is_null( $second ) )
+    {
+      foreach( $first as $key => $value )
+      {
+        $this->set ( $key, $value );
+      }
+    }
+    elseif ( is_string($first) and ! is_null( $second ) )
+    {
+      $this->result[$first] = $second;
+    }
+    elseif ( is_null ($second) )
+    {    
+      $this->result = $first;
+    }
+    else
     {
       $this->raiseError("Invalid parameters");
     }
-    $this->result[$property] = $value;
   }
   
   /**
