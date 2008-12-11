@@ -17,7 +17,7 @@ class qcl_config_db extends qcl_db_model
    * types that config values may have
    * @var array
    */
-  var $types = array("string","number","boolean");
+  var $types = array("string","number","boolean","list");
 		
   /**
    * Returns singleton instance.
@@ -126,7 +126,7 @@ class qcl_config_db extends qcl_db_model
 	/**
 	 * Returns config property value
 	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
-	 * @return value of property or null if value does not exist.
+	 * @return value of property or null if value does not exist. 
 	 */
 	function get( $name )
 	{
@@ -167,6 +167,8 @@ class qcl_config_db extends qcl_db_model
         return floatval($value);
       case "boolean" : 
         return (bool) $value;
+      case "list" : 
+        return explode(",", $value);        
       default:
         return strval($value);
     }
@@ -446,6 +448,10 @@ class qcl_config_db extends qcl_db_model
       {
         $type = "number";
       }
+		  elseif ( is_array( $value ) ) 
+      {
+        $type = "list";
+      }      
       else 
       {
         $type = "string";
@@ -466,9 +472,33 @@ class qcl_config_db extends qcl_db_model
 		$type_error = false;
 		switch ( $row[$this->col_type] )
 		{
-			case "string" 	: if ( ! is_string($value) ) 	$type_error = true; break;
-			case "number" 	: if ( ! is_numeric($value) ) $type_error = true; break;
-			case "boolean" 	: if ( ! is_bool($value) ) 		$type_error = true; break;
+			case "string": 
+			 if ( ! is_string($value) ) 
+			 {
+			   $type_error = true; 
+			 }
+			 break;
+			 
+			case "number": 
+  			if ( ! is_numeric($value) ) 
+  			{
+  			   $type_error = true; 
+  			}
+  			break;
+  			
+			case "boolean": 
+			 if ( ! is_bool($value) ) 
+			 {
+			   $type_error = true;
+			 }
+			 break;
+			 
+			case "list": 
+			  if ( is_array( $value ) )   
+			  {
+			    $value = implode(",",$value);
+			  }
+			  break;
 		}
 		if ( $type_error )
 		{
