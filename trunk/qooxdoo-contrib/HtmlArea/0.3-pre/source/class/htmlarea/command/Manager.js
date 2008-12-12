@@ -525,15 +525,26 @@ qx.Class.define("htmlarea.command.Manager",
      {
        "gecko" : function()
        {
- 				 /* This nodes are needed to apply the exactly style settings on the paragraph */
- 				var helperStyle = this.__generateHelperString();
-
+        // get the current styles as structure
+        var helperStyleStructure = this.__getCurrentStylesGrouped();
+        
+        // check for "text-align" -> this has to be applied at the paragraph
+        // element instead of the inner span elements
+        var textAlign = "";
+        if (helperStyleStructure.child["text-align"])
+        {
+          textAlign = ' style="text-align:' + helperStyleStructure.child["text-align"] + ';"';
+          delete helperStyleStructure.child["text-align"];
+        }
+        // generate the span elements to preserve the styling
+        var helperStyle = this.__generateHelperString(helperStyleStructure);
+        
  				/* Generate unique ids to find the elements later */
  				var spanId = "__placeholder__" + Date.parse(new Date());
  				var paragraphId = "__paragraph__" + Date.parse(new Date());
 
  				var helperString = '<span id="' + spanId + '"></span>';
- 				var paragraphString = '<p id="' + paragraphId + '">';
+ 				var paragraphString = '<p id="' + paragraphId + '"' + textAlign + '>';
 
  				var spanNode;
  				var paragraphNode;
@@ -1095,7 +1106,7 @@ qx.Class.define("htmlarea.command.Manager",
   
        /*
         * Gecko needs some extra HTML elements to keep
-        * the current style setting after inserint the
+        * the current style setting after inserting the
         * <hr> tag.
         */
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
@@ -1112,16 +1123,18 @@ qx.Class.define("htmlarea.command.Manager",
       * *** ONLY IN USE FOR GECKO ***
       * 
       * @type member
+      * @param groupedStyles {Map} Data structure with grouped styles.
+      *                            Structure of the "__getCurrentStylesGrouped" method.
       * @return {String} String containing tags with special style settings.
       */
-     __generateHelperString : function()
+     __generateHelperString : function(groupedStyles)
      {
        var formatString = "";
        var spanBegin = '<span style="';
        var closings = [];
        
-       // retrieve the current styles as structure
-       var structure = this.__getCurrentStylesGrouped();
+       // retrieve the current styles as structure if no parameter is given
+       var structure = groupedStyles !== null ? groupedStyles : this.__getCurrentStylesGrouped();
        
        // first traverse the "child" chain
        var child = structure.child;
