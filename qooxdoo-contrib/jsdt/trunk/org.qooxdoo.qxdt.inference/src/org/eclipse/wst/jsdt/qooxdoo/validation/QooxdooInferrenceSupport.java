@@ -136,7 +136,15 @@ public class QooxdooInferrenceSupport extends InferEngine
   }
 
   private boolean isClassDefinition( IFunctionCall messageSend ) {
-    return isQxClassDefine( messageSend ) || isMixinDefine( messageSend );
+    return isQxClassDefine( messageSend ) 
+            || isMixinDefine( messageSend )
+            || isBootstrapDefine( messageSend );
+  }
+
+  private boolean isBootstrapDefine(IFunctionCall messageSend) {
+    return messageSend.getReceiver() != null
+    && "qx.Bootstrap".equals( messageSend.getReceiver().toString() )
+    && "define".equals( new String( messageSend.getSelector() ) );
   }
 
   private boolean isMixinDefine( IFunctionCall messageSend ) {
