@@ -254,8 +254,10 @@ class qcl_access_user extends qcl_access_common
    */
   function purgeAnonymous()
   {
+    $u = QCL_ANONYMOUS_USER_PREFIX;
+    $l = strlen($u);
     $this->findWhere("
-      SUBSTR(`username`,1,6) = '" . QCL_ANONYMOUS_USER_PREFIX . "'AND
+      SUBSTR(`username`,1,$l) = '$u' AND
       ( TIME_TO_SEC( TIMEDIFF( NOW(), `lastAction` ) ) > 3600
         OR `lastAction` IS NULL ) 
     ",null,"id");
