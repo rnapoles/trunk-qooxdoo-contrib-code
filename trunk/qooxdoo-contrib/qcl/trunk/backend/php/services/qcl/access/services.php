@@ -726,6 +726,53 @@ class qcl_access_services extends qcl_core_mixin
     return $this->response();
   }
  
-}
+  /**
+   * Drops all tables related to roles and permissions
+   * to reloads the data upon next request.
+   */   
+  function method_reloadRolesPermissions()
+  {
+    /*
+     * security
+     */    
+    $this->requirePermission("qcl.access.permissions.manage");
+    
+    /*
+     * db
+     */
+    $roleModel =& $this->getRoleModel();
+    $db =& $roleModel->db();
+    $db->dropTable( array("roles","permissions","link_roles_permissions") );
 
+    return $this->response();    
+  }  
+  
+  /**
+   * Drops all tables related to access data (users, roles, permissions)
+   * to reloads the data upon next request.
+   */ 
+  function method_reloadAccessData($params)
+  {
+    /*
+     * security
+     */
+    $this->requirePermission("qcl.access.permissions.manage");
+    
+    /*
+     * db
+     */
+    $roleModel =& $this->getRoleModel();
+    $db =& $roleModel->db();
+    $db->dropTable( array("users","roles","permissions","link_user_roles","link_roles_permissions") );
+
+    /*
+     * enable logging
+     */
+    $logger =& $this->getLogger();
+    $logger->setFilterEnabled(QCL_LOG_TABLE_MAINTENANCE, false );
+    $logger->setFilterEnabled(QCL_LOG_PROPERTY_MODEL, false );       
+
+    return $this->response();
+  }      
+}
 ?>
