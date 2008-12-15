@@ -160,6 +160,29 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
   }
   
   /**
+   * Stores data in the file. Shortcut for open("w"), write, close.
+   * @param string $data
+   */
+  function store( $data )
+  {
+    $this->open("w");
+    $this->write($data);
+    $this->close();
+  }
+
+  /**
+   * Apends data to file. Shortcut for open("a"), write, close
+   * @param string $data
+   */
+  function append( $data )
+  {
+    $this->open("a");
+    $this->write($data);
+    $this->close();
+  }  
+  
+  
+  /**
    * Returns an associative array containing information about path.
    * The following associative array elements are returned: 
    * dirname, basename extension (if any), and filename.
