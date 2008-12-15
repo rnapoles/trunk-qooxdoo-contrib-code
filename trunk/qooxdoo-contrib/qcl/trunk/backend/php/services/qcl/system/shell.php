@@ -8,18 +8,33 @@ require_once ("qcl/jsonrpc/model.php");
  * class to run binaries through the shell from php
  **/
  	
- class qcl_system_shell extends qcl_core_object
- {
-	var $error; 	// error msg
+class qcl_system_shell extends qcl_core_object
+{
+  /**
+   * error message
+   */	
+  var $error; 	
+   
+  /**
+   * warning
+   */
 	var $warning;	// warning msg
-	var $result;	// result of shell query
+  
+	/**
+	 * Result of shell command
+	 */
+	var $result;	
 	
-	var $slash;		// os-dependent slash char
-	var $ext;		// os-dependent binary extension
-	var $command;	// the last command executed on the shell
+	/**
+	 * The last command
+	 */
+	var $command;  
 	
-	var $hasPython;	// python version if available or false
-	var $pythonCmd;	// name of python executable
+	/**
+	 * File extension for executable files
+	 */
+	var $ext;		
+
 	
  	/**
  	 * Constructor
@@ -27,12 +42,9 @@ require_once ("qcl/jsonrpc/model.php");
  	 * @return bool true or false depending on whether shell access 
 	 * is possible
  	 **/
- 	function __construct ($dir)
+ 	function __construct()
 	{
-		$this->dir		= realpath($dir);
-		$this->slash 	= eregi("win",PHP_OS)? "\\"   : "/";
-		$this->ext		= eregi("win",PHP_OS)? ".exe" : "";
-		$this->checkPython();
+		$this->ext = eregi("win",PHP_OS)? ".exe" : "";
 	}
 
 	/**
@@ -41,7 +53,6 @@ require_once ("qcl/jsonrpc/model.php");
 	 * 
  	 * @return boolean success
  	 **/
-	 
  	function test()
 	{
 		// can php access the shell?
@@ -64,68 +75,79 @@ require_once ("qcl/jsonrpc/model.php");
 		return false;
 	}	
 	
-	/**
-	 * Check for python and return version or false
-	 * @return mixed string version 
-	 **/
-	function checkPython()
-	{
-		$pyVersions = array('python','python2.2','python2.3',"python2.4","python2.5" );
-		$version = false;
-		
-		foreach($pyVersions as $python)
-		{
-			$result = $this->execute ( $python, "-V", true );
-			if(ereg("Python",$result))
-			{
-				$version = $python;
-				break;
-			} 
-		}
-		
-		$this->pythonVersion	= $version ? $result : false;
-		$this->pythonCmd		= $python;
-		
-		return $version;
-	}
-	
-	
-	/**
-	 * Executes python script
-	 * @param string $parameters
-	 * @param boolean $stderr return stderr instead of stdout
-	 * @return 
-	 **/
-	 
-	function python($parameters,$stderr)
-	{
-		if( ! $this->pythonVersion ) 
-		{
-			$this->error = "Python is not available!";
-			return false;
-		}
-		return $this->execute($this->pythonCmd, $parameters, $stderr);
-	}
-	
 	
 	/**
 	 * executes given command in working directory
-	 * @param string 	$command
-	 * @param string 	$parameters
-	 * @param boolean 	$stderr 		if set, stderr is redirected to stdout
+	 * @param string $command
+	 * @param string $input
 	 * @return string result
 	 **/
-	function execute( $command, $parameters="", $stderr=false)
+	function execute( $command, $input )
 	{
-		$dir = chdir($this->dir);
-		$this->command 	=	$command .
-							$this->ext . " " .
-							$parameters .
-							($stderr ? " 2>&1" : "");
-		$result = @shell_exec($this->command);
-		chdir($dir);        
-		return $result;
+
+	  /*
+	   * command
+	   */
+    $this->command  = $command;
+	  
+    /*
+     * streams and pipes
+     */
+    $descriptorspec = array(
+      0 => array("pipe", "r"),  // stdin 
+      1 => array("pipe", "w"),  // stdout 
+      2 => array("pipe", "r")   // stderr 
+    );
+
+    /*
+     * create process
+     */
+    $process = proc_open( $command, $descriptorspec, $pipes );
+    if ( ! is_resource($process)) 
+    {
+      $this->raiseError("Cannot create process from command '$command'");
+    }
+
+    /*
+     * feed input
+     */
+    fwrite($pipes[0], $input);
+    fclose($pipes[0]);
+
+    /*
+     * get response
+     */
+    $response = "";
+    while( ! feof($pipes[1]) )
+    {
+      $response .= fread($pipes[1],1024);
+    }
+    fclose($pipes[1]);
+    
+    /*
+     * get error
+     */
+    $error = "";
+    while( ! feof($pipes[2]) )
+    {
+      $error .= fread($pipes[2],1024);
+    }
+    fclose($pipes[2]);    
+
+    /*
+     * close process and set error, if any
+     */
+    proc_close($process);
+    if ( $error )
+    {
+      $this->setError($error);
+      $this->warn("'$command' resulted in error '$error'.");   
+    }
+    
+    return $response;
 	}
+	
+	
  }
 
 ?>
