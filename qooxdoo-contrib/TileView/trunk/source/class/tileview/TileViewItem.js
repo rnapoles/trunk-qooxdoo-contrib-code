@@ -93,21 +93,21 @@ qx.Class.define("tileview.TileViewItem",
           control = new qx.ui.basic.Label(this.getLabel());
           control.setAnonymous(true);
           control.setRich(this.getRich());
-          this._getChildControl("labelcont").addAt(control, 0);
+          this.getChildControl("labelcont").addAt(control, 0);
           break;
 
         case "description":
           control = new qx.ui.basic.Label(this.getDescription());
           control.setAnonymous(true);
           control.setRich(this.getRich());
-          this._getChildControl("labelcont").addAt(control, 1);
+          this.getChildControl("labelcont").addAt(control, 1);
           break;
 
         case "status":
           control = new qx.ui.basic.Label(this.getStatus());
           control.setAnonymous(true);
           control.setRich(this.getRich());
-          this._getChildControl("labelcont").addAt(control, 2);
+          this.getChildControl("labelcont").addAt(control, 2);
           break;
 
         case "labelcont":
@@ -139,34 +139,34 @@ qx.Class.define("tileview.TileViewItem",
     // property apply
     _applyRich : function(value)
     {
-      this._getChildControl("label").setRich(value);
-      this._getChildControl("description").setRich(value);
-      this._getChildControl("status").setRich(value);
+      this.getChildControl("label").setRich(value);
+      this.getChildControl("description").setRich(value);
+      this.getChildControl("status").setRich(value);
     },
 
     // property apply
     _applyGap : function(value)
     {
       this.base(arguments, value);
-      this._getChildControl("labelcont").setSpacing(value);
+      this.getChildControl("labelcont").setSpacing(value);
     },
 
     // property apply
     _applyLabel : function(value)
     {
-      this._getChildControl("label").setContent(value);
+      this.getChildControl("label").setContent(value);
     },
 
     // property apply
     _applyDescription : function(value)
     {
-      this._getChildControl("description").setContent(value);
+      this.getChildControl("description").setContent(value);
     },
 
     // property apply
     _applyStatus : function(value)
     {
-      this._getChildControl("status").setContent(value);
+      this.getChildControl("status").setContent(value);
     }
 
   }  
