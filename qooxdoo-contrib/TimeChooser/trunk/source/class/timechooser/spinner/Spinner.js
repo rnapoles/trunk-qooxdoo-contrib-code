@@ -287,7 +287,7 @@ qx.Class.define("timechooser.spinner.Spinner",
     // overridden
     tabFocus : function()
     {
-      var field = this._getChildControl("textfield");
+      var field = this.getChildControl("textfield");
 
       field.getFocusElement().focus();
       field.selectAll();
@@ -398,9 +398,9 @@ qx.Class.define("timechooser.spinner.Spinner",
      */
     _applyValue: function(value, old)
     {
-      var upButton = this._getChildControl("upbutton");
-      var downButton = this._getChildControl("downbutton");
-      var textField = this._getChildControl("textfield");
+      var upButton = this.getChildControl("upbutton");
+      var downButton = this.getChildControl("downbutton");
+      var textField = this.getChildControl("textfield");
 
       // up button enabled/disabled
       if (value < this.getMax())
@@ -455,7 +455,7 @@ qx.Class.define("timechooser.spinner.Spinner",
      */
     _applyEditable : function(value, old)
     {
-      var textField = this._getChildControl("textfield");
+      var textField = this.getChildControl("textfield");
 
       if (textField) {
         textField.setReadOnly(!value);
@@ -474,8 +474,8 @@ qx.Class.define("timechooser.spinner.Spinner",
     {
       if (value)
       {
-        var upButton = this._getChildControl("upbutton");
-        var downButton = this._getChildControl("downbutton");
+        var upButton = this.getChildControl("upbutton");
+        var downButton = this.getChildControl("downbutton");
 
         if (this.getEnabled())
         {
@@ -495,7 +495,7 @@ qx.Class.define("timechooser.spinner.Spinner",
      * @param old {Boolean} The former value of the numberFormat property
      */
     _applyNumberFormat : function(value, old) {
-      this._getChildControl("textfield").setValue(this.getNumberFormat().format(this._lastValidValue));
+      this.getChildControl("textfield").setValue(this.getNumberFormat().format(this._lastValidValue));
     },
 
     /**
@@ -504,7 +504,7 @@ qx.Class.define("timechooser.spinner.Spinner",
      * @return {qx.ui.core.Widget} The content padding target.
      */
     _getContentPaddingTarget : function() {
-      return this._getChildControl("textfield");
+      return this.getChildControl("textfield");
     },
 
 
@@ -533,7 +533,7 @@ qx.Class.define("timechooser.spinner.Spinner",
           this._pageUpMode = true;
 
         case "Up":
-          this._getChildControl("upbutton").press();
+          this.getChildControl("upbutton").press();
           break;
 
         case "PageDown":
@@ -541,7 +541,7 @@ qx.Class.define("timechooser.spinner.Spinner",
           this._pageDownMode = true;
 
         case "Down":
-          this._getChildControl("downbutton").press();
+          this.getChildControl("downbutton").press();
           break;
 
         default:
@@ -567,21 +567,21 @@ qx.Class.define("timechooser.spinner.Spinner",
       switch(e.getKeyIdentifier())
       {
         case "PageUp":
-          this._getChildControl("upbutton").release();
+          this.getChildControl("upbutton").release();
           this._pageUpMode = false;
           break;
 
         case "Up":
-          this._getChildControl("upbutton").release();
+          this.getChildControl("upbutton").release();
           break;
 
         case "PageDown":
-          this._getChildControl("downbutton").release();
+          this.getChildControl("downbutton").release();
           this._pageDownMode = false;
           break;
 
         case "Down":
-          this._getChildControl("downbutton").release();
+          this.getChildControl("downbutton").release();
           break;
       }
     },
@@ -620,7 +620,7 @@ qx.Class.define("timechooser.spinner.Spinner",
      */
     _onTextChange : function(e)
     {
-      var textField = this._getChildControl("textfield");
+      var textField = this.getChildControl("textfield");
       var value;
 
       // if a number format is set

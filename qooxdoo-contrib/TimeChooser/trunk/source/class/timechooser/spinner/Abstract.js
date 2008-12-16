@@ -102,9 +102,9 @@ qx.Class.define("timechooser.spinner.Abstract",
       //
 
       // Get the various controls in the spinner
-      var upButton = this._getChildControl("upbutton");
-      var downButton = this._getChildControl("downbutton");
-      var textField = this._getChildControl("textfield");
+      var upButton = this.getChildControl("upbutton");
+      var downButton = this.getChildControl("downbutton");
+      var textField = this.getChildControl("textfield");
 
       // Cause the buttons' labels to center properly
       upButton.setCenter(true);
