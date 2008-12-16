@@ -46,7 +46,7 @@ qx.Class.define("timechooser.spinner.AmPm",
     this.__toggle[this.__pm] = this.__am;
 
     // The text field needn't be quite so wide as our superclass'
-    var textField = this._getChildControl("textfield");
+    var textField = this.getChildControl("textfield");
     textField.setWidth(24);
 
     // Allow wrapping by default
@@ -116,9 +116,9 @@ qx.Class.define("timechooser.spinner.AmPm",
     // overridden
     _applyValue : function(value, old)
     {
-      var upButton = this._getChildControl("upbutton");
-      var downButton = this._getChildControl("downbutton");
-      var textField = this._getChildControl("textfield");
+      var upButton = this.getChildControl("upbutton");
+      var downButton = this.getChildControl("downbutton");
+      var textField = this.getChildControl("textfield");
 
       // up button enabled/disabled
       if (value == this.__am)
@@ -163,7 +163,7 @@ qx.Class.define("timechooser.spinner.AmPm",
     _onTextChange : function(e)
     {
       // Get the value entered in the text field
-      var textField = this._getChildControl("textfield");
+      var textField = this.getChildControl("textfield");
       var value = textField.getValue().toUpperCase();
 
       // Is this a valid value?

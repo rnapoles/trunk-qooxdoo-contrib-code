@@ -42,7 +42,7 @@ qx.Class.define("timechooser.spinner.TimeValue",
     this.setWrap(true);
 
     // Set an appropriate width for a two-digit time component
-    var textField = this._getChildControl("textfield");
+    var textField = this.getChildControl("textfield");
     textField.setWidth(20);
   },
 
@@ -108,7 +108,7 @@ qx.Class.define("timechooser.spinner.TimeValue",
         // Don't call this method recursively when we modify the value
         this.__bInOnTextChange = true;
 
-        var textField = this._getChildControl("textfield");
+        var textField = this.getChildControl("textfield");
         textField.setValue(("0" + this.getValue()).substr(-2));
 
         this.__bInOnTextChange = false;
