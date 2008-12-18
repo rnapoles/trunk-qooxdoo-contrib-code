@@ -219,6 +219,48 @@ public class IO {
         }
         if (root == null) {
             if (working == null || fs != working.getRoot().getFilesystem()) {
+                /* fails on Windows with 
+org.qooxdoo.sushi.fs.LocatorException: file:\DOKUME~1\matw\LOKALE~1\Temp: no working directory for filesystem file
+        at org.qooxdoo.sushi.fs.IO.node(IO.java:224)
+        at org.qooxdoo.sushi.fs.IO.node(IO.java:204)
+        at org.qooxdoo.sushi.fs.IO.init(IO.java:553)
+        at org.qooxdoo.sushi.fs.IO.<init>(IO.java:107)
+        at org.qooxdoo.sushi.fs.IO.<init>(IO.java:93)
+        at de.ui.devel.maven.plugins.application.GenerateMojo.<init>(GenerateMojo.java:115)
+        at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+        at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+        at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+        at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+        at java.lang.Class.newInstance0(Class.java:355)
+        at java.lang.Class.newInstance(Class.java:308)
+        at org.codehaus.plexus.component.factory.java.JavaComponentFactory.newInstance(JavaComponentFactory.java:44)
+        at org.codehaus.plexus.DefaultPlexusContainer.createComponentInstance(DefaultPlexusContainer.java:1464)
+        at org.codehaus.plexus.component.manager.AbstractComponentManager.createComponentInstance(AbstractComponentManager.java:93)
+        at org.codehaus.plexus.component.manager.PerLookupComponentManager.getComponent(PerLookupComponentManager.java:48)
+        at org.codehaus.plexus.DefaultPlexusContainer.lookup(DefaultPlexusContainer.java:331)
+        at org.codehaus.plexus.DefaultPlexusContainer.lookup(DefaultPlexusContainer.java:440)
+        at org.apache.maven.plugin.DefaultPluginManager.getConfiguredMojo(DefaultPluginManager.java:609)
+        at org.apache.maven.plugin.DefaultPluginManager.executeMojo(DefaultPluginManager.java:429)
+        at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(DefaultLifecycleExecutor.java:558)
+        at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalWithLifecycle(DefaultLifecycleExecutor.java:499)
+        at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoal(DefaultLifecycleExecutor.java:478)
+        at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalAndHandleFailures(DefaultLifecycleExecutor.java:330)
+        at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeTaskSegments(DefaultLifecycleExecutor.java:291)
+        at org.apache.maven.lifecycle.DefaultLifecycleExecutor.execute(DefaultLifecycleExecutor.java:142)
+        at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:336)
+        at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:129)
+        at org.apache.maven.cli.MavenCli.main(MavenCli.java:287)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at org.codehaus.classworlds.Launcher.launchEnhanced(Launcher.java:315)
+        at org.codehaus.classworlds.Launcher.launch(Launcher.java:255)
+        at org.codehaus.classworlds.Launcher.mainWithExitCode(Launcher.java:430)
+        at org.codehaus.classworlds.Launcher.main(Launcher.java:375)
+
+
+                 */
                 throw new LocatorException(fs.getName() + ":" + rootPath, "no working directory for filesystem " + fs.getName());
             }
             result = working.join(rootPath);
