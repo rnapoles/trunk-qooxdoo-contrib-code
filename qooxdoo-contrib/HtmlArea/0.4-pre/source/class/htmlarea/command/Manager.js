@@ -944,38 +944,57 @@ qx.Class.define("htmlarea.command.Manager",
       {
         "webkit" : function(value, commandObject)
         {
-          var returnValue;
-          
           /* Current selection */
           var sel = this.__editorInstance.__getSelection();
           var node = sel.focusNode.parentNode;
-          
-          var marginValue = node.style.marginLeft;
-          var pos = marginValue.indexOf("px");
-          var level;
 
-          if (pos == -1)
+          var range = sel.getRangeAt(0);
+          var ancestor = range.commonAncestorContainer;
+          var children = ancestor.childNodes;
+          var marginLeft;
+
+          /**
+           *
+           **/ 
+          if (sel.isCollapsed)
           {
-            level = 0;
+            marginLeft = this.__calculateMargin(node, commandObject.identifier);
+            node.style.marginLeft = marginLeft;
           }
           else
           {
-            var tmp = marginValue.split("px");
-            level = Math.abs(tmp[0]);
-          }
-
-          if (commandObject.identifier == "Indent")
-          {
-            console.info("will indent " + (level + 20) + "px")
-            node.style.marginLeft = (level + 20) + "px";
-          }
-          else
-          {
-            if (level > 0) {
-              console.info("will outdent " + (level - 20) + "px")
-              node.style.marginLeft = (level - 20) + "px";
+            for(var i=0, j=children.length; i<j; i++)
+            {
+              if(sel.containsNode(children[i]))
+              {
+                marginLeft = this.__calculateMargin(children[i], commandObject.identifier);
+                children[i].style.marginLeft = marginLeft;
+              }
+            }
+            
+            if(sel.anchorNode.nodeType == 3)
+            {
+              marginLeft = this.__calculateMargin(sel.anchorNode.parentElement, commandObject.identifier);
+              sel.anchorNode.parentElement.style.marginLeft = marginLeft;
+            }
+            else if (sel.anchorNode.nodeType == 1)
+            {
+              marginLeft = this.__calculateMargin(sel.anchorNode, commandObject.identifier);
+              sel.anchorNode.style.marginLeft = marginLeft;
+            }
+            
+            if(sel.focusNode.nodeType == 3)
+            {
+              marginLeft = this.__calculateMargin(sel.focusNode.parentElement, commandObject.identifier);
+              sel.focusNode.parentElement.style.marginLeft = marginLeft;
+            }
+            else if (sel.focusNode.nodeType == 1)
+            {
+              marginLeft = this.__calculateMargin(sel.focusNode, commandObject.identifier);
+              sel.focusNode.style.marginLeft = marginLeft;
             }
           }
+
           
           return true;
         },
@@ -994,6 +1013,38 @@ qx.Class.define("htmlarea.command.Manager",
           return returnValue;
         }
       }),
+
+
+      __calculateMargin : function(node, identifier)
+      {
+        var marginValue = node.style.marginLeft;
+        var pos = marginValue.indexOf("px");
+        var level, marginLeft;
+
+        if (pos == -1) {
+          level = 0;
+        }
+        else
+        {
+          var tmp = marginValue.split("px");
+          level = Math.abs(tmp[0]);
+        }
+
+        if (identifier == "Indent")
+        {
+          marginLeft = (level + 20) + "px";
+        }
+        else
+        {
+          if (level > 0) {
+            marginLeft = (level - 20) + "px";
+          } else {
+            marginLeft = "0px";
+          }
+        }
+
+        return marginLeft;
+      },
      
      /**
       * Inserts a list.
