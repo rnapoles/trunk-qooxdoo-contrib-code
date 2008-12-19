@@ -24,6 +24,9 @@ qooxdoo-0.7.3-sdk: qooxdoo-0.7.3-sdk.$(ZIP_SUFFIX)
 download-0.8: qooxdoo-0.8-sdk
 qooxdoo-0.8-sdk: qooxdoo-0.8-sdk.zip
 
+download-0.8.1: qooxdoo-0.8.1-sdk
+qooxdoo-0.8.1-sdk: qooxdoo-0.8.1-sdk.zip
+
 %.zip:
 	wget http://downloads.sourceforge.net/qooxdoo/$@
 	unzip $@
