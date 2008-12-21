@@ -1,5 +1,6 @@
 <?php
 require_once "qcl/datasource/controller.php";
+require_once "qcl/registry/Session.php";
 
 /**
  * Service class containing test methods

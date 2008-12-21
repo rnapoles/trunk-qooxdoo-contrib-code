@@ -29,7 +29,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
   /**
    * Request timeout
    */
-  var $timeout  = 1;
+  var $timeout  = 3;
 
   /**
    * Request content type
@@ -120,6 +120,11 @@ class qcl_http_Request extends qcl_jsonrpc_model
     return $this->url;
   }
 
+  function setTimeout( $timeout )
+  {
+    $this->timeout = $timeout;
+  }
+  
   /**
    * add a http header
    * @param $header string
