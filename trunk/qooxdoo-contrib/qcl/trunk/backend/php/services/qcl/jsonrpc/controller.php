@@ -269,7 +269,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 */
   function getDispatcherUrl()
   {
-    return "http://" . getenv (HTTP_HOST) . $_SERVER['PHP_SELF']; 
+    return "http://" . getenv ( HTTP_HOST ) . dirname( $_SERVER['PHP_SELF'] ) . "/index.php"; 
   }
   
 	/**

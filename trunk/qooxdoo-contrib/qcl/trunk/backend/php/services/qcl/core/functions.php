@@ -615,41 +615,6 @@ if( ! function_exists('array_diff_key') )
 }
 
 
-if ( ! function_exists("json_encode") )
-{
-  /**
-   * php4 equivalent of json_encode
-   * @param string $string String to encode
-   */  
-  function json_encode( $string )
-  {
-    require_once ("qcl/jsonrpc/JSON.phps");
-    $json = new JSON();
-    return $json->encode( $string );
-  }
-}
-
-
-if ( ! function_exists("json_decode") )
-{
-  /**
-   * php4 equivalent of json_decode
-   * @param string $string JSON string to decode
-   */
-  function json_decode( $string, $tranformToArray=false )
-  {
-    require_once ("qcl/jsonrpc/JSON.phps");
-    $json = new JSON();
-    $var = $json->decode( $string );
-    if ( is_object( $var ) and $tranformToArray );
-    {
-      return object2array($var);
-    }
-    return $var;
-  }
-}
-
-
 if ( ! function_exists("microtime_float" ) )
 {
   /**

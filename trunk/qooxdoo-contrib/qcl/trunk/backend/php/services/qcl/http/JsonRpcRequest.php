@@ -23,7 +23,7 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
   function __construct($controller)
   {
     parent::__construct(&$controller);
-    $this->setUrl($controller->getDispatcherUrl());
+    $this->setUrl( $controller->getDispatcherUrl() );
   }
   
   /**
@@ -42,15 +42,19 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
    * @param array  $params
    * return string Response content without header data
    */
-  function callService($service,$method,$params)
+  function callService( $service, $method, $params )
   {
-    $this->info("Calling $service.$method with " .  count($params) . " parameter(s).");
+    //$this->debug("Calling $service.$method with " .  count($params) . " parameter(s).");
+    //$this->debug($this->getUrl());
+    $controller =& $this->getController();
     
-    $this->setJsonData(array(
-      'service'    => $service,
-      'method'     => $method,
-      'params'     => $params,
-      'id'         => ((float) microtime() )*10
+    $this->setJsonData( array(
+      'service'     => $service,
+      'method'      => $method,
+      'params'      => $params,
+      'id'          => floor(((float) microtime() )*1000000),
+      // FIXME when checking for remote IP, server must accept localhost
+      'server_data' => array( "sessionId" => $controller->getSessionId() )
     )); 
     
     $this->send();

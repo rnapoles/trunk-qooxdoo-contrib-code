@@ -25,17 +25,10 @@
 
 
 /*
- * include json class, either a wrapper around a php extension (php4) or
- * built-in functions (php5)
+ * include json class, either a wrapper around a php extension/php-only implementation
+ * (php4) or built-in functions (php5)
  */
-if ( !isset($_GET["_ScriptTransport_id"]) and function_exists("json_encode") )
-{
-  require_once dirname(__FILE__) . "/json_wrapper.php";
-}
-else
-{
-  require_once dirname(__FILE__) . "/JSON.phps";  
-}
+require_once "qcl/jsonrpc/Json.php";
 
 /*
  * include JsonRpcError class

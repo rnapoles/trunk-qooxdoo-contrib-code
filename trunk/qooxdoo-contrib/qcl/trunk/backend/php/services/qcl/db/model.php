@@ -816,20 +816,22 @@ class qcl_db_model extends qcl_core_PropertyModel
     {
       $data['id'] = $id;
     }
+
+    /*
+     * set modified timestamp to null to set it to the current database update time
+     * unless requested (i.e. in sync operations)
+     */
+    if ( ! $keepTimestamp and $this->hasProperty("modified") )
+    {
+      $data['modified'] = null;
+    }      
     
     /*
      * convert property names to local aliases
      */
     $data = $this->unschematize($data);
     
-    /*
-     * set modified timestamp to null to set it to the current database update time
-     * unless requested (i.e. in syn operations)
-     */
-    if ( $this->col_modified && !$keepTimestamp)
-    {
-      $data[$this->col_modified] = null;
-    }    
+  
     
     //$this->info($data);
     
