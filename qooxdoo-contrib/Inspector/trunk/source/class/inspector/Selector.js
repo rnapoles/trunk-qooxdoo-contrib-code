@@ -71,8 +71,16 @@ qx.Class.define("inspector.Selector",
       }
       
       this._highlight(element);
-      window.setTimeout(function() {
+      
+      // check for an old time
+      if (this._highlightTimerId != null) {
+        window.clearTimeout(this._highlightTimerId);
+      }
+      
+      var self = this;
+      self._highlightTimerId = window.setTimeout(function() {
         overlay.hide();
+        self._highlightTimerId = null;
       }, msec);      
     },
     
@@ -97,10 +105,10 @@ qx.Class.define("inspector.Selector",
         var clickedElement = this._searchWidget(
           this._root, xPosition, yPosition
         );
+        // hide the highlight
+        this._highlightOverlay.hide();        
         // select the widget with the given id in the tree
         this.setSelection(clickedElement);
-        // hide the highlight
-        this._highlightOverlay.hide();
       }, this);
 
       // register the mousemove handler

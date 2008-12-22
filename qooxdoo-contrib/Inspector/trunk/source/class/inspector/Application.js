@@ -19,6 +19,8 @@
 /* ************************************************************************
 
 #asset(inspector/*)
+#resource(inspector.css:css)
+#embed(inspector.css/*)
 
 ************************************************************************ */
 
@@ -63,6 +65,7 @@ qx.Class.define("inspector.Application",
       -------------------------------------------------------------------------
       */
       
+      
       this.__createToolbar();
             
       // create the iFrame
@@ -76,15 +79,19 @@ qx.Class.define("inspector.Application",
         
         // check if the app is running on a server
         this.__checkWorking();
-
+        
+        // check for the selector
         if (!this._selector) {
           this._selector = new inspector.Selector(this._loadedWindow);
         } else {
           this._selector.setJSWindow(this._loadedWindow);          
         }
         
+        // select the root app
         this._selector.addListener("changeSelection", this._changeSelection, this);
+        this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication());
         
+        // load the objects in the objects window
         this._objectWindow.load(this._loadedWindow);
       }, this);      
     },
@@ -151,8 +158,17 @@ qx.Class.define("inspector.Application",
       this.getRoot().add(this._objectWindow);
       var objectsButton = new qx.ui.toolbar.CheckBox("Objects");
       this._toolbar.add(objectsButton);
+      var objectsWindowWasOpen = false;
       objectsButton.addListener("changeChecked", function(e) {
+        // move the window to a good start position
+        if (!objectsWindowWasOpen) {
+          this._objectWindow.moveTo(0, 29);
+        }
         e.getData() ? this._objectWindow.open() : this._objectWindow.close();
+        objectsWindowWasOpen = true;
+      }, this);
+      this._objectWindow.addListener("close", function() {
+        objectsButton.setChecked(false);
       }, this);
       
       // Console window
@@ -160,9 +176,17 @@ qx.Class.define("inspector.Application",
       this.getRoot().add(this._consoleWindow);
       var consoleButton = new qx.ui.toolbar.CheckBox("Console");
       this._toolbar.add(consoleButton);
+      var consoleWindowWasOpen = false;
       consoleButton.addListener("changeChecked", function(e) {
+        if (!consoleWindowWasOpen) {
+          this._consoleWindow.moveTo(20, 49);
+        }
         e.getData() ? this._consoleWindow.open() : this._consoleWindow.close();
-      }, this);      
+        consoleWindowWasOpen = true;
+      }, this);   
+      this._consoleWindow.addListener("close", function() {
+        consoleButton.setChecked(false);
+      }, this);         
       
       // add the third separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
@@ -187,13 +211,33 @@ qx.Class.define("inspector.Application",
       
     },
     
+    
     _changeSelection: function(e) {
       this.select(e.getData());
     },
     
     
+    getSelectedObject : function() {
+      return this._selector.getSelection();
+    },
+    
+    getIframeWindowObject : function() {
+      return this._loadedWindow;
+    },
+    
+    setWidgetByHash : function(hash, initiator) {
+      // check the initiator
+      if (initiator == "console") {
+        initiator = this._consoleWindow;
+      }
+      var object = qx.core.ObjectRegistry.fromHashCode(hash);
+      this.select(object, initiator);
+    },
+    
     select: function(object, initiator) {
       this._selectedWidgetLabel.setContent(object.toString());
+      
+      this._selector.setSelection(object);
       
       if (initiator != this._objectWindow) {
         this._objectWindow.select(object, true);        
@@ -201,5 +245,13 @@ qx.Class.define("inspector.Application",
       
       this._selector.highlightFor(object, 1000);
     }
+  },
+  
+  
+  
+  defer : function()
+  {
+    // Include CSS file
+    qx.bom.Stylesheet.includeFile("inspector/css/consoleview.css");
   }
 });

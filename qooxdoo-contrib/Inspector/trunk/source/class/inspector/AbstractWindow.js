@@ -30,14 +30,11 @@ qx.Class.define("inspector.AbstractWindow",
     this.setLayout(new qx.ui.layout.VBox());
     
     this.setShowMinimize(false);
-    this.setShowMaximize(false);
-    this.setShowClose(false);
-    
+    this.setShowMaximize(false);    
     
     this.setWidth(240);
-    this.setHeight(150);
-    this.setContentPadding(0);    
-    
+    this.setHeight(200);
+    this.setContentPadding(0);
   },
 
   members :

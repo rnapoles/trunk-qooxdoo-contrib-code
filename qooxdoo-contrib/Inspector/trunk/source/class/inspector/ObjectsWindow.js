@@ -24,8 +24,26 @@ qx.Class.define("inspector.ObjectsWindow",
   construct : function()
   {
     this.base(arguments, "Objects");
-
     
+    // toolbar
+    this._toolbar = new qx.ui.toolbar.ToolBar();
+    // TODO protected to public
+    this._toolbar._getLayout().setAlignY("middle");
+    this.add(this._toolbar);
+    this._reloadButton = new qx.ui.toolbar.Button("Reload");
+    this._toolbar.add(this._reloadButton);
+    this._reloadButton.addListener("execute", function() {
+      this.load();
+    }, this);
+    this._toolbar.addSpacer();
+    this._filterTextField = new qx.ui.form.TextField();
+    this._filterTextField.setMarginRight(5);
+    this._toolbar.add(this._filterTextField);
+    this._filterTextField.addListener("input", function(e) {
+      this.load(null, e.getData());
+    }, this);
+
+    // table
     var model = new qx.ui.table.model.Simple();
     model.setColumns(["Hash", "Classname"]);
     this._table = new qx.ui.table.Table(model);
@@ -39,24 +57,24 @@ qx.Class.define("inspector.ObjectsWindow",
     this.add(this._table, {flex: 1});
     
     this._table.getSelectionModel().addListener("changeSelection", this._onChangeSelection, this);
-    
-    // TODO Add a toolbar
-    // reload button
-    // search textfield
   },
 
   members :
   {
     
-    load: function(window) {
-      this._iFrameWindow = window || this._iFrameWindow;
+    load: function(window, filter) {
       // TODO exclude the chatchClickLayer and HighlightWidget
+
+      this._iFrameWindow = window || this._iFrameWindow;
       // get a copy of the objects db
-      var objects = window.qx.core.ObjectRegistry.getRegistry();
+      var objects = this._iFrameWindow.qx.core.ObjectRegistry.getRegistry();
       var data = [];
       for (var hash in objects) {
         data.push([hash, objects[hash].classname]);
       }
+      if (filter) {
+        data = this._filterData(data, filter);
+      }      
       this._table.getTableModel().setData(data);
     },
     
@@ -82,6 +100,17 @@ qx.Class.define("inspector.ObjectsWindow",
         var object = this._iFrameWindow.qx.core.ObjectRegistry.fromHashCode(data[0]);
         qx.core.Init.getApplication().select(object, this);
       }
+    },
+    
+    
+    _filterData : function(data, filter) {
+      for (var i = data.length - 1; i >= 0; i--) {
+        if (data[i][0].search(filter) == -1 && 
+            data[i][1].search(filter) == -1) {
+          data.splice(i, 1);
+        }
+      }
+      return data;
     }
     
   }
