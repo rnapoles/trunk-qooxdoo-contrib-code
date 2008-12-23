@@ -42,15 +42,14 @@ qx.Class.define("inspector.Selector",
     
     setJSWindow : function(window) {
       this._iFrameWindow = window;
-      this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();
-      
       this._addedWidgets = [];
-      
+      this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();
+
       this._createCatchClickLayer();
-      this._createHighlightStuff();
+      this._createHighlightStuff();        
+      
+      this.setSelection(null);
     },
-    
-    
     
     
     getAddedWidgets: function() {
@@ -68,16 +67,11 @@ qx.Class.define("inspector.Selector",
     
     
     highlightFor: function(object, msec) {
-      var overlay = this._highlightOverlay;
-      // if its a widget
-      if (object.getContainerElement) {
-        var element = object.getContainerElement().getDomElement();
-      // if its a html element       
-      } else if (object.getDomElement) {
-        var element = object.getDomElement(); 
+      // if its an application object
+      if (object.classname == "qx.ui.root.Application") {
+        return;
       }
-      
-      this._highlight(element);
+      this._highlight(object);
       
       // check for an old time
       if (this._highlightTimerId != null) {
@@ -86,7 +80,7 @@ qx.Class.define("inspector.Selector",
       
       var self = this;
       self._highlightTimerId = window.setTimeout(function() {
-        overlay.hide();
+        self._highlightOverlay.hide();
         self._highlightTimerId = null;
       }, msec);      
     },
@@ -125,11 +119,11 @@ qx.Class.define("inspector.Selector",
         var xPosition = e.getDocumentLeft();
         var yPosition = e.getDocumentTop();
         // search the widget at the current position
-        var element = this._searchWidget(
+        var object = this._searchWidget(
           this._root, xPosition, yPosition, ""
         );
         // highlight the widget under the mouse pointer
-        this._highlight(element.getContainerElement().getDomElement());
+        this._highlight(object);
       }, this);
     },
     
@@ -160,9 +154,15 @@ qx.Class.define("inspector.Selector",
           continue;
         }
         // get the coordinates of the current widget
-        var coordinates = this._getCoordinates(
-          childWidget.getContainerElement().getDomElement()
-        );
+        if (childWidget.getContainerElement) {
+          var domElement = childWidget.getContainerElement().getDomElement();
+        } else if (childWidget.getDomElement) {
+          var domElement = childWidget.getDomElement();
+        } else {
+          return childWidget;
+        }
+
+        var coordinates = this._getCoordinates(domElement);
         // if the element is visible
         if (coordinates != null) {
           // if the element is under the mouse position
@@ -190,7 +190,13 @@ qx.Class.define("inspector.Selector",
     },
     
     
-    _highlight: function(element) {      
+    _highlight: function(object) {
+      var element = null;
+      if (object.getContainerElement && object.getContainerElement().getDomElement) {
+        element = object.getContainerElement().getDomElement();
+      } else if (object.getDomElement) {
+        element = object.getDomElement();
+      }
       // do not highlight if the element is not shown on the screen
       if (element == null) {
         this._highlightOverlay.hide();

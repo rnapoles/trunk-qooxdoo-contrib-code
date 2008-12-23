@@ -71,14 +71,15 @@ qx.Class.define("inspector.Application",
       // create the iFrame
       this._iFrame = new qx.ui.embed.Iframe();
       this.getRoot().add(this._iFrame, {top: 29, left: 0, right: 0, bottom: 0});
-      this._iFrame.setSource(this._urlTextField.getValue());
       
       this._iFrame.addListener("load", function() {
         this._toolbar.setEnabled(true);
         this._loadedWindow = this._iFrame.getContentElement().getWindow();
         
-        // check if the app is running on a server
-        this.__checkWorking();
+        // check if the app is loaded correctly
+        if (!this.__checkWorking()) {
+          return;
+        }
         
         // check for the selector
         if (!this._selector) {
@@ -94,8 +95,14 @@ qx.Class.define("inspector.Application",
         // load the objects in the objects window
         this._objectWindow.load(this._loadedWindow);
         // load the widgets in the widgetsWindow
-        this._widgetsWindow.load();
-      }, this);      
+        this._widgetsWindow.load();        
+        this._loading = false;
+        // select the root of the new app
+        this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication().getRoot());
+      }, this);  
+
+      this._loading = true;      
+      this._iFrame.setSource(this._urlTextField.getValue());
     },
     
     
@@ -108,7 +115,8 @@ qx.Class.define("inspector.Application",
         }
         // reset the enabled properties of the toolbar stuf
         this._selectedWidgetLabel.resetEnabled();
-        this._urlTextField.resetEnabled();        
+        this._urlTextField.resetEnabled();
+        return true;     
       } catch (e) {
         // signal that the inspector is not working
         this._toolbar.setEnabled(false);
@@ -119,6 +127,7 @@ qx.Class.define("inspector.Application",
         this._selectedWidgetLabel.setEnabled(true);
         // enable the url field to give a chance to change the url
         this._urlTextField.setEnabled(true);
+        return false;
       }
     },
     
@@ -224,6 +233,7 @@ qx.Class.define("inspector.Application",
       this._toolbar.add(this._urlTextField);
       this._urlTextField.addListener("changeValue", function(e) {
         this._toolbar.setEnabled(false);
+        this._loading = true;
         this._iFrame.setSource(this._urlTextField.getValue());
       }, this);      
       
@@ -261,7 +271,12 @@ qx.Class.define("inspector.Application",
     },
     
     
-    select: function(object, initiator) {
+    select: function(object, initiator) { 
+      // if its currently loaiding, do nothing
+      if (this._loading) {
+        return;
+      }     
+      // show the selected widget in the inspector bar
       this._selectedWidgetLabel.setContent(object.toString());
       
       if (initiator != this._selector) {
