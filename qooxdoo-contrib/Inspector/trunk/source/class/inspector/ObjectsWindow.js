@@ -25,11 +25,6 @@ qx.Class.define("inspector.ObjectsWindow",
   {
     this.base(arguments, "Objects");
     
-    // toolbar
-    this._toolbar = new qx.ui.toolbar.ToolBar();
-    // TODO protected to public
-    this._toolbar._getLayout().setAlignY("middle");
-    this.add(this._toolbar);
     this._reloadButton = new qx.ui.toolbar.Button("Reload");
     this._toolbar.add(this._reloadButton);
     this._reloadButton.addListener("execute", function() {
@@ -63,8 +58,6 @@ qx.Class.define("inspector.ObjectsWindow",
   {
     
     load: function(window, filter) {
-      // TODO exclude the chatchClickLayer and HighlightWidget
-
       this._iFrameWindow = window || this._iFrameWindow;
       // get a copy of the objects db
       var objects = this._iFrameWindow.qx.core.ObjectRegistry.getRegistry();
@@ -72,6 +65,18 @@ qx.Class.define("inspector.ObjectsWindow",
       for (var hash in objects) {
         data.push([hash, objects[hash].classname]);
       }
+      
+      // get all components of the inspector application
+      var components = qx.core.Init.getApplication().getExcludes();
+      
+      for (var i = data.length -1; i >= 0; i--) {
+        for (var j = 0; j < components.length; j++) {
+          if (data[i][0] === components[j].toHashCode()) {
+            data.splice(i, 1);
+          }
+        }
+      }
+      
       if (filter) {
         data = this._filterData(data, filter);
       }      
@@ -111,6 +116,17 @@ qx.Class.define("inspector.ObjectsWindow",
         }
       }
       return data;
+    },
+    
+    
+    getSelection : function() {
+      var selectionModel = this._table.getSelectionModel();
+      var selectedIndex = selectionModel.getSelectedRanges().minIndex;
+      if (selectedIndex) {
+        var row = this._table.getTableModel().getData()[selectedIndex];
+        return qx.core.ObjectRegistry.fromHashCode(row[0]);
+      }
+      return null;
     }
     
   }
