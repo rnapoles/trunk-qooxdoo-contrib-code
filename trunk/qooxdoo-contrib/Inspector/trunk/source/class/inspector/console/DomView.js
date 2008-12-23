@@ -34,6 +34,6 @@ qx.Class.define("inspector.console.DomView",
     
     clear: function() {
       // TODO
-    },
+    }
   }
 });
