@@ -35,6 +35,12 @@ qx.Class.define("inspector.AbstractWindow",
     this.setWidth(240);
     this.setHeight(200);
     this.setContentPadding(0);
+    
+    // toolbar
+    this._toolbar = new qx.ui.toolbar.ToolBar();
+    // TODO protected to public
+    this._toolbar._getLayout().setAlignY("middle");
+    this.add(this._toolbar);    
   },
 
   members :

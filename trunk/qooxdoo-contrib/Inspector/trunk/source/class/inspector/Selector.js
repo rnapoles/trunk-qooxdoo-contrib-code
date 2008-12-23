@@ -24,12 +24,7 @@ qx.Class.define("inspector.Selector",
   construct : function(iFrameWindow)
   {
     this.base(arguments);
-    
-    this._iFrameWindow = iFrameWindow;
-    this._root = iFrameWindow.qx.core.Init.getApplication().getRoot();
-    
-    this._createCatchClickLayer();
-    this._createHighlightStuff();
+    this.setJSWindow(iFrameWindow);
   },
   
   
@@ -47,7 +42,19 @@ qx.Class.define("inspector.Selector",
     
     setJSWindow : function(window) {
       this._iFrameWindow = window;
-      this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();      
+      this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();
+      
+      this._addedWidgets = [];
+      
+      this._createCatchClickLayer();
+      this._createHighlightStuff();
+    },
+    
+    
+    
+    
+    getAddedWidgets: function() {
+      return this._addedWidgets;
     },
     
     
@@ -88,6 +95,7 @@ qx.Class.define("inspector.Selector",
     _createCatchClickLayer: function() {
       // initialize the layer to catch the clicks
       this._catchClickLayer = new this._iFrameWindow.qx.ui.core.Widget();
+      this._addedWidgets.push(this._catchClickLayer);
       this._catchClickLayer.setBackgroundColor("black");
       this._catchClickLayer.setOpacity(0.1);
       this._catchClickLayer.setZIndex(1e6 - 1);
@@ -129,9 +137,11 @@ qx.Class.define("inspector.Selector",
     _createHighlightStuff: function() {
       // create the border used to highlight the widgets
       this._highlightDecorator = new this._iFrameWindow.qx.ui.decoration.Single(2, "solid", "red");
+      this._addedWidgets.push(this._highlightDecorator);
 
       // create a new overlay atom object
       this._highlightOverlay = new this._iFrameWindow.qx.ui.core.Widget();
+      this._addedWidgets.push(this._highlightOverlay);
       this._highlightOverlay.setDecorator(this._highlightDecorator);
       this._highlightOverlay.setZIndex(1e6 - 2);
       this._highlightOverlay.hide();
@@ -180,7 +190,7 @@ qx.Class.define("inspector.Selector",
     },
     
     
-    _highlight: function(element) {
+    _highlight: function(element) {      
       // do not highlight if the element is not shown on the screen
       if (element == null) {
         this._highlightOverlay.hide();

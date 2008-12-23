@@ -84,7 +84,7 @@ qx.Class.define("inspector.Application",
         if (!this._selector) {
           this._selector = new inspector.Selector(this._loadedWindow);
         } else {
-          this._selector.setJSWindow(this._loadedWindow);          
+          this._selector.setJSWindow(this._loadedWindow);        
         }
         
         // select the root app
@@ -93,6 +93,8 @@ qx.Class.define("inspector.Application",
         
         // load the objects in the objects window
         this._objectWindow.load(this._loadedWindow);
+        // load the widgets in the widgetsWindow
+        this._widgetsWindow.load();
       }, this);      
     },
     
@@ -186,7 +188,24 @@ qx.Class.define("inspector.Application",
       }, this);   
       this._consoleWindow.addListener("close", function() {
         consoleButton.setChecked(false);
-      }, this);         
+      }, this);       
+      
+      // Widgets window
+      this._widgetsWindow = new inspector.WidgetsWindow();
+      this.getRoot().add(this._widgetsWindow);
+      var widgetsButton = new qx.ui.toolbar.CheckBox("Widgets");
+      this._toolbar.add(widgetsButton);
+      var widgetsWindowWasOpen = false;
+      widgetsButton.addListener("changeChecked", function(e) {
+        if (!widgetsWindowWasOpen) {
+          this._widgetsWindow.moveTo(40, 69);
+        }
+        e.getData() ? this._widgetsWindow.open() : this._widgetsWindow.close();
+        widgetsWindowWasOpen = true;
+      }, this);   
+      this._widgetsWindow.addListener("close", function() {
+        widgetsButton.setChecked(false);
+      }, this);        
       
       // add the third separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
@@ -213,7 +232,7 @@ qx.Class.define("inspector.Application",
     
     
     _changeSelection: function(e) {
-      this.select(e.getData());
+      this.select(e.getData(), this._selector);
     },
     
     
@@ -221,9 +240,16 @@ qx.Class.define("inspector.Application",
       return this._selector.getSelection();
     },
     
+    
     getIframeWindowObject : function() {
       return this._loadedWindow;
     },
+    
+    
+    getExcludes: function() {
+      return this._selector.getAddedWidgets();
+    },
+    
     
     setWidgetByHash : function(hash, initiator) {
       // check the initiator
@@ -234,14 +260,27 @@ qx.Class.define("inspector.Application",
       this.select(object, initiator);
     },
     
+    
     select: function(object, initiator) {
       this._selectedWidgetLabel.setContent(object.toString());
       
-      this._selector.setSelection(object);
+      if (initiator != this._selector) {
+        if (object !== this._selector.getSelection()) {
+          this._selector.setSelection(object);                  
+        }
+      }
       
       if (initiator != this._objectWindow) {
-        this._objectWindow.select(object, true);        
+        if (object != this._objectWindow.getSelection()) {
+        this._objectWindow.select(object, true);          
+        }
       }
+      
+      if (initiator != this._widgetsWindow) {
+        if (object != this._widgetsWindow.getSelection()) {
+          this._widgetsWindow.select(object, true);                  
+        }
+      }      
       
       this._selector.highlightFor(object, 1000);
     }

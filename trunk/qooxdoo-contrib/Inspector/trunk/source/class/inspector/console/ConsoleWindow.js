@@ -25,9 +25,7 @@ qx.Class.define("inspector.console.ConsoleWindow",
   {
     this.base(arguments, "Console");
     
-    // toolbar
-    this._toolbar = new qx.ui.toolbar.ToolBar();
-    this.add(this._toolbar);
+    // toolbar buttons
     this._clearButton = new qx.ui.toolbar.Button("Clear");
     this._toolbar.add(this._clearButton);
     this._clearButton.addListener("execute", function() {
