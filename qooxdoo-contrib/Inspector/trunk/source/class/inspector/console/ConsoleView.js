@@ -16,14 +16,20 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-qx.Class.define("inspector.ConsoleWindow", 
+qx.Class.define("inspector.console.ConsoleView", 
 {
-  extend : inspector.AbstractWindow,
+  extend : qx.ui.core.Widget,
 
 
-  construct : function()
+  construct : function(console)
   {
-    this.base(arguments, "Console");
+    this.base(arguments);
+    
+    // store the reference to the window
+    this._console = console;
+    
+    // create the popup for the auto completion
+    this._autoCompletePopup = new inspector.console.AutoCompletePopup(this);  
     
     // history stuff
     this._history = [];
@@ -33,19 +39,13 @@ qx.Class.define("inspector.ConsoleWindow",
     this._objectFolder = [];
     this._objectFolderIndex = 0;
     
-    // toolbar
-    this._toolbar = new qx.ui.toolbar.ToolBar();
-    this.add(this._toolbar);
-    this._clearButton = new qx.ui.toolbar.Button("Clear");
-    this._toolbar.add(this._clearButton);
-    this._clearButton.addListener("execute", function() {
-      this._content.setHtml("");
-    }, this);
-    
+    // set the layout
+    this._setLayout(new qx.ui.layout.VBox());    
+  
     // html embed
     this._content = new qx.ui.embed.Html("");
     this._content.setOverflowY("scroll");
-    this.add(this._content, {flex: 1});
+    this._add(this._content, {flex: 1});
     
     // inputfield
     var inputComposite = new qx.ui.container.Composite();
@@ -53,7 +53,7 @@ qx.Class.define("inspector.ConsoleWindow",
     var layout = new qx.ui.layout.HBox();
     layout.setAlignY("middle");
     inputComposite.setLayout(layout);
-    this.add(inputComposite);
+    this._add(inputComposite);
     var leadingLabel = new qx.ui.basic.Label(">>>");
     var font = new qx.bom.Font(12, ["Courier New"]);
     // TODO Blue arrows at the beginning
@@ -69,46 +69,64 @@ qx.Class.define("inspector.ConsoleWindow",
     this._inputTextField.addListener("keyup", this._keyUpHandler, this);
     this._inputTextField.addListener("keypress", this._keyPressHandler, this);    
   },
-  
-  properties : {
-    ans : {
-      init: null,
-      nullable: true
-      // TODO allow undefined
-    }
-  },
 
   members :
   {
     
+    setAns: function(ans) {
+      this._ans = ans;
+    },
     
-    escapeHtml: function(value) {
-      function replaceChars(ch) {
-        switch(ch) {
-          case "<":
-            return "&lt;";
-
-          case ">":
-            return "&gt;";
-
-          case "&":
-            return "&amp;";
-
-          case "'":
-            return "&#39;";
-
-          case '"':
-            return "&quot;";
-        }
-        return "?";
+    getAns: function() {
+      return this._ans;
+    },
+    
+    
+    clear: function() {
+      this._content.setHtml("");
+    },  
+    
+    
+    chooseAutoCompleteValue: function() {
+      // get the current value of the textfield
+      var value = this._inputTextField.getValue();
+      // get the value to add to the textfield
+      var name = this._autoCompletePopup.getCurrentSelection();
+      // if something is selected
+      if (name != "undefined") {
+        // get the stuff after the dot in the textfield
+        var afterDot = value.substring(value.lastIndexOf(".") + 1);
+        // remove the characters which are already in the textfield
+        name = name.substring(afterDot.length, name.length);
+        // append the new selected string
+        this.appendString(name);            
       }
-      return String(value).replace(/[<>&"']/g, replaceChars);
+      // hide the popup
+      this._autoCompletePopup.hide(); 
+      // focus the textfield 
+      this._inputTextField.focus();
     },    
     
     
+    appendString: function(string) {
+      if (string != null) {
+        // append the given string to the textfield
+        this._inputTextField.setValue(this._inputTextField.getValue() + string);
+        // if there is a ( in the textfield
+        if (this._inputTextField.getValue().lastIndexOf("(") != -1) {
+          // mark the stuff in the ()
+          var start = this._inputTextField.getValue().lastIndexOf("(") + 1;
+          var end = this._inputTextField.getValue().length - 1;
+          this._textField.setSelection(start, end);          
+        }  
+      }
+    },    
+    
+    
+
     _process: function(text) {
       // add the text to the embedded
-      this._printText(this.escapeHtml(text));
+      this._printText(this._console.escapeHtml(text));
       // try to run the code
       try {        
         // run it and store the result in the global ans value
@@ -136,54 +154,77 @@ qx.Class.define("inspector.ConsoleWindow",
     
     
     _keyDownHandler: function(e) {   
+          
+      // if the esc key is pressed
+      if (e.getKeyIdentifier() == "Escape") {
+        // hide the auto complete popup
+        this._autoCompletePopup.hide();
+        return;
+      }
                 
       // if the enter button is pressed
       if (e.getKeyIdentifier() == "Enter") {
-        // save the string in the history
-        this._history.unshift(this._inputTextField.getValue());
-        // process the input
-        this._process(this._inputTextField.getValue());
-        // empty the textfield
-        this._inputTextField.setValue("");
-        // rest the history counter
-        this._historyCounter = -1;
-        // if the history is bigger than it should be
-        if (this._history.length > 20) {
-          // remove the last element
-          this._history.pop();
+        // if the auto complete popup is not on the screen
+        if (!this._autoCompletePopup.isOnScreen()) {
+          // save the string in the history
+          this._history.unshift(this._inputTextField.getValue());
+          // process the input
+          this._process(this._inputTextField.getValue());
+          // empty the textfield
+          this._inputTextField.setValue("");
+          // rest the history counter
+          this._historyCounter = -1;
+          // if the history is bigger than it should be
+          if (this._history.length > 20) {
+            // remove the last element
+            this._history.pop();
+          }
+        // if the popup is on screen
+        } else {
+          this.chooseAutoCompleteValue();
         }
+        return;
       }
       
       // if the up key is pressed
       if (e.getKeyIdentifier() == "Up") {
         // prevent that the cursor is set to another position
         e.preventDefault();
-        // if a value is in the history
-        if (this._history[this._historyCounter + 1] != undefined) {
-          // increase the counter
-          this._historyCounter++;            
-          // set the value to the textfield
-          this._inputTextField.setValue(this._history[this._historyCounter]);
+        // if the popup is on screen
+        if (!this._autoCompletePopup.isOnScreen()) {
+          // if a value is in the history
+          if (this._history[this._historyCounter + 1] != undefined) {
+            // increase the counter
+            this._historyCounter++;            
+            // set the value to the textfield
+            this._inputTextField.setValue(this._history[this._historyCounter]);
+          }
         }
-      }        
+        return;
+      }
           
       // if the down key is pressed
       if (e.getKeyIdentifier() == "Down") {
         // prevent that the cursor is set to another position
         e.preventDefault();
-        // check if the counter is bigger than 0
-        if (this._historyCounter > 0) {
-          // if yes, decreass the counter
-          this._historyCounter--;
-          // set the new value from the history
-          this._inputTextField.setValue(this._history[this._historyCounter]);
+        // if the popup is nor on screen
+        if (!this._autoCompletePopup.isOnScreen()) {
+          // check if the counter is bigger than 0
+          if (this._historyCounter > 0) {
+            // if yes, decreass the counter
+            this._historyCounter--;
+            // set the new value from the history
+            this._inputTextField.setValue(this._history[this._historyCounter]);
+          }
         }
+        return;
       }
           
       // if the control key is pressed
       if (e.getKeyIdentifier() == "Control") {
         // mark that in a flag
         this._ctrl = true;
+        return;
       }
       
       // if the space or tab is pressed
@@ -204,17 +245,31 @@ qx.Class.define("inspector.ConsoleWindow",
           }
 
           // do the auto complete
-          // try {
-          //   // get the position for the popup
-          //   var left = qx.html.Location.getPageBoxLeft(this._textField.getElement());
-          //   var top = qx.html.Location.getPageBoxTop(this._textField.getElement()) - this._autoCompletePopup.getHeight();
-          //   // tell the popup to show itself            
-          //   this._autoCompletePopup.open(this._textField.getComputedValue(), left, top);
-          // } catch (e) {
-          //   // do nothing
-          //   this.info(e);
-          // }
+          try {
+            // get the position for the popup
+            var left = qx.bom.element.Location.getLeft(
+              this.getContainerElement().getDomElement()
+            );
+            var top = qx.bom.element.Location.getTop(
+              this._inputTextField.getContentElement().getDomElement()
+            ) - this._autoCompletePopup.getHeight();
+            // tell the popup to show itself            
+            this._autoCompletePopup.open(this._inputTextField.getValue(), left, top);
+            // but still focus the textfield
+            var self= this;
+            window.setTimeout(function() {
+              self._inputTextField.focus();              
+            }, 0);
+          } catch (e) {
+            // do nothing
+            this.info(e);
+          }
         }
+        return;
+      }
+      // in every other case
+      if (this._autoCompletePopup.isOnScreen()) {
+        this._autoCompletePopup.load(this._inputTextField.getValue());
       }
     },
     
@@ -230,13 +285,13 @@ qx.Class.define("inspector.ConsoleWindow",
     
 
     _keyPressHandler: function(e) {
-      // if (this._autoCompletePopup.isOnScreen()) {
-      //   if (e.getKeyIdentifier() == "Down") {
-      //     this._autoCompletePopup.selectionDown();
-      //   } else if (e.getKeyIdentifier() == "Up") {
-      //     this._autoCompletePopup.selectionUp();
-      //   }
-      // }
+      if (this._autoCompletePopup.isOnScreen()) {
+        if (e.getKeyIdentifier() == "Down") {
+          this._autoCompletePopup.selectionDown();
+        } else if (e.getKeyIdentifier() == "Up") {
+          this._autoCompletePopup.selectionUp();
+        }
+      }
     },
     
     
@@ -251,7 +306,7 @@ qx.Class.define("inspector.ConsoleWindow",
         var element = self._content.getContentElement();
         element.scrollToY(qx.bom.element.Dimension.getHeight(element));
       }, 0);
-    },    
+    },
     
     
     
@@ -368,14 +423,83 @@ qx.Class.define("inspector.ConsoleWindow",
       var text = text;
       // handle the icon uri
       if (icon == "info" || icon == "error" || icon == "warning") {
-        var iconHtml = "<img src='" + qx.io.Alias.getInstance().resolve("inspector/image/shell/" + 
-                       icon + "Icon.png") + "' class='ins_console_icon'>";
+        var iconHtml = "<img src='inspector/image/shell/" + 
+                       icon + "Icon.png" + "' class='ins_console_icon'>";
         text = iconHtml + "&nbsp;" + text;
       }
       // create the surrounding div
       text = "<div class='ins_console_common'><div class='" + clazz + "'>" + text + "</div></div>";
       // return the text String
       return text;      
-    }     
+    },
+    
+    
+    /*
+    *********************************
+       APPENDER IMPLEMENTATIONS
+    *********************************
+    */        
+    /**
+     * Prints out an error to the console.
+     * @param message {String} The error message.
+     */    
+    error: function(message) {
+      // open the console if it is not opened
+      if (!this._console.isVisible()) {
+        this._console.open();
+      }
+      var label = this._getLabel(message, "ins_console_error", "error");
+      this._content.setHtml(this._content.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();         
+    }, 
+    
+    
+    /**
+     * Prints out a warning message to the console.
+     * @param message {String} The warning message to print out.
+     */
+    warn: function(message) {
+      // open the console if it is not opened
+      if (!this._console.isVisible()) {
+        this._console.open();
+      }
+      var label = this._getLabel(message, "ins_console_warn", "warning");           
+      this._content.setHtml(this._content.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
+    },
+    
+    
+    /**
+     * Prints out an info message to the console.
+     * @param message {String} The info message.
+     */
+    info: function(message) {
+      // open the console if it is not opened
+      if (!this._console.isVisible()) {
+        this._console.open();
+      }
+      var label = this._getLabel(message, "ins_console_info", "info");
+      this._content.setHtml(this._content.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
+    }, 
+    
+    
+    /**
+     * Prints out an debug message to the console.
+     * @param message {String} The debug message.
+     */
+    debug: function(message) {
+      // open the console if it is not opened
+      if (!this._console.isVisible()) {
+        this._console.open();
+      }            
+      var label = this._getLabel(message, "ins_console_debug");        
+      this._content.setHtml(this._content.getHtml() + label);
+      // scroll to the end of the console 
+      this._scrollToLastLine();
+    }            
   }
 });

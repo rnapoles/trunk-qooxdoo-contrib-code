@@ -172,7 +172,7 @@ qx.Class.define("inspector.Application",
       }, this);
       
       // Console window
-      this._consoleWindow = new inspector.ConsoleWindow();
+      this._consoleWindow = new inspector.console.ConsoleWindow();
       this.getRoot().add(this._consoleWindow);
       var consoleButton = new qx.ui.toolbar.CheckBox("Console");
       this._toolbar.add(consoleButton);
