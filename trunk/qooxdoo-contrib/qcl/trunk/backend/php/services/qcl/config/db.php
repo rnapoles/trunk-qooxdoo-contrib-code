@@ -1,13 +1,16 @@
 <?php
-
-require_once ("qcl/db/model.php");
+/*
+ * dependencies
+ */
+require_once "qcl/db/model.php";
 
 /**
  * configuration management class, using a database backend
  * 
  * Class cannot be used directly, you need to subclass it in 
  * your application service class folder
- * @todo use qcl_model records instead of custom sql
+ * @todo use qcl_model methods instead of custom sql
+ * @todo use userId instead of username
  */
 
 class qcl_config_db extends qcl_db_model
@@ -43,8 +46,13 @@ class qcl_config_db extends qcl_db_model
 	 * 		  own variant of the configuration setting 
 	 * @return id of created config entry
 	 */
-	function create($name, $type, $permissionRead=null, $permissionWrite=null, $allowUserVariants=false )
-	{
+	function create(
+	   $name, 
+	   $type, 
+	   $permissionRead=null, 
+	   $permissionWrite=null, 
+	   $allowUserVariants=false 
+	) {
 		// check permission
     $controller  =& $this->getController();
     $activeUser  =& $controller->getActiveUser();
@@ -83,46 +91,75 @@ class qcl_config_db extends qcl_db_model
 	} 
 
 	/**
-	 * checks if config property exists
+	 * Checks if config property exists
+	 * @todo rename, conflicts with qcl_model::exists()
 	 * @param string $key
 	 * @return boolean
 	 */
-	function exists($key) 
+	function exists( $key ) 
 	{
 		$value = $this->get( $key );
 		return ! empty( $value );
 	}	
 	
 	/**
-	 * deletes a config property completely or only its user variant 
-	 * requires permission qcl.config.permissions.manage
+	 * Deletes a config key dependent on permissions
 	 * 
-	 * @param mixed $ref Id or name of the property (i.e., myapplication.config.locale)
-	 * @return true if success 
+	 * @return void
 	 */
-	function delete( $ref )
+	function delete()
 	{
 		$controller =& $this->getController();
     $userModel  =& $controller->getUserModel();
-		$userModel->requirePermission("qcl.config.permissions.manage");
-		
-		if ( is_numeric( $ref ) )
-		{
-			$this->db->execute("
-				DELETE FROM `{$this->table}` 
-				 WHERE `{$this->col_id}` = $ref
-			");			
-		}
+    $activeUser =& $userModel->getActiveUser();
+
+    /*
+     * get key name
+     */
+    $namedId = $this->getNamedId();
+    
+    /*
+     * delete if permissions allow it
+     */
+    if ( $activeUser->hasPermission("qcl.config.permissions.manage") 
+          or $this->getUser() == $activeUser->getNamedId() )
+    {
+      parent::delete();
+      $this->log("Deleted config record '$namedId' (#$id)", "config" );
+    }
+    
+    /*
+     * or raise error
+     */
 		else
 		{
-			$this->db->execute("
-				DELETE FROM `{$this->table}` 
-				 WHERE `{$this->col_namedId}` = '$ref'
-			");			
-		}		 
-		return true;
-	} 
-	 
+		  $this->raiseError("Current user doesn't have permission to delete '$namedId'");
+		}
+	}
+	
+	/**
+	 * Delete all records that belong to a user
+	 * @param string $user
+	 * @return void
+	 */
+	function deleteByUser( $user )
+	{
+	  $this->findByUser( $user );
+	  if ( $this->foundSomething() )
+	  {
+	    do
+      {
+        $this->delete();
+      }
+      while( $this->nextRecord() );
+	  }
+	  else
+	  {
+	    $this->log("User $user does not have any config entries","config");
+	  }
+	  
+	}
+	
 	/**
 	 * Returns config property value
 	 * @param string $name The name of the property (i.e., myapplication.config.locale) 
@@ -130,7 +167,7 @@ class qcl_config_db extends qcl_db_model
 	 */
 	function get( $name )
 	{
-		$row = $this->getRow($name);
+		$row = $this->findByNamedId($name);
     return $this->getValue($row);
 	}  
 	
@@ -142,7 +179,7 @@ class qcl_config_db extends qcl_db_model
    */
   function getType( $name )
   {
-    $row  = $this->getRow($name);
+    $row  = $this->findByNamedId($name);
     return $row[$this->col_type];    
   }  	
 	
@@ -181,47 +218,43 @@ class qcl_config_db extends qcl_db_model
 	 */
 	function has( $name, $user=null )  
   {
-    return ( count( $this->getRow( $name, $user ) ) > 0 );
+    return ( count( $this->findByNamedId( $name, $user ) ) > 0 );
   }
   
 	/**
-	 * gets config data by id
+	 * Returns config data by id
 	 * @param string $id The row id of the key 
 	 * @return array row data
+	 * @override
 	 */
-	function getRowById( $id )
+	function findById( $id )
 	{
 		$controller  =& $this->getController();
     $userModel   =& $controller->getUserModel();
-    if ( is_numeric( $id ) )
+
+		/*
+		 * find record
+		 */
+	  parent::findById( $id );
+		
+    /*
+     * check for read permission
+     */
+		if ( $permission = $this->getProperty("permissionRead") )
 		{
-			$row = $this->db->getRow("
-				SELECT *
-				  FROM `{$this->table}` 
-				 WHERE `{$this->col_id}` = $id
-			");
-			
-      // if a read permission is set, require permission
-			if ( $row[$this->col_permissionRead] )
-			{
-				$userModel->requirePermission($row[$this->col_permissionRead]);
-			}
+			$userModel->requirePermission($permission);
 		}
-		else
-		{
-			$this->raiseError("Expected numeric value, got '$id'.");
-		}		 
-    // requesting user has access to config key
-		return $row;	
+
+    return $this->getRecord();
 	} 	 	
 
 	/**
-	 * gets the database record for the config entry and for the specific user
+	 * Returns the database record for the config entry and for the specific user
 	 * @param string $name
 	 * @param mixed $userRef
 	 * @return array|null
 	 */
-	function getRow( $name, $username=null )
+	function findByNamedId( $name, $username=null )
 	{			
 		$controller =& $this->getController();
     $activeUser =& $controller->getActiveUser();
@@ -408,7 +441,7 @@ class qcl_config_db extends qcl_db_model
 	}	 
  
 	/**
-	 * sets config property
+	 * Sets config property
 	 * @param string $name The name of the property (i.e., myapplication.config.locale)
 	 * @param string $value The value of the property. 
 	 * @param boolean $defaultValue If true, set the key's default value for keys that allow
@@ -425,12 +458,12 @@ class qcl_config_db extends qcl_db_model
 		if ( $defaultValue )
 		{
 			// if we set the default, we need to retrieve the row containing the default value
-      $row = $this->getRow($name,"default");	
+      $row = $this->findByNamedId($name,"default");	
 		}
 		else
 		{
 			// otherwise, retrieve the user value or the global value
-      $row = $this->getRow($name);
+      $row = $this->findByNamedId($name);
 		}
 		
 		// create if key doesn't exist - todo: this is a security problem!
@@ -581,7 +614,7 @@ class qcl_config_db extends qcl_db_model
 	 */
 	function getPermissionRead($name)
 	{
-		$row = $this->getRow($name);
+		$row = $this->findByNamedId($name);
 		return $row[$this->col_permissionRead];
 	}
 	
@@ -592,7 +625,7 @@ class qcl_config_db extends qcl_db_model
 	 */
 	function getPermissionWrite($name)
 	{
-		$row = $this->getRow($name);
+		$row = $this->findByNamedId($name);
 		return $row[$this->col_permissionWrite];
 	}
 

@@ -31,10 +31,24 @@ class qcl_session_db_model extends qcl_db_model
 	 * @param string $sessionId 
 	 * @param int $userId 
 	 */
-  function registerSession( $sessionId, $userId )
+  function registerSession( $sessionId, $userId, $ip )
   {
+    $controller =& $this->getController();
+    
     /*
-     * Delete sessions that exist with the same id but
+     * if session id is present but linked to a different IP
+     * there is a security breach, unless the request was originated 
+     * on the local host
+     */
+    $localhost = ( $ip=="::1" or $ip=="127.0.0.1" );
+    if ( ! $localhost and $this->exists("`sessionId` = '$sessionId' AND `ip` != '$ip'") )
+    {
+      $this->setError("Access denied.");
+      return false;
+    }
+    
+    /*
+     * Cleanup: Delete sessions that exist with the same id but
      * a different user
      * @todo this can be removed when session ids are
      * no longer tied to the php session.
@@ -44,23 +58,39 @@ class qcl_session_db_model extends qcl_db_model
       `sessionId`  = '$sessionId' AND 
       `userId`    != '$userId' AND user != 0
     ");
+
+    /*
+     * Cleanup: Delete sessions that refer to non-existing users
+     */
+    $userModel =& $controller->getUserModel();
+    $userTable =  $userModel->getTableName();    
+    $this->deleteWhere("
+      userId NOT IN ( SELECT id FROM users )
+    ");    
     
+    /*
+     * insert new session data
+     */
     $this->insert( array (
       'sessionId'  => $sessionId,
-      'userId'     => $userId
-    ) );    
+      'userId'     => $userId,
+      'ip'         => $ip
+    ) );
+    
+    return true;
+    
   }
 
   /**
    * Checks whether a user is registered with a session
    */
-  function isRegistered( $sessionId, $userId )
+  function isRegistered( $sessionId, $userId, $ip )
   {
-    $this->findWhere("
+    return $this->exists("
       `sessionId` = '$sessionId' AND 
-      `userId`    = $userId
+      `userId`    = $userId AND
+      `ip`        = '$ip'
     ");
-    return $this->foundSomething();
   }
   
 	/**
@@ -80,24 +110,13 @@ class qcl_session_db_model extends qcl_db_model
    * @return void
    * @param int $userId 
    */
-  function unregisterAllSessions(  $userId )
+  function unregisterAllSessions( $userId )
   {
     $this->deleteWhere("
       `userId`  = $userId
     ");
   } 
   
-  /**
-	 * expunge all sessions that have exceeded the timeout
-	 * @param int $timeout Timeout in seconds
-	 * @return void
-	 */
-	function expungeStaleSessions( $timeout )
-  {
-    $this->deleteWhere("
-      TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > $timeout
-    ");
-  }
   
   /**
    * Adds a message for all client

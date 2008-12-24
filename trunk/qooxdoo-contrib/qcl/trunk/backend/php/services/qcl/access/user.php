@@ -119,10 +119,6 @@ class qcl_access_user extends qcl_access_common
    */
   function setActiveUser( $userObject )
   {
-    /*
-     * logout previous user if any
-     */
-    $this->logout();
     
     /*
      * set new active user
@@ -232,7 +228,7 @@ class qcl_access_user extends qcl_access_common
     /*
      * create a new guest user and link it to the guest role
      */
-    $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float();
+    $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
     $this->create($username);
     $this->linkWith(&$roleModel);
     $this->setActiveUser( &$this );
@@ -262,6 +258,7 @@ class qcl_access_user extends qcl_access_common
         OR `lastAction` IS NULL ) 
     ",null,"id");
     $ids = $this->values();
+    
     if ( count( $ids ) )
     {
       $this->delete( $ids );  
@@ -270,18 +267,90 @@ class qcl_access_user extends qcl_access_common
   }
   
   /**
-   * Logs out the the active user 
-   * @return void
+   * Logs out the the active user. If the user is anonymous, delete its record 
+   * in the user table.
+   * @return bool success
    */
   function logout()
   {
-    if (  $this->_activeUser and $this->_activeUser->isAnonymous() )
+    /*
+     * check whether anyone is logged in
+     */
+    if ( ! $this->_activeUser )
+    {
+      $this->warn("Cannot log out, nobody is logged in");
+      return false;  
+    }
+    
+    /*
+     * controller
+     */
+    $controller =& $this->getController();
+    
+    /*
+     * remove all associated sessions
+     */
+    if ( method_exists( $controller, "getSessionModel" ) )
+    {
+      $sessionModel =& $controller->getSessionModel();
+      $sessionModel->unregisterAllSessions( $this->getId() );
+    }    
+    
+    /*
+     * delete user data if anonymous
+     */
+    if ( $this->_activeUser->isAnonymous() )
     {
       $this->_activeUser->delete();
     }
+    
+    /*
+     * unset active user 
+     */
     $this->_activeUser = null;
+    return true;
   }
-
+  
+  /**
+   * Deletes the active user, also purging linked data
+   * @param array[optional] $ids If null (default), delete active record, otherwise delete given ids.
+   * @return void
+   */
+  function delete( $ids=null )
+  {
+    /*
+     * if argument is array, delete list of ids
+     */
+    if ( is_array( $ids) )
+    {
+      foreach($ids as $id )
+      {
+        $this->load($id);
+        $this->delete();
+      }
+      return;
+    }
+    
+    /*
+     * otherwise, delete active record
+     */    
+    $controller =& $this->getController();
+   
+    /*
+     * delete config data for real users
+     */
+    if ( ! $this->isAnonymous() )
+    {
+      $configModel =& $controller->getConfigModel();
+      $configModel->deleteByUser( $this->getId() );
+    }
+    
+    /*
+     * call parent method to delete data
+     */
+    parent::delete();
+  }
+  
   /**
    * Checks if the current user has the given permission
    * respects wildcards, i.e. myapp.permissions.* covers

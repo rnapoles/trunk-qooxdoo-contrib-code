@@ -278,7 +278,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
     /*
      * Connect
      */
-    $this->log("Connecting to $host, port $port, path $domain.");
+    //$this->debug("Connecting to $host, port $port, path $domain.");
     $errno = ""; $errstr="";
     $fp = fsockopen($host, $port, $errno, $errstr, $timeout );
     

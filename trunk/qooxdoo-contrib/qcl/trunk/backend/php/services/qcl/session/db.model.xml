@@ -18,6 +18,9 @@
         <property name="userId" type="string">
           <sql>int(11) NOT NULL</sql>
         </property>    
+        <property name="ip" type="string">
+          <sql>varchar(32) NOT NULL</sql>
+        </property>    
         
         <!-- deprecated -->
         <property name="user" type="string">

@@ -150,6 +150,16 @@ class qcl_access_controller extends qcl_db_controller
     $activeUser =& $userModel->getActiveUser();
 
     /*
+     * log out the active user
+     */
+    if ( $activeUser )
+    {
+      $name = $userModel->getNamedId();
+      $this->info ("Logging off user $name.");
+      $userModel->logout();  
+    }
+        
+    /*
      * Authenticate user if user name has been provided
      * and password matches
      */
@@ -262,8 +272,8 @@ class qcl_access_controller extends qcl_db_controller
   
   /**
    * Passively checks if the requesting client is an authenticated user.
-   * For the actual active authentication, use qcl_access_user::authenticate()
-   * @see qcl_access_user::method_authenticate()
+   * For the actual active authentication, use qcl_access_controller::method_authenticate()
+   * @see qcl_access_controller::method_authenticate()
    * @return bool True if request can continue, false if it should be aborted with 
    * a "access denied" exception
    * @todo implement (see Bugzilla bug 1659)
@@ -278,45 +288,36 @@ class qcl_access_controller extends qcl_db_controller
     $activeUser  =& $userModel->getActiveUser();    
     
     /*
-     * check authentication 
+     * if we don't have an active user yet, grant guest access
      */
-    if ( $activeUser )
+    if ( ! $activeUser )
     {
-      //$this->debug($activeUser->getId());
-      
-      /*
-       * user has been authenticated
-       * check the user session for timeouts etc.
-       */
-      if ( $this->checkTimeout() )
-      {
-        /*
-         * user is authenticated, simply return
-         */
-        return true;     
-      }
-      
-      /*
-       * force log out because of timeout
-       */
-      $this->logout();
-      return false;         
-    }
-    else
-    {
-      /*
-       * We have an anonymous user, grant guest access
-       * 
-       */
       $userModel->guestAccess();
+      $activeUser =& $userModel->getActiveUser();
     
       /*
        * change config model to read-only mode for guest access
        */
       $this->configModel =& $this->getSingleton("qcl_config_session");    
-      
-      return true;
-    }  
+    }
+    
+    /*
+     * if this is a session-based access controller, register the session
+     */
+    $this->registerSession();
+
+    /*
+     * Check the user session for timeouts etc.
+     */
+    if ( ! $this->checkTimeout() )
+    {
+      /*
+       * force log out because of timeout
+       */
+      $this->logout();
+      return false;
+    }        
+    
   }
   
   /**
@@ -331,25 +332,12 @@ class qcl_access_controller extends qcl_db_controller
      */
     $configModel =& $this->getConfigModel();
     $activeUser  =& $this->getActiveUser();
-
-    /*
-     * no timeout check if not authenticated or guest access
-     */    
-    if ( ! $activeUser or $activeUser->isAnonymous() )
-    {
-      return true;
-    }
     
     /*
      * timeout
      */
     $timeout = (int) either( $configModel->get("qcl.session.timeout"), 1800 ); // timeout in seconds, defaults to 30 minutes
     $seconds = (int) $activeUser->getSecondsSinceLastAction();
-    
-    /*
-     * register this session if parent class provides this. 
-     */
-    $this->registerSession( $timeout );
         
     //$this->info("bibliograph_controller::authenticate: User $activeUser, $seconds seconds since last action, timeout is $timeout seconds.");
     $activeUser->resetLastAction();
