@@ -106,6 +106,14 @@ class qcl_db_model extends qcl_core_PropertyModel
     return $this->db;
   }
   
+  /**
+   * Returns the name of the table
+   * @return string
+   */
+  function table()
+  {
+    return $this->table;
+  }
 	
   /**
    * Connects to database. if this model is connected to 
@@ -838,6 +846,14 @@ class qcl_db_model extends qcl_core_PropertyModel
     return $this->db->update( $this->table, $data, $this->col_id );
   }     
   
+  /**
+   * Checks wheter a record exists that matches a query
+   * @param $where Where query
+   */  
+  function exists( $where )
+  {
+    return $this->db->exists( $this->table(), $where );
+  }
   
   /**
    * Deletes the currently loaded record or one or more records in a table identified by id

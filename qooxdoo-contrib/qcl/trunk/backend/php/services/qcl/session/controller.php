@@ -81,25 +81,34 @@ class qcl_session_controller extends qcl_access_controller
   /**
    * Registers session and user. call from extending controller's constructor 
    * requires a user and a session model
-   * @param int $timeout Timeout in seconds, defaults to 600 seconds
+   * @param int $timeout Timeout in seconds, defaults to 30 Minutes
    */
-  function registerSession($timeout=600)
+  function registerSession($timeout=null)
   {
     /*
      * models
      */
+    $configModel  =& $this->getConfigModel();
     $activeUser   =& $this->getActiveUser();
-    $sessionModel =& $this->getSessionModel();
+    $sessionModel =& $this->getSessionModel(); 
     
     /*
-     * delete all expired sessions
+     * register current session 
      */
-    $sessionModel->expungeStaleSessions($timeout);
+    $reqObj =& $this->requestObject();
+    $sessionModel->registerSession( 
+      $this->getSessionId(), 
+      $activeUser->getId(),
+      $reqObj->getIp()
+    );
     
     /*
-     * register current session (will be ignored if already present)
+     * Raise error if session model returns false
      */
-    $sessionModel->registerSession( $this->getSessionId(), $activeUser->getId() );
+    if ( $sessionModel->getError() )
+    {
+      $this->raiseError( $sessionModel->getError() );
+    }
   }
   
   /**
@@ -122,15 +131,15 @@ class qcl_session_controller extends qcl_access_controller
       {
         $this->raiseError("Session is not connected with a user id!"); 
       }
-      $userModel    =& $this->getUserModel();
+      $userModel =& $this->getUserModel();
       $userModel->load($activeUserId);
       $userModel->setActiveUser( $userModel->cloneObject() );
     }
   }
   
   /**
-   * Returns the current session id. Defaults to PHP session id.
-   * Override in parent classes for more sophisticated session handling
+   * Returns the current session id. 
+   * @override
    * @return string session id
    */
   function getSessionId()
@@ -175,7 +184,10 @@ class qcl_session_controller extends qcl_access_controller
     $userId    = $activeUser->getId();
     $username  = $activeUser->username();
     
-    if ( $sessionModel->isRegistered( $sessionId, $userId ) )
+    $reqObj =& $this->requestObject();
+    $ip = $reqObj->getIp();
+    
+    if ( $sessionModel->isRegistered( $sessionId, $userId, $ip ) )
     {
       $sessionModel->unregisterSession( $sessionId, $userId );
       $this->info ( "$username logs out." );

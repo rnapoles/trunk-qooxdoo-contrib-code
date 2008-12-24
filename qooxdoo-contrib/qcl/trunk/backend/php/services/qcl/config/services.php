@@ -148,7 +148,7 @@ class qcl_config_services extends qcl_core_mixin
 		
 		if ( $key == "value" )
 		{
-			$row = $configModel->getRowById($id);
+			$row = $configModel->findById($id);
 			$data = array();
 			$data[$row[$configModel->col_name]] = $row[$configModel->col_value]; 
 			$this->dispatchMessage( "qcl.config.messages.server.changeConfigKey", $data );	

@@ -25,20 +25,41 @@ function either()
 } 
 
 /**
- * transform an object structure into an associative array.
+ * Transform an object structure into an associative array.
  * In contrast to array casting with "(array)", this function 
- * transverses nested objest structures
- * @param object $obj
- * return array()
+ * transverses nested object structures, including nested arrays within 
+ * this structure
+ * @param object $var
+ * return array
  */
-function object2array($obj)
+function object2array( $var )
 {
-  if (! is_object($obj)) return (array) $obj;
-  $arr=array();
-  foreach (get_object_vars($obj) as $key => $val) 
+  /*
+   * if argument is a scalar value ( not array and not object)
+   * return it
+   */
+  if ( ! is_object( $var ) and ! is_array( $var ) ) return $var;
+  
+  /*
+   * convert objects into an array
+   */
+  if ( is_object( $var ) )
   {
-    $arr[$key]= is_object($val) ? object2array($val) : $val;
+    $var = get_object_vars( $var );
   }
+  
+  /*
+   * iterate recursively through this array
+   */
+  $arr=array();
+  foreach ( $var as $key => $val ) 
+  {
+    $arr[$key] = object2array( $val );
+  }
+  
+  /*
+   * return the result array
+   */
   return $arr;
 }
 
