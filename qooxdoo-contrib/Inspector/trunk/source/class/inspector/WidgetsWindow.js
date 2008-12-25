@@ -100,6 +100,11 @@ qx.Class.define("inspector.WidgetsWindow", {
       // get the current items of the tree folder
       var items = parentTreeFolder.getItems(false, true);
       
+      // ignore all objects without children (spacer e.g.)
+      if (parentWidget._getChildren == undefined) {
+        return;
+      }
+      
       // if parent widget contains no more widgets
       if (parentWidget._getChildren().length == 0) {
         if (items.length > 1) {
