@@ -45,7 +45,7 @@ qx.Class.define("inspector.ObjectsWindow",
     this._table.setColumnVisibilityButtonVisible(false);    
     this._table.setColumnWidth(0, 50);
     this._table.setColumnWidth(1, 170);
-    this._table.setStatusBarVisible(false);
+    // this._table.setStatusBarVisible(false);
     
     this._table.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.SINGLE_SELECTION);
     

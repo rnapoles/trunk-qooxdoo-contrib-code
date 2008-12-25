@@ -153,6 +153,12 @@ qx.Class.define("inspector.Selector",
         if (childWidget == this._catchClickLayer || childWidget == this._highlightOverlay) {
           continue;
         }
+        // check for a spacer
+        try {
+          if (childWidget instanceof this._iFrameWindow.qx.ui.core.Spacer) {
+            continue;
+          }
+        } catch (e) {}
         // get the coordinates of the current widget
         if (childWidget.getContainerElement) {
           var domElement = childWidget.getContainerElement().getDomElement();
