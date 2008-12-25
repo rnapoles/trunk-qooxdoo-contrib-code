@@ -34,10 +34,21 @@ qx.Class.define("inspector.console.ConsoleWindow",
     // separator
     this._toolbar.add(new qx.ui.toolbar.Separator());
     
-    var consoleButton = new qx.ui.toolbar.RadioButton("Console");
-    this._toolbar.add(consoleButton);
-    var domButton = new qx.ui.toolbar.RadioButton("Dom");
-    this._toolbar.add(domButton);
+    this._consoleButton = new qx.ui.toolbar.RadioButton("Console");
+    this._toolbar.add(this._consoleButton);
+    this._domButton = new qx.ui.toolbar.RadioButton("Dom");
+    this._toolbar.add(this._domButton);
+    
+    // add a spacer
+    this._toolbar.addSpacer();
+    
+    // search text field
+    this._findField = new qx.ui.form.TextField();
+    this._findField.setMarginRight(5);
+    this._toolbar.add(this._findField);
+    this._findField.addListener("input", function(e) {
+      this._stack.getSelected().filter(e.getData());
+    }, this);
     
     // the stack
     this._stack = new qx.ui.container.Stack();
@@ -52,16 +63,19 @@ qx.Class.define("inspector.console.ConsoleWindow",
     this._stack.add(this._domView, {flex: 1});
     
     // radio group for switching views
-    var radioGround = new qx.ui.form.RadioGroup(consoleButton, domButton);
+    var radioGround = new qx.ui.form.RadioGroup(this._consoleButton, this._domButton);
     radioGround.addListener("changeValue", function(e) {
-      if (radioGround.getSelected() == consoleButton) {
+      // reset the filter field
+      this._findField.setValue("");
+      if (radioGround.getSelected() == this._consoleButton) {
         this._stack.setSelected(this._consoleView);
-      } else if (radioGround.getSelected() == domButton) {
+      } else if (radioGround.getSelected() == this._domButton) {
         this._stack.setSelected(this._domView);        
       } else {
-        consoleButton.setChecked(true);
+        this._consoleButton.setChecked(true);
       }
-    }, this);    
+    }, this);  
+    
   },
 
   members :
@@ -88,6 +102,38 @@ qx.Class.define("inspector.console.ConsoleWindow",
         return "?";
       }
       return String(value).replace(/[<>&"']/g, replaceChars);
+    },
+    
+    
+    inspectObjectByInternalId: function(id) {
+      // get the object and the name
+      var o = this._consoleView.getObjectById(id);
+      // inspect the object
+      this.inspectObject(o);
+    },
+    
+    
+    inspectObjectByDomSelecet: function(index, key) {
+      // update the object in the domview
+      this._domView.setObjectByIndex(index, key);
+      // reset the search field
+      this._findField.setValue("");
+    },    
+    
+    
+    inspectObject: function(inputObject) {
+      // give the object to the dom view
+      this._domView.setObject(inputObject.object, inputObject.name);
+      // show the dom view
+      this._domButton.setChecked(true);
+    },
+    
+    
+    goToDefaultView: function() {
+      // go to console view
+      this._consoleButton.setChecked(true);
+      // clear the dom view
+      this._domView.clear();
     }
 
   }

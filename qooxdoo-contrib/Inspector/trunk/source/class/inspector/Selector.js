@@ -43,7 +43,7 @@ qx.Class.define("inspector.Selector",
     setJSWindow : function(window) {
       this._iFrameWindow = window;
       this._addedWidgets = [];
-      this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();
+      this._root = this._iFrameWindow.qx.core.Init.getApplication().getRoot();        
 
       this._createCatchClickLayer();
       this._createHighlightStuff();        
