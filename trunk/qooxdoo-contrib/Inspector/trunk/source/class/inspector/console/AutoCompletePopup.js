@@ -203,7 +203,7 @@ qx.Class.define("inspector.console.AutoCompletePopup", {
             }   
           
           // if it is a function
-          if (object[name] instanceof Function) {
+          if (object[name] instanceof iFrameWindow.Function) {
             // add the opening bracket for the function arguments
             var functionString = name + "(";
             // go threw all expected arguments

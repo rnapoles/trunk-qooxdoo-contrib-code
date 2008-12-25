@@ -39,12 +39,20 @@ qx.Class.define("inspector.console.ConsoleView",
     this._objectFolder = [];
     this._objectFolderIndex = 0;
     
+    // search stuff
+    this._filter = "";
+    
     // set the layout
     this._setLayout(new qx.ui.layout.VBox());    
   
     // html embed
     this._content = new qx.ui.embed.Html("");
     this._content.setOverflowY("scroll");
+    // wait until the dom element is created
+    this.addListenerOnce("appear", function() {
+      // set the id for the dom element
+      this._content.getContentElement().getDomElement().id = "consoleViewHtmlEmbed";
+    }, this);    
     this._add(this._content, {flex: 1});
     
     // inputfield
@@ -67,7 +75,13 @@ qx.Class.define("inspector.console.ConsoleView",
     // add the listener to the textfield
     this._inputTextField.addListener("keydown", this._keyDownHandler, this);
     this._inputTextField.addListener("keyup", this._keyUpHandler, this);
-    this._inputTextField.addListener("keypress", this._keyPressHandler, this);    
+    this._inputTextField.addListener("keypress", this._keyPressHandler, this);
+    
+    this._inputTextField.addListener("input", function(e) {
+      if (this._autoCompletePopup.isOnScreen()) {
+        this._autoCompletePopup.load(e.getData());
+      }
+    }, this);
   },
 
   members :
@@ -85,6 +99,65 @@ qx.Class.define("inspector.console.ConsoleView",
     clear: function() {
       this._content.setHtml("");
     },  
+    
+    
+    getObjectById: function(id) {
+      return this._objectFolder[id];
+    },
+    
+    
+    filter: function(filter) {
+      // store the new filter
+      this._filter = filter;
+      
+      // TODO remove cross browser code!
+      // check for the browser variants
+      if (qx.core.Variant.isSet("qx.client", "gecko")) {
+        // get all children in a gecko browser
+        var children = document.getElementById("consoleViewHtmlEmbed").childNodes;
+      } else if (qx.core.Variant.isSet("qx.client", "opera|webkit|mshtml")) {
+        // get all children in opera, ie and safari
+        var children = document.getElementById("consoleViewHtmlEmbed").childNodes[0].childNodes;
+      } else {
+        // dont do anything because the browser is not known
+        return;
+      }
+      
+      // try to filter
+      try {
+        // create a regexp object for filtering
+        var regExp = new RegExp(this._filter);  
+        // go threw all children      
+        for (var i = 0; i < children.length; i++) {
+          // if the browser is a ie
+          if (qx.core.Variant.isSet("qx.client", "mshtml")) {
+            // take the innerText as content
+            var content = children[i].innerText;
+          }  else {
+            // for all others, take the textContent as content
+            var content = children[i].textContent;
+          }  
+          
+          // test if the current content fits the filter
+          if (regExp.test(content)) {
+            // if there is a style attribute
+            if (children[i].style != undefined) {
+              // set the current child visible
+              children[i].style.display = "";
+            }
+          } else {
+            // if the child has a style attribute
+            if (children[i].style != undefined) {
+              // hide the current child
+              children[i].style.display = "none";
+            }
+          }
+        }  
+      } catch (e) {
+        // if that doesnt work, tell the user why
+        alert("Unable to filter: " + e);
+      }      
+    },     
     
     
     chooseAutoCompleteValue: function() {
@@ -117,7 +190,7 @@ qx.Class.define("inspector.console.ConsoleView",
           // mark the stuff in the ()
           var start = this._inputTextField.getValue().lastIndexOf("(") + 1;
           var end = this._inputTextField.getValue().length - 1;
-          this._textField.setSelection(start, end);          
+          this._inputTextField.setSelection(start, end);          
         }  
       }
     },    
@@ -267,10 +340,6 @@ qx.Class.define("inspector.console.ConsoleView",
         }
         return;
       }
-      // in every other case
-      if (this._autoCompletePopup.isOnScreen()) {
-        this._autoCompletePopup.load(this._inputTextField.getValue());
-      }
     },
     
 
@@ -296,7 +365,6 @@ qx.Class.define("inspector.console.ConsoleView",
     
     
     _scrollToLastLine: function() {
-      // TODO Scroll does not work
       // flush the queues to ensure that the adding has been recognized
       qx.ui.core.queue.Manager.flush();      
       // wait until everything is done
@@ -304,7 +372,13 @@ qx.Class.define("inspector.console.ConsoleView",
       window.setTimeout(function() {
         // scroll to the bottom of the layout
         var element = self._content.getContentElement();
-        element.scrollToY(qx.bom.element.Dimension.getHeight(element));
+        var height = qx.bom.element.Dimension.getClientHeight(
+          self._content.getContentElement().getDomElement()
+        );
+        var scrollHeight = qx.bom.element.Dimension.getScrollHeight(
+          self._content.getContentElement().getDomElement()
+        );
+        element.scrollToY(scrollHeight - height);
       }, 0);
     },
     
@@ -358,7 +432,7 @@ qx.Class.define("inspector.console.ConsoleView",
       } else if (iFrameWindow && returnValue instanceof iFrameWindow.Object) {        
         // if yes, print out that it is one
         var label = this._getLabel("<span class='ins_console_link' onclick='" + 
-                                   "inspector.Inspector.getInstance().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+                                   "qx.core.Init.getApplication().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
                                    "'>" + returnValue + " </span>", "ins_console_return_object");
         this._content.setHtml(this._content.getHtml() + label);
         
@@ -386,7 +460,10 @@ qx.Class.define("inspector.console.ConsoleView",
         "<span class='ins_console_link' onclick=" 
         + "\"qx.core.Init.getApplication().setWidgetByHash('"
         + object.toHashCode() + "', 'console');\"> " + object.classname 
-        + " [" + object.toHashCode() + "]</span> ", 
+        + " [" + object.toHashCode() + "]</span> "
+        + "<span class='ins_console_dom_link' onclick='" + 
+              "qx.core.Init.getApplication().inspectObjectByInternalId(" + this._objectFolderIndex + ")" +
+              "'>inspect Object</span>", 
         "ins_console_return_qxobject");
       // append the label string
       this._content.setHtml(this._content.getHtml() + label);      
@@ -421,9 +498,10 @@ qx.Class.define("inspector.console.ConsoleView",
     _getLabel: function(text, clazz, icon) {
       // create the text of the label
       var text = text;
+      // TODO build icon path!
       // handle the icon uri
       if (icon == "info" || icon == "error" || icon == "warning") {
-        var iconHtml = "<img src='inspector/image/shell/" + 
+        var iconHtml = "<img src='../source/resource/inspector/images/shell/" + 
                        icon + "Icon.png" + "' class='ins_console_icon'>";
         text = iconHtml + "&nbsp;" + text;
       }

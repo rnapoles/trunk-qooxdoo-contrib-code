@@ -111,12 +111,15 @@ qx.Class.define("inspector.Application",
       try {
         // also break if its undefined
         if (this._loadedWindow.qx === undefined) {
-          throw new Error();
+          throw new Error("qooxdoo not found!");
         }
+        // try to get the root element of the application
+        this._loadedWindow.qx.core.Init.getApplication().getRoot();
+        
         // reset the enabled properties of the toolbar stuf
         this._selectedWidgetLabel.resetEnabled();
         this._urlTextField.resetEnabled();
-        return true;     
+        return true;
       } catch (e) {
         // signal that the inspector is not working
         this._toolbar.setEnabled(false);
@@ -265,10 +268,28 @@ qx.Class.define("inspector.Application",
       // check the initiator
       if (initiator == "console") {
         initiator = this._consoleWindow;
+        // tell the console to go to the default view
+        this._consoleWindow.goToDefaultView();
       }
       var object = qx.core.ObjectRegistry.fromHashCode(hash);
       this.select(object, initiator);
     },
+    
+
+    inspectObjectByDomSelecet: function(index, key) {
+      if (this._consoleWindow != null) {
+          this._consoleWindow.inspectObjectByDomSelecet(index, key);
+      }
+    },
+    
+    
+    inspectObjectByInternalId: function(id) {
+      // if the console exists
+      if (this._consoleWindow != null) {
+        // tell the consol to do the rest
+        this._consoleWindow.inspectObjectByInternalId(id);
+      }
+    },    
     
     
     select: function(object, initiator) { 
@@ -306,6 +327,9 @@ qx.Class.define("inspector.Application",
   defer : function()
   {
     // Include CSS file
+    qx.bom.Stylesheet.includeFile("inspector/css/domview.css");        
     qx.bom.Stylesheet.includeFile("inspector/css/consoleview.css");
+    qx.bom.Stylesheet.includeFile("inspector/css/sourceview.css");
+    qx.bom.Stylesheet.includeFile("inspector/css/propertylisthtml.css");
   }
 });
