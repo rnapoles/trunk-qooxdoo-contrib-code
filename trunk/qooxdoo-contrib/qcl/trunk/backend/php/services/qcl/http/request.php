@@ -75,7 +75,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
   }
 
   /**
-   * Sets the POST data, which must be an associative array
+   * Sets the GET/POST data, which must be an associative array
    * @param $method array
    * @return void
    */
@@ -151,8 +151,7 @@ class qcl_http_Request extends qcl_jsonrpc_model
     /*
      * create header string from array
      */
-    $headers = count($this->headers) > 0 ? 
-                    implode("\n\r", $this->headers) : null;
+    $headers = count($this->headers) > 0 ? implode("\n\r", $this->headers) : null;
 
     /*
      * encode data
