@@ -247,7 +247,7 @@ class qcl_access_controller extends qcl_db_controller
     {
       $username = $activeUser->username();
       $this->info ( "$username logs out." );  
-      $userModel->setActiveUser(null);      
+      $userModel->logout();      
     }
         
     /*

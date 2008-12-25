@@ -60,11 +60,12 @@ class qcl_session_db_model extends qcl_db_model
     ");
 
     /*
-     * Cleanup: Delete sessions that refer to non-existing users
+     * Cleanup: Delete sessions that have been deleted or refer to non-existing users
      */
     $userModel =& $controller->getUserModel();
     $userTable =  $userModel->getTableName();    
     $this->deleteWhere("
+      markedDeleted = 1 OR
       userId NOT IN ( SELECT id FROM users )
     ");    
     
@@ -100,8 +101,10 @@ class qcl_session_db_model extends qcl_db_model
 	 */
   function unregisterSession( $sessionId, $userId )
   {
-    $this->deleteWhere("
-      `sessionId` = '$sessionId'
+    $this->db->execute("
+      UPDATE {$this->table}
+      SET `markedDeleted` = 1
+      WHERE `sessionId` = '$sessionId'
     ");
   }
 
@@ -112,8 +115,10 @@ class qcl_session_db_model extends qcl_db_model
    */
   function unregisterAllSessions( $userId )
   {
-    $this->deleteWhere("
-      `userId`  = $userId
+    $this->db->execute("
+      UPDATE {$this->table}
+      SET `markedDeleted` = 1
+      WHERE `userId`  = $userId
     ");
   } 
   

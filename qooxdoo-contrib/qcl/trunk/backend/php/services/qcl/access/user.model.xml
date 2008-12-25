@@ -34,7 +34,8 @@
         </property>           
         <property name="lastAction" type="date" skipExport="true"> 
           <sql>datetime NULL</sql>
-        </property> 
+        </property>
+                
       </properties>
 
       <!-- indexes -->

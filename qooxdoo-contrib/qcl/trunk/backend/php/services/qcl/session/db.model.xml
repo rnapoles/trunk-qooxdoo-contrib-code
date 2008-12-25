@@ -21,6 +21,9 @@
         <property name="ip" type="string">
           <sql>varchar(32) NOT NULL</sql>
         </property>    
+        <property name="markedDeleted" type="bool">
+          <sql>int(1) DEFAULT 0</sql>
+        </property>
         
         <!-- deprecated -->
         <property name="user" type="string">
