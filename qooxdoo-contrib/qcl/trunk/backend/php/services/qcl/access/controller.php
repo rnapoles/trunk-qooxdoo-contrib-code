@@ -152,9 +152,9 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * log out the active user
      */
-    if ( $activeUser )
+    if ( $username and $activeUser )
     {
-      $name = $userModel->getNamedId();
+      $name = $activeUser->getNamedId();
       $this->info ("Logging off user $name.");
       $userModel->logout();  
     }
