@@ -186,14 +186,22 @@ class qcl_access_controller extends qcl_db_controller
     }
     
     /*
-     * otherwise, if we have no username, but a user is already
-     * logged in, use the data of this user
+     * if we have no username
      */
-    elseif ( ! $username and $activeUser  )
+    elseif ( ! $username  )
     {
       
       /*
-       * user already logged in, get username and security data from active user
+       * if no active user, create guest access
+       */
+      if ( ! $activeUser )
+      {
+        $userModel->guestAccess();
+        $activeUser =& $userModel->getActiveUser();
+      }
+      
+      /*
+       * get username and security data from active user
        */
       $username     = $activeUser->username();
       $securityData = $activeUser->securityData();
@@ -203,6 +211,7 @@ class qcl_access_controller extends qcl_db_controller
        */
       $this->dispatchMessage( "qcl.messages.login.success" );
     }
+      
     
     /*
      * otherwise, we assume that invalid authentication data has been 
