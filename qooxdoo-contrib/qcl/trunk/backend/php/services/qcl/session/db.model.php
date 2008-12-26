@@ -60,13 +60,15 @@ class qcl_session_db_model extends qcl_db_model
     ");
 
     /*
-     * Cleanup: Delete sessions that have been deleted or refer to non-existing users
+     * Cleanup: Delete sessions that have been deleted, refer to non-existing users, or
+     * to the same user with a different session id
      */
     $userModel =& $controller->getUserModel();
     $userTable =  $userModel->getTableName();    
     $this->deleteWhere("
       markedDeleted = 1 OR
-      userId NOT IN ( SELECT id FROM users )
+      userId NOT IN ( SELECT id FROM users ) OR
+      ( userId = $userId AND sessionId != '$sessionId' )
     ");    
     
     /*
