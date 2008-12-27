@@ -168,7 +168,7 @@ qx.Class.define("inspector.Application",
       this._toolbar.add(new qx.ui.toolbar.Separator());
   
       // Objects window
-      this._objectWindow = new inspector.ObjectsWindow();
+      this._objectWindow = new inspector.objects.ObjectsWindow();
       this.getRoot().add(this._objectWindow);
       var objectsButton = new qx.ui.toolbar.CheckBox("Objects");
       this._toolbar.add(objectsButton);

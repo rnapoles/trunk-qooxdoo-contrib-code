@@ -32,7 +32,7 @@ qx.Class.define("inspector.AbstractWindow",
     this.setShowMinimize(false);
     this.setShowMaximize(false);    
     
-    this.setWidth(240);
+    this.setWidth(320);
     this.setHeight(200);
     this.setContentPadding(0);
     
