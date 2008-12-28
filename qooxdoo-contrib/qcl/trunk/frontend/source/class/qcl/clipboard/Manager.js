@@ -219,7 +219,7 @@ qx.Class.define("qcl.clipboard.Manager",
 		{
 			try
 			{
-				_copyToSystemClipboard( text, flavor );
+				this._copyToSystemClipboard( text, flavor );
 			} 
 			catch (e)
 			{
@@ -229,7 +229,7 @@ qx.Class.define("qcl.clipboard.Manager",
 
 		/**
 		 * tries to copy text to the clipboard of the underlying operating system
-		 * and issues a warning if not successful
+		 * and returns false if not successful
 		 * @param {Object} text
 		 * @param {Object} flavor
 		 */
@@ -237,11 +237,12 @@ qx.Class.define("qcl.clipboard.Manager",
 		{
 			try
 			{
-				_copyToSystemClipboard( text, flavor );
+				this._copyToSystemClipboard( text, flavor );
+        return true;
 			} 
 			catch (e)
 			{
-				this.warn(e);
+				return false;
 			}
 		},
 		
