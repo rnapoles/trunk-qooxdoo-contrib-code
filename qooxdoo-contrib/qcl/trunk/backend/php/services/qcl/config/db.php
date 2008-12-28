@@ -352,6 +352,13 @@ class qcl_config_db extends qcl_db_model
 	{
 		$controller     =& $this->getController();
     $activeUser     =& $controller->getActiveUser();
+    
+    /*
+     * no accessible keys if no active user
+     */
+    if ( ! $activeUser ) return array();
+    
+    
     $username        = $activeUser->username();
 		$isConfigManager = $activeUser->hasPermission("bibliograph.config.permissions.manage");
 		
