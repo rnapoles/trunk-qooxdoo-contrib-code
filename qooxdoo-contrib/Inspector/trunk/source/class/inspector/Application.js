@@ -93,12 +93,35 @@ qx.Class.define("inspector.Application",
         this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication());
     
         this._loading = false;
+        
+        // save the url in a cookie
+        inspector.CookieApi.set("url", this._iFrame.getSource());
+        
         // select the root of the new app
         this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication().getRoot());
+        
+        // check for the cookies
+        this.__checkCookies();        
       }, this);  
 
       this._loading = true;      
       this._iFrame.setSource(this._urlTextField.getValue());
+    },
+    
+    
+    __checkCookies: function() {
+      // check if the objects window should be openend
+      if (inspector.CookieApi.get("objectsOpen") == "true") {
+        this._objectsButton.setChecked(true);
+      }
+      // check if the widgets window should be openend
+      if (inspector.CookieApi.get("widgetsOpen") == "true") {
+        this._widgetsButton.setChecked(true);        
+      }
+      // check if the console should be opened
+      if (inspector.CookieApi.get("consoleOpen") == "true") {
+        this._consoleButton.setChecked(true);        
+      }
     },
     
     
@@ -164,22 +187,22 @@ qx.Class.define("inspector.Application",
       this._toolbar.add(new qx.ui.toolbar.Separator());
   
       // Objects window
-      var objectsButton = new qx.ui.toolbar.CheckBox("Objects");
-      this._toolbar.add(objectsButton);
+      this._objectsButton = new qx.ui.toolbar.CheckBox("Objects");
+      this._toolbar.add(this._objectsButton);
       var objectsWindowWasOpen = false;
-      objectsButton.addListener("changeChecked", function(e) {
+      this._objectsButton.addListener("changeChecked", function(e) {
         if (!objectsWindowWasOpen) {
           // create and add an instance
           this._objectWindow = new inspector.objects.ObjectsWindow();
           this.getRoot().add(this._objectWindow);   
           // set the right starting position and size
           var left = qx.bom.Viewport.getWidth() - this._objectWindow.getWidth();
-          var height = (qx.bom.Viewport.getHeight() - 30) / 3;
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
           this._objectWindow.moveTo(left, 30);
           this._objectWindow.setHeight(height);
           // add a close listener
           this._objectWindow.addListener("close", function() {
-            objectsButton.setChecked(false);
+            this._objectsButton.setChecked(false);
           }, this);
           // load if possible
           if (this._loadedWindow != null) {
@@ -188,57 +211,66 @@ qx.Class.define("inspector.Application",
         }
         e.getData() ? this._objectWindow.open() : this._objectWindow.close();
         objectsWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("objectsOpen", e.getData());
       }, this);
 
       
       // Console window
-      var consoleButton = new qx.ui.toolbar.CheckBox("Console");
-      this._toolbar.add(consoleButton);
+      this._consoleButton = new qx.ui.toolbar.CheckBox("Console");
+      this._toolbar.add(this._consoleButton);
       var consoleWindowWasOpen = false;
-      consoleButton.addListener("changeChecked", function(e) {
+      this._consoleButton.addListener("changeChecked", function(e) {
         if (!consoleWindowWasOpen) {
           // create and add an instance
           this._consoleWindow = new inspector.console.ConsoleWindow();
           this.getRoot().add(this._consoleWindow);
           // set the right size and position
           var width = qx.bom.Viewport.getWidth();
-          var height = (qx.bom.Viewport.getHeight() - 30) / 3;
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
           this._consoleWindow.moveTo(0, 2 * height + 30);
           this._consoleWindow.setWidth(width);
           this._consoleWindow.setHeight(height);
           // add a close listener
           this._consoleWindow.addListener("close", function() {
-            consoleButton.setChecked(false);
+            this._consoleButton.setChecked(false);
           }, this);          
         }
         e.getData() ? this._consoleWindow.open() : this._consoleWindow.close();
         consoleWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("consoleOpen", e.getData());        
       }, this);   
      
       
       // Widgets window
-      var widgetsButton = new qx.ui.toolbar.CheckBox("Widgets");
-      this._toolbar.add(widgetsButton);
+      this._widgetsButton = new qx.ui.toolbar.CheckBox("Widgets");
+      this._toolbar.add(this._widgetsButton);
       var widgetsWindowWasOpen = false;
-      widgetsButton.addListener("changeChecked", function(e) {
+      this._widgetsButton.addListener("changeChecked", function(e) {
         if (!widgetsWindowWasOpen) {
           // create a instance and add it
           this._widgetsWindow = new inspector.WidgetsWindow();
           this.getRoot().add(this._widgetsWindow);
           // move the window to its starting position and size
           var left = qx.bom.Viewport.getWidth() - this._widgetsWindow.getWidth();
-          var height = (qx.bom.Viewport.getHeight() - 30) / 3;
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
           this._widgetsWindow.moveTo(left, height + 30);
           this._widgetsWindow.setHeight(height);
           // add a listener for the close button
           this._widgetsWindow.addListener("close", function() {
-            widgetsButton.setChecked(false);
+            this._widgetsButton.setChecked(false);
           }, this);
           // invoke a load
           this._widgetsWindow.load();
         }
         e.getData() ? this._widgetsWindow.open() : this._widgetsWindow.close();
         widgetsWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("widgetsOpen", e.getData());        
       }, this);   
       
       
@@ -252,8 +284,13 @@ qx.Class.define("inspector.Application",
       // add a spacer to seperate the url
       this._toolbar.addSpacer();
 
+      // get the url out of a cookie
+      var cookieUrl = inspector.CookieApi.get("url");
+      if (cookieUrl == undefined || cookieUrl == "") {
+        cookieUrl = "Please enter an url here!";
+      }
       // add the url textfield
-      this._urlTextField = new qx.ui.form.TextField("../../../testWidgetSelect/source/index.html");
+      this._urlTextField = new qx.ui.form.TextField(cookieUrl);
       this._urlTextField.setMarginRight(5);
       this._urlTextField.setWidth(300);
       this._toolbar.add(this._urlTextField);
