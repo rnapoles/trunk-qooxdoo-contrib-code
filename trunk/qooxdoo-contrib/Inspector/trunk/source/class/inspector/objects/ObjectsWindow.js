@@ -92,7 +92,7 @@ qx.Class.define("inspector.objects.ObjectsWindow",
         // set the column names
         this._model.setColumns(model.getColumns());
         this._table.setColumnWidth(0, 50);
-        this._table.setColumnWidth(1, 250);        
+        this._table.setColumnWidth(1, 230);        
       }
     },
     
