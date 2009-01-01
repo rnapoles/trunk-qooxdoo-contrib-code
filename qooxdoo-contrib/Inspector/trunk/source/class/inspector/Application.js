@@ -117,11 +117,15 @@ qx.Class.define("inspector.Application",
       // check if the widgets window should be openend
       if (inspector.CookieApi.get("widgetsOpen") == "true") {
         this._widgetsButton.setChecked(true);        
-      }
+      }     
       // check if the console should be opened
       if (inspector.CookieApi.get("consoleOpen") == "true") {
         this._consoleButton.setChecked(true);        
       }
+      // check if the console should be opened
+      if (inspector.CookieApi.get("bindingsOpen") == "true") {
+        this._bindingsButton.setChecked(true);        
+      }      
     },
     
     
@@ -182,97 +186,17 @@ qx.Class.define("inspector.Application",
         this._selector.start();
       }, this);      
       
-  
       // add the second separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
   
       // Objects window
-      this._objectsButton = new qx.ui.toolbar.CheckBox("Objects");
-      this._toolbar.add(this._objectsButton);
-      var objectsWindowWasOpen = false;
-      this._objectsButton.addListener("changeChecked", function(e) {
-        if (!objectsWindowWasOpen) {
-          // create and add an instance
-          this._objectWindow = new inspector.objects.ObjectsWindow();
-          this.getRoot().add(this._objectWindow);   
-          // set the right starting position and size
-          var left = qx.bom.Viewport.getWidth() - this._objectWindow.getWidth();
-          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
-          this._objectWindow.moveTo(left, 30);
-          this._objectWindow.setHeight(height);
-          // add a close listener
-          this._objectWindow.addListener("close", function() {
-            this._objectsButton.setChecked(false);
-          }, this);
-          // load if possible
-          if (this._loadedWindow != null) {
-            this._objectWindow.load(this._loadedWindow);
-          }          
-        }
-        e.getData() ? this._objectWindow.open() : this._objectWindow.close();
-        objectsWindowWasOpen = true;
-        
-        // store the open status in a cookie
-        inspector.CookieApi.set("objectsOpen", e.getData());
-      }, this);
-
-      
-      // Console window
-      this._consoleButton = new qx.ui.toolbar.CheckBox("Console");
-      this._toolbar.add(this._consoleButton);
-      var consoleWindowWasOpen = false;
-      this._consoleButton.addListener("changeChecked", function(e) {
-        if (!consoleWindowWasOpen) {
-          // create and add an instance
-          this._consoleWindow = new inspector.console.ConsoleWindow();
-          this.getRoot().add(this._consoleWindow);
-          // set the right size and position
-          var width = qx.bom.Viewport.getWidth();
-          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
-          this._consoleWindow.moveTo(0, 2 * height + 30);
-          this._consoleWindow.setWidth(width);
-          this._consoleWindow.setHeight(height);
-          // add a close listener
-          this._consoleWindow.addListener("close", function() {
-            this._consoleButton.setChecked(false);
-          }, this);          
-        }
-        e.getData() ? this._consoleWindow.open() : this._consoleWindow.close();
-        consoleWindowWasOpen = true;
-        
-        // store the open status in a cookie
-        inspector.CookieApi.set("consoleOpen", e.getData());        
-      }, this);   
-     
-      
+      this.__createObjects();          
       // Widgets window
-      this._widgetsButton = new qx.ui.toolbar.CheckBox("Widgets");
-      this._toolbar.add(this._widgetsButton);
-      var widgetsWindowWasOpen = false;
-      this._widgetsButton.addListener("changeChecked", function(e) {
-        if (!widgetsWindowWasOpen) {
-          // create a instance and add it
-          this._widgetsWindow = new inspector.WidgetsWindow();
-          this.getRoot().add(this._widgetsWindow);
-          // move the window to its starting position and size
-          var left = qx.bom.Viewport.getWidth() - this._widgetsWindow.getWidth();
-          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
-          this._widgetsWindow.moveTo(left, height + 30);
-          this._widgetsWindow.setHeight(height);
-          // add a listener for the close button
-          this._widgetsWindow.addListener("close", function() {
-            this._widgetsButton.setChecked(false);
-          }, this);
-          // invoke a load
-          this._widgetsWindow.load();
-        }
-        e.getData() ? this._widgetsWindow.open() : this._widgetsWindow.close();
-        widgetsWindowWasOpen = true;
-        
-        // store the open status in a cookie
-        inspector.CookieApi.set("widgetsOpen", e.getData());        
-      }, this);   
-      
+      this.__createWidgets();
+      // Console window
+      this.__createConsole();   
+      // Bindings Window
+      this.__createBindings();   
       
       // add the third separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
@@ -301,6 +225,134 @@ qx.Class.define("inspector.Application",
       }, this);      
       
       
+    },
+    
+    
+    __createBindings: function() {
+      this._bindingsButton = new qx.ui.toolbar.CheckBox("Bindings");
+      this._toolbar.add(this._bindingsButton);
+      var bindingsWindowWasOpen = false;
+      this._bindingsButton.addListener("changeChecked", function(e) {
+        if (!bindingsWindowWasOpen) {
+          // create and add an instance
+          this._bindingsWindow = new inspector.bindings.BindingsWindow();
+          this.getRoot().add(this._bindingsWindow);   
+          // set the right starting position and size
+          var left = qx.bom.Viewport.getWidth() - this._bindingsWindow.getWidth();
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+          this._bindingsWindow.moveTo(left, 30 + 2 * height);
+          this._bindingsWindow.setHeight(height);
+          // add a close listener
+          this._bindingsWindow.addListener("close", function() {
+            this._bindingsButton.setChecked(false);
+          }, this);       
+        }
+        // open the window
+        e.getData() ? this._bindingsWindow.open() : this._bindingsWindow.close();
+        // load the data AFTER the window is open (TODO Bug?)
+        qx.ui.core.queue.Manager.flush();
+        if (!bindingsWindowWasOpen) {
+          // load if possible
+          if (this._loadedWindow != null) {
+            this._bindingsWindow.load(this._loadedWindow);
+          }          
+        }
+
+        bindingsWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("bindingsOpen", e.getData());
+      }, this);      
+    },
+    
+    
+    __createObjects: function() {
+      this._objectsButton = new qx.ui.toolbar.CheckBox("Objects");
+      this._toolbar.add(this._objectsButton);
+      var objectsWindowWasOpen = false;
+      this._objectsButton.addListener("changeChecked", function(e) {
+        if (!objectsWindowWasOpen) {
+          // create and add an instance
+          this._objectWindow = new inspector.objects.ObjectsWindow();
+          this.getRoot().add(this._objectWindow);   
+          // set the right starting position and size
+          var left = qx.bom.Viewport.getWidth() - this._objectWindow.getWidth();
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+          this._objectWindow.moveTo(left, 30);
+          this._objectWindow.setHeight(height);
+          // add a close listener
+          this._objectWindow.addListener("close", function() {
+            this._objectsButton.setChecked(false);
+          }, this);
+          // load if possible
+          if (this._loadedWindow != null) {
+            this._objectWindow.load(this._loadedWindow);
+          }          
+        }
+        e.getData() ? this._objectWindow.open() : this._objectWindow.close();
+        objectsWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("objectsOpen", e.getData());
+      }, this);
+    },
+    
+    __createConsole: function() {
+      this._consoleButton = new qx.ui.toolbar.CheckBox("Console");
+      this._toolbar.add(this._consoleButton);
+      var consoleWindowWasOpen = false;
+      this._consoleButton.addListener("changeChecked", function(e) {
+        if (!consoleWindowWasOpen) {
+          // create and add an instance
+          this._consoleWindow = new inspector.console.ConsoleWindow();
+          this.getRoot().add(this._consoleWindow);
+          // set the right size and position
+          var width = qx.bom.Viewport.getWidth();
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+          this._consoleWindow.moveTo(0, 2 * height + 30);
+          this._consoleWindow.setWidth(width - 300);
+          this._consoleWindow.setHeight(height);
+          // add a close listener
+          this._consoleWindow.addListener("close", function() {
+            this._consoleButton.setChecked(false);
+          }, this);          
+        }
+        e.getData() ? this._consoleWindow.open() : this._consoleWindow.close();
+        consoleWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("consoleOpen", e.getData());        
+      }, this);      
+    },
+    
+    
+    __createWidgets: function() {
+      this._widgetsButton = new qx.ui.toolbar.CheckBox("Widgets");
+      this._toolbar.add(this._widgetsButton);
+      var widgetsWindowWasOpen = false;
+      this._widgetsButton.addListener("changeChecked", function(e) {
+        if (!widgetsWindowWasOpen) {
+          // create a instance and add it
+          this._widgetsWindow = new inspector.widgets.WidgetsWindow();
+          this.getRoot().add(this._widgetsWindow);
+          // move the window to its starting position and size
+          var left = qx.bom.Viewport.getWidth() - this._widgetsWindow.getWidth();
+          var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+          this._widgetsWindow.moveTo(left, height + 30);
+          this._widgetsWindow.setHeight(height);
+          // add a listener for the close button
+          this._widgetsWindow.addListener("close", function() {
+            this._widgetsButton.setChecked(false);
+          }, this);
+          // invoke a load
+          this._widgetsWindow.load();
+        }
+        e.getData() ? this._widgetsWindow.open() : this._widgetsWindow.close();
+        widgetsWindowWasOpen = true;
+        
+        // store the open status in a cookie
+        inspector.CookieApi.set("widgetsOpen", e.getData());        
+      }, this);      
     },
     
     
