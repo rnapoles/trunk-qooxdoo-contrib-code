@@ -96,6 +96,15 @@ qx.Class.define("inspector.objects.ObjectsWindow",
       }
     },
     
+    
+    setInitSizeAndPosition: function() {
+      var left = qx.bom.Viewport.getWidth() - this.getWidth();
+      var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+      this.moveTo(left, 30);
+      this.setHeight(height);      
+    },
+    
+    
     load: function(window, filter) {
       this._iFrameWindow = window || this._iFrameWindow;
       // get the data of the current model

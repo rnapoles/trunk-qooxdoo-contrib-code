@@ -58,6 +58,14 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
   
   members : {
     
+    setInitSizeAndPosition: function() {
+      var left = qx.bom.Viewport.getWidth() - this.getWidth();
+      var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+      this.moveTo(left, 30 + height);
+      this.setHeight(height);      
+    },
+        
+    
     select: function(widget) {
       this._selectWidgetInTheTree(widget);
     },

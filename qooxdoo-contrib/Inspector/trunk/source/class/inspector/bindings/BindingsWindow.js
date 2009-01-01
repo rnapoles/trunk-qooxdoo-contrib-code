@@ -66,10 +66,20 @@ qx.Class.define("inspector.bindings.BindingsWindow",
   members :
   {
     
+    setInitSizeAndPosition: function() {
+      var left = qx.bom.Viewport.getWidth() - this.getWidth();
+      var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+      this.moveTo(left, 30 + 2 * height);
+      this.setHeight(height);
+    },
+    
     
     load: function(window, filter) {
       if (window != undefined) {
         this._iFrameWindow = window;        
+      }
+      if (this._iFrameWindow == null) {
+        this._iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
       }
 
       if (this._iFrameWindow.qx.data == undefined) {
