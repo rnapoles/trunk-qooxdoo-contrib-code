@@ -23,7 +23,7 @@
  * of the current document. Therefore a tree shows all widgets added to 
  * the document, which is the root element in a qooxdoo GUI.
  */
-qx.Class.define("inspector.WidgetsWindow", {
+qx.Class.define("inspector.widgets.WidgetsWindow", {
   
   extend : inspector.AbstractWindow,  
   
