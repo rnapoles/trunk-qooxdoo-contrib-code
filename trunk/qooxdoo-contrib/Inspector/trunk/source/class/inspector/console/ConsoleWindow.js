@@ -81,6 +81,15 @@ qx.Class.define("inspector.console.ConsoleWindow",
   members :
   {    
     
+    setInitSizeAndPosition: function() {
+      var width = qx.bom.Viewport.getWidth() - 300;
+      var height = parseInt((qx.bom.Viewport.getHeight() - 30) / 3);
+      this.moveTo(0, 2 * height + 30);
+      this.setWidth(width);
+      this.setHeight(height);
+    },
+        
+    
     escapeHtml: function(value) {
       function replaceChars(ch) {
         switch(ch) {
