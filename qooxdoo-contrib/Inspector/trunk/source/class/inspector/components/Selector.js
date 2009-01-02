@@ -16,7 +16,7 @@
      * Martin Wittemann (martinwittemann)
 
 ************************************************************************ */
-qx.Class.define("inspector.Selector", 
+qx.Class.define("inspector.components.Selector", 
 {
   extend : qx.core.Object,
 
