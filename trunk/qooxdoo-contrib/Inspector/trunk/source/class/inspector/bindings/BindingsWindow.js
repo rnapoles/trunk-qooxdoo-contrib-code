@@ -18,7 +18,7 @@
 ************************************************************************ */
 qx.Class.define("inspector.bindings.BindingsWindow", 
 {
-  extend : inspector.AbstractWindow,
+  extend : inspector.components.AbstractWindow,
 
 
   construct : function()

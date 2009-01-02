@@ -23,7 +23,7 @@
 
 ************************************************************************ */
 
-qx.Class.define("inspector.CookieApi",
+qx.Class.define("inspector.components.CookieApi",
 {
   /*
   *****************************************************************************
@@ -101,7 +101,7 @@ qx.Class.define("inspector.CookieApi",
       if (vExpires)
       {
         vCookie.push(";");
-        vCookie.push(qx.io.local.CookieApi.STR_EXPIRES);
+        vCookie.push(inspector.components.CookieApi.STR_EXPIRES);
         vCookie.push("=");
         vCookie.push(new Date(today.getTime() + (vExpires * 1000 * 60 * 60 * 24)).toGMTString());
       }
@@ -109,7 +109,7 @@ qx.Class.define("inspector.CookieApi",
       if (vPath)
       {
         vCookie.push(";");
-        vCookie.push(qx.io.local.CookieApi.STR_PATH);
+        vCookie.push(inspector.components.CookieApi.STR_PATH);
         vCookie.push("=");
         vCookie.push(vPath);
       }
@@ -117,7 +117,7 @@ qx.Class.define("inspector.CookieApi",
       if (vDomain)
       {
         vCookie.push(";");
-        vCookie.push(qx.io.local.CookieApi.STR_DOMAIN);
+        vCookie.push(inspector.components.CookieApi.STR_DOMAIN);
         vCookie.push("=");
         vCookie.push(vDomain);
       }
@@ -125,7 +125,7 @@ qx.Class.define("inspector.CookieApi",
       if (vSecure)
       {
         vCookie.push(";");
-        vCookie.push(qx.io.local.CookieApi.STR_SECURE);
+        vCookie.push(inspector.components.CookieApi.STR_SECURE);
       }
 
       // Store cookie
@@ -144,7 +144,7 @@ qx.Class.define("inspector.CookieApi",
      */
     del : function(vName, vPath, vDomain)
     {
-      if (!qx.io.local.CookieApi.get(vName)) {
+      if (!inspector.components.CookieApi.get(vName)) {
         return;
       }
 
@@ -154,7 +154,7 @@ qx.Class.define("inspector.CookieApi",
       if (vPath)
       {
         vCookie.push(";");
-        vCookie.push(qx.io.local.CookieApi.STR_PATH);
+        vCookie.push(inspector.components.CookieApi.STR_PATH);
         vCookie.push("=");
         vCookie.push(vPath);
       }
@@ -162,15 +162,15 @@ qx.Class.define("inspector.CookieApi",
       if (vDomain)
       {
         vCookie.push(";");
-        vCookie.push(qx.io.local.CookieApi.STR_DOMAIN);
+        vCookie.push(inspector.components.CookieApi.STR_DOMAIN);
         vCookie.push("=");
         vCookie.push(vDomain);
       }
 
       vCookie.push(";");
-      vCookie.push(qx.io.local.CookieApi.STR_EXPIRES);
+      vCookie.push(inspector.components.CookieApi.STR_EXPIRES);
       vCookie.push("=");
-      vCookie.push(qx.io.local.CookieApi.STR_DELDATA);
+      vCookie.push(inspector.components.CookieApi.STR_DELDATA);
 
       // Store cookie
       document.cookie = vCookie.join("");

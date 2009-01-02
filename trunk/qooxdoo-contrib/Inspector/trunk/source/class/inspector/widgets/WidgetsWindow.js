@@ -25,7 +25,7 @@
  */
 qx.Class.define("inspector.widgets.WidgetsWindow", {
   
-  extend : inspector.AbstractWindow,  
+  extend : inspector.components.AbstractWindow,  
   
 
   construct : function() {   
