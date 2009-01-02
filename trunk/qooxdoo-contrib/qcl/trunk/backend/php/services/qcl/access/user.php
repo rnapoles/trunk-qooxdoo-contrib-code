@@ -5,12 +5,6 @@
  */
 require_once "qcl/access/common.php";
 
-/*
- * Constants
- */
-define('QCL_ACTIVE_USER_ID_VAR', "qcl_access_user_activeUserId");
-define('QCL_ANONYMOUS_USER_PREFIX', "anonymous_");
-
 /**
  * class providing data on users
  * providing a backend to the qcl.auth client package
@@ -51,14 +45,6 @@ class qcl_access_user extends qcl_access_common
    * password of anonymous user
    */
   var $anonymous_password = "guest";  
-
-  /**
-   * The active user object
-   * Access with getActiveUser()/setActiveUser() only
-   * @access private
-   * @var qcl_access_user
-   */
-  var $_activeUser;
   
   /**
    * Returns singleton instance.
@@ -78,161 +64,7 @@ class qcl_access_user extends qcl_access_common
   function username()
   {
     return $this->getNamedId();   
-  }  
-  
-  /**
-   * Returns the active object saved in the session
-   * @return qcl_access_user
-   */
-  function &getActiveUser()
-  {
-
-    /*
-     * no active user
-     */
-    if ( ! $_SESSION[QCL_ACTIVE_USER_ID_VAR] )
-    {
-      return null;
-    }
-        
-    /*
-     * Create a user model instance
-     */
-    if ( ! $this->_activeUser )
-    {
-      $className  =  $this->className();
-      $controller =& $this->getController(); 
-      $this->_activeUser =& new $className(&$controller);
-      $this->_activeUser->load( $_SESSION[QCL_ACTIVE_USER_ID_VAR] );
-    }
-    
-    /*
-     * return the existing or created instance
-     */
-    return $this->_activeUser;
-  }
-   
-  /**
-   * Sets the active user. This will copy the user id into the 
-   * session variable, in case the client doesn't provide a session id.
-   * @param qcl_access_user $userObject A user object or null to logout.
-   */
-  function setActiveUser( $userObject )
-  {
-    
-    /*
-     * set new active user
-     */
-    if ( is_null( $userObject ) or is_a( $userObject, $this->className() ) )
-    {
-      if ( $userObject )
-      {
-        $_SESSION[QCL_ACTIVE_USER_ID_VAR] = $userObject->getId();
-        $this->_activeUser =& $userObject;
-      }
-      else
-      {
-        $_SESSION[QCL_ACTIVE_USER_ID_VAR] = null;
-        $this->_activeUser = null;
-      }
-    }
-    else
-    {
-      $this->raiseError("Active user object must be NULL or of class '". $this->className() . "', but is '" .
-       ( is_object($userObject) ? get_class($userObject) : gettype( $userObject) ) . "'.");
-    }
-  }
-
-
-  
-  /**
-   * Authenticate a user with a password.
-   * If no username is given, check if a user has already been logged in,
-   * so you can use this method in your service class without parameters
-   * to make sure a login has taken place.
-   * @param string $username or null
-   * @param string $password (MD5-encoded) password or null
-   * @return boolean success
-   */
-  function authenticate ( $username=null, $password=null )
-  {
-    if ( ! $username )
-    {
-      if ( $this->getActiveUser() )
-      {
-        /*
-         * user has already been authenticated
-         */
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-;
-    /*
-     * try to authenticate
-     */
-    $this->findByNamedId( $username );
-    if ( $this->foundNothing() )
-    {
-      $this->setError( $this->tr("Unknown user name.") );
-      return false;
-    }
-    	
-    /*
-     * compare provided password with stored password
-     */
-    $savedPw = $this->getPassword();
-    	
-    if ( ! $savedPw or
-    $password === $savedPw or
-    md5( $password ) === $savedPw or
-    $password === md5 ( $savedPw ) )
-    {
-      $activeUser = $this->cloneObject();
-      $activeUser->resetLastAction();
-      $this->setActiveUser( $activeUser );
-      return true;
-    }
-    else
-    {
-      $this->setError($this->tr( "Wrong Password" ) );
-      return false;
-    }
-  }
-  
-  /**
-   * Grant guest access
-   * @return void
-   */
-  function guestAccess()
-  {
-    /*
-     * purge all anonymous users that haven't been active for more than one hour
-     */    
-    $this->purgeAnonymous();
-    
-    /*
-     * role model
-     */
-    $controller =& $this->getController();
-    $roleModel  =& $controller->getRoleModel();
-    $roleModel->findByNamedId("qcl.roles.Guest");
-    if ( $roleModel->foundNothing() )
-    {
-      $this->raiseError("No guest role available.");
-    }
-    
-    /*
-     * create a new guest user and link it to the guest role
-     */
-    $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
-    $this->create($username);
-    $this->linkWith(&$roleModel);
-    $this->setActiveUser( &$this );
-  }
+  } 
   
   /**
    * Whether the given user name is the name of a guest (anonymous) user
@@ -245,10 +77,38 @@ class qcl_access_user extends qcl_access_common
   }  
   
   /**
+   * Creates a new anonymous guest user
+   * @return void
+   */
+  function createGuestUser()
+  {
+    /*
+     * purge inactive guests
+     */
+    $this->purgeInactiveGuestUsers();
+    
+    /*
+     * role model
+     */
+    $controller =& $this->getController();
+    $roleModel  =& $controller->getRoleModel();
+    $roleModel->findByNamedId("qcl.roles.Guest");
+    if ( $roleModel->foundNothing() )
+    {
+      $this->raiseError("No guest role available.");
+    }
+    
+    $username = QCL_ANONYMOUS_USER_PREFIX . microtime_float()*100;
+    $this->create($username);
+    $this->linkWith(&$roleModel);      
+  }
+  
+  /**
    * Purge all anonymous guests that are inactive for more than
    * one hour
+   * @todo unhardcode timeout
    */
-  function purgeAnonymous()
+  function purgeInactiveGuestUsers()
   {
     $u = QCL_ANONYMOUS_USER_PREFIX;
     $l = strlen($u);
@@ -263,53 +123,7 @@ class qcl_access_user extends qcl_access_common
     {
       $this->delete( $ids );  
     }
-    
-  }
-  
-  /**
-   * Logs out the the active user. If the user is anonymous, delete its record 
-   * in the user table.
-   * @return bool success
-   */
-  function logout()
-  {
-    /*
-     * check whether anyone is logged in
-     */
-    if ( ! $this->_activeUser )
-    {
-      $this->warn("Cannot log out, nobody is logged in");
-      return false;  
-    }
-    
-    /*
-     * controller
-     */
-    $controller =& $this->getController();
-    
-    /*
-     * remove all associated sessions
-     */
-    if ( method_exists( $controller, "getSessionModel" ) )
-    {
-      $sessionModel =& $controller->getSessionModel();
-      $sessionModel->unregisterAllSessions( $this->getId() );
-    }    
-    
-    /*
-     * delete user data if anonymous
-     */
-    if ( $this->_activeUser->isAnonymous() )
-    {
-      $this->_activeUser->delete();
-    }
-    
-    /*
-     * unset active user 
-     */
-    $this->_activeUser = null;
-    return true;
-  }
+  }   
   
   /**
    * Deletes the active user, also purging linked data

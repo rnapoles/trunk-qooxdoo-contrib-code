@@ -133,7 +133,7 @@ class qcl_session_controller extends qcl_access_controller
       }
       $userModel =& $this->getUserModel();
       $userModel->load($activeUserId);
-      $userModel->setActiveUser( $userModel->cloneObject() );
+      $this->setActiveUser( $userModel->cloneObject() );
     }
   }
   
@@ -172,7 +172,7 @@ class qcl_session_controller extends qcl_access_controller
      */
     $userModel    =& $this->getUserModel();
     $sessionModel =& $this->getSessionModel();
-    $activeUser   =& $userModel->getActiveUser();
+    $activeUser   =& $this->getActiveUser();
     
     if ( ! $activeUser ) 
     {
@@ -190,13 +190,13 @@ class qcl_session_controller extends qcl_access_controller
     if ( $sessionModel->isRegistered( $sessionId, $userId, $ip ) )
     {
       $sessionModel->unregisterSession( $sessionId, $userId );
-      $this->info ( "$username logs out." );
+      $this->info ( "'$username' logs out." );
     }
     else
     {
       $this->warn("User $userId is not registered for session $sessionId. Logging out.");
     }
-    $userModel->setActiveUser(null);      
+    $this->setActiveUser(null);      
            
     /*
      * message to indicate that server has logged out

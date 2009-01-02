@@ -111,7 +111,7 @@ class qcl_config_db extends qcl_db_model
 	{
 		$controller =& $this->getController();
     $userModel  =& $controller->getUserModel();
-    $activeUser =& $userModel->getActiveUser();
+    $activeUser =& $controller->getActiveUser();
 
     /*
      * get key name
