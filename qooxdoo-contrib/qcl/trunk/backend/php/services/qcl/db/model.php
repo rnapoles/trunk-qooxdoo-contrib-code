@@ -240,7 +240,8 @@ class qcl_db_model extends qcl_core_PropertyModel
   /**
    * Returns a records by property value
    * @param string $propName Name of property
-   * @param string $value Value to find
+   * @param string|array $value Value or array of values to find. If an array, retrieve all records
+   * that match any of the values.
    * @param string|null[optional] $orderBy  Field to order by
    * @param array|null[optional]  $properties  Array of properties to retrieve or null (default) if all
    * properties are to be retrieved
@@ -251,8 +252,14 @@ class qcl_db_model extends qcl_core_PropertyModel
   function findBy( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {
     $colName = $this->getColumnName( $propName );
-    $value   = $this->db->escape($value);
-    return $this->findWhere( "`$colName`='$value'", $orderBy, $properties, $link );
+    $values = (array) $value;
+    $where = array();
+    foreach ( $values as $value )
+    {
+      $where[]  = "`$colName` = '$value'";
+    } 
+    $where = implode (" OR ", $where );
+    return $this->findWhere( $where, $orderBy, $properties, $link );
   }
 
   /**
