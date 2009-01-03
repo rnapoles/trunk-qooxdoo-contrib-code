@@ -54,16 +54,6 @@ qx.Mixin.define("qcl.application.MApplication",
     {
       check : "Array",
       init : []
-    },
-    
-    /**
-     * The session id connecting this particular browser instance
-     * with the server
-     */
-    sessionId :
-    {
-      check : "String",
-      nullable : true
     }
 
   },
@@ -296,6 +286,7 @@ qx.Mixin.define("qcl.application.MApplication",
      * @param {String} name
      * @param {String} value
      * @param {String} optional description of the state that will appear in the title bar and the browser history
+     * @todo tie to property of application 
      */
     setState : function( name, value, description )
     {
@@ -407,6 +398,7 @@ qx.Mixin.define("qcl.application.MApplication",
      * @param {String} name
      * @param {String} data
      * @return void
+     * @todo: either change event name or tie state to property
      */
     _fireStateEvent : function ( name, data )
     {
@@ -539,6 +531,45 @@ qx.Mixin.define("qcl.application.MApplication",
     },
     
     /**
+     * Returns the session id, which is either an application state in the
+     * browser url or cached as a property.
+     * @return {String|null}
+     */
+    getSessionId : function()
+    {
+      var sid =  this.getState("sessionId");
+      
+      if ( sid )
+      {
+        this.__sessionId = sid;  
+      }
+      
+      if ( this.__sessionId )
+      {
+        return this.__sessionId;
+      }
+      
+      return null;
+            
+    },
+    
+    /**
+     * Sets the session id and copies it to the application state
+     * @param sessionId {String}
+     * @return void
+     */
+    setSessionId : function( sessionId )
+    {
+      if ( ! sessionId )
+      {
+        this.error("Invalid session id.");
+      }
+      
+      this.setState("sessionId", sessionId );
+      this.__sessionId = sessionId;            
+    },    
+    
+    /**
      * sets up the default context menu behaviour: traverse the widget tree upwards until
      * a context menu ist found, which is then displayed
      */
@@ -568,6 +599,26 @@ qx.Mixin.define("qcl.application.MApplication",
           }
         } 
       },this);      
+    },
+    
+    getPermission : function( name )
+    {
+      return qcl.auth.permission.Manager.getInstance().getObject( name );   
+    },
+    
+    updatePermission : function( name )
+    {
+      this.getPermission( name ).update();
+    },
+    
+    getConfigKey : function( key )
+    {
+      return qcl.config.Manager.getInstance().getKey( key );
+    },
+    
+    setConfigKey : function( key, value )
+    {
+      return qcl.config.Manager.getInstance().setKey( key, value );
     }
   }
 });
