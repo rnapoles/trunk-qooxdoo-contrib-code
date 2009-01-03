@@ -1104,6 +1104,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       case "bool": 
         return (bool) $value;
       case "string":
+        return (string) $value; 
       default:
         return $value;
     }

@@ -37,6 +37,7 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
   /**
    * Deletes the file/folder 
    * @return booelean Result 
+   * @todo implement seperately for folder
    */
   function delete() 
   {

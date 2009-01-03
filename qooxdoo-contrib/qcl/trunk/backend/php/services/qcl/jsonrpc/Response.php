@@ -33,21 +33,22 @@ class qcl_jsonrpc_Response
    * @param string[optional] $second
    * @param mixed $value
    */
-  function set( $first, $second=null )
+  function set( $first, $second=QCL_ARGUMENT_NOT_SET )
   {
-    if ( is_array( $first ) and is_null( $second ) )
+    
+    if ( is_array( $first ) and $second === QCL_ARGUMENT_NOT_SET )
     {
       foreach( $first as $key => $value )
       {
         $this->set ( $key, $value );
       }
     }
-    elseif ( is_string($first) and ! is_null( $second ) )
+    elseif ( is_string($first) and $second !== QCL_ARGUMENT_NOT_SET )
     {
       $this->result[$first] = $second;
     }
-    elseif ( is_null ($second) )
-    {    
+    elseif ( is_string($first) and $second === QCL_ARGUMENT_NOT_SET )
+    { 
       $this->result = $first;
     }
     else

@@ -26,6 +26,15 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
   var $schemaName = "remoteFiles";
   
   /**
+   * If the datasource is a file storage. True for this datasource
+   * @return bool
+   */
+  function isFileStorage()
+  {
+    return true; 
+  }  
+    
+  /**
    * initializes all models that belong to this datasource
    * @abstract
    * @param string $datasource Name of the datasource

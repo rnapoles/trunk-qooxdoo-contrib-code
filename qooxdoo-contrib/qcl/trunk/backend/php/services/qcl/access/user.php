@@ -76,6 +76,11 @@ class qcl_access_user extends qcl_access_common
     return ( substr( $this->getNamedId(), 0, strlen(QCL_ANONYMOUS_USER_PREFIX) ) == QCL_ANONYMOUS_USER_PREFIX );
   }  
   
+  function isAdmin()
+  {
+    return ( $this->hasRole("qcl.roles.Administrator") );
+  }
+  
   /**
    * Creates a new anonymous guest user
    * @return void
@@ -222,6 +227,24 @@ class qcl_access_user extends qcl_access_common
 		}
 		return false;
   }
+  
+  /**
+   * Whether the user has the given role
+   * @param string $role
+   * @return bool
+   * @todo this can be optimized
+   */
+   function hasRole($role)
+   {
+     $roleModel =& $this->linkedRoleModel();
+     do
+     {
+       if ( $roleModel->getNamedId() == $role ) return true;
+     }
+     while( $roleModel->nextRecord() );
+     return false;
+   }
+   
    
   /**
    * Requires a specific permission. If current user does not have the permission,

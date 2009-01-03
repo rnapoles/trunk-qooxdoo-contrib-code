@@ -281,6 +281,16 @@ class qcl_datasource_type_db_Model extends qcl_db_model
    return true;
   }
   
+  /**
+   * If the datasource is a file storage. Defaults to false in normal 
+   * datasources
+   * @return bool
+   */
+  function isFileStorage()
+  {
+    return false; 
+  }  
+  
 
 }
 
