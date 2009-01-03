@@ -225,12 +225,6 @@ class qcl_access_controller extends qcl_db_controller
        */
       $this->setActiveUser(null);
     }
-    
-    /*
-     * message to indicate that server has logged out
-     */
-    $this->dispatchMessage( "qcl.commands.logout", $username );
-    return $this->response();
   }
 
   /**
@@ -351,10 +345,6 @@ class qcl_access_controller extends qcl_db_controller
         $this->grantGuestAccess();
         $activeUser =& $this->getActiveUser();         
       }
-      else
-      {
-        $this->info ("Continuing user session.");  
-      }
       
       /*
        * get username and security data from active user
@@ -366,6 +356,8 @@ class qcl_access_controller extends qcl_db_controller
        * message that login was successful
        */
       $this->dispatchMessage( "qcl.messages.login.success" );
+      
+      $this->info ("Continuing session for user '$username'.");  
       
     }
       
@@ -393,25 +385,31 @@ class qcl_access_controller extends qcl_db_controller
     $this->set("security", $securityData ); 
     return $this->response();
   }   
-   
-  
 
   
   /**
-   * Passively checks if the requesting client is an authenticated user.
+   * (Passively) checks if the requesting client is an authenticated user.
    * For the actual active authentication, use qcl_access_controller::method_authenticate()
    * @see qcl_access_controller::method_authenticate()
    * @return bool True if request can continue, false if it should be aborted with 
-   * a "access denied" exception
+   * a "access denied" exception.
+   * @param string $username If provided, try to authenticate user
+   * @param string $password If provided, try to authenticate user
+   *
    */
-  function authenticate()
+  function authenticate( $username = null, $password = null)
   {
+    if ( $username )
+    {
+      $this->loginAttempt( $username, $password );
+    }
+    
     /*
      * models
      */
     $configModel =& $this->getConfigModel();
     $activeUser  =& $this->getActiveUser();    
-    
+        
     /*
      * if we don't have an active user yet, grant guest access
      */
@@ -437,6 +435,8 @@ class qcl_access_controller extends qcl_db_controller
       $this->logout();
       return false;
     }
+    
+    return true;
   }
   
   /**
@@ -468,6 +468,12 @@ class qcl_access_controller extends qcl_db_controller
     {
       $userName = $activeUser->username();
       $this->info( "$userName : $seconds seconds after last activity (Timeout $timeout seconds)." );
+      
+      /*
+       * force logout on client
+       */
+      $this->dispatchMessage( "qcl.commands.logout" );      
+      
       return false;
     }     
     

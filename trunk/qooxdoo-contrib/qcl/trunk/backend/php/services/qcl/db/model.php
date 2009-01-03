@@ -273,6 +273,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * @param string[optional] $link Name of the link in the schema xml. If provided, this will  
    * automatically generate the necessary join query. 
    * @return array recordset
+   * @todo this should be automatic by resolving the type from the schema xml
    */
   function findLike( $propName, $value, $orderBy=null, $properties=null, $link=null  )
   {

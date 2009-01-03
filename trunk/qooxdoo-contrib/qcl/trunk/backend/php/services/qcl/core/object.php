@@ -18,12 +18,17 @@ if ( ! defined( "QCL_LOG_FILE") )
 
 /**
  * JsonRpcClassPrefix from dispatcher script
+ * @todo move elsewhere
  */
 if ( ! defined( "JsonRpcClassPrefix" ) )
 {
   define( "JsonRpcClassPrefix" , "class_");
 }
 
+/**
+ * Use as a a default argument to indicate that argument hasn't been supplied 
+ */
+define("QCL_ARGUMENT_NOT_SET", "QCL_ARGUMENT_NOT_SET");
 
 /**
  * global reqistry that is maintained during one request. For persistent storage, use

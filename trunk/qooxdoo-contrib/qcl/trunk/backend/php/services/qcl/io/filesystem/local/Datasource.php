@@ -33,7 +33,6 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
   function initializeModels( $datasource )
   {
     $resourcePath = $this->getType() . "://" . $this->getResourcePath();
-    $this->info($resourcePath);
     $this->folderObj =& new qcl_io_filesystem_local_Folder( &$this, $resourcePath );
   }
  
@@ -46,6 +45,15 @@ class qcl_io_filesystem_local_Datasource extends qcl_datasource_type_db_Model
   {
     return $this->folderObj->get($filename);
   }
+  
+  /**
+   * Returns the folder object 
+   * @var qcl_io_filesystem_local_Folder
+   */
+  function &getFolderObject()
+  {
+    return $this->folderObj;
+  }  
   
   /**
    * Returns a list of fields that should be disabled in a form

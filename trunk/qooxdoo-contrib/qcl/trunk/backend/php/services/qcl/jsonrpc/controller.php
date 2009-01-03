@@ -9,8 +9,21 @@ require_once "qcl/jsonrpc/Response.php";
 /*
  * constants
  */
+
+/**
+ * name for file that contains configuration data
+ */
 define("QCL_SERVICE_CONFIG_FILE", "service.ini.php");
+
+/*
+ * log filter name for request-related messages
+ */
 define("QCL_LOG_REQUEST", "request");
+
+/**
+ * global var for session ids independent of the PHP session
+ */
+define("QCL_SESSION_ID_VAR", "QCL_SESSION_ID");
 
 /**
  * Simple controller-model architecture for jsonrpc
@@ -172,6 +185,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   function setSessionId( $sessionId )
   {
     $this->_sessionId = $sessionId;
+    $GLOBALS[QCL_SESSION_ID_VAR] = $sessionId;
   }
   
     
@@ -443,10 +457,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * Set a part or the full response
 	 * @see qcl_jsonrpc_response::set()
 	 * @todo rename to setResponseData()
+	 * 
 	 */
-	function set ( $first, $second=null )
+	function set ( $first, $second=QCL_ARGUMENT_NOT_SET )
 	{
-		$this->response->set($first, $second);
+		$this->response->set( $first, $second );
 	}
 	
 	/**
@@ -454,7 +469,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 	 * @param string $key
 	 * @todo rename to getResponseData
 	 */
-	function &get ( $keyl )
+	function &get ( $key )
 	{
 		$response =& $this->getResponseObj();
 	  return $this->response->get($key);
