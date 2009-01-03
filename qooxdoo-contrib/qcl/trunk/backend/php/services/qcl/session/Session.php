@@ -3,14 +3,13 @@
  * dependencies
  */
 require_once "qcl/db/model.php";
-require_once "qcl/message/db.model.php";
 
 /**
  * Model for session data bases on a mysql database model.
  * 'Session' here means the connection established by a particular
  * browser instance. 
  */
-class qcl_session_db_model extends qcl_db_model 
+class qcl_session_Session extends qcl_db_model 
 {
 
   /**
@@ -18,7 +17,7 @@ class qcl_session_db_model extends qcl_db_model
    * @see qcl_db_model::getSchmemaXmlPath()
    * @var string
    */
-  var $schemaXmlPath = "qcl/session/db.model.xml";  
+  var $schemaXmlPath = "qcl/session/Session.model.xml";  
    
 	//-------------------------------------------------------------
   // public methods
@@ -59,22 +58,12 @@ class qcl_session_db_model extends qcl_db_model
       `userId`    != '$userId' AND user != 0
     ");
 
-    /*
-     * Cleanup: Delete sessions that have been deleted, refer to non-existing users, or
-     * to the same user with a different session id
-     */
-    $userModel =& $controller->getUserModel();
-    $userTable =  $userModel->getTableName();    
-    $this->deleteWhere("
-      markedDeleted = 1 OR
-      userId NOT IN ( SELECT id FROM users ) OR
-      ( userId = $userId AND sessionId != '$sessionId' )
-    ");    
+    $this->cleanUp();
     
     /*
      * insert new session data
      */
-    $this->insert( array (
+    $this->insertOrUpdate( array (
       'sessionId'  => $sessionId,
       'userId'     => $userId,
       'ip'         => $ip
@@ -82,6 +71,36 @@ class qcl_session_db_model extends qcl_db_model
     
     return true;
     
+  }
+  
+  /**
+   * Cleanup sessions and messages,
+   * @todo rewrite without raw sql
+   */  
+  function cleanUp()
+  {
+    /*
+     * Delete sessions that have been deleted, refer to non-existing users, or
+     * to the same user with a different session id.
+     * @todo unhardcode timeout
+     */
+    $controller =& $this->getController();
+    $userModel =& $controller->getUserModel();
+    //$userTable =  $userModel->getTableName();    
+    $this->deleteWhere("
+      markedDeleted = 1 
+      OR userId NOT IN ( SELECT id FROM users )
+      OR TIME_TO_SEC( TIMEDIFF( NOW(), `modified` ) ) > 3600 
+    ");
+    
+    /*
+     * Delete messages that have been deleted, or refer to non-existing sessions
+     */     
+    $msgModel   =& $controller->getMessageModel();
+    $msgModel->deleteWhere("
+      markedDeleted = 1 OR
+      sessionId NOT IN ( SELECT sessionId FROM sessions ) 
+    ");        
   }
 
   /**
@@ -97,17 +116,33 @@ class qcl_session_db_model extends qcl_db_model
   }
   
 	/**
-	 * Unregisters a session
+	 * Unregisters a session. We cannot delete them right away since
+	 * the request has not completed yet, so we mark them to be deleted
+	 * when the next session is registered.
 	 * @return void
 	 * @param string $sessionId 
+	 * @todo rewrite without raw sql queries
 	 */
-  function unregisterSession( $sessionId, $userId )
+  function unregisterSession( $sessionId )
   {
-    $this->db->execute("
-      UPDATE {$this->table}
-      SET `markedDeleted` = 1
-      WHERE `sessionId` = '$sessionId'
-    ");
+    $this->debug($sessionId);
+    /*
+     * delete session
+     */
+    $this->updateWhere(
+      array('markedDeleted' => 1),
+      array('sessionId' => $sessionId)
+    );
+    
+    /*
+     * delete messages belonging to session
+     */
+    $controller =& $this->getController();
+    $msgModel   =& $controller->getMessageModel();
+    $msgModel->updateWhere(
+      array('markedDeleted' => 1),
+      array('sessionId' => $sessionId)
+    );
   }
 
  /**
@@ -139,7 +174,8 @@ class qcl_session_db_model extends qcl_db_model
      */  
     $sessionIds = $this->findValues("sessionId");
     
-    $msgModel =& new qcl_message_db_model( &$this );
+    $controller =& $this->getController();
+    $msgModel =& $controller->getMessageModel();
     
     foreach( $sessionIds as $sessionId )
     {
@@ -160,7 +196,7 @@ class qcl_session_db_model extends qcl_db_model
   function getBroadcastedMessages( $sessionId )
   {
     $controller =& $this->getController();
-    $msgModel   =& new qcl_message_db_model(&$controller);
+    $msgModel   =& $controller->getMessageModel();
     
     /*
      * get messages that have been stored for session id

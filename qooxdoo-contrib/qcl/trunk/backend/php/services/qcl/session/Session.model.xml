@@ -4,7 +4,7 @@
   
   <model 
     table="sessions"
-    name="qcl.session.db.Model"
+    name="qcl.session.Session"
     extends="qcl.db.Model">
     
     <definition>
@@ -35,14 +35,10 @@
         
       </properties>
       
-      <aliases>
-        <alias for="namedId">sessionId</alias>
-      </aliases>
-      
       <!-- indexes -->
       <indexes>
         <index type="unique">
-          <property name="namedId" />
+          <property name="sessionId" />
           <property name="userId"  />
           <property name="ip"  />
         </index>
@@ -50,7 +46,7 @@
         <!-- deprecated -->
         <index type="unique">
           <property name="user"  />
-          <property name="namedId" />
+          <property name="sessionId" />
         </index>
       </indexes>
             
