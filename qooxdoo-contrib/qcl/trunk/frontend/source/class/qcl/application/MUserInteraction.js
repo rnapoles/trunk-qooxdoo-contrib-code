@@ -599,66 +599,114 @@ qx.Mixin.define("qcl.application.MUserInteraction",
      * upload window. user can select a file on the local filesystem
      * @param {String} msg
      * @param {String|null} url or null if the file is not to be uploaded 
-     * @param {Function} callback, will be called with the path of the local file as argument
+     * @param {Function} callback, will be called with the path of the local file 
+     * and the response string as arguments
      * @param {Object} context
      */
-    upload : function (msg, url, callback, context)
+    upload : function (msg, url, callback, context, params )
     {
-      // check that we have the upload widget available
+      /*
+       * check that we have the upload widget available
+       */
       if (! window.uploadwidget )
       {
         return this.alert("Upload Widget is not available.");
       }
       
-      // make sure callback is a function
+      /*
+       * make sure callback is a function
+       */
       this._checkCallback(callback);
 
-      // cancel button
+      /*
+       * cancel button
+       */
       var c = new qx.ui.form.Button(this.tr("Cancel"), "icon/16/actions/dialog-cancel.png");
 
-      // "OK" button
+      /*
+       *  "OK" button
+       */
       var b = new qx.ui.form.Button(this.tr("OK"), "icon/16/actions/dialog-ok.png");
       
-      // form
+      /*
+       * form widget
+       */
       var cv = new qx.ui.layout.CanvasLayout;
       cv.addToDocument();
       cv.set({width:300,height:50});
       
-      var form = new uploadwidget.UploadForm('uploadFrm',url );
-      form.setParameter('rm','upload');
-      form.set({top:0,left:0,right:0,bottom:0,width:null});
+      /*
+       * upload widget
+       */
+      var form = new uploadwidget.UploadForm('uploadFrm', url );
+      form.set({
+        top    : 0,
+        left   : 0,
+        right  : 0,
+        bottom : 0,
+        width  : null
+      });
       
-      // file upload field
+      /*
+       * parameters
+       */
+      if ( typeof params != undefined )
+      {
+        for ( var k in params )
+        {
+          form.setParameter( k, params[k] );
+        }
+      }
+      
+      /*
+       * file upload field
+       */
       var file = new uploadwidget.UploadField('uploadfile',"Choose File",null);
-      file.set({top:0,left:0,right:0,bottom:0,width:null});
+      file.set({
+        top    : 0,
+        left   : 0,
+        right  : 0,
+        bottom : 0,
+        width  : null
+      });
       form.add(file);
       cv.add(form);
 
-      // event listeners
+      /*
+       * event listeners
+       */
       form.addEventListener('sending',function(e) {
         this.debug('sending');
       });
       
       form.addEventListener('completed',function(e) {
         var response = this.getIframeHtmlContent();
-        this.debug(response);
         var path = file.getValue();
-        w.close();
-        w.dispose();
-        callback.call(context, path );
+        callback.call( context, path, response );
+        window.setTimeout(function(){
+          w.close();
+          w.dispose();
+          w.destroy();
+        },100);
       });
 
-      // button panel
+      /*
+       * button panel
+       */
       var p = new qx.ui.layout.HorizontalBoxLayout;
       p.setSpacing(10);
       p.setHorizontalChildrenAlign("center");
       p.add(c, b);
       controls = [cv,p];
 
-      // window
+      /*
+       * window
+       */
       var w = this._createWindow(this.tr("Select a file"), msg, 'icon/16/actions/document-save.png', 'icon/32/actions/document-save.png', controls);
 
-      // add event listener for OK Button
+      /*
+       * add event listener for OK Button
+       */
       b.addEventListener("execute", function()
       {
         // send form if an url has been passed        
@@ -677,7 +725,9 @@ qx.Mixin.define("qcl.application.MUserInteraction",
         }
       });
 
-      // add event listener for cancel Button
+      /*
+       * add event listener for cancel Button
+       */
       c.addEventListener("execute", function()
       {
         w.close();
