@@ -4,7 +4,8 @@
  * dependencies
  */
 require_once "qcl/access/controller.php";
-require_once "qcl/session/db.model.php";
+require_once "qcl/session/Session.php";
+require_once "qcl/session/Message.php";
 
 /**
  * Base class that keeps track of connected clients 
@@ -17,10 +18,18 @@ class qcl_session_controller extends qcl_access_controller
   /**
    * session model. Access with getSessionModel()
    * @access private
-   * @var qcl_session_db_model
+   * @var qcl_session_Session
    */
-  var $sessionModel;
+  var $_sessionModel;
     
+  
+  /**
+   * session model. Access with getMessageModel()
+   * @access private
+   * @var qcl_session_Message
+   */
+  var $_messageModel;  
+  
   /**
    * constructor 
    * registers session with a database-table-based session and user model. 
@@ -35,11 +44,17 @@ class qcl_session_controller extends qcl_access_controller
      * connection and access/config models
      */
     parent::__construct();
-            
+
     /*
-     * add session model
+     * session model
      */
-    $this->sessionModel =& new qcl_session_db_model(&$this);
+    $this->_messageModel =& new qcl_session_Message(&$this);
+        
+    /*
+     * session model
+     */
+    $this->_sessionModel =& new qcl_session_Session(&$this);
+   
     
     /*
      * Does the request contain a session id?
@@ -61,23 +76,47 @@ class qcl_session_controller extends qcl_access_controller
       $sessionId = $this->getSessionId();
       //$this->debug("New session id: $sessionId ");
     }
-        
-
   }     
+  
+  /**
+   * @override
+   * @see qcl_access_controller::logout()
+   */
+  function logout()
+  {
+    /*
+     * unregister the current session
+     */
+    $this->unregisterSession();
     
+    /*
+     * logout
+     */
+    return parent::logout();
+  }
+  
   //-------------------------------------------------------------
   // session management
   //-------------------------------------------------------------
 
   /**
-   * gets the session model
-   * @return qcl_session_db_model
+   * Returns the session model
+   * @return qcl_session_Session
    */
   function &getSessionModel()
   {
-    return $this->sessionModel;
+    return $this->_sessionModel;
   }
 
+  /**
+   * Returns the message model
+   * @return qcl_session_Message
+   */
+  function &getMessageModel()
+  {
+    return $this->_messageModel;
+  }  
+  
   /**
    * Registers session and user. call from extending controller's constructor 
    * requires a user and a session model
@@ -112,6 +151,15 @@ class qcl_session_controller extends qcl_access_controller
   }
   
   /**
+   * Unregisters the current session and deletes all messages
+   */
+  function unregisterSession()
+  {
+    $sessionModel =& $this->getSessionModel();
+    $sessionModel->unregisterSession( $this->getSessionId() );
+  }
+  
+  /**
    * Sets the session id and the active user, if any
    * @override
    */
@@ -123,7 +171,7 @@ class qcl_session_controller extends qcl_access_controller
      * if session already exists, get user id
      */
     $sessionModel =& $this->getSessionModel();
-    $sessionModel->findByNamedId( $sessionId );
+    $sessionModel->findBy( "sessionId", $sessionId );
     if ( $sessionModel->foundSomething() )
     {
       $activeUserId = $sessionModel->get("userId");
@@ -160,49 +208,6 @@ class qcl_session_controller extends qcl_access_controller
     return $this->_sessionId;
   }    
   
-  /**
-   * Logout current user
-   * @override
-   * @return void
-   */
-  function logout()
-  {
-    /*
-     *  models
-     */
-    $userModel    =& $this->getUserModel();
-    $sessionModel =& $this->getSessionModel();
-    $activeUser   =& $this->getActiveUser();
-    
-    if ( ! $activeUser ) 
-    {
-      $this->warn("Cannot log out, no user is logged in.");
-      return false;
-    }
-    
-    $sessionId = $this->getSessionId();
-    $userId    = $activeUser->getId();
-    $username  = $activeUser->username();
-    
-    $reqObj =& $this->requestObject();
-    $ip = $reqObj->getIp();
-    
-    if ( $sessionModel->isRegistered( $sessionId, $userId, $ip ) )
-    {
-      $sessionModel->unregisterSession( $sessionId, $userId );
-      $this->info ( "'$username' logs out." );
-    }
-    else
-    {
-      $this->warn("User $userId is not registered for session $sessionId. Logging out.");
-    }
-    $this->setActiveUser(null);      
-           
-    /*
-     * message to indicate that server has logged out
-     */
-    $this->dispatchMessage( "qcl.commands.logout", $username );
-  }     
   
   //-------------------------------------------------------------
   // messages and events
@@ -277,18 +282,6 @@ class qcl_session_controller extends qcl_access_controller
     }
   }  
   
-  /**
-   * gets the path to a file that has been uploaded with uploader.php
-   * @param string $file filename (must not have any path information)
-   * @return string fully qualified path to file
-   */
-  function getTmpUploadPath($file)
-  {
-    $prefix  = session_id();
-    $path = "../../var/upload/tmp/{$prefix}_{$file}";
-    return realpath($path);
-  }
-   
 } 
 
 ?>
