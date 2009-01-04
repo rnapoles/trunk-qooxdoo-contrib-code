@@ -374,6 +374,45 @@ class qcl_db_type_Mysql extends qcl_db_type_Abstract
 		return $this->query($sql);
 	}
 
+	
+  /**
+   * Updates records in a table identified by a where condition
+   * @param string $table table name
+   * @param array $data associative array with the column names as keys and the column data as values
+   * @param string $where Where condition
+   */
+  function updateWhere ( $table, $data, $where )
+  {
+    $pairs   = array();
+
+    foreach ( $data as $key => $value )
+    {
+      if ( is_null ( $value ) )
+      {
+        $pairs[] = "`$key` = NULL";
+      }
+      elseif ( is_numeric ( $value ) )
+      {
+        $pairs[] = "`$key` = $value";
+      }
+      else
+      {
+        $pairs[] = "`$key` = '" . $this->escape( $value ) . "'";
+      }
+    }
+    $pairs = implode ("," , $pairs );
+
+    $sql = ( "
+      UPDATE `$table`
+      SET $pairs
+      WHERE $where
+    ");
+    
+    //$this->Info($sql); 
+    
+    return $this->query($sql);
+  }
+  
 	/**
 	 * deletes a record in a table identified by id
 	 * @param string $table table name
