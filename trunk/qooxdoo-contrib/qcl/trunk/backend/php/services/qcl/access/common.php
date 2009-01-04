@@ -70,15 +70,8 @@ class qcl_access_common extends qcl_db_model
    	/*
    	 * insert new empty record
    	 */
-		$data = array();
-		$data[$this->col_namedId] = $namedId;
-		$itemId = $this->insert($data);
-	
-    /*
-     * load item data
-     */
-    $this->load($itemId);
-    
+	   $itemId = parent::create($namedId);
+   
     /*
      * return item id
      */

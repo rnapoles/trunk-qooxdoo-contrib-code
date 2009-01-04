@@ -887,7 +887,7 @@ class qcl_db_model extends qcl_core_PropertyModel
      */
     $id = $this->db->insert( $this->table, $data );
     
-    //$this->info("Created new record #$id in {$this->table} with data: " . var_dump($data,true) );
+    //$this->info("Created new record #$id in {$this->table} with data: " . print_r($data,true) );
      
     /*
      * retrive record data (which might contain additional values inserted by the database)
@@ -997,7 +997,8 @@ class qcl_db_model extends qcl_core_PropertyModel
   } 
   
   /**
-   * deletes one or more records in a table matching a where condition
+   * Deletes one or more records in a table matching a where condition.
+   * This does not delete dependencies!
    * @param string  $where where condition
    */
   function deleteWhere ( $where )

@@ -589,7 +589,7 @@ class qcl_access_controller extends qcl_db_controller
   function hasPermission ( $permission )
   {
     /*
-     * check if this permission has a local 
+     * check if this permission has a local alias
      */
     if ( $alias = $this->hasPermissionAlias($permission) )
     {

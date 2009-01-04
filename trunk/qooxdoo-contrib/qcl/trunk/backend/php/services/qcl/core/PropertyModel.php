@@ -1364,12 +1364,10 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * insert data
      */
     $id = $this->insert( $this->getRecord() );
-    
-    /*
-     * load record, which might now contain additional values
-     * set by the database
-     */
-    $this->findById($id);
+    if ( ! $id )
+    {
+      $this->warn( "Could not create '$namedId', probably already exists.");
+    }
     
     /*
      * return new id
