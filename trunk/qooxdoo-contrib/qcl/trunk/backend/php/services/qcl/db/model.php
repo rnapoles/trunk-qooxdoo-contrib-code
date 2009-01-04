@@ -287,7 +287,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * in the "where" expression the table name is available as the alias "t1", the joined tables as "t2".
    * 
    * @param string|array|null  $where 'Where' condition to match. If null, get all. if array, 
-   * match properties
+   * match all key -> value combinations
    * @param string|array|null[optional] $orderBy Order by property/properties. 
    * If an array is given, the last element of the array will be searched for "ASC" or "DESC" and 
    * used as sort direction.
@@ -728,14 +728,52 @@ class qcl_db_model extends qcl_core_PropertyModel
   /**
    * Converts array data to a 'where' compliant sql string
    * @param string|array $where
+   * @todo rename method name
    */
   function toSql( $where )
   {
     if ( is_array($where) )
     {
       $sql = "";
+      $i=0;
       foreach ( $where as $property => $expr )
       {
+        $i++;
+        
+        /*
+         * check if expression has an operator. if not,
+         * use "="
+         * FIXME this is a hack. rewrite this!!
+         */
+        if ( ! in_array( substr( trim($expr),0,1 ),
+                        array( "=","!" ) )
+             AND substr( trim($expr),0, 2 ) != "IN"
+             AND substr( trim($expr),0, 4 ) != "LIKE"                        
+        ) {
+          switch( $this->getPropertyType( $property ) )
+          {
+            case "int":
+              $expr = " = $expr";
+              break;
+
+            case "string":
+            default:
+              $expr = " = '" . addslashes($expr) . "'"; 
+              break;          
+          }
+          
+          /*
+           * add boolean operator
+           */
+          if ( $i < count($where) )
+          {
+            $expr .= " AND ";   
+          }
+        }
+                
+        /*
+         * add to sql
+         */
         $sql .= "`" . $this->getColumnName($property) . "` " . $expr. " ";  
       }
       return $sql; 
@@ -759,8 +797,62 @@ class qcl_db_model extends qcl_core_PropertyModel
  			return $this->getIdByNamedId( $namedId );
  		}	
 	  return $this->create( $namedId, $foreignId );
- 	}   
+ 	}
   
+ 	/**
+ 	 * Inserts data or updates a record according to the following rules: 
+ 	 * a) If id property is provided, look for the record with this primary key and 
+ 	 * update all the other values. If the record does not exist, throw an error.
+ 	 * b) If no id is provided, check if a record matching the
+ 	 * given key-value pairs exist. If yes, update its 'modified' property. If not,
+ 	 * insert the data.
+ 	 *
+ 	 * @param array $data
+ 	 * @return int The id of the existing or newly created record
+ 	 */
+ 	function insertOrUpdate( $data )
+ 	{
+ 	  /*
+ 	   * search for record based on id or row data
+ 	   */
+ 	  if ( $data['id'] )
+ 	  {
+ 	    $this->load( $data['id'] );
+ 	    if ( $this->foundNothing() )
+ 	    {
+ 	      $this->raiseError("Record #{$data['id']} does not exist");
+ 	    }
+ 	    else
+ 	    {
+ 	      $this->update($data);
+ 	    }
+ 	  }
+ 	  else
+ 	  {
+ 	    $this->findWhere( $data );
+ 	  
+   	  /*
+   	   * if nothing was found, insert data
+   	   */
+   	  if ( $this->foundNothing() )
+   	  {
+   	    $this->insert( $data );
+   	  }
+   	  /*
+   	   * else, update timestamp
+   	   */
+ 	    else
+ 	    {
+ 	      $this->updateTimestamp();
+ 	    }
+ 	  }
+ 	  
+ 	  /*
+ 	   * return record id
+ 	   */
+ 	  return $this->getId();
+ 	}
+ 	
   /**
    * Inserts a record into a table and returns last_insert_id()
    * @param array|stdClass $data associative array with the column names as keys and the column data as values
@@ -852,7 +944,18 @@ class qcl_db_model extends qcl_core_PropertyModel
     //$this->info($data);
     
     return $this->db->update( $this->table, $data, $this->col_id );
-  }     
+  }
+  
+  /**
+   * Update the records matching the where condition with the key-value pairs
+   * @param array $data
+   * @param string|array $where
+   * @return result
+   */
+  function updateWhere( $data, $where )
+  {
+    return $this->db->updateWhere( $this->table, $data, $this->toSql($where) );
+  }
   
   /**
    * Checks wheter a record exists that matches a query
@@ -1393,15 +1496,22 @@ class qcl_db_model extends qcl_core_PropertyModel
    * updates the modification date without changing the data
    * @param int|array $ids One or more record ids
    * @return void
+   * @todo rewrite
    */
-  function updateTimestamp( $ids )
+  function updateTimestamp( $ids=null )
   {
+    if ( is_null($ids) )
+    {
+      $ids = $this->getId();
+    }
+    
     if (! is_numeric($ids) and ! is_array($ids)  )
     {
-      $this->raiseError("qcl_db_model::updateTimestamp : invalid id '$ids'");
+      $this->raiseError("Invalid argument");
     }
     
     $ids = implode(",", (array) $ids);
+    
     $this->db->execute(" 
       UPDATE `{$this->table}` 
       SET `{$this->col_modified}` = NOW()
