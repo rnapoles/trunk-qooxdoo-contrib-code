@@ -253,7 +253,7 @@ function SendReply($reply, $scriptTransportId)
     {
         /* Otherwise, we need to add a call to a qooxdoo-specific function */
         $reply =
-            "qx.io.remote.ScriptTransport._requestFinished(" .
+            "qx.io.remote.transport.Script._requestFinished(" .
             $scriptTransportId . ", " . $reply .
             ");";
         print $reply;
