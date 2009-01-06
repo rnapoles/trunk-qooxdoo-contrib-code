@@ -84,9 +84,12 @@ qx.Class.define("inspector.widgets.WidgetsWindow", {
     
         
 
-    load: function() {
-      // get current iframe window
-      this._iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();
+    load: function(win) {
+      if (win == undefined) {
+        this._iFrameWindow = qx.core.Init.getApplication().getIframeWindowObject();        
+      } else {
+        this._iFrameWindow = win;        
+      }
       
       var remoteAppRoot = this._iFrameWindow.qx.core.Init.getApplication().getRoot();
       // create a new root folder
