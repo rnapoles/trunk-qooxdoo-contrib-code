@@ -49,13 +49,25 @@ qx.Class.define("inspector.bindings.BindingsWindow",
     this._model.setColumns(["Source-Object", "Source-Property", "Tagert-Obect", "Target-Property"]);     
     this._table = new qx.ui.table.Table(this._model);
     this._table.setColumnVisibilityButtonVisible(false); 
-    this._table.getSelectionModel().setSelectionMode(qx.ui.table.selection.Model.NO_SELECTION);
     this.add(this._table, {flex: 1});
     
     this._table.setColumnWidth(0, 100);
     this._table.setColumnWidth(1, 50);
     this._table.setColumnWidth(2, 100);
     this._table.setColumnWidth(3, 50);    
+         
+    // TODO focusChange instead of selection change
+    this._table.getSelectionModel().addListener("changeSelection", function(e) {
+      var row = this._table.getFocusedRow();
+      var column = this._table.getFocusedColumn();
+      var dataItem = this._table.getTableModel().getData()[row][column];
+      
+      // check if its an object
+      if (typeof dataItem == "string" && dataItem.charAt(dataItem.length - 1) == "]") {
+        var hash = dataItem.substring(dataItem.indexOf("[") + 1, dataItem.length - 1);
+        qx.core.Init.getApplication().setWidgetByHash(hash);
+      }
+    }, this);
          
     // TODO 
     // Selection support for the widgets (Visual line for the bindings)
@@ -88,8 +100,10 @@ qx.Class.define("inspector.bindings.BindingsWindow",
         this._toolbar.setEnabled(false);
         return;
       }
-      // if a data binding was found, enable the toolbar
+      // if a data binding was found, enable the toolbar 
+      // and reset the error message
       this._toolbar.setEnabled(true);
+      this._errorLabel.setContent("");
       
       // get all bindings
       var bindings = this._iFrameWindow.qx.data.SingleValueBinding.getAllBindings();

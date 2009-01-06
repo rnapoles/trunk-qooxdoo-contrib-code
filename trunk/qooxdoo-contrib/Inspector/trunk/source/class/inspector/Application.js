@@ -97,9 +97,11 @@ qx.Class.define("inspector.Application",
         
         // save the url in a cookie
         inspector.components.CookieApi.set("url", this._iFrame.getSource());
+
+        this.__checkForReload();
         
         // select the root of the new app
-        this._selector.setSelection(this._loadedWindow.qx.core.Init.getApplication().getRoot());
+        this.select(this._loadedWindow.qx.core.Init.getApplication().getRoot());
         
         // check for the cookies
         this.__checkCookies();        
@@ -115,6 +117,25 @@ qx.Class.define("inspector.Application",
       Initializ helper
     -------------------------------------------------------------------------
     */   
+    
+    __checkForReload: function() {
+      // check if the objects window is open
+      if (this._objectsWindow != null && this._objectsWindow.isVisible()) {
+        this._objectsWindow.load(this._loadedWindow);
+      }
+      
+      // check if the widgets window is open
+      if (this._widgetsWindow != null && this._widgetsWindow.isVisible()) {
+        this._widgetsWindow.load(this._loadedWindow);
+      }
+      
+      // check if the bindings window is open
+      if (this._bindingsWindow != null && this._bindingsWindow.isVisible()) {
+        this._bindingsWindow.load(this._loadedWindow);
+      }      
+    },
+    
+    
     __checkCookieFor: function(winRef, button, name) {
       // if the open cookie is set
       if (inspector.components.CookieApi.get(name + "Open") == "true") {
@@ -141,7 +162,7 @@ qx.Class.define("inspector.Application",
     
     __checkCookies: function() {
       // check the objects window
-      this.__checkCookieFor("_objectWindow", this._objectsButton, "objects");
+      this.__checkCookieFor("_objectsWindow", this._objectsButton, "objects");
       // check the widgets window
       this.__checkCookieFor("_widgetsWindow", this._widgetsButton, "widgets");
       // check the console window
@@ -218,11 +239,11 @@ qx.Class.define("inspector.Application",
   
       // Objects window
       this.__createWindow(
-        "_objectsButton", "Objects", "_objectWindow", 
+        "_objectsButton", "Objects", "_objectsWindow", 
         inspector.objects.ObjectsWindow, "objects", 
         function() {
           if (this._loadedWindow != null) {
-            this._objectWindow.load(this._loadedWindow);
+            this._objectsWindow.load(this._loadedWindow);
           }          
         }
       );
@@ -250,7 +271,7 @@ qx.Class.define("inspector.Application",
         function() {
           // TODO load the bindings
         }
-      );      
+      );
       
       // add the third separator
       this._toolbar.add(new qx.ui.toolbar.Separator());
@@ -361,7 +382,7 @@ qx.Class.define("inspector.Application",
         // tell the console to go to the default view
         this._consoleWindow.goToDefaultView();
       }
-      var object = qx.core.ObjectRegistry.fromHashCode(hash);
+      var object = this._loadedWindow.qx.core.ObjectRegistry.fromHashCode(hash);
       this.select(object, initiator);
     },
     
@@ -396,9 +417,9 @@ qx.Class.define("inspector.Application",
         }
       }
       
-      if (this._objectWindow != null && initiator != this._objectWindow) {
-        if (object != this._objectWindow.getSelection()) {
-          this._objectWindow.select(object, true);          
+      if (this._objectsWindow != null && initiator != this._objectsWindow) {
+        if (object != this._objectsWindow.getSelection()) {
+          this._objectsWindow.select(object, true);          
         }
       }
       

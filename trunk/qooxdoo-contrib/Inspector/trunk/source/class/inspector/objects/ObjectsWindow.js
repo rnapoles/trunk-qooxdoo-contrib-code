@@ -49,6 +49,9 @@ qx.Class.define("inspector.objects.ObjectsWindow",
     this.add(this._table, {flex: 1});
     this._table.getSelectionModel().addListener("changeSelection", this._onChangeSelection, this);
     
+    // remove the highlight bachground of the table
+    this._table.getDataRowRenderer().setHighlightFocusRow(false);
+    
     // add the models
     this._modelRadio = new qx.ui.form.RadioGroup();
     this._currentModel = null;
