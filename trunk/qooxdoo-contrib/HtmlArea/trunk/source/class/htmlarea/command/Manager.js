@@ -245,8 +245,8 @@ qx.Class.define("htmlarea.command.Manager",
       this.__commands = {
         bold                  : { useBuiltin : true, identifier : "Bold", method : null },
         italic                : { useBuiltin : true, identifier : "Italic", method : null },
-        underline             : { useBuiltin : false, identifier : "Underline", method : "__setUnderline" },
-        strikethrough         : { useBuiltin : false, identifier : "StrikeThrough", method : "__setStrikeThrough" },
+        underline             : { useBuiltin : true, identifier : "Underline", method : "__setUnderline" },
+        strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : "__setStrikeThrough" },
 
         fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : false, identifier : "FontSize", method : "__setFontSize" },
