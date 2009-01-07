@@ -940,19 +940,127 @@ qx.Class.define("htmlarea.command.Manager",
       * @param commandObject {Object} command object
       * @return {Boolean} Success of operation
       */
-     __setInOutdent : function(value, commandObject)
+     __setInOutdent : qx.core.Variant.select("qx.client",
      {
-       /* Get Range for IE, or document in other browsers */
-       var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.getCurrentRange() : this.__doc; 
+        "webkit" : function(value, commandObject)
+        {
+          /* Current selection */
+          var sel = this.__editorInstance.__getSelection();
+          var node = sel.focusNode.parentNode;
 
-       /* Execute command on it */
-       var returnValue = commandTarget.execCommand(commandObject.identifier, false, value);
+          var range = sel.getRangeAt(0);
+          var ancestor = range.commonAncestorContainer;
+          var children = ancestor.childNodes;
+          var marginLeft;
 
-       /* Focus the editor */
-       this.__focusAfterExecCommand();
+          /**
+           * Selection is collapsed, we just need to indent or outdent a single element.
+           */
+          if (sel.isCollapsed)
+          {
+            marginLeft = this.__calculateMargin(node, commandObject.identifier);
+            node.style.marginLeft = marginLeft;
+          }
+          else
+          {
+            /*
+             * We have a (possible) selection over more than one element.
+             * Loop over all children inside the selection ans set the margin.
+             */
+            for(var i=0, j=children.length; i<j; i++)
+            {
+              if(sel.containsNode(children[i]))
+              {
+                marginLeft = this.__calculateMargin(children[i], commandObject.identifier);
+                children[i].style.marginLeft = marginLeft;
+              }
+            }
 
-       return returnValue;
-     },
+            // The anchor node is a text node, so calculate and set the margin on its parent
+            if(sel.anchorNode.nodeType == 3)
+            {
+              marginLeft = this.__calculateMargin(sel.anchorNode.parentElement, commandObject.identifier);
+              sel.anchorNode.parentElement.style.marginLeft = marginLeft;
+            }
+            // The anchor node is a element node, so calculate and set the margin on itself
+            else if (sel.anchorNode.nodeType == 1)
+            {
+              marginLeft = this.__calculateMargin(sel.anchorNode, commandObject.identifier);
+              sel.anchorNode.style.marginLeft = marginLeft;
+            }
+
+            // The focus node is a text node, so calculate and set the margin on its parent
+            if(sel.focusNode.nodeType == 3)
+            {
+              marginLeft = this.__calculateMargin(sel.focusNode.parentElement, commandObject.identifier);
+              sel.focusNode.parentElement.style.marginLeft = marginLeft;
+            }
+            // The focus node is a element node, so calculate and set the margin on itself
+            else if (sel.focusNode.nodeType == 1)
+            {
+              marginLeft = this.__calculateMargin(sel.focusNode, commandObject.identifier);
+              sel.focusNode.style.marginLeft = marginLeft;
+            }
+          }
+
+
+          return true;
+        },
+
+        "default" : function(value, commandObject)
+        {
+          /* Get Range for IE, or document in other browsers */
+          var commandTarget = qx.core.Variant.isSet("qx.client", "mshtml") ? this.getCurrentRange() : this.__doc;
+
+          /* Execute command on it */
+          var returnValue = commandTarget.execCommand(commandObject.identifier, false, value);
+
+          /* Focus the editor */
+          this.__focusAfterExecCommand();
+
+          return returnValue;
+        }
+      }),
+
+      /**
+       * Calculates the new margin for the given element based on the command identifier.
+       *
+       * @param node {Object} DOM element from which the margin should be calculated
+       * @param identifier {Object} command object
+       * @return {String} Calculated margin in pixel and "px".
+       */
+      __calculateMargin : function(node, identifier)
+      {
+        var marginValue = node.style.marginLeft;
+        var pos = marginValue.indexOf("px");
+        var level, marginLeft;
+
+        // No margin set
+        if (pos == -1) {
+          level = 0;
+        }
+        else
+        {
+          // Remove "px" from integer value
+          var tmp = marginValue.split("px");
+          level = Math.abs(tmp[0]);
+        }
+
+        if (identifier == "Indent")
+        {
+          marginLeft = (level + 20) + "px";
+        }
+        else
+        {
+          if (level > 0) {
+            marginLeft = (level - 20) + "px";
+          } else {
+            marginLeft = "0px";
+          }
+        }
+
+        return marginLeft;
+      },
      
      
      /**
