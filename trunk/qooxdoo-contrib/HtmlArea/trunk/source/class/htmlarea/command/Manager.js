@@ -245,8 +245,8 @@ qx.Class.define("htmlarea.command.Manager",
       this.__commands = {
         bold                  : { useBuiltin : true, identifier : "Bold", method : null },
         italic                : { useBuiltin : true, identifier : "Italic", method : null },
-        underline             : { useBuiltin : true, identifier : "Underline", method : "__setUnderline" },
-        strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : "__setStrikeThrough" },
+        underline             : { useBuiltin : true, identifier : "Underline", method : null },
+        strikethrough         : { useBuiltin : true, identifier : "StrikeThrough", method : null },
 
         fontfamily            : { useBuiltin : true, identifier : "FontName", method : null },
         fontsize              : { useBuiltin : false, identifier : "FontSize", method : "__setFontSize" },
@@ -2477,97 +2477,8 @@ qx.Class.define("htmlarea.command.Manager",
            this.getContentWindow().focus();
          }, this.__editorInstance, 50);
        }
-    }),
-    
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param value {String} color info
-     * @param commandObject {Object} command infos
-     * @return {Boolean} Success of operation
-     */
-    __setUnderline  : qx.core.Variant.select("qx.client", {
-      "webkit" : function(value, commandObject)
-      {
-        var contextMap = this.__editorInstance.getContextInformation();
-        var focusNode = this.__editorInstance.getFocusNode();
-
-        if(contextMap.underline)
-        {
-          // underline is already set as text-decoration, so remove it
-          focusNode.style.textDecoration = "none";
-        }
-        else
-        {
-          /*
-           * Text decoration is set to strikethrough, so add a new element
-           * to apply both
-           */
-          if(contextMap.strikethrough)
-          {
-            // Create a new span tag, apply a style on it and append it
-            var helper = this.__doc.createElement("span");
-            qx.bom.element.Style.set(helper, "textDecoration", "underline");
-            focusNode.appendChild(helper);
-
-            // Set the cursor behind the created element
-            var sel = this.__editorInstance.__getSelection();
-            sel.extend(helper, 0);
-            if (!sel.isCollapsed) {
-              sel.collapseToEnd();
-            }
-
-            // Focus the HA again
-            this.__focusAfterExecCommand();
-          }
-          else
-          {
-            // Just add the value for text-decoration
-            focusNode.style.textDecoration = "underline";
-          }
-        }
-
-        return true;
-      },
-
-      "default" : function(value, commandObject)
-      {
-        return this.__executeCommand(commandObject.identifier, false, value);
-      }
-    }),
-
-    /**
-     * TODOC
-     *
-     * @type member
-     * @param value {String} color info
-     * @param commandObject {Object} command infos
-     * @return {Boolean} Success of operation
-     */
-    __setStrikeThrough  : qx.core.Variant.select("qx.client", {
-      "webkit" : function(value, commandObject)
-      {
-        var focusNode = this.__editorInstance.getFocusNode();
-        var helper = this.__doc.createElement("span");
-        qx.bom.element.Style.set(helper, "textDecoration", "line-through");
-        focusNode.appendChild(helper);
-        var sel = this.__editorInstance.__getSelection();
-        sel.extend(helper, 0);
-        if (!sel.isCollapsed) {
-          sel.collapseToEnd();
-        }
-
-        this.__focusAfterExecCommand();
-        return true;
-      },
-
-      "default" : function(value, commandObject)
-      {
-        return this.__executeCommand(commandObject.identifier, false, value);
-      }
     })
+
   },
 
 
