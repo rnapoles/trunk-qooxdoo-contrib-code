@@ -29,26 +29,20 @@ import org.qooxdoo.sushi.fs.filter.Filter;
 /** TODO adjust directory modes */
 public class Template {
     private final Node sourcedir;
-	private final String pathPrefix;
-	private final String pathSuffix;
-	private final String contentPrefix;
-	private final String contentSuffix;
-	private final char contentEscape;
+    private final Substitution path;
+    private final Substitution content;
 	private final Map<String, String> variables;
 	private final Filter filter;
 	
 	public Template(Node srcdir) {
-		this(srcdir, "__", "__", "${", "}", '\\', new HashMap<String, String>(), srcdir.getIO().filter().includeAll());
+		this(srcdir, new Substitution("__", "__", '\\'), new Substitution("${", "}", '\\'), 
+		        new HashMap<String, String>(), srcdir.getIO().filter().includeAll());
 	}
 	
-	public Template(Node srcdir, String pathPrefix, String pathSuffix, String contentPrefix, String contentSuffix, char contentEscape, 
-			Map<String, String> variables, Filter filter) {
+	public Template(Node srcdir, Substitution path, Substitution content, Map<String, String> variables, Filter filter) {
 	    this.sourcedir = srcdir;
-		this.pathPrefix = pathPrefix;
-		this.pathSuffix = pathSuffix;
-		this.contentPrefix = contentPrefix;
-		this.contentSuffix = contentSuffix;
-		this.contentEscape = contentEscape;
+		this.path = path;
+		this.content = content;
 		this.variables = variables;
 		this.filter = filter;
 	}
@@ -82,9 +76,7 @@ public class Template {
 	}
 	
 	public void apply(Node destdir, Action action) throws IOException, TemplateException {
-		String path;
 		Node dest;
-        String content;
         String replaced;
         String old;
         int mode;
@@ -92,8 +84,7 @@ public class Template {
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
 		for (Node src : sourcedir.find(filter)) {
-			path = src.getRelative(sourcedir);
-			dest = destdir.join(replace(pathPrefix, pathSuffix, path));
+			dest = destdir.join(path.apply(src.getRelative(sourcedir), variables));
 			if (src.isDirectory()) {
 		        if (dest.exists()) {
 		            // nothing to to
@@ -102,8 +93,7 @@ public class Template {
 		        }
 			} else {
 			    dest.getParent().mkdirsOpt();
-		        content = src.readString();
-		        replaced = replace(contentPrefix, contentSuffix, content);
+		        replaced = content.apply(src.readString(), variables);
 	            mode = src.getMode();
 		        if (dest.exists()) {
 		            old = dest.readString();
@@ -116,46 +106,6 @@ public class Template {
                     action.file(dest, null, replaced, mode);
 		        }
 			}
-		}
-	}
-	
-	public String replace(String prefix, String suffix, String content) throws TemplateException {
-		StringBuffer buffer;
-		int start;
-		int end;
-		int last;
-		String var;
-		String replaced;
-		
-		buffer = new StringBuffer();
-		last = 0;
-		while (true) {
-			start = content.indexOf(prefix, last);
-			if (start == -1) {
-				if (last == 0) {
-					return content;
-				} else {
-					buffer.append(content.substring(last));
-					return buffer.toString();
-				}
-			}
-			end = content.indexOf(suffix, start + prefix.length());
-			if (end == -1) {
-				throw new TemplateException("missing end marker");
-			}
-			if (start > 0 && content.charAt(start - 1) == contentEscape) {
-			    buffer.append(content.substring(last, start - 1));
-			    buffer.append(content.substring(start, end + suffix.length()));
-			} else {
-			    var = content.substring(start + prefix.length(), end);
-			    replaced = variables.get(var);
-			    if (replaced == null) {
-			        throw new TemplateException("undefined variable: " + var);
-			    }
-			    buffer.append(content.substring(last, start));
-			    buffer.append(replaced);
-			}
-			last = end + suffix.length();
 		}
 	}
 }
