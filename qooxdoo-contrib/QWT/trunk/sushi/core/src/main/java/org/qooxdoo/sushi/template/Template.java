@@ -32,6 +32,8 @@ public class Template {
     private final Substitution path;
     private final Substitution content;
 	private final Map<String, String> variables;
+
+	/** relavant files in source dir */
 	private final Filter filter;
 	
 	public Template(Node srcdir) {
@@ -87,7 +89,7 @@ public class Template {
 			dest = destdir.join(path.apply(src.getRelative(sourcedir), variables));
 			if (src.isDirectory()) {
 		        if (dest.exists()) {
-		            // nothing to to
+		            // nothing to do
 		        } else {
                     action.directory(dest);
 		        }
