@@ -20,7 +20,9 @@
 package org.qooxdoo.sushi.fs.copy;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.qooxdoo.sushi.fs.Node;
@@ -60,11 +62,14 @@ public class Copy {
 		return variables;
 	}
 	
-	public void copy(Node destdir) throws IOException, CopyException {
+	/** @return Source files copied */
+	public List<Node> copy(Node destdir) throws IOException, CopyException {
 		Node dest;
 		String relative;
         String replaced;
+        List<Node> result;
         
+        result = new ArrayList<Node>();
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
 		for (Node src : sourcedir.find(filter)) {
@@ -72,7 +77,7 @@ public class Copy {
 			if (path != null) {
 				relative = path.apply(relative, variables);
 			}
-			dest = destdir.join(path.apply(relative, variables));
+			dest = destdir.join(relative);
 			if (src.isDirectory()) {
 		        dest.mkdirsOpt();
 			} else {
@@ -83,10 +88,12 @@ public class Copy {
 			    } else {
 			    	src.copyFile(dest);
 			    }
+			    result.add(src);
 			}
 			if (modes) {
 				dest.setMode(src.getMode());
 			}
 		}
+		return result;
 	}
 }
