@@ -27,7 +27,7 @@ import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
 
 /** TODO adjust directory modes */
-public class Template {
+public class Copy {
     private final Node sourcedir;
     private final Substitution path;
     private final Substitution content;
@@ -38,12 +38,12 @@ public class Template {
 
 	private final boolean modes;
 	
-	public Template(Node srcdir) {
+	public Copy(Node srcdir) {
 		this(srcdir, new Substitution("__", "__", '\\'), new Substitution("${", "}", '\\'), 
 		        new HashMap<String, String>(), srcdir.getIO().filter().includeAll(), false);
 	}
 	
-	public Template(Node srcdir, Substitution path, Substitution content, Map<String, String> variables, Filter filter, boolean modes) {
+	public Copy(Node srcdir, Substitution path, Substitution content, Map<String, String> variables, Filter filter, boolean modes) {
 	    this.sourcedir = srcdir;
 		this.path = path;
 		this.content = content;
@@ -60,7 +60,7 @@ public class Template {
 		return variables;
 	}
 	
-	public void copy(Node destdir) throws IOException, TemplateException {
+	public void copy(Node destdir) throws IOException, CopyException {
 		Node dest;
 		String relative;
         String replaced;
