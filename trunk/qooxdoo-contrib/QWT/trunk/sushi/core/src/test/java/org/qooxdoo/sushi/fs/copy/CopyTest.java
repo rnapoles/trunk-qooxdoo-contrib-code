@@ -8,11 +8,11 @@ import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
-public class TemplateTest {
+public class CopyTest {
 	private IO io;
 	private Copy copy;
 	
-	public TemplateTest() throws IOException {
+	public CopyTest() throws IOException {
 		io = new IO();
         copy = new Copy(io.getTemp().createTempDirectory());
 	}
