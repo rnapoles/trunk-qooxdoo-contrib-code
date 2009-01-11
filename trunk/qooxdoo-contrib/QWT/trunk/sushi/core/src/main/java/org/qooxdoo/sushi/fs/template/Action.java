@@ -1,4 +1,4 @@
-package org.qooxdoo.sushi.template;
+package org.qooxdoo.sushi.fs.template;
 
 import java.io.IOException;
 

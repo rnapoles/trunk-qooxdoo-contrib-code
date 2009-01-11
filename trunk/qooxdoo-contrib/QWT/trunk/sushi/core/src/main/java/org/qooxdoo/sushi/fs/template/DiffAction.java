@@ -1,36 +1,34 @@
-package org.qooxdoo.sushi.template;
+package org.qooxdoo.sushi.fs.template;
 
 import java.io.IOException;
 
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.util.Diff;
+import org.qooxdoo.sushi.util.Strings;
 
-public class StatusAction extends Action {
+public class DiffAction extends Action {
     private final Node base;
     private final StringBuilder status;
     
-    public StatusAction(Node base) {
+    public DiffAction(Node base) {
         this.base = base;
         this.status = new StringBuilder();
     }
     
     @Override
     public void directory(Node dest) throws IOException {
-    	add('A', dest);
     }
 
     @Override
     public void file(Node dest, String prev, String next, int mode) throws IOException {
+        status.append("### ").append(dest.getRelative(base)).append('\n');
         if (prev == null) {
-        	add('A', dest);
+        	status.append(Strings.indent(next, "+ "));
         } else if (next != null) {
-        	add('M', dest);
+        	status.append(Diff.diff(prev, next));
         } else {
-        	add('m', dest);
+            status.append("[chmod " + Integer.toOctalString(mode) + "]\n");
         }
-    }
-
-    private void add(char flag, Node dest) throws IOException {
-        status.append(flag).append(' ').append(dest.getRelative(base)).append('\n');
     }
 
     public String get() {

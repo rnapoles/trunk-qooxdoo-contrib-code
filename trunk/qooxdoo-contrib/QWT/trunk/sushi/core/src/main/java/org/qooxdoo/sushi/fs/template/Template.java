@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.template;
+package org.qooxdoo.sushi.fs.template;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class Template {
     private final Substitution content;
 	private final Map<String, String> variables;
 
-	/** relavant files in source dir */
+	/** relevant files in source dir */
 	private final Filter filter;
 	
 	public Template(Node srcdir) {
