@@ -35,18 +35,21 @@ public class Template {
 
 	/** relevant files in source dir */
 	private final Filter filter;
+
+	private final boolean modes;
 	
 	public Template(Node srcdir) {
 		this(srcdir, new Substitution("__", "__", '\\'), new Substitution("${", "}", '\\'), 
-		        new HashMap<String, String>(), srcdir.getIO().filter().includeAll());
+		        new HashMap<String, String>(), srcdir.getIO().filter().includeAll(), false);
 	}
 	
-	public Template(Node srcdir, Substitution path, Substitution content, Map<String, String> variables, Filter filter) {
+	public Template(Node srcdir, Substitution path, Substitution content, Map<String, String> variables, Filter filter, boolean modes) {
 	    this.sourcedir = srcdir;
 		this.path = path;
 		this.content = content;
 		this.variables = variables;
 		this.filter = filter;
+		this.modes = modes;
 	}
 
     public Node getSourceDir() {
@@ -59,19 +62,30 @@ public class Template {
 	
 	public void copy(Node destdir) throws IOException, TemplateException {
 		Node dest;
+		String relative;
         String replaced;
         
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
 		for (Node src : sourcedir.find(filter)) {
-			dest = destdir.join(path.apply(src.getRelative(sourcedir), variables));
+			relative = src.getRelative(sourcedir);
+			if (path != null) {
+				relative = path.apply(relative, variables);
+			}
+			dest = destdir.join(path.apply(relative, variables));
 			if (src.isDirectory()) {
 		        dest.mkdirsOpt();
 			} else {
 			    dest.getParent().mkdirsOpt();
-		        replaced = content.apply(src.readString(), variables);
-	        	dest.writeString(replaced);
-	        	dest.setMode(src.getMode());
+			    if (content != null) {
+			    	replaced = content.apply(src.readString(), variables);
+			    	dest.writeString(replaced);
+			    } else {
+			    	src.copyFile(dest);
+			    }
+			}
+			if (modes) {
+				dest.setMode(src.getMode());
 			}
 		}
 	}
