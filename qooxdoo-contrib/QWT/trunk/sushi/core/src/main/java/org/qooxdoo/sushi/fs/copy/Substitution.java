@@ -33,7 +33,7 @@ public class Substitution {
 		this.escape = escape;
 	}
 	
-	public String apply(String content, Map<String, String> variables) throws TemplateException {
+	public String apply(String content, Map<String, String> variables) throws CopyException {
 		StringBuilder builder;
 		int start;
 		int end;
@@ -60,12 +60,12 @@ public class Substitution {
 			    last = start + prefix.length();
 			} else {
 			    if (end == -1) {
-			        throw new TemplateException("missing end marker");
+			        throw new CopyException("missing end marker");
 			    } 
 			    var = content.substring(start + prefix.length(), end);
 			    replaced = variables.get(var);
 			    if (replaced == null) {
-			        throw new TemplateException("undefined variable: " + var);
+			        throw new CopyException("undefined variable: " + var);
 			    }
 			    builder.append(content.substring(last, start));
 			    builder.append(replaced);
