@@ -57,56 +57,21 @@ public class Template {
 		return variables;
 	}
 	
-    public String status(Node destdir) throws IOException {
-        StatusAction action;
-        
-        action = new StatusAction(destdir);
-        apply(destdir, action);
-        return action.get();
-    }
-    
-    public String diff(Node destdir) throws IOException {
-        DiffAction action;
-        
-        action = new DiffAction(destdir);
-        apply(destdir, action);
-        return action.get();
-    }
-    
-	public void copy(Node destdir) throws IOException {
-	    apply(destdir, new CopyAction());
-	}
-	
-	public void apply(Node destdir, Action action) throws IOException, TemplateException {
+	public void copy(Node destdir) throws IOException, TemplateException {
 		Node dest;
         String replaced;
-        String old;
-        int mode;
         
 		sourcedir.checkDirectory();
 		destdir.checkDirectory();
 		for (Node src : sourcedir.find(filter)) {
 			dest = destdir.join(path.apply(src.getRelative(sourcedir), variables));
 			if (src.isDirectory()) {
-		        if (dest.exists()) {
-		            // nothing to do
-		        } else {
-                    action.directory(dest);
-		        }
+		        dest.mkdirsOpt();
 			} else {
 			    dest.getParent().mkdirsOpt();
 		        replaced = content.apply(src.readString(), variables);
-	            mode = src.getMode();
-		        if (dest.exists()) {
-		            old = dest.readString();
-		            if (!old.equals(replaced)) {
-	                    action.file(dest, old, replaced, mode);
-		            } else if (mode != dest.getMode()) {
-	                    action.file(dest, old, null, mode);
-		            }
-		        } else {
-                    action.file(dest, null, replaced, mode);
-		        }
+	        	dest.writeString(replaced);
+	        	dest.setMode(src.getMode());
 			}
 		}
 	}

@@ -384,15 +384,28 @@ public abstract class Node {
         }
     }
 
+    /** 
+     * Overwrites existing files.
+     * @return dest 
+     */
+    public Node copyFile(Node dest) throws IOException {
+        InputStream in;
+        
+        in = createInputStream();
+        getIO().getBuffer().copy(in, dest);
+        in.close();
+        return dest;
+    }
+
     public List<Node> copyDirectory(Node dest) throws IOException {
-        return copyDirectory(getIO().filter().includeAll(), dest);
+        return copyDirectory(dest, getIO().filter().includeAll());
     }
 
     /**
      * Overwrites existing files
      * @return source files actually copied, no directories 
      */
-    public List<Node> copyDirectory(Filter filter, Node destRoot) throws IOException {
+    public List<Node> copyDirectory(Node destRoot, Filter filter) throws IOException {
         String relative;
         Node dest;
         List<Node> result;
@@ -608,21 +621,6 @@ public abstract class Node {
     public Node writeXml(org.w3c.dom.Node node) throws IOException {
         getIO().getXml().serializer.serialize(node, this);
         return this;
-    }
-
-    //-- copy
-    
-    /** 
-     * Overwrites existing files.
-     * @return dest 
-     */
-    public Node copyFile(Node dest) throws IOException {
-        InputStream in;
-        
-        in = createInputStream();
-        getIO().getBuffer().copy(in, dest);
-        in.close();
-        return dest;
     }
 
     //-- other

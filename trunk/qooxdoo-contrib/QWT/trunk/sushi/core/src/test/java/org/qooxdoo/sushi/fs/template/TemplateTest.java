@@ -9,10 +9,12 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
 public class TemplateTest {
+	private IO io;
 	private Template template;
 	
 	public TemplateTest() throws IOException {
-        template = new Template(new IO().getTemp().createTempDirectory());
+		io = new IO();
+        template = new Template(io.getTemp().createTempDirectory());
 	}
 
 
@@ -24,43 +26,43 @@ public class TemplateTest {
         template.variables().put("home", "mhm");
         template.variables().put("machine", "walter");
         
-        assertEquals("", template.status(destdir));
-        assertEquals("", template.diff(destdir));
+        assertEquals("", status(destdir));
+        assertEquals("", diff(destdir));
 
         template.getSourceDir().join("file").writeLines("home: ${home}", "machine: ${machine}");
-        assertEquals("A file\n", template.status(destdir));
+        assertEquals("A file\n", status(destdir));
         assertEquals("### file\n" +
         		"+ home: mhm\n" +
-                "+ machine: walter\n", template.diff(destdir));
+                "+ machine: walter\n", diff(destdir));
         template.copy(destdir);
-        assertEquals("", template.status(destdir));
+        assertEquals("", status(destdir));
         
         template.getSourceDir().join("folder").mkdir();
-        assertEquals("A folder\n", template.status(destdir));
+        assertEquals("A folder\n", status(destdir));
         template.copy(destdir);
-        assertEquals("", template.status(destdir));
+        assertEquals("", status(destdir));
         
         template.getSourceDir().join("superdir/subdir").mkdirs();
-        assertEquals("A superdir\nA superdir/subdir\n", template.status(destdir));
+        assertEquals("A superdir\nA superdir/subdir\n", status(destdir));
         template.copy(destdir);
-        assertEquals("", template.status(destdir));
+        assertEquals("", status(destdir));
 
         template.getSourceDir().join("folder/file").writeLines("home: ${home}", "machine: ${machine}");
-        assertEquals("A folder/file\n", template.status(destdir));
+        assertEquals("A folder/file\n", status(destdir));
         template.copy(destdir);
-        assertEquals("", template.status(destdir));
+        assertEquals("", status(destdir));
         
         template.variables().put("machine", "fritz");
-        assertEquals("M file\nM folder/file\n", template.status(destdir));
+        assertEquals("M file\nM folder/file\n", status(destdir));
         assertEquals("### file\n" +
                 "- machine: walter\n" +
                 "+ machine: fritz\n" +
                 "### folder/file\n" + 
                 "- machine: walter\n" +
-                "+ machine: fritz\n", template.diff(destdir));
+                "+ machine: fritz\n", diff(destdir));
         template.copy(destdir);
-        assertEquals("", template.status(destdir));
-        assertEquals("", template.diff(destdir));
+        assertEquals("", status(destdir));
+        assertEquals("", diff(destdir));
     }
 	
     @Test
@@ -77,8 +79,20 @@ public class TemplateTest {
         assertEquals(0700, destdir.join("file").getMode());
 
         file.setMode(0655);
-        assertEquals("m file\n", template.status(destdir));
+        assertEquals("m file\n", status(destdir));
         template.copy(destdir);
         assertEquals(0655, destdir.join("file").getMode());
+    }
+    
+    private String status(Node destdir) throws IOException {
+    	Node tmp = io.getTemp().createTempDirectory();
+    	template.copy(tmp);
+    	return tmp.status(destdir);
+    }
+    
+    private String diff(Node destdir) throws IOException {
+    	Node tmp = io.getTemp().createTempDirectory();
+    	template.copy(tmp);
+    	return tmp.status(destdir);
     }
 }
