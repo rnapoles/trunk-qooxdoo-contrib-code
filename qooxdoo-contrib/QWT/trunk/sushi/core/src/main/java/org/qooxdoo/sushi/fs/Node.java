@@ -710,6 +710,32 @@ public abstract class Node {
         } while (leftChunk > 0);
         return false;
     }
+
+    //-- status - "diff --brief"
+    
+    public String status(Node cmp) throws IOException {
+    	StringBuilder result;
+    	
+    	result = new StringBuilder();
+    	status(cmp, result);
+    	return result.toString();
+    }
+    
+    public void status(Node cmp, StringBuilder result) throws IOException {
+    	if (!cmp.exists()) {
+    		status('R', result);
+    	} else if (diff(cmp)) {
+    		status('M', result);
+    	} else if (getMode() != cmp.getMode()) {
+    		status('m', result);
+    	} else {
+    		// nothing
+    	}
+    }
+    
+    private void status(char name, StringBuilder result) {
+    	result.append(name).append("  ").append(getRelative(base)).append('\n');
+    }
     
     //-- Object functionality
     
