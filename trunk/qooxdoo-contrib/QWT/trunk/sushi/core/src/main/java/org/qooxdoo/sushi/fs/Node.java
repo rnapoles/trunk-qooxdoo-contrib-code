@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -43,6 +42,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.qooxdoo.sushi.fs.copy.Copy;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Strings;
@@ -356,9 +356,9 @@ public abstract class Node {
             return this;
         }
         if (exists()) {
-            throw new IOException("directory expected: " + this);
+            throw new FileNotFoundException("directory expected: " + this);
         } else {
-            throw new IOException("no such directory: " + this);
+            throw new FileNotFoundException("no such directory: " + this);
         }
     }
     
@@ -367,9 +367,9 @@ public abstract class Node {
             return this;
         }
         if (exists()) {
-            throw new IOException("file expected: " + this);
+            throw new FileNotFoundException("file expected: " + this);
         } else {
-            throw new IOException("no such file: " + this);
+            throw new FileNotFoundException("no such file: " + this);
         }
     }
     
@@ -406,26 +406,7 @@ public abstract class Node {
      * @return source files actually copied, no directories 
      */
     public List<Node> copyDirectory(Node destRoot, Filter filter) throws IOException {
-        String relative;
-        Node dest;
-        List<Node> result;
-        
-        if (!destRoot.isDirectory()) {
-            throw new FileNotFoundException("no such directory: " + destRoot);
-        }
-        result = new ArrayList<Node>();
-        for (Node src : find(filter)) {
-            relative = src.getRelative(this);
-            dest = destRoot.join(relative);
-            if (src.isDirectory()) {
-                dest.mkdirs();
-            } else {
-                dest.getParent().mkdirsOpt();
-                src.copyFile(dest);
-                result.add(src);
-            }
-        }
-        return result;
+    	return new Copy(this, null, null, null, filter, false).copy(destRoot);
     }
 
     //-- search for child nodes
