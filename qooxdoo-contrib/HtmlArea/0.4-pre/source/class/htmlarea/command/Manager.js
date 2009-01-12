@@ -386,7 +386,7 @@ qx.Class.define("htmlarea.command.Manager",
         }
       }
 
-      return bodyIsFocusNode || (!isInParagraph);
+      return bodyIsFocusNode || (!isInParagraph);
     },
 
     /**
@@ -780,7 +780,7 @@ qx.Class.define("htmlarea.command.Manager",
           delete helperStyleStructure.child["text-align"];
         }
         // generate the span elements to preserve the styling
-				var helperStyle = this.__generateHelperString(helperStyleStructure);
+				var helperStyle = this.generateHelperString(helperStyleStructure);
 				
 				/* Generate unique ids to find the elements later */
 				var spanId = "__placeholder__" + Date.parse(new Date());
@@ -1495,7 +1495,7 @@ qx.Class.define("htmlarea.command.Manager",
         * <hr> tag.
         */
        if (qx.core.Variant.isSet("qx.client", "gecko")) {
-         htmlText += this.__generateHelperString();
+         htmlText += this.generateHelperString();
        }
   
        return this.__insertHtml(htmlText, commandObject);
@@ -1513,14 +1513,14 @@ qx.Class.define("htmlarea.command.Manager",
       *                            Structure of the "__getCurrentStylesGrouped" method.
       * @return {String} String containing tags with special style settings.
       */
-     __generateHelperString : function(groupedStyles)
+     generateHelperString : function(groupedStyles)
      {
        var formatString = "";
        var spanBegin = '<span style="';
        var closings = [];
        
        // retrieve the current styles as structure if no parameter is given
-       var structure = groupedStyles !== null ? groupedStyles : this.__getCurrentStylesGrouped();
+       var structure = groupedStyles != null ? groupedStyles : this.__getCurrentStylesGrouped();
        
        // first traverse the "child" chain
        var child = structure.child;
