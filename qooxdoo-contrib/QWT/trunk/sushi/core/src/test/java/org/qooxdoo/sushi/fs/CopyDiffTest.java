@@ -24,9 +24,21 @@ public class CopyDiffTest {
                 Substitution.path(variables), Substitution.ant(variables));
 	}
 
+	@Test
+	public void diff() throws Exception {
+		Node left;
+		Node right;
+		
+		left = io.getTemp().createTempDirectory();
+		right = io.getTemp().createTempDirectory();
+		left.join("left").writeString("1");
+		right.join("right").writeString("2");
+		assertEquals("R left\nA right\n", left.diffDirectory(right, true));
+		assertEquals("A right\n", new Diff(true).directory(left, right, "right"));
+	}
 
 	@Test
-    public void copy() throws Exception {
+    public void template() throws Exception {
         Node destdir;
         
         destdir = copy.getSourceDir().getIO().getTemp().createTempDirectory();

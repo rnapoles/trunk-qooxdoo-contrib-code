@@ -2,6 +2,7 @@ package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
@@ -43,6 +44,10 @@ public class Diff {
     	paths = paths(leftdir, filter);
     	paths(rightdir, filter, paths);
     	return directory(leftdir, rightdir, paths);
+    }
+    
+    public String directory(Node leftdir, Node rightdir, String ... paths) throws IOException {
+    	return directory(leftdir, rightdir, Arrays.asList(paths));
     }
     
     public String directory(Node leftdir, Node rightdir, List<String> paths) throws IOException {
