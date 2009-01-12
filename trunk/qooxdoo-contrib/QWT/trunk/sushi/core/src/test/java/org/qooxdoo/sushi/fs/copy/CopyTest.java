@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
-@Ignore
 public class CopyTest {
 	private IO io;
 	private Map<String, String> variables;
@@ -21,7 +19,7 @@ public class CopyTest {
 		io = new IO();
 		variables = new HashMap<String, String>();
         copy = new Copy(io.getTemp().createTempDirectory(),
-                io.filter().includeAll(), false,
+                io.filter().includeAll(), true,
                 Substitution.path(variables), Substitution.ant(variables));
 	}
 
@@ -93,14 +91,16 @@ public class CopyTest {
     }
     
     private String status(Node destdir) throws IOException {
-    	Node tmp = io.getTemp().createTempDirectory();
-    	copy.copy(tmp);
-    	return tmp.status(destdir);
+        return doDiff(destdir, true);
     }
     
     private String diff(Node destdir) throws IOException {
-    	Node tmp = io.getTemp().createTempDirectory();
-    	copy.copy(tmp);
-    	return tmp.status(destdir);
+        return doDiff(destdir, false);
+    }
+
+    private String doDiff(Node destdir, boolean brief) throws IOException {
+        Node tmp = io.getTemp().createTempDirectory();
+        copy.copy(tmp);
+        return destdir.diffDirectory(tmp, io.filter().includeAll(), brief);
     }
 }
