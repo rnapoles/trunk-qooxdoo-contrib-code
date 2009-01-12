@@ -31,6 +31,12 @@ class qcl_session_controller extends qcl_access_controller
   var $_messageModel;  
   
   /**
+   * The id of the active user, determined from the 
+   * session id
+   */
+  var $_activeUserId;
+  
+  /**
    * constructor 
    * registers session with a database-table-based session and user model. 
    * if you want to use your custom session model, set it before
@@ -38,13 +44,12 @@ class qcl_session_controller extends qcl_access_controller
    */
   function __construct()
   {
-
     /*
      * call parent constructor, this will initialize database
      * connection and access/config models
      */
-    parent::__construct();
-
+    parent::__construct();    
+    
     /*
      * session model
      */
@@ -53,30 +58,75 @@ class qcl_session_controller extends qcl_access_controller
     /*
      * session model
      */
-    $this->_sessionModel =& new qcl_session_Session(&$this);
-   
-    
+    $this->_sessionModel =& new qcl_session_Session(&$this);    
+  }
+  
+  /**
+   * This overrides and extends the authenticate method by providing a way to determine
+   * the user by a given session id in the request. 
+   * @see qcl_access_controller::_authenticate()
+   * @override
+   */
+  function isValidUserSession()  
+  {
     /*
      * Does the request contain a session id?
      */
     $sessionId = $this->getServerData("sessionId");
+    
+    $this->debug("Initial session id: $sessionId");
+    
     if ( $sessionId )
-    {
+    { 
       /*
-       * yes, set session id (this will also set the active user)
+       * set session id 
        */
       $this->setSessionId( $sessionId );
-      //$this->debug("Getting session id from request: $sessionId");
-    }    
+      $this->debug("Getting session id from request: $sessionId");
+    
+      /*
+       * get user from session. if session data is invalid,
+       * do not authenticate
+       */
+      $activeUser =& $this->getUserFromSession( $sessionId );
+      if ( ! $activeUser )
+      { 
+        return false;
+      }
+      else
+      {
+        /*
+         * set active user
+         */
+        $this->setActiveUser( &$activeUser );  
+      }
+    }
     else
     {
-      /*
-       * no, create a new session 
-       */
-      $sessionId = $this->getSessionId();
-      //$this->debug("New session id: $sessionId ");
+      $this->createSessionId();
     }
-  }     
+    
+    /*
+     * call parent method, which checks for a valid user session
+     * and creates guest access
+     */
+    if ( ! parent::isValidUserSession() )
+    {
+      $this->debug("qcl_access_controller::isValidUserSession() returns false");
+      return false;
+    }
+    
+    /*
+     * register the session
+     */
+    $this->debug("registering session");
+    $this->registerSession();
+    
+    /*
+     * sucess!!
+     */
+    return true;     
+  }
   
   /**
    * @override
@@ -87,7 +137,10 @@ class qcl_session_controller extends qcl_access_controller
     /*
      * unregister the current session
      */
-    $this->unregisterSession();
+    if ( $this->getSessionId() )
+    {
+      $this->unregisterSession();  
+    }
     
     /*
      * logout
@@ -99,6 +152,26 @@ class qcl_session_controller extends qcl_access_controller
   // session management
   //-------------------------------------------------------------
 
+  /**
+   * Returns the active user's id 
+   * @override
+   * @return int
+   */
+  function getActiveUserId( )
+  {
+    return $this->_activeUserId;
+  }
+  
+  /**
+   * Sets the active user's id 
+   * @override
+   * @param int $id
+   */
+  function setActiveUserId( $id )
+  {
+    $this->_activeUserId = $id;
+  }
+    
   /**
    * Returns the session model
    * @return qcl_session_Session
@@ -160,53 +233,47 @@ class qcl_session_controller extends qcl_access_controller
   }
   
   /**
-   * Sets the session id and the active user, if any
-   * @override
+   * Set the active user from the session id
+   * @param int $sessionId
+   * @return qcl_access_user|bool if this method returns false, the request should be 
+   * aborted since the session data refers to a non-existing or expired
+   * user.
    */
-  function setSessionId( $sessionId )
+  function getUserFromSession( $sessionId )
   {
-    parent::setSessionId( $sessionId );
     
     /*
-     * if session already exists, get user id
+     * look if session exists
      */
     $sessionModel =& $this->getSessionModel();
     $sessionModel->findBy( "sessionId", $sessionId );
+    
+    /*
+     * if yes, get user id
+     */
     if ( $sessionModel->foundSomething() )
     {
       $activeUserId = $sessionModel->get("userId");
       if ( ! $activeUserId )
       {
-        $this->raiseError("Session is not connected with a user id!"); 
+        $this->warn("Session $sessionId is not connected with a user id!");
+        return false;
       }
       $userModel =& $this->getUserModel();
-      $userModel->load($activeUserId);
-      $this->setActiveUser( $userModel->cloneObject() );
+      $userModel->load( $activeUserId );
+      if ( $userModel->foundNothing() )
+      {
+        $this->warn("Session $sessionId refers to a non-existing user."); 
+        return false;       
+      }
+      return $userModel->cloneObject();
+    }
+    else
+    {
+      $this->warn("Session $sessionId does not exist."); 
+      return false;
     }
   }
-  
-  /**
-   * Returns the current session id. 
-   * @override
-   * @return string session id
-   */
-  function getSessionId()
-  {
-    if ( ! $this->_sessionId )
-    {
-      /*
-       * create random session id
-       */
-      $sessionId = md5(microtime());
-      $this->_sessionId = $sessionId;
-      
-      /*
-       * notify client of session id
-       */
-      $this->dispatchMessage("qcl.commands.setSessionId", $sessionId );
-    }
-    return $this->_sessionId;
-  }    
   
   
   //-------------------------------------------------------------
@@ -251,6 +318,7 @@ class qcl_session_controller extends qcl_access_controller
   // Response
   //-------------------------------------------------------------
 
+  
   /**
    * gets result for json response inclusing result data, events, and messages
    * overriding parent method to include message broadcasts

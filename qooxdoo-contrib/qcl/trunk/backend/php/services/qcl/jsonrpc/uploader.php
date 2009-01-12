@@ -53,7 +53,7 @@ if ( $_REQUEST['sessionId'] )
   $userController->setSessionId( $_REQUEST['sessionId'] );
 }
 
-if ( ! $userController->authenticate() )
+if ( ! $userController->isValidUserSession() )
 {
   /*
    * check http basic authentication

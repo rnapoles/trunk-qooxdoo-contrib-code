@@ -86,6 +86,15 @@ class qcl_jsonrpc_object extends qcl_core_object
   {
     return realpath(QCL_TMP_PATH) . "/";
   }
+  
+  /**
+   * Returns the server error object
+   * @return JsonRpcError
+   */
+  function &getErrorResponseObject()
+  {
+    return $GLOBALS['error'];
+  }
 
   /**
    * Raises a server error and exits
@@ -117,12 +126,12 @@ class qcl_jsonrpc_object extends qcl_core_object
      * if this is a jsonrpc request, we have a global $error object
      * that the error can be passed to.
      */
-    global $error;
+    $error =& $this->getErrorResponseObject();
     
-    if ( is_object($error) )
+    if ( is_a( $error, "JsonRpcError" ) ) 
     {
       $error->setError( $number, htmlentities( stripslashes( $message ) ) );
-      $error->SendAndExit();
+      $error->SendAndExit( $this->optionalErrorResponseData() );
       // never gets here
       exit;
     }
@@ -132,6 +141,17 @@ class qcl_jsonrpc_object extends qcl_core_object
      */
     echo $message;
     exit;
+  }
+  
+  /**
+   * Hook to return optional error response data. By default, return an 
+   * empty array. Override this method if you want to provide
+   * addition data to be passed with the error response.
+   * @return array
+   */
+  function optionalErrorResponseData()
+  {
+    return array();
   }
   
   /**

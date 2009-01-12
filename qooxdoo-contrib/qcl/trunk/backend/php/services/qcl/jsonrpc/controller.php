@@ -60,6 +60,11 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   var $_sessionId;
   
   /**
+   * Whether the request has been aborted
+   */
+  var $_isAborted = false;
+  
+  /**
    * constructor , configures the service
    */
 	function __construct()
@@ -190,12 +195,22 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   
     
   /**
-   * Resets the session id
+   * Creates a new session id and passes it to the client
    * @return void
    */
-  function resetSessionId( )
+  function createSessionId( )
   {
-    $this->_sessionId = null;
+    /*
+     * create random session id
+     */
+    $sessionId = md5(microtime());
+    $this->_sessionId = $sessionId;
+    
+    /*
+     * notify client of session id
+     */
+    $this->debug("Creating new session id and passing it to client: $sessionId");
+    $this->dispatchMessage("qcl.commands.setSessionId", $sessionId );
   }  
   
   /**
@@ -298,9 +313,18 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
 		{
 			$value = $value[$part];  
 		}
-		return $value;
+		return trim($value);
 	}
 	
+	function abortRequest()
+	{
+	  $this->_isAborted = true;  
+	}
+	
+	function isAborted()
+	{
+	  return $this->_isAborted;
+	}
 	
   //-------------------------------------------------------------
   // models
@@ -489,6 +513,23 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
   // Extend message and event system to the client
   //-------------------------------------------------------------
 
+  /**
+   * Hook to return optional error response data. Returns event and message
+   * data
+   * @override
+   * @return array
+   */
+  function optionalErrorResponseData()
+  {
+    $response =& $this->responseObject();
+    return array(
+      'result' => array(
+        'messages' => $response->getMessages(),
+        'events'   => $response->getEvents()
+      )
+    );
+  }  
+  
   /**
    * dispatches a server message
    * @param string $message Message name 
