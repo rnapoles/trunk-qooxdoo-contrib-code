@@ -34,22 +34,6 @@ class qcl_io_filesystem_remote_File extends qcl_io_filesystem_remote_Resource
      */
     parent::__construct( &$controller, $resourcePath );
     
-    /*
-     * create file if it doesn't exist
-     */
-    if ( ! $this->open( "r" ) )
-    {
-      if ( ! $this->open( "w" ) )
-      {
-        $this->raiseError("Problems creating file '$resourcePath'." );  
-      }
-      $this->close();  
-    }
-    else
-    {
-      $this->close();
-    }
-    
   }       
   
   /**

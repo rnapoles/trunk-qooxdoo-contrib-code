@@ -26,17 +26,14 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
      * parent constructor takes care of controller and resource path
      */
     parent::__construct( &$controller, $resourcePath );   
-
+    
     /*
-     * create directory if it doesn't exist
+     * check for trailing slash
      */
-    if ( ! $this->exists( $resourcePath ) )
+    if ( substr($resourcePath,-1) != "/" )
     {
-      if ( ! mkdir( $resourcePath, $mode ) )
-      {
-        $this->raiseError("Problems creating folder '$resourcePath' with permissions $mode." );
-      }
-    }    
+      $this->raiseError("Invalid resource path '$resourcePath': must end with a slash for folders!");
+    }
   }       
   
   /**
@@ -46,8 +43,27 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function &createOrGetFile( $name ) 
   {
-    $resourcePath = $this->resourcePath() . "/" . $name;
-    return new qcl_io_filesystem_remote_File( &$this, $resourcePath );
+    /*
+     * create file if it doesn't exist
+     */
+    $resourcePath = $this->resourcePath() . $name;
+    $file = new qcl_io_filesystem_remote_File( &$this, $resourcePath );
+    if ( ! $file->open( "r" ) )
+    {
+      if ( ! $file->open( "w" ) )
+      {
+        $this->raiseError("Problems creating file '$resourcePath'." );  
+      }
+      else
+      {
+        $file->close();        
+      }
+    }
+    else
+    {
+      $file->close();
+    }
+    return $file;
   }
   
   /**
@@ -57,7 +73,17 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function &createOrGetFolder( $name ) 
   {
-    $resourcePath = $this->resourcePath() . "/" . $name;
+    /*
+     * create directory if it doesn't exist
+     */
+    $resourcePath = $this->resourcePath() . $name ."/";
+    if ( ! $this->exists( $resourcePath ) )
+    {
+      if ( ! mkdir( $resourcePath, $mode ) )
+      {
+        $this->raiseError("Problems creating folder '$resourcePath' with permissions $mode." );
+      }
+    }        
     return new qcl_io_filesystem_remote_Folder( &$this, $resourcePath );    
   }
   
@@ -68,8 +94,13 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function has( $name ) 
   {
-    $filePath = $this->resourcePath() . "/" . $name;
-    return file_exists( $filePath );    
+    $file =& $this->get($name);
+    if ( $file->open() )
+    {
+      $file->close();
+      return true;    
+    }
+    return false;
   }    
   
   /**
@@ -78,7 +109,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
    */
   function &get( $name ) 
   {
-    $resourcePath = $this->resourcePath() . "/" . $name;
+    $resourcePath = $this->resourcePath() . $name;
     $controller   =& $this->getController();
     
     if ( $this->isFile( $resourcePath ) )
@@ -91,7 +122,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
     }
     else
     {
-      $this->raiseError("File '$filePath' does not exist." ) ;    
+      $this->raiseError("Invalid file type '$filePath'." ) ;    
     }
   }
   
