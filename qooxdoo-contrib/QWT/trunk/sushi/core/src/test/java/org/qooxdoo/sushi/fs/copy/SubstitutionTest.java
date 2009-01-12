@@ -19,7 +19,7 @@ public class SubstitutionTest {
 	}
 
 	@Test
-	public void underline() throws CopyException {
+	public void underline() throws SubstitutionException {
 	    Substitution underline;
 	    
 		underline = new Substitution("_", "_", '/', props);
@@ -35,19 +35,19 @@ public class SubstitutionTest {
         try {
             underline.apply("_3_");
             fail();
-        } catch (CopyException e) {
+        } catch (SubstitutionException e) {
             // ok
         }
         try {
             underline.apply("_");
             fail();
-        } catch (CopyException e) {
+        } catch (SubstitutionException e) {
             // ok
         }
 	}
 
     @Test
-    public void ant() throws CopyException {
+    public void ant() throws SubstitutionException {
         Substitution ant;
         
         ant = Substitution.ant(props);
@@ -62,13 +62,13 @@ public class SubstitutionTest {
         try {
             ant.apply("${3}");
             fail();
-        } catch (CopyException e) {
+        } catch (SubstitutionException e) {
             // ok
         }
         try {
             ant.apply("${");
             fail();
-        } catch (CopyException e) {
+        } catch (SubstitutionException e) {
             // ok
         }
 	}
