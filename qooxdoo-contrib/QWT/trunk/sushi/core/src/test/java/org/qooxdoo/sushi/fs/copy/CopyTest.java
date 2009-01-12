@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
+import org.qooxdoo.sushi.util.Substitution;
 
 public class CopyTest {
 	private IO io;

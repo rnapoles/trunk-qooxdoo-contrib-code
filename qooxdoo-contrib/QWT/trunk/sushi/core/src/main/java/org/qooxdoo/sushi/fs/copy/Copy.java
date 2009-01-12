@@ -26,6 +26,8 @@ import java.util.List;
 import org.qooxdoo.sushi.fs.CopyException;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
+import org.qooxdoo.sushi.util.Substitution;
+import org.qooxdoo.sushi.util.SubstitutionException;
 
 /** Copy configuration and command. */
 public class Copy {
