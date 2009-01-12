@@ -21,8 +21,8 @@ public class CopyTest {
 		io = new IO();
 		variables = new HashMap<String, String>();
         copy = new Copy(io.getTemp().createTempDirectory(),
-                Substitution.path(variables), Substitution.ant(variables),
-                io.filter().includeAll(), false);
+                io.filter().includeAll(), false,
+                Substitution.path(variables), Substitution.ant(variables));
 	}
 
 
