@@ -49,25 +49,38 @@ qx.Class.define("custom.Application",
         qx.log.appender.Console;
       }
 
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
+      var table = this.createTable();
+      this.getRoot().add(table, {left: 10, top: 10});      
+    },
+    
+    createTable : function()
+    {
+      // Create the initial data
+      var rowData = this.createRandomRows(50);
 
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      // table model
+      var tableModel = this._tableModel = new qx.ui.table.model.Simple();
+      tableModel.setColumns([ "ID", "A number", "A date", "Boolean" ]);
+      tableModel.setData(rowData);
 
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
-      });
-    }
+      // table
+      var table = new qx.ui.table.Table(tableModel);
+      return table;
+    },
+    
+    
+    nextId : 0,
+    createRandomRows : function(rowCount)
+    {
+      var rowData = [];
+      var now = new Date().getTime();
+      var dateRange = 400 * 24 * 60 * 60 * 1000; // 400 days
+      for (var row = 0; row < rowCount; row++) {
+        var date = new Date(now + Math.random() * dateRange - dateRange / 2);
+        rowData.push([ this.nextId++, Math.random() * 10000, date, (Math.random() > 0.5) ]);
+      }
+      return rowData;
+    }    
   }
 });
