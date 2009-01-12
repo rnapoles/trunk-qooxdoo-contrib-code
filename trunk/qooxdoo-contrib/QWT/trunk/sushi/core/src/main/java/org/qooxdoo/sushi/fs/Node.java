@@ -43,11 +43,11 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.qooxdoo.sushi.fs.copy.Copy;
-import org.qooxdoo.sushi.fs.copy.SubstitutionException;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Diff;
 import org.qooxdoo.sushi.util.Strings;
+import org.qooxdoo.sushi.util.SubstitutionException;
 import org.qooxdoo.sushi.xml.Serializer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;

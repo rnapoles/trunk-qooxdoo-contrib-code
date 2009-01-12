@@ -17,7 +17,7 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs.copy;
+package org.qooxdoo.sushi.util;
 
 import java.util.Map;
 

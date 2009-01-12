@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.qooxdoo.sushi.util.Substitution;
+import org.qooxdoo.sushi.util.SubstitutionException;
 
 public class SubstitutionTest {
     private Map<String, String> props;
