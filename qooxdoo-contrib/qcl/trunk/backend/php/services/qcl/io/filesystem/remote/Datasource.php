@@ -65,6 +65,18 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
   }
   
   /**
+   * Returns the folder object of the datasource
+   */
+  function &getFolderObject()
+  {
+    if ( $this->folderObj )
+    {
+      return $this->folderObj;  
+    }
+    $this->raiseError("Datasource not initialized.");
+  }
+  
+  /**
    * Returns a list of fields that should be disabled in a form
    * @override
    * @return array
@@ -115,6 +127,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
     return true;
   }  
 
+  
 }
 
 ?>

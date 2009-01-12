@@ -71,6 +71,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
    * the path is analyzed whether there is a file extension.
    * @param string[optional] $resourcePath
    * @return bool
+   * @todo this should be clear from the file name!
    */
   function isDir( $resourcePath=null )
   {
