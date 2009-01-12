@@ -21,9 +21,7 @@ package org.qooxdoo.sushi.fs.copy;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
@@ -31,35 +29,28 @@ import org.qooxdoo.sushi.fs.filter.Filter;
 /** TODO adjust directory modes */
 public class Copy {
     private final Node sourcedir;
-    private final Substitution path;
-    private final Substitution content;
-	private final Map<String, String> variables;
-
 	/** relevant files in source dir */
 	private final Filter filter;
 
 	private final boolean modes;
 	
+    private final Substitution path;
+    private final Substitution content;
+
 	public Copy(Node srcdir) {
-		this(srcdir, new Substitution("__", "__", '\\'), new Substitution("${", "}", '\\'), 
-		        new HashMap<String, String>(), srcdir.getIO().filter().includeAll(), false);
+		this(srcdir, null, null, srcdir.getIO().filter().includeAll(), false);
 	}
 	
-	public Copy(Node srcdir, Substitution path, Substitution content, Map<String, String> variables, Filter filter, boolean modes) {
+	public Copy(Node srcdir, Substitution path, Substitution content, Filter filter, boolean modes) {
 	    this.sourcedir = srcdir;
 		this.path = path;
 		this.content = content;
-		this.variables = variables;
 		this.filter = filter;
 		this.modes = modes;
 	}
 
-    public Node getSourceDir() {
-        return sourcedir;
-    }
-    
-	public Map<String, String> variables() {
-		return variables;
+	public Node getSourceDir() {
+	    return sourcedir;
 	}
 	
 	/** @return Source files copied */
@@ -75,7 +66,7 @@ public class Copy {
 		for (Node src : sourcedir.find(filter)) {
 			relative = src.getRelative(sourcedir);
 			if (path != null) {
-				relative = path.apply(relative, variables);
+				relative = path.apply(relative);
 			}
 			dest = destdir.join(relative);
 			if (src.isDirectory()) {
@@ -83,7 +74,7 @@ public class Copy {
 			} else {
 			    dest.getParent().mkdirsOpt();
 			    if (content != null) {
-			    	replaced = content.apply(src.readString(), variables);
+			    	replaced = content.apply(src.readString());
 			    	dest.writeString(replaced);
 			    } else {
 			    	src.copyFile(dest);

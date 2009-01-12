@@ -3,6 +3,8 @@ package org.qooxdoo.sushi.fs.copy;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,11 +14,15 @@ import org.qooxdoo.sushi.fs.Node;
 @Ignore
 public class CopyTest {
 	private IO io;
+	private Map<String, String> variables;
 	private Copy copy;
 	
 	public CopyTest() throws IOException {
 		io = new IO();
-        copy = new Copy(io.getTemp().createTempDirectory());
+		variables = new HashMap<String, String>();
+        copy = new Copy(io.getTemp().createTempDirectory(),
+                Substitution.path(variables), Substitution.ant(variables),
+                io.filter().includeAll(), false);
 	}
 
 
@@ -25,8 +31,8 @@ public class CopyTest {
         Node destdir;
         
         destdir = copy.getSourceDir().getIO().getTemp().createTempDirectory();
-        copy.variables().put("home", "mhm");
-        copy.variables().put("machine", "walter");
+        variables.put("home", "mhm");
+        variables.put("machine", "walter");
         
         assertEquals("", status(destdir));
         assertEquals("", diff(destdir));
@@ -54,7 +60,7 @@ public class CopyTest {
         copy.copy(destdir);
         assertEquals("", status(destdir));
         
-        copy.variables().put("machine", "fritz");
+        variables.put("machine", "fritz");
         assertEquals("M file\nM folder/file\n", status(destdir));
         assertEquals("### file\n" +
                 "- machine: walter\n" +
