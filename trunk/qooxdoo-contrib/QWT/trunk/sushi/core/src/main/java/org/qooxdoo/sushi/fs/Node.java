@@ -415,7 +415,7 @@ public abstract class Node {
     }
 
     public String diffDirectory(Node rightdir, boolean brief) throws IOException {
-        return new Diff(brief, getIO().filter().includeAll()).directory(this, rightdir);        
+        return new Diff(brief).directory(this, rightdir, getIO().filter().includeAll());        
     }
 
     /** cheap diff if you only need a yes/no answer */

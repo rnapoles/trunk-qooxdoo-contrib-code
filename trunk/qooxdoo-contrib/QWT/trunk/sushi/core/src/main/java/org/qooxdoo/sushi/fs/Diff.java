@@ -1,34 +1,61 @@
 package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.util.Strings;
 
 public class Diff {
     private final boolean brief;
-    private final Filter filter;
 
-    public Diff(Filter filter) {
-        this(true, filter);
-    }
-
-    public Diff(boolean brief, Filter filter) {
+    public Diff(boolean brief) {
         this.brief = brief;
-        this.filter = filter;
     }
 
-    public String directory(Node leftdir, Node rightdir) throws IOException {
+    //-- scan directories for relevant files
+    
+    public List<String> paths(Node dir, Filter filter) throws IOException {
+    	List<String> result;
+    	
+    	result = new ArrayList<String>();
+    	paths(dir, filter, result);
+    	return result;
+    }
+    
+    public void paths(Node dir, Filter filter, List<String> result) throws IOException {
+    	String path;
+    	
+    	for (Node node : dir.find(filter)) {
+    		path = node.getRelative(dir);
+    		if (!result.contains(path)) {
+    			result.add(path);
+    		}
+    	}
+    }
+
+    //-- diff
+    
+    public String directory(Node leftdir, Node rightdir, Filter filter) throws IOException {
+    	List<String> paths;
+    	
+    	paths = paths(leftdir, filter);
+    	paths(rightdir, filter, paths);
+    	return directory(leftdir, rightdir, paths);
+    }
+    
+    public String directory(Node leftdir, Node rightdir, List<String> paths) throws IOException {
         StringBuilder result;
-        String relative;
         Node left;
+        Node right;
         
         result = new StringBuilder();
         leftdir.checkDirectory();
         rightdir.checkDirectory();
-        for (Node right : rightdir.find(filter)) {
-            relative = right.getRelative(rightdir);
-            left = leftdir.join(relative);
+        for (String path : paths) {
+            left = leftdir.join(path);
+            right = rightdir.join(path);
             if (left.isDirectory()) {
                 if (right.isDirectory()) {
                     // ok
@@ -36,15 +63,15 @@ public class Diff {
                     throw new IOException("TODO");
                 } else {
                     if (brief) {
-                        header('A', relative, result);
+                        header('A', path, result);
                     } else {
                         // TODO
                     }
                 }
             } else if (right.isDirectory()) {
-                header("A", relative, result);
+                header("A", path, result);
             } else {
-                file(left, right, relative, result);
+                file(left, right, path, result);
             }
         }
         return result.toString();
