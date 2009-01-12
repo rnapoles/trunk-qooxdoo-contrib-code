@@ -209,7 +209,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * notify client of session id
      */
-    $this->debug("Creating new session id and passing it to client: $sessionId");
+   //$this->debug("Creating new session id and passing it to client: $sessionId");
     $this->dispatchMessage("qcl.commands.setSessionId", $sessionId );
   }  
   

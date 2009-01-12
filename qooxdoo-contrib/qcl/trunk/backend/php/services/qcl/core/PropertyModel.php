@@ -1615,9 +1615,9 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       //$this->debug(gettype($propNode)); 
     } 
     
-//    $this->debug("Properties:");
-//    $this->debug(array_keys($this->propertyNodes));
-//    $this->debug(array_keys(get_object_vars($this)));
+//   //$this->debug("Properties:");
+//   //$this->debug(array_keys($this->propertyNodes));
+//   //$this->debug(array_keys(get_object_vars($this)));
     
     /*
      * aliases

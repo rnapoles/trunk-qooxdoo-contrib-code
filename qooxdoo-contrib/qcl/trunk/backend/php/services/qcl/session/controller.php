@@ -74,7 +74,7 @@ class qcl_session_controller extends qcl_access_controller
      */
     $sessionId = $this->getServerData("sessionId");
     
-    $this->debug("Initial session id: $sessionId");
+   //$this->debug("Initial session id: $sessionId");
     
     if ( $sessionId )
     { 
@@ -82,7 +82,7 @@ class qcl_session_controller extends qcl_access_controller
        * set session id 
        */
       $this->setSessionId( $sessionId );
-      $this->debug("Getting session id from request: $sessionId");
+     //$this->debug("Getting session id from request: $sessionId");
     
       /*
        * get user from session. if session data is invalid,
@@ -112,14 +112,14 @@ class qcl_session_controller extends qcl_access_controller
      */
     if ( ! parent::isValidUserSession() )
     {
-      $this->debug("qcl_access_controller::isValidUserSession() returns false");
+     //$this->debug("qcl_access_controller::isValidUserSession() returns false");
       return false;
     }
     
     /*
      * register the session
      */
-    $this->debug("registering session");
+   //$this->debug("registering session");
     $this->registerSession();
     
     /*
