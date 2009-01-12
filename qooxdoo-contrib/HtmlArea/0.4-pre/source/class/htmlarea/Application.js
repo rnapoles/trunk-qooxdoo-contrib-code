@@ -69,7 +69,7 @@ qx.Class.define("htmlarea.Application",
     {
       this.base(arguments);
       
-      var demoContent = '<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.';
+      var demoContent = '<p id="10" style="font-size:10pt;">10pt</p><p id="20" style="font-size:20pt;">20pt</p>';
 
       qx.Theme.patch(qx.theme.classic.Appearance, htmlarea.theme.classic.Appearance);
 

@@ -57,6 +57,7 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isReady = false;
     
     this.__firstLineSelected = false;
+    this.__listEntryStyles = "";
 
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
@@ -91,6 +92,9 @@ qx.Class.define("htmlarea.HtmlArea",
      * to set the editor in the "editable" mode.
      */
     this.addEventListener("load", this._loaded, this);
+
+
+    this.addEventListener("ready", this._onReady, this);
 
     /*
      * Catch key events. The DOM key events get transformed to qooxdoo key event objects
@@ -978,6 +982,43 @@ qx.Class.define("htmlarea.HtmlArea",
       }
     },
 
+    _onReady : function()
+    {
+      // qx.html.EventRegistration.addEventListener(
+      //   this.getContentWindow(),
+      //   "beforeunload",
+      //   function()
+      //   {
+      //     console.info("foo?!")
+      //     return "wutt?";
+      //   }    
+      //   );
+
+//       win = this.getContentWindow();
+//       body = win.document.body;
+//       var fnc = function(){
+//         console.info("hä?")
+//         return "watt??";
+//       };
+// debugger;
+//       win.onbeforeunload = fnc;
+//       body.onbeforeunload = fnc;
+
+
+
+      var iframe = document.getElementsByTagName("iframe")[0];
+
+      var fnc = function(){return "o'rly?";}
+      // iframe.contentWindow.onbeforeunload = fnc;
+      iframe.contentWindow.onbeforeunload = fnc;
+
+
+
+
+
+
+
+    },
     
     /**
      * Initializes the command manager, sets the document editable, renders
@@ -1543,6 +1584,49 @@ qx.Class.define("htmlarea.HtmlArea",
       
       else if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
+        
+        if (this.__listEntryStyles != "")
+        {
+          qx.client.Timer.once(
+            function() {
+              this.__commandManager.__commandManager.__executeCommand("inserthtml", false, this.__listEntryStyles);
+            
+              /*
+               * Sometimes Gecko executes the command but sets the carret back
+               * to the list. So we have to check if the carret is not in a list
+               * any more.
+               */
+               var sel = this.__getSelection();
+               var rng = sel.getRangeAt(0);
+               var selNode = sel.focusNode;
+               var inList = false;
+               while (selNode.nodeName.toLowerCase() != "body")
+               {
+                 if (selNode.nodeName.toLowerCase() == "li")
+                 {
+                   inList = true;
+                   break;
+                 }
+                 selNode = selNode.parentNode;
+               }
+
+               if (inList)
+               {
+                 // We are still in the list. The inserted HTML is the next
+                 // sibling to the list element. We have to so place the
+                 // carret inside it.
+
+                 var target = selNode.parentNode.nextSibling;
+                 rng.setStart(target, 0);
+                 rng.setEnd(target, 0);
+               }
+
+              this.__listEntryStyles = "";
+            },
+            this,
+            10);
+        }
+        
         /* These keys can change the selection */
         switch(keyIdentifier)
         {
@@ -1960,6 +2044,9 @@ qx.Class.define("htmlarea.HtmlArea",
             {
               if (selNode.nodeName.toLowerCase() == "li")
               {
+                if (selNode.textContent == "") {
+                  this.__listEntryStyles = this.__commandManager.__commandManager.__generateHelperString();
+                }
                 return;
               }
               selNode = selNode.parentNode;
@@ -2803,6 +2890,8 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyRight        : justifyRight ? 1 : 0,
         justifyFull         : justifyFull ? 1 : 0
       };
+
+      console.info(focusNode.id, node.id, eventMap.fontSize, '||', focusNode.tagName, node.tagName)
 
       return eventMap;
     },

@@ -1520,7 +1520,7 @@ qx.Class.define("htmlarea.command.Manager",
        var closings = [];
        
        // retrieve the current styles as structure if no parameter is given
-       var structure = groupedStyles !== null ? groupedStyles : this.__getCurrentStylesGrouped();
+       var structure = groupedStyles != null ? groupedStyles : this.__getCurrentStylesGrouped();
        
        // first traverse the "child" chain
        var child = structure.child;
