@@ -22,24 +22,24 @@ public class SubstitutionTest {
 	public void underline() throws CopyException {
 	    Substitution underline;
 	    
-		underline = new Substitution("_", "_", '/');
-		assertEquals("", underline.apply("", props));
-        assertEquals("1", underline.apply("1", props));
-        assertEquals("one", underline.apply("_1_", props));
-        assertEquals(" one xyz", underline.apply(" _1_ xyz", props));
-        assertEquals("onetwo", underline.apply("_1__2_", props));
-        assertEquals("_", underline.apply("/_", props));
-        assertEquals("__", underline.apply("/_/_", props));
-        assertEquals("abc_def", underline.apply("abc/_def", props));
+		underline = new Substitution("_", "_", '/', props);
+		assertEquals("", underline.apply(""));
+        assertEquals("1", underline.apply("1"));
+        assertEquals("one", underline.apply("_1_"));
+        assertEquals(" one xyz", underline.apply(" _1_ xyz"));
+        assertEquals("onetwo", underline.apply("_1__2_"));
+        assertEquals("_", underline.apply("/_"));
+        assertEquals("__", underline.apply("/_/_"));
+        assertEquals("abc_def", underline.apply("abc/_def"));
 
         try {
-            underline.apply("_3_", props);
+            underline.apply("_3_");
             fail();
         } catch (CopyException e) {
             // ok
         }
         try {
-            underline.apply("_", props);
+            underline.apply("_");
             fail();
         } catch (CopyException e) {
             // ok
@@ -50,23 +50,23 @@ public class SubstitutionTest {
     public void ant() throws CopyException {
         Substitution ant;
         
-        ant = new Substitution("${", "}", '\\');
-        assertEquals("", ant.apply("", props));
-        assertEquals("1", ant.apply("1", props));
-        assertEquals("one", ant.apply("${1}", props));
-        assertEquals(" one xyz", ant.apply(" ${1} xyz", props));
-        assertEquals("onetwo", ant.apply("${1}${2}", props));
-        assertEquals("${", ant.apply("\\${", props));
-        assertEquals("${${", ant.apply("\\${\\${", props));
-        assertEquals("123${456", ant.apply("123\\${456", props));
+        ant = Substitution.ant(props);
+        assertEquals("", ant.apply(""));
+        assertEquals("1", ant.apply("1"));
+        assertEquals("one", ant.apply("${1}"));
+        assertEquals(" one xyz", ant.apply(" ${1} xyz"));
+        assertEquals("onetwo", ant.apply("${1}${2}"));
+        assertEquals("${", ant.apply("\\${"));
+        assertEquals("${${", ant.apply("\\${\\${"));
+        assertEquals("123${456", ant.apply("123\\${456"));
         try {
-            ant.apply("${3}", props);
+            ant.apply("${3}");
             fail();
         } catch (CopyException e) {
             // ok
         }
         try {
-            ant.apply("${", props);
+            ant.apply("${");
             fail();
         } catch (CopyException e) {
             // ok

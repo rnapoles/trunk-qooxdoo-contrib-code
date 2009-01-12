@@ -406,7 +406,7 @@ public abstract class Node {
      * @return source files actually copied, no directories 
      */
     public List<Node> copyDirectory(Node destRoot, Filter filter) throws IOException {
-    	return new Copy(this, null, null, null, filter, false).copy(destRoot);
+    	return new Copy(this).copy(destRoot);
     }
 
     //-- search for child nodes
