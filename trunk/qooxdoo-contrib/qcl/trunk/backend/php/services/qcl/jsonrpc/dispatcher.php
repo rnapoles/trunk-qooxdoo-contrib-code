@@ -435,6 +435,21 @@ if (! $classExists)
 $service = new $className();
 
 /*
+ * Check if service has been aborted in the constructor. This allows
+ * more fine-grained access control.
+ * @todo put this in overriding method
+ */
+if ( method_exists($service, "isAborted") && $service->isAborted() )
+{
+  $ret = array("result" => $service->response(),
+               "id"     => $jsonInput->id);    
+  
+  $jsonStr = $json->encode($ret);
+  SendReply($jsonStr, $scriptTransportId);
+  exit;
+}
+
+/*
  * Do referer checking.  There is a global default which can be overridden by
  * each service for a specified method.
  */

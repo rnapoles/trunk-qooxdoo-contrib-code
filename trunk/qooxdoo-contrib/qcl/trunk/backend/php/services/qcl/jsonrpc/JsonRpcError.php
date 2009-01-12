@@ -159,12 +159,22 @@ class JsonRpcError
         $this->scriptTransportId = $id;
     }
     
-    function SendAndExit()
+    /**
+     * Returns the error jsonrpc data to the client
+     * @param array $optional_data An optional array of key=>value pairs that should be included
+     * in the array response. Must not contain the keys "error" and "id"
+     */
+    function SendAndExit( $optional_data=array() )
     {
-        $error = $this;
+      
         $id = $this->id;
-        $ret = array("error" => $this->data,
-                     "id"    => $id);
+        $ret = array_merge(
+                array(
+                  "error" => $this->data,
+                   "id"   => $id
+                ),
+                $optional_data
+               );
         SendReply($this->json->encode($ret), $this->scriptTransportId);
         exit;
     }
