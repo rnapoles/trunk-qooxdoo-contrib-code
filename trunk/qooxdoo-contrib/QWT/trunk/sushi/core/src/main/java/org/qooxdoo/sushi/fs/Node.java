@@ -44,9 +44,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.io.Buffer;
-import org.qooxdoo.sushi.util.Diff;
 import org.qooxdoo.sushi.util.Strings;
-import org.qooxdoo.sushi.util.SubstitutionException;
 import org.qooxdoo.sushi.xml.Serializer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -412,101 +410,14 @@ public abstract class Node {
 
     //-- diff
 
-    public String diffDirectory(Node destdir) throws IOException {
-        return diffDirectory(destdir, destdir.getIO().filter().includeAll());
+    public String diffDirectory(Node rightdir) throws IOException {
+        return diffDirectory(rightdir, false);        
     }
 
-    public String diffDirectory(Node destdir, Filter filter) throws IOException {
-        return diffDirectory(destdir, filter, false);
+    public String diffDirectory(Node rightdir, boolean brief) throws IOException {
+        return new Diff(brief, getIO().filter().includeAll()).directory(this, rightdir);        
     }
 
-    public String diffDirectory(Node destdir, Filter filter, boolean brief) throws IOException {
-        StringBuilder result;
-        String relative;
-        Node src;
-        
-        result = new StringBuilder();
-        checkDirectory();
-        destdir.checkDirectory();
-        for (Node dest : destdir.find(filter)) {
-            relative = dest.getRelative(destdir);
-            src = join(relative);
-            if (src.isDirectory()) {
-                if (dest.isDirectory()) {
-                    // ok
-                } else if (dest.isFile()) {
-                    throw new IOException("TODO");
-                } else {
-                    if (brief) {
-                        diffBrief('A', relative, result);
-                    } else {
-                        // TODO
-                    }
-                }
-            } else if (dest.isDirectory()) {
-                diffBrief("A", relative, result);
-            } else {
-                src.diffFile(dest, relative, brief, result);
-            }
-        }
-        return result.toString();
-    }
-
-    public String diffFile(Node cmp, boolean brief) throws IOException {
-        StringBuilder result;
-        
-        result = new StringBuilder();
-        diffFile(cmp, "TODO", brief, result);
-        return result.toString();
-    }
-
-    public void diffFile(Node cmp, String relative, boolean brief, StringBuilder result) throws IOException {
-        if (brief) {
-            diffFileBrief(cmp, relative, result);
-        } else {
-            diffFileNormal(cmp, relative, result);
-        }
-    }
-    
-    public void diffFileNormal(Node cmp, String relative, StringBuilder result) throws IOException {
-        String str;
-        
-        if (!exists()) {
-            cmp.checkFile();
-            diffBrief("###", relative, result);
-            result.append(Strings.indent(cmp.readString(), "+ "));
-        } else {
-            str = Diff.diff(readString(), cmp.readString());
-            if (str.length() > 0) {
-                diffBrief("###", relative, result);
-                result.append(str);
-            }
-        }
-    }
-    
-    public void diffFileBrief(Node cmp, String relative, StringBuilder result) throws IOException {
-        if (!exists()) {
-            cmp.checkFile();
-            diffBrief('A', relative, result);
-        } else if (!cmp.exists()) {
-            diffBrief('R', relative, result);
-        } else if (diff(cmp)) {
-            diffBrief('M', relative, result);
-        } else if (getMode() != cmp.getMode()) {
-            diffBrief('m', relative, result);
-        } else {
-            // nothing
-        }
-    }
-
-    private void diffBrief(char name, String relative, StringBuilder result) {
-        diffBrief(new String("" + name), relative, result);
-    }
-
-    private void diffBrief(String name, String relative, StringBuilder result) {
-        result.append(name).append(' ').append(relative).append('\n');
-    }
-    
     /** cheap diff if you only need a yes/no answer */
     public boolean diff(Node right) throws IOException {
         return diff(right, new Buffer(getIO().getBuffer()));

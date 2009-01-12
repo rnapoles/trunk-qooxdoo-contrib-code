@@ -102,6 +102,6 @@ public class CopyTest {
     private String doDiff(Node destdir, boolean brief) throws IOException {
         Node tmp = io.getTemp().createTempDirectory();
         copy.copy(tmp);
-        return destdir.diffDirectory(tmp, io.filter().includeAll(), brief);
+        return destdir.diffDirectory(tmp, brief);
     }
 }
