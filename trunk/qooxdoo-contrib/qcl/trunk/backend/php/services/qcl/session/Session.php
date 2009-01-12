@@ -125,7 +125,7 @@ class qcl_session_Session extends qcl_db_model
 	 */
   function unregisterSession( $sessionId )
   {
-    $this->debug($sessionId);
+   //$this->debug($sessionId);
     /*
      * delete session
      */

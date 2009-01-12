@@ -586,7 +586,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
     {
       $attr = $child->attributes();
       $tag  = $child->getName();
-      //if ($GLOBALS['debug']==true) $this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
+      //if ($GLOBALS['debug']==true)//$this->debug("<$tag $name='{$attr[$name]}' =='$value'? >");
       if ( $attr[$name] == $value )
       {
         return $child;

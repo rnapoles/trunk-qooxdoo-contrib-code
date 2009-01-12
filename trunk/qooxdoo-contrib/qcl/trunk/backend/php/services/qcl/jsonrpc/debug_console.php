@@ -90,7 +90,7 @@ if ( $_POST )
           if ( $msg['name'] == "qcl.commands.setSessionId" )
           {
             $sessionId = $msg['data'];
-            $this->debug("Setting Session Id to $sessionId ... ");
+           //$this->debug("Setting Session Id to $sessionId ... ");
             $this->setSessionId($sessionId);
             echo "
               <script>
