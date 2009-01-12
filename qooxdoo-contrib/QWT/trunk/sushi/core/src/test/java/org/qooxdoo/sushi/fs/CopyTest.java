@@ -1,4 +1,4 @@
-package org.qooxdoo.sushi.fs.copy;
+package org.qooxdoo.sushi.fs;
 
 import static org.junit.Assert.assertEquals;
 
