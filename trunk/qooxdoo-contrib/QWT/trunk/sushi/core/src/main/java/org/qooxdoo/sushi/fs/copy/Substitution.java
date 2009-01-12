@@ -42,7 +42,7 @@ public class Substitution {
 		this.variables = variables;
 	}
 	
-	public String apply(String content) throws CopyException {
+	public String apply(String content) throws SubstitutionException {
 		StringBuilder builder;
 		int start;
 		int end;
@@ -69,12 +69,12 @@ public class Substitution {
 			    last = start + prefix.length();
 			} else {
 			    if (end == -1) {
-			        throw new CopyException("missing end marker");
+			        throw new SubstitutionException("missing end marker");
 			    } 
 			    var = content.substring(start + prefix.length(), end);
 			    replaced = variables.get(var);
 			    if (replaced == null) {
-			        throw new CopyException("undefined variable: " + var);
+			        throw new SubstitutionException("undefined variable: " + var);
 			    }
 			    builder.append(content.substring(last, start));
 			    builder.append(replaced);

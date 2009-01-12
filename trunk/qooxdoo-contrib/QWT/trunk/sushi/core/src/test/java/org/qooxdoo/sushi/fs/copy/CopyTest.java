@@ -25,7 +25,7 @@ public class CopyTest {
 
 
 	@Test
-    public void copy() throws IOException {
+    public void copy() throws Exception {
         Node destdir;
         
         destdir = copy.getSourceDir().getIO().getTemp().createTempDirectory();
@@ -72,7 +72,7 @@ public class CopyTest {
     }
 	
     @Test
-    public void mode() throws IOException {
+    public void mode() throws Exception {
         Node destdir;
         Node file;
         

@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -44,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.qooxdoo.sushi.fs.copy.Copy;
+import org.qooxdoo.sushi.fs.copy.SubstitutionException;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Diff;
@@ -408,7 +408,7 @@ public abstract class Node {
      * @return source files actually copied, no directories 
      */
     public List<Node> copyDirectory(Node destdir, Filter filter) throws IOException {
-    	return new Copy(this, filter).copy(destdir);
+        return new Copy(this, filter).copy(destdir);
     }
 
     //-- diff
