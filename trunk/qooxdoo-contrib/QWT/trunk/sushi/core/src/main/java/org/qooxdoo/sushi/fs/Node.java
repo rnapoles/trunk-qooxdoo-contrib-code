@@ -42,7 +42,6 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.qooxdoo.sushi.fs.copy.Copy;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.io.Buffer;
 import org.qooxdoo.sushi.util.Diff;

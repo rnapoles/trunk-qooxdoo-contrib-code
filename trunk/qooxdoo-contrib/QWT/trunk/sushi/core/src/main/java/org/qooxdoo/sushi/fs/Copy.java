@@ -17,14 +17,12 @@
    
  ************************************************************************ */
 
-package org.qooxdoo.sushi.fs.copy;
+package org.qooxdoo.sushi.fs;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.qooxdoo.sushi.fs.CopyException;
-import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.util.Substitution;
 import org.qooxdoo.sushi.util.SubstitutionException;
