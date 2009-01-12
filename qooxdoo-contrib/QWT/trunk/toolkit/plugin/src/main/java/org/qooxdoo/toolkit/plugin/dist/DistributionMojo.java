@@ -250,7 +250,7 @@ public class DistributionMojo extends Base {
         filter.exclude("repository");
         filter.exclude("repository/**/*");
 
-        qwtSource.copyDirectory(filter, dest);
+        qwtSource.copyDirectory(dest, filter);
     }
 
     private void qwtSvn(Node qwt) throws IOException, SVNException {
@@ -268,7 +268,7 @@ public class DistributionMojo extends Base {
         
         filter = io.filter().include("org/qooxdoo/**/*", "org/eclipse/base/**/*");
 
-        localRepository.copyDirectory(filter, unzipped.join("repository").mkdir());
+        localRepository.copyDirectory(unzipped.join("repository").mkdir(), filter);
         for (Node node : unzipped.find("**/maven-metadata-local.xml")) {
             dest = (FileNode) node.getParent().join("maven-metadata.xml");
             ((FileNode) node).rename(dest);

@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
+@Ignore
 public class CopyTest {
 	private IO io;
 	private Copy copy;
