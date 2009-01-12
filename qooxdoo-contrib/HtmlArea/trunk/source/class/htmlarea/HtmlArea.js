@@ -57,6 +57,7 @@ qx.Class.define("htmlarea.HtmlArea",
     this.__isReady = false;
     
     this.__firstLineSelected = false;
+    this.__listEntryStyles = "";
 
     this.setTabIndex(1);
     this.setEnableElementFocus(false);
@@ -977,7 +978,6 @@ qx.Class.define("htmlarea.HtmlArea",
         this._onDocumentIsReady();
       }
     },
-
     
     /**
      * Initializes the command manager, sets the document editable, renders
@@ -1543,6 +1543,56 @@ qx.Class.define("htmlarea.HtmlArea",
       
       else if (qx.core.Variant.isSet("qx.client", "gecko"))
       {
+        
+        if (this.__listEntryStyles != "")
+        {
+          qx.client.Timer.once(
+            function() {
+              // Insert HTML snippet containting the style settings from
+              // the last list entry.
+              this.__commandManager.__commandManager.execute(
+                "inserthtml",
+                this.__listEntryStyles);
+
+              /*
+               * Sometimes Gecko executes the command but sets the carret back
+               * to the list. So we have to check if the carret is not in a list
+               * any more.
+               */
+               var sel = this.__getSelection();
+               var rng = sel.getRangeAt(0);
+               var selNode = sel.focusNode;
+               var inList = false;
+               while (selNode.nodeName.toLowerCase() != "body")
+               {
+                 if (selNode.nodeName.toLowerCase() == "li")
+                 {
+                   inList = true;
+                   break;
+                 }
+                 selNode = selNode.parentNode;
+               }
+
+               if (inList)
+               {
+                 // We are still in the list. The inserted HTML is the next
+                 // sibling to the list element. We have to so place the
+                 // carret inside it.
+                 var nextToList = selNode.parentNode.nextSibling;
+                 var target = nextToList.firstChild ?
+                                nextToList.firstChild :
+                                nextToList;
+
+                 rng.setStart(target, 0);
+                 rng.setEnd(target, 0);
+               }
+
+              this.__listEntryStyles = "";
+            },
+            this,
+            10);
+        }
+        
         /* These keys can change the selection */
         switch(keyIdentifier)
         {
@@ -1954,12 +2004,19 @@ qx.Class.define("htmlarea.HtmlArea",
 
           if (sel)
           {
-            // check if inside a list
+            // Check if the carret is inside a list:
             var selNode = sel.focusNode;
             while (selNode.nodeName.toLowerCase() != "body")
             {
               if (selNode.nodeName.toLowerCase() == "li")
               {
+                if (selNode.textContent == "")
+                {
+                  // We are on a list entry. The current style settings are
+                  // saved on __listEntryStyles to apply them once the carret
+                  // is outside the list.
+                  this.__listEntryStyles = this.__commandManager.__commandManager.generateHelperString();
+                }
                 return;
               }
               selNode = selNode.parentNode;
