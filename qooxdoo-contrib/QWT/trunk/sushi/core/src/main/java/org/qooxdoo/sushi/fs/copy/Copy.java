@@ -26,7 +26,7 @@ import java.util.List;
 import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.fs.filter.Filter;
 
-/** TODO adjust directory modes */
+/** Copy configuration and command. */
 public class Copy {
     private final Node sourcedir;
 	/** relevant files in source dir */
@@ -38,15 +38,23 @@ public class Copy {
     private final Substitution content;
 
 	public Copy(Node srcdir) {
-		this(srcdir, null, null, srcdir.getIO().filter().includeAll(), false);
+		this(srcdir, srcdir.getIO().filter().includeAll());
 	}
 	
-	public Copy(Node srcdir, Substitution path, Substitution content, Filter filter, boolean modes) {
+    public Copy(Node srcdir, Filter filter) {
+        this(srcdir, filter, false);
+    }
+    
+    public Copy(Node srcdir, Filter filter, boolean modes) {
+        this(srcdir, filter, modes, null, null);
+    }
+    
+	public Copy(Node srcdir, Filter filter, boolean modes, Substitution path, Substitution content) {
 	    this.sourcedir = srcdir;
+        this.filter = filter;
+        this.modes = modes;
 		this.path = path;
 		this.content = content;
-		this.filter = filter;
-		this.modes = modes;
 	}
 
 	public Node getSourceDir() {
