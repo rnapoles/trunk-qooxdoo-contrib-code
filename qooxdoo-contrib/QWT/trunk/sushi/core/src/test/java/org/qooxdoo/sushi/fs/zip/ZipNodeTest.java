@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
@@ -38,41 +39,41 @@ public class ZipNodeTest {
     private IO ioObj = new IO();
     
     @Test
-    public void jar() throws RootPathException, IOException {
+    public void junit() throws RootPathException, IOException {
         FileNode jar;
         String rootPath;
         String locator;
-        ZipNode object;
-        ZipNode lang;
+        ZipNode assrt;
+        ZipNode junit;
         List<? extends Node> list;
         List<? extends Node> tree;
         
-        jar = ioObj.locateClasspathItem(Object.class);
-        rootPath = jar.getAbsolute() + "!/java/lang/Object.class";
+        jar = ioObj.locateClasspathItem(Assert.class);
+        rootPath = jar.getAbsolute() + "!/org/junit/Assert.class";
         locator = "zip:" + rootPath;
-        object = (ZipNode) ioObj.node(locator);
-        assertEquals(locator, object.getLocator());
-        assertEquals("java/lang/Object.class", object.getPath());
-        assertTrue(object.exists());
-        assertTrue(object.isFile());
-        assertTrue(object.readString().length() > 100);
-        lang = (ZipNode) object.getParent();
-        assertEquals("java/lang", lang.getPath());
-        assertTrue(lang.isDirectory());
-        list = lang.list();
+        assrt = (ZipNode) ioObj.node(locator);
+        assertEquals(locator, assrt.getLocator());
+        assertEquals("org/junit/Assert.class", assrt.getPath());
+        assertTrue(assrt.exists());
+        assertTrue(assrt.isFile());
+        assertTrue(assrt.readString().length() > 100);
+        junit = (ZipNode) assrt.getParent();
+        assertEquals("org/junit", junit.getPath());
+        assertTrue(junit.isDirectory());
+        list = junit.list();
         assertTrue(list.size() > 10);
-        assertTrue(list.contains(object));
+        assertTrue(list.contains(assrt));
         assertFalse(list.contains(list));
-        tree = lang.find("**/*");
+        tree = junit.find("**/*");
         assertTrue(tree.size() > list.size());
-        assertTrue(tree.contains(object));
+        assertTrue(tree.contains(assrt));
         assertFalse(tree.contains(list));
         assertTrue(tree.containsAll(list));
-        object = (ZipNode) lang.join("Object.class");
-        assertTrue(object.exists());
-        assertTrue(object.isFile());
+        assrt = (ZipNode) junit.join("Assert.class");
+        assertTrue(assrt.exists());
+        assertTrue(assrt.isFile());
     }
-    
+ 
     @Test
     public void manifest() throws IOException {
         FileNode jar;

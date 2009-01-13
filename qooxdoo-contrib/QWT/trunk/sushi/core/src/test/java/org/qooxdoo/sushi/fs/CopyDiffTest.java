@@ -53,22 +53,22 @@ public class CopyDiffTest {
         assertEquals("### file\n" +
         		"+ home: mhm\n" +
                 "+ machine: walter\n", diff(destdir));
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals("", brief(destdir));
         
         copy.getSourceDir().join("folder").mkdir();
         assertEquals("A folder\n", brief(destdir));
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals("", brief(destdir));
         
         copy.getSourceDir().join("superdir/subdir").mkdirs();
         assertEquals("A superdir\nA superdir/subdir\n", brief(destdir));
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals("", brief(destdir));
 
         copy.getSourceDir().join("folder/file").writeLines("home: ${home}", "machine: ${machine}");
         assertEquals("A folder/file\n", brief(destdir));
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals("", brief(destdir));
         
         variables.put("machine", "fritz");
@@ -79,7 +79,7 @@ public class CopyDiffTest {
                 "### folder/file\n" + 
                 "- machine: walter\n" +
                 "+ machine: fritz\n", diff(destdir));
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals("", brief(destdir));
         assertEquals("", diff(destdir));
     }
@@ -94,12 +94,12 @@ public class CopyDiffTest {
         file = copy.getSourceDir().join("file");
         file.writeLines("foo");
         file.setMode(0700);
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals(0700, destdir.join("file").getMode());
 
         file.setMode(0655);
         assertEquals("m file\n", brief(destdir));
-        copy.copy(destdir);
+        copy.directory(destdir);
         assertEquals(0655, destdir.join("file").getMode());
     }
     
@@ -113,7 +113,7 @@ public class CopyDiffTest {
     
     private String doDiff(Node destdir, boolean brief) throws IOException {
         Node tmp = io.getTemp().createTempDirectory();
-        copy.copy(tmp);
+        copy.directory(tmp);
         return destdir.diffDirectory(tmp, brief);
     }
 }

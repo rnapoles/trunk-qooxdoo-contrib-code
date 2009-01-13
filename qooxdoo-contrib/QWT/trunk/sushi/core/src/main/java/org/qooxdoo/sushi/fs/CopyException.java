@@ -20,8 +20,11 @@
 package org.qooxdoo.sushi.fs;
 
 public class CopyException extends NodeException {
-    public CopyException(Node node, Throwable e) {
-        super(node, "copy failed");
+    public final Node dest;
+
+    public CopyException(Node src, Node dest, Throwable e) {
+        super(src, "copy failed: " + dest + ": " + e.getMessage());
+        this.dest = dest;
         initCause(e);
     }
 }
