@@ -29,7 +29,7 @@
   "let" :
   {
     "APPLICATION"  : "custom",
-    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QOOXDOO_PATH" : "../../../qooxdoo/trunk",
     "QXTHEME"      : "custom.theme.Theme",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],

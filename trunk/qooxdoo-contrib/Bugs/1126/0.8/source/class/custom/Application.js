@@ -55,19 +55,45 @@ qx.Class.define("custom.Application",
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
+      var scroll = new qx.ui.container.Scroll().set({
+        height: 200,
+        width: 400,
+        scrollbarX: "off"
+      });      
+      this.getRoot().add(scroll, {left: 10, top: 10});
+      
+      var container = new qx.ui.container.Composite();
+      scroll.add(container);
+      container.setLayout(new qx.ui.layout.VBox());
+      container.add(this.create_a_table());
+      container.add(this.create_a_table());
+    },
+    
+    create_a_table : function()
+    {
+      var model = new qx.ui.table.model.Simple ();
+      model.setColumns([ "Column 1", "Column 2", "Column 3" ]);
 
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      var custom = {
+        tableColumnModel : function(obj) {
+          return new qx.ui.table.columnmodel.Resize (obj);
+        }
+      };
 
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
+      var table = new qx.ui.table.Table (model, custom).set ({
+        height:150
       });
-    }
+
+      table.setColumnVisibilityButtonVisible (false);
+      table.setStatusBarVisible (false);
+
+      data = [ ];
+      for (var i = 1; i <= 50; i++) {
+        data[i-1] = ([ ""+i, ""+(i*i), ""+(i*i*i) ]);
+      }
+      model.setData (data);
+
+      return table;
+    }    
   }
 });
