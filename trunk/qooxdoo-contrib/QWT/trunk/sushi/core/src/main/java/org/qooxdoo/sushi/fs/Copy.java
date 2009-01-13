@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.qooxdoo.sushi.fs.filter.Filter;
 import org.qooxdoo.sushi.util.Substitution;
-import org.qooxdoo.sushi.util.SubstitutionException;
 
 /** Copy configuration and command. */
 public class Copy {
@@ -63,7 +62,7 @@ public class Copy {
 	}
 	
 	/** @return Source files copied */
-	public List<Node> copy(Node destdir) throws IOException {
+	public List<Node> directory(Node destdir) throws IOException {
 		Node dest;
 		String relative;
         String replaced;
@@ -74,33 +73,35 @@ public class Copy {
 		destdir.checkDirectory();
 		for (Node src : sourcedir.find(filter)) {
 			relative = src.getRelative(sourcedir);
-			if (path != null) {
-				try {
-                    relative = path.apply(relative);
-                } catch (SubstitutionException e) {
-                    throw new CopyException(src, e);
-                }
-			}
-			dest = destdir.join(relative);
-			if (src.isDirectory()) {
-		        dest.mkdirsOpt();
-			} else {
-			    dest.getParent().mkdirsOpt();
-			    if (content != null) {
-			    	try {
-                        replaced = content.apply(src.readString());
-                    } catch (SubstitutionException e) {
-                        throw new CopyException(src, e);
-                    }
-			    	dest.writeString(replaced);
-			    } else {
-			    	src.copyFile(dest);
+			dest = null;
+            try {
+                if (path != null) {
+			        relative = path.apply(relative);
 			    }
-			    result.add(src);
-			}
-			if (modes) {
-				dest.setMode(src.getMode());
-			}
+			    dest = destdir.join(relative);
+			    if (src.isDirectory()) {
+		            dest.mkdirsOpt();
+			    } else {
+			        dest.getParent().mkdirsOpt();
+			        if (content != null) {
+                        replaced = content.apply(src.readString());
+			    	    dest.writeString(replaced);
+			        } else {
+			    	    src.copyFile(dest);
+			        }
+			        result.add(src);
+			    }
+			    if (modes) {
+				    dest.setMode(src.getMode());
+			    }
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                if (dest == null) {
+                    dest = destdir.join(relative);
+                }
+                throw new CopyException(src, dest, e);
+            }
 		}
 		return result;
 	}
