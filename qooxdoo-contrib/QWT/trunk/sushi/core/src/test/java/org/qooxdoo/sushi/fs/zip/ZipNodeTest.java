@@ -64,6 +64,7 @@ public class ZipNodeTest {
         assertTrue(list.size() > 10);
         assertTrue(list.contains(assrt));
         assertFalse(list.contains(list));
+        assertEquals(2, junit.getParent().list().size());
         tree = junit.find("**/*");
         assertTrue(tree.size() > list.size());
         assertTrue(tree.contains(assrt));
