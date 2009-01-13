@@ -642,39 +642,62 @@ public abstract class NodeTest extends NodeReadOnlyTest {
     }
 
     @Test
-    public void uid() throws Exception {
-        Node file;
-        int id;
-        
-        file = work.join("file");
-        file.writeBytes();
-        try {
-            id = file.getUid();
-        } catch (UnsupportedOperationException e) {
-            // ok - quit
-            return;
-        }
-        file.setUid(id);
-        assertEquals(id, file.getUid());
+    public void uidDir() throws Exception {
+        doUid(work.join("dir").mkdir());
     }
-
     @Test
-    public void gid() throws Exception {
-        Node file;
+    public void uidFile() throws Exception {
+        doUid(work.join("file").writeBytes());
+    }
+
+    private void doUid(Node node) throws IOException {
         int id;
-        
-        file = work.join("file");
-        file.writeBytes();
+
         try {
-            id = file.getGid();
+            id = node.getUid();
         } catch (UnsupportedOperationException e) {
             // ok - quit
             return;
         }
-        file.setGid(id);
-        assertEquals(id, file.getGid());
+        node.setUid(id);
+        assertEquals(id, node.getUid());
+        try {
+            node.setUid(0);
+            fail();
+        } catch (IOException e) {
+            // ok
+        }
+        assertEquals(id, node.getUid());
     }
+    
+    @Test
+    public void gidDir() throws Exception {
+        doGid(work.join("dir").mkdir());
+    }
+    @Test
+    public void gidFile() throws Exception {
+        doGid(work.join("file").writeBytes());
+    }
+    private void doGid(Node node) throws IOException {
+        int id;
 
+        try {
+            id = node.getGid();
+        } catch (UnsupportedOperationException e) {
+            // ok - quit
+            return;
+        }
+        node.setGid(id);
+        assertEquals(id, node.getGid());
+        try {
+            node.setGid(0);
+            fail();
+        } catch (IOException e) {
+            // ok
+        }
+        assertEquals(id, node.getGid());
+    }
+    
     //-- Object methods
     
     @Test
