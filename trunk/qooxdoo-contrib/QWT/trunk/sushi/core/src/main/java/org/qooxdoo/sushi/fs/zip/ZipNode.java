@@ -165,7 +165,7 @@ public class ZipNode extends Node {
         while (e.hasMoreElements()) {
             entry = e.nextElement();
             name = entry.getName();
-            if (name.startsWith(prefix)) {
+            if (name.length() > length && name.startsWith(prefix)) {
                 idx = name.indexOf(separator, length);
                 name = (idx == -1 ? name : name.substring(0, idx));
                 if (!done.contains(name)) {
