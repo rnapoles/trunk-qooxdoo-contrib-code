@@ -1,73 +1,93 @@
 /* ************************************************************************
-
-   Copyright:
-
-   License:
-
-   Authors:
-
+#require(qx.log.appender.Console)
+#require(qx.log.appender.Native)
 ************************************************************************ */
 
-/* ************************************************************************
-
-#asset(custom/*)
-
-************************************************************************ */
-
-/**
- * This is the main application class of your custom application "1192"
- */
 qx.Class.define("custom.Application",
 {
   extend : qx.application.Standalone,
 
-
-
-  /*
-  *****************************************************************************
-     MEMBERS
-  *****************************************************************************
-  */
-
   members :
   {
-    /**
-     * This method contains the initial application code and gets called 
-     * during startup of the application
-     */
     main : function()
     {
-      // Call super class
       this.base(arguments);
-
-      // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
-      {
-        // support native logging capabilities, e.g. Firebug for Firefox
-        qx.log.appender.Native;
-        // support additional cross-browser console. Press F7 to toggle visibility
-        qx.log.appender.Console;
-      }
-
-      /*
-      -------------------------------------------------------------------------
-        Below is your actual application code...
-      -------------------------------------------------------------------------
-      */
-
-      // Create a button
-      var button1 = new qx.ui.form.Button("First Button", "custom/test.png");
-
-      // Document is the application root
-      var doc = this.getRoot();
-			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
-
-      // Add an event listener
-      button1.addListener("execute", function(e) {
-        alert("Hello World!");
+  
+      var win = new qx.ui.window.Window().set({
+        contentPadding: 0
       });
+      win.setLayout(new qx.ui.layout.Grow());
+      win.open();
+      
+      var rowData = this.createRandomRows(10);
+
+      var tableModel = this._tableModel = new qx.ui.table.model.Simple();
+      tableModel.setColumns([ "ID", "A number", "A date", "Boolean" ]);
+      tableModel.setData(rowData);
+
+      var custom =
+      {
+        tableColumnModel : function(obj) {
+          return new qx.ui.table.columnmodel.Resize(obj);
+        }
+      };
+
+      var table = new qx.ui.table.Table(tableModel, custom);
+      win.add(table);
+      table.set(
+        {
+          width: 400,
+          height: 400
+        });
+
+      table.setMetaColumnCounts([ 1, -1 ]);
+
+      var tcm = table.getTableColumnModel();
+
+      // Obtain the behavior object to manipulate
+      var resizeBehavior = tcm.getBehavior();
+
+      // This uses the set() method to set all attriutes at once; uses flex
+      resizeBehavior.set(0, { width:"1*", minWidth:180 });
+
+      tcm.setDataCellRenderer(3, new qx.ui.table.cellrenderer.Boolean());
+
+      var renderer =
+        new qx.ui.table.headerrenderer.Icon("icon/16/apps/office-calendar.png",
+                                            "A date");
+      tcm.setHeaderCellRenderer(2, renderer);
+
+      
+      //this.getRoot().add(table);
+    },
+
+    nextId : 0,
+    createRandomRows : function(rowCount)
+    {
+      var rowData = [];
+      var now = new Date().getTime();
+      var dateRange = 400 * 24 * 60 * 60 * 1000; // 400 days
+      for (var row = 0; row < rowCount; row++)
+      {
+        var date = new Date(now + Math.random() * dateRange - dateRange / 2);
+        rowData.push([
+                       this.nextId++,
+                       Math.random() * 10000,
+                       date,
+                       (Math.random() > 0.5)
+                     ]);
+      }
+      return rowData;
+    },
+
+    close : function()
+    {
+      this.base(arguments);
+    },
+
+
+    terminate : function() {
+      this.base(arguments);
     }
   }
 });
