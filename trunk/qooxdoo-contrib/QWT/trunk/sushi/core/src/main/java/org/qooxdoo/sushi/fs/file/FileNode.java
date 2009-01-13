@@ -367,6 +367,26 @@ public class FileNode extends Node {
         new Program(dir(), "chmod", Integer.toOctalString(mode), getAbsolute()).execNoOutput();
     }
     
+    @Override
+    public int getUid() throws IOException {
+        return Integer.parseInt(new Program(dir(), "stat", "--format", "%u", getAbsolute()).exec().trim());
+    }
+    
+    @Override
+    public void setUid(int uid) throws IOException {
+        new Program(dir(), "chown", Integer.toString(uid), getAbsolute()).execNoOutput();
+    }
+
+    @Override
+    public int getGid() throws IOException {
+        return Integer.parseInt(new Program(dir(), "stat", "--format", "%g", getAbsolute()).exec().trim());
+    }
+
+    @Override
+    public void setGid(int gid) throws IOException {
+        new Program(dir(), "chgrp", Integer.toString(gid), getAbsolute()).execNoOutput();
+    }
+
     private FileNode dir() {
         return (FileNode) getParent();
     }
