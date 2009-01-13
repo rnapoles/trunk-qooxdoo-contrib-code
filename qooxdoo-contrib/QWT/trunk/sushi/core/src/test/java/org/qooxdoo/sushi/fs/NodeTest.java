@@ -641,6 +641,40 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         assertEquals(0755, file.getMode());
     }
 
+    @Test
+    public void uid() throws Exception {
+        Node file;
+        int id;
+        
+        file = work.join("file");
+        file.writeBytes();
+        try {
+            id = file.getUid();
+        } catch (UnsupportedOperationException e) {
+            // ok - quit
+            return;
+        }
+        file.setUid(id);
+        assertEquals(id, file.getUid());
+    }
+
+    @Test
+    public void gid() throws Exception {
+        Node file;
+        int id;
+        
+        file = work.join("file");
+        file.writeBytes();
+        try {
+            id = file.getGid();
+        } catch (UnsupportedOperationException e) {
+            // ok - quit
+            return;
+        }
+        file.setGid(id);
+        assertEquals(id, file.getGid());
+    }
+
     //-- Object methods
     
     @Test

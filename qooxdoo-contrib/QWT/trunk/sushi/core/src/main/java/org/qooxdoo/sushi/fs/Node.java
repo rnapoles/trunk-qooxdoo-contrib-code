@@ -152,6 +152,11 @@ public abstract class Node {
     public abstract int getMode() throws IOException;
     public abstract void setMode(int mode) throws IOException;
 
+    public abstract int getUid() throws IOException;
+    public abstract void setUid(int id) throws IOException;
+    public abstract int getGid() throws IOException;
+    public abstract void setGid(int id) throws IOException;
+
     //-- path functionality
 
     /**

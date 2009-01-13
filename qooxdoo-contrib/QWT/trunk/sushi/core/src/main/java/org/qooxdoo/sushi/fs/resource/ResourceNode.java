@@ -69,6 +69,26 @@ public class ResourceNode extends Node {
         throw unsupported("setMode()");
     }
 
+    @Override 
+    public int getUid() {
+        throw unsupported("getUid()");
+    }
+
+    @Override
+    public void setUid(int uid) {
+        throw unsupported("setUid()");
+    }
+
+    @Override 
+    public int getGid() {
+        throw unsupported("getGid()");
+    }
+
+    @Override
+    public void setGid(int gid) {
+        throw unsupported("setGid()");
+    }
+
     @Override
     public boolean exists() {
         return filesystem.inputStream(path) != null;

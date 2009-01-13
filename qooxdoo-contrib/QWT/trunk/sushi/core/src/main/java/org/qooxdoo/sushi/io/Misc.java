@@ -22,6 +22,10 @@ package org.qooxdoo.sushi.io;
 import java.io.IOException;
 
 public class Misc {
+    public static IOException exception(Throwable cause) {
+        return exception(cause.getMessage(), cause);
+    }
+
     public static IOException exception(String msg, Throwable cause) {
         IOException e;
         

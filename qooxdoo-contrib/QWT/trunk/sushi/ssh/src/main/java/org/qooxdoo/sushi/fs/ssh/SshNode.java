@@ -206,7 +206,7 @@ public class SshNode extends Node {
         try {
             return channel.stat(slashPath).getPermissions() & 0777;
         } catch (SftpException e) {
-            throw new IOException(e.getMessage());
+            throw Misc.exception(e);
         }
     }
 
@@ -219,10 +219,53 @@ public class SshNode extends Node {
             stat.setPERMISSIONS(mode);
             channel.setStat(slashPath, stat);
         } catch (SftpException e) {
-            throw new IOException(e.getMessage());
+            throw Misc.exception(e);
         }
     }
 
+    @Override
+    public int getUid() throws IOException {
+        try {
+            return channel.stat(slashPath).getUId();
+        } catch (SftpException e) {
+            throw Misc.exception(e);
+        }
+    }
+    
+    @Override
+    public void setUid(int uid) throws IOException {
+        SftpATTRS stat;
+        
+        try {
+            stat = channel.stat(slashPath);
+            stat.setUIDGID(uid, stat.getGId());
+        } catch (SftpException e) {
+            throw Misc.exception(e);
+        }
+    }
+    
+    @Override
+    public int getGid() throws IOException {
+        try {
+            return channel.stat(slashPath).getGId();
+        } catch (SftpException e) {
+            throw Misc.exception(e);
+        }
+    }
+
+    @Override
+    public void setGid(int gid) throws IOException {
+        SftpATTRS stat;
+        
+        try {
+            stat = channel.stat(slashPath);
+            stat.setUIDGID(stat.getUId(), gid);
+        } catch (SftpException e) {
+            throw Misc.exception(e);
+        }
+    }
+    
+    
     @Override
     public InputStream createInputStream() throws IOException {
         FileNode tmp;

@@ -151,6 +151,26 @@ public class SvnNode extends Node {
         throw unsupported("setMode()");
     }
     
+    @Override 
+    public int getUid() {
+        throw unsupported("getUid()");
+    }
+
+    @Override
+    public void setUid(int uid) {
+        throw unsupported("setUid()");
+    }
+
+    @Override 
+    public int getGid() {
+        throw unsupported("getGid()");
+    }
+
+    @Override
+    public void setGid(int gid) {
+        throw unsupported("setGid()");
+    }
+
     @Override
     public InputStream createInputStream() throws IOException {
         FileNode tmp;
