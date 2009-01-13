@@ -78,9 +78,8 @@ qx.Class.define("custom.Application",
       this.getRoot().add(table, {left: 20, top: 20});
 
       var btn = new qx.ui.form.Button("Change metacolumns");
-      this.getRoot().add(btn, left: 20, top: 400);
-      btn.addToDocument();
-      btn.addEventListener("execute", function(event) {
+      this.getRoot().add(btn, {left: 20, top: 400});
+      btn.addListener("execute", function(event) {
           table.setMetaColumnCounts([ -1 ]);
       }, this);
       
