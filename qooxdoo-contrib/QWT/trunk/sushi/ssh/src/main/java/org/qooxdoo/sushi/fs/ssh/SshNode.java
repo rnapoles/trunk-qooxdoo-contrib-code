@@ -239,6 +239,7 @@ public class SshNode extends Node {
         try {
             stat = channel.stat(slashPath);
             stat.setUIDGID(uid, stat.getGId());
+            channel.setStat(slashPath, stat);
         } catch (SftpException e) {
             throw Misc.exception(e);
         }
@@ -260,6 +261,7 @@ public class SshNode extends Node {
         try {
             stat = channel.stat(slashPath);
             stat.setUIDGID(stat.getUId(), gid);
+            channel.setStat(slashPath, stat);
         } catch (SftpException e) {
             throw Misc.exception(e);
         }
