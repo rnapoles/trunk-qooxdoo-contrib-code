@@ -30,7 +30,7 @@
   {
     "APPLICATION"  : "bug1808",
     "QOOXDOO_PATH" : "../../qooxdoo/trunk",
-    "QXTHEME"      : "bug1808.theme.Theme",
+    "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
     "LOCALES"      : [ "en" ],
     "ROOT"         : "."
