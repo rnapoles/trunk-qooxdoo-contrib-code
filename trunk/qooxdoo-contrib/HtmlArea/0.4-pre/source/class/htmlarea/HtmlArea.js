@@ -15,7 +15,7 @@
    Authors:
      * Alexander Back (aback)
      * Michael Haitz (mhaitz)
-     * Jonathan Rass (jonathan_rass)
+     * Jonathan Weiß (jonathan_rass)
 
 ************************************************************************ */
 
