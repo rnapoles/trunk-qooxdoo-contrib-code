@@ -2869,7 +2869,6 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyRight        : justifyRight ? 1 : 0,
         justifyFull         : justifyFull ? 1 : 0
       };
-      console.info(focusNode.id, node.id, eventMap.fontSize, '||', focusNode.tagName, node.tagName)
 
       return eventMap;
     },
