@@ -15,7 +15,8 @@ if ( $_POST )
   
   class Debug_Controller extends qcl_jsonrpc_controller 
   {
-    
+    function configureService(){}
+      
     function sendRequest()
     {
       /*
@@ -147,7 +148,7 @@ if ( $_POST )
 <body>
 
   <h1>qooxdoo JsonRpc Backend Debug Console</h1>
-  <form action="test.php" target="responseIframe" 
+  <form  target="responseIframe" 
       method="post">
     
   <table width="100%">
