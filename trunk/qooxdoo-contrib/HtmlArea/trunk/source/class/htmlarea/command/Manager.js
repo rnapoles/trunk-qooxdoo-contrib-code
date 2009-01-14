@@ -806,7 +806,7 @@ qx.Class.define("htmlarea.command.Manager",
       },
 
       /**
-       * Gecko does not copy the paragraph's background color, and text
+       * Webkit does not copy the paragraph's background color, and text
        * alignment so do this manually.
        */
       "webkit" : function()

@@ -1774,11 +1774,18 @@ qx.Class.define("htmlarea.HtmlArea",
             if (this.getInsertParagraphOnLinebreak() && !isShiftPressed)
             {
               var sel = this.__getSelection();
-
               if (sel)
               {
-                // check if inside a list
                 var selNode = sel.focusNode;
+                
+                // check if the caret is within a word - Gecko can handle it
+                if (sel.isCollapsed && qx.dom.Node.isText(selNode) && 
+                    sel.anchorOffset < selNode.length)
+                {
+                  return;
+                }
+                
+                // check if inside a list
                 while (selNode.nodeName.toLowerCase() != "body")
                 {
                   if (selNode.nodeName.toLowerCase() == "li")
