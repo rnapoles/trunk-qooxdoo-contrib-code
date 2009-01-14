@@ -274,6 +274,12 @@ qx.Class.define("htmlarea.command.Manager",
         return false;
       }
 
+      if (!this.__editorInstance.isSeeable())
+      {
+        this.error("editor not visible! '"+command+"':'"+value+"'");
+        return false;
+      }
+
       /* Normalize */
       command = command.toLowerCase();
       value   = value != null ? value : null;
