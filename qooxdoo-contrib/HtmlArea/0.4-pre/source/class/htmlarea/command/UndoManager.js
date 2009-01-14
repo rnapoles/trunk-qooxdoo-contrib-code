@@ -14,7 +14,7 @@
 
    Authors:
      * Alexander Back (aback)
-     * Jonathan Rass (jonathan_rass) 
+     * Jonathan Weiß (jonathan_rass) 
 
 ************************************************************************ */
 
