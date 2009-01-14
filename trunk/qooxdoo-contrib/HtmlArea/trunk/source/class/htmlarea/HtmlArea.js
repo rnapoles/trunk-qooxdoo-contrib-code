@@ -72,7 +72,6 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
-
     this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
 
 
@@ -2187,7 +2186,6 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleFocusOut : qx.core.Variant.select("qx.client",
     {
-
       "mshtml" : function(e)
       {
         if (this.__commandManager)

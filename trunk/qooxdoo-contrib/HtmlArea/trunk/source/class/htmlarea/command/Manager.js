@@ -36,13 +36,6 @@ qx.Class.define("htmlarea.command.Manager",
 
     this.__commands       = null;
     this.__populateCommandList();
-    
-    /* event listener */
-    if (qx.core.Variant.isSet("qx.client", "mshtml"))
-    {
-      this.__editorInstance.addEventListener("focusOut", this.__getParagraphStyles, this);
-      this.__editorInstance.addEventListener("keypress", this.__handleKeyPress, this);
-    }
   },
 
   statics :
@@ -61,33 +54,6 @@ qx.Class.define("htmlarea.command.Manager",
 
   members :
   {
-    /* ****************************************************************
-     *                      EVENT LISTENER  
-     * **************************************************************** */
-
-    /**
-     * Listenen for all "keypress" events of the editor
-     * 
-     * @param e {qx.event.type.KeyEvent} key event instance
-     * @return {void}
-     * @signature function(e)
-     */
-    __handleKeyPress : qx.core.Variant.select("qx.client", 
-    {
-      "mshtml" : function(e)
-      {
-        // Reset the flag of an empty paragragh.
-        // This flag is used for copy the styling of a paragraph to another
-        // if the user formats the content right after he took away the focus
-        // This "rescue" of the style is necessary because IE is not capable of
-        // "remembering" the style settings when the focus is lost.
-        this.__emptyParagraph = false;
-      },
-      
-      "default" : function(e) {}
-    }),
-    
-    
     /* ****************************************************************
      *                BASIC / INITIALISATION
      * **************************************************************** */
@@ -402,96 +368,90 @@ qx.Class.define("htmlarea.command.Manager",
         
     
     /**
-     * Called at each "focusOut" event of the editor to check for empty
-     * paragraphs and the styling of the previous paragraph.
+     * Returns the styles of each child element of the given paragraph element.
+     * Used internally for paragraph-handling. 
      * 
-     * * ONLY RELEVANT FOR IE *
+     * *** ONLY RELEVANT FOR IE ***
      * 
-     * @param e {qx.event.type.Event} event object
-     * @return {void}
-     * @signature function(e)
+     * @param paragraphElement {Element} paragraph DOM Element
+     * @return {Map} Map of all styles. Key is the execCommand identifier and
+     *               the value is the (optional) value for the execCommand
+     * @signature function(paragraphElement)
      */
     __getParagraphStyles : qx.core.Variant.select("qx.client",
     {
-      "mshtml" : function(e)
+      "mshtml" : function(paragraphElement)
       {
-        // get the element which holds the current range
-        var rngParent = this.__editorInstance.getRange().parentElement();
-        
-        // only look for an *empty* paragraphs which are a result of a line-break
-        if (rngParent.nodeName.toLowerCase() === "p" && rngParent.childNodes.length === 0)
+        var styles = {};
+        if (paragraphElement && paragraphElement.nodeName.toLowerCase() === "p")
         {
-          var previousElement = rngParent.previousSibling; 
-          if (previousElement && previousElement.nodeName.toLowerCase() == "p")
+          // Get all the child elements
+          // Do *not* use "getDescendants" of "qx.dom.Hierarchy" since
+          // this method relies on the "qx.lang.Array.fromCollection" method
+          // which was broken in 0.7.x
+          var childElements = paragraphElement.getElementsByTagName("*");
+          
+          // check every child element and collect infos for formatting
+          // the current empty paragraph at the next execCommand
+          for (var i=0, j=childElements.length; i<j; i++)
           {
-            this.__emptyParagraph = true;
-            this.__paragraphStyles = {};
-            
-            // Get all the child elements
-            // Do *not* use "getDescendants" of "qx.dom.Hierarchy" since
-            // this method relies on the "qx.lang.Array.fromCollection" method
-            // which was broken in 0.7.x
-            var childElements = previousElement.getElementsByTagName("*");
-            
-            // check every child element and collect infos for formatting
-            // the current empty paragraph at the next execCommand
-            for (var i=0, j=childElements.length; i<j; i++)
+            switch(childElements[i].nodeName.toLowerCase())
             {
-              switch(childElements[i].nodeName.toLowerCase())
-              {
-                case "em":
-                  this.__paragraphStyles["Italic"] = null;
-                break;
+              case "em":
+                styles["Italic"] = null;
+              break;
+              
+              case "strong":
+                styles["Bold"] = null;
+              break;
+              
+              case "u":
+                styles["Underline"] = null;
+              break;
+              
+              case "strike":
+                styles["StrikeThrough"] = null;
+              break;
+              
+              case "font":
+                var element = childElements[i];
                 
-                case "strong":
-                  this.__paragraphStyles["Bold"] = null;
-                break;
+                // size attribute
+                var fontSize = element.getAttribute("size");
+                if (fontSize !== "")
+                {
+                  styles["FontSize"] = fontSize; 
+                }
                 
-                case "u":
-                  this.__paragraphStyles["Underline"] = null;
-                break;
+                // family
+                var fontFamily = element.getAttribute("face");
+                if (fontFamily !== "")
+                {
+                  styles["FontName"] = fontFamily;
+                }
                 
-                case "strike":
-                  this.__paragraphStyles["StrikeThrough"] = null;
-                break;
+                // styles like color, background-color etc.
+                var elementColor = element.getAttribute("color");
+                if (elementColor !== "")
+                {
+                  styles["ForeColor"] = elementColor;
+                }
                 
-                case "font":
-                  var element = childElements[i];
-                  
-                  // size attribute
-                  var fontSize = element.getAttribute("size");
-                  if (fontSize !== "")
-                  {
-                    this.__paragraphStyles["FontSize"] = fontSize; 
-                  }
-                  
-                  // family
-                  var fontFamily = element.getAttribute("face");
-                  if (fontFamily !== "")
-                  {
-                    this.__paragraphStyles["FontName"] = fontFamily;
-                  }
-                  
-                  // styles like color, background-color etc.
-                  var elementColor = element.getAttribute("color");
-                  if (elementColor !== "")
-                  {
-                    this.__paragraphStyles["ForeColor"] = elementColor;
-                  }
-                  
-                  var elementBgColor = element.style.backgroundColor;
-                  if (elementBgColor !== "")
-                  {
-                    this.__paragraphStyles["BackColor"] = elementBgColor;
-                  }                  
-                break;
-              }
-            }            
-          }
+                var elementBgColor = element.style.backgroundColor;
+                if (elementBgColor !== "")
+                {
+                  styles["BackColor"] = elementBgColor;
+                }                  
+              break;
+            }
+          }          
         }
+        return styles;
       },
       
-      "default" : function() {}
+      "default" : function() { 
+        return {};
+      }
     }),
     
 
@@ -599,21 +559,24 @@ qx.Class.define("htmlarea.command.Manager",
 
         }
         
-        // If the current paragraph is an empty one take over the 
-        // collected formatting elements of the previous paragraph and apply
-        // them here
+        // If the current paragraph is an empty one take over the collected 
+        // formatting elements of the previous paragraph and apply them here
         if (qx.core.Variant.isSet("qx.client", "mshtml"))
         {
-          if (this.__emptyParagraph)
+          // look for an *empty* paragraphs which are a result of a line-break
+          var rngParent = this.__editorInstance.getRange().parentElement();
+          if (rngParent.nodeName.toLowerCase() === "p" && rngParent.childNodes.length === 0)
           {
-            var paraStyles = this.__paragraphStyles;
-            
-            for (var pStyle in paraStyles)
+            var previousElement = rngParent.previousSibling; 
+            if (previousElement && previousElement.nodeName.toLowerCase() == "p")
             {
-              this.__doc.execCommand(pStyle, false, paraStyles[pStyle]);
-            }          
-            
-            this.__emptyParagraph = false;
+              // get the styles of the previous paragraph and apply them
+              var paraStyles = this.__getParagraphStyles(previousElement);
+              for (var pStyle in paraStyles)
+              {
+                this.__doc.execCommand(pStyle, false, paraStyles[pStyle]);
+              }          
+            }
           }
         }
 
