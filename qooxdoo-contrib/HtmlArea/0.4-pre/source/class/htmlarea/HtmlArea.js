@@ -2053,19 +2053,12 @@ qx.Class.define("htmlarea.HtmlArea",
             }
 
             this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
-          }
-          else
-          {
-            if (this.__nodeInList(sel.focusNode)) {
-              return;
-            }
 
-            this.__commandManager.insertParagraphOnLinebreak();
+            /* Stop event */
+            e.preventDefault();
+            e.stopPropagation();
           }
 
-          /* Stop event */
-          e.preventDefault();
-          e.stopPropagation();
         }
       },
       
@@ -2876,6 +2869,7 @@ qx.Class.define("htmlarea.HtmlArea",
         justifyRight        : justifyRight ? 1 : 0,
         justifyFull         : justifyFull ? 1 : 0
       };
+      console.info(focusNode.id, node.id, eventMap.fontSize, '||', focusNode.tagName, node.tagName)
 
       return eventMap;
     },
