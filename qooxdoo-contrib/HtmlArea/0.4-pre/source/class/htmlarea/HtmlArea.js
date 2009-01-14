@@ -2013,6 +2013,14 @@ qx.Class.define("htmlarea.HtmlArea",
           if (sel)
           {
             var selNode = sel.focusNode;
+            
+            // check if the caret is within a word - Gecko can handle it
+            if (sel.isCollapsed && qx.dom.Node.isText(selNode) && 
+                sel.anchorOffset < selNode.length)
+            {
+              return;
+            }
+            
             // Check if the carret is inside a list:
             while (selNode.nodeName.toLowerCase() != "body")
             {
