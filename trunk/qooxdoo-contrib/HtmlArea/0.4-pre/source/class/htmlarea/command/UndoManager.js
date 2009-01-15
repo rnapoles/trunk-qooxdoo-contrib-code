@@ -137,7 +137,7 @@ qx.Class.define("htmlarea.command.UndoManager",
     insertParagraphOnLinebreak : function()
     {
       /* Use the internal collect method to add the command to the undo stack */
-      this.__collectUndoInfo("inserthtml", "", this.__commandManager.getCommandObject("inserthtml"));
+      this.__collectUndoInfo("inserthtml", "insertParagraph", this.__commandManager.getCommandObject("inserthtml"));
       
       return this.__commandManager.insertParagraphOnLinebreak();
     },
@@ -311,7 +311,7 @@ qx.Class.define("htmlarea.command.UndoManager",
          else if(this.__registeredHandler[undoStep.actionType])
          {
             var handler = this.__registeredHandler[undoStep.actionType];
-            result = handler.undo.call(handler.context ? context : this, undoStep);
+            result = handler.undo.call(handler.context ? handler.context : this, undoStep);
             
             // add it automatically to the redoStack
             this.__addToRedoStack(undoStep);
@@ -451,15 +451,7 @@ qx.Class.define("htmlarea.command.UndoManager",
      * @return {Boolean}
      */
     __undoContent : qx.core.Variant.select("qx.client", {
-      "mshtml" : function(undoInfo)
-      {
-        /* Add undo step to the redoStack */
-        this.__addToRedoStack(undoInfo);
-        
-        this.__doc.execCommand("Undo", false, null);
-      },
-      
-      "default" : function(undoInfo)
+      "gecko" : function(undoInfo)
       {
         /* Add undo step to the redoStack */
         this.__addToRedoStack(undoInfo);
@@ -478,7 +470,21 @@ qx.Class.define("htmlarea.command.UndoManager",
           }
           
           /* Use the native undo command */
-          return this.__doc.execCommand("Undo", false, null);
+          var result = this.__doc.execCommand("Undo", false, null);
+      
+          /* Undo the insertion of a new paragraph together with the content */
+          if (this.__undoStack.length > 1)
+          {
+            var nextUndoStep = this.__undoStack[this.__undoStack.length-1];
+            if (nextUndoStep.actionType == "Command" && nextUndoStep.value == "insertParagraph")
+            {  
+              this.__addToRedoStack(nextUndoStep);
+              this.__undoStack.pop();
+              this.__doc.execCommand("Undo", false, null);
+            } 
+          }
+          
+          return result;
         }
         catch(error)
         {
@@ -488,6 +494,14 @@ qx.Class.define("htmlarea.command.UndoManager",
             this.debug("execCommand failed! Details: " + error)
           }
         }
+      },
+    
+      "default" : function(undoInfo)
+      {
+          /* Add undo step to the redoStack */
+          this.__addToRedoStack(undoInfo);
+          
+          this.__doc.execCommand("Undo", false, null);
       }
     }),
 
@@ -541,7 +555,7 @@ qx.Class.define("htmlarea.command.UndoManager",
            else if(this.__registeredHandler[redoStep.actionType])
            {
               var handler = this.__registeredHandler[redoStep.actionType];
-              result = handler.redo.call(handler.context ? context : this, redoStep);
+              result = handler.redo.call(handler.context ? handler.context : this, redoStep);
               
               // add it automatically to the undoStack
               this.__addToUndoStack(redoStep);
@@ -641,7 +655,24 @@ qx.Class.define("htmlarea.command.UndoManager",
       /* Add the redo step to the undoStack */
       this.__addToUndoStack(redoInfo);
       
-      return this.__doc.execCommand("Redo", false, null);
+      var result = this.__doc.execCommand("Redo", false, null);
+      
+      /* Redo the insertion of a new paragraph together with the content */
+      if (qx.core.Variant.isSet("qx.client", "gecko"))
+      {
+        if (this.__redoStack.length > 0)
+        {
+          var nextRedoStep = this.__redoStack[this.__redoStack.length-1];
+          if (nextRedoStep.command == "inserthtml" && nextRedoStep.value == "insertParagraph")
+          {
+            this.__redoStack.pop();
+            this.__addToUndoStack(nextRedoStep);
+            this.__doc.execCommand("Redo", false, null);
+          }
+        }
+      }
+      
+      return result; 
     },    
     
     
