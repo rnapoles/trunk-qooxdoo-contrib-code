@@ -218,9 +218,9 @@ qx.Class.define("inspector.console.ConsoleView",
           // invoke the addition to the index after the objects has been printed to the screen
           this._objectFolderIndex++;
         }
-      } catch (e) {
+      } catch (ex) {
         // print out the exception
-        this.error(e);
+        this.error(ex);
       }
     },    
     
@@ -333,9 +333,9 @@ qx.Class.define("inspector.console.ConsoleView",
             window.setTimeout(function() {
               self._inputTextField.focus();              
             }, 0);
-          } catch (e) {
+          } catch (ex) {
             // do nothing
-            this.info(e);
+            this.info(ex);
           }
         }
         return;
