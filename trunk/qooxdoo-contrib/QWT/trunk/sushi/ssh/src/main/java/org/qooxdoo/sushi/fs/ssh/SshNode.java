@@ -234,12 +234,22 @@ public class SshNode extends Node {
     
     @Override
     public void setUid(int uid) throws IOException {
+        String str;
         SftpATTRS stat;
         
         try {
-            stat = channel.stat(slashPath);
-            stat.setUIDGID(uid, stat.getGId());
-            channel.setStat(slashPath, stat);
+            if (isDirectory()) { // TODO
+                str = getRoot().exec("chown", Integer.toString(uid), slashPath);
+                if (str.length() > 0) {
+                    throw new IOException("chown failed:" + str);
+                }
+            } else {
+                stat = channel.stat(slashPath);
+                stat.setUIDGID(uid, stat.getGId());
+                channel.setStat(slashPath, stat);
+            }
+        } catch (JSchException e) {
+            throw Misc.exception(e);
         } catch (SftpException e) {
             throw Misc.exception(e);
         }
@@ -256,12 +266,22 @@ public class SshNode extends Node {
 
     @Override
     public void setGid(int gid) throws IOException {
+        String str;
         SftpATTRS stat;
         
         try {
-            stat = channel.stat(slashPath);
-            stat.setUIDGID(stat.getUId(), gid);
-            channel.setStat(slashPath, stat);
+            if (isDirectory()) { // TODO
+                str = getRoot().exec("chgrp", Integer.toString(gid), slashPath);
+                if (str.length() > 0) {
+                    throw new IOException("chgrp failed:" + str);
+                }
+            } else {
+                stat = channel.stat(slashPath);
+                stat.setUIDGID(stat.getUId(), gid);
+                channel.setStat(slashPath, stat);
+            }
+        } catch (JSchException e) {
+            throw Misc.exception(e);
         } catch (SftpException e) {
             throw Misc.exception(e);
         }
