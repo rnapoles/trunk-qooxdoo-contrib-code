@@ -57,6 +57,8 @@ class qcl_http_JsonRpcRequest extends qcl_http_Request
       'server_data' => array( "sessionId" => $controller->getSessionId() )
     )); 
     
+    //$this->debug($controller->getSessionId());
+    
     $this->send();
     
     return $this->getResponseContent();

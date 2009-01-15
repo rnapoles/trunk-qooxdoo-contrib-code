@@ -132,16 +132,16 @@ class qcl_access_controller extends qcl_db_controller
    * This is the main access control function. It will check whether a valid
    * user session exists, and do nothing if this is so. If not, it checks whether 
    * guest access is enabled, and grant guest access if this is the case. 
-   * Otherwise (no valid session and  no guest access), it refuses access to
+   * Otherwise (no valid session and no guest access), it refuses access to
    * the called function by aborting the request. 
    */
   function controlAccess()
   {
     /*
      * check for valid user session unless the requested method
-     * is an authentication request 
+     * is an authentication or one requesting guest access 
      */ 
-    if (  $this->request->getMethod() != "authenticate" )
+    if (  ! in_array( $this->request->getMethod(), array( "authenticate", "guestAccess" ) ) )
     {
       /*
        * initiate logut if no valid user session
@@ -172,8 +172,7 @@ class qcl_access_controller extends qcl_db_controller
   /**
    * Checks if the requesting client is an authenticated user.
    * @return bool True if request can continue, false if it should be aborted with 
-   * a "access denied" exception. If client has requested an authentication
-   * request, return true by default.
+   * a "access denied" exception.
    * @return bool success
    */
   function isValidUserSession()
@@ -191,7 +190,8 @@ class qcl_access_controller extends qcl_db_controller
     $activeUser  =& $this->getActiveUser();    
         
     /*
-     * if we don't have an active user yet, grant guest access
+     * if we don't have an active user yet, grant guest access if
+     * allowed
      */
     if ( ! $activeUser  )
     {
@@ -201,7 +201,7 @@ class qcl_access_controller extends qcl_db_controller
       }
       else
       {
-        $this->warn("Guest access was denied.");
+        $this->warn( "Guest access was denied.");
         return false;
       }
     }
@@ -296,7 +296,7 @@ class qcl_access_controller extends qcl_db_controller
     
     if ( ! $activeUser )
     {
-      $this->warn("Cannot log out, nobody is logged in");
+      //$this->warn("Cannot log out, nobody is logged in");
       return false;
     }
     
@@ -317,7 +317,7 @@ class qcl_access_controller extends qcl_db_controller
      * unset active user 
      */
     $this->setActiveUser(null);
-    
+
     return true;     
   }
 
@@ -327,6 +327,14 @@ class qcl_access_controller extends qcl_db_controller
    */
   function method_guestAccess()
   {
+    /*
+     * Check if guest access is allowed at all
+     */
+    if ( ! $this->getIniValue("service.allow_guest_access") )
+    {
+      return $this->alert( $this->tr("Guest access denied.") );
+    }
+    
     /*
      * logout any previous user
      */
@@ -360,6 +368,8 @@ class qcl_access_controller extends qcl_db_controller
     $userModel =& $this->getUserModel();   
     $userModel->createGuestUser();
     $this->setActiveUser( $userModel->cloneObject() );
+    $userId = $userModel->getId();
+    $sessionId = $this->getSessionId();
 
     /*
      * change config model to read-only mode for guest access
@@ -369,7 +379,7 @@ class qcl_access_controller extends qcl_db_controller
     /*
      * log message
      */
-    $this->info ("Granting guest access."); 
+    $this->info ("Granting guest access (user id #$userId, session id #$sessionId )."); 
     
   }
   

@@ -5,16 +5,12 @@
 require_once "qcl/jsonrpc/model.php";
 
 /**
- * Abstract class that is persisted in the filesystem
+ * Abstract sub class for persistent objects 
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
- * FIXME: implement, this is currently still a copy
- * of qcl_db_PersistentObject
- * @deprecated, use qcl_persistence package instead
  */
-class qcl_core_PersistentObject extends qcl_jsonrpc_model
+class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
 {
-
   
   /**
    * Copy of object properties in its initial state (to check whether
@@ -47,6 +43,18 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    * @var string
    */
   var $objectId;
+  
+  /**
+   * The id of the user that this object belongs to.
+   * @var int
+   */
+  var $_userId = null;
+  
+  /**
+   * The id of the session that this object belongs to
+   * @var string
+   */
+  var $_sessionId = null;
   
   /**
    * Indicates that this is the first time the object
@@ -115,8 +123,12 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    * request. If you want only one instance of this object to exist, pass
    * the class name of the inheriting class in its constructor to this 
    * parent constructor. 
+   * @param int $userId If given, create/retrieve a persistent object that belongs
+   * to the user. It will be deleted when the user is deleted.
+   * @param string $sessionId If given, create/retrieve a persistent object that belongs
+   * to the session. It will be deleted when the session expires or is deleted.
    */  
-  function __construct( $controller, $id=null)
+  function __construct( $controller, $id=null, $userId=null, $sessionId=null)
   {
     /*
      * call parent contructor
@@ -138,6 +150,12 @@ class qcl_core_PersistentObject extends qcl_jsonrpc_model
    {
      $id = $this->objectId();
    }
+   
+   /*
+    * set user and session id
+    */
+    $this->_userId    = $userId;
+    $this->_sessionId = $sessionId;
     
     /*
      * initialize the object

@@ -728,7 +728,7 @@ class qcl_db_model extends qcl_core_PropertyModel
   /**
    * Converts array data to a 'where' compliant sql string
    * @param string|array $where
-   * @todo rename method name
+   * @todo rename method name and rewrite this
    */
   function toSql( $where )
   {
@@ -740,27 +740,43 @@ class qcl_db_model extends qcl_core_PropertyModel
       {
         $i++;
         
+
         /*
          * check if expression has an operator. if not,
          * use "="
          * FIXME this is a hack. rewrite this!!
          */
-        if ( ! in_array( substr( trim($expr),0,1 ),
-                        array( "=","!" ) )
+        if ( is_null($expr) or ( 
+            ! in_array( substr( trim($expr),0,1 ), array( "=","!" ) )
              AND substr( trim($expr),0, 2 ) != "IN"
-             AND substr( trim($expr),0, 4 ) != "LIKE"                        
+             AND substr( trim($expr),0, 4 ) != "LIKE" )                      
         ) {
-          switch( $this->getPropertyType( $property ) )
+          /*
+           * expression is null
+           */
+          if ( is_null($expr) ) 
           {
-            case "int":
-              $expr = " = $expr";
-              break;
-
-            case "string":
-            default:
-              $expr = " = '" . addslashes($expr) . "'"; 
-              break;          
+            $expr = "IS NULL";
           }
+          
+          /*
+           * else, sql depends on property type
+           */
+          else
+          {          
+            switch( $this->getPropertyType( $property ) )
+            {
+              case "int":
+                $expr = " = $expr";
+                break;
+  
+              case "string":
+              default:
+                $expr = " = '" . addslashes($expr) . "'"; 
+                break;          
+            }
+          }
+          
           
           /*
            * add boolean operator
@@ -769,7 +785,7 @@ class qcl_db_model extends qcl_core_PropertyModel
           {
             $expr .= " AND ";   
           }
-        }
+        } 
                 
         /*
          * add to sql

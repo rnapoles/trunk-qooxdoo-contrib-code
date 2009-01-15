@@ -2,16 +2,15 @@
 /*
  * dependencies
  */
-require_once "qcl/core/PersistentObject.php";
-require_once "qcl/db/PersistentModel.php";
+require_once "qcl/persistence/AbstractObject.php";
+require_once "qcl/persistence/db/Model.php";
 
 /**
  * Abstract class that is persisted in the database
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
- * @deprecated, use qcl_persistence package instead
  */
-class qcl_db_PersistentObject extends qcl_core_PersistentObject
+class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
 {
 
   /**
@@ -30,31 +29,28 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
      * database model storing the object data
      */
     $controller     =& $this->getController();
-    $this->_dbModel =& new qcl_db_PersistentModel(&$controller);    
+    $this->_dbModel =& new qcl_persistence_db_Model(&$controller);    
   }
   
   /**
    * Reconstructs the object from the model data. This _must_ set $this->_original
-   * FIXME: we have ::objectId and ::_objectId/::objectId() (object uuid) now -> needs to be integrated
+   * FIXME: we have ::objectId and ::_objectId/::objectId() (object uuid) now 
+   * -> needs to be integrated
    */
-  function load($id=null)
+  function load( $id=null )
   {
+    
     /*
      * get or create model record
      */
-    if ( $id )
-    {
-      //$this->info("Loading " . $this->className() . " [$id].");
-      
-      $this->_dbModel->findWhere(array(
-        'class'    => "= '" . $this->className() . "' AND ",
-        'objectId' => "= '$id'"
-      )); 
-    }
-    else
-    {
-      $this->_dbModel->findByClass( $this->className() );
-    }
+    //$this->info("Loading " . $this->className() . " [$id].");
+    $this->_dbModel->findWhere(array(
+      'class'    => $this->className(),
+      'objectId' => $id,
+      'userId'   => $this->_userId,
+      'sessionId'=> $this->_sessionId
+    ));         
+
     
     /*
      * Check if model data was found
@@ -67,12 +63,23 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
        * create new record in database
        */
       $this->_dbModel->create();
-      $this->_dbModel->setClass( $this->className() );
+      $this->_dbModel->set( array( 
+        'class'     => $this->className(),
+        'objectId' => $id,
+        'userId'   => $this->_userId,
+        'sessionId'=> $this->_sessionId
+      ) );
+
       if ( $id )
       {
         $this->_dbModel->setProperty("objectId",$id);
       }
       $this->_dbModel->save();
+      
+      /*
+       * use the opportunity to clean up
+       */
+      $this->cleanUp();
     }
     else
     {
@@ -136,6 +143,18 @@ class qcl_db_PersistentObject extends qcl_core_PersistentObject
      */
     $this->objectId = $id;    
   }
+  
+  /*
+   * clean up objects that refer to nonexisting users or sessions
+   */
+  function cleanUp()
+  {
+    $this->deleteWhere("
+      sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
+      userId NOT IN ( SELECT id FROM users )
+    ");          
+  }
+  
   
   /**
    * Saves the object to the storage
