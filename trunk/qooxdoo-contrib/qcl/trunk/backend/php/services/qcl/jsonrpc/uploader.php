@@ -45,12 +45,20 @@ if ( ! session_id() )
 /*
  * authentication
  */
-$userController =& new qcl_session_controller();
+$classname = QCL_ACCESS_CONTROLLER;
+require_once qcl_core_object::getClassPath($classname);
+$userController =& new $classname();
+  
 $qcl =& $userController;
  
 if ( $_REQUEST['sessionId'] )
 {
   $userController->setSessionId( $_REQUEST['sessionId'] );
+  $activeUser =& $userController->getUserFromSession( $_REQUEST['sessionId'] );
+  if ( $activeUser )
+  {
+    $userController->setActiveUser( $activeUser );
+  }
 }
 
 if ( ! $userController->isValidUserSession() )
@@ -67,6 +75,12 @@ if ( ! $userController->isValidUserSession() )
     exit;
   }
 }
+
+/*
+ * log message
+ */
+$activeUser =& $userController->getActiveUser();
+$userController->info("Upload authorized for " . $activeUser->username() );
 
 /*
  * check if upload directory is writeable
