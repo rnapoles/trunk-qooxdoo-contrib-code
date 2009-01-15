@@ -74,7 +74,7 @@ class qcl_session_controller extends qcl_access_controller
      */
     $sessionId = $this->getServerData("sessionId");
     
-   //$this->debug("Initial session id: $sessionId");
+    //$this->debug("Initial session id: $sessionId");
     
     if ( $sessionId )
     { 
@@ -101,10 +101,7 @@ class qcl_session_controller extends qcl_access_controller
         $this->setActiveUser( &$activeUser );  
       }
     }
-    else
-    {
-      $this->createSessionId();
-    }
+
     
     /*
      * call parent method, which checks for a valid user session
@@ -266,6 +263,7 @@ class qcl_session_controller extends qcl_access_controller
         $this->warn("Session $sessionId refers to a non-existing user."); 
         return false;       
       }
+      $this->setActiveUserId( $activeUserId );
       return $userModel->cloneObject();
     }
     else

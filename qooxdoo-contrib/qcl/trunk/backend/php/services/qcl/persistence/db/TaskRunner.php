@@ -3,14 +3,13 @@
 /*
  * dependencies
  */
-require_once "qcl/db/PersistentObject.php";
+require_once "qcl/persistence/db/Object.php";
 
 /*
  * Class to run tasks that need to be distributed over a whole series 
  * of requests.
- * @deprecated, use qcl_persistence package instead
  */
-class qcl_db_PersistentTaskRunner extends qcl_db_PersistentObject
+class qcl_persistence_db_TaskRunner extends qcl_persistence_db_Object
 {
   
   /**

@@ -1266,11 +1266,20 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     } 
     
     /*
+     * typecast all values except NULL to the types determined
+     * by the property
+     */
+    if ( ! is_null($value) ) 
+    {
+      $value = $this->typecast($name, $value);
+    }    
+    
+    /*
      * if property name exists, set it
      */    
     if ( isset( $this->currentRecord[$name] ) )
     {
-      $this->currentRecord[$name] = $this->typecast($name, $value);
+      $this->currentRecord[$name] = $value; 
       $data[$name] = $value;
     }
     
@@ -1286,14 +1295,14 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       {
         if ( strtolower($key) == strtolower($name) )
         {
-          $this->currentRecord[$key] = $this->typecast($key, $value);
-          $data[$key] = $this->currentRecord[$key];
+          $this->currentRecord[$key] = $value;
+          $data[$key] = $value;
           $found = true;
         }
         elseif ( strtolower($this->getColumnName($key) ) == strtolower($name) )
         {
-          $this->currentRecord[$key] = $this->typecast($key, $value);
-          $data[$key] = $this->currentRecord[$key];
+          $this->currentRecord[$key] = $value;
+          $data[$key] = $value;
           $found = true;
         }
       }

@@ -100,7 +100,8 @@ class qcl_session_Session extends qcl_db_model
     $msgModel->deleteWhere("
       markedDeleted = 1 OR
       sessionId NOT IN ( SELECT sessionId FROM sessions ) 
-    ");        
+    ");      
+
   }
 
   /**
