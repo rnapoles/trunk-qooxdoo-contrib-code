@@ -158,7 +158,7 @@ qx.Class.define("inspector.components.Selector",
           if (childWidget instanceof this._iFrameWindow.qx.ui.core.Spacer) {
             continue;
           }
-        } catch (e) {}
+        } catch (ex) {}
         // get the coordinates of the current widget
         if (childWidget.getContainerElement) {
           var domElement = childWidget.getContainerElement().getDomElement();

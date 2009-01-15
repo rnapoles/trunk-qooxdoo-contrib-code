@@ -52,7 +52,7 @@ qx.Class.define("inspector.objects.HashModel",
     
     
     getColumns: function() {
-      return ["Hash", "CLassname"];
+      return ["Hash", "Classname"];
     },
     
     
