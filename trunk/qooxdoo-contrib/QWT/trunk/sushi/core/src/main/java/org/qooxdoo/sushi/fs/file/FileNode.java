@@ -354,37 +354,45 @@ public class FileNode extends Node {
     
     @Override
     public int getMode() throws IOException {
-        Program stat;
-        
-        stat = new Program(dir(), "stat");
-        stat.add(OS.CURRENT.stat);
-        stat.add(getAbsolute());
-        return Integer.parseInt(stat.exec().trim(), 8) & 0777;
+        return stat(OS.CURRENT.mode, 8) & 0777;
     }
 
     @Override
     public void setMode(int mode) throws IOException {
-        new Program(dir(), "chmod", Integer.toOctalString(mode), getAbsolute()).execNoOutput();
+        ch("chmod", Integer.toOctalString(mode));
     }
     
     @Override
     public int getUid() throws IOException {
-        return Integer.parseInt(new Program(dir(), "stat", "--format", "%u", getAbsolute()).exec().trim());
+        return stat(OS.CURRENT.uid, 10);
     }
     
     @Override
     public void setUid(int uid) throws IOException {
-        new Program(dir(), "chown", Integer.toString(uid), getAbsolute()).execNoOutput();
+        ch("chown", Integer.toString(uid));
     }
 
     @Override
     public int getGid() throws IOException {
-        return Integer.parseInt(new Program(dir(), "stat", "--format", "%g", getAbsolute()).exec().trim());
+        return stat(OS.CURRENT.gid, 10);
     }
 
     @Override
     public void setGid(int gid) throws IOException {
-        new Program(dir(), "chgrp", Integer.toString(gid), getAbsolute()).execNoOutput();
+        ch("chgrp", Integer.toString(gid));
+    }
+
+    private void ch(String cmd, String n) throws IOException {
+        new Program(dir(), cmd, n, getAbsolute()).execNoOutput();
+    }
+    
+    private int stat(String[] args, int radix) throws IOException {
+        Program stat;
+        
+        stat = new Program(dir(), "stat");
+        stat.add(args);
+        stat.add(getAbsolute());
+        return Integer.parseInt(stat.exec().trim(), radix);
     }
 
     private FileNode dir() {
