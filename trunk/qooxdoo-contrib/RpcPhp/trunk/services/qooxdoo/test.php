@@ -131,7 +131,7 @@ class class_test
         {
             $error->SetError(JsonRpcError_ParameterMismatch,
                              "Expected 1 parameter; got " . count($params));
-            return null;
+            return $error;
         }
         
         sleep(intval($params[0]));
@@ -253,6 +253,14 @@ class class_test
     function method_getError($params, $error)
     {
         $error->SetError(23, "This is an application-provided error");
+
+        // test the GetError() method
+        $errorInfo = $error->GetError();
+
+        $error->SetError(23,
+                         "origin=" . $errorInfo["origin"] .
+                         ", code=" . $errorInfo["code"] .
+                         ", message=" . $errorInfo["message"]);
         return $error;
     }	
 }

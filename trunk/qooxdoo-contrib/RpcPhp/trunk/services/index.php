@@ -277,7 +277,7 @@ class JsonRpcError
     function JsonRpcError($json,
                           $origin = JsonRpcError_Origin_Server,
                           $code = JsonRpcError_Unknown,
-                          $message = "Unknown error")
+                          $message = "Unspecified error")
     {
         $this->json = $json;
         $this->data = array("origin"  => $origin,
@@ -297,6 +297,11 @@ class JsonRpcError
     {
         $this->data["code"] = $code;
         $this->data["message"] = $message;
+    }
+    
+    function GetError()
+    {
+        return $this->data;
     }
     
     function SetId($id)
@@ -841,10 +846,10 @@ $error->SetOrigin(JsonRpcError_Origin_Application);
 $output = $service->$method($jsonInput->params, $error);
 
 /* See if the result of the function was actually an error */
-if (get_class($output) == "JsonRpcError")
+if (get_class($output) == get_class($error))
 {
     /* Yup, it was.  Return the error */
-    $error->SendAndExit();
+    $output->SendAndExit();
     /* never gets here */
 }
 
