@@ -689,6 +689,9 @@ public abstract class NodeTest extends NodeReadOnlyTest {
         }
         node.setGid(id);
         assertEquals(id, node.getGid());
+        if (id == 0) {
+        	return;
+        }
         try {
             node.setGid(0);
             fail();
