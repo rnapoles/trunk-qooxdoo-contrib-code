@@ -997,8 +997,25 @@ qx.Class.define("rpcexample.Application",
               function()
               {
                 test = "getError";
-                page.warn("Calling '" + test + "'");
+                page.warn("Calling '" + test + " (method 1)'");
                 mycall = rpc.callAsync(handler, test);
+              },
+
+              function(result)
+              {
+                // should never get here; we should receive an exception
+                page.warn("ERROR: Should have received an exception!  " +
+                          "Got: " + result);
+              }
+            ],
+
+            [
+              function()
+              {
+                test = "getError";
+                page.warn("Calling '" + test +
+                          " (method 2 -- only differs with PHP backend)'");
+                mycall = rpc.callAsync(handler, test, true);
               },
 
               function(result)
@@ -1023,15 +1040,15 @@ qx.Class.define("rpcexample.Application",
           } else {
             // display results of the completed test
             tests[testNum][1](result);  // [][1] = validate response
+          }
 
-            // start the next test
-            ++testNum;
-
-            // Are we done?
-            if (testNum < tests.length) {
-              // Nope.  Run the next test.
-              tests[testNum][0]();
-            }
+          // start the next test
+          ++testNum;
+          
+          // Are we done?
+          if (testNum < tests.length) {
+            // Nope.  Run the next test.
+            tests[testNum][0]();
           }
         }
 

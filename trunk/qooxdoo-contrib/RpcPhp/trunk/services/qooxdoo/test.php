@@ -250,19 +250,45 @@ class class_test
         return $obj;
     }
 
-    function method_getError($params, $error)
+    // utility function used by method_getError()
+    function getErrorThrown($params)
     {
-        $error->SetError(23, "This is an application-provided error");
+        // In this example we don't use the provided $error object.
+        // Instead, we throw a new error. This could be done from any depth
+        // of recursion or function call graph without having to pass around
+        // the $error object.
+        throw new JsonRpcError(23, "This is an application-provided error");
+    }
 
-        // test the GetError() method
+    // utility function used by method_getError()
+    function getErrorTraditional($params, $error)
+    {
+        // Here we demonstrate the traditional method of returning the
+        // provided $error object after specifying the error code and message.
+        $error->SetError(42, "This is an application-provided error");
+
+        // just for fun, test the GetError() method too
         $errorInfo = $error->GetError();
 
-        $error->SetError(23,
+        // override the previous error message with a new one.
+        $error->SetError($errorInfo["code"],
                          "origin=" . $errorInfo["origin"] .
                          ", code=" . $errorInfo["code"] .
                          ", message=" . $errorInfo["message"]);
         return $error;
-    }	
+    }
+
+    function method_getError($params, $error)
+    {
+        if (count($params) > 0 && $params[0])
+        {
+            return $this->getErrorThrown($params);
+        }
+        else
+        {
+            return $this->getErrorTraditional($params, $error);
+        }
+    }
 }
 
 ?>

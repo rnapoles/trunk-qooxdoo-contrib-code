@@ -267,19 +267,18 @@ function SendReply($reply, $scriptTransportId)
  * This class allows service methods to easily provide error information for
  * return via JSON-RPC.
  */
-class JsonRpcError
+class JsonRpcError extends Exception
 {
     var             $json;
     var             $data;
     var             $id;
     var             $scriptTransportId;
     
-    function JsonRpcError($json,
-                          $origin = JsonRpcError_Origin_Server,
-                          $code = JsonRpcError_Unknown,
-                          $message = "Unspecified error")
+    // origin defaults to Application for easy "throw" in RPC methods
+    function JsonRpcError($code = JsonRpcError_Unknown,
+                          $message = "Unspecified error",
+                          $origin = JsonRpcError_Origin_Application)
     {
-        $this->json = $json;
         $this->data = array("origin"  => $origin,
                             "code"    => $code,
                             "message" => $message);
@@ -328,7 +327,8 @@ class JsonRpcError
         }
         else
         {
-            SendReply($this->json->encode($ret), $this->scriptTransportId);
+            $json = new JSON();
+            SendReply($json->encode($ret), $this->scriptTransportId);
         }
         exit;
     }
@@ -511,12 +511,15 @@ if (JsonRpcErrorHandling == "on")
  */
 session_start();
 
+/* Create a new JsonRpcError object and initialize it to origin: Server */
+$error = new JsonRpcError();
+$error->SetOrigin(JsonRpcError_Origin_Server);
+
 /*
  * Create a new instance of JSON and get the JSON-RPC request from
  * the POST data.
  */
 $json = new JSON();
-$error = new JsonRpcError($json);
 
 /* Assume (default) we're not using ScriptTransport */
 $scriptTransportId = ScriptTransport_NotInUse;
@@ -607,10 +610,7 @@ if (! isset($jsonInput) ||
 /*
  * Ok, it looks like JSON-RPC, so we'll return an Error object if we encounter
  * errors from here on out.
- */
-$error->SetId($jsonInput->id);
-
-/*
+ *
  * Ensure the requested service name is kosher.  A service name should be:
  *
  *   - a dot-separated sequences of strings; no adjacent dots
@@ -843,12 +843,21 @@ if (! method_exists($service, $method))
 $error->SetOrigin(JsonRpcError_Origin_Application);
 
 /* Call the requested method passing it the provided params */
-$output = $service->$method($jsonInput->params, $error);
+try
+{
+    $output = $service->$method($jsonInput->params, $error);
+}
+catch (JsonRpcError $exception)
+{
+    $output = $exception;
+}
 
 /* See if the result of the function was actually an error */
 if (get_class($output) == get_class($error))
 {
     /* Yup, it was.  Return the error */
+
+    $output->SetId($jsonInput->id);
     $output->SendAndExit();
     /* never gets here */
 }
