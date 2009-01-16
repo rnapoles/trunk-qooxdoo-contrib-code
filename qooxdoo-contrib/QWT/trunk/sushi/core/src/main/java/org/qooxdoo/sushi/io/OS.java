@@ -20,9 +20,18 @@
 package org.qooxdoo.sushi.io;
 
 public enum OS {
-    LINUX("Linux", "$", "", ':', "\n", "--format", "%a"),
-    MAC("Mac", "$", "", ':', "\n", "-f", "%Op"), 
-    WINDOWS("Windows", "%", "%", ';', "\r\n", "/f", "%a"); 
+    LINUX("Linux", "$", "", ':', "\n", 
+    		new String[] { "--format", "%a"},
+            new String[] { "--format", "%u"}, 
+            new String[] { "--format", "%g"}),
+    MAC("Mac", "$", "", ':', "\n", 
+    		new String[] { "-f", "%Op"},
+    		new String[] { "-f", "%u"}, 
+    		new String[] { "-f", "%g"}), 
+    WINDOWS("Windows", "%", "%", ';', "\r\n", 
+    		new String[] { "/f", "%a" }, 
+    		new String[] { "/f", "%u" }, 
+    		new String[] { "/f", "%g" }); 
 
     private static OS detect() {
         String name;
@@ -44,17 +53,22 @@ public enum OS {
     public final char listSeparatorChar;
     public final String listSeparator;
     public final String lineSeparator;
-    public final String[] stat;
+    public final String[] mode;
+    public final String[] uid;
+    public final String[] gid;
     
     private OS(String substring, String variablePrefix, String variableSuffix, 
-            char listSeparatorChar, String lineSeparator, String... stat) {
+            char listSeparatorChar, String lineSeparator, 
+            String[] mode, String[] uid, String[] gid) {
         this.substring = substring;
         this.variablePrefix = variablePrefix;
         this.variableSuffix = variableSuffix;
         this.listSeparatorChar = listSeparatorChar;
-        this.listSeparator = "" + listSeparatorChar;
+        this.listSeparator = Character.toString(listSeparatorChar);
         this.lineSeparator = lineSeparator;
-        this.stat = stat;
+        this.mode = mode;
+        this.uid = uid;
+        this.gid = gid;
     }
 
     public String variable(String name) {
