@@ -610,7 +610,10 @@ if (! isset($jsonInput) ||
 /*
  * Ok, it looks like JSON-RPC, so we'll return an Error object if we encounter
  * errors from here on out.
- *
+ */
+$error->SetId($jsonInput->id);
+
+/*
  * Ensure the requested service name is kosher.  A service name should be:
  *
  *   - a dot-separated sequences of strings; no adjacent dots
@@ -850,6 +853,7 @@ try
 catch (JsonRpcError $exception)
 {
     $output = $exception;
+    $output->SetId($jsonInput->id);
 }
 
 /* See if the result of the function was actually an error */
@@ -857,7 +861,6 @@ if (get_class($output) == get_class($error))
 {
     /* Yup, it was.  Return the error */
 
-    $output->SetId($jsonInput->id);
     $output->SendAndExit();
     /* never gets here */
 }
