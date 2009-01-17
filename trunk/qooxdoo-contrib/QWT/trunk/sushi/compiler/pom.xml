@@ -8,8 +8,8 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.qooxdoo.sushi</groupId>
-  <artifactId>mork</artifactId>
-  <name>Sushi Mork</name>
+  <artifactId>compiler</artifactId>
+  <name>Sushi Compiler Stuff</name>
   <packaging>jar</packaging>
   <version>${sushi.version}</version>
 

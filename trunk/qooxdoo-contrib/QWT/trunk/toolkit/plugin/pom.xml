@@ -89,7 +89,7 @@
     </dependency>
     <dependency>
       <groupId>org.qooxdoo.sushi</groupId>
-      <artifactId>mork</artifactId>
+      <artifactId>compiler</artifactId>
       <version>${sushi.version}</version>
     </dependency>
   </dependencies>
