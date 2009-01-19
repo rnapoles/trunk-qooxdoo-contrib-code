@@ -1,25 +1,61 @@
 <?php
 
+/*
+ * dependencies
+ */
+require_once "qcl/xml/__init__.php";
+require_once "qcl/jsonrpc/model.php";
+require_once "qcl/io/filesystem/IFile.php";
+require_once "qcl/io/filesystem/Resource.php";
+require_once "qcl/io/filesystem/local/File.php";
+require_once "qcl/persistence/db/Object.php";
+
+
+/**
+ * Persistent class to cache xml object data
+ */
+class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
+{
+  /*
+   * file modification timestamp
+   * @var string
+   */
+  var $lastModified;
+  
+  /*
+   * the xml document tree
+   * @var simpleXMLDocument
+   */
+  var $doc;
+}
+
 /**
  * Class providing a cross-version (php4/5) simple xml 
  * representation as a php object. This class also provides 
- * caching of the object that is parsed from the xml, and a 
- * simple locking mechanism that ensures that several users 
- * can access the xml at the same time and changes in the xml
- * will be written consecutively. The object will have the 
- * lock on its corresponding xml file until it is disposed 
- * at the script end (or if you call $obj->removeLock() manually)
- * @deprecated Use qcl_xml_SimpleXmlStorage instead
- * @todo Rework dependent classes to use qcl_xml_SimpleXmlStorage
+ * caching of the object that is parsed from the xml and 
+ * persisted on a per-file, per-user, or per-session basis. 
+ * That is, differently manipulated copies of the original xml data
+ * file data can coexist. By default, the caching is done by 
+ * the qcl_persistence_db_Object class, which ensures that
+ * data by no longer existing users or sessions is automatically
+ * deleted. 
+ * @see qcl_xml_SimpleXmlStorage::getCacheObject() for details
+ * 
  **/
-class qcl_xml_simpleXML extends qcl_jsonrpc_object
+class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
 {
  
   /**
-   * file path if xml is in a file
+   * file object if xml is in a file
+   * @var qcl_io_filesystem_IFile
    */
   var $file; 
 
+  /**
+   * XML string if loaded from string
+   */
+  var $xml;
+  
   /**
    * PHP4-backport of simplexml API
    * @var XMLParser
@@ -39,17 +75,29 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   var $cacheId;
   
   /**
-   * modification date of xml file
+   * If a separate copy for a user should be kept, set
+   * this property to the user id
+   */
+  var $userId = null;
+  
+  /**
+   * If a separate copy for a session should be kept, set
+   * this property to the user id
+   */
+  var $sessionId = null;
+  
+  /**
+   * modification date of xml file, if parsed from file
    * @var string
    */
-  var $filectime;
+  var $lastModified;
   
   /**
    * flag for indicating if the xml source for the document
-   * has changed or if we are using a copy from cache
+   * has changed
    * @var bool
    */
-  var $hasChanged;
+  var $hasChanged = false;
   
   /**
    * the document object
@@ -58,177 +106,249 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   var $doc;
   
   /**
-   * constructor
-   * @param mixed   $xml see qcl_xml_simpleXML::load() 
-   * @param mixed   $cache see qcl_xml_simpleXML::load() 
+   * Array of atrributes which will be indexed for fast access (PHP4 only) 
+   * @var array
+   */
+  var $indexedAttributes = array();
+  
+  /**
+   * Cconstructor
+   * @param qcl_jsonrpc_controller $controller instance
+   * @param qcl_io_filesystem_IFile|string $fileOrString Xml string, file name or object implementing 
+   * qcl_io_filesystem_IFile 
+   * @param string $cacheId Id with which to cache xml data, if it is a string (file cache ids are overwritten
+   * internally).
+   * @param array $indexedAttributes (PHP4 only) Array of atrributes which will be indexed for fast access
    **/
-  function __construct( $controller, $xml=null, $cache=true, $debug=false )
+  function __construct( $controller, $fileOrString=null, $cacheId=null, $indexedAttributes=array() )
   { 
     /*
      * parent constructor
      */
-    parent::__construct();
+    parent::__construct( &$controller );
     
     /*
      * debugging
+     * @todo move this into  __init__.php 
      */
     $logger =& $this->getLogger();
     if ( ! $logger->isRegistered("xml") )
     {
       $logger->registerFilter("xml","XML-related debugging");
     }
-    $logger->setFilterEnabled("xml",$debug);
+
+    /*
+     * If php4, use simplexml backport library
+     */
+    if ( PHP_VERSION < 5 )
+    {
+      require_once 'qcl/xml/parser_php4.php';
+    }
+
+
+    /*
+     * Do we have an xml string?
+     */
+    if ( is_string($fileOrString) )
+    {
+      if ( substr($fileOrString,0,5) == "<?xml" )
+      {
+        /*
+         * Yes, save it
+         */
+        $this->xml = $fileOrString;
+        
+        /*
+         * Cache id, if given
+         */
+        $this->cacheId = $cacheId;    
+      }
+      
+      /*
+       * No, if string, convert string file name to qcl file object
+       */
+      else
+      {
+        $fileOrString =& qcl_io_filesystem_Resource::createInstance( &$controller, "file://" . $fileOrString );
+      }
+    }
     
     /*
-     * load xml document
+     * If file, save it and generate cache id.
      */
-    if ( $xml )
+    if ( ! $this->xml  )
     {
-      $this->load( $xml, $cache );
-    } 
+      if ( is_qcl_file( $fileOrString ) )
+      { 
+        $this->file =& $fileOrString;  
+        $this->cacheId = md5( $this->file->resourcePath() ); 
+      }
+      else
+      {
+        $this->raiseError("Invalid xml data '" . get_var_type($fileOrString) .  "'");
+      }
+    }
+        
+    /*
+     * indexed arrays (PHP4 only)
+     */
+    $this->indexedAttributes = $indexedAttributes;
+    
   }
   
   /**
-   * Creates a new file with optional content but only if it
-   * doesn't exist already
-   * @return boolean True if file was created
+   * Make the cached copy of the xml data specific to a user
+   *
+   * @param int $userId
    */
-  function createIfNotExists($path,$xml="")
+  function setOwnedByUserId( $userId )
   {
-     
-    if ( is_valid_file($path) ) 
+    if ( ! $userId or ! is_integer( $userId ) )
     {
-      $this->log("'$path' exists. No need to create it.","xml");
-      return false;
+      $this->raiseError("Invalid user id '$userId'");
+    }
+    $this->userId = $userId;
+    $this->sessionId = null;
+  }
+  
+  /**
+   * Make the cached copy of the xml data specific to a session
+   *
+   * @param unknown_type $userId
+   */
+  function setOwnedBySessionId( $sessionId )
+  {
+    if ( ! $sessionId or ! is_string( $sessionId ) )
+    {
+      $this->raiseError("Invalid session id '$sessionId'");
+    }
+    $this->userId = null;
+    $this->sessionId = $sessionId;
+  }  
+  
+  /**
+   * Creates a new file with optional content but only if it
+   * doesn't exist already, then load document.
+   * @return void
+   */
+  function createFile( $xml="" )
+  {
+    $controller =& $this->getController();
+    
+    if ( ! is_object( $this->file ) )
+    {
+      $this->raiseError("No file object to create.");
     }
     
+    $path = $this->file->resourcePath();
+    if ( $this->file->exists() ) 
+    {
+      $this->raiseError("File exists!");
+    }
+
     if ( ! $xml )
     {
       $xml = '<?xml version="1.0" encoding="utf-8"?><root/>';
     }
     
-    if ( file_put_contents($path,$xml) )
+    /*
+     * create file and save xml string
+     */    
+    if ( $this->file->create() and $this->file->save( $xml ) )
     {
-      $this->log("Created root node in '$path'...","xml");
-      return true;
+      $this->log("Created root node in '$path'...","xml"); 
+    }
+    else 
+    {
+      $this->raiseError( $this->file->getError() );  
     }
 
-    $this->raiseError("Could not create '$path'.");
+    /*
+     * delete cache
+     */
+    $this->delete();
+    
+    /*
+     * load document
+     */
+    $this->load();
+    
+    
   }
   
   /**
-   * loads xml from string or file
-   * @param mixed  $xml xml string or file name
-   * @param mixed[optional, default false] $cache if not false, cache the result. 
-   * if $xml is a file, reuse cached data if file timestamp hasn't changed. If $xml is a string, 
-   * reuse cache with an id supplied by $cache if it exists.
-   * @param array $atrributeIndexed array of atrributes which will be indexed (PHP4)
+   * Loads xml from  file
    * @return SimpleXmlElement
    **/
-  function &load( $xml, $cache=false, $indexedAttributes=array() )
+  function &load()
   {
-    if ( PHP_VERSION < 5 )
-    {
-      /*
-       * use simplexml backport library
-       */
-      require_once 'qcl/xml/parser_php4.php';
-    }
+    $controller    =& $this->getController();
+    $file          =& $this->file;
+    $cacheId       = $this->cacheId;
     
     /*
-     * when reusing the object, make sure the lock is freed
+     * xml document
      */
-    if ( $this->cacheId )
-    {
-      $this->removeLock($cacheId);  
-    }
+    $doc = null;
 
     /*
-     * if xml is a file name, store location
+     * do we deal with a file or a string?
      */
-    $isFile = is_valid_file($xml);
-    
-    if ( $isFile )
-    {
-        $this->file = $xml;      
-    }
-    
+    $isFile = is_object($file);
+
     /*
-     * check if document object has been cached
+     * last modification timestamp, if from file
      */
-    if ( $cache )
+    $lastModified  = $isFile ? $file->lastModified() : null;
+        
+    /*
+     * get document from cache
+     */
+    if ( $cacheId )
     {
-      if ( $isFile )
+
+      $this->log("Cache Id is: $cacheId","xml");
+      
+      /*
+       * get cached document
+       */
+      $cacheObj =& $this->getCacheObject( $cacheId );
+    
+      if ( ! $cacheObj->isNew() )
       {
         
         /*
-         * cache id
+         * copy from persistent object
          */
-        $cacheId         = "qcl_xml_simpleXML_" . md5($xml); 
-        $this->filectime = filectime($xml);
-        $this->cacheId   = $cacheId;
-        
-        //$this->debug("Cache Id is: $cacheId");
+        $doc = $cacheObj->doc;
         
         /*
-         * get lock because some other process could be just writing the cache
+         * check if document is valid
          */
-        $this->getLock($cacheId);
-
+        if ( ! is_object( $doc ) )
+        {
+          $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
+          $doc = null;   
+        }
+        
         /*
-         * use cached object if exists and if the file modification date matches the signature in the cached object
+         * check modification date
          */
-        $doc =& $this->retrieve($cacheId);
-     
-        if ( is_object($doc) )
+        if ( $lastModified )
         { 
-          $this->log( "Cache file exists with timestamp " . $doc->__filectime, "xml" );
-        
-          if ( $this->filectime == $doc->__filectime )
+          $this->log( "Cache file exists with timestamp " . $cacheObj->lastModified, "xml" );
+          
+          if ( $lastModified == $cacheObj->lastModified )
           {
-            $this->log("Timestamp matches. Getting xml document object ($xml) from cache ($cacheId)...","xml");
+            $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
             $this->doc =& $doc;
             $this->hasChanged = false;
-            return;
+            return $doc;
           }
           else
           {
-            $this->log("Timestamp doesn't match:" .$this->filectime, "xml" );
+            $this->log("Timestamp doesn't match: Document: {$lastModified}, Cache: {$cacheObj->lastModified}.", "xml" );
           }
-        }
-        elseif ( ! is_bool( $doc) or ! is_null( $doc ) )
-        {
-          $this->warn("Invalid cache '$doc' (" . gettype($doc) . ").");
-        }
-        
-        /*
-         * discard cache because file modification doesn't match
-         */ 
-        $doc = null;     
-      }    
-      else
-      {
-        /*
-         * cache id
-         */
-        $this->cacheId = $cache;
-        
-        /*
-         * get lock because some other process could be just writing the cache
-         */
-        $this->getLock( $this->cacheId );
-        
-        /*
-         * get document
-         */
-        $doc =& $this->retrieve($cache);
-        
-        if ( is_object($doc) )
-        {
-          $this->doc =& $doc;
-          $this->hasChanged = false;
-          $this->log("Getting xml document object from cache (#$cache)...","xml");
-          return;
         }
       }
     }
@@ -263,64 +383,108 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
        */
       if ( $isFile )
       {
-        $this->log("Loading document from file $xml...","xml");
-        $this->doc =& $this->__impl->load_file($xml);
+        $path = $file->filePath();
+        $this->log("Loading document from file $path...","xml");
+        $this->doc =& $this->__impl->load_file($path);
       }
-      elseif ( is_string ( $xml ) )
+      elseif ( is_string ( $this->xml ) )
       {
-        $this->log("Loading document from string... " . substr($xml,0,30) . "...", "xml" );
-        $this->doc =& $this->__impl->load_string($xml);
-        //$this->debug($this->doc->asXML()); die;
+        $this->log("Loading document from string... " . substr( $this->xml,0,30) . "...", "xml" );
+        $this->doc =& $this->__impl->load_string( $this->xml );
+        //$this->log($this->doc->asXML()); die;
       }
       else
       {
-        $this->raiseError("Invalid parameter " . $xml );
+        $this->raiseError("Cannot load xml data ");
       }
     }
     else
     {
       if ( $isFile )
       {
-        $this->log("Loading document from file $xml...","xml");
-        $this->doc = simplexml_load_file($xml);
+        $path = $file->filePath();
+        $this->log("Loading document from file $path...","xml");
+        $this->doc = simplexml_load_file($path);
       }
-      elseif ( is_string ( $xml ) )
+      elseif ( is_string ( $this->xml ) )
       {
         $this->log("Loading document from string...","xml");
-        $this->doc = simplexml_load_string($xml);
+        $this->doc = simplexml_load_string( $this->xml );
       }
       else
       {
-        $this->raiseError("Invalid parameter " . $xml );
+        $this->raiseError("Cannot load xml data ");
       }      
     }
 
     /*
      * cache document object
      */
-    if ( $cache and !$doc )
+    if ( $cacheId )
     {
-      $this->_saveToCache();
+      $this->save();
     }      
      
     return $this->doc;
   }
   
   /**
-   * saves parsed xml object tree to cache
-   * @access private
+   * Returns the persistent object which caches the xml document. Override
+   * this method if you want to implement a different caching mechanism.
+   * By default, and qcl_xml_simpleXmlCache instance, which subclasses 
+   * qcl_persistence_db_Object, is used. If you provide a user id or session
+   * id in the constructor, a separately cached copy will be kept for the user 
+   * or the session.
+   * @return qcl_xml_simpleXmlCache
    */
-  function _saveToCache()
+  function &getCacheObject( $cacheId )
   {
-    // store modification date
-    if ( $this->filectime )
+    if ( ! $cacheId )
     {
-      $this->doc->__filectime = $this->filectime;
+      $this->raiseError("No cache id!");
     }
     
+    static $cacheObj = null;
+    if ( ! $cacheObj )
+    {
+      $controller =& $this->getController();
+      $cacheObj =& new qcl_xml_simpleXmlCache( &$controller, $cacheId, $this->userId, $this->sessionId ); 
+    }
+    return $cacheObj; 
+  }
+  
+  /**
+   * Saves parsed xml object tree to the caching storage
+   * @access private
+   */
+  function save()
+  {
+    $cacheObj =& $this->getCacheObject( $this->cacheId );
+    
+    /*
+     * store modification date
+     */ 
+    if ( $this->lastModified )
+    {
+      $cacheObj->lastModified = $this->lastModified;
+    }
+    
+    /*
+     * copy xml document tree to cache object
+     */
+    $cacheObj->doc = $this->doc;
+    
     $this->log("Saving xml document object to the cache...","xml");
-    $this->store($this->cacheId, $this->doc);
-    $this->hasChanged = true;
+    $cacheObj->save();
+  }
+  
+  /**
+   * Deletes the cached object
+   */
+  function delete()
+  {
+    $cacheObj =& $this->getCacheObject( $this->cacheId );
+    $cacheObj->delete();
   }
   
   /**
@@ -392,7 +556,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
      */
     if (! is_object ($this->doc) )
     {
-      $this->raiseError("qcl_xml_simpleXML::getNode : No xml document available.");
+      $this->raiseError("No xml document available.");
     } 
     
     /*
@@ -484,13 +648,13 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         return null;
       }
     }
-    elseif ( qcl_xml_simpleXML::isNode($pathOrNode) )
+    elseif ( qcl_xml_SimpleXmlStorage::isNode($pathOrNode) )
     {
       $node =& $pathOrNode;
     }
     else
     {
-      qcl_xml_simpleXML::raiseError("qcl_simpleXML::getData: invalid parameter.");
+      qcl_xml_SimpleXmlStorage::raiseError("qcl_simpleXML::getData: invalid parameter.");
     }
     
     /*
@@ -577,9 +741,9 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
    */
   function &getChildNodeByAttribute( $node, $name, $value )
   {
-    if ( ! qcl_xml_simpleXML::isNode($node) )
+    if ( ! qcl_xml_SimpleXmlStorage::isNode($node) )
     {
-      qcl_xml_simpleXML::raiseError("qcl_xml_simpleXML::getChildNodeByAttribute : invalid node.");
+      qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
     }
     
     $children =& $node->children();
@@ -606,9 +770,9 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
    */
   function removeChildNodeByAttribute($node,$name,$value)
   {
-    if ( ! qcl_xml_simpleXML::isNode($node) )
+    if ( ! qcl_xml_SimpleXmlStorage::isNode($node) )
     {
-      qcl_xml_simpleXML::raiseError("qcl_xml_simpleXML::removeChildNodeByAttribute : invalid node.");
+      qcl_xml_SimpleXmlStorage::raiseError("Invalid node.");
     }
    
     /*
@@ -644,19 +808,30 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   /**
    * save current xml object tree and the cache
    */
-  function save()
+  function saveToFile()
   {
-    if ( ! is_valid_file($this->file) )
+    if ( ! is_object( $this->file ) )
     {
-      $this->raiseError("No valid file name stored ('{$this->file}').");
+      $this->raiseError("No file object to save to.");
     }
     
     $xml = $this->doc->asXML();
-    file_put_contents($this->file,$xml);
-    $this->filectime = filectime($this->file);     
-    $this->_saveToCache();
+    $this->file->save( $xml );
+    $this->lastModified = $this->file->lastModified();
+    $this->save();
   }
   
+  function deleteFile()
+  {
+    if ( ! is_object( $this->file ) )
+    {
+      $this->raiseError("No file object to delete.");
+    }    
+    
+    $this->file->delete();
+    $this->lastModified = null;
+    $this->delete();
+  }
   
   /**
    * checks whether the xml document has changed 
@@ -682,12 +857,12 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   
   /**
    * extends a simple xml object tree
-   * @see qcl_xml_simpleXML::_extend
-   * @param qcl_xml_simpleXML 
+   * @see qcl_xml_SimpleXmlStorage::_extend
+   * @param qcl_xml_SimpleXmlStorage 
    */
   function extend($parentXml)
   {
-    if ( is_a($parentXml,"qcl_xml_simpleXML") )
+    if ( is_a($parentXml,"qcl_xml_SimpleXmlStorage") )
     {
       $doc       =& $this->getDocument();
       $parentDoc =& $parentXml->getDocument();  
@@ -921,27 +1096,7 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   {
     return $this->doc->asXML();
   }
-  
-  /**
-   * removes the lock of the present xml file
-   * @return void
-   */
-  function removeLock()
-  {
-    if ( $this->cacheId )
-    {
-      parent::removeLock($this->cacheId);  
-    }
-  }
-  
-  /**
-   * destructor: removes the lock on the xmlfile, so that other processes can read or write it.
-   */
-  function __destruct()
-  {
-    $this->removeLock();
-    parent::__destruct();
-  }
+
   
 }
 ?>
