@@ -38,9 +38,9 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
   function method_testPersistenceLocking()
   {
     $obj1 =& new TestPersistence(&$this,"TestPersistence");
-    $obj2 =& new TestPersistence(&$this,"TestPersistence");
     $obj1->getWriteLock();
-    //$obj2->getWriteLock(); 
+    $obj2 =& new TestPersistence(&$this,"TestPersistence");
+    $obj2->getWriteLock(); 
     return $this->response();
   }  
 
@@ -64,7 +64,7 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
       {
         $test->end     = rand(5,10);
         $test->counter = 0;
-        $this->info("Initializing object: " . $test->end); 
+        $this->info("Initializing object " . $test->instanceLabel() . " with " . $test->end . " runs." ); 
       }
       
       /*
@@ -81,22 +81,32 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
          * increment counter
          */
         $test->counter++;
-        $this->info($html . " {$test->counter} / {$test->end} ... ");
+        $this->info( $test->instanceLabel() . ": " . $html . " {$test->counter} / {$test->end} ... ");
         $percent = floor(($test->counter/$test->end) * 100); 
         $html    = "Progress $percent %";
+        
+        /*
+         * display message on client
+         */
         $this->dispatchEvent("displayServerMessage",$html);
+        
+        /*
+         * this resubmits the form when called from the debug 
+         * console
+         */
+        $this->dispatchMessage("qcl.commands.repeatLastRequest");
    
       }
       else
       {
-        $this->info("Action completed. Deleting object...");
+        $this->info("Action completed. Deleting " . $test->instanceLabel() );
         $test->delete(); 
         $this->dispatchEvent("endProcess");
       }
     }
     else
     {
-      $this->info("Action aborted. Deleting object...");
+      $this->info("Action aborted. Deleting " . $test->instanceLabel() );
       $test->delete();    
     }
     
