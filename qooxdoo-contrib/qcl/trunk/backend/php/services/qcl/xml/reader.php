@@ -1,10 +1,13 @@
 <?php
 
-// dependencies
-require_once ("qcl/core/object.php");
+/*
+ * dependencies
+ */
+require_once "qcl/core/object.php";
 
 /**
- * Component to do XSLT - Transformations
+ * Component to read xml documents. In PHP4, requires domxml extension
+ * 
  * @todo php5 compatibility
  **/
 class qcl_xml_reader extends qcl_core_object
@@ -20,11 +23,11 @@ class qcl_xml_reader extends qcl_core_object
     {
       $this->raiseError("qcl_xml_reader currently works only with php4.");
     }
-    
-    if ( ! function_exists("domxml_open_mem") )
+    elseif ( ! function_exists("domxml_open_mem") )
     {
       $this->raiseError("Cannot parse xml document: domxml-extension is not installed!");
     }
+    
     parent::__construct();
     
     if ( $xml )
@@ -101,7 +104,7 @@ class qcl_xml_reader extends qcl_core_object
    * executes an xpath (1.0) query on the current document
    * @return XPathObject
    */
-	function evalXpath( $expr) 
+	function evalXpath( $expr ) 
   {
     $xpCxt =& $this->dom->xpath_new_context();
     $xpObj =& $xpCxt->xpath_eval_expression($expr);

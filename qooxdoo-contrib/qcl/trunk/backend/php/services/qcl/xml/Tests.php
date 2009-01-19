@@ -1,23 +1,37 @@
 <?php
-require_once "qcl/datasource/controller.php";
+require_once "qcl/application/controller.php";
+require_once "qcl/xml/SimpleXmlStorage.php";
 
 /**
  * Service class containing test methods
  */
-class class_qcl_xml_Tests extends qcl_datasource_controller
+class class_qcl_xml_Tests extends qcl_application_controller
 {
+  function __construct()
+  {
+    parent::__construct();
+    $this->controlAccess();
+  }
   
  function method_testSimpleXml()
   {
-    require_once("qcl/xml/simpleXML.php");
+    $logger =& $this->getLogger();
     
-    $testfile = "../var/tmp/test.xml"; 
-    unlink($testfile);
+    $logger->setFilterEnabled("xml",true);
+    $logger->setFilterEnabled("persistence",false);
     
-    $parser = new qcl_xml_simpleXML;
-    $parser->createIfNotExists($testfile);
-    $parser->load($testfile,true);
+    $testfile = realpath("../var/tmp/test.xml"); 
     
+    $parser =& new qcl_xml_SimpleXmlStorage( &$this, $testfile );
+    $parser->setOwnedBySessionId( $this->getSessionId() );
+    
+    $this->debug("Deleting original xml file...");
+    $parser->deleteFile();
+    
+    $this->debug("Creating new empty xml file...");
+    $parser->createFile();
+    
+    $this->debug("Creating document tree...");
     $doc =& $parser->getDocument();
    
     $record  =& $doc->addChild("record"); 
@@ -25,94 +39,41 @@ class class_qcl_xml_Tests extends qcl_datasource_controller
     $child   =& $record->addChild("child","boo!");
     $child->setAttribute("id","child or first record"); 
     
-    //$this->info($doc->asXml()); 
-    
     $record2 =& $doc->addChild("record");
     $record2->setAttribute("id","second record");
     $child2  =& $record2->addChild("child");
     $child2->setAttribute("id","child of second record"); 
     
     
-    //$this->Info($doc->tagChildren);
-    
-    $doc->recordModel[0]->setCDATA("CDATA of first record");
-    $doc->recordModel[0]->child->setAttribute("foo","yeah!");
-    
-    //$this->info($root->asXML());  
+    $doc->record[0]->setCDATA("CDATA of first record");
+    $doc->record[0]->child->setAttribute("foo","yeah!");
+      
     $parser->setData("/record[2]","Oder nicht?");
     $parser->setAttribute("/record[1]/child","visible","false");
+
+    $this->info("Document tree is:");
+    $this->info( $doc->asXML() );
     
-    //$this->info($doc->toArray());
-    $this->info($doc->asXML());
+    $this->debug("Saving to file...");
+    $parser->saveToFile();
     
-    $parser->save();
-    
-    $parser2 = new qcl_xml_simpleXML; 
-    $parser2->load($testfile,true,array("id"));
+    $this->debug("Retrieving stored document from cache ...");
+    $parser2 =& new qcl_xml_SimpleXmlStorage( &$this, $testfile );
+    $parser2->setOwnedBySessionId( $this->getSessionId() );
+    $parser2->load();
     
     $doc = $parser2->getDocument();
-    $this->info($doc->toArray());
-    $find = $parser2->getNodesByAttributeValue("id","second record");
     
+    $this->debug("Cached document tree:");
+    $this->info($doc->asXML());
+
+    return $this->response();
   }
 
-  function method_createXmlModel()
+  function method_testCache()
   {
-    require_once("qcl/xml/model.php");
-    $path = "../var/tmp/xml_model.xml"; 
-    unlink($path);
-    
-    $xmlModel = new qcl_xml_model($this);
-    
-    $xmlModel->load($path);
-    $doc =& $xmlModel->getDocument();
-    
-    $admin =& $doc->addChild("role");
-    $admin->addAttribute("name","qcl.roles.admin");
-    
-    $perm1 =& $admin->addChild("permission");
-    $perm1->addAttribute("name","qcl.permissions.doAdminStuff");
-    
-    $manager =& $doc->addChild("role");
-    $manager->addAttribute("name","qcl.role.manager");
-    
-    $perm2 =& $manager->addChild("permission");
-    $perm2->addAttribute("name","qcl.permissions.doManagerStuff");
-    
-    $user =& $doc->addChild("role");
-    $user->addAttribute("name","qcl.role.user");
-
-    $perm3 =& $user->addChild("permission");
-    $perm3->addAttribute("name","qcl.permissions.doUserStuff");
-    
-    $xmlModel->save(); 
-    
     
   }
-  
-  function method_testXmlModel()
-  {
-    require_once("qcl/xml/model.php");
-    $path = "../var/tmp/xml_model.xml"; 
-    
-    $xmlModel = new qcl_xml_model($this);
-    $xmlModel->load($path);
-    
-    // query
-    $nodes = $xmlModel->getNodesWhere(array(
-      'name' => 'qcl.roles.admin'
-    ));
-
-      
-    $this->info("admin has the following permissions:");
-    /*
-    foreach($nodes[0]->children() as $child)
-    {
-      $attr = $child->attributes();
-      $this->info("- ". $attr['name']);
-    }*/
-    
-  }  
   
 }
 
