@@ -119,7 +119,7 @@ class qcl_jsonrpc_object extends qcl_core_object
      */
     $this->error( $message . "\n" . 
       "Backtrace:\n" . 
-      $this->backtrace()
+      $this->backtrace(true)
     );
     
     /*
@@ -437,7 +437,8 @@ class qcl_jsonrpc_object extends qcl_core_object
  	 */
  	function getSessionVar ( $name )
  	{
-    $reg =& qcl_registry_Session::getInstance();
+    require_once "qcl/registry/Session.php";
+ 	  $reg =& qcl_registry_Session::getInstance();
     return $reg->get($name);
  	}
 
