@@ -20,6 +20,17 @@ class qcl_io_filesystem_IResource
    */
   function resourcePath() {}
 
+  /**
+   * Checks if file exists
+   * @return bool
+   */
+  function exists() {}
+  
+  /**
+   * Creates the file
+   * @return bool if file could be created
+   */
+  function create() {}      
   
   /**
    * Deletes the file/folder 
@@ -59,7 +70,13 @@ class qcl_io_filesystem_IResource
    * Casting as string, returns the resource path
    * @return string
    */
-  function toString() {}  
+  function toString() {}
+
+  /**
+   * Last modification date
+   * @return string
+   */
+  function lastModified() {}
 }
 
 ?>

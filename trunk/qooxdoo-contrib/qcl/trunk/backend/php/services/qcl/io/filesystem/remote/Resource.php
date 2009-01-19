@@ -12,7 +12,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
   /**
    * The supported / allowed protocols
    */
-  var $protocols = array("ftp","http","s3");
+  var $resourceTypes = array("ftp","http","s3");
 
   /**
    * Constructor. Checks whether allow_url_fopen us enabled (necessary for
@@ -30,7 +30,7 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     /*
      * s3 wrapper
      */
-    if ( $this->protocol == "s3" )
+    if ( $this->resourceType == "s3" )
     {
       if ( ! defined('S3_KEY') )
       {
@@ -83,30 +83,15 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
   
   /**
    * Checks if file or folder exists
-   * @param string $resourcePath
    */
-  function exists( $resourcePath )
+  function exists()
   {
-    if ( $this->isFile($resourcePath) )
+    if ( $this->open() )
     {
-      $fp = fopen($resourcePath, "r");
-      if ( !$fp )
-      {
-        return false;
-      }
-      fclose($fp);
+      $this->close();
       return true;
     }
-    else
-    {
-      $dh = opendir( $resourcePath );
-      if ( !$dh )
-      {
-        return false;
-      }
-      closedir($dh);
-      return true;
-    }
+    return false;
   }
   
   /**
@@ -135,6 +120,13 @@ class qcl_io_filesystem_remote_Resource extends qcl_io_filesystem_local_Resource
     $this->raiseError("Renaming remote Files/Folders not implemented.");
   }  
   
+  /**
+   * Returns the last modification date
+   */
+  function lastModified()
+  {
+    $this->notImplemented(__CLASS__);
+  }  
 
  
 }

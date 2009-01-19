@@ -83,7 +83,7 @@ class qcl_io_filesystem_remote_Datasource extends qcl_datasource_type_db_Model
    */
   function unusedFields()
   {
-    if ( $this->folderObj && $this->folderObj->protocol == "s3" )
+    if ( $this->folderObj && $this->folderObj->resourceType == "s3" )
     {
       return array( "host", "port", "database", "prefix" );
     }

@@ -8,10 +8,12 @@ require_once "qcl/io/filesystem/Resource.php";
 class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
 {
 
+  
+  
   /**
    * The supported / allowed protocols
    */
-  var $protocols = array("file");  
+  var $resourceTypes = array("file");  
     
   
   /**
@@ -34,6 +36,15 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
     return is_dir( either( $resourcePath, $this->filePath() ) );
   }  
   
+  
+  /**
+   * Checks if file exists
+   */
+  function exists() 
+  {
+    return file_exists( $this->filePath() );
+  }  
+  
   /**
    * Deletes the file/folder 
    * @return booelean Result 
@@ -41,7 +52,7 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
    */
   function delete() 
   {
-    if ( ! unlink( $this->filePath() ) )
+    if ( ! @unlink( $this->filePath() ) )
     {
       $this->setError("Problem deleting " . $this->resourcePath() );
       return false;
@@ -71,6 +82,14 @@ class qcl_io_filesystem_local_Resource extends qcl_io_filesystem_Resource
     $this->setError("Problem renaming '" . $this->resourcePath() . "' to '$name'.");
     return false;
   }  
+  
+  /**
+   * Returns the last modification date
+   */
+  function lastModified()
+  {
+    return filectime($this->filePath());
+  }
   
 }
 ?>

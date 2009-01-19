@@ -39,7 +39,7 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
   /**
    * Creates a file resource if it doesn't exist. Return resource.
    * @param string $name
-   * @return qcl_io_filesystem_remote_File
+   * @return qcl_io_filesystem_remote_File|false
    */
   function &createOrGetFile( $name ) 
   {
@@ -47,29 +47,24 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
      * create file if it doesn't exist
      */
     $resourcePath = $this->resourcePath() . $name;
-    $file = new qcl_io_filesystem_remote_File( &$this, $resourcePath );
-    if ( ! $file->open( "r" ) )
+    $fileObj = new qcl_io_filesystem_remote_File( &$this, $resourcePath );
+    if ( ! $fileObj->exists() )
     {
-      if ( ! $file->open( "w" ) )
-      {
-        $this->raiseError("Problems creating file '$resourcePath'." );  
-      }
-      else
-      {
-        $file->close();        
-      }
+      $fileObj->create();
     }
-    else
+    if ( $fileObj->getError() )
     {
-      $file->close();
+      $this->setError( $fileObj->getError() );  
+      return false;
     }
-    return $file;
+    return $fileObj;    
+    
   }
   
   /**
    * Creates a folder resource if it doesn't exist. Return resource
    * @param string $name
-   * @return qcl_io_filesystem_remote_Folder
+   * @return qcl_io_filesystem_remote_Folder|false
    */
   function &createOrGetFolder( $name ) 
   {
@@ -77,14 +72,17 @@ class qcl_io_filesystem_remote_Folder extends qcl_io_filesystem_remote_Resource
      * create directory if it doesn't exist
      */
     $resourcePath = $this->resourcePath() . $name ."/";
-    if ( ! $this->exists( $resourcePath ) )
+    $folderObj =& new qcl_io_filesystem_remote_Folder( &$this, $resourcePath );
+    if ( ! $folderObj->exists() )
     {
-      if ( ! mkdir( $resourcePath, $mode ) )
-      {
-        $this->raiseError("Problems creating folder '$resourcePath' with permissions $mode." );
-      }
-    }        
-    return new qcl_io_filesystem_remote_Folder( &$this, $resourcePath );    
+      $folderObj->create();
+    }
+    if ( $folderObj->getError() )
+    {
+      $this->setError( $folderObj->getError() );  
+      return false;
+    }
+    return $folderObj;
   }
   
   /**

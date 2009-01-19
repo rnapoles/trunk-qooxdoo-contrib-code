@@ -21,19 +21,26 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
   var $_dir;
   
   /**
-   * Constructor. Will create the folder if it doesn't exist and will
-   * throw an error if that is not possible.
+   * Constructor
    * @param qcl_jsonrpc_controller $controller
    * @param string $resourcePath
-   * @param int $mode File permissions, defaults to 0777 
    */
-  function __construct ( $controller, $resourcePath, $mode=0777 )
+  function __construct ( $controller, $resourcePath )
   {
     /*
      * parent constructor takes care of controller and resource path
      */
     parent::__construct( &$controller, $resourcePath );
-    
+  }
+
+  
+  /**
+   * Creates the folder
+   * @param int $mode File permissions, defaults to 0777 
+   * @return bool if file could be created
+   */
+  function create($mode=0777) 
+  {
     /*
      * create folder if it doesn't exist
      */
@@ -47,38 +54,61 @@ class qcl_io_filesystem_local_Folder extends qcl_io_filesystem_local_Resource
       {
         if ( ! mkdir( $filePath, $mode ) )
         {
-          $this->raiseError("Problems creating folder '$filePath' with permissions $mode." );
+          $this->setError("Problems creating folder '$filePath' with permissions $mode." );
+          return false;
         }
       }
       else
       {
-        $this->raiseError("Folder '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
+        $this->setError("Folder '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
+        return false;
       }
-    }
-  }       
+    }    
+    return true;
+  }    
   
   /**
    * Creates a file resource if it doesn't exist. Return resource.
    * @param string $name
-   * @return qcl_io_filesystem_local_File
+   * @return qcl_io_filesystem_local_File | false
    */
   function &createOrGetFile( $name ) 
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
     $controller =& $this->getController();
-    return new qcl_io_filesystem_local_File( &$controller, $resourcePath );
+    $fileObj =& new qcl_io_filesystem_local_File( &$controller, $resourcePath );
+    if ( ! $fileObj->exists() )
+    {
+      $fileObj->create();
+    }
+    if ( $fileObj->getError() )
+    {
+      $this->setError( $fileObj->getError() );
+      return false;
+    }
+    return $fileObj;
   }
   
   /**
    * Creates a folder resource if it doesn't exist. Return resource
    * @param string $name
-   * @return qcl_io_filesystem_local_Folder
+   * @return qcl_io_filesystem_local_Folder | false
    */
   function &createOrGetFolder( $name ) 
   {
     $resourcePath = $this->resourcePath() . "/" . $name;
     $controller =& $this->getController();
-    return new qcl_io_filesystem_local_Folder( &$controller, $resourcePath );    
+    $folderObj =& new qcl_io_filesystem_local_Folder( &$controller, $resourcePath );
+    if ( ! $folderObj->exists() )
+    {
+      $folderObj->create();
+    }
+    if ( $folderObj->getError() )
+    {
+      $this->setError( $folderObj->getError() );   
+      return false; 
+    }
+    return $folderObj;
   }  
   
   /**
