@@ -20,33 +20,14 @@ class qcl_io_filesystem_Resource extends qcl_jsonrpc_model
   /**
    * The supported / allowed protocols
    */
-  var $protocols = array();  
+  var $resourceTypes = array();  
   
   /**
    * The currently used protocol
    */
-  var $protocol;   
+  var $resourceType;   
   
-  /**
-   * Checks wether resource path is valid. Local files have to start 
-   * with "file://", remote files with a valid protocol such as "ftp://"
-   * @param string $resourcePath
-   * @retrun boolean
-   */
-  function checkResourcePath( $resourcePath ) 
-  {
-    $pos = strpos($resourcePath,":");
-    return  in_array( substr($resourcePath, 0, $pos), $this->protocols ) && substr($resourcePath,$pos,3) == "://";
-  }
-  
-  /**
-   * Gets the file's resource path
-   * @return string
-   */
-  function resourcePath() 
-  {
-    return $this->_resourcePath;
-  }
+
 
   /**
    * Constructor
@@ -71,13 +52,86 @@ class qcl_io_filesystem_Resource extends qcl_jsonrpc_model
     /*
      * protocol
      */
-    $this->protocol = substr($resourcePath,0,strpos($resourcePath,":") );    
+    $this->resourceType = $this->getResourceType( $resourcePath );    
     
     /*
      * save resource path
      */
     $this->_resourcePath = $resourcePath;
   }
+  
+  /**
+   * Factory method which returns the correct class type according to protocol.
+   * @static
+   * @return qcl_io_filesystem_IResource
+   */
+  function createInstance( $controller, $resourcePath )
+  {
+    /*
+     * check resource path
+     */
+    $resourceType = qcl_io_filesystem_Resource::getResourceType( $resourcePath );
+    switch ( $resourceType )
+    {
+      case "file":
+        if ( substr($resourcePath,-1) == "/" )
+        {
+          require_once "qcl/io/filesystem/local/Folder.php";
+          return new qcl_io_filesystem_local_Folder( &$controller, $resourcePath );
+        }
+        else
+        {
+          require_once "qcl/io/filesystem/local/File.php";
+          return new qcl_io_filesystem_local_File( &$controller, $resourcePath );             
+        }
+        break;
+        
+      default: 
+        if ( substr($resourcePath,-1) == "/" )
+        {
+          require_once "qcl/io/filesystem/remote/Folder.php";
+          return new qcl_io_filesystem_remote_Folder( &$controller, $resourcePath );
+        }
+        else
+        {
+          require_once "qcl/io/filesystem/remote/File.php";
+          return new qcl_io_filesystem_remote_File( &$controller, $resourcePath );             
+        }
+        break;
+    }
+    
+  }
+  
+  /**
+   * Returns the prefix of the resource path as the protocol/ resource
+   * type
+   */
+  function getResourceType( $resourcePath )
+  {
+    return substr( $resourcePath, 0, strpos($resourcePath,":") );
+  }
+  
+  /**
+   * Checks wether resource path is valid. Local files have to start 
+   * with "file://", remote files with a valid protocol such as "ftp://"
+   * @param string $resourcePath
+   * @retrun boolean
+   */
+  function checkResourcePath( $resourcePath ) 
+  {
+    $pos = strpos($resourcePath,":");
+    return  in_array( substr($resourcePath, 0, $pos), $this->resourceTypes ) 
+            && substr($resourcePath,$pos,3) == "://";
+  }
+  
+  /**
+   * Gets the file's resource path
+   * @return string
+   */
+  function resourcePath() 
+  {
+    return $this->_resourcePath;
+  }  
   
   /**
    * Returns the file path withoug leading protocol "foo://"

@@ -21,19 +21,26 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
   var $_fp;
 
   /**
-   * Constructor. Will create the file if it doesn't exist and will
-   * throw an error if that is not possible.
+   * Constructor
    * @param qcl_jsonrpc_controller $controller
    * @param string $resourcePath
-   * @param int $mode File permissions, defaults to 0666  
    */
-  function __construct ( $controller, $resourcePath, $mode=0666 )
+  function __construct ( $controller, $resourcePath )
   {
     /*
      * parent constructor takes care of controller and resource path
      */
     parent::__construct( &$controller, $resourcePath );
     
+  }
+  
+  /**
+   * Create a file
+   * @param int $mode File permissions, defaults to 0666  
+   * @return bool if file could be created
+   */
+  function create( $mode="0666" )
+  {
     /*
      * create file if it doesn't exist
      */
@@ -47,13 +54,21 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
       {
         touch( $filePath );
         chmod( $filePath, $mode );
+        return true;
       }
       else
       {
-        $this->raiseError("File '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
+        $this->setError("File '$basename' does not exist and cannot be created because parent directory '$dirname' is not writable." );
+        return false;
       }
+    }    
+    else
+    {
+      $this->setError("File '$basename' exist." );
+      return false;
     }
-  }       
+  }
+  
   
   /**
    * Load the whole file resource into memory
@@ -69,9 +84,17 @@ class qcl_io_filesystem_local_File extends qcl_io_filesystem_local_Resource
    * @param string $data
    * @return void
    */
-  function save($data) 
+  function save( $data ) 
   {
-    file_put_contents($this->filePath(), $data );
+    if ( file_put_contents( $this->filePath(), $data ) )
+    {
+      return true;
+    }
+    else
+    {
+      $this->setError("Problems saving to " . $this->filePath() );
+      return false;
+    }
   }
 
   /**

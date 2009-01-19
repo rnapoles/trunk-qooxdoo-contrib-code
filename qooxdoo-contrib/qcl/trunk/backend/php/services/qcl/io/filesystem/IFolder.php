@@ -8,6 +8,8 @@ require_once "qcl/io/filesystem/IResource.php";
 class qcl_io_filesystem_IFolder extends qcl_io_filesystem_IResource
 {
 
+
+  
   /**
    * Creates a file resource if it doesn't exist. Return resource.
    * @param string $name

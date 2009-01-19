@@ -1,5 +1,6 @@
 <?php
 require_once "qcl/jsonrpc/controller.php";
+require_once "qcl/registry/session.php"; // @todo
 require_once "qcl/io/filesystem/local/File.php";
 require_once "qcl/io/filesystem/local/Folder.php";
 
@@ -12,13 +13,17 @@ class class_qcl_io_filesystem_local_Tests extends qcl_jsonrpc_controller
   function method_testCreate()
   {
     $topDir =& new qcl_io_filesystem_local_Folder( &$this, "file://" . $this->tmpDir() . "test" );
+    $topDir->create();
     $file1  =& $topDir->createOrGetFile("file1");  
     $file2  =& $topDir->createOrGetFile("file2");
     $dir1   =& $topDir->createOrGetFolder("dir1");
+    $dir1->create();
     
     $file3 =& $dir1->createOrGetFile("file3");
     $file3->rename("file3b");
-    $file3->delete();
+    
+    $file4 =& $dir1->createOrGetFile("file4");
+    $file4->delete();
   }
     
   function method_testDirContents()
