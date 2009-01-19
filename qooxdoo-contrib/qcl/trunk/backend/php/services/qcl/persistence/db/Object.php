@@ -33,115 +33,68 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
   }
   
   /**
-   * Reconstructs the object from the model data. This _must_ set $this->_original
-   * FIXME: we have ::objectId and ::_objectId/::objectId() (object uuid) now 
-   * -> needs to be integrated
+   * Reconstructs the object from the model data. 
+   * @param string $id the id of the object
+   * @return null|false|array If null, no model data exists. If false, model data doesn't
+   * exist or is invalid. If valid data exists, return array. 
    */
-  function load( $id=null )
+  function _load( $id )
   {
-    
     /*
      * get or create model record
      */
-    //$this->info("Loading " . $this->className() . " [$id].");
+    //$this->debug("Loading " . $this->className() . " [$id].");
     $this->_dbModel->findWhere(array(
-      'class'    => $this->className(),
-      'objectId' => $id,
-      'userId'   => $this->_userId,
-      'sessionId'=> $this->_sessionId
+      'class'      => $this->className(),
+      'instanceId' => $id,
+      'userId'     => $this->_userId,
+      'sessionId'  => $this->_sessionId
     ));         
-
     
     /*
-     * Check if model data was found
+     * Check if model data was found. If nul, return null
      */
     if ( $this->_dbModel->foundNothing() )
     {
-      //$this->info($this->className() . " [$id] was not found. Creating it...");
-      
-      /*
-       * create new record in database
-       */
-      $this->_dbModel->create();
-      $this->_dbModel->set( array( 
-        'class'     => $this->className(),
-        'objectId' => $id,
-        'userId'   => $this->_userId,
-        'sessionId'=> $this->_sessionId
-      ) );
-
-      if ( $id )
-      {
-        $this->_dbModel->setProperty("objectId",$id);
-      }
-      $this->_dbModel->save();
-      
-      /*
-       * use the opportunity to clean up
-       */
-      $this->cleanUp();
+      return null;
     }
-    else
-    {
-      /*
-       * unserialize model object
-       */
-      //$this->info($this->_dbModel->getRecord());
-      $objData = $this->_dbModel->getProperty("data");
-      //$this->info($objData);
-      $data = unserialize( $objData );
-      //$this->info($data);
-      
-      /*
-       * save original data against which to check
-       * for modifications
-       */
-      $this->_original = $data;
-      
-      /*
-       * check for lock
-       */
-      if ( $data['isLocked'] )
-      {
-        /*
-         * check timestamp to break locks by aborted
-         * processes
-         */
-        $seconds = $this->_dbModel->getSecondsSince($this->_dbModel->getModified());
-        //$this->info("Seconds since modified: $seconds");
-        
-        if ( $seconds > $this->staleLockTimeout )
-        {
-          $this->warn("Removing stale lock on " . $this->className() );
-          $data['isLocked'] = false;
-        }
-      }
-      
-      //$this->info("Object was found. Copying properties ...");
-      
-      /*
-       * attach object properties to this object
-       */
-      //$d = array();
-      foreach ( $this->persistedProperties() as $key)
-      {
-        $this->$key = $data[$key];
-        //$d[] = $data[$key];
-        //$this->info(" Setting  '$key' to '{$this->$key}''");
-      }
-      //$this->info(implode(",",$d));
-      
-      /*
-       * set flag that this is a reconstructed object
-       */
-      $this->isNew = false;   
 
-    }
+    /*
+     * unserialize model object
+     */
+    $objData = $this->_dbModel->getProperty("data");
+    //$this->debug($objData);
+    $data = unserialize( $objData );
+    //$this->debug($data);
+    
+    return $data;
+  }
+
+  /**
+   * Creates a new record in the database that will hold the information for
+   * this instance
+   */
+  function create()
+  {
     
     /*
-     * object id
+     * create new record in database
      */
-    $this->objectId = $id;    
+    $this->_dbModel->create();
+    $this->_dbModel->set( array( 
+      'class'      => $this->className(),
+      'instanceId' => $this->instanceId,
+      'userId'     => $this->_userId,
+      'sessionId'  => $this->_sessionId
+    ) );
+    
+    $this->_dbModel->save();
+    
+    /*
+     * use the opportunity to clean up objects that refer
+     * to non-existing users or sessions
+     */
+    $this->cleanUp();    
   }
   
   /*
@@ -149,7 +102,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
    */
   function cleanUp()
   {
-    $this->deleteWhere("
+    $this->_dbModel->deleteWhere("
       sessionId NOT IN ( SELECT sessionId FROM sessions ) OR
       userId NOT IN ( SELECT id FROM users )
     ");          
@@ -170,11 +123,11 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
          and $this->lockMode == $this->WRITE_LOCK
          and ! $this->_lockIsMine )
     {
-      $this->raiseError("Cannot save " . $this->className()  . " [$this->objectId]." . " because of write lock." );
+      $this->raiseError("Cannot save " . $this->className()  . " [$this->instanceId]." . " because of write lock." );
       return; 
     }
     
-    //$this->info("Saving object data for '" . $this->className() . "' [$this->objectId].");
+    //$this->debug("Saving object data for '" . $this->className() . "' [$this->instanceId].");
     
     /*
      * save object data
@@ -185,7 +138,7 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
     foreach( $properties as $property )
     {
       $data[$property] = $this->$property;
-      //$this->info(" Saving '$property' with value '$data[$property]'");
+      //$this->debug(" Saving '$property' with value '$data[$property]'");
     }
     $this->_dbModel->setData( serialize( $data ) );
     $this->_dbModel->save();

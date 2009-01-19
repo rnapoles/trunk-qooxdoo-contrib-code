@@ -3,6 +3,28 @@
  * dependencies
  */
 require_once "qcl/jsonrpc/model.php";
+require_once "qcl/persistence/__init__.php";
+
+/*
+ * constants
+ */
+
+/**
+ * Lock mode constant: no lock (default)
+ */
+define("QCL_PERSISTENCE_NO_LOCK", 0);
+
+/**
+ * Lock mode constant: other objects can read the object, but 
+ * cannot change it
+ */
+define("QCL_PERSISTENCE_WRITE_LOCK", 1);
+
+/**
+ * Lock mode constant: other objects cannot read or change the object
+ * until the lock is released
+ */
+define("QCL_PERSISTENCE_READ_LOCK", 2);
 
 /**
  * Abstract sub class for persistent objects 
@@ -38,11 +60,10 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
   var $isPersistent = true;
 
   /**
-   * The id of the object if several objects of the
-   * same class are saved seperately
+   * The id of the instance 
    * @var string
    */
-  var $objectId;
+  var $instanceId;
   
   /**
    * The id of the user that this object belongs to.
@@ -78,27 +99,10 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
   var $lockMode = 0;
   
   /**
-   * Lock mode constant: no lock (default)
-   */
-  var $NO_LOCK    = 0;
-  
-  /**
-   * Lock mode constant: other objects can read the object, but 
-   * cannot change it
-   */
-  var $WRITE_LOCK = 1;
-  
-  /**
-   * Lock mode constant: other objects cannot read or change the object
-   * until the lock is released
-   */
-  var $READ_LOCK  = 2;
-  
-  /**
    * Timeout in seconds before trying to get the lock is aborted
    * @var int 
    */
-  var $lockTimeout = 3;
+  var $_lockTimeout = 3;
 
   /**
    * Flag indicating that the current lock is owned by the object
@@ -111,7 +115,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    * Timeout in seconds before stale lock is broken
    * @var int 
    */
-  var $staleLockTimeout = 10;  
+  var $_staleLockTimeout = 10;  
   
   /**
    * Constructor. Reconstructs object properties
@@ -119,7 +123,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    * @param string[optional] $id Optional id if several objects of
    * the same class are to be persisted. If you don't provide an id,
    * the UUID-style object id is used. This means that you need to retrieve
-   * the objectId in order to access the persistent object in a later
+   * the instanceId in order to access the persistent object in a later
    * request. If you want only one instance of this object to exist, pass
    * the class name of the inheriting class in its constructor to this 
    * parent constructor. 
@@ -128,12 +132,12 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    * @param string $sessionId If given, create/retrieve a persistent object that belongs
    * to the session. It will be deleted when the session expires or is deleted.
    */  
-  function __construct( $controller, $id=null, $userId=null, $sessionId=null)
+  function __construct( $controller, $id=null, $userId=null, $sessionId=null )
   {
     /*
      * call parent contructor
      */
-    parent::__construct( &$controller );
+    parent::__construct( &$controller );  
     
     /*
      * check if class is subclassed
@@ -144,12 +148,14 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
     }
     
    /*
-    * use object id as id if no id is given
+    * id of the object, identifying it among all the other saved instances of 
+    * the class of the object. Use given id or object id 
     */ 
    if ( ! $id )
    {
      $id = $this->objectId();
-   }
+   }  
+   $this->instanceId = $id;
    
    /*
     * set user and session id
@@ -165,7 +171,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
     /*
      * synchronize object and model data
      */
-    $this->load($id);
+    $this->load( $id );
     
   }
 
@@ -186,12 +192,111 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
   }
   
   /**
-   * Reconstructs the object from the model data. This _must_ set
-   * $this->_original!
+   * Reconstructs the object from the model data or creates it 
+   * if it does not exist.
+   * @param string $id the id of the object
    */
-  function load($id=null)
+  function load( $id )
   {
-    $this->raiseError("Not yet implemented");
+    /*
+     * id
+     */
+    if ( ! $id )
+    {
+      $this->raiseError("No id given");
+    }
+    
+    /*
+     * get data from implementing method
+     */       
+    $data = $this->_load( $id );
+    
+    /*
+     * If no data was found, create new object
+     */
+    if ( $data === null )
+    {
+      $this->log($this->className() . " [$id] was not found. Creating it...","persistence");
+      $this->create();
+    }
+    elseif ( is_array( $data ) )
+    { 
+      /*
+       * save original data against which to check
+       * for modifications
+       */
+      $this->_original = $data;
+      
+      /*
+       * check for lock
+       */
+      if ( $data['isLocked'] )
+      {
+        /*
+         * check timestamp to break locks by aborted
+         * processes
+         */
+        $seconds = $this->_dbModel->getSecondsSince( $this->_dbModel->getModified() );
+        $timeout = $this->_staleLockTimeout;
+        //$this->debug("Seconds since modified: $seconds, timeout $timeout.");
+        
+        if ( $seconds > $timeout )
+        {
+          $this->warn("Lock is older than $timeout. Removing it on " . $this->className() );
+          $data['isLocked'] = false;
+        }
+      }
+      
+      //$this->debug("Object was found. Copying properties ...");
+      
+      /*
+       * attach object properties to this object
+       */
+      //$d = array();
+      foreach ( $this->persistedProperties() as $key)
+      {
+        $this->$key = $data[$key];
+        //$d[] = $data[$key];
+        //$this->debug(" Setting  '$key' to '{$this->$key}''");
+      }
+      //$this->debug(implode(",",$d));
+      
+      /*
+       * set flag that this is a reconstructed object
+       */
+      $this->isNew = false;   
+
+    }
+    else
+    {
+      $this->log("Persisted object data is invalid.","persistence");
+    }
+    
+    
+    /*
+     * object id
+     */
+    $this->instanceId = $id;    
+  }
+  
+  /**
+   * Implementing method to create a new record in the database 
+   * that will hold the information for this instance
+   */
+  function create()
+  {
+    $this->notImplemented(__CLASS__); 
+  }  
+  
+  /**
+   * Reconstructs the object from the model data. Implementing method for load(). 
+   * @param string $id the id of the object
+   * @return null|false|array If null, no model data exists. If false, model data is
+   * invalid. If valid data exists, return array. 
+   */
+  function _load( $id )
+  {
+    $this->notImplemented(__CLASS__);
   }
   
   /**
@@ -199,7 +304,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    */
   function reload()
   {
-    $this->load($this->objectId);
+    $this->load( $this->instanceId );
   }
   
   /**
@@ -210,7 +315,8 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
   {
     
     /*
-     * Reload object to get newest data, but only if the object is new
+     * Reload object to get newest data, but only if the object is newly 
+     * initialized. ??
      */
     if ( ! $this->isNew() )
     {
@@ -222,29 +328,30 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
      */
     if ( $this->isLocked && $this->_lockIsMine )
     {
-      $this->raiseError("Object is already locked.");
+      $this->warn("Object is already locked.");
+      return;
     }
     
     /*
      * Check for lock
      */
     $timestamp = time();
-    while ( $this->isLocked && $this->lockMode == $this->WRITE_LOCK )
+    while ( $this->isLocked && $this->lockMode == QCL_PERSISTENCE_WRITE_LOCK )
     {
       /*
        * sleep a bit and try again if timeout hasn't
        * been reached
        */
       sleep(0.1);
-      if ( time() - $timestamp > $this->lockTimeout )
+      if ( time() - $timestamp > $this->_lockTimeout )
       {
-        $this->raiseError("Cannot write read access to locked object " . $this->className() );
+        $this->raiseError("Cannot get write lock " . $this->className() . " [{$this->instanceId}]" );
       }
-      $this->load();
+      $this->reload();
     }
     $this->_lockIsMine = true;
     $this->isLocked = true;
-    $this->lockMode = $this->WRITE_LOCK;
+    $this->lockMode = QCL_PERSISTENCE_WRITE_LOCK;
     $this->save();
   }
   
@@ -254,26 +361,27 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
   function removeLock()
   {
     $this->isLocked = false;
-    $this->lockMode = $this->NO_LOCK;
+    $this->lockMode = QCL_PERSISTENCE_NO_LOCK;
     $this->save();
   }
   
   /**
-   * Releases a lock if it is owned
+   * Releases a lock if it is owned. This saves the object.
    */
   function releaseLock()
   {
+    //$this->debug("Trying to release Lock ...");
     if ( $this->isLocked and $this->_lockIsMine )
     {
       $this->removeLock();
     }
     elseif ( $this->isLocked )
     {
-      $this->raiseError("Cannot release lock on ". $this->className() . "[{$this->objectId}] : do not own lock.");
+      $this->raiseError("Cannot release lock on ". $this->className() . " [{$this->instanceId}] : do not own lock.");
     }
     else
     {
-       $this->warn("No need to release lock on " . $this->className() . "[{$this->objectId}]: not locked.");
+       $this->warn("No need to release lock on " . $this->className() . " [{$this->instanceId}]: not locked.");
     }
   }
   
@@ -304,7 +412,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    */
   function save()
   {
-    $this->raiseError("Not yet implemented");
+    $this->notImplemented(__CLASS__);
   }
   
   /**
@@ -313,8 +421,17 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    */
   function delete()
   {
-    $this->raiseError("Not yet implemented");
+    $this->notImplemented(__CLASS__);
   }
+  
+  /**
+   * Returns the unique label of this instance ( class name plus instance id)
+   * @return string
+   */
+  function instanceLabel()
+  {
+    return $this->className() . " [$this->instanceId]";
+  }  
   
   /**
    * Checks if object has changed during runtime by 
@@ -328,7 +445,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
     
     foreach( $this->persistedProperties() as $key )
     {
-      //$this->info( $key . ": " . $this->$key . " <-> " . $this->_original[$key] );
+      //$this->debug( $key . ": " . $this->$key . " <-> " . $this->_original[$key] );
       if ( $this->$key != $this->_original[$key] )
       {
         /*
@@ -356,10 +473,8 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
    */
   function __destruct()
   {
-    /*
-     * do not check for changes if deleted or there is no change
-     */
-    if ( $this->_isDeleted or $this->_hasChanged === false )
+    
+    if ( $this->_isDeleted )
     {
       return;
     }
@@ -370,8 +485,8 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
     if ( $this->hasChanged() )
     {
       
-      //$this->info($this->className() . " [{$this->objectId}] has changed, saving ... ");
-      //$this->info( $this->persistedProperties(true) );
+      //$this->debug($this->className() . " [{$this->instanceId}] has changed, saving ... ");
+      //$this->debug( $this->persistedProperties(true) );
       
       if ( $this->isLocked )
       {
@@ -390,13 +505,15 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
     }
     else
     {
-      //$this->info($this->className() . " [{$this->objectId}] has not changed.");
-      //$this->info( $this->persistedProperties(true) );
+      //$this->debug( $this->className() . " [{$this->instanceId}] has not changed.");
+      //$this->debug( $this->persistedProperties(true) );
       if ( $this->isLocked and $this->_lockIsMine )
       {
         $this->releaseLock();     
       }
     }
   }
+  
+
 }
 ?>

@@ -17,7 +17,7 @@
         <property name="class" type="string" index="yes">
           <sql>varchar(100) NOT NULL</sql>
         </property>
-        <property name="objectId" type="string" index="yes">
+        <property name="instanceId" type="string" index="yes">
           <sql>varchar(100) NULL</sql>
         </property>
         <property name="userId" type="int">
@@ -30,12 +30,12 @@
           <sql>longblob</sql>
         </property>
       </properties> 
-
+ 
       <!-- indexes -->
       <indexes>
         <index type="unique">
           <property name="class" />
-          <property name="objectId" />
+          <property name="instanceId" />
         </index>
       </indexes>      
 
