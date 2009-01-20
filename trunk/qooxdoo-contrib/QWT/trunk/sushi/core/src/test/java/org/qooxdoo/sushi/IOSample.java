@@ -25,7 +25,7 @@ import org.qooxdoo.sushi.fs.IO;
 import org.qooxdoo.sushi.fs.Node;
 
 public class IOSample {
-    /** print all Java files in your curring working directory */
+    /** print all Java files in your src/main/java directory */
     public static void main(String[] args) throws IOException {
         IO io;
         Node dir;
