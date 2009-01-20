@@ -2,9 +2,9 @@
 /*
  * dependencies
  */
-require_once "qcl/db/PersistentObject.php";
+require_once "qcl/persistence/db/Object.php";
 
-class qcl_db_ModelTableInfo extends qcl_db_PersistentObject 
+class qcl_db_ModelTableInfo extends qcl_persistence_db_Object  
 {
   /*
    * data

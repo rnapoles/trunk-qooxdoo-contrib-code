@@ -173,12 +173,12 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
         /*
          * get lock because some other process could be just writing the cache
          */
-        $this->getLock($cacheId);
+        //$this->getLock($cacheId);
 
         /*
          * use cached object if exists and if the file modification date matches the signature in the cached object
          */
-        $doc =& $this->retrieve($cacheId);
+        $doc = null;
      
         if ( is_object($doc) )
         { 
@@ -318,8 +318,8 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
       $this->doc->__filectime = $this->filectime;
     }
     
-    $this->log("Saving xml document object to the cache...","xml");
-    $this->store($this->cacheId, $this->doc);
+    //$this->log("Saving xml document object to the cache...","xml");
+    //$this->store($this->cacheId, $this->doc);
     $this->hasChanged = true;
   }
   
@@ -920,27 +920,6 @@ class qcl_xml_simpleXML extends qcl_jsonrpc_object
   function asXML()
   {
     return $this->doc->asXML();
-  }
-  
-  /**
-   * removes the lock of the present xml file
-   * @return void
-   */
-  function removeLock()
-  {
-    if ( $this->cacheId )
-    {
-      parent::removeLock($this->cacheId);  
-    }
-  }
-  
-  /**
-   * destructor: removes the lock on the xmlfile, so that other processes can read or write it.
-   */
-  function __destruct()
-  {
-    $this->removeLock();
-    parent::__destruct();
   }
   
 }

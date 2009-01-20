@@ -2,7 +2,7 @@
 /*
  * dependencies
  */
-require_once "qcl/core/PropertyModel.php";
+require_once "qcl/db/AbstractModel.php";
 
 /**
  * Model base class for models based on a (mysql) database
@@ -11,7 +11,7 @@ require_once "qcl/core/PropertyModel.php";
  * the whole model or all records. "getFoo" should only be used for
  * model data.
  */
-class qcl_db_model extends qcl_core_PropertyModel
+class qcl_db_model extends qcl_db_AbstractModel
 {
 
   /**
@@ -75,24 +75,34 @@ class qcl_db_model extends qcl_core_PropertyModel
      * connect to datasource, if any
      */
     $this->connect( &$datasourceModel );     
-       
-    /*
-     * setup schema. if necessary, create or update tables and import intial data. 
-     */
-    $this->setupSchema();
 
-    /*
-     * setup table links
-     */
-    $this->setupTableLinks();
     
     /*
-     * return valeu
+     * skip schema setup if no schema xml path
      */
-    if ( $this->getError() )
+    if ( $this->getSchmemaXmlPath() )
     {
-      return false;
+    
+      /*
+       * setup schema. if necessary, create or update tables and import intial data. 
+       */
+      $this->setupSchema();
+  
+      /*
+       * setup table links
+       */
+      $this->setupTableLinks();
+      
+      /*
+       * error?
+       */
+      if ( $this->getError() )
+      {
+        return false;
+      }
+    
     }
+    
     return true;
 
   }
@@ -155,21 +165,21 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * try to connect to connection supplied by controller
          */
-        //$this->info( get_class($this) . ": getting connection object from Controller...");
         $controller =& $this->getController();
-        $db         =& $controller->getConnection();
+        //$this->debug( get_class($this) . ": getting connection object from controller " . get_class($controller));
+        $db =& $controller->getConnection(); 
       }
       else
       {
         /*
          * connecting to custom dsn by creating new database connection object
          */
-        $this->log("Connecting to custom dsn ...");
+        //$this->debug("Connecting to custom dsn ...");
         
         require_once "qcl/db/type/Mysql.php"; 
         
-        $this->log("Connecting to ");
-        $this->log($dsn);
+        //$this->debug("Connecting to ");
+        //$this->debug($dsn);
         
         /*
          * connect to new database 
@@ -431,13 +441,13 @@ class qcl_db_model extends qcl_core_PropertyModel
     /*
      * select 
      */
-    $sql = "\n   SELECT $columns \n";
+    $sql = "\n   SELECT $columns ";
     
     
     /*
      * from
      */
-    $sql .= "     FROM `$thisTable` AS t1 \n";
+    $sql .= "\n     FROM `$thisTable` AS t1 ";
     
     /*
      * join
@@ -465,12 +475,12 @@ class qcl_db_model extends qcl_core_PropertyModel
         /*
          * @todo this might not be compatible with other than mysql
          */
-        $sql .= "     JOIN (`$linkTable` AS l,`$joinedTable` AS t2) \n";
-        $sql .= "       ON ( t1.`$localKey` = l.`$foreignKey` AND l.`$joinedFKey` = t2.`$joinedLKey` ) \n";
+        $sql .= "\n     JOIN (`$linkTable` AS l,`$joinedTable` AS t2) ";
+        $sql .= "\n       ON ( t1.`$localKey` = l.`$foreignKey` AND l.`$joinedFKey` = t2.`$joinedLKey` ) ";
       }
       else
       {
-        $sql .= "     JOIN `$joinedTable` AS t2 ON ( t1.`$localKey` = t2.`$foreignKey` ) \n";
+        $sql .= "\n     JOIN `$joinedTable` AS t2 ON ( t1.`$localKey` = t2.`$foreignKey` ) ";
       }
     }
     
@@ -480,7 +490,7 @@ class qcl_db_model extends qcl_core_PropertyModel
     if ( $where )
     {
       $where = $this->toSql($where);
-      $sql .= "    WHERE $where \n";
+      $sql .= "\n    WHERE $where ";
     }
     
     /*
@@ -507,14 +517,14 @@ class qcl_db_model extends qcl_core_PropertyModel
         $column[] = $this->getColumnName($property);
       }
       $orderBy = implode("`,`", (array) $column );
-      $sql .= "ORDER BY `$orderBy` $direction";
+      $sql .= "\nORDER BY `$orderBy` $direction";
        
     }
     
     /*
      * execute query
      */
-    //$this->info($sql);
+    //$this->debug($sql);
     $result = $this->db->getAllRecords($sql);
     
     /*
@@ -815,172 +825,8 @@ class qcl_db_model extends qcl_core_PropertyModel
 	  return $this->create( $namedId, $foreignId );
  	}
   
- 	/**
- 	 * Inserts data or updates a record according to the following rules: 
- 	 * a) If id property is provided, look for the record with this primary key and 
- 	 * update all the other values. If the record does not exist, throw an error.
- 	 * b) If no id is provided, check if a record matching the
- 	 * given key-value pairs exist. If yes, update its 'modified' property. If not,
- 	 * insert the data.
- 	 *
- 	 * @param array $data
- 	 * @return int The id of the existing or newly created record
- 	 */
- 	function insertOrUpdate( $data )
- 	{
- 	  /*
- 	   * search for record based on id or row data
- 	   */
- 	  if ( $data['id'] )
- 	  {
- 	    $this->load( $data['id'] );
- 	    if ( $this->foundNothing() )
- 	    {
- 	      $this->raiseError("Record #{$data['id']} does not exist");
- 	    }
- 	    else
- 	    {
- 	      $this->update($data);
- 	    }
- 	  }
- 	  else
- 	  {
- 	    $this->findWhere( $data );
- 	  
-   	  /*
-   	   * if nothing was found, insert data
-   	   */
-   	  if ( $this->foundNothing() )
-   	  {
-   	    $this->insert( $data );
-   	  }
-   	  /*
-   	   * else, update timestamp
-   	   */
- 	    else
- 	    {
- 	      $this->updateTimestamp();
- 	    }
- 	  }
- 	  
- 	  /*
- 	   * return record id
- 	   */
- 	  return $this->getId();
- 	}
+
  	
-  /**
-   * Inserts a record into a table and returns last_insert_id()
-   * @param array|stdClass $data associative array with the column names as keys and the column data as values
-   * @return int the id of the inserted row or 0 if the insert was not successful 
-   */
-  function insert( $data )
-  {
-    /*
-     * check arguments
-     */
-    $data = $this->_getArrayData($data);
-    
-    /*
-     * convert property names to local aliases
-     */
-    $data = $this->unschematize($data);   
-    
-    
-    /*
-     * created timestamp by setting it to null
-     * @todo is this compatible with all dbms?
-     */
-    if ( $this->hasProperty("created")
-          and ( $col_created = $this->getPropertyName("created") )
-          and ! isset ( $data[$col_created] ) )
-    {
-      $data[$col_created] = null;
-    }
-    
-    /*
-     * insert into database
-     */
-    $id = $this->db->insert( $this->table, $data );
-    
-    //$this->info("Created new record #$id in {$this->table} with data: " . print_r($data,true) );
-     
-    /*
-     * retrive record data (which might contain additional values inserted by the database)
-     * if the model has an id column and a new id was returned
-     */
-    if ( $id ) 
-    {
-      $this->findById($id);
-    }
-    
-    /*
-     * return id or 0 if the insert was not successful 
-     */
-    return $id;
-  }
-
-  /**
-   * updates a record in a table identified by id
-   * @param array       $data   associative array with the column names as keys and the column data as values
-   * @param int|string  $id   if the id key is not provided in the $data paramenter, provide it here (optional)
-   * @param bool        $keepTimestamp If true, do not overwrite the 'modified' timestamp
-   * @return boolean success 
-   */
-  function update ( $data=null, $id=null, $keepTimestamp= false )    
-  {    
-    /*
-     * use cached record data?
-     */
-    if ($data === null)
-    { 
-      $data = $this->currentRecord;
-    }
-    elseif ( $id !== null )
-    {
-      $data['id'] = $id;
-    }
-
-    /*
-     * set modified timestamp to null to set it to the current database update time
-     * unless requested (i.e. in sync operations)
-     */
-    if ( ! $keepTimestamp and $this->hasProperty("modified") )
-    {
-      $data['modified'] = null;
-    }      
-    
-    /*
-     * convert property names to local aliases
-     */
-    $data = $this->unschematize($data);
-    
-  
-    
-    //$this->info($data);
-    
-    return $this->db->update( $this->table, $data, $this->col_id );
-  }
-  
-  /**
-   * Update the records matching the where condition with the key-value pairs
-   * @param array $data
-   * @param string|array $where
-   * @return result
-   */
-  function updateWhere( $data, $where )
-  {
-    return $this->db->updateWhere( $this->table, $data, $this->toSql($where) );
-  }
-  
-  /**
-   * Checks wheter a record exists that matches a query
-   * @param $where Where query
-   */  
-  function exists( $where )
-  {
-    return $this->db->exists( $this->table(), $where );
-  }
   
   /**
    * Deletes the currently loaded record or one or more records in a table identified by id
@@ -1374,7 +1220,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       }
       // set data
       $data = array();
-      $data[$this->col_id] = $id;
+      $data[$this->getIdColumn()] = $id;
       $data[$column] = $value;
       $this->update($data);
     }
@@ -1513,7 +1359,7 @@ class qcl_db_model extends qcl_core_PropertyModel
    * updates the modification date without changing the data
    * @param int|array $ids One or more record ids
    * @return void
-   * @todo rewrite
+   * @todo rewrite without raw sql
    */
   function updateTimestamp( $ids=null )
   {
@@ -1528,11 +1374,12 @@ class qcl_db_model extends qcl_core_PropertyModel
     }
     
     $ids = implode(",", (array) $ids);
-    
+    $modifiedCol = $this->getColumnName("modified");
+    $idCol = $this->getIdColumn();
     $this->db->execute(" 
       UPDATE `{$this->table}` 
-      SET `{$this->col_modified}` = NOW()
-      WHERE `{$this->col_id}` IN ($ids)
+      SET `$modifiedCol` = NOW()
+      WHERE `$idCol` IN ($ids)
     ");
   }
   
@@ -1563,19 +1410,22 @@ class qcl_db_model extends qcl_core_PropertyModel
   
   /**
    * Returns a hash map of ids the modification timestamp
+   * @todo rewrite withoug raw sql
    * @return array
    */
   function getModificationList()
   {
-    if ( ! $this->col_modified )
+    if ( ! $this->hasProperty("modified") )
     {
       $this->raiseError("Table {$this->table} has no timestamp column");
     }
+    $modifiedCol = $this->getColumnName("modified");
+    $idCol = $this->getIdColumn();    
     
     $rows = $this->db->getAllRecords("
       SELECT 
-        {$this->col_id}       AS id,
-        {$this->col_modified} AS timestamp
+        `$idCol` AS id,
+        `$modifiedCol` AS timestamp
       FROM {$this->table}
     ") ;  
     $map = array();
@@ -1765,12 +1615,12 @@ class qcl_db_model extends qcl_core_PropertyModel
     /*
      * Get the modelTableInfo persistent object to look up if this
      * table has been initialized already. To avoid an indefinitive loop,
-     * the qcl_db_PersistentModel used by qcl_db_ModelTableInfo must
+     * the qcl_persistence_db_Model used by qcl_db_ModelTableInfo must
      * be especially treated. You can upgrade its schema only be deleting
      * the table.
      */
     $modelTableInfo = null;
-    if ( $this->instanceOf("qcl_db_PersistentModel") and $tableExists )
+    if ( $this->instanceOf("qcl_persistence_db_Model") and $tableExists )
     {
       $isInitialized = true;
       $forceUpgrade  = false;
@@ -1897,7 +1747,7 @@ class qcl_db_model extends qcl_core_PropertyModel
       $sql1 = trim(preg_replace("/on update .+$|default null/", "", strtolower( $normativeDef ) ) );
       $sql2 = trim(preg_replace("/default null/",               "", strtolower( $descriptiveDef ) ) ); 
       
-      //$this->log("'$sql1' == '$sql2'? ");
+      ////$this->debug("'$sql1' == '$sql2'? ");
       
       /*
        * continue with the next property if nothing has changed
@@ -2909,7 +2759,8 @@ class qcl_db_model extends qcl_core_PropertyModel
       /*
        * create new xml file
        */
-      $dataXml =& new qcl_xml_simpleXML();
+      $controller =& $this->getController();
+      $dataXml =& new qcl_xml_simpleXML( &$controller );
       $dataXml->createIfNotExists($path);
       $dataXml->load($path);          
 

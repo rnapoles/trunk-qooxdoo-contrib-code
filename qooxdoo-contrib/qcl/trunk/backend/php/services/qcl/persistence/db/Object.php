@@ -6,6 +6,16 @@ require_once "qcl/persistence/AbstractObject.php";
 require_once "qcl/persistence/db/Model.php";
 
 /**
+ *  * @todo this can be removed once qcl_db_SimpleModel does
+ * automatic table creation.
+ */
+require_once "qcl/db/model.php";
+class qcl_persistence_db_Setup extends qcl_db_model 
+{
+  var $schemaXmlPath = "qcl/persistence/db/Model.xml";
+}
+
+/**
  * Abstract class that is persisted in the database
  * By default, all public properties are saved (PHP4: all
  * properties that do not start with an underscore).
@@ -16,19 +26,32 @@ class qcl_persistence_db_Object extends qcl_persistence_AbstractObject
   /**
    * model object
    * @acces private
-   * @var qcl_db_PersistentModel
+   * @var qcl_persistence_db_Model
    */
   var $_dbModel;  
   
   /**
    * Initializes the object
+   * @override
    */
   function initialize()
   {
-    /*
-     * database model storing the object data
-     */
     $controller     =& $this->getController();
+
+    /*
+     * Initialize a dummy qcl_db_model object to create tables
+     * @todo this can be removed once qcl_db_SimpleModel does
+     * automatic table creation.
+     */
+    if ( ! class_exists( "qcl_persistence_db_Setup" ) )
+    {
+      $dummy =& new qcl_persistence_db_Setup(&$controller);        
+    }
+
+    /*
+     * create the actual model object that will be used to store
+     * the data
+     */
     $this->_dbModel =& new qcl_persistence_db_Model(&$controller);    
   }
   

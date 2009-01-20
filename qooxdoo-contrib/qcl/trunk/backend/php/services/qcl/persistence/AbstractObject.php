@@ -167,7 +167,7 @@ class qcl_persistence_AbstractObject extends qcl_jsonrpc_model
      * initialize the object
      */
     $this->initialize();
-    
+   
     /*
      * synchronize object and model data
      */
