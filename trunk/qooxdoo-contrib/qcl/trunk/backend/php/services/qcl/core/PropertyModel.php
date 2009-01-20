@@ -80,7 +80,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * The schema as an simpleXml object, containing all
    * included xml files. Acces with qcl_db_model::getSchemaXml();
    * @access private
-   * @var qcl_xml_SimpleXmlStorage
+   * @var qcl_xml_SimpleXmlStorageStorage
    */
   var $schemaXml;
   
@@ -1576,7 +1576,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
          */
         $attrs    = $alias->attributes();
         $propName = $attrs['for'];
-        $column   = qcl_xml_simpleXmlStorage::getData(&$alias);
+        $column   = qcl_xml_SimpleXmlStorageStorage::getData(&$alias);
         
         /*
          * store in alias map
@@ -1609,7 +1609,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $propGroups =& $definition->propertyGroups;
     if ( $propGroups )
     {
-      $metaDataNode =& qcl_xml_SimpleXmlStorage::getChildNodeByAttribute($propGroups,"name","metaData"); 
+      $metaDataNode =& qcl_xml_SimpleXmlStorageStorage::getChildNodeByAttribute($propGroups,"name","metaData"); 
       if ( $metaDataNode )
       {
         foreach ( $metaDataNode->children() as $metaDataPropNode )
@@ -1648,7 +1648,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * get the model schema as an simpleXml object
    * @param string $path path of schema xml file or null if default file is used
-   * @return qcl_xml_SimpleXmlStorage
+   * @return qcl_xml_SimpleXmlStorageStorage
    */  
   function &getSchemaXml($path=null)
   {
@@ -1692,7 +1692,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * Parses an xml schema file, processing includes
    * @param string $file
-   * @return qcl_xml_SimpleXmlStorage
+   * @return qcl_xml_SimpleXmlStorageStorage
    */
   function &parseXmlSchemaFile($file)
   {
@@ -1708,7 +1708,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */
     $this->log("Parsing model schema file '$file'...","propertyModel");
     $controller =& $this->getController();
-    $modelXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $modelXml =& new qcl_xml_SimpleXmlStorageStorage( &$controller, $file );
     $modelXml->load();
 
     /*
@@ -1751,7 +1751,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * Parses an xml data file, processing includes
    * @param string $file
-   * @return qcl_xml_SimpleXmlStorage
+   * @return qcl_xml_SimpleXmlStorageStorage
    */
   function &parseXmlDataFile( $file )
   {
@@ -1767,7 +1767,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      */
     $this->log("Parsing model data file '$file'...","propertyModel");
     $controller =& $this->getController();
-    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $dataXml =& new qcl_xml_SimpleXmlStorageStorage( &$controller, $file );
     $dataXml->load();
     
     /*
@@ -1806,7 +1806,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * exports model data to an xml file
    *
    * @param string $path file path, defaults to the location of the inital data file
-   * @return qcl_xml_SimpleXmlStorage The xml document object
+   * @return qcl_xml_SimpleXmlStorageStorage The xml document object
    */
   function &export($path=null)
   {
@@ -1832,7 +1832,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * create new xml file
      */
-    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $path );
+    $dataXml =& new qcl_xml_SimpleXmlStorageStorage( &$controller, $path );
     $dataXml->createFile();
     
     /*

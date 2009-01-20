@@ -2760,7 +2760,7 @@ class qcl_db_model extends qcl_db_AbstractModel
        * create new xml file
        */
       $controller =& $this->getController();
-      $dataXml =& new qcl_xml_simpleXML( &$controller );
+      $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller );
       $dataXml->createIfNotExists($path);
       $dataXml->load($path);          
 
