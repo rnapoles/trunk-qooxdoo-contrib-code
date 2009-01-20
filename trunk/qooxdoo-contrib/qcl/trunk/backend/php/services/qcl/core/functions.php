@@ -66,19 +66,60 @@ function object2array( $var )
 /**
  * checks if passed string var is a valid file.
  * assumes that strings over the length of 512 characters are not a filename
- * @param string $str
+ * @param string $arg
  */
-function is_valid_file($str)
+function is_valid_file($arg)
 {
-  if ( ! is_string($str) ) return false;
-  if ( strlen($str) > 512 ) return false;
-  if ( ! file_exists($str) ) return false;
-  if ( ! is_readable( $str ) ) return false;
-  if ( ! @is_file( $str ) ) return false;
-  if ( ! @file_exists( $str ) ) return false; 
+  /*
+   * qcl file object?
+   */
+  if ( is_qcl_file($arg) )
+  {
+    return $arg->exists();
+  }
+  
+  /*
+   * the following checks work on string arguments
+   */
+  if ( ! is_string($arg) ) return false;
+  if ( strlen($arg) > 512 ) return false;
+  if ( ! file_exists($arg) ) return false;
+  if ( ! is_readable( $arg ) ) return false;
+  if ( ! @is_file( $arg ) ) return false;
+  if ( ! @file_exists( $arg ) ) return false; 
   return true;
 }
 
+/**
+ * checks if argument is a qcl_io_filesystem_IFile object
+ * @return bool
+ */
+function is_qcl_file( $arg )
+{
+  return 
+    is_a( $arg,"qcl_core_object" ) and
+    is_array( $arg->implements ) and
+    in_array( "qcl_io_filesystem_IFile", $arg->implements );
+}
+
+function get_var_type( $var )
+{
+  if ( is_object($var) )
+  {
+    return get_class( $var );
+  }
+  else
+  {
+    return gettype($var);
+  }
+}
+
+function &qcl_get_logger()
+{
+  $obj = new qcl_core_object();
+  $logger =& $obj->getLogger();
+  return $logger;
+}
 
 /**
  * function to properly encode string data for use in xml.
@@ -263,8 +304,11 @@ function is_list( $var )
  * @author      Christian Boulanger <c.boulanger@qxtransformer.org>
  * @return      string
  * @require     PHP 4.3.0 (debug_backtrace)
+ * @param int  $skip Number of calls to skip
+ * @param bool $returnAsArray If true, return an array of calls instead of a
+ * concatenated string
  */
-function debug_get_backtrace( $skip=1 )
+function debug_get_backtrace( $skip=1, $returnAsArray=false )
 {
   /*
    * Get backtrace
@@ -293,7 +337,8 @@ function debug_get_backtrace( $skip=1 )
   foreach ( $backtrace as $i => $call ) 
   {
       $location = ( isset( $call['file'] ) and isset($call['line'] ) ) ?
-          str_replace( $path, "", $call['file'] ) . ':' . $call['line'] : "(unknown)";
+         "called at\n--> " . ( str_replace( $path, "", $call['file'] ) . ':' . $call['line'] ) :
+         "";
   
       $function = isset( $call['class'] ) ?
           $call['class'] . '.' . $call['function'] :
@@ -302,14 +347,14 @@ function debug_get_backtrace( $skip=1 )
       $params = ( isset( $call['args'] ) and is_array( $call['args'] ) ) ? 
           @implode(", ", $call['args'] )  : "";
 
-      $calls[] = sprintf("#%d  %s(%s) called at\n--> %s",
+      $calls[] = sprintf("#%d  %s(%s) %s",
           $i,
           $function,
           $params,
           $location); 
   }
 
-  return implode("\n", $calls);
+  return $returnAsArray ? $calls : implode("\n", $calls);
 }
 
 /**

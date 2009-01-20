@@ -104,7 +104,8 @@ class qcl_datasource_type_z3950_Model  extends qcl_datasource_type_db_Model
        * parse xml into an object tree
        */
       $cacheId = str_replace(".","_",$file."_".filectime($path));// use filename plus last modification date for caching 
-      $parser  =& new qcl_xml_simpleXML($xml,$cacheId);
+      $controller =& $this->getController();
+      $parser  =& new qcl_xml_simpleXML( &$controller, $xml,$cacheId);
      
       $connection = array(
         'name'     => $parser->getData("/databaseInfo/title"),      

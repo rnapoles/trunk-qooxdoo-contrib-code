@@ -1,11 +1,11 @@
 <?php
 
-require_once "qcl/db/PersistentObject.php";
+require_once "qcl/persistence/db/Object.php";
 
 /**
  * Persistent object storing and managing datasource information 
  */
-class qcl_datasource_SchemaManager extends qcl_db_PersistentObject
+class qcl_datasource_SchemaManager extends qcl_persistence_db_Object 
 {
   /**
    * Maps datasource schema names to datasource information

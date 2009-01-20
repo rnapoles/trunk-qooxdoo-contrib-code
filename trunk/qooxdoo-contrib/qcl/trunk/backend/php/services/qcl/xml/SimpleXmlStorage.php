@@ -8,11 +8,11 @@ require_once "qcl/jsonrpc/model.php";
 require_once "qcl/io/filesystem/IFile.php";
 require_once "qcl/io/filesystem/Resource.php";
 require_once "qcl/io/filesystem/local/File.php";
-require_once "qcl/persistence/db/Object.php";
+require_once "qcl/db/SimpleModel.php";
 
 
 /**
- * Persistent class to cache xml object data
+ * Persistent class to cache xml object data.
  */
 class qcl_xml_simpleXmlCache extends qcl_persistence_db_Object
 {
@@ -112,6 +112,12 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   var $indexedAttributes = array();
   
   /**
+   * The cache object
+   * @var qcl_xml_simpleXmlCache
+   */
+  var $_cacheObj;
+   
+  /**
    * Cconstructor
    * @param qcl_jsonrpc_controller $controller instance
    * @param qcl_io_filesystem_IFile|string $fileOrString Xml string, file name or object implementing 
@@ -126,16 +132,6 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
      * parent constructor
      */
     parent::__construct( &$controller );
-    
-    /*
-     * debugging
-     * @todo move this into  __init__.php 
-     */
-    $logger =& $this->getLogger();
-    if ( ! $logger->isRegistered("xml") )
-    {
-      $logger->registerFilter("xml","XML-related debugging");
-    }
 
     /*
      * If php4, use simplexml backport library
@@ -181,7 +177,7 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       if ( is_qcl_file( $fileOrString ) )
       { 
         $this->file =& $fileOrString;  
-        $this->cacheId = md5( $this->file->resourcePath() ); 
+        $this->cacheId = $this->file->resourcePath(); 
       }
       else
       {
@@ -282,9 +278,9 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
    **/
   function &load()
   {
-    $controller    =& $this->getController();
-    $file          =& $this->file;
-    $cacheId       = $this->cacheId;
+    $controller =& $this->getController();
+    $file       =& $this->file;
+    $cacheId     = $this->cacheId;
     
     /*
      * xml document
@@ -312,7 +308,9 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       /*
        * get cached document
        */
+       
       $cacheObj =& $this->getCacheObject( $cacheId );
+     
     
       if ( ! $cacheObj->isNew() )
       {
@@ -336,18 +334,27 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
          */
         if ( $lastModified )
         { 
-          $this->log( "Cache file exists with timestamp " . $cacheObj->lastModified, "xml" );
+          $this->lastModified = $lastModified;
           
-          if ( $lastModified == $cacheObj->lastModified )
+          if ( $cacheObj->lastModified )
           {
-            $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
-            $this->doc =& $doc;
-            $this->hasChanged = false;
-            return $doc;
+            $this->log( "Cache file exists with timestamp " . $cacheObj->lastModified, "xml" );
+            
+            if ( $this->lastModified == $cacheObj->lastModified )
+            {
+              $this->log("Timestamp matches. Getting xml document object from cache ($cacheId)...","xml");
+              $this->doc =& $doc;
+              $this->hasChanged = false;
+              return $doc;
+            }
+            else
+            {
+              $this->log("Timestamp doesn't match: Document: {$lastModified}, Cache: {$cacheObj->lastModified}.", "xml" );
+            }
           }
           else
           {
-            $this->log("Timestamp doesn't match: Document: {$lastModified}, Cache: {$cacheObj->lastModified}.", "xml" );
+            $this->log( "Cache doesn't have a timestamp.", "xml" );
           }
         }
       }
@@ -429,6 +436,16 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
   }
   
   /**
+   * Returns the timestamp of the original xml source, if any.
+   * Timestamp format depends on the source.
+   * @returm string
+   */
+  function lastModified()
+  {
+    return $this->lastModified;
+  }
+  
+  /**
    * Returns the persistent object which caches the xml document. Override
    * this method if you want to implement a different caching mechanism.
    * By default, and qcl_xml_simpleXmlCache instance, which subclasses 
@@ -444,13 +461,12 @@ class qcl_xml_simpleXmlStorage extends qcl_jsonrpc_model
       $this->raiseError("No cache id!");
     }
     
-    static $cacheObj = null;
-    if ( ! $cacheObj )
+    if ( ! $this->_cacheObj )
     {
       $controller =& $this->getController();
-      $cacheObj =& new qcl_xml_simpleXmlCache( &$controller, $cacheId, $this->userId, $this->sessionId ); 
+      $this->_cacheObj =& new qcl_xml_simpleXmlCache( &$controller, $cacheId, $this->userId, $this->sessionId );
     }
-    return $cacheObj; 
+    return $this->_cacheObj; 
   }
   
   /**

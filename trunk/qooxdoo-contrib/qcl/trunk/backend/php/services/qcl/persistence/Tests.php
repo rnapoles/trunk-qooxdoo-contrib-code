@@ -26,6 +26,7 @@ class class_qcl_persistence_Tests extends qcl_datasource_controller
     $this->controlAccess();
   }  
   
+  
   function method_testPersistence()
   { ;
     $obj =& new TestPersistence(&$this, "TestPersistence", null, $this->getSessionId() );

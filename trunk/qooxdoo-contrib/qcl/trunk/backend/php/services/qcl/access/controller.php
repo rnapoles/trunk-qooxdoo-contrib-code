@@ -157,6 +157,7 @@ class qcl_access_controller extends qcl_db_controller
          * logout on client
          */
         $this->dispatchMessage("qcl.commands.logout");
+        $this->dispatchMessage("qcl.commands.setSessionId","");
         $this->alert($this->tr("Session is invalid or has expired. Please log in again."));
         
         /*

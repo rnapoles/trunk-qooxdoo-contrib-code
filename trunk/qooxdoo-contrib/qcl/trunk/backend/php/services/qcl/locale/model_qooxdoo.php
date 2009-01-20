@@ -1,15 +1,45 @@
 <?php
 
-require_once ("qcl/jsonrpc/model.php");
+require_once "qcl/jsonrpc/model.php";
+require_once "qcl/persistence/db/Object.php";
 
 /**
  * locale model using the  the qooxdoo translation system.
  * @todo externally set paths
  */
-class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
+class qcl_locale_model_qooxdoo extends qcl_persistence_db_Object
 {
 	
-  var $default_locale = "en"; 
+  /**
+   * Constuctor
+   *
+   * @param qcl_locale_manager $manager
+   */
+  function __construct( $manager )
+  {
+    parent::__construct( &$manager, __CLASS__ );
+  }
+  
+  /**
+   * The current message catalogue
+   * @var array
+   */
+  var $catalogue = array();
+  
+  /**
+   * The default locale
+   */
+  var $default_locale = "en";
+
+  /**
+   * The current locale
+   * @var string
+   */
+  var $locale = null;
+  
+  /*
+   * @todo unhardcode
+   */
   var $locale_dir     = "../../../frontend/source/translation"; 
   var $locale_js_dir  = "../../../frontend/source/class/bibliograph/translation";  // todo
   var $translation_js = "../../../frontend/source/class/bibliograph/backend.js"; // todo
@@ -24,23 +54,9 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
     if ( ! trim ( $messageId ) ) return "";
     
     $locale = $this->getLocale();
-    
-    // get cached catalogue or build it
-    $catalogue = $this->retrieve("message_cat_$locale");
-    if ( ! $catalogue )
-    {
-      $catalogue = array();
-      $file = file_get_contents( $this->locale_js_dir . "/$locale.js" );
-      preg_match_all('/"(.+)": "(.+)",/',$file,$matches);
-      for ( $i=0; $i<count($matches[0]); $i++)
-      {
-        $catalogue[$matches[1][$i]] = $matches[2][$i];
-      }
-      $this->store("message_cat_$locale",$catalogue);
-    }
    
     // translation found?
-    $translation = $catalogue[$messageId];
+    $translation = $this->catalogue[$messageId];
     
     if ( $translation)
     {
@@ -67,7 +83,9 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
    */	
 	function setLocale($locale)
 	{
-    $this->locale = $locale;
+    if ( $this->locale != $locale )
+	  $this->locale = $locale;
+    $this->loadTranslations();
 	}
 	
   /**
@@ -77,6 +95,35 @@ class qcl_locale_model_qooxdoo extends qcl_jsonrpc_model
   function getLocale()
   {
     return $this->locale;
+  }
+  
+  /**
+   * Loads the translation strings for the current locale
+   */
+  function loadTranslations()
+  {
+    /*
+     * check
+     */
+    if ( ! $this->locale )
+    {
+      $this->raiseError("No locale set!");
+    }
+    
+    /*
+     * clear translations
+     */
+    $this->catalogue = array();
+    
+    /*
+     * load file contents
+     */
+    $file = file_get_contents( $this->locale_js_dir . "/{$this->locale}.js" );
+    preg_match_all('/"(.+)": "(.+)",/',$file,$matches);
+    for ( $i=0; $i<count($matches[0]); $i++)
+    {
+      $catalogue[$matches[1][$i]] = $matches[2][$i];
+    }
   }
   
   /**

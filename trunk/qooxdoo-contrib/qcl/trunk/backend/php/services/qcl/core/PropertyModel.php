@@ -4,7 +4,6 @@
  * dependencies
  */
 require_once "qcl/jsonrpc/model.php";
-require_once "qcl/xml/simpleXML.php";
 
 /*
  * constants
@@ -81,7 +80,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * The schema as an simpleXml object, containing all
    * included xml files. Acces with qcl_db_model::getSchemaXml();
    * @access private
-   * @var qcl_xml_simpleXML
+   * @var qcl_xml_SimpleXmlStorage
    */
   var $schemaXml;
   
@@ -183,7 +182,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
      * call parent constructor
      */
     parent::__construct( &$controller );
-
+    
     /*
      * debug message
      */
@@ -192,17 +191,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
                 "' controlled by '" . $c->className() . "'" .
                 ( is_object( $datasourceModel ) ? 
                   " and by datasource model class '" . get_class( $datasourceModel ) . "'." : ". " ),
-                "framework");    
-
-    /*
-     * create filter
-     */
-    $logger =& $this->getLogger();
-    if ( ! $logger->isRegistered("propertyModel") )
-    {
-      $logger->registerFilter("propertyModel","Log messages concerning the setup and initializing of model properties.");
-      $logger->setFilterEnabled("propertyModel",false);
-    }
+                "framework");
                     
     /*
      *  initialize the model
@@ -332,17 +321,14 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       $this->setDatasourceModel( &$datasourceModel );
     }
     
-        
     /*
-     * parse schema document into $this->schemaXml
+     * parse schema document into $this->schemaXml and
+     * setup properties if successful
      */
-    $this->getSchemaXml();
-    
-    /*
-     * setup properties 
-     */
-    $this->setupProperties();    
-    
+    if ( $this->getSchemaXml() )
+    {
+      $this->setupProperties();    
+    }
 
   }   
 
@@ -1023,6 +1009,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   function getProperty( $name, $id = null )
   {
   
+    if ( ! $this->hasProperty($name) )
+    {
+      $this->raiseError("Model does not have property '$name'");
+    }    
+    
     /*
      * check if record is loaded
      */
@@ -1045,44 +1036,19 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
         $this->raiseError("Cannot get property '$name' from model '{$this->name}: Record #$id does not exist.");
       }
     }
-    
+
     /*
-     * property exists, return straight
-     */    
-    if ( isset( $this->currentRecord[$name] ) )
-    {
-      return $this->typecast($name, $this->currentRecord[$name]);
-    }
-    else
-    {
-      /*
-       * property doesn't exist, either the current record is in a unconverted
-       * (column) format or there is a letter case problem
-       */
-      foreach ( $this->currentRecord as $key => $value )
-      {
-        if ( strtolower($key) == strtolower($name) )
-        {
-          return $this->typecast($name,$value);
-        }
-        elseif ( strtolower( $this->aliases[$key] ) == strtolower($name) )
-        {
-          return $this->typecast($name,$value);
-        }
-      }
-    }
-    
-    /*
-     * property name was not found
+     * typecast all values except null and return it
      */
-    if ( $this->hasProperty($name) )
+    $value = $this->currentRecord[$name];
+    if ( ! is_null($value) ) 
     {
-      return null;
-    }
-    else
-    {
-      $this->raiseError("Property '$name' does not exist.'");
-    }
+      $value = $this->typecast($name, $value);
+    }       
+    
+   // $this->debug("Getting $property -> $value");
+
+    return $value;
   }
   
   /**
@@ -1235,14 +1201,18 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function setProperty( $name, $value, $id=null )
   { 
-    //$this->debug("set property '$name' = '$value' (" . gettype($value) .") on record #$id");
+    if ( ! $this->hasProperty($name) )
+    {
+      $this->raiseError("Model does not have property '$name'.");
+    }
+    
     
     /*
      * retrieve record if id is given
      */
     if ( ! is_null( $id ) )
     {
-      $this->findById( $id );
+      $this->load( $id );
       $data['id'] = $id;
     }
     
@@ -1265,6 +1235,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       $this->raiseError("Model " . $this->className() . " has no 'id' property."); 
     } 
     
+    //$this->debug("Setting property '$name' = '$value' (" . gettype($value) .") on record #$id");
+    
     /*
      * typecast all values except NULL to the types determined
      * by the property
@@ -1273,48 +1245,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     {
       $value = $this->typecast($name, $value);
     }    
-    
-    /*
-     * if property name exists, set it
-     */    
-    if ( isset( $this->currentRecord[$name] ) )
-    {
-      $this->currentRecord[$name] = $value; 
-      $data[$name] = $value;
-    }
-    
-    /*
-     * if property name doesn't exist, either the current 
-     * record is in a unconverted 
-     * (column) format or there is a letter case problem
-     */    
-    else
-    {
-      $found = false;
-      foreach ( $this->getProperties() as $key ) 
-      {
-        if ( strtolower($key) == strtolower($name) )
-        {
-          $this->currentRecord[$key] = $value;
-          $data[$key] = $value;
-          $found = true;
-        }
-        elseif ( strtolower($this->getColumnName($key) ) == strtolower($name) )
-        {
-          $this->currentRecord[$key] = $value;
-          $data[$key] = $value;
-          $found = true;
-        }
-      }
-      
-      /*
-       * if still not found, raise error
-       */
-      if ( ! $found )
-      {
-        $this->raiseError("Property '$name' does not exist.'");
-      }
-    }
+    $this->currentRecord[$name] = $value; 
+    $data[$name] = $value;
     
     /*
      * commit property if id was given
@@ -1394,7 +1326,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function insert( $data )
   {
-    $this->raiseError("Not implemented for class " . $this->className() );
+    $this->notImplemented(__CLASS__);
   }
 
   /**
@@ -1467,7 +1399,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function update ( $data=null, $id=null, $keepTimestamp= false )    
   {    
-    $this->raiseError("Not implemented for class " . $this->className() );
+    $this->notImplemented(__CLASS__);
   }     
   
   
@@ -1601,6 +1533,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
       /*
        * store shorcut object property for easy
        * sql string coding: "SELECT {$this->col_id} ..."
+       * @todo remove this eventually, bad style
        */
       $columnVar = "col_$propName";
       $this->$columnVar = $propName;
@@ -1643,7 +1576,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
          */
         $attrs    = $alias->attributes();
         $propName = $attrs['for'];
-        $column   = qcl_xml_simpleXML::getData(&$alias);
+        $column   = qcl_xml_simpleXmlStorage::getData(&$alias);
         
         /*
          * store in alias map
@@ -1676,7 +1609,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     $propGroups =& $definition->propertyGroups;
     if ( $propGroups )
     {
-      $metaDataNode =& qcl_xml_simpleXML::getChildNodeByAttribute($propGroups,"name","metaData"); 
+      $metaDataNode =& qcl_xml_SimpleXmlStorage::getChildNodeByAttribute($propGroups,"name","metaData"); 
       if ( $metaDataNode )
       {
         foreach ( $metaDataNode->children() as $metaDataPropNode )
@@ -1704,7 +1637,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    */
   function getSchmemaXmlPath()
   {
-    if ( $this->schemaXmlPath )
+    if ( $this->schemaXmlPath or $this->schemaXmlPath === false )
     {
       return $this->schemaXmlPath;
     }
@@ -1715,10 +1648,11 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * get the model schema as an simpleXml object
    * @param string $path path of schema xml file or null if default file is used
-   * @return qcl_xml_simpleXML
+   * @return qcl_xml_SimpleXmlStorage
    */  
   function &getSchemaXml($path=null)
   {
+        
     /*
      * if schema file has already been parsed, return it
      */
@@ -1728,9 +1662,21 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     }
 
     /*
-     * parse schema file
+     * get schema file location
      */
     $path = either( $path, $this->getSchmemaXmlPath() );
+    
+    /*
+     * if null, return null
+     */
+    if ( $path === false )
+    {
+      return null;
+    }
+    
+    /*
+     * check file
+     */
     if ( ! is_valid_file($path) )
     {
       $this->raiseError("No valid file path: '$path'");
@@ -1746,31 +1692,33 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * Parses an xml schema file, processing includes
    * @param string $file
-   * @return qcl_xml_simpleXML
+   * @return qcl_xml_SimpleXmlStorage
    */
   function &parseXmlSchemaFile($file)
   {
 
     /*
+     * include simple xml library (cannot do that in header without
+     * creating include order problems)
+     */
+    require_once "qcl/xml/SimpleXmlStorage.php";    
+    
+    /*
      * load model schema xml file
      */
     $this->log("Parsing model schema file '$file'...","propertyModel");
-    
-    $modelXml =& new qcl_xml_simpleXML($file);
+    $controller =& $this->getController();
+    $modelXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $modelXml->load();
 
     /*
      * The timestamp of the schema file. When a schema extends
      * another schema, the newest filestamp is used.
      */
-    if ( $modelXml->filectime > $this->schemaTimestamp )
+    if ( $modelXml->lastModified() > $this->schemaTimestamp )
     {
-      $this->schemaTimestamp = $modelXml->filectime;
+      $this->schemaTimestamp = $modelXml->lastModified();
     }
-    
-    /*
-     * remove lock, since we need read-only access only
-     */
-    $modelXml->removeLock(); 
 
     /*
      * The document object
@@ -1803,23 +1751,25 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
   /**
    * Parses an xml data file, processing includes
    * @param string $file
-   * @return qcl_xml_simpleXML
+   * @return qcl_xml_SimpleXmlStorage
    */
   function &parseXmlDataFile( $file )
   {
 
     /*
+     * include simple xml library (cannot do that in header without
+     * creating include order problems
+     */
+    require_once "qcl/xml/SimpleXmlStorage.php";      
+    
+    /*
      * load model schema xml file
      */
     $this->log("Parsing model data file '$file'...","propertyModel");
+    $controller =& $this->getController();
+    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $file );
+    $dataXml->load();
     
-    $dataXml =& new qcl_xml_simpleXML($file);
-    
-    /*
-     * remove lock, since we need read-only access only
-     */
-    $dataXml->removeLock(); 
-
     /*
      * The document object
      */
@@ -1856,10 +1806,12 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
    * exports model data to an xml file
    *
    * @param string $path file path, defaults to the location of the inital data file
-   * @return qcl_xml_simpleXML The xml document object
+   * @return qcl_xml_SimpleXmlStorage The xml document object
    */
   function &export($path=null)
   {
+    $controller =& $this->getController();
+    
     /*
      * schema document
      */
@@ -1880,9 +1832,8 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * create new xml file
      */
-    $dataXml =& new qcl_xml_simpleXML();
-    $dataXml->createIfNotExists($path);
-    $dataXml->load($path); 
+    $dataXml =& new qcl_xml_SimpleXmlStorage( &$controller, $path );
+    $dataXml->createFile();
     
     /*
      * create the main nodes
@@ -1976,7 +1927,7 @@ class qcl_core_PropertyModel extends qcl_jsonrpc_model
     /*
      * save xml
      */
-    $dataXml->save();
+    $dataXml->saveToFile();
     return $dataXml;
   }
   

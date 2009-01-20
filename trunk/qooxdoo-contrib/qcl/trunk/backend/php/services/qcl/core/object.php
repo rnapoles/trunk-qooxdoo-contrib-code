@@ -1,5 +1,11 @@
 <?php
 /*
+ * for constant definition, use global variable $constId
+ * define("MY_CONSTANT", $constId++);
+ */
+$constId = 0;
+
+/*
  * dependencies
  */
 require_once "qcl/core/functions.php";      // global functions
@@ -51,7 +57,7 @@ class qcl_core_object
    * The class name of this object
    * @var string
    */
-  var $class;
+  var $_class;
  
 	/**
 	 * Array of class names that will be included as mixins. 
@@ -154,7 +160,7 @@ class qcl_core_object
 	  /*
 	   * class name
 	   */
-	  $this->class = get_class($this);
+	  $this->_class = get_class($this);
 	  
 		/*
 		 * apply mixins
@@ -177,7 +183,7 @@ class qcl_core_object
       /*
        * do not check again
        */
-      if ( $this->getRegistryVar( "qcl.interfaces.checked.{$this->class}.$interface" ) )
+      if ( $this->getRegistryVar( "qcl.interfaces.checked.{$this->_class}.$interface" ) )
       {
         continue;
       }
@@ -192,7 +198,7 @@ class qcl_core_object
       {
         if ( ! method_exists( $this, $method ) )
         {
-          $this->raiseError("Class {$this->class} has no implementation of method '$method' as required by interface '$interface'");
+          $this->raiseError("Class {$this->_class} has no implementation of method '$method' as required by interface '$interface'");
         }
       }
       /*
@@ -202,14 +208,14 @@ class qcl_core_object
       {
         if ( !  isset( $this, $var ) )
         {
-          $this->raiseError("Class {$this->class} has no property '$var' as required by interface '$interface'");
+          $this->raiseError("Class {$this->_class} has no property '$var' as required by interface '$interface'");
         }
       }
 
       /*
        * set flag that this was checked
        */
-      $this->setRegistryVar( "qcl.interfaces.checked.{$this->class}.$interface", true );
+      $this->setRegistryVar( "qcl.interfaces.checked.{$this->_class}.$interface", true );
     }
     
     /*
@@ -312,81 +318,6 @@ class qcl_core_object
   {
     $GLOBALS['qcl_registry'][$name] =& $value;    
   }
-  
-  //-------------------------------------------------------------
-  // Object persistence
-  //-------------------------------------------------------------	
-
-  /**
-   * get persistent object instance of this class. this will serialize
-   * itself automatically at the end of the request. 
-   * Can take up to five arguments that will be passed to the class constructor
-   * @param string $class Class name
-   * @param mixed[optional] $arg1
-   * @param mixed[optional] $arg2
-   * @param mixed[optional] $arg3
-   * @param mixed[optional] $arg4
-   * @param mixed[optional] $arg5
-   * @deprecated Subclass qcl_db_PersistentModel instead!
-   * @return qcl_core_object Instance of class
-   */
-  function &getPersistentInstance( $class, $arg1=null, $arg2=null, $arg3=null, $arg4=null, $arg5=null)
-  {
-    qcl_core_object::includeClassfile($class);
-    
-    /*
-     * retrieve instance
-     */
-    $obj =& qcl_core_object::retrieve($class);
-    
-    /*
-     * create new instance if no cached copy is available
-     */
-    if ( ! is_object ($obj) )
-    {
-      $obj =& new $class( &$arg1, &$arg2, &$arg3, &$arg4, &$arg5);
-      //$this->info("Created new $class");
-    }
-    else
-    {
-      //$this->info("Retrieved $class from cache...");
-      $obj->isNew = false;
-    }
-    
-    /*
-     * set persistent flag so that method will be serialized on shutdown
-     */
-    $obj->isPersistent = true;
-    
-    /*
-     * registering shutdown function since constructor is not called
-     */
-    //$this->info("Registering  function 'save' for " . get_class($obj));
-    register_shutdown_function ( array( &$obj, 'save' ) );        
-    
-    return $obj;
-  }
-  
-  
-  /**
-   * saves the object to a storage
-   * @deprecated
-   */
-  function save()
-  {
-    $this->warn("Saving objects is deprecated. Please subclass qcl_core_PersistentObject instead.");
-    if ( is_object( $this) and is_a($this,__CLASS__) )
-    {
-      $class = get_class($this);
-      //$this->info("Saving serialized object of class $class.");
-      qcl_core_object::store($class,&$this);
-    }
-    else
-    {
-      $this->raiseError("Cannot save object.");
-    }
-  }
-  
 
   /**
    * make a copy of this object
@@ -781,7 +712,8 @@ class qcl_core_object
 	function debug($msg)
 	{
     if ( ! is_scalar($msg) ) $msg = print_r($msg,true);
-	  $this->log ( ">>> DEBUG <<< " . $msg, "info" );
+    $msg = ">>> DEBUG <<< " . $msg;
+	  $this->log ( $msg, "info" );
   }	
 	
   /**
@@ -900,8 +832,12 @@ class qcl_core_object
     exit;
   }  
   
-  function dumpObject($object)
+  function dumpObject($object=null)
   {
+    if ( is_null($object) )
+    {
+      $object =& $this;
+    }
     $dump = array();
     foreach ( get_object_vars($object) as $key => $value )
     {
@@ -913,90 +849,10 @@ class qcl_core_object
     $this->info("\n" . implode("\n",$dump) );
   }
 
-  //-------------------------------------------------------------
-  // data storage in the filesystem
-  //-------------------------------------------------------------   
-  
-  /**
-   * stores the object or arbitrary data in the filesystem.
-   * @param mixed   $id     Id under which to store the data. If no Id is given, use the class name
-   *                This allows to create persistent singletons.
-   * @param mixed   $data     Data to store. If no data is provided, the object serializes itself
-   * return string Path to file with stored data.
-   * @return string path to file
-   * @todo reimplement using a storage class which can be file-based, db-based, etc. 
-   * @deprecated Use persistent instance instead
+
+  /*
+   * todo: the following methods really should be functions
    */
-  function store($id=null, $data="")
-  {
-    if ( ! $id )
-    {
-      // use class name as id
-      $id = get_class($this) . ".tmp";
-    }
-    elseif ( substr($id,0,1) == "." )
-    {
-      // just the extension passed, create random unique id
-      $id = md5(microtime()) . $id;
-    }
-    $path = QCL_TMP_PATH . $id;
-    if ( is_object($data) or is_array($data) )
-    {
-      $data = serialize($data); 
-    }
-    file_put_contents($path,$data);
-    return $path;
-  }
-  
-  /**
-   * retrieve stored object
-   * @deprecated
-   * @todo remove method
-   * @param string  $id   Id of data to be retrieved from filesystem
-   */
-  function &retrieve ( $id=null )
-  {
-    if ( ! $id )
-    {
-      $id = get_class($this) . ".tmp";
-    }
-    
-    $path = QCL_TMP_PATH . $id;
-    
-    if ( is_valid_file( $path ) )
-    {
-      $data = @file_get_contents( $path );
-      $obj = @unserialize( $data );
-    
-      if ( is_object( $obj ) or is_array( $obj ) )
-      {
-        return $obj;
-      }
-      return $data;
-    }
-    return null;
-  }
-  
-  /**
-   * remove stored object
-   * @deprecated
-   */
-  function remove ( $id, $prependPath = true )
-  {
-    if ( ! $id )
-    {
-      $id = get_class($this);
-    }
-    if ( $prependPath) $path = QCL_TMP_PATH . $id;
-    else $path = $id;
-    if ( is_valid_file( $path ) )
-    {
-      @unlink ($path);
-      return true;
-    }
-    return false; 
-  }
-  
   function checkType( $type, $var )
   {
     $ntype = gettype($var);
@@ -1028,4 +884,9 @@ class qcl_core_object
     return $this->checkType("array",$var);
   }  
 }
+
+/*
+ * init script has to be called *after* this class was defined.
+ */
+require_once "qcl/core/__init__.php";
 ?>
