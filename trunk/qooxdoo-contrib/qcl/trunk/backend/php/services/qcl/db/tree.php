@@ -122,8 +122,8 @@ class qcl_db_tree extends qcl_core_mixin
    	*/
 	function changeParent( $folderId, $parentFolderId )
 	{
-		$oldParentId  = $this->getPropertyValue("parentId",$folderId);
-    $this->setPropertyValue("parentId",$parentFolderId,$folderId);
+		$oldParentId  = $this->getProperty("parentId",$folderId);
+    $this->setProperty("parentId",$parentFolderId,$folderId);
     return $oldParentId;
 	}
 	
@@ -135,7 +135,7 @@ class qcl_db_tree extends qcl_core_mixin
   {
     if ( $id !== null )
     {
-      $folder = $this->getById($id);  
+      $folder = $this->load($id);  
     }
     else
     {
@@ -174,7 +174,7 @@ class qcl_db_tree extends qcl_core_mixin
       // top folder
       return array();
     }
-    $folder = $this->getById($id);  
+    $folder = $this->load($id);  
     $hierarchyIds = $this->getNodeIdHierarchy( $folder[$this->col_parentId] );
     array_push($hierarchyIds,$id);
     return $hierarchyIds;
@@ -191,7 +191,7 @@ class qcl_db_tree extends qcl_core_mixin
   {
     if ( $id !== null )
     {
-      $folder = $this->getById($id);  
+      $folder = $this->load($id);  
     }
     else
     {

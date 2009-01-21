@@ -2,13 +2,13 @@
 /*
  * dependencies
  */
-require_once "qcl/core/PropertyModel.php";
+require_once "qcl/db/PropertyModel.php";
 
 /**
  * Class containing all the methods shared by the qcl_db_model and qcl_db_SimpleModel
  * @todo define interface
  */
-class qcl_db_AbstractModel extends qcl_core_PropertyModel
+class qcl_db_AbstractModel extends qcl_db_PropertyModel
 {
 
   

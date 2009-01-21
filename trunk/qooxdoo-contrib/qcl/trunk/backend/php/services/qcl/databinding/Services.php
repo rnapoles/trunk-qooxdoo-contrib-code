@@ -84,7 +84,7 @@ class qcl_databinding_Services extends qcl_core_mixin
       /*
        * get all records
        */
-      $model->getAllRecords($sortBy);  
+      $model->findAll($sortBy);  
     }
     
     /*

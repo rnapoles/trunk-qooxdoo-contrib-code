@@ -653,12 +653,12 @@ class qcl_db_model extends qcl_db_AbstractModel
  	 * Alias of qcl_db_model::findById().
  	 * 
  	 * @param int $id
- 	 * @return void
+ 	 * @return arrray()
  	 */
  	function load($id)
  	{
     $this->checkInt($id);
- 	  $this->findById($id); 	    
+ 	  return $this->findById($id); 	    
  	}
  
   /**
@@ -922,7 +922,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @return Array Array of db record sets
    * @deprecated use new findX.. methods 
    */
-  function getAllRecords($orderBy=null)
+  function findAll($orderBy=null)
   {  
     return $this->findWhere(null,$orderBy);
   }  
@@ -1049,35 +1049,6 @@ class qcl_db_model extends qcl_db_AbstractModel
   }
 
   
- /**
-   * get and cache record by id 
-   * @param mixed $id
-   * @return Array Db record set
-   * @deprecated use new findX.. methods 
-   */
-  function getById( $id = null )
-  {
-    if ( $id !== null )
-    {
-      if ( ! is_numeric($id) )
-      {
-        $id = "'$id'";
-      }
-      $this->currentRecord = $this->db->getRow("
-        SELECT * 
-        FROM `{$this->table}` 
-        WHERE `{$this->col_id}` = $id;
-      ");           
-    }
-    else
-    {
-      if ( ! is_array( $this->currentRecord ) )
-      {
-        $this->raiseError("No id given, but no record cached!");
-      }
-    }
-    return $this->currentRecord;
-  }
   /**
    * get record by its unique string id
    * @deprecated use new findX.. methods
@@ -1086,7 +1057,9 @@ class qcl_db_model extends qcl_db_AbstractModel
   function getByName($name)
   {
     return $this->getByNamedId($name);
+    $this->load();
   }
+  
    /**
     * get record by its unique string id
     * @deprecated use new findX.. methods t
@@ -1118,7 +1091,7 @@ class qcl_db_model extends qcl_db_AbstractModel
   {
     if ( is_numeric ($ref) )
     {
-      return $this->getById($ref); 
+      return $this->load($ref); 
     }
     elseif ( is_string ($ref) )
     {
@@ -2716,7 +2689,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    *    </origin>
    *  </link>
    * </links>
-   * @see qcl_core_PropertyModel
+   * @see qcl_db_PropertyModel
    * @param string $dir directory path where link data is to be put, defaults to the 
    * directory containing the inital data file
    * @param bool $isBackup if true, prepend "backup_" before the filename

@@ -334,7 +334,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    * Generic getter for models. Methods exist that follow the 
    * pattern getFooModel()
    * @param string $type
-   * @return qcl_core_PropertyModel
+   * @return qcl_db_PropertyModel
    */
   function &getModel($type)
   {
@@ -360,7 +360,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      */
     $obj =& $this->$getter();
     
-    if ( ! is_a($obj,"qcl_core_PropertyModel" ) )
+    if ( ! is_a($obj,"qcl_db_PropertyModel" ) )
     {
       $this->raiseError( 
         $this->className() . 
