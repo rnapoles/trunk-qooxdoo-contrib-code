@@ -52,10 +52,10 @@ class qcl_datasource_type_z3950_Model  extends qcl_datasource_type_db_Model
     $this->recordModel =& new bibliograph_models_record_default( &$controller, &$this);
 
     
-    $this->getById($name);
+    $this->load($name);
     
     // @todo options?
-    $data = unserialize( $this->getPropertyValue('data') );
+    $data = unserialize( $this->getProperty('data') );
     if ( ! is_array ( $data ) )
     {
       $this->raiseError("Cannot unserialize Z39.50 connection data." );

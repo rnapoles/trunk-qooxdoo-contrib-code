@@ -79,7 +79,7 @@ class qcl_access_services extends qcl_core_mixin
     /*
      * get data
      */
-    $itemData = $model->getById($itemId);
+    $itemData = $model->load($itemId);
 
     /*
      * convert to table data model
@@ -543,8 +543,8 @@ class qcl_access_services extends qcl_core_mixin
     /*
      * get ordered lists of roles and permissions
      */ 
-    $roles            = $roleModel->getAllRecords($roleModel->col_descriptiveName);
-    $permissions      = $permModel->getAllRecords($roleModel->col_descriptiveName . "`,`" . $permModel->col_namedId );
+    $roles            = $roleModel->findAll($roleModel->col_descriptiveName);
+    $permissions      = $permModel->findAll($roleModel->col_descriptiveName . "`,`" . $permModel->col_namedId );
     $permissionRoles  = $permModel->getByRoleId();
     
     $parentNodeIds    = array();
@@ -650,7 +650,7 @@ class qcl_access_services extends qcl_core_mixin
      * construct node
      */
     $result     = array();
-    $permission = $permModel->getById($permissionId);
+    $permission = $permModel->load($permissionId);
     $namedId    = $permission[$permModel->col_namedId];
     $name       = $permission[$permModel->col_descriptiveName];
     $label      = $name? "$name ($namedId)" : $namedId;
@@ -702,7 +702,7 @@ class qcl_access_services extends qcl_core_mixin
      * construct node
      */
     $result         = array();
-    $user           = $this->getById($userId);
+    $user           = $this->load($userId);
     $namedId        = $user[$userModel->col_namedId];
     $name           = $user[$userModel->col_descriptiveName];
     $label          = "$name ($namedId)";
