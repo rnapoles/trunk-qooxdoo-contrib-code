@@ -3,12 +3,9 @@
 /*
  * dependencies
  */
+require_once "qcl/db/__init__.php";
 require_once "qcl/jsonrpc/model.php";
 
-/*
- * constants
- */
-define("QCL_LOG_PROPERTY_MODEL","propertyModel");
 
 /**
  * Model that has a set of properties defined by an xml schema

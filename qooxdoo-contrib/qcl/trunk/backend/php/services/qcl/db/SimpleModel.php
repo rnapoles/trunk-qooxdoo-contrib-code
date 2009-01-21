@@ -2,19 +2,8 @@
 /*
  * dependencies
  */
-require_once "qcl/db/model.php";
+require_once "qcl/db/AbstractModel.php";
 
-/*
- * define property type constants
- */
-define("QCL_DB_PROPERTY",             "QCL_DB_PROPERTY");
-define("QCL_DB_PROPERTY_VARCHAR_32",  "QCL_DB_PROPERTY_VARCHAR_32");
-define("QCL_DB_PROPERTY_VARCHAR_100", "QCL_DB_PROPERTY_VARCHAR_100");
-define("QCL_DB_PROPERTY_VARCHAR_250", "QCL_DB_PROPERTY_VARCHAR_250");
-define("QCL_DB_PROPERTY_BOOLEAN",     "QCL_DB_PROPERTY_BOOLEAN");
-define("QCL_DB_PROPERTY_INT",         "QCL_DB_PROPERTY_INT");
-define("QCL_DB_PROPERTY_BLOB",        "QCL_DB_PROPERTY_BLOB");
-define("QCL_DB_PROPERTY_TIMESTAMP",   "QCL_DB_PROPERTY_TIMESTAMP");
 
 /**
  * Simpler ORM Mmechanism than the qcl_db_model way that uses xml
@@ -31,7 +20,7 @@ define("QCL_DB_PROPERTY_TIMESTAMP",   "QCL_DB_PROPERTY_TIMESTAMP");
  * @todo Implement automatic getter and setter access to properties that 
  * are saved in the database
  */
-class qcl_db_SimpleModel extends qcl_db_model 
+class qcl_db_SimpleModel extends qcl_db_AbstractModel
 {
   /**
    * This model does not have a schema xml document but
