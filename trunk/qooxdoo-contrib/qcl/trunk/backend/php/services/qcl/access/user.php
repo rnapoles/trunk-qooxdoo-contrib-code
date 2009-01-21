@@ -216,7 +216,7 @@ class qcl_access_user extends qcl_access_common
 		/*
 		 * Permission was not found
 		 */
-    $permModel->getByNamedId( $requestedPermission );
+    $permModel->findByNamedId( $requestedPermission );
 		if ( $permModel->foundNothing() )
 		{
 		  /*

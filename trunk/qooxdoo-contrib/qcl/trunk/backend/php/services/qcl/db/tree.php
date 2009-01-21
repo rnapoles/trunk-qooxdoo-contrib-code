@@ -20,7 +20,7 @@ class qcl_db_tree extends qcl_core_mixin
 	function getChildren ( $parentId )
 	{
 		$parentId = (int) $parentId;
-		return $this->getRecordsWhere("{$this->col_parentId} = $parentId", $this->col_position );
+		return $this->findWhere("{$this->col_parentId} = $parentId", $this->col_position );
 	}
 	
 	/**
@@ -32,7 +32,7 @@ class qcl_db_tree extends qcl_core_mixin
 	{
 		$parentId = (int) $parentId;
     $orderBy  = either( $orderBy, $this->col_position );
-		return $this->getColumnValues($this->col_id, "{$this->col_parentId} = $parentId", $orderBy );
+		return $this->findValues($this->col_id, "{$this->col_parentId} = $parentId", $orderBy );
 	}	
 	
 	/**
