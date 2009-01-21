@@ -937,326 +937,6 @@ class qcl_db_model extends qcl_db_AbstractModel
     return $this->getColumnName($this->getForeignKey());
   }
 
-  /**
-   * gets all database records or those that match a where condition. 
-   * the table name is available as the alias "r" (for records)
-   * @param string   $where    where condition to match, if null, get all
-   * @param string|array|null[optional]  $orderBy  (optional) order by field. if an array is provided,
-   * the last element is can contain the sort direction ("ASC"/"DESC")
-   * @param array|null[optional] $fields  Array of fields to retrieve 
-   * @return Array Array of db record sets
-   * @deprecated use new findX.. methods 
-   */
-  function getRecordsWhere( $where=null, $orderBy=null, $fields=null)
-  {
-    
-    /*
-     * fields to retrieve
-     */
-    if ( $fields )
-    {
-      $fields = "`" . implode("`,`", (array) $fields ) . "`";
-    }
-    else
-    {
-      $fields = "*"; 
-    }
-    
-    /*
-     * select
-     */
-    $sql = "SELECT $fields FROM {$this->table} AS r \n";
-    
-    /*
-     * where
-     */
-    if ($where)
-    {
-      $sql .= "WHERE $where ";
-    }
-    
-    /*
-     * order by 
-     */
-    if ( $orderBy )
-    {
-      $orderBy  = (array) $orderBy;
-      $lastElem = $orderBy[count($orderBy)-1];
-      
-      $direction = in_array( strtolower($lastElem), array("asc","desc") ) ? 
-          array_pop($orderBy) : "";
-      
-      $orderBy = implode("`,`", $orderBy );
-      $sql .= "ORDER BY `$orderBy` $direction"; 
-    }
-    
-    //$this->info($sql);
-    
-    /*
-     * return db records
-     */
-    return $this->db->getAllRecords($sql);    
-  }
-
-  /**
-   * gets database records by their primary key
-   * @param array|int     $ids    
-   * @param string|null   $orderBy  (optional) order by field
-   * @param array|null    $fields   (optional) Array of fields to retrieve 
-   * @return Array Array of db record sets
-   * @deprecated use new findX.. methods 
-   */
-  function getRowsById( $ids, $orderBy=null, $fields=null )
-  {
-    if ( ! is_numeric($ids) and !is_array($ids) )
-    {
-      $this->raiseError("qcl_db_model::getRowsById() : invalid parameter id: '$ids'");
-    }
-    $rowIds = implode(",", (array) $ids );
-    if ( ! empty($rowIds) )
-    {
-      return $this->findWhere( "`{$this->col_id}` IN ($rowIds)", $orderBy, $fields );
-    }  
-  }
-
-  /**
-   * gets values of database columns that match a where condition
-   * @param string|array    $column   name of column(s) 
-   * @param string          $where    where condition to match, if null, get all
-   * @param string|null     $orderBy  (optional) order by field
-   * @return array Array of values
-   * @deprecated use new findX.. methods 
-   */
-  function getColumnValues($column,$where=null,$orderBy=null)
-  { 
-    if ( is_array( $column ) )
-    {
-      $column = implode("`,`",$column);
-    }
-    
-    $sql = "SELECT `$column` FROM {$this->table} \n";
-    
-    if ($where)
-    {
-      $sql .= "WHERE $where ";
-    }
-    if ($orderBy)
-    {
-      $orderBy = implode("`,`", (array) $orderBy );
-      $sql .= "ORDER BY `$orderBy`"; 
-    }
-    return $this->db->values($sql);    
-  }
-
-  
-  /**
-   * get record by its unique string id
-   * @deprecated use new findX.. methods
-   * @return Array Db record set
-   */
-  function getByName($name)
-  {
-    return $this->getByNamedId($name);
-    $this->load();
-  }
-  
-   /**
-    * get record by its unique string id
-    * @deprecated use new findX.. methods t
-    * @return Array Db record set
-    */
-  function getByNamedId($namedId)
-  {
-    if ( $this->col_namedId )
-    {
-      $row = $this->db->getRow("
-        SELECT * 
-        FROM `{$this->table}` 
-        WHERE `{$this->col_namedId}` = '$namedId'
-      ");
-      $this->currentRecord = $row;
-      return $row;
-    }
-    else
-    {
-      $this->raiseError("qcl_db_model::getByNamedId : model does not have a named id property");  
-    }
-  }
-  /**
-   * get record by reference (string id or numeric id)
-   * @param mixed $ref numeric id or string name
-   * @deprecated use new findX.. methods 
-   */
-  function getByRef($ref)
-  {
-    if ( is_numeric ($ref) )
-    {
-      return $this->load($ref); 
-    }
-    elseif ( is_string ($ref) )
-    {
-      return $this->getByName($ref);
-    }
-    else
-    {
-      $this->raiseError("qcl_db_model::getByRef : integer or string expected, got '$ref'");
-    }
-  }
-
-  /**
-   * gets the record in this table that is referred to by the record from a different table (argument) 
-   * @return array
-   * @param Array   $record  record from a different table that contains a key corresponding to the foreign id of this table
-   * @param Boolean $idOnly if true, return only the value of the foreign key column
-   * @deprecated use new findX.. methods 
-   */
-  function getByForeignKey( $record, $idOnly = false )
-  {
-    $id = $record[ $this->getForeignKeyColumn() ];
-    if ( $idOnly )
-    {
-      return $id;
-    }
-    else
-    {
-      return $this->findById( $id );
-    }
-  }     
-
-  /**
-   * gets the value of a column in a record
-   * @param string       $column  
-   * @param int|string|null[optional] $id Numeric or named id. If omitted, use current record
-   * @deprecated use new findX.. methods 
-   */
-  function getColumnValue( $column, $id = null)
-  {
-    if ( is_numeric( $id ) )
-    {
-      // id is numeric
-      $row = $this->findById( $id );
-    } 
-    elseif ( is_string($id) )
-    {
-      // id is string => namedId
-      $row = $this->findByNamedId( $id );
-    }
-    elseif ( $id === null )
-    {
-      // operate on current record
-      $row = $this->currentRecord;  
-    }
-    
-    /*
-     * return value
-     */ 
-    if ( count ( $row ) )
-    {
-      return $row[$column];
-    }
-    else
-    {
-      if ( $id )
-      {
-        $this->raiseError("Row '$id' does not exist");  
-      }
-      elseif ( $id == 0 )
-      {
-        $this->raiseError("Invalid id (0).");  
-      }      
-      else
-      {
-        $this->raiseError("No current record.");  
-      }
-    }
-  }
-
-  /**
-   * sets the value of a column in a record 
-   * @param string      $column
-   * @param mixed       $value
-   * @param int|string|null[optional] $id Numeric or named id. If omitted, use current record
-   * @deprecated use new setter methods 
-   */
-  function setColumnValue( $column, $value, $id=null )
-  {
-    if( $id )
-    {
-      if ( ! is_numeric( $id ) )
-      {
-        $namedId = $id;
-        $id = $this->getIdByNamedId ( $namedId );
-        if ( ! $id )
-        {
-          $this->raiseError("Invalid named id '$namedId'.");
-        }
-      }
-      // set data
-      $data = array();
-      $data[$this->getIdColumn()] = $id;
-      $data[$column] = $value;
-      $this->update($data);
-    }
-    else
-    {
-      $this->currentRecord[$column]=$value;   
-    }
-  }
- 
-  /**
-   * gets the value of the property of the current record or a record specified by the id
-   * @param string $propName Property name
-   * @param int|string $id    if omitted, modify current record cache without updating the database 
-   * @deprecated use new findX.. methods 
-   */
-  function getPropertyValue ( $propName, $id=null )
-  {
-    /*
-     * get from database if id is given
-     */
-    if ( ! is_null($id) )
-    {
-      $this->findById($id);
-    }
-    
-    /*
-     * return value
-     */
-    return $this->getProperty( $propName ); 
-  }
-
-  /**
-   * sets the value of the property of the current record or a record specified by the id
-   * @param string $propName Property name
-   * @param mixed      $value 
-   * @param int|string $id    if omitted, modify current record cache without updating the database 
-   * @return void
-   * @deprecated use new setter methods 
-   */
-  function setPropertyValue ( $propName, $value, $id=null )
-  {
-    /*
-     * get from database if id is given
-     */
-    if ( ! is_null($id) )
-    {
-      $this->findById($id);
-    }
-    
-    /*
-     * set property
-     */
-    $this->setProperty($propName,$value);
-    
-    /*
-     * save to database if id is given
-     */
-    if ( ! is_null($id) )
-    {
-      $this->update();
-    }
-  }
-
 
   /**
    * translates column to property names in the array keys
@@ -1264,7 +944,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @return array
    * @deprecated use new findX.. methods 
    */
-  function columnsToProperties ( $row )
+  function columnsToProperties( $row )
   {
     return $this->_columnsToProperties ( $row );
   }
@@ -1275,7 +955,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @return array
    * @deprecated use new findX.. methods 
    */
-  function _columnsToProperties ( $row )
+  function _columnsToProperties( $row )
   {
     if ( ! $row )
     {
@@ -1299,7 +979,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @return array
    * @deprecated use new findX.. methods 
    */
-  function propertiesToColumns ( $row=null )
+  function propertiesToColumns( $row=null )
   {
     return $this->_propertiesToColumns ( $row );
   }
@@ -1310,7 +990,7 @@ class qcl_db_model extends qcl_db_AbstractModel
    * @return array
    * @deprecated use new findX.. methods 
    */
-  function _propertiesToColumns ( $row=null )
+  function _propertiesToColumns( $row=null )
   {
     $translatedRow = array();
     foreach ( $row as $propName => $value )

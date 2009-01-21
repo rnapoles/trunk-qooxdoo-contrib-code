@@ -409,8 +409,8 @@ class qcl_access_services extends qcl_core_mixin
     /*
      * get lists of users and roles ordered by name
      */
-    $users      = $userModel->getRecordsWhere(null,$userModel->col_descriptiveName);
-    $roles      = $roleModel->getRecordsWhere(null,$roleModel->col_descriptiveName);
+    $users      = $userModel->findWhere(null,$userModel->col_descriptiveName);
+    $roles      = $roleModel->findWhere(null,$roleModel->col_descriptiveName);
     $userRoles  = $roleModel->getByUserId();
     
     $parentNodeIds  = array();

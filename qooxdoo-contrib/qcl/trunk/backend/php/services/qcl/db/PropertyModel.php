@@ -1452,7 +1452,7 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
    */
   function ids()
   {
-    return $this->getColumnValues($this->getColumnName("id"));
+    return $this->findValues($this->getColumnName("id"));
   }
   
   /**
