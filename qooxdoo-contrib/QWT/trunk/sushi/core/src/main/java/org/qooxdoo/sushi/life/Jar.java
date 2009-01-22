@@ -20,19 +20,15 @@ public class Jar {
     @Value
     private Id id;
 
-    @Value
-    private String hash;
-    
     @Sequence(String.class)
     private List<String> directories;
     
     public Jar() {
-        this(new Id(), "");
+        this(new Id());
     }
     
-    public Jar(Id id, String hash) {
+    public Jar(Id id) {
         this.id = id;
-        this.hash = hash;
         this.directories = new ArrayList<String>();
     }
     
@@ -42,13 +38,6 @@ public class Jar {
 
     public void setId(Id id) {
         this.id = id;
-    }
-    
-    public String getHash() {
-        return hash;
-    }
-    public void setHash(String hash) {
-        this.hash = hash;
     }
     
     public List<String> directories() {
