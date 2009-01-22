@@ -96,7 +96,7 @@ qx.Class.define("inspector.Application",
         this._loading = false;
         
         // save the url in a cookie
-        inspector.components.CookieApi.set("url", this._iFrame.getSource());
+        qx.bom.Cookie.set("url", this._iFrame.getSource());
 
         this.__checkForReload();
         
@@ -138,18 +138,18 @@ qx.Class.define("inspector.Application",
     
     __checkCookieFor: function(winRef, button, name) {
       // if the open cookie is set
-      if (inspector.components.CookieApi.get(name + "Open") == "true") {
+      if (qx.bom.Cookie.get(name + "Open") == "true") {
         button.setChecked(true);
 
         // check the position
-        var top = parseInt(inspector.components.CookieApi.get(name + "Top"));
-        var left = parseInt(inspector.components.CookieApi.get(name + "Left"));
+        var top = parseInt(qx.bom.Cookie.get(name + "Top"));
+        var left = parseInt(qx.bom.Cookie.get(name + "Left"));
         if (!isNaN(top) && !isNaN(left)) {
           this[winRef].moveTo(left, top);
         }      
         // check the size
-        var width = parseInt(inspector.components.CookieApi.get(name + "Width"));
-        var height =   parseInt(inspector.components.CookieApi.get(name + "Height"));
+        var width = parseInt(qx.bom.Cookie.get(name + "Width"));
+        var height =   parseInt(qx.bom.Cookie.get(name + "Height"));
         if (!isNaN(height)) {
           this[winRef].setHeight(height);
         }
@@ -284,7 +284,7 @@ qx.Class.define("inspector.Application",
       this._toolbar.addSpacer();
 
       // get the url out of a cookie
-      var cookieUrl = inspector.components.CookieApi.get("url");
+      var cookieUrl = qx.bom.Cookie.get("url");
       if (cookieUrl == undefined || cookieUrl == "") {
         cookieUrl = "Please enter an url here!";
       }
@@ -337,7 +337,7 @@ qx.Class.define("inspector.Application",
         wasOpen = true;
         
         // store the open status in a cookie
-        inspector.components.CookieApi.set(name + "Open", e.getData());
+        qx.bom.Cookie.set(name + "Open", e.getData());
       }, this);      
     },
     
@@ -349,13 +349,13 @@ qx.Class.define("inspector.Application",
       }, this);
       // add a move listener
       win.addListener("move", function(e) {
-        inspector.components.CookieApi.set(name + "Left", e.getData().left);
-        inspector.components.CookieApi.set(name + "Top", e.getData().top);            
+        qx.bom.Cookie.set(name + "Left", e.getData().left);
+        qx.bom.Cookie.set(name + "Top", e.getData().top);            
       }, this);
       // add a resize listener
       win.addListener("resize", function(e) {
-        inspector.components.CookieApi.set(name + "Width", e.getData().width);
-        inspector.components.CookieApi.set(name + "Height", e.getData().height);
+        qx.bom.Cookie.set(name + "Width", e.getData().width);
+        qx.bom.Cookie.set(name + "Height", e.getData().height);
       }, this);      
     },
         
