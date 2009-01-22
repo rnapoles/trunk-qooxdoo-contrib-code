@@ -72,19 +72,17 @@ class qcl_session_controller extends qcl_access_controller
     /*
      * Does the request contain a session id?
      */
-    $sessionId = $this->getServerData("sessionId");
+    $sessionId       = $this->getServerData("sessionId");
+    $parentSessionId = $this->getServerData("parentSessionId");
     
     /*
      * If not, is this a sub-session of a parent session?
-     */
-    if ( ! $sessionId )
+     */ 
+    if ( $parentSessionId )
     {
-      $parentSessionId = $this->getServerData("parentSessionId");      
-      if ( $parentSessionId )
-      {
-        $sessionId = $this->createChildSession($parentSessionId);
-      }
+      $sessionId = $this->createChildSession($parentSessionId);
     }
+
     
     //$this->debug("Initial session id: $sessionId, $parentSessionId");
     
