@@ -8,6 +8,16 @@ import org.qooxdoo.sushi.fs.Node;
 
 public class IdTest {
     @Test
+    public void fromString() {
+        check("1:2:3");
+        check("de.schlund.tariff:tariff:1-SNAPSHOT");
+    }
+    
+    private void check(String id) {
+        assertEquals(id, Id.fromString(id).toString());
+    }
+
+    @Test
     public void formRepoNode() throws Exception {
         IO io;
         Node junit;
@@ -15,7 +25,7 @@ public class IdTest {
         io = new IO();
         junit = io.locateClasspathItem(Test.class);
         junit.checkFile();
-        assertEquals(Id.fromString("junit:junit:4.5"), Id.fromNode(junit));
+        assertEquals(Id.fromString("junit:junit:4.4"), Id.fromNode(junit));
     }
 
     @Test

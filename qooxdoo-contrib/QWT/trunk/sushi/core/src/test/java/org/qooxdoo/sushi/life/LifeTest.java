@@ -3,8 +3,10 @@ package org.qooxdoo.sushi.life;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 import org.qooxdoo.sushi.fs.IO;
@@ -25,14 +27,23 @@ public class LifeTest {
         assertNotNull(life.lookup(new Id("a", "b", "c")));
         assertNull(life.lookup(new Id("a", "b", "d")));
     }
-    
+
     @Test
-    public void fromString() {
-        check("1:2:3");
-        check("de.schlund.tariff:tariff:1-SNAPSHOT");
-    }
-    
-    private void check(String id) {
-        assertEquals(id, Id.fromString(id).toString());
+    public void lookupWithoutVersionl() throws IOException {
+        Jar one;
+        Jar two;
+        Life life;
+        List<Jar> lst;
+
+        one = new Jar("a:b:1");
+        two = new Jar("a:b:2");
+        life = new Life();
+        life.jars().add(one);
+        life.jars().add(two);
+        life.jars().add(new Jar("a:c:2"));
+        lst = life.lookupWithoutVersion(Id.fromString("a:b:2"));
+        assertEquals(2, lst.size());
+        assertTrue(lst.contains(one));
+        assertTrue(lst.contains(two));
     }
 }
