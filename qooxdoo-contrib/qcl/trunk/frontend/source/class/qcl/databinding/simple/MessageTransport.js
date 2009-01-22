@@ -282,13 +282,10 @@ qx.Class.define("qcl.databinding.simple.MessageTransport",
             rpc.setCrossDomain(_this.getAllowCrossDomainRequests());
             
             /*
-             * session id
+             * application state is sent as server data
              */
             var app = qx.core.Init.getInstance().getApplication();
-            if ( typeof app.getSessionId == "function" )
-            {
-              rpc.setServerData({ 'sessionId' : app.getSessionId() } );
-            }
+            rpc.setServerData( app.getStates() );  
             
             /*
              * request with handler function 

@@ -269,7 +269,7 @@ qx.Mixin.define("qcl.application.MApplication",
         
         for (var key in hP) 
         {
-          p.push(key + "=" + encodeURIComponent(hP[key]));
+          p.push(key + "=" + encodeURIComponent( hP[key] ) );
         }
         
         window.location.hash = p.join("&");
@@ -341,6 +341,15 @@ qx.Mixin.define("qcl.application.MApplication",
         case "NaN" : return undefined;
         default: return value;
       }
+    },
+    
+    /**
+     * Returns a map with the complete application state
+     * @return {Map}
+     */
+    getStates : function()
+    {
+      return this._analyzeHashString();
     },
 
     /**
@@ -560,11 +569,6 @@ qx.Mixin.define("qcl.application.MApplication",
      */
     setSessionId : function( sessionId )
     {
-      if ( ! sessionId )
-      {
-        this.error("Invalid session id.");
-      }
-      
       this.setState("sessionId", sessionId );
       this.__sessionId = sessionId;            
     },    

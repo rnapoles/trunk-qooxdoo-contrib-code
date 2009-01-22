@@ -34,16 +34,28 @@
  * transport and provides several widgets with data or sends their data
  * to the server on demand, respectively.
  * 
- * Most of the time, the only methods that will be called is updateClient (to 
- * pull data from the server to update the client object) and updateServer 
- * (to send client data to the server).
+ * Most of the time, the only methods that will be called is updateClient() (to 
+ * pull data from the server to update the client object) and updateServer() 
+ * (to send client data to the server). if the last argument passed to the methods
+ * is a function, this will be used as a callback function after the request
+ * has returned without error.
  * 
  * The result sent from the server must be a hash map of the following structure.:
  * <pre>
  * {
- *   result : { ... result data ... },
- *   events : [ { type : "event1", data : ... }, { type : "event2", data: ... }, ... ],
- *   messages : [ { name : "appname.messages.foo", data : ... }, { name : "appname.messages.bar", data: ... }, ... ]
+ *   // result property should always be provided in order to allow events and messages to be transported
+ *   result : 
+ *   {
+ *     result : { (... result data ...) },
+ *     events : [ { type : "event1", data : ... }, { type : "event2", data: ... }, ... ],
+ *     messages : [ { name : "appname.messages.foo", data : ... }, { name : "appname.messages.bar", data: ... }, ... ]
+ *   }
+ *   // error property only exists if an error occurred 
+ *   error : 
+ *   {
+ *     (... error data ...)
+ *   }
+ *   id : (int id of rpc request)
  * }
  * </pre>
  * 
@@ -310,6 +322,12 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       }      
       
       /*
+       * check wether the last argument is a function as use
+       * this as the final callback function
+       */
+      var finalCallbackFunc = ( typeof params[ params.length-1] == "function" ) ? params.pop() : null;
+      
+      /*
        * configure new request object
        */
       var rpc = new qx.io.remote.Rpc();      
@@ -319,13 +337,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
       
       /*
-       * session id
+       * application state is sent as server data
        */
       var app = qx.core.Init.getInstance().getApplication();
-      if ( typeof app.getSessionId == "function" )
-      {
-        rpc.setServerData({ 'sessionId' : app.getSessionId() } );
-      }
+      rpc.setServerData( app.getStates() );  
       
       /*
        * tag the current object instance for closures
@@ -364,19 +379,20 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
          */
         rpc.dispose();
         delete rpc;
+
+        /*
+         *  handle messages and events
+         */
+        if ( data && ( data.messages || data.events ) ) 
+        {
+          _this.__handleEventsAndMessages( _this, data );
+        }        
         
         /*
          * check for error
          */
         if ( ex == null ) 
         {  
-           /*
-            * no error, handle messages and events
-            */
-           if (data.messages || data.events) 
-           {
-             _this.__handleEventsAndMessages( _this, data );
-           }
            
            /*
             * handle received data  
@@ -409,7 +425,15 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
            _this.createDispatchDataEvent("dataReceived",null);
          }
 
-       };
+        /*
+         * call final callback function if defined
+         */
+        if ( finalCallbackFunc )
+        {
+          finalCallbackFunc(data, ex, id);
+        }  
+  
+      };
        
        /*
         * send request 
@@ -848,7 +872,13 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         var serviceName   = this.getServiceName();
         var serviceMethod = this.getServiceMethodUpdateServer();
         var params = args;
-      }           
+      }    
+      
+      /*
+       * check wether the last argument is a function as use
+       * this as the final callback function
+       */
+      var finalCallbackFunc = ( typeof params[ params.length-1] == "function" ) ? params.pop() : null;             
 
       /*
        * configure request object
@@ -860,13 +890,10 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
       rpc.setCrossDomain(this.getAllowCrossDomainRequests());
 
       /*
-       * session id
+       * application state is sent as server data
        */
       var app = qx.core.Init.getInstance().getApplication();
-      if ( typeof app.getSessionId == "function" )
-      {
-        rpc.setServerData({ 'sessionId' : app.getSessionId() } );
-      }
+      rpc.setServerData( app.getStates() );  
       
       /*
        * reference present object instance for closures
@@ -909,16 +936,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         rpc.dispose();
         delete rpc; 
         
-        if (ex == null) 
+        /*
+         *  handle messages and events
+         */
+        if ( data && ( data.messages || data.events ) ) 
         {
-          /*
-           * handle messages and events
-           */
-          if (data.messages || data.events) 
-          {
-            _this.__handleEventsAndMessages( _this, data )
-          }
-          
+          _this.__handleEventsAndMessages( _this, data );
+        }              
+        
+        if (ex == null) 
+        {          
           /*
            * notify about sent data only if sending was successful
            */
@@ -936,7 +963,16 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
           );
           _this.warn ( "Async exception (#" + id + "): " + ex.message );
         }
-       };
+        
+        /*
+         * call final callback function if defined
+         */
+        if ( finalCallbackFunc )
+        {
+          finalCallbackFunc(data, ex, id);
+        }  
+                
+      };
 
       /* 
        * send request
@@ -957,7 +993,7 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
     /**
      * update server using a post request
      */
-    _updateServerPost : function()
+    _updateServerPost : function(finalCallbackFunc)
     {
       // create new request object
       var req = new qx.io.remote.Request(this.getServiceUrl(), qx.net.Http.METHOD_POST, qx.util.Mime.TEXT);
@@ -991,6 +1027,14 @@ qx.Mixin.define("qcl.databinding.simple.MDataManager",
         req = null;
         var result = e.getData().getContent();
         _this.createDispatchDataEvent("dataSent",result);
+        
+        /*
+         * call final callback function if defined
+         */
+        if ( finalCallbackFunc )
+        {
+          finalCallbackFunc(data, ex, id);
+        }          
       });
       
       var failureFunc = function(e){
