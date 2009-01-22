@@ -274,6 +274,12 @@ qx.Class.define("htmlarea.command.Manager",
         return false;
       }
 
+      if (!this.__editorInstance.isSeeable())
+      {
+        this.error("editor not visible! '"+command+"':'"+value+"'");
+        return false;
+      }
+
       /* Normalize */
       command = command.toLowerCase();
       value   = value != null ? value : null;
@@ -800,7 +806,7 @@ qx.Class.define("htmlarea.command.Manager",
       },
 
       /**
-       * Gecko does not copy the paragraph's background color, and text
+       * Webkit does not copy the paragraph's background color, and text
        * alignment so do this manually.
        */
       "webkit" : function()
