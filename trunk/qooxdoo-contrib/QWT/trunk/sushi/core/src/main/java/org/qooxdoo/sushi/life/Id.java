@@ -1,27 +1,72 @@
 package org.qooxdoo.sushi.life;
 
+import java.util.List;
+
+import org.qooxdoo.sushi.fs.IO;
+import org.qooxdoo.sushi.fs.Node;
 import org.qooxdoo.sushi.metadata.annotation.Type;
 import org.qooxdoo.sushi.metadata.annotation.Value;
+import org.qooxdoo.sushi.util.Strings;
 
 @Type
 public class Id {
+    public static Id fromNode(Node node) {
+        IO io;
+        Node repo;
+        String name;
+        
+        io = node.getIO();  
+        repo = io.getHome().join(".m2/repository");
+        if (node.hasAnchestor(repo)) {
+            return fromPath(node.getRelative(repo));
+        } else {
+            name = Strings.removeSuffix(node.getName(), ".jar");
+            return fromString(name, '+');
+        }
+    }
+
+    public static Id fromPath(String str) {
+        List<String> segments;
+        String version;
+        String artifact;
+        String group;
+        
+        segments = Strings.split("/", str);
+        if (segments.size() < 3) {
+            throw new IllegalArgumentException(str);
+        }
+        pop(segments); // file name
+        version = pop(segments);
+        artifact = pop(segments);
+        group = Strings.join(".", segments);
+        return new Id(group, artifact, version);
+    }
+    
+    private static String pop(List<String> lst) {
+        return lst.remove(lst.size() - 1);
+    }
+    
     public static Id fromString(String str) {
+        return fromString(str, ':');
+    }
+    
+    public static Id fromString(String str, char delim) {
         int idx;
         String group;
         String artifact;
         String version;
         
-        idx = str.indexOf(':');
+        idx = str.indexOf(delim);
         if (idx == -1) {
             throw new IllegalArgumentException(str);
         }
         group = str.substring(0, idx);
-        idx = str.indexOf(':', idx + 1);
+        idx = str.indexOf(delim, idx + 1);
         if (idx == -1) {
             throw new IllegalArgumentException(str);
         }
         artifact = str.substring(group.length() + 1, idx);
-        if (str.indexOf(':', idx + 1) != -1) {
+        if (str.indexOf(delim, idx + 1) != -1) {
             throw new IllegalArgumentException(str);
         }
         version = str.substring(idx + 1);

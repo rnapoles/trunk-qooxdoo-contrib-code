@@ -111,7 +111,7 @@ public class Strings {
         if (str.endsWith(suffix)) {
             return str.substring(0, str.length() - suffix.length());
         } else {
-            throw new IllegalArgumentException(str + "does not end with " + suffix);
+            throw new IllegalArgumentException(str + " does not end with " + suffix);
         }
     }        
     

@@ -3,7 +3,6 @@ package org.qooxdoo.sushi.life;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 
@@ -19,13 +18,11 @@ public class LifeTest {
         
         life = new Life();
         assertNull(life.lookup(new Id("foo", "bar", "bar")));
-        assertNull(life.lookup("nix"));
-        life.jars().add(new Jar(new Id("a", "b", "c"), "d"));
+        life.jars().add(new Jar(new Id("a", "b", "c")));
         file = new IO().getTemp().createTempFile();
         life.save(file);
         life = Life.load(file);
         assertNotNull(life.lookup(new Id("a", "b", "c")));
-        assertSame(life.lookup(new Id("a", "b", "c")), life.lookup("d"));
         assertNull(life.lookup(new Id("a", "b", "d")));
     }
     

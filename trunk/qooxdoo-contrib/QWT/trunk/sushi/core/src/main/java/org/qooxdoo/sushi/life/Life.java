@@ -58,18 +58,9 @@ public class Life {
     }
     
     public Jar lookup(Node node) throws IOException {
-        return lookup(Jar.hash(node));
+        return lookup(Id.fromNode(node));
     }
 
-    public Jar lookup(String hash) {
-        for (Jar jar : jars) {
-            if (hash.equals(jar.getHash())) {
-                return jar;
-            }
-        }
-        return null;
-    }
-    
     public void save(Node file) throws IOException {
         file.writeString(TYPE.instance(this).toXml());
     }
