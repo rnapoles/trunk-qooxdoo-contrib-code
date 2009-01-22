@@ -72,7 +72,6 @@ qx.Class.define("htmlarea.HtmlArea",
      * @param e {Object} Event object
      */
     this.__handleFocusEvent = qx.lang.Function.bind(this._handleFocusEvent, this);
-
     this.__handleFocusOut = qx.lang.Function.bind(this._handleFocusOut, this);
 
 
@@ -2021,7 +2020,7 @@ qx.Class.define("htmlarea.HtmlArea",
               return;
             }
             
-            // Check if the carret is inside a list:
+            // Check if the caret is inside a list:
             while (selNode.nodeName.toLowerCase() != "body")
             {
               if (selNode.nodeName.toLowerCase() == "li")
@@ -2199,7 +2198,6 @@ qx.Class.define("htmlarea.HtmlArea",
      */
     _handleFocusOut : qx.core.Variant.select("qx.client",
     {
-
       "mshtml" : function(e)
       {
         if (this.__commandManager)
