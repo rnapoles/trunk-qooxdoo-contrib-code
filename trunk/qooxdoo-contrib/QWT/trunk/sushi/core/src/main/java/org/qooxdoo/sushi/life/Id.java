@@ -123,10 +123,14 @@ public class Id {
         
         if (obj instanceof Id) {
             id = (Id) obj;
-            return group.equals(id.group) && artifact.equals(id.artifact) && version.equals(id.version); 
+            return version.equals(id.version) && equalsWithoutVersion(id); 
         } else {
             return false;
         }
+    }
+    
+    public boolean equalsWithoutVersion(Id id) {
+        return group.equals(id.group) && artifact.equals(id.artifact); 
     }
     
     @Override
