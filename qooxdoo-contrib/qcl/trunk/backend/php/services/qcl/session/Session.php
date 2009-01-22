@@ -136,7 +136,7 @@ class qcl_session_Session extends qcl_db_model
      */
     $this->updateWhere(
       array('markedDeleted' => 1),
-      "`sessionId`=$sessionId OR `parentSessionId`=$sessionId"
+      "`sessionId`='$sessionId' OR `parentSessionId`='$sessionId'"
     );
     
     /*
@@ -146,7 +146,7 @@ class qcl_session_Session extends qcl_db_model
     $msgModel   =& $controller->getMessageModel();
     $msgModel->updateWhere(
       array('markedDeleted' => 1),
-      "`sessionId`=$sessionId OR `parentSessionId`=$sessionId"
+      array('sessionId' => $sessionId)
     );
   }
 
