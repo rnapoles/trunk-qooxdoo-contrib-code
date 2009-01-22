@@ -129,8 +129,6 @@ class qcl_db_PropertyModel extends qcl_jsonrpc_model
    */
   var $metaDataProperties;  
   
-
-  
   
   /**
    * The path containing data that will imported into the model data 

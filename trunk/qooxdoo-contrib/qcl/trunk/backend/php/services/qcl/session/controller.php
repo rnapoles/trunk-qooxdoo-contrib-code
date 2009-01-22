@@ -62,9 +62,9 @@ class qcl_session_controller extends qcl_access_controller
   }
   
   /**
-   * This overrides and extends the authenticate method by providing a way to determine
+   * This overrides and extends the parent method by providing a way to determine
    * the user by a given session id in the request. 
-   * @see qcl_access_controller::_authenticate()
+   * @see qcl_access_controller::isValidUserSession()
    * @override
    */
   function isValidUserSession()  
@@ -74,7 +74,19 @@ class qcl_session_controller extends qcl_access_controller
      */
     $sessionId = $this->getServerData("sessionId");
     
-    //$this->debug("Initial session id: $sessionId");
+    /*
+     * If not, is this a sub-session of a parent session?
+     */
+    if ( ! $sessionId )
+    {
+      $parentSessionId = $this->getServerData("parentSessionId");      
+      if ( $parentSessionId )
+      {
+        $sessionId = $this->createChildSession($parentSessionId);
+      }
+    }
+    
+    //$this->debug("Initial session id: $sessionId, $parentSessionId");
     
     if ( $sessionId )
     { 
@@ -273,6 +285,46 @@ class qcl_session_controller extends qcl_access_controller
     }
   }
   
+  /**
+   * Returns a new session id that depends on a parent session and
+   * will be deleted when the parent session is deleted.
+   */
+  function createChildSession( $parentSessionId )
+  {
+    if ( ! $parentSessionId )
+    {
+      $this->raiseError("Invalid parent session id.");
+    }
+    
+    /*
+     * get user id from parent session
+     */
+    $sessionModel =& $this->getSessionModel();
+    $sessionModel->findBy("parentSessionId",$parentSessionId);
+    if ( $sessionModel->foundNothing() )
+    {
+      return null;
+    }
+    $userId = $sessionModel->get("userId");
+    
+    /*
+     * create random new session id and pass it to the client
+     */
+    $sessionId = $this->createSessionId();
+    
+    $this->debug("Spawning child session #$sessionId form parent session #$parentSessionId");
+    
+    /*
+     * save in new session
+     */
+    $sessionModel->create();
+    $sessionModel->set( "sessionId", $sessionId );
+    $sessionModel->set( "userId", $userId );
+    $sessionModel->set( "parentSessionId", $parentSessionId );
+    $sessionModel->save();
+    
+    return $sessionId;
+  }
   
   //-------------------------------------------------------------
   // messages and events

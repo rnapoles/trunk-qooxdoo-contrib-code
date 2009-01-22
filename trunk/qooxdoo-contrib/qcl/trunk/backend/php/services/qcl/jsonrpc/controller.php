@@ -196,7 +196,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     
   /**
    * Creates a new session id and passes it to the client
-   * @return void
+   * @return string The session id
    */
   function createSessionId( )
   {
@@ -211,6 +211,8 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      */
    //$this->debug("Creating new session id and passing it to client: $sessionId");
     $this->dispatchMessage("qcl.commands.setSessionId", $sessionId );
+    
+    return $sessionId;
   }  
   
   /**
@@ -697,6 +699,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
      */
     $debugValue = array(
       'Parameters'  => $request->getParams(),
+      'ServerData'  => $request->getServerData(),
       'Result'      => $response->getData(),
       'Events'      => $response->getEvents(),
       'Messages'    => $response->getMessages()
