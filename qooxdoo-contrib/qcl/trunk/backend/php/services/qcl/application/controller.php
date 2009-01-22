@@ -82,7 +82,7 @@ class qcl_application_controller extends qcl_datasource_controller
     $configModel =& $this->getConfigModel();
     if ( $configModel->get("qcl.components.jsonrpc.MonitorWindow.enabled") )
     {
-     //$this->debugJsonRpcRequestAsHtml();  
+     $this->debugJsonRpcRequestAsHtml();  
     }
     return parent::response(); 
   }  

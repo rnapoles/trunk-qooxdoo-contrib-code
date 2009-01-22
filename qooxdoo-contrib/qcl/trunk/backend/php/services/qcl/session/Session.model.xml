@@ -15,6 +15,9 @@
         <property name="sessionId" type="string">
           <sql>varchar(50) NOT NULL</sql>
         </property>
+        <property name="parentSessionId" type="string">
+          <sql>varchar(50) NULL</sql>
+        </property>        
         <property name="userId" type="string">
           <sql>int(11) NOT NULL</sql>
         </property>    

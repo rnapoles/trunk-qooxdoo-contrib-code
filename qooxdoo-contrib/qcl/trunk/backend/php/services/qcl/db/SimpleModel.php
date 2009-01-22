@@ -9,7 +9,7 @@ require_once "qcl/db/AbstractModel.php";
  * Simpler ORM Mmechanism than the qcl_db_model way that uses xml
  * documents for a schema. In this model type, declare public properties
  * with QCL_DB_PROPERTY_* constants. However, there is be no automatic
- * setup and maintenance of tables (at least for now). Thsi system is
+ * setup and maintenance of tables (at least for now). This system is
  * probably a bit faster than the other.
  * @todo change inheritance order: this class should have all methods from
  * qcl_db_model that do not rely on the xml schema system, and qcl_db_model
@@ -25,6 +25,14 @@ class qcl_db_SimpleModel extends qcl_db_AbstractModel
   /**
    * This model does not have a schema xml document but
    * manages its properties directly
+   * @todo property definition should be like
+   * $properties = array(
+   *  'foo' => array( 
+   *    'type'     => "qcl_db_property_varchar32",
+   *    'nullable' => true,
+   *    'init'     => 'foo'
+   *  )
+   * ):
    */
   var $schemaXmlPath = false;
  

@@ -122,17 +122,21 @@ class qcl_session_Session extends qcl_db_model
 	 * when the next session is registered.
 	 * @return void
 	 * @param string $sessionId 
-	 * @todo rewrite without raw sql queries
 	 */
   function unregisterSession( $sessionId )
   {
-   //$this->debug($sessionId);
+    if ( ! $sessionId )
+    {
+      $this->raiseError("Invalid session id");
+    }
+    
+    //$this->debug($sessionId);
     /*
      * delete session
      */
     $this->updateWhere(
       array('markedDeleted' => 1),
-      array('sessionId' => $sessionId)
+      "`sessionId`=$sessionId OR `parentSessionId`=$sessionId"
     );
     
     /*
@@ -142,7 +146,7 @@ class qcl_session_Session extends qcl_db_model
     $msgModel   =& $controller->getMessageModel();
     $msgModel->updateWhere(
       array('markedDeleted' => 1),
-      array('sessionId' => $sessionId)
+      "`sessionId`=$sessionId OR `parentSessionId`=$sessionId"
     );
   }
 

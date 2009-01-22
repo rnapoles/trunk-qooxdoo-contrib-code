@@ -14,7 +14,6 @@ if ( defined("QCL_LOG_DATASOURCE") ) define("QCL_LOG_DATASOURCE","datasource");
 /**
  * Datasource controller class. Can also be used as a mixin for controllers
  * that are not bound to a database.
- * @todo Get rid of file-based storage and use persistend db object instead.
  */
 class qcl_datasource_controller extends qcl_session_controller
 {  
