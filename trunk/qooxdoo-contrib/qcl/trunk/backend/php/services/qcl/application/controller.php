@@ -77,12 +77,13 @@ class qcl_application_controller extends qcl_datasource_controller
    */
   function &response()
   {
-    //$this->addBroadcastMessagesToResponse();
-    
-    $configModel =& $this->getConfigModel();
-    if ( $configModel->get("qcl.components.jsonrpc.MonitorWindow.enabled") )
+    if ( $this->getActiveUser() ) 
     {
-     $this->debugJsonRpcRequestAsHtml();  
+      $configModel =& $this->getConfigModel();
+      if ( $configModel->get("qcl.components.jsonrpc.MonitorWindow.enabled") )
+      {
+       $this->debugJsonRpcRequestAsHtml();  
+      }
     }
     return parent::response(); 
   }  

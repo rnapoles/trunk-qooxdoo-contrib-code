@@ -807,15 +807,21 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     /*
      * use cached record data?
      */
-    if ($data === null)
+    if ( $data === null )
     { 
       $data = $this->currentRecord;
     }
-    elseif ( $id !== null )
+    else
     {
-      $data['id'] = $id;
+      /*
+       * insert id if given
+       */
+      if ( $id !== null )
+      {
+        $data['id'] = $id;
+      }
     }
-
+      
     /*
      * set modified timestamp to null to set it to the current database update time
      * unless requested (i.e. in sync operations)
@@ -824,13 +830,13 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     {
       $data['modified'] = null;
     }      
-    
+   
     /*
      * convert property names to local aliases
      */
     $data = $this->unschematize($data);
     
-    //$this->debug($data);
+    //$this->debug($data);    
     
     return $this->db->update( $this->table, $data, $this->getColumnName("id") );
   }
@@ -848,11 +854,11 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
   
   /**
    * Checks wheter a record exists that matches a query
-   * @param $where Where query
+   * @param array|string $where Where query
    */  
   function exists( $where )
   {
-    return $this->db->exists( $this->table(), $where );
+    return $this->db->exists( $this->table(), $this->toSql($where) );
   }
   
   /**
@@ -862,6 +868,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
    * b) If no id is provided, check if a record matching the
    * given key-value pairs exist. If yes, update its 'modified' property. If not,
    * insert the data.
+   * Before returning, the found or created record is loaded
    *
    * @param array $data
    * @return int The id of the existing or newly created record
@@ -873,16 +880,22 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
      */
     if ( $data['id'] )
     {
-      $this->load( $data['id'] );
+      $id = $data['id'];
+      $this->load( $id );
       if ( $this->foundNothing() )
       {
-        $this->raiseError("Record #{$data['id']} does not exist");
+        $this->raiseError("Record #$id does not exist");
       }
       else
       {
-        $this->update($data);
+        $this->update( $data );
       }
     }
+    
+    /*
+     * if data does not contain an id,
+     * look if a matching row exists
+     */
     else
     {
       $this->findWhere( $data );
@@ -892,8 +905,17 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
        */
       if ( $this->foundNothing() )
       {
-        $this->insert( $data );
+        $id = $this->insert( $data );
+        if ( $id )
+        {
+          $this->load( $id );  
+        }
+        else
+        {
+          $this->raiseError("Cannot insert data " . print_r($data,true) . "- might violate a table constraint.");
+        }
       }
+      
       /*
        * else, update timestamp
        */
@@ -906,7 +928,7 @@ class qcl_db_AbstractModel extends qcl_db_PropertyModel
     /*
      * return record id
      */
-    return $this->getId();
+    return $id;
   }  
   
   /**
