@@ -78,13 +78,11 @@ class qcl_session_controller extends qcl_access_controller
     /*
      * If not, is this a sub-session of a parent session?
      */ 
-    if ( $parentSessionId )
+    if ( $parentSessionId and ! $this->sessionExists($sessionId) )
     {
       $sessionId = $this->createChildSession($parentSessionId);
-    }
-
-    
-    //$this->debug("Initial session id: $sessionId, $parentSessionId");
+      $this->debug("Created and changed to child session id: $sessionId from parent session: $parentSessionId");
+    }    
     
     if ( $sessionId )
     { 
@@ -119,7 +117,7 @@ class qcl_session_controller extends qcl_access_controller
      */
     if ( ! parent::isValidUserSession() )
     {
-     //$this->debug("qcl_access_controller::isValidUserSession() returns false");
+      //$this->debug("qcl_access_controller::isValidUserSession() returns false");
       return false;
     }
     
@@ -196,6 +194,17 @@ class qcl_session_controller extends qcl_access_controller
   {
     return $this->_messageModel;
   }  
+  
+  /**
+   * Checks if a session with the given id exists
+   * @param string $sessionId
+   * @return bool
+   */
+  function sessionExists( $sessionId )
+  {
+    $sessionModel =& $this->getSessionModel();
+    return $sessionModel->exists( array( 'sessionId' => $sessionId ) );
+  }
   
   /**
    * Registers session and user. call from extending controller's constructor 
@@ -298,9 +307,10 @@ class qcl_session_controller extends qcl_access_controller
      * get user id from parent session
      */
     $sessionModel =& $this->getSessionModel();
-    $sessionModel->findBy("parentSessionId",$parentSessionId);
+    $sessionModel->findBy("sessionId",$parentSessionId);
     if ( $sessionModel->foundNothing() )
     {
+      $this->warn("Parent session $parentSessionId not found...");
       return null;
     }
     $userId = $sessionModel->get("userId");
@@ -313,13 +323,15 @@ class qcl_session_controller extends qcl_access_controller
     $this->debug("Spawning child session #$sessionId form parent session #$parentSessionId");
     
     /*
-     * save in new session
+     * register new session 
      */
-    $sessionModel->create();
-    $sessionModel->set( "sessionId", $sessionId );
-    $sessionModel->set( "userId", $userId );
-    $sessionModel->set( "parentSessionId", $parentSessionId );
-    $sessionModel->save();
+    $reqObj =& $this->requestObject();
+    $sessionModel->insert(array( 
+      'sessionId'       => $sessionId, 
+      'userId'          => $userId,
+      'ip'              => $reqObj->getIp(),
+      'parentSessionId' => $parentSessionId
+    ));
     
     return $sessionId;
   }

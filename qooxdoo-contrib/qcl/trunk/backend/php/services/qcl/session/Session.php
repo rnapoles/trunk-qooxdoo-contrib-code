@@ -27,8 +27,10 @@ class qcl_session_Session extends qcl_db_model
 	 * Registers a session. adds an entry with the current timestamp if the session 
 	 * doesn't exist, otherwise leaves the last action column alone.
 	 * @return void
-	 * @param string $sessionId 
-	 * @param int $userId 
+	 * @param string $sessionId The id of the current session
+	 * @param int $userId The id of the current user
+	 * @param string $ip The IP address of the requesting client. This makes sure
+	 * session ids cannot be "stolen" by an intercepting party
 	 */
   function registerSession( $sessionId, $userId, $ip )
   {
@@ -45,18 +47,6 @@ class qcl_session_Session extends qcl_db_model
       $this->setError("Access denied.");
       return false;
     }
-    
-    /*
-     * Cleanup: Delete sessions that exist with the same id but
-     * a different user
-     * @todo this can be removed when session ids are
-     * no longer tied to the php session.
-     * remove AND user != 0 and update table schema
-     */
-    $this->deleteWhere("
-      `sessionId`  = '$sessionId' AND 
-      `userId`    != '$userId' AND user != 0
-    ");
 
     $this->cleanUp();
     
@@ -64,9 +54,9 @@ class qcl_session_Session extends qcl_db_model
      * insert new session data
      */
     $this->insertOrUpdate( array (
-      'sessionId'  => $sessionId,
-      'userId'     => $userId,
-      'ip'         => $ip
+      'sessionId'        => $sessionId,
+      'userId'           => $userId,
+      'ip'               => $ip
     ) );
     
     return true;

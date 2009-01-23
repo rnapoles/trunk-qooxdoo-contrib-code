@@ -482,6 +482,9 @@ class qcl_access_controller extends qcl_db_controller
      */
     else
     {
+      $sessionId = $this->getSessionId();
+      $activeUser =& $this->getActiveUser();
+      $username = $activeUser->username(); 
       $logMsg = "Continuing session: $username ($sessionId).";  
     }
 
@@ -489,7 +492,7 @@ class qcl_access_controller extends qcl_db_controller
      * access data
      * @todo rename security -> access
      */
-    $activeUser = $this->getActiveUser();
+    $activeUser =& $this->getActiveUser();
     $securityData = $activeUser->securityData();
     $this->set("security", $securityData );
     
