@@ -15,7 +15,7 @@
    Authors:
      * Alexander Back (aback)
      * Michael Haitz (mhaitz)
-     * Jonathan Rass (jonathan_rass)
+     * Jonathan Weiß (jonathan_rass)
 
 ************************************************************************ */
 
@@ -777,6 +777,25 @@ qx.Class.define("htmlarea.HtmlArea",
       return result;
     },
 
+
+    /**
+     * Checks if the given node is insde a (ordered or unordered) list.
+     * 
+     * @param node {Object} The DOM node
+     * @return {Boolean} True if node is inside a list, otherwise false.
+     */
+    __nodeInList : function(node)
+    {
+      while (node.nodeName.toLowerCase() != "body")
+      {
+        if (node.nodeName.toLowerCase() == "li") {
+          return true;
+        }
+        node = node.parentNode;
+      }
+
+      return false;
+    },
 
     /**
      * TODOC
@@ -1561,18 +1580,8 @@ qx.Class.define("htmlarea.HtmlArea",
                var sel = this.__getSelection();
                var rng = sel.getRangeAt(0);
                var selNode = sel.focusNode;
-               var inList = false;
-               while (selNode.nodeName.toLowerCase() != "body")
-               {
-                 if (selNode.nodeName.toLowerCase() == "li")
-                 {
-                   inList = true;
-                   break;
-                 }
-                 selNode = selNode.parentNode;
-               }
 
-               if (inList)
+               if (this.__nodeInList(selNode))
                {
                  // We are still in the list. The inserted HTML is the next
                  // sibling to the list element. We have to so place the
@@ -2021,7 +2030,7 @@ qx.Class.define("htmlarea.HtmlArea",
                   // We are on a list entry. The current style settings are
                   // saved on __listEntryStyles to apply them once the carret
                   // is outside the list.
-                  this.__listEntryStyles = this.__commandManager.__commandManager.generateHelperString();
+                  this.__listEntryStyles = "<p>" + this.__commandManager.__commandManager.generateHelperString();
                 }
                 return;
               }
@@ -2039,11 +2048,11 @@ qx.Class.define("htmlarea.HtmlArea",
       {
         if (this.getInsertParagraphOnLinebreak())
         {
+          var sel = this.__getSelection();
+
           if(isShiftPressed)
           {
-            var sel = this.__getSelection();
             var helperString = "";
-
             /* Insert bogus node if we are on an empty line: */
             if(sel.focusNode.textContent == "" || sel.focusNode.parentElement.tagName == "LI")
             {
@@ -2051,15 +2060,12 @@ qx.Class.define("htmlarea.HtmlArea",
             }
 
             this.__commandManager.execute("inserthtml", helperString + htmlarea.HtmlArea.simpleLinebreak);
-          }
-          else
-          {
-            this.__commandManager.insertParagraphOnLinebreak();
+
+            /* Stop event */
+            e.preventDefault();
+            e.stopPropagation();
           }
 
-          /* Stop event */
-          e.preventDefault();
-          e.stopPropagation();
         }
       },
       
@@ -2148,8 +2154,7 @@ qx.Class.define("htmlarea.HtmlArea",
       }
 
       // need to invalidate the stored range
-      if (this.__commandManager)
-      {
+      if (this.__commandManager) {
         this.__commandManager.invalidateCurrentRange();
       }
 
@@ -2756,7 +2761,12 @@ qx.Class.define("htmlarea.HtmlArea",
         focus node
         ----------
       */
-      var focusNode      = this.getFocusNode();
+      var focusNode = this.getFocusNode();
+
+      if (focusNode.nodeType == 3) {
+        focusNode = focusNode.parentNode;
+      }
+      
       var focusNodeStyle = qx.core.Variant.isSet("qx.client", "mshtml") ? focusNode.currentStyle : doc.defaultView.getComputedStyle(focusNode, null);
 
       /*
@@ -3130,7 +3140,7 @@ qx.Class.define("htmlarea.HtmlArea",
 
          if (sel && sel.focusNode)
          {
-           return sel.focusNode.parentNode;
+           return sel.focusNode;
          }
 
          return this.getContentDocument().body;
