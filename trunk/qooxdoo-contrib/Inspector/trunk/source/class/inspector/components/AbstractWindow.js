@@ -5,7 +5,7 @@
    http://qooxdoo.org
 
    Copyright:
-     2004-2008 1&1 Internet AG, Germany, http://www.1und1.de
+     2004-2009 1&1 Internet AG, Germany, http://www.1und1.de
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -14,36 +14,59 @@
 
    Authors:
      * Martin Wittemann (martinwittemann)
+     * Christian Schmidt (chris_schmidt)
 
 ************************************************************************ */
+/**
+ * Abstract window that contains a empty toolbar.
+ */
 qx.Class.define("inspector.components.AbstractWindow", 
 {
   extend : qx.ui.window.Window,
 
-
+  /**
+   * Creates a new instance of a AbstractWindow.
+   * 
+   * @param name {String} The window title.
+   */
   construct : function(name)
   {
     this.base(arguments, name);
     
-    this._iFrameWindow = null;
-    
+    // Set layout
     this.setLayout(new qx.ui.layout.VBox());
-    
-    this.setShowMinimize(false);
-    this.setShowMaximize(false);    
-    
     this.setWidth(300);
     this.setHeight(200);
     this.setContentPadding(0);
     
-    // toolbar
+    // Disaple buttons
+    this.setShowMinimize(false);
+    this.setShowMaximize(false);    
+    
+    // Create toolbar
     this._toolbar = new qx.ui.toolbar.ToolBar();
-    // TODO protected to public
     this._toolbar._getLayout().setAlignY("middle");
     this.add(this._toolbar);    
   },
 
   members :
   {
+    /**
+     * Toolbar instance.
+     */
+    _toolbar : null,
+    
+    /**
+     * TODO doc
+     */
+    _iFrameWindow : null,
+    
+    /**
+     * Init the size and the position from the window.
+     */
+    setInitSizeAndPosition : function() {
+      // throw an exception if the method is called on the abstract class
+      throw new Error("Abstract method call (setInitSizeAndPosition) in 'AbstractWindow'!");
+    }
   }
 });
