@@ -129,10 +129,7 @@ qx.Class.define("inspector.Application",
         this._widgetsWindow.load(this._loadedWindow);
       }
       
-      // check if the bindings window is open
-      if (this._bindingsWindow != null && this._bindingsWindow.isVisible()) {
-        this._bindingsWindow.load(this._loadedWindow);
-      }      
+      //TODO check for property
     },
     
     
@@ -167,8 +164,8 @@ qx.Class.define("inspector.Application",
       this.__checkCookieFor("_widgetsWindow", this._widgetsButton, "widgets");
       // check the console window
       this.__checkCookieFor("_consoleWindow", this._consoleButton, "console");
-      // check the bindings window
-      this.__checkCookieFor("_bindingsWindow", this._bindingsButton, "bindings");      
+      // check the property window
+      this.__checkCookieFor("_propertyWindow", this._propertyButton, "property");      
     },
     
        
@@ -264,12 +261,12 @@ qx.Class.define("inspector.Application",
         }
       );      
       
-      // Bindings Window
+      // Property Window
       this.__createWindow(
-        "_bindingsButton", "Bindings", "_bindingsWindow", 
-        inspector.bindings.BindingsWindow, "bindings", 
+        "_propertyButton", "Property", "_propertyWindow", 
+        inspector.property.PropertyWindow, "property", 
         function() {
-          // TODO load the bindings
+          this._propertyWindow.select(this._selector.getSelection());
         }
       );
       
@@ -428,6 +425,13 @@ qx.Class.define("inspector.Application",
           this._widgetsWindow.select(object, true);                  
         }
       }      
+      
+      if (this._propertyWindow != null && initiator != this._propertyWindow) {
+        if (object != this._propertyWindow.getSelection() && 
+            this._propertyWindow.getMode() != "minimized") {
+          this._propertyWindow.select(object, true);                  
+        }
+      } 
       
       this._selector.highlightFor(object, 1000);
     },
