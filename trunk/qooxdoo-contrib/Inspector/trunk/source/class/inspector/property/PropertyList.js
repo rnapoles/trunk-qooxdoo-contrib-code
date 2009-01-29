@@ -22,6 +22,7 @@
 #asset(inspector/images/open.gif)
 #asset(inspector/images/null.png)
 #asset(inspector/images/shell/errorIcon.png)
+#asset(qx/icon/Tango/16/actions/go-next.png)
 ************************************************************************ */
 /**
  * The class is a implementation of the abstract {@link inspector.propertyEditor.PropertyList}
@@ -53,6 +54,11 @@ qx.Class.define("inspector.property.PropertyList", {
     this._comboBoxPopups = [];
     // create the color popup
     this._createColorPopup();
+    
+    var arrow = new qx.ui.basic.Image("icon/16/actions/go-next.png");
+    arrow.setPaddingLeft(8);
+    
+    this._arrow = {arrow : arrow, container : null, row : null};
   },
 
 
@@ -77,6 +83,8 @@ qx.Class.define("inspector.property.PropertyList", {
     _colorPopup: null,
     _colorFields: null,
     _currentColorProperty: null,
+    
+    _arrow : null,
     
     /*
     *********************************
@@ -229,7 +237,7 @@ qx.Class.define("inspector.property.PropertyList", {
 
           // create a new layout for the group
           var groupLayout = new qx.ui.container.Composite(new qx.ui.layout.Grid(6, 6));
-          groupLayout.setPaddingLeft(20);
+          groupLayout.getLayout().setColumnWidth(0, 25);
           groupLayout.setUserData("name", groupNames[i]);
 
           // mark all but the first property group as inherited if the inherited view is enabled
@@ -255,8 +263,8 @@ qx.Class.define("inspector.property.PropertyList", {
           }, groupLayout);         
 
           // add the group of properties to the property list     
-          this.addAfter(groupLayout, groupNameAtom);     
-         
+          this.addAfter(groupLayout, groupNameAtom);
+          
           // go threw all properties in the current group
           var row = 0;
           for (var key in properties[i]) {
@@ -265,21 +273,35 @@ qx.Class.define("inspector.property.PropertyList", {
               // create and add the label for the property name
               var labelName = new qx.ui.basic.Label(key + ":");
               // save the classname as additional user data as a unique key in combination with the label
-              labelName.setUserData("classname", classnames[i][key]);              
-              groupLayout.add(labelName, {row: row, column: 0});              
+              labelName.setUserData("classname", classnames[i][key]); 
+              labelName.setUserData("key", key);
+              labelName.setUserData("row", row);
+              groupLayout.add(labelName, {row: row, column: 1});              
               
               // add the item to change the value
-              groupLayout.add(this._getPropertyWidgetFull(properties[i][key], key, classnames[i][key]), {row: row, column: 1});
+              var propertyValue = this._getPropertyWidgetFull(properties[i][key], key, classnames[i][key]);
+              propertyValue.setUserData("classname", classnames[i][key]); 
+              propertyValue.setUserData("key", key);
+              propertyValue.setUserData("row", row);
+              groupLayout.add(propertyValue, {row: row, column: 2});
               
               // add the image to signal the null value
               var nullImage = new qx.ui.basic.Image("inspector/images/null.png");
-              groupLayout.add(nullImage, {row: row, column: 2});
+              nullImage.setUserData("classname", classnames[i][key]); 
+              nullImage.setUserData("key", key);
+              nullImage.setUserData("row", row);
+              groupLayout.add(nullImage, {row: row, column: 3});
               
               // add the property row to the reference array
               this._propertyRows[classnames[i][key] + "." + key] = {container: groupLayout, row: row};
 
               // layouting
               groupLayout.getLayout().setRowAlign(row, "left", "middle");
+
+               // handle the clicks
+              labelName.addListener("click", this.__onPropertyClick, this, true); 
+              propertyValue.addListener("click", this.__onPropertyClick, this, true); 
+              nullImage.addListener("click", this.__onPropertyClick, this, true); 
               
               row++;
             }                
@@ -301,21 +323,23 @@ qx.Class.define("inspector.property.PropertyList", {
      */    
     _removeUnnecessaryClasses: function(classnames) {
       // remove all classes from the list which are definitely not in the current widget
-      while ((classnames.length  - 1) * 2 < this.getChildren().length) {
+      for (;(classnames.length  - 1) * 2 < this.getChildren().length;) {
         // remove the first item (the name of the class) the list and dispose is
         var temp = this.getChildren()[0];
         this.removeAt(0);        
         temp.dispose();
        
         // get the layouts which hold the properties
-        var propertyLayouts = this.getChildren()[0].getChildren();
+        var children = this.getChildren()[0].getChildren();
         // go threw all layouts of this class
-        for (var i = 0; i < propertyLayouts.length; i++) {
-          // get the classname.key string
-          var classKey = propertyLayouts[i].getUserData("classname") + 
-                         "." + propertyLayouts[i].getUserData("key");
-          // delete the layout from the property columns
-          delete this._propertyRows[classKey];
+        for (var currentIndex = 0; currentIndex < children.length; currentIndex++) {
+          if (children[currentIndex].classname == "qx.ui.basic.Label") {
+            // generate the classname.key string
+            var classKey = children[currentIndex].getUserData("classname") + 
+              "." + children[currentIndex].getUserData("key");
+            // delete the layout from the property row
+            delete this._propertyRows[classKey];                
+          }
         }
         // remove the first item in the list
         this.removeAt(0); 
@@ -335,25 +359,28 @@ qx.Class.define("inspector.property.PropertyList", {
         this._clearList();
         return;
       }
+      
       // remove all until the marked class is reached
-      while (true) {
+      while(true) {
+        var child = this.getChildren()[0];
         // get the classname of the current selected item in the list
-        var removedClassName = this.getChildren()[0].getUserData("name");
+        var removedClassName = child.getUserData("name");
         // stop deleting if the class is marked not to delete
         if (removedClassName == deleteTo) {
           break;
-        } else {                
+        } else {   
           // store the reference in the pool before deleting
-          if (this.getChildren()[0].classname == "qx.ui.layout.VBox") {
-            // get the list of all layouts which hold the properties
-            var propertyLayouts = this.getChildren()[0].getChildren();
+          if (child.classname == "qx.ui.container.Composite") {
+            var children = child.getChildren();
             // go threw all properties
-            for (var currentIndex = 0; currentIndex < propertyLayouts.length; currentIndex++) {
-              // generate the classname.key string
-              var classKey = propertyLayouts[currentIndex].getUserData("classname") + 
-                             "." + propertyLayouts[currentIndex].getUserData("key");
-              // delete the layout from the property columns
-              delete this._propertyRows[classKey];
+            for (var currentIndex = 0; currentIndex < children.length; currentIndex++) {
+              if (children[currentIndex].classname == "qx.ui.basic.Label") {
+                // generate the classname.key string
+                var classKey = children[currentIndex].getUserData("classname") + 
+                               "." + children[currentIndex].getUserData("key");
+                // delete the layout from the property row
+                delete this._propertyRows[classKey];                
+              }
             }
           }
           // remove the first item in the list
@@ -556,6 +583,7 @@ qx.Class.define("inspector.property.PropertyList", {
             this._colorPopup.placeToMouse(e)
             this._colorPopup.show();
           }, this);  
+          button.addListener("execute", this.__onPropertyClick, this);
                   
           return layout;     
 
@@ -607,33 +635,39 @@ qx.Class.define("inspector.property.PropertyList", {
       var layout = this._propertyRows[classname + "." + key].container.getLayout();
       var row = this._propertyRows[classname + "." + key].row;
       
+      if (layout.getCellWidget(row, 0)) {
+        this._arrow.container.remove(this._arrow.arrow);
+        this._arrow.container = null;
+        this._arrow.row = null;
+      }
+      
       // read value
       var getterName = "get" + qx.lang.String.firstUp(key);
       try {
         var value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());  
       } catch (ex) {
-        layout.getCellWidget(row, 2).setVisibility("visible");
-        layout.getCellWidget(row, 2).setSource("inspector/images/shell/errorIcon.png");
+        layout.getCellWidget(row, 3).setVisibility("visible");
+        layout.getCellWidget(row, 3).setSource("inspector/images/shell/errorIcon.png");
         
-        var tooltip = layout.getCellWidget(row, 2).getToolTip();
+        var tooltip = layout.getCellWidget(row, 3).getToolTip();
         if (!tooltip) {
           tooltip = new qx.ui.tooltip.ToolTip(ex + "", "inspector/images/shell/errorIcon.png");
         } else {
           tooltip.setLabel(ex + "");
           tooltip.setIcon("inspector/images/shell/errorIcon.png");
         }
-        layout.getCellWidget(row, 2).setToolTip(tooltip);
+        layout.getCellWidget(row, 3).setToolTip(tooltip);
         
         return;
       }
       
       // show or hide the null label
       if (value == null) {
-        layout.getCellWidget(row, 2).setVisibility("visible");
-        layout.getCellWidget(row, 2).setSource("inspector/images/null.png");
-        layout.getCellWidget(row, 2).resetToolTip();
+        layout.getCellWidget(row, 3).setVisibility("visible");
+        layout.getCellWidget(row, 3).setSource("inspector/images/null.png");
+        layout.getCellWidget(row, 3).resetToolTip();
       } else {
-        layout.getCellWidget(row, 2).setVisibility("hidden");
+        layout.getCellWidget(row, 3).setVisibility("hidden");
       }     
       
       try {
@@ -644,51 +678,51 @@ qx.Class.define("inspector.property.PropertyList", {
           value = parent[getterName].call(parent);
         }
       } catch (ex) {
-        layout.getCellWidget(row, 2).setVisibility("visible");
-        layout.getCellWidget(row, 2).setSource("inspector/images/shell/errorIcon.png");
+        layout.getCellWidget(row, 3).setVisibility("visible");
+        layout.getCellWidget(row, 3).setSource("inspector/images/shell/errorIcon.png");
         
-        var tooltip = layout.getCellWidget(row, 2).getToolTip();
+        var tooltip = layout.getCellWidget(row, 3).getToolTip();
         if (!tooltip) {
           tooltip = new qx.ui.tooltip.ToolTip(ex + "", "inspector/images/shell/errorIcon.png");
         } else {
           tooltip.setLabel(ex + "");
           tooltip.setIcon("inspector/images/shell/errorIcon.png");
         }
-        layout.getCellWidget(row, 2).setToolTip(tooltip);
+        layout.getCellWidget(row, 3).setToolTip(tooltip);
         return;
       }
       
       // check box
-      if (layout.getCellWidget(row, 1).classname == "qx.ui.form.CheckBox") {
+      if (layout.getCellWidget(row, 2).classname == "qx.ui.form.CheckBox") {
         if (value == null) {
-          layout.getCellWidget(row, 1).setChecked(false);
+          layout.getCellWidget(row, 2).setChecked(false);
         } else {
-          layout.getCellWidget(row, 1).setChecked(value);          
+          layout.getCellWidget(row, 2).setChecked(value);          
         }
 
       // labels
-      } else if (layout.getCellWidget(row, 1).classname == "qx.ui.basic.Label") {
+      } else if (layout.getCellWidget(row, 2).classname == "qx.ui.basic.Label") {
         if (value != null) {
           
           var properties = qx.Class.getByName(classname).$$properties;
           var property = properties[key];
           // if it is an array
           if (value instanceof Array) {
-            layout.getCellWidget(row, 1).setContent(value.length + " objects");
+            layout.getCellWidget(row, 2).setContent(value.length + " objects");
             
           // if it is a widget and not the client document  
           } else if ((property.check == "qx.ui.core.Widget")&& 
               (this._controller.getQxObject() instanceof qx.application.AbstractGui)) {
             
             // create the link to the widget
-            layout.getCellWidget(row, 1).setContent("<u>" + value.classname + " [" + value.toHashCode() + "]</u>");
-            layout.getCellWidget(row, 1).setStyleProperty("cursor", "pointer");
+            layout.getCellWidget(row, 2).setContent("<u>" + value.classname + " [" + value.toHashCode() + "]</u>");
+            layout.getCellWidget(row, 2).setStyleProperty("cursor", "pointer");
            
             // add only a event listener the first time
-            if (layout.getCellWidget(row, 1).hasListeners("click") === undefined) {
+            if (layout.getCellWidget(row, 2).hasListeners("click") === undefined) {
               
               // register the click handler
-              layout.getCellWidget(row, 1).addListener("click", function(e) {
+              layout.getCellWidget(row, 2).addListener("click", function(e) {
                 
                 if (this._controller.getSelectedProperty() != null) {
                   // disable the selection of current selected property
@@ -704,31 +738,31 @@ qx.Class.define("inspector.property.PropertyList", {
           // fonts    
           } else if(property.check == "Font") {
             // set the font of the label
-            layout.getCellWidget(row, 1).setFont(value);            
-            layout.getCellWidget(row, 1).setContent(value + "");
+            layout.getCellWidget(row, 2).setFont(value);            
+            layout.getCellWidget(row, 2).setContent(value + "");
             
           } else {
-            layout.getCellWidget(row, 1).setContent(value + "");
+            layout.getCellWidget(row, 2).setContent(value + "");
           }
         // reset the label if the value is set null
         } else {
-          layout.getCellWidget(row, 1).setContent("");
+          layout.getCellWidget(row, 2).setContent("");
         }
         
       // text fields  
-      } else if (layout.getCellWidget(row, 1).classname == "qx.ui.form.TextField") {
+      } else if (layout.getCellWidget(row, 2).classname == "qx.ui.form.TextField") {
         // set the current value
         if (value != null) {
-          layout.getCellWidget(row, 1).setValue(value + "");
+          layout.getCellWidget(row, 2).setValue(value + "");
         } else {
-          layout.getCellWidget(row, 1).setValue("");
+          layout.getCellWidget(row, 2).setValue("");
         }
 
       // ComboBox  
-      } else if (layout.getCellWidget(row, 1).classname == "qx.ui.form.ComboBox") {
+      } else if (layout.getCellWidget(row, 2).classname == "qx.ui.form.ComboBox") {
         
         // get the current ComboBox
-        var box = layout.getCellWidget(row, 1);
+        var box = layout.getCellWidget(row, 2);
         
         // it the value is null
         if (value == null) {
@@ -749,8 +783,8 @@ qx.Class.define("inspector.property.PropertyList", {
         }
       
       // color
-      } else if (layout.getCellWidget(row, 1).classname == "qx.ui.container.Composite") {        
-        layout.getCellWidget(row, 1).getChildren()[0].setBackgroundColor(value);
+      } else if (layout.getCellWidget(row, 2).classname == "qx.ui.container.Composite") {        
+        layout.getCellWidget(row, 2).getChildren()[0].setBackgroundColor(value);
       }
     },    
     
@@ -796,9 +830,37 @@ qx.Class.define("inspector.property.PropertyList", {
           this._currentColorProperty = null;        
         }
       }, this);
+    },
+    
+    __onPropertyClick : function(e) {
+      var target = e.getTarget();
+      
+      while(target.getUserData("key") == null) {
+        target = target.getLayoutParent();
+      }
+      
+      // get the currently clicked property name
+      var classKey = target.getUserData("classname") + "." + target.getUserData("key");
+      // reset the background color of the former selected property
+      if (this._arrow.container != null) {
+        this._arrow.container.remove(this._arrow.arrow);
+        this._arrow.container = null;
+        this._arrow.row = null;
+      }
+                  
+      // if the property is still available
+      if (this._propertyRows[classKey] != undefined) {
+        this._arrow.container = this._propertyRows[classKey].container
+        this._arrow.row = target.getUserData("row");
+        this._arrow.container.add(this._arrow.arrow, {row: this._arrow.row, column: 0});
+                    
+        //TODO this._controller.setSelectedProperty(this._propertyRows[classKey]);                  
+      } else {
+        // reset the selected property if it is no longer available
+        //TODO this._controller.setSelectedProperty(null);
+      }
     }
   },
-  
   
   /*
   *****************************************************************************
