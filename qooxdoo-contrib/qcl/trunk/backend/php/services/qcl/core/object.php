@@ -111,6 +111,12 @@ class qcl_core_object
   var $_logger;
   
   /**
+   * Timestamp for script execution time measurement
+   * @var float
+   */
+  var $_timestamp;
+  
+  /**
    * PHP4 __construct() hack taken from cakephp
    * taken from https://trac.cakephp.org/browser/trunk/cake/1.2.x.x/cake/libs/object.php
    *
@@ -151,7 +157,11 @@ class qcl_core_object
 	 */
 	function __construct() 
 	{
-		
+		/*
+		 * start internal timer
+		 */
+	  $this->startTimer();
+	  
 	  /*
 	   * initialize object id
 	   */
@@ -883,6 +893,23 @@ class qcl_core_object
   {
     return $this->checkType("array",$var);
   }  
+  
+  
+  function startTimer()
+  {
+    $this->_timestamp = microtime_float();
+  }
+  
+  function timerAsSeconds($debugmsg=null)
+  {
+    $time_end = microtime_float();
+    $seconds = round($time_end - $this->_timestamp,5);
+    if ( $debugmsg )
+    {
+      $this->debug( $debugmsg . ": $seconds seconds since timer started." );      
+    }    
+    return $seconds;
+  }
 }
 
 /*

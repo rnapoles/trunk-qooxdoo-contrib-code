@@ -599,6 +599,8 @@ $error->SetOrigin(JsonRpcError_Origin_Application);
 /* Call the requested method passing it the provided params */
 $output = $service->$method($jsonInput->params, $error);
 
+//$service->timerAsSeconds("Service executed.");
+
 /* See if the result of the function was actually an error */
 if (get_class($output) == "JsonRpcError")
 {
@@ -612,12 +614,9 @@ $ret = array("result" => $output,
              "id"     => $jsonInput->id);    
 
 $jsonStr = $json->encode($ret);
-/*
-$service->info( "\n\n *** End of request {$jsonInput->id}: " . 
-                $service->className() . "." . $method . 
-                "(" .implode (", ", $jsonInput->params ) .") *** \n" );
-$service->info( $jsonStr );
-*/
+
+//$service->timerAsSeconds("Return data encoded.");
+
 SendReply($jsonStr, $scriptTransportId);
 exit;
 

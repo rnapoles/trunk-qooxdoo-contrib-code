@@ -69,12 +69,12 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
    */
 	function __construct()
   {
-
+    
 		/*
 		 * call parent constructor first
 		 */
     parent::__construct();
-
+    
     /*
      * request object, fetches information from current
      * request
@@ -89,7 +89,7 @@ class qcl_jsonrpc_controller extends qcl_jsonrpc_object
     /*
      * log request
      */
-    $this->log( 
+    $this->log( "\n\n" .
       "Request for " . $this->request->service . 
       "." . $this->request->method .  
       " from " . $this->request->ip,

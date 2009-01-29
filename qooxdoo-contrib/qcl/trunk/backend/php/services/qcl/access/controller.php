@@ -73,13 +73,14 @@ class qcl_access_controller extends qcl_db_controller
    */
   function __construct()
   {
-  
+
+
     /*
      * call parent constructor, this will initialize database
      * connection
      */
     parent::__construct();
-    
+
     /*
      * initialize access and config models based on connection
      */
@@ -728,11 +729,12 @@ class qcl_access_controller extends qcl_db_controller
      * check if we should do a dump of it
      */
     $configModel =& $this->getConfigModel();
+    /* doesn't work after logout
     if ( $configModel->get("qcl.jsonrpc.Server.dumpResponse") )
     {
       $this->info((array) $response );
     }
-    
+    */
     return $response;
   }   
   
