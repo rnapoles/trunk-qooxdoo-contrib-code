@@ -34,4 +34,12 @@
       <version>1.2.0.4949</version>
     </dependency>
   </dependencies>
+
+  <!-- TODO
+  <repositories>
+    <repository>
+      <id>billy</id>
+      <url>http://billy.devel.schlund.de/repository</url>
+    </repository>
+  </repositories>
 </project>
