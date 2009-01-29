@@ -560,9 +560,10 @@ qx.Class.define("inspector.property.PropertyList", {
         } else if (propertySet.check == "Color") {
           // create the layout which holds the color field and the choose button
           var layout = new qx.ui.container.Composite(new qx.ui.layout.HBox(6));
+          layout.getLayout().setAlignY("middle");
           // create the color field and set the initial color
           var colorField = new qx.ui.core.Widget();
-          //TODO set decorator colorField.setDecorator("input"); 
+          colorField.setDecorator(new qx.ui.decoration.Single(1, "solid", "#969696")); 
           colorField.setBackgroundColor("white");
           colorField.setHeight(20);
           colorField.setWidth(20);
