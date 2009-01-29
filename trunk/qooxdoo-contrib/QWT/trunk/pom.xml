@@ -7,6 +7,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <version>3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Qooxdoo</name>
+  <url>http://qooxdoo.org/contrib/project/qwt</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
