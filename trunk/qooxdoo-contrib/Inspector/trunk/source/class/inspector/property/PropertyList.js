@@ -299,9 +299,10 @@ qx.Class.define("inspector.property.PropertyList", {
               groupLayout.getLayout().setRowAlign(row, "left", "middle");
 
                // handle the clicks
-              labelName.addListener("click", this.__onPropertyClick, this, true); 
-              propertyValue.addListener("click", this.__onPropertyClick, this, true); 
-              nullImage.addListener("click", this.__onPropertyClick, this, true); 
+              labelName.addListener("click", this.__onPropertyClick, this);
+              propertyValue.addListener("click", this.__onPropertyClick, this); 
+              propertyValue.addListener("activate", this.__onPropertyClick, this); 
+              nullImage.addListener("click", this.__onPropertyClick, this); 
               
               row++;
             }                
@@ -430,15 +431,16 @@ qx.Class.define("inspector.property.PropertyList", {
           var checkBox = new qx.ui.form.CheckBox();
           
           var checkBoxHandler = function(e) {            
-            if (checkBox.getChecked != value) {
+            var value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
+            if (e.getData() != value) {
               // get the setter name
               var setterName = "set" + qx.lang.String.firstUp(key);
               // try to invoke the setter
               try {
                 // set the new value
-                this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), checkBox.getChecked());                
+                this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), e.getData());                
                 // reload the property view of the current column
-                this._setPropertyValueFull(key, classname);                
+                this._setPropertyValueFull(key, classname, true);                
               } catch (ex) {
                 // alert the user if the sett could not be executed
                 alert(ex + " [" + setterName + "]");
@@ -448,7 +450,7 @@ qx.Class.define("inspector.property.PropertyList", {
           };
           
           // register the handler for changing the checkbox
-          checkBox.addListener("click", checkBoxHandler, this);
+          checkBox.addListener("changeChecked", checkBoxHandler, this);
           return checkBox;
                     
         // ComboBox
@@ -480,7 +482,7 @@ qx.Class.define("inspector.property.PropertyList", {
                   // get the new value
                   value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
                   // reload the property view of the current column
-                  this._setPropertyValueFull(key, classname);
+                  this._setPropertyValueFull(key, classname, true);
                   // save the new value
                   value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
                 } catch (ex) {
@@ -505,13 +507,13 @@ qx.Class.define("inspector.property.PropertyList", {
           
           var textFieldHandler = function(e) { 
             // check which type of event triggered the function
-            if (e.classname == "qx.event.type.KeyEvent") {
+            if (e.classname == "qx.event.type.KeySequence") {
               // do nothing if it is not the return key
               if (e.getKeyIdentifier() != "Enter") {
                 return;
               }
               // otherwise go on
-            } else if (e.classname == "qx.event.type.FocusEvent") {
+            } else if (e.classname == "qx.event.type.Focus") {
               // go on
             } else {
               // do nothing if it is an unknown event
@@ -523,11 +525,11 @@ qx.Class.define("inspector.property.PropertyList", {
             // try to invoke the setter
             try {
               // parse the value to float if a number is expected
-              var newValue = textField.getComputedValue();
+              var newValue = textField.getValue();
               // get the current set value
               value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
               // stop further processing if the representation is null
-              if (e.classname == "qx.event.type.FocusEvent") {
+              if (e.classname == "qx.event.type.Focus") {
                 if (newValue == "" && value == null) {
                   return;
                 }                
@@ -538,7 +540,7 @@ qx.Class.define("inspector.property.PropertyList", {
               }
               this._controller.getQxObject()[setterName].call(this._controller.getQxObject(), newValue);
               // reload the property view of the current column
-              this._setPropertyValueFull(key, classname);
+              this._setPropertyValueFull(key, classname, true);
               // save the new value
               value = this._controller.getQxObject()[getterName].call(this._controller.getQxObject());
             } catch (ex) {
@@ -584,6 +586,7 @@ qx.Class.define("inspector.property.PropertyList", {
             this._colorPopup.show();
           }, this);  
           button.addListener("execute", this.__onPropertyClick, this);
+          button.addListener("activate", this.__onPropertyClick, this);
                   
           return layout;     
 
@@ -630,12 +633,12 @@ qx.Class.define("inspector.property.PropertyList", {
      * @param key {String} The name of the property.
      * @param classname {String} The classname of the properties class.
      */
-    _setPropertyValueFull: function(key, classname) {      
+    _setPropertyValueFull: function(key, classname, keepArrow) {      
       // get the layout containing the property 
       var layout = this._propertyRows[classname + "." + key].container.getLayout();
       var row = this._propertyRows[classname + "." + key].row;
       
-      if (layout.getCellWidget(row, 0)) {
+      if (!keepArrow && layout.getCellWidget(row, 0)) {
         this._arrow.container.remove(this._arrow.arrow);
         this._arrow.container = null;
         this._arrow.row = null;
@@ -821,7 +824,7 @@ qx.Class.define("inspector.property.PropertyList", {
             // set the selected color of the color field
             this._colorFields[this._currentColorProperty].setBackgroundColor(e.getData());
             // reload the property view of the current column
-            this._setPropertyValueFull(colorKey, colorClassname);          
+            this._setPropertyValueFull(colorKey, colorClassname, true);          
           } catch (ex) {
             // alert the user if the sett could not be executed
             alert(ex);
