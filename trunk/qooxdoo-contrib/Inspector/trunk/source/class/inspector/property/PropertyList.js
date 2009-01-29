@@ -733,7 +733,7 @@ qx.Class.define("inspector.property.PropertyList", {
                   this._controller.getSelectedProperty().setBackgroundColor(null);                
                 }
                 // save the new property
-                this._controller.setSelectedProperty(layout);
+                this._controller.setSelectedProperty(layout.getCellWidget(row, 1));
                 // tell the controller to go to the new widget
                 this._controller.gotoSelectedWidget();
               }, this);            
@@ -858,10 +858,10 @@ qx.Class.define("inspector.property.PropertyList", {
         this._arrow.row = target.getUserData("row");
         this._arrow.container.add(this._arrow.arrow, {row: this._arrow.row, column: 0});
                     
-        //TODO this._controller.setSelectedProperty(this._propertyRows[classKey]);                  
+        this._controller.setSelectedProperty(target);                  
       } else {
         // reset the selected property if it is no longer available
-        //TODO this._controller.setSelectedProperty(null);
+        this._controller.setSelectedProperty(null);
       }
     }
   },
