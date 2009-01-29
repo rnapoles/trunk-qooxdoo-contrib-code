@@ -169,11 +169,6 @@ qx.Class.define("inspector.property.PropertyWindow",
     },
          
     
-    /**
-     * Sets the selected property.
-     * @internal
-     * @param layout {qx.ui.layout.HorizontalBoxLayout} The layout containing the property. 
-     */
     setSelectedProperty: function(layout) {
       this._currentlySelectedProperty = layout;
       this._switchPropertyButtons();      
@@ -274,7 +269,7 @@ qx.Class.define("inspector.property.PropertyWindow",
         "inspector/images/icons/api.png");
       apiButton.setToolTip(new qx.ui.tooltip.ToolTip(
         this.self(arguments).SHOW_API_BUTTON_TOOLTIP_TEXT));
-      apiButton.addListener("execute", this._openApiWindow, this);
+      apiButton.addListener("execute", this._onOpenApiWindow, this);
       this._toolbar.add(apiButton);
       
       // add a spacer to keep the property relevant buttons on the right
@@ -443,9 +438,9 @@ qx.Class.define("inspector.property.PropertyWindow",
             this._highlightCurrentPropertyButton.setEnabled(false);
             this._gotoSelectedPropertyButton.setEnabled(false);
           }
-        } catch (e) {
+        } catch (ex) {
           // signal the user that something went wrong
-          alert("Error during reading the selected Property: " + e);
+          alert("Error during reading the selected Property: " + ex);
           // mark the property that something went wrong while reading
           this._currentlySelectedProperty.setBackgroundColor(null);
           // reset the current selected property
@@ -461,7 +456,7 @@ qx.Class.define("inspector.property.PropertyWindow",
      * This method opens the api viewer via the inspector and shows the api 
      * to the current selected object or property if something is selected.
      */
-    _openApiWindow: function() {
+    _onOpenApiWindow: function() {
       // if a object is selected
       if (this._qxObject != null) {
         // if a property is selected
@@ -470,16 +465,31 @@ qx.Class.define("inspector.property.PropertyWindow",
           var classname = this._currentlySelectedProperty.getUserData("classname");
           var propertyname = this._currentlySelectedProperty.getUserData("key");
           // open the api window to that property 
-          this._inspector.openApiWindow(classname, propertyname);
+          this._openApiWindow(classname, propertyname);
         } else {
           // open the api window to the class of the current selected property
-          this._inspector.openApiWindow(this._qxObject.classname);  
+          this._openApiWindow(this._qxObject.classname);  
         }
       // if no object is selected
       } else {
         // open just the api viewer
-        this._inspector.openApiWindow();
+        this._openApiWindow();
       }
+    },
+    
+    _openApiWindow: function(classname, propertyname) {
+      var urlString = "http://demo.qooxdoo.org/current/apiviewer/";
+      
+      if (classname != null) {
+        urlString += "#" + classname;
+        // if a property name is given
+        if (propertyname != null) {
+          urlString += "~" + propertyname;
+        }
+      }
+      
+      var apiViewer = window.open(urlString, "qooxdoo API viewer");
+      apiViewer.focus();
     },
     
     
