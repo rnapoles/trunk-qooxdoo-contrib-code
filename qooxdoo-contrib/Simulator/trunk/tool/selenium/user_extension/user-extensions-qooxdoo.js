@@ -15,6 +15,7 @@
    Authors:
      * Robert Zimmermann (rz)
      * Thomas Herchenroeder (thron7)
+     * Daniel Wagner (d_wagner)
 
 ************************************************************************ */
 
@@ -265,7 +266,7 @@ Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventP
   var metaKey = eventParamObject.getParamValue("metaKey", false);
 
   //    window     = null; //TODO: use correctly
-  /* for event dbugging
+  // for event dbugging
       LOG.debug(" * called triggerMouseEventQx, params:");
       LOG.debug("eventType=" + eventType);
       LOG.debug("element=" + element);
@@ -282,7 +283,7 @@ Selenium.prototype.qx.triggerMouseEventQx = function (eventType, element, eventP
       LOG.debug("metaKey=" + metaKey);
       LOG.debug("button=" + button);
       LOG.debug(" * END triggerMouseEventQx, params:");
-  */
+  //
 
   var evt = null;
 
@@ -650,7 +651,7 @@ PageBot.prototype.locateElementByQxh = function(qxLocator, inDocument, inWindow)
   var qxObject = this._findQxObjectInWindowQxh(qxLocator, inWindow);
 
   if (qxObject) {
-    return qxObject.getElement();
+    return qxObject.getContentElement().getDomElement();
   } else {
     return null;
   }
@@ -673,12 +674,11 @@ PageBot.prototype._getClientDocument = function(inWindow){
   //
   //So prevent access to the client document until application is set
   if ((inWindow != null)
-       && (inWindow.qx != null)
-       && (inWindow.qx.core.Init != null)
-       && (inWindow.qx.core.Init.getInstance() != null)      
-       && (inWindow.qx.core.Init.getInstance().getApplication() != null)
+       && (inWindow.wrappedJSObject.qx != null)
+       && (inWindow.wrappedJSObject.qx.core.Init != null)
+       && (inWindow.wrappedJSObject.qx.core.Init.getApplication() != null)
      ){
-    return inWindow.qx.ui.core.ClientDocument.getInstance();
+    return inWindow.wrappedJSObject.qx.core.Init.getApplication();
   } else{
     return null;
   }
@@ -705,27 +705,27 @@ PageBot.prototype._findQxObjectInWindowQxh = function(qxLocator, inWindow)
   // the AUT window must contain the qx-Object
   var qxAppRoot;
 
-  if (inWindow.qx)
+  if (inWindow.wrappedJSObject.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance");
     // check for object space spec
     if (qxLocator.match('^app:')) 
     {
-      qxAppRoot = inWindow.qx.core.Init.getInstance().getApplication();
+      qxAppRoot = inWindow.wrappedJSObject.qx.core.Init.getApplication();
     } else 
     {
       qxAppRoot = this._getClientDocument(inWindow);
       if (qxAppRoot == null){
-        LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+        LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
         return null;
       }
     }
-    this._globalQxObject = inWindow.qx;
+    this._globalQxObject = inWindow.wrappedJSObject.qx;
   }
 
   else
   {
-    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
 
     // do not throw here, as if the locator fails in the first place selenium will call this
     // again with all frames (and windows?) which won't result in "element not found" but in
@@ -780,18 +780,18 @@ PageBot.prototype._findQxObjectInWindow = function(qxLocator, inWindow)
   var qxResultObject;
 
   // the AUT window must contain the qx-Object
-  if (inWindow.qx)
+  if (inWindow.wrappedJSObject.qx)
   {
     LOG.debug("qxLocator: qooxdoo seems to be present in AUT window. Try to get the Instance using (qx.ui.core.ClientDocument.getInstance())");
     qxResultObject = this._getClientDocument(inWindow);
     if (qxResultObject == null){
-      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+      LOG.debug("qx-Locator: Cannot access Init.getApplication() (yet), cannot search. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
       return null;
     }
   }
   else
   {
-    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.qx=" + inWindow.qx);
+    LOG.debug("qx-Locator: qx-Object not defined, object not found. inWindow=" + inWindow.location.href + ", inWindow.wrappedJSObject.qx=" + inWindow.wrappedJSObject.qx);
 
     // do not throw here, as if the locator fails in the first place selenium will call this
     // again with all frames (and windows?) which won't result in "element not found" but in
@@ -1338,7 +1338,7 @@ PageBot.prototype._getQxNodeDescendants = function(node)
     }
   }
 
-  LOG.debug("getQxNodeDescendants: returning for node : "+node+" immediate children: "+descArr1);
+  LOG.debug("getQxNodeDescendants: returning for node : "+node+" immediate children: "+descArr1.length);
   return descArr1;
 };  // _getQxNodeDescendants()
 
